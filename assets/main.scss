@@ -83,3 +83,9 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+
+/* Hide site navigation to avoid duplicate site name */
+.site-nav {
+  display: none;
+}
