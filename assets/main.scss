@@ -87,5 +87,8 @@ a:hover {
 
 /* Hide site navigation to avoid duplicate site name */
 .site-nav {
-  display: none;
-}
+  display: none !important;
+
+.site-nav {
+  display: none !important;
+}}
