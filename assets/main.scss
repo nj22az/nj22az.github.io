@@ -1,94 +1,234 @@
 ---
 ---
+/* Load Minima first, then your overrides */
 @import "minima";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-$font-family-base: "Poppins", sans-serif;
+/* Web font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* =========================
+   DESIGN TOKENS
+   ========================= */
+$font-family-base: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans",
+                   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+
+$accent: #007aff;
+$text: #333;
+$text-muted: #666;
+$card-blur: 20px;
+$shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.05);
+$border-soft: 1px solid rgba(0, 0, 0, 0.06);
 $background-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+
+/* =========================
+   GLOBAL
+   ========================= */
+html, body {
+  margin: 0;
+  padding: 0;
+}
 
 body {
   font-family: $font-family-base;
   background: $background-gradient;
-  margin: 0;
-  padding: 0;
-  color: #333;
+  color: $text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
 }
 
-// Header styling
+/* Let content breathe a bit more than Minima default */
+.wrapper {
+  max-width: 860px;
+  margin: 2.5rem auto;
+  padding: 0 1rem;
+}
+
+/* Headings: slightly smaller than Minima’s defaults */
+h1, .post-title, .page-heading, .site-title {
+  letter-spacing: -0.01em;
+}
+
+h1, .post-title, .page-heading {
+  font-size: 2rem;           /* down from the chunky default */
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+}
+
+h2 { font-size: 1.5rem; margin-top: 2rem; }
+h3 { font-size: 1.25rem; margin-top: 1.5rem; }
+
+/* Make small screens comfy */
+@media (max-width: 640px) {
+  .wrapper { margin: 2rem auto; }
+  h1, .post-title, .page-heading { font-size: 1.6rem; }
+  h2 { font-size: 1.25rem; }
+}
+
+/* =========================
+   HEADER
+   ========================= */
 .site-header {
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.4);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur($card-blur);
+  -webkit-backdrop-filter: blur($card-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .site-header .wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 0.6rem 1rem; /* slimmer than default */
 }
 
 .site-title {
-  font-size: 1.8rem;
+  font-size: 1.4rem; /* trimmed */
   font-weight: 600;
   margin: 0;
+  line-height: 1;
 }
 
-// Hide footer (remove redundant site title)
-.site-footer {
-  display: none;
+/* If Minima shows a nav with the site title again, hide it */
+.site-nav { display: none !important; }
+
+/* =========================
+   FOOTER
+   ========================= */
+/* If the footer repeats your site title or you want ultra-min look, keep hidden */
+.site-footer { display: none; }
+
+/* =========================
+   POST LIST & CARDS
+   ========================= */
+/* Minima uses .post-list > li on the home page */
+.post-list > li {
+  list-style: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur($card-blur);
+  -webkit-backdrop-filter: blur($card-blur);
+  border-radius: 1rem;
+  padding: 1.25rem 1.25rem 1rem;
+  margin: 0 0 1rem 0;
+  box-shadow: $shadow-soft;
+  border: $border-soft;
 }
 
-// Content wrapper
-.wrapper {
-  max-width: 900px;
-  margin: 3rem auto;
-  padding: 0 1rem;
-}
-
-// Post card style
+/* Actual post pages */
 .post {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur($card-blur);
+  -webkit-backdrop-filter: blur($card-blur);
   border-radius: 1rem;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-soft;
+  border: $border-soft;
 }
 
 .post-title {
-  font-size: 2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .post-meta {
-  font-size: 0.85rem;
-  color: #666;
+  font-size: 0.9rem;
+  color: $text-muted;
   margin-bottom: 1rem;
 }
 
 .post-content {
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.75;
 }
 
-// Links styling
+/* =========================
+   TYPOGRAPHY & ELEMENTS
+   ========================= */
 a {
-  color: #007aff;
+  color: $accent;
   text-decoration: none;
 }
-
-a:hover {
+a:hover,
+a:focus {
   text-decoration: underline;
 }
 
+/* Lists a bit looser for readability */
+ul, ol { padding-left: 1.5rem; }
+li + li { margin-top: 0.25rem; }
 
-/* Hide site navigation to avoid duplicate site name */
-.site-nav {
-  display: none !important;
+/* Blockquotes with a subtle accent bar */
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-left: 4px solid $accent;
+  border-radius: 0.5rem;
+}
 
-.site-nav {
-  display: none !important;
-}}
+/* Code blocks that match the glass aesthetic */
+pre, code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+pre {
+  overflow: auto;
+  padding: 0.9rem 1rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 0.75rem;
+  border: $border-soft;
+}
+
+/* Tables look like cards */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: $shadow-soft;
+}
+th, td {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+tr:last-child td { border-bottom: 0; }
+
+/* =========================
+   RSS / SMALL PRINT
+   ========================= */
+.site-footer .feed-subscribe, .feed-subscribe { 
+  font-size: 0.95rem;
+}
+
+/* =========================
+   OPTIONAL DARK MODE
+   ========================= */
+@media (prefers-color-scheme: dark) {
+  $text: #e7e7e7;
+  $text-muted: #b7b7b7;
+
+  body { color: $text; background: linear-gradient(135deg, #111418 0%, #1a1f27 100%); }
+
+  .site-header {
+    background: rgba(20, 22, 26, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .post,
+  .post-list > li,
+  table,
+  blockquote {
+    background: rgba(22, 24, 28, 0.6);
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  }
+
+  pre { background: rgba(255,255,255,0.06); }
+  a { color: #72aaff; }
+  .post-meta { color: $text-muted; }
+}
