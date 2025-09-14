@@ -1,3 +1,21 @@
 title: "The Office of Nils Johansson"
-description: "A personal blog about engineering, travel, and culture."
+description: "Reflections on engineering, travel, and culture—blending technical insight with global curiosity."
+author: "Nils Johansson"
+url: "https://nj22az.github.io"   # replace if you have a custom domain
+baseurl: ""                       # leave blank for GitHub Pages root
 theme: minima
+
+# Social links (shows up in minima if enabled)
+twitter_username: yourhandle
+github_username: nj22az
+linkedin_username: your-linkedin-handle
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Optional: add plugins for more features
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
