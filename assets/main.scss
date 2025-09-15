@@ -92,7 +92,22 @@ h3 { font-size: 1.25rem; margin-top: 1.5rem; }
 }
 
 /* If Minima shows a nav with the site title again, hide it */
-.site-nav { display: none !important; }
+/* Navigation with icons */
+.site-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.site-nav a {
+  color: $text;
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-nav svg {
+  width: 24px;
+  height: 24px;
+}
 
 /* =========================
    FOOTER
