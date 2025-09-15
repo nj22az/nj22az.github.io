@@ -232,3 +232,42 @@ tr:last-child td { border-bottom: 0; }
   a { color: #72aaff; }
   .post-meta { color: $text-muted; }
 }
+
+/* =========================
+   REACT APP
+   ========================= */
+.app-container {
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.posts-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.post-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur($card-blur);
+  -webkit-backdrop-filter: blur($card-blur);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: $shadow-soft;
+  border: $border-soft;
+}
+
+.post-card h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.post-date {
+  font-size: 0.9rem;
+  color: $text-muted;
+}

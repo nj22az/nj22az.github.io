@@ -1,0 +1,21 @@
+---
+layout: default
+---
+<div id="root"></div>
+
+<script>
+  window.__POSTS__ = [
+  {% for post in site.posts %}
+    {
+      title: "{{ post.title | escape }}",
+      url: "{{ post.url | relative_url }}",
+      date: "{{ post.date | date_to_string }}"
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  ];
+  window.__SITE_TITLE__ = "{{ site.title | escape }}";
+</script>
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script type="text/babel" src="{{ '/assets/js/app.jsx' | relative_url }}"></script>
