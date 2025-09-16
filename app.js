@@ -65,4 +65,11 @@ function App() {
   ]);
 }
 
-ReactDOM.render(React.createElement(App), document.getElementById('root'));
+ReactDOM.render(React.createElement(App
+                                   ), document.getElementById('root'));
+(function() {
+  var script = document.createElement('script');
+  script.src = 'main.js';
+  script.type = 'text/javascript';
+  document.body.appendChild(script);
+})();
