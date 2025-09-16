@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+<div class="home-hero">
+  {% comment %}Hero carousel will go here{% endcomment %}
+</div>
+
+<div class="home-content-grid">
+  <div class="home-main">
+    {% for post in site.posts limit:5 %}
+      {% include post-card.html post=post %}
+    {% endfor %}
+  </div>
+  <aside class="home-sidebar">
+    {% include sidebar.html %}
+  </aside>
+</div>
