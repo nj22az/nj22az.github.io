@@ -1,0 +1,14 @@
+---
+layout: default
+---
+
+<div class="downloads-page">
+  <div class="downloads-content">
+    {% for item in site.downloads %}
+      {% include download-card.html item=item %}
+    {% endfor %}
+  </div>
+  <aside class="downloads-sidebar">
+    {% include sidebar.html %}
+  </aside>
+</div>
