@@ -1,0 +1,28 @@
+<aside class="sidebar">
+  <div class="widget recent-posts">
+    <h2>Recent Posts</h2>
+    <ul>
+      {% for post in site.posts limit:5 %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="widget categories">
+    <h2>Categories</h2>
+    <ul>
+      {% assign categories = site.categories | sort %}
+      {% for category in categories %}
+        <li><a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }} ({{ category[1].size }})</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="widget tags">
+    <h2>Tags</h2>
+    <ul class="tag-cloud">
+      {% assign tags = site.tags %}
+      {% for tag in tags %}
+        <li><a href="{{ '/tags/' | relative_url }}#{{ tag[0] | slugify }}">{{ tag[0] }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</aside>
