@@ -1,9 +1,32 @@
-<header class="site-header">
+<header class="site-header" role="banner">
   <div class="wrapper">
-    {%- assign default_paths = site.pages | map: "path" -%}
-    {%- assign page_paths = site.minima.nav_pages | default: default_paths -%}
-    {%- assign page_titles = site.pages | map: 'title' | compact %}
-    <a class="site-title" rel="author" href="{{ '/' | relative_url }}">{{ site.title | escape }}</a>
-    <!-- Removed nav to avoid duplicate site name and give a clean header -->
+    {% assign office_prefix = 'The Office of ' %}
+    {% if site.title contains office_prefix %}
+      {% assign office_name = site.title | replace: office_prefix, '' %}
+    {% else %}
+      {% assign office_name = site.title %}
+    {% endif %}
+    <div class="site-header__inner">
+      <a class="site-title" rel="author" href="{{ '/' | relative_url }}">
+        {% if site.title contains office_prefix %}
+          <span class="site-title__label">{{ office_prefix | strip }}</span>
+          <span class="site-title__name">{{ office_name | escape }}</span>
+        {% else %}
+          <span class="site-title__name">{{ site.title | escape }}</span>
+        {% endif %}
+        <span class="site-title__tagline">Product Leadership Studio</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <ul class="nav-list">
+          <li><a href="#ethos">Ethos</a></li>
+          <li><a href="#expertise">Expertise</a></li>
+          <li><a href="#method">Method</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#insights">Insights</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <a class="nav-cta" href="#contact">Book a session</a>
+    </div>
   </div>
 </header>
