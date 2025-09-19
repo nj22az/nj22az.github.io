@@ -31,115 +31,43 @@ function enhancePost(post) {
   };
 }
 
-const MASCOT_STATES = {
-  home: {
-    mood: 'happy',
-    message: 'こんにちは! Mochi here — pick a story card and let’s start today’s adventure.'
-  },
-  blog: {
-    mood: 'curious',
-    message: 'Flip through the journal cards. Each one hides field notes and cozy reflections.'
-  },
-  downloads: {
-    mood: 'helpful',
-    message: 'Collect handy goodies for your toolkit. Every download is a little badge of progress!'
-  },
-  about: {
-    mood: 'thinking',
-    message: 'Take a peek behind the scenes and meet the engineer guiding these journeys.'
-  },
-  reading: {
-    mood: 'celebrating',
-    message: 'Story unlocked! Enjoy the tale, I’ll keep watch for the next surprise.'
-  }
-};
-
-const MOOD_ICONS = {
-  happy: '🌸',
-  curious: '🔍',
-  helpful: '🎒',
-  thinking: '🤔',
-  celebrating: '🎉',
-  sleeping: '😴'
-};
-
-function KawaiiButton({ children, variant = 'primary', size = 'md', className = '', as = 'button', ...props }) {
-  const classes = ['kawaii-button', `kawaii-button--${variant}`, `kawaii-button--${size}`, className]
-    .filter(Boolean)
-    .join(' ');
-
-  if (as === 'a') {
-    const { href, target, rel, ...rest } = props;
-    return React.createElement('a', { className: classes, href, target, rel, ...rest }, children);
-  }
-
-  const { type = 'button', ...rest } = props;
-  return React.createElement('button', { className: classes, type, ...rest }, children);
-}
-
-function FloatingDecor() {
-  const icons = ['🌸', '✨', '🍡', '☁', '🎮'];
-  return React.createElement(
-    'div',
-    { className: 'floating-decor', 'aria-hidden': 'true' },
-    icons.map((icon, index) =>
-      React.createElement('span', { className: `floating-decor__icon floating-decor__icon--${index}`, key: index }, icon)
-    )
-  );
-}
-
-function MascotGuide({ mood, message, onNudge }) {
-  const icon = MOOD_ICONS[mood] || '🌟';
-  return React.createElement('aside', {
-    className: `mascot-guide mascot-guide--${mood}`,
-    role: 'status',
-    'aria-live': 'polite'
-  }, [
-    React.createElement('div', { key: 'character', className: 'mascot-guide__character' }, [
-      React.createElement('span', { key: 'emoji', className: 'mascot-guide__emoji', 'aria-hidden': 'true' }, icon),
-      React.createElement('span', { key: 'label', className: 'mascot-guide__label' }, 'Mochi the Navigator')
-    ]),
-    React.createElement('div', { key: 'bubble', className: 'mascot-guide__bubble speech-bubble' },
-      React.createElement('p', { key: 'text' }, message)
-    ),
-    onNudge
-      ? React.createElement(KawaiiButton, { key: 'cta', variant: 'secondary', size: 'sm', onClick: onNudge }, 'Take me there ✨')
-      : null
-  ]);
+function MonoIcon({ name, className = '' }) {
+  return React.createElement('span', {
+    className: ['mono-icon', `mono-icon--${name}`, className].filter(Boolean).join(' '),
+    'aria-hidden': 'true'
+  });
 }
 
 function Navigation({ currentPage, onPageChange, onBrandClick }) {
   const pages = [
-    { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'blog', label: 'Blog', icon: '📓' },
-    { id: 'downloads', label: 'Downloads', icon: '🎁' },
-    { id: 'about', label: 'About', icon: '💬' }
+    { id: 'home', label: 'Home', icon: 'home' },
+    { id: 'blog', label: 'Journal', icon: 'journal' },
+    { id: 'downloads', label: 'Downloads', icon: 'download' },
+    { id: 'about', label: 'About', icon: 'about' }
   ];
 
-  return React.createElement('header', { className: 'top-bar kawaii-top-bar' }, [
+  return React.createElement('header', { className: 'top-bar' }, [
     React.createElement('div', { className: 'top-bar__brand', key: 'brand' },
-      React.createElement(KawaiiButton, {
-        variant: 'ghost',
-        size: 'sm',
+      React.createElement('button', {
+        type: 'button',
         className: 'brand-button',
         onClick: onBrandClick
       }, [
-        React.createElement('span', { key: 'icon', className: 'brand-glyph', 'aria-hidden': 'true' }, '🌈'),
-        React.createElement('span', { key: 'text', className: 'brand-text' }, 'Nils Field Notes'),
-        React.createElement('span', { key: 'tagline', className: 'brand-tagline' }, 'Curiosity Journal ✧')
+        React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
+        React.createElement('span', { key: 'text', className: 'brand-text' }, 'Nils Johansson'),
+        React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
       ])
     ),
     React.createElement('nav', { className: 'nav-items', key: 'nav', 'aria-label': 'Primary navigation' },
       pages.map(({ id, label, icon }) =>
-        React.createElement(KawaiiButton, {
-          variant: currentPage === id ? 'primary' : 'tab',
-          size: 'sm',
+        React.createElement('button', {
+          type: 'button',
           key: id,
           className: 'nav-item' + (currentPage === id ? ' active' : ''),
           'aria-current': currentPage === id ? 'page' : undefined,
           onClick: () => onPageChange(id)
         }, [
-          React.createElement('span', { key: 'icon', className: 'nav-item__icon', 'aria-hidden': 'true' }, icon),
+          React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'nav-item__icon' }),
           React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
         ])
       )
@@ -154,25 +82,18 @@ function Hero({ onExplore }) {
     }
   };
 
-  return React.createElement('section', { className: 'hero kawaii-hero' }, [
-    React.createElement('div', { key: 'decor', className: 'hero__decor', 'aria-hidden': 'true' }, '🌸'),
-    React.createElement('div', { key: 'content', className: 'hero__content' }, [
-      React.createElement('span', { key: 'tag', className: 'hero__tag stamp' }, 'Field Log 01'),
-      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Adventure-ready stories & schematics.'),
-      React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Playful reflections on engineering in motion, culture on the move, and the gear that keeps the journey running.'),
-      React.createElement('div', { key: 'cta', className: 'hero__cta' }, [
-        React.createElement(KawaiiButton, {
-          key: 'explore',
-          variant: 'primary',
-          size: 'lg',
-          onClick: handleExplore
-        }, 'Explore the blog ✨'),
-        React.createElement('span', { key: 'meta', className: 'hero__meta' }, '☆ Collect new insights weekly. Tap a card to begin!')
-      ])
-    ]),
-    React.createElement('div', { key: 'bubble', className: 'hero__bubble speech-bubble' }, [
-      React.createElement('p', { key: 'line1' }, 'Mochi whispers: “Curiosity is our compass!”'),
-      React.createElement('p', { key: 'line2' }, 'Choose a chapter and I’ll tag along.')
+  return React.createElement('section', { className: 'hero' }, [
+    React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Field notes & design signals'),
+    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Engineering stories delivered with calm precision.'),
+    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Dispatches from shipyards, innovation labs, and cross-border deployments—documenting the rituals that keep complex projects on schedule.'),
+    React.createElement('div', { key: 'cta', className: 'hero__cta' }, [
+      React.createElement('button', {
+        key: 'cta-button',
+        type: 'button',
+        className: 'primary-button',
+        onClick: handleExplore
+      }, 'Browse latest articles'),
+      React.createElement('span', { key: 'meta', className: 'hero__meta' }, 'Frameworks, reflections, and artefacts captured directly from the work.')
     ])
   ]);
 }
@@ -192,24 +113,22 @@ function PostCard({ post, onOpen }) {
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('span', { key: 'sticker', className: 'post-card__sticker', 'aria-hidden': 'true' }, '✨'),
-    React.createElement('div', { key: 'header', className: 'post-card__header' }, [
+    React.createElement('div', { key: 'meta', className: 'post-card__meta' }, [
+      React.createElement(MonoIcon, { key: 'icon', name: 'calendar', className: 'post-card__meta-icon' }),
       React.createElement('span', { key: 'date', className: 'post-card__date' }, post.displayDate),
-      React.createElement('span', { key: 'reading', className: 'post-card__time' }, `${post.readingTime} min read`)
+      React.createElement('span', { key: 'separator', className: 'post-card__separator', 'aria-hidden': 'true' }, '•'),
+      React.createElement('span', { key: 'time', className: 'post-card__time' }, `${post.readingTime} min read`)
     ]),
     React.createElement('h3', { key: 'title', className: 'post-card__title' }, post.title),
-    React.createElement('p', { key: 'excerpt', className: 'post-card__excerpt' }, post.excerpt),
-    React.createElement('div', { key: 'footer', className: 'post-card__footer' },
-      React.createElement('span', { className: 'post-card__cta' }, 'Tap to read →')
-    )
+    React.createElement('p', { key: 'excerpt', className: 'post-card__excerpt' }, post.excerpt)
   ]);
 }
 
 function PostList({ posts, onOpen }) {
   if (!posts.length) {
-    return React.createElement('div', { className: 'empty-state speech-bubble' }, [
-      React.createElement('h3', { key: 'title' }, 'Fresh stories are brewing ☕️'),
-      React.createElement('p', { key: 'copy' }, 'Check back soon—new adventures are on the way!')
+    return React.createElement('div', { className: 'empty-state' }, [
+      React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
+      React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
     ]);
   }
 
@@ -230,8 +149,8 @@ function HomePage({ posts, onOpen, onExplore }) {
     React.createElement(Hero, { key: 'hero', onExplore }),
     React.createElement('section', { key: 'posts', className: 'posts-section' }, [
       React.createElement('div', { key: 'header', className: 'section-header' }, [
-        React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest postcards'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Choose a vignette to uncover life at the edges of the map.')
+        React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest insights'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Essays, briefs, and checklists distilled from live engagements.')
       ]),
       React.createElement(PostList, { key: 'list', posts: latestPosts, onOpen })
     ])
@@ -242,8 +161,8 @@ function BlogPage({ posts, onOpen }) {
   return React.createElement('div', { className: 'posts-page' }, [
     React.createElement('section', { key: 'section', className: 'posts-section' }, [
       React.createElement('div', { key: 'header', className: 'section-header' }, [
-        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal shelf'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Field-tested lessons, travel notes, and cultural curios collected on assignment.')
+        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal archive'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Long-form thinking, quick status dispatches, and the frameworks guiding cross-regional delivery.')
       ]),
       React.createElement(PostList, { key: 'list', posts, onOpen })
     ])
@@ -252,17 +171,16 @@ function BlogPage({ posts, onOpen }) {
 
 function PostView({ post, onBack }) {
   return React.createElement('article', { className: 'post-detail' }, [
-    React.createElement(KawaiiButton, {
+    React.createElement('button', {
       key: 'back',
-      variant: 'ghost',
-      size: 'sm',
-      className: 'post-detail__back',
+      type: 'button',
+      className: 'pill-button',
       onClick: onBack
-    }, '← Back to story dock'),
+    }, '← Back to articles'),
     React.createElement('header', { key: 'header', className: 'post-detail__header' }, [
-      React.createElement('span', { key: 'stamp', className: 'post-detail__stamp' }, 'Story mode ☆'),
+      React.createElement('p', { key: 'eyebrow', className: 'post-detail__eyebrow' }, 'Journal entry'),
       React.createElement('h1', { key: 'title', className: 'post-detail__title' }, post.title),
-      React.createElement('p', { key: 'meta', className: 'post-detail__meta' }, `${post.displayDate} • ${post.readingTime} min read`)
+      React.createElement('p', { key: 'meta', className: 'post-detail__meta' }, `${post.displayDate} \u2022 ${post.readingTime} min read`)
     ]),
     React.createElement('div', {
       key: 'body',
@@ -282,7 +200,9 @@ function DownloadCard({ item }) {
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
   return React.createElement('article', { className: 'download-card' }, [
-    React.createElement('span', { key: 'icon', className: 'download-card__icon', 'aria-hidden': 'true' }, '🎁'),
+    React.createElement('div', { key: 'badge', className: 'download-card__badge' },
+      React.createElement(MonoIcon, { name: 'download', className: 'download-card__icon' })
+    ),
     React.createElement('h3', { key: 'title', className: 'download-card__title' }, item.title),
     React.createElement('p', { key: 'description', className: 'download-card__description' }, item.description),
     metaItems.length
@@ -291,12 +211,9 @@ function DownloadCard({ item }) {
         )
       : null,
     item.url
-      ? React.createElement(KawaiiButton, {
+      ? React.createElement('a', {
           key: 'action',
-          as: 'a',
-          variant: 'secondary',
-          size: 'sm',
-          className: 'download-card__action',
+          className: 'button button--subtle download-card__action',
           href: item.url,
           target: isExternal ? '_blank' : undefined,
           rel: isExternal ? 'noreferrer noopener' : undefined
@@ -308,35 +225,24 @@ function DownloadCard({ item }) {
 function DownloadsPage({ downloads }) {
   return React.createElement('section', { className: 'downloads-section' }, [
     React.createElement('div', { key: 'header', className: 'section-header' }, [
-      React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads chest'),
-      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Collect practical templates, checklists, and field-ready helpers.')
+      React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads'),
+      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
     ]),
     downloads.length
       ? React.createElement('div', { key: 'grid', className: 'download-grid' },
           downloads.map((item, index) => React.createElement(DownloadCard, { item, key: index }))
         )
-      : React.createElement('p', { key: 'empty', className: 'empty-state speech-bubble' }, 'Downloads will be available soon—check back shortly!')
+      : React.createElement('p', { key: 'empty', className: 'empty-state' }, 'New assets are being prepared—check back soon for additional resources.')
   ]);
 }
 
 function AboutPage() {
-  const highlights = [
-    { icon: '🛠', text: 'Marine engineer turned field service specialist with a taste for complex deployments.' },
-    { icon: '🌍', text: 'Works across continents, documenting the cultural nuances that shape every project.' },
-    { icon: '🎏', text: 'Shares frameworks, travel rituals, and lessons learned so fellow explorers can thrive.' }
-  ];
-
   return React.createElement('section', { className: 'about-section' }, [
-    React.createElement('h1', { key: 'title', className: 'section-title' }, 'Meet Nils'),
-    React.createElement('p', { key: 'lead', className: 'section-lead' }, 'Thoughtful notes from shipyards, innovation labs, and the quiet hours in-between.'),
-    React.createElement('ul', { key: 'list', className: 'about-section__list' },
-      highlights.map(({ icon, text }, index) =>
-        React.createElement('li', { className: 'about-section__item', key: index }, [
-          React.createElement('span', { className: 'about-section__icon', 'aria-hidden': 'true', key: 'icon' }, icon),
-          React.createElement('p', { className: 'about-section__text', key: 'text' }, text)
-        ])
-      )
-    )
+    React.createElement('h1', { key: 'title', className: 'section-title' }, 'About Nils'),
+    React.createElement('p', { key: 'lead', className: 'section-lead' }, 'Field service engineer translating complex projects into predictable outcomes.'),
+    React.createElement('p', { key: 'p1', className: 'section-body' }, 'Marine engineering roots, a decade of hands-on deployments, and a commitment to clear documentation.'),
+    React.createElement('p', { key: 'p2', className: 'section-body' }, 'This journal is a working log—expect tested checklists, cultural context, and decision frameworks you can adapt immediately.'),
+    React.createElement('p', { key: 'p3', className: 'section-body' }, 'If you operate in similar environments, I hope these notes help you ship with confidence.')
   ]);
 }
 
@@ -407,23 +313,19 @@ function App() {
   }
 
   const activePage = currentPost ? 'blog' : page;
-  const mascotState = currentPost
-    ? { ...MASCOT_STATES.reading, message: `Enjoy “${currentPost.title}” — I’ll keep watch for highlights.` }
-    : MASCOT_STATES[activePage] || MASCOT_STATES.home;
-
-  const mascotNudge = !currentPost && activePage === 'home'
-    ? () => handleChangePage('downloads')
-    : undefined;
 
   return React.createElement('div', { className: 'app-shell' }, [
-    React.createElement(FloatingDecor, { key: 'decor' }),
-    React.createElement(Navigation, { key: 'nav', currentPage: activePage, onPageChange: handleChangePage, onBrandClick: handleBrandClick }),
+    React.createElement(Navigation, {
+      key: 'nav',
+      currentPage: activePage,
+      onPageChange: handleChangePage,
+      onBrandClick: handleBrandClick
+    }),
     React.createElement('main', {
       key: 'main',
       className: 'main-area' + (currentPost ? ' main-area--detail' : '')
     }, mainContent),
-    React.createElement(MascotGuide, { key: 'mascot', mood: mascotState.mood, message: mascotState.message, onNudge: mascotNudge }),
-    React.createElement('footer', { key: 'footer', className: 'site-footer' }, `© ${new Date().getFullYear()} Nils Johansson ✿ Crafted with curiosity and cocoa.`)
+    React.createElement('footer', { key: 'footer', className: 'site-footer' }, `\u00A9 ${new Date().getFullYear()} Nils Johansson · Field Notes`)
   ]);
 }
 
