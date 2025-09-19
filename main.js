@@ -49,14 +49,14 @@ function MonoIcon({ name, className = '', tone, style }) {
   });
 }
 
-function Navigation({ currentPage, onPageChange, onBrandClick }) {
-  const pages = [
-    { id: 'home', label: 'Home', icon: 'home' },
-    { id: 'blog', label: 'Journal', icon: 'journal' },
-    { id: 'downloads', label: 'Downloads', icon: 'download' },
-    { id: 'about', label: 'About', icon: 'about' }
-  ];
+const NAV_ITEMS = [
+  { id: 'home', label: 'Home', icon: 'home' },
+  { id: 'blog', label: 'Journal', icon: 'journal' },
+  { id: 'downloads', label: 'Downloads', icon: 'download' },
+  { id: 'about', label: 'About', icon: 'about' }
+];
 
+function Navigation({ currentPage, onPageChange, onBrandClick }) {
   return React.createElement('aside', { className: 'side-nav' }, [
     React.createElement('button', {
       type: 'button',
@@ -71,7 +71,7 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
       ])
     ]),
     React.createElement('nav', { className: 'side-nav__items', key: 'nav', 'aria-label': 'Primary navigation' },
-      pages.map(({ id, label, icon }) =>
+      NAV_ITEMS.map(({ id, label, icon }) =>
         React.createElement('button', {
           type: 'button',
           key: id,
@@ -92,6 +92,28 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
   ]);
 }
 
+function BottomNavigation({ currentPage, onPageChange }) {
+  return React.createElement('nav', { className: 'bottom-nav', 'aria-label': 'Primary navigation' },
+    NAV_ITEMS.map(({ id, label, icon }) =>
+      React.createElement('button', {
+        type: 'button',
+        key: id,
+        className: 'bottom-nav__item' + (currentPage === id ? ' active' : ''),
+        'aria-current': currentPage === id ? 'page' : undefined,
+        onClick: () => onPageChange(id)
+      }, [
+        React.createElement(MonoIcon, {
+          key: 'icon',
+          name: icon,
+          className: 'bottom-nav__icon',
+          tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
+        }),
+        React.createElement('span', { key: 'label', className: 'bottom-nav__label' }, label)
+      ])
+    )
+  );
+}
+
 function Hero({ onExplore }) {
   const handleExplore = () => {
     if (typeof onExplore === 'function') {
@@ -100,9 +122,8 @@ function Hero({ onExplore }) {
   };
 
   return React.createElement('section', { className: 'hero app-frame' }, [
-    React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'FIELD OPERATIONS JOURNAL'),
-    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Practical notes from complex deployments.'),
-    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Field-tested approaches, cultural context, and ready-to-use resources for distributed teams.'),
+    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Field operations journal'),
+    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently.'),
     React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
       React.createElement('button', {
         key: 'primary',
@@ -328,7 +349,12 @@ function App() {
         className: 'timeline' + (currentPost ? ' timeline--detail' : '')
       }, timelineItems),
       React.createElement(SecondaryPanel, { key: 'panel', page: activePage, downloads })
-    ])
+    ]),
+    React.createElement(BottomNavigation, {
+      key: 'bottom-nav',
+      currentPage: activePage,
+      onPageChange: handleChangePage
+    })
   ]);
 }
 
