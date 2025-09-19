@@ -10,7 +10,7 @@ function createExcerpt(text) {
   if (text.length <= 160) {
     return text;
   }
-  const slice = text.slice(0, 180);
+  const slice = text.slice(0, 200);
   const lastSpace = slice.lastIndexOf(' ');
   const candidate = lastSpace > 140 ? slice.slice(0, lastSpace) : slice;
   return `${candidate.trim()}…`;
@@ -32,16 +32,16 @@ function enhancePost(post) {
 }
 
 const ICON_COLORS = {
-  home: '#0a84ff',
-  blog: '#30d158',
-  downloads: '#ff9f0a',
-  about: '#ff375f',
-  calendar: '#32ade6',
-  download: '#ff9f0a',
-  aboutBadge: '#8e8e93'
+  home: '#0F6CBD',
+  blog: '#107C41',
+  downloads: '#C43E1C',
+  about: '#5C2D91',
+  calendar: '#0B6A99',
+  download: '#B7322C',
+  info: '#616161'
 };
 
-const CARD_COLOR_POOL = ['#0a84ff', '#30d158', '#ff9f0a', '#af52de', '#64d2ff', '#ff375f'];
+const CARD_COLOR_POOL = ['#0F6CBD', '#107C41', '#C43E1C', '#5C2D91', '#038387', '#744DA9'];
 
 function MonoIcon({ name, className = '', style }) {
   return React.createElement('span', {
@@ -61,19 +61,18 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
 
   return React.createElement('header', { className: 'top-bar' },
     React.createElement('div', { className: 'app-frame top-bar__frame' }, [
-      React.createElement('div', { className: 'top-bar__brand', key: 'brand' },
-        React.createElement('button', {
-          type: 'button',
-          className: 'brand-button',
-          onClick: onBrandClick
-        }, [
-          React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
-          React.createElement('span', { key: 'identity', className: 'brand-text-block' }, [
-            React.createElement('span', { key: 'name', className: 'brand-text' }, 'Nils Johansson'),
-            React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
-          ])
+      React.createElement('button', {
+        type: 'button',
+        className: 'brand-button',
+        onClick: onBrandClick,
+        key: 'brand'
+      }, [
+        React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
+        React.createElement('div', { key: 'text', className: 'brand-text-block' }, [
+          React.createElement('span', { key: 'name', className: 'brand-text' }, 'Nils Johansson'),
+          React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
         ])
-      ),
+      ]),
       React.createElement('nav', { className: 'nav-items', key: 'nav', 'aria-label': 'Primary navigation' },
         pages.map(({ id, label, icon, tone }) =>
           React.createElement('button', {
@@ -89,8 +88,7 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
               style: { backgroundColor: tone }
             }, React.createElement(MonoIcon, {
               name: icon,
-              className: 'nav-item__icon',
-              style: { backgroundColor: '#fff' }
+              className: 'nav-item__icon'
             })),
             React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
           ])
@@ -108,17 +106,33 @@ function Hero({ onExplore }) {
   };
 
   return React.createElement('section', { className: 'hero app-frame' }, [
-    React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Field notes & design signals'),
-    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Engineering stories delivered with calm precision.'),
-    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Dispatches from shipyards, innovation labs, and cross-border deployments—documenting the rituals that keep complex projects on schedule.'),
-    React.createElement('div', { key: 'cta', className: 'hero__cta' }, [
-      React.createElement('button', {
-        key: 'cta-button',
-        type: 'button',
-        className: 'primary-button',
-        onClick: handleExplore
-      }, 'Browse latest articles'),
-      React.createElement('span', { key: 'meta', className: 'hero__meta' }, 'Frameworks, reflections, and artefacts captured directly from the work.')
+    React.createElement('div', { key: 'content', className: 'hero__content' }, [
+      React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'FIELD OPERATIONS PLAYBOOK'),
+      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Shareable lessons from live deployments.'),
+      React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Structured field notes, design signals, and proven frameworks that help distributed teams deliver consistently.'),
+      React.createElement('div', { key: 'cta', className: 'hero__actions' }, [
+        React.createElement('button', {
+          key: 'primary',
+          type: 'button',
+          className: 'primary-button',
+          onClick: handleExplore
+        }, 'Review recent updates'),
+        React.createElement('a', {
+          key: 'secondary',
+          className: 'link-button',
+          href: '#downloads'
+        }, 'Browse resources →')
+      ])
+    ]),
+    React.createElement('div', { key: 'metrics', className: 'hero__metrics' }, [
+      React.createElement('div', { key: 'metric1', className: 'metric-card' }, [
+        React.createElement('span', { className: 'metric-value' }, '12'),
+        React.createElement('span', { className: 'metric-label' }, 'Active checklists')
+      ]),
+      React.createElement('div', { key: 'metric2', className: 'metric-card' }, [
+        React.createElement('span', { className: 'metric-value' }, '4'),
+        React.createElement('span', { className: 'metric-label' }, 'Regions supported')
+      ])
     ])
   ]);
 }
@@ -132,24 +146,21 @@ function PostCard({ post, onOpen, accent }) {
   };
 
   return React.createElement('article', {
-    className: 'settings-item post-card',
+    className: 'resource-card',
     role: 'button',
     tabIndex: 0,
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('div', { key: 'icon', className: 'settings-leading' },
-      React.createElement('span', {
-        className: 'settings-icon',
-        style: { backgroundColor: accent }
-      }, React.createElement(MonoIcon, { name: 'calendar', style: { backgroundColor: '#fff' } }))
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon', style: { backgroundColor: accent } },
+      React.createElement(MonoIcon, { name: 'journal' })
     ),
-    React.createElement('div', { key: 'body', className: 'settings-body' }, [
-      React.createElement('h3', { key: 'title', className: 'settings-title' }, post.title),
-      React.createElement('p', { key: 'meta', className: 'settings-subtitle' }, `${post.displayDate} · ${post.readingTime} min read`),
-      React.createElement('p', { key: 'excerpt', className: 'settings-secondary' }, post.excerpt)
+    React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
+      React.createElement('h3', { key: 'title', className: 'resource-card__title' }, post.title),
+      React.createElement('p', { key: 'meta', className: 'resource-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`),
+      React.createElement('p', { key: 'excerpt', className: 'resource-card__excerpt' }, post.excerpt)
     ]),
-    React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'settings-chevron' })
+    React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'resource-card__chevron' })
   ]);
 }
 
@@ -161,14 +172,16 @@ function PostList({ posts, onOpen }) {
     ]);
   }
 
-  return React.createElement('div', { className: 'settings-group app-frame' },
-    posts.map((post, index) =>
-      React.createElement(PostCard, {
-        post,
-        onOpen,
-        accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-        key: post.id || post.url || post.title
-      })
+  return React.createElement('div', { className: 'app-frame' },
+    React.createElement('div', { className: 'resource-grid resource-grid--three' },
+      posts.map((post, index) =>
+        React.createElement(PostCard, {
+          post,
+          onOpen,
+          accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
+          key: post.id || post.url || post.title
+        })
+      )
     )
   );
 }
@@ -178,9 +191,12 @@ function HomePage({ posts, onOpen, onExplore }) {
   return React.createElement(React.Fragment, null, [
     React.createElement(Hero, { key: 'hero', onExplore }),
     React.createElement('section', { key: 'posts', className: 'posts-section app-frame' }, [
-      React.createElement('div', { key: 'header', className: 'section-header section-header--left' }, [
-        React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest insights'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Essays, briefs, and checklists distilled from live engagements.')
+      React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
+        React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
+          React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest insights'),
+          React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Essays and annotations from recent field engagements.')
+        ]),
+        React.createElement('a', { key: 'cta', className: 'link-button', onClick: onExplore }, 'View all articles')
       ]),
       React.createElement(PostList, { key: 'list', posts: latestPosts, onOpen })
     ])
@@ -189,11 +205,23 @@ function HomePage({ posts, onOpen, onExplore }) {
 
 function BlogPage({ posts, onOpen }) {
   return React.createElement('section', { className: 'posts-section app-frame' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--left' }, [
-      React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal archive'),
-      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Long-form thinking, quick status dispatches, and the frameworks guiding cross-regional delivery.')
+    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
+      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
+        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal archive'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Long-form thinking, status notes, and frameworks guiding cross-regional delivery.')
+      ]),
+      React.createElement('span', { key: 'count', className: 'section-caption' }, `${posts.length} entries`)
     ]),
-    React.createElement(PostList, { key: 'list', posts, onOpen })
+    React.createElement('div', { className: 'resource-grid resource-grid--three' },
+      posts.map((post, index) =>
+        React.createElement(PostCard, {
+          post,
+          onOpen,
+          accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
+          key: post.id || post.url || post.title
+        })
+      )
+    )
   ]);
 }
 
@@ -227,40 +255,40 @@ function DownloadCard({ item, accent }) {
 
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
-  return React.createElement('div', { className: 'settings-item download-card' }, [
-    React.createElement('div', { key: 'icon', className: 'settings-leading' },
-      React.createElement('span', {
-        className: 'settings-icon',
-        style: { backgroundColor: accent }
-      }, React.createElement(MonoIcon, { name: 'download', style: { backgroundColor: '#fff' } }))
+  return React.createElement('div', { className: 'resource-card resource-card--horizontal' }, [
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon', style: { backgroundColor: accent } },
+      React.createElement(MonoIcon, { name: 'download' })
     ),
-    React.createElement('div', { key: 'body', className: 'settings-body' }, [
-      React.createElement('h3', { key: 'title', className: 'settings-title' }, item.title),
-      React.createElement('p', { key: 'description', className: 'settings-secondary' }, item.description),
+    React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
+      React.createElement('h3', { key: 'title', className: 'resource-card__title' }, item.title),
+      React.createElement('p', { key: 'description', className: 'resource-card__excerpt' }, item.description),
       metaItems.length
-        ? React.createElement('p', { key: 'meta', className: 'settings-subtitle' }, metaItems.join(' · '))
+        ? React.createElement('p', { key: 'meta', className: 'resource-card__meta' }, metaItems.join(' · '))
         : null
     ]),
     item.url
       ? React.createElement('a', {
           key: 'download',
-          className: 'settings-action-link',
+          className: 'link-button link-button--inline',
           href: item.url,
           target: isExternal ? '_blank' : undefined,
           rel: isExternal ? 'noreferrer noopener' : undefined
         }, 'Download')
-      : null
+      : React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'resource-card__chevron' })
   ]);
 }
 
 function DownloadsPage({ downloads }) {
-  return React.createElement('section', { className: 'downloads-section app-frame' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--left' }, [
-      React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads'),
-      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
+  return React.createElement('section', { className: 'downloads-section app-frame', id: 'downloads' }, [
+    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
+      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
+        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
+      ]),
+      React.createElement('span', { key: 'caption', className: 'section-caption' }, `${downloads.length} resources`)
     ]),
     downloads.length
-      ? React.createElement('div', { key: 'group', className: 'settings-group' },
+      ? React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--two' },
           downloads.map((item, index) => React.createElement(DownloadCard, {
             item,
             accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
@@ -290,29 +318,28 @@ function AboutPage() {
     },
     {
       icon: 'download',
-      tone: ICON_COLORS.download,
+      tone: ICON_COLORS.downloads,
       title: 'Practitioner focus',
       copy: 'Designed for teams shipping in the real world: concise, actionable, and adaptable.'
     }
   ];
 
   return React.createElement('section', { className: 'about-section app-frame' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--left' }, [
-      React.createElement('h1', { key: 'title', className: 'section-title' }, 'About Nils'),
-      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Field service engineer translating complex projects into predictable outcomes.')
+    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
+      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
+        React.createElement('h1', { key: 'title', className: 'section-title' }, 'About Nils'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Field service engineer translating complex projects into predictable outcomes.')
+      ])
     ]),
-    React.createElement('div', { key: 'group', className: 'settings-group' },
+    React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--three' },
       highlights.map(({ icon, tone, title, copy }, index) =>
-        React.createElement('div', { className: 'settings-item', key: index }, [
-          React.createElement('div', { className: 'settings-leading' },
-            React.createElement('span', {
-              className: 'settings-icon',
-              style: { backgroundColor: tone }
-            }, React.createElement(MonoIcon, { name: icon, style: { backgroundColor: '#fff' } }))
+        React.createElement('div', { className: 'resource-card resource-card--stacked', key: index }, [
+          React.createElement('div', { className: 'resource-card__icon', style: { backgroundColor: tone } },
+            React.createElement(MonoIcon, { name: icon })
           ),
-          React.createElement('div', { className: 'settings-body' }, [
-            React.createElement('h3', { className: 'settings-title', key: 'title' }, title),
-            React.createElement('p', { className: 'settings-secondary', key: 'copy' }, copy)
+          React.createElement('div', { className: 'resource-card__body' }, [
+            React.createElement('h3', { className: 'resource-card__title', key: 'title' }, title),
+            React.createElement('p', { className: 'resource-card__excerpt', key: 'copy' }, copy)
           ])
         ])
       )

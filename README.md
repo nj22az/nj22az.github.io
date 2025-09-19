@@ -6,7 +6,7 @@ A quick reference for running, extending, and publishing the React-driven Jekyll
 
 - **Static generator:** Jekyll builds the Markdown posts into HTML and also emits the JSON feed consumed by React (`posts.json`).
 - **Front-end:** `index.html` loads the custom React app in `main.js` for the full browsing experience.
-- **Styling:** Global design system lives in `styles.css` (Apple HIG-inspired) and a few Jekyll overrides in `assets/main.scss`.
+- **Styling:** Global design system lives in `styles.css` (modern workspace/SharePoint-inspired) and a few Jekyll overrides in `assets/main.scss`.
 - **Data:**
   - Blog content lives in `_posts/` as Markdown files with front matter.
   - Download metadata lives in `downloads.json`.
