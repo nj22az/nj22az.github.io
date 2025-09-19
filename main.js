@@ -103,33 +103,21 @@ function Hero({ onExplore }) {
   };
 
   return React.createElement('section', { className: 'hero app-frame' }, [
-    React.createElement('div', { key: 'content', className: 'hero__content' }, [
-      React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'FIELD OPERATIONS PLAYBOOK'),
-      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Shareable lessons from live deployments.'),
-      React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Structured field notes, design signals, and proven frameworks that help distributed teams deliver consistently.'),
-      React.createElement('div', { key: 'cta', className: 'hero__actions' }, [
-        React.createElement('button', {
-          key: 'primary',
-          type: 'button',
-          className: 'primary-button',
-          onClick: handleExplore
-        }, 'Review recent updates'),
-        React.createElement('a', {
-          key: 'secondary',
-          className: 'link-button',
-          href: '#downloads'
-        }, 'Browse resources →')
-      ])
-    ]),
-    React.createElement('div', { key: 'metrics', className: 'hero__metrics' }, [
-      React.createElement('div', { key: 'metric1', className: 'metric-card' }, [
-        React.createElement('span', { className: 'metric-value' }, '12'),
-        React.createElement('span', { className: 'metric-label' }, 'Active checklists')
-      ]),
-      React.createElement('div', { key: 'metric2', className: 'metric-card' }, [
-        React.createElement('span', { className: 'metric-value' }, '4'),
-        React.createElement('span', { className: 'metric-label' }, 'Regions supported')
-      ])
+    React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'FIELD OPERATIONS JOURNAL'),
+    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Practical notes from complex deployments.'),
+    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Field-tested approaches, cultural context, and ready-to-use resources for distributed teams.'),
+    React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
+      React.createElement('button', {
+        key: 'primary',
+        type: 'button',
+        className: 'primary-button',
+        onClick: handleExplore
+      }, 'Browse latest articles'),
+      React.createElement('a', {
+        key: 'secondary',
+        className: 'link-button',
+        href: '#downloads'
+      }, 'View downloads')
     ])
   ]);
 }
@@ -149,7 +137,7 @@ function PostCard({ post, onOpen, accent }) {
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: accent } },
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline' },
       React.createElement(MonoIcon, { name: 'journal', tone: accent })
     ),
     React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
@@ -253,7 +241,7 @@ function DownloadCard({ item, accent }) {
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
   return React.createElement('div', { className: 'resource-card resource-card--horizontal' }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: accent } },
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline' },
       React.createElement(MonoIcon, { name: 'download', tone: accent })
     ),
     React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
@@ -331,7 +319,7 @@ function AboutPage() {
     React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--three' },
       highlights.map(({ icon, tone, title, copy }, index) =>
         React.createElement('div', { className: 'resource-card resource-card--stacked', key: index }, [
-      React.createElement('div', { className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: tone } },
+      React.createElement('div', { className: 'resource-card__icon resource-card__icon--outline' },
         React.createElement(MonoIcon, { name: icon, tone })
       ),
           React.createElement('div', { className: 'resource-card__body' }, [

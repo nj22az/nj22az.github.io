@@ -178,20 +178,14 @@ button:focus-visible,
 }
 
 .hero {
-  margin-top: clamp(1rem, 4vw, 2.5rem);
-  padding: clamp(2.6rem, 6vw, 3.8rem);
+  margin-top: clamp(1rem, 4vw, 2.3rem);
+  padding: clamp(2.2rem, 5vw, 3.2rem);
   border-radius: var(--radius-large);
-  background: linear-gradient(135deg, rgba(15, 108, 189, 0.95), rgba(15, 108, 189, 0.82));
+  background: linear-gradient(135deg, #0f6cbd 0%, #124a7a 100%);
   color: #fff;
   display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
   box-shadow: var(--shadow-large);
-}
-
-.hero__content {
-  display: grid;
-  gap: 1rem;
 }
 
 .hero__eyebrow {
@@ -202,18 +196,18 @@ button:focus-visible,
 }
 
 .hero__headline {
-  margin: 0;
+  margin: 0 0 0.6rem;
   font-family: 'Segoe UI Variable Display', 'Segoe UI', 'SF Pro Display', sans-serif;
-  font-size: clamp(2.4rem, 6vw, 3rem);
+  font-size: clamp(2.1rem, 5vw, 2.8rem);
   letter-spacing: -0.015em;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .hero__subhead {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.03rem;
   line-height: 1.6;
-  opacity: 0.92;
+  opacity: 0.9;
 }
 
 .hero__actions {
@@ -245,35 +239,11 @@ button:focus-visible,
 .link-button {
   font-weight: 600;
   color: #fff;
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 .link-button:hover {
   opacity: 1;
-}
-
-.hero__metrics {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-}
-
-.metric-card {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 1rem 1.2rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.metric-value {
-  display: block;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.metric-label {
-  font-size: 0.85rem;
-  opacity: 0.85;
 }
 
 .posts-section,
