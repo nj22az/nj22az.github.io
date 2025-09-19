@@ -185,6 +185,8 @@ function DownloadCard({ item }) {
     typeof item.download_count === 'number' ? `${item.download_count} downloads` : null
   ].filter(Boolean);
 
+  const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
+
   return React.createElement('article', { className: 'download-card' }, [
     React.createElement('h3', { key: 'title', className: 'download-card__title' }, item.title),
     React.createElement('p', { key: 'description', className: 'download-card__description' }, item.description),
@@ -192,6 +194,15 @@ function DownloadCard({ item }) {
       ? React.createElement('div', { key: 'meta', className: 'download-card__meta' },
           metaItems.map((meta, index) => React.createElement('span', { key: index }, meta))
         )
+      : null,
+    item.url
+      ? React.createElement('a', {
+          key: 'action',
+          className: 'button button--subtle download-card__action',
+          href: item.url,
+          target: isExternal ? '_blank' : undefined,
+          rel: isExternal ? 'noreferrer noopener' : undefined
+        }, 'Download')
       : null
   ]);
 }

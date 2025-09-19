@@ -216,6 +216,31 @@ button:focus-visible,
   outline-offset: 3px;
 }
 
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.button--subtle {
+  background: rgba(0, 113, 227, 0.12);
+  color: var(--accent);
+}
+
+.button--subtle:hover {
+  background: rgba(0, 113, 227, 0.18);
+  transform: translateY(-1px);
+}
+
+.button--subtle:focus-visible {
+  outline: 2px solid rgba(0, 113, 227, 0.4);
+  outline-offset: 3px;
+}
+
 .hero__meta {
   font-size: 0.95rem;
   color: var(--text-secondary);
@@ -421,6 +446,11 @@ button:focus-visible,
   gap: 0.75rem;
   font-size: 0.9rem;
   color: var(--text-secondary);
+}
+
+.download-card__action {
+  margin-top: 1.2rem;
+  align-self: flex-start;
 }
 
 .section-lead {
