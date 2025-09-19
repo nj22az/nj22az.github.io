@@ -47,14 +47,31 @@ A quick reference for running, extending, and publishing the React-driven Jekyll
    layout: post
    title: "Working Between Shipyards"
    date: 2025-01-15
+   tags: [deployments, checklists]
    ---
 
    Start with a short intro paragraph. The React UI uses this to build the excerpt and estimate reading time.
    ```
 
 2. Use standard Markdown for headings, lists, code blocks, and images. Everything between the front matter and the end of the file becomes the post body.
-3. (Optional) Add custom metadata such as `tags` if you need it for future enhancements; Jekyll will pass it through to the JSON feed.
-4. Save, preview locally with `jekyll serve`, then commit/push when ready.
+3. Reference images by placing them under `assets/images/posts/<slug>/` (create the folder if needed) and linking with Markdown, e.g. `![Engine room gauges](/assets/images/posts/engine-room/gauges.jpg)`.
+4. Tags are displayed automatically; add them in front matter (`tags: [operations, toolkit]`) to prepare for future filtering.
+5. Save, preview locally with `jekyll serve`, then commit/push when ready.
+
+### Changing the icon and glass brand treatment
+
+- The round glyph in the sidebar and mobile header is controlled in `styles.css` via the `.brand-glyph` selector. Swap the gradient for your own image by setting `background: url(/assets/images/brand.svg) center/cover;` or adjust the gradients to match a new palette.
+- Navigation icons are monochrome masks defined in `main.js` and `styles.css` via the `MonoIcon` component. Add a new icon by supplying a new CSS mask (`.mono-icon--<name>`) and referencing it inside `NAV_ITEMS` in `main.js`.
+
+### Where to put photos
+
+- Store post-specific assets inside `assets/images/posts/<post-slug>/` to keep things organised.
+- Reference them with site-relative URLs (`/assets/images/...`) so they work both locally and on GitHub Pages.
+
+### Tags and filtering roadmap
+
+- Tags defined in front matter are baked into `posts.json` and already surface in the UI.
+- When you are ready to add filtering, the React app can reuse the `post.tags` array that is now exposed on every card.
 
 ## Managing Downloads
 

@@ -122,6 +122,7 @@ function Hero({ onExplore }) {
   };
 
   return React.createElement('section', { className: 'hero app-frame' }, [
+    React.createElement('span', { key: 'badge', className: 'hero__badge' }, 'Field service engineer · Global deployments'),
     React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Field operations journal'),
     React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently.'),
     React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
@@ -165,7 +166,12 @@ function PostCard({ post, onOpen, accent }) {
       ]),
       React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'timeline-card__chevron' })
     ]),
-    React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt)
+    React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt),
+    post.tags && post.tags.length
+      ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--inline' },
+          post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
+        )
+      : null
   ]);
 }
 
@@ -206,6 +212,11 @@ function PostView({ post, onBack }) {
         onClick: onBack
       }, 'Back')
     ]),
+    post.tags && post.tags.length
+      ? React.createElement('div', { key: 'meta', className: 'tag-list tag-list--detail' },
+          post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
+        )
+      : null,
     React.createElement('div', {
       key: 'body',
       className: 'timeline-card__body content',

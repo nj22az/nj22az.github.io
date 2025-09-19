@@ -196,6 +196,19 @@ button:focus-visible,
   gap: 1.2rem;
 }
 
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(0, 119, 255, 0.12);
+  color: var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .hero__headline {
   margin: 0;
   font-family: 'SF Pro Display', 'SF Pro Text', sans-serif;
@@ -299,6 +312,39 @@ button:focus-visible,
   margin: 0;
   color: var(--ink-muted);
   font-size: 0.98rem;
+}
+
+.timeline-card__body {
+  color: var(--ink-primary);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag-list--inline {
+  margin-top: 0.4rem;
+}
+
+.tag-list--detail {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(13, 19, 33, 0.08);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  background: rgba(0, 119, 255, 0.12);
+  color: var(--accent-strong);
 }
 
 .timeline-card__body {
@@ -486,7 +532,9 @@ button:focus-visible,
   }
 
   .brand-text-block {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
   }
 
   .app-main {
