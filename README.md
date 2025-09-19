@@ -81,6 +81,8 @@ Downloads are driven by the `downloads.json` file and any binary assets you add.
 3. Commit both the updated JSON and any new files in `assets/downloads/`.
 4. After the GitHub Pages build completes, confirm the links resolve (e.g., `https://nj22az.github.io/assets/downloads/engine-room-checklist.pdf`).
 
+> **Current placeholders:** `cv-template.pdf` and `project-checklist.txt` live in `assets/downloads/` so the Downloads page has working links. Replace these with your real files and adjust `downloads.json` when you are ready.
+
 ## Troubleshooting
 
 - **`jekyll` command not found:** run `source ~/.zshrc` in the current terminal or start a new shell so the PATH updates apply.
