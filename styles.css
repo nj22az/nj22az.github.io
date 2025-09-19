@@ -376,7 +376,7 @@ button:focus-visible,
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0.4rem 1.2rem;
+  padding: 0.4rem 1.2rem calc(0.6rem + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.82);
   border-top: 1px solid rgba(13, 19, 33, 0.08);
   backdrop-filter: blur(22px);
@@ -461,11 +461,12 @@ button:focus-visible,
     top: 0;
     height: auto;
     width: 100%;
-    padding: 1.2rem clamp(1rem, 6vw, 1.6rem);
+    padding: 1.1rem clamp(1rem, 6vw, 1.6rem);
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.82);
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.9);
     border-bottom: 1px solid var(--panel-border);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -473,12 +474,7 @@ button:focus-visible,
   }
 
   .side-nav__items {
-    flex-direction: row;
-    gap: 0.8rem;
-  }
-
-  .nav-item {
-    padding-inline: 0.9rem;
+    display: none;
   }
 
   .brand-text-block {
@@ -487,7 +483,7 @@ button:focus-visible,
 
   .app-main {
     flex-direction: column;
-    padding: 1.6rem clamp(1rem, 6vw, 1.8rem) 4.2rem;
+    padding: 1.6rem clamp(1rem, 6vw, 1.8rem) 5.8rem;
   }
 
   .timeline {
@@ -499,7 +495,37 @@ button:focus-visible,
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .hero {
+    padding: 1.5rem;
+    border-radius: 22px;
+    gap: 1rem;
+  }
+
+  .hero__headline {
+    font-size: clamp(1.8rem, 6vw, 2.2rem);
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button,
+  .link-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .timeline {
+    gap: 1.1rem;
+  }
+
+  .timeline-card {
+    padding: 1.2rem 1.3rem;
+    border-radius: 22px;
+  }
+
   .timeline-card__header {
     grid-template-columns: auto 1fr;
     gap: 0.75rem;
@@ -508,6 +534,12 @@ button:focus-visible,
   .timeline-card__chevron,
   .link-button--inline {
     display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-main {
+    padding-bottom: 6.6rem;
   }
 }
 
