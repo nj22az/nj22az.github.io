@@ -32,14 +32,13 @@ function enhancePost(post) {
 }
 
 const ICON_TONES = {
-  neutral: '#7a808d',
-  active: '#0F6CBD',
-  calendar: '#107C41',
-  download: '#C43E1C',
-  about: '#5C2D91'
+  neutral: '#687684',
+  active: '#1DA1F2',
+  meta: '#1DA1F2',
+  download: '#1DA1F2'
 };
 
-const CARD_COLOR_POOL = ['#0F6CBD', '#107C41', '#C43E1C', '#5C2D91', '#038387', '#744DA9'];
+const CARD_COLOR_POOL = ['#1DA1F2', '#17BF63', '#F45D22', '#794BC4', '#FFAD1F', '#5C6BC0'];
 
 function MonoIcon({ name, className = '', tone, style }) {
   const toneStyle = tone ? { color: tone } : undefined;
@@ -58,41 +57,39 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
     { id: 'about', label: 'About', icon: 'about' }
   ];
 
-  return React.createElement('header', { className: 'top-bar' },
-    React.createElement('div', { className: 'app-frame top-bar__frame' }, [
-      React.createElement('button', {
-        type: 'button',
-        className: 'brand-button',
-        onClick: onBrandClick,
-        key: 'brand'
-      }, [
-        React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
-        React.createElement('div', { key: 'text', className: 'brand-text-block' }, [
-          React.createElement('span', { key: 'name', className: 'brand-text' }, 'Nils Johansson'),
-          React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
+  return React.createElement('aside', { className: 'side-nav' }, [
+    React.createElement('button', {
+      type: 'button',
+      className: 'brand-button',
+      onClick: onBrandClick,
+      key: 'brand'
+    }, [
+      React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
+      React.createElement('div', { key: 'text', className: 'brand-text-block' }, [
+        React.createElement('span', { key: 'name', className: 'brand-text' }, 'Nils Johansson'),
+        React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
+      ])
+    ]),
+    React.createElement('nav', { className: 'side-nav__items', key: 'nav', 'aria-label': 'Primary navigation' },
+      pages.map(({ id, label, icon }) =>
+        React.createElement('button', {
+          type: 'button',
+          key: id,
+          className: 'nav-item' + (currentPage === id ? ' active' : ''),
+          'aria-current': currentPage === id ? 'page' : undefined,
+          onClick: () => onPageChange(id)
+        }, [
+          React.createElement(MonoIcon, {
+            key: 'icon',
+            name: icon,
+            className: 'nav-item__icon',
+            tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
+          }),
+          React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
         ])
-      ]),
-      React.createElement('nav', { className: 'nav-items', key: 'nav', 'aria-label': 'Primary navigation' },
-        pages.map(({ id, label, icon }) =>
-          React.createElement('button', {
-            type: 'button',
-            key: id,
-            className: 'nav-item' + (currentPage === id ? ' active' : ''),
-            'aria-current': currentPage === id ? 'page' : undefined,
-            onClick: () => onPageChange(id)
-          }, [
-            React.createElement(MonoIcon, {
-              key: 'icon',
-              name: icon,
-              className: 'nav-item__icon',
-              tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
-            }),
-            React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
-          ])
-        )
       )
-    ])
-  );
+    )
+  ]);
 }
 
 function Hero({ onExplore }) {
@@ -131,104 +128,44 @@ function PostCard({ post, onOpen, accent }) {
   };
 
   return React.createElement('article', {
-    className: 'resource-card',
+    className: 'timeline-card timeline-card--post',
     role: 'button',
     tabIndex: 0,
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline' },
-      React.createElement(MonoIcon, { name: 'journal', tone: accent })
-    ),
-    React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
-      React.createElement('h3', { key: 'title', className: 'resource-card__title' }, post.title),
-      React.createElement('p', { key: 'meta', className: 'resource-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`),
-      React.createElement('p', { key: 'excerpt', className: 'resource-card__excerpt' }, post.excerpt)
+    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
+      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
+        React.createElement(MonoIcon, { name: 'journal', tone: accent })
+      ),
+      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, post.title),
+        React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
+      ]),
+      React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'timeline-card__chevron' })
     ]),
-    React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'resource-card__chevron' })
+    React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt)
   ]);
 }
 
 function PostList({ posts, onOpen }) {
   if (!posts.length) {
-    return React.createElement('div', { className: 'empty-state app-frame' }, [
-      React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
-      React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
-    ]);
+    return [
+      React.createElement('div', { className: 'empty-state app-frame', key: 'empty' }, [
+        React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
+        React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
+      ])
+    ];
   }
 
-  return React.createElement('div', { className: 'app-frame' },
-    React.createElement('div', { className: 'resource-grid resource-grid--three' },
-      posts.map((post, index) =>
-        React.createElement(PostCard, {
-          post,
-          onOpen,
-          accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-          key: post.id || post.url || post.title
-        })
-      )
-    )
-  );
-}
-
-function HomePage({ posts, onOpen, onExplore }) {
-  const latestPosts = posts.slice(0, 6);
-  return React.createElement(React.Fragment, null, [
-    React.createElement(Hero, { key: 'hero', onExplore }),
-    React.createElement('section', { key: 'posts', className: 'posts-section app-frame' }, [
-      React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
-        React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
-          React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest insights'),
-          React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Essays and annotations from recent field engagements.')
-        ]),
-        React.createElement('a', { key: 'cta', className: 'link-button', onClick: onExplore }, 'View all articles')
-      ]),
-      React.createElement(PostList, { key: 'list', posts: latestPosts, onOpen })
-    ])
-  ]);
-}
-
-function BlogPage({ posts, onOpen }) {
-  return React.createElement('section', { className: 'posts-section app-frame' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
-      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
-        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal archive'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Long-form thinking, status notes, and frameworks guiding cross-regional delivery.')
-      ]),
-      React.createElement('span', { key: 'count', className: 'section-caption' }, `${posts.length} entries`)
-    ]),
-    React.createElement('div', { className: 'resource-grid resource-grid--three' },
-      posts.map((post, index) =>
-        React.createElement(PostCard, {
-          post,
-          onOpen,
-          accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-          key: post.id || post.url || post.title
-        })
-      )
-    )
-  ]);
-}
-
-function PostView({ post, onBack }) {
-  return React.createElement('article', { className: 'post-detail app-frame' }, [
-    React.createElement('button', {
-      key: 'back',
-      type: 'button',
-      className: 'pill-button',
-      onClick: onBack
-    }, '← Back to articles'),
-    React.createElement('header', { key: 'header', className: 'post-detail__header' }, [
-      React.createElement('p', { key: 'eyebrow', className: 'post-detail__eyebrow' }, 'Journal entry'),
-      React.createElement('h1', { key: 'title', className: 'post-detail__title' }, post.title),
-      React.createElement('p', { key: 'meta', className: 'post-detail__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
-    ]),
-    React.createElement('div', {
-      key: 'body',
-      className: 'post-detail__body content',
-      dangerouslySetInnerHTML: { __html: post.content }
+  return posts.map((post, index) =>
+    React.createElement(PostCard, {
+      post,
+      onOpen,
+      accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
+      key: post.id || post.url || post.title || index
     })
-  ]);
+  );
 }
 
 function DownloadCard({ item, accent }) {
@@ -240,96 +177,77 @@ function DownloadCard({ item, accent }) {
 
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
-  return React.createElement('div', { className: 'resource-card resource-card--horizontal' }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline' },
-      React.createElement(MonoIcon, { name: 'download', tone: accent })
-    ),
-    React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
-      React.createElement('h3', { key: 'title', className: 'resource-card__title' }, item.title),
-      React.createElement('p', { key: 'description', className: 'resource-card__excerpt' }, item.description),
-      metaItems.length
-        ? React.createElement('p', { key: 'meta', className: 'resource-card__meta' }, metaItems.join(' · '))
-        : null
+  return React.createElement('article', { className: 'timeline-card timeline-card--download' }, [
+    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
+      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
+        React.createElement(MonoIcon, { name: 'download', tone: accent })
+      ),
+      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, item.title),
+        metaItems.length
+          ? React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, metaItems.join(' · '))
+          : null
+      ]),
+      item.url
+        ? React.createElement('a', {
+            key: 'action',
+            className: 'link-button link-button--inline',
+            href: item.url,
+            target: isExternal ? '_blank' : undefined,
+            rel: isExternal ? 'noreferrer noopener' : undefined
+          }, 'Download')
+        : React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'timeline-card__chevron' })
     ]),
-    item.url
-      ? React.createElement('a', {
-          key: 'download',
-          className: 'link-button link-button--inline',
-          href: item.url,
-          target: isExternal ? '_blank' : undefined,
-          rel: isExternal ? 'noreferrer noopener' : undefined
-        }, 'Download')
-      : React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'resource-card__chevron' })
+    React.createElement('p', { key: 'description', className: 'timeline-card__excerpt' }, item.description)
   ]);
 }
 
 function DownloadsPage({ downloads }) {
-  return React.createElement('section', { className: 'downloads-section app-frame', id: 'downloads' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
-      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
-        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
-      ]),
-      React.createElement('span', { key: 'caption', className: 'section-caption' }, `${downloads.length} resources`)
-    ]),
-    downloads.length
-      ? React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--two' },
-          downloads.map((item, index) => React.createElement(DownloadCard, {
-            item,
-            accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-            key: index
-          }))
-        )
-      : React.createElement('div', { key: 'empty', className: 'empty-state' }, [
-          React.createElement('h3', { key: 'title' }, 'Downloads coming soon'),
-          React.createElement('p', { key: 'text' }, 'New assets are being prepared—check back for additional resources.')
-        ])
+  const headerCard = React.createElement('article', { className: 'timeline-card timeline-card--intro', key: 'header' }, [
+    React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'Downloads'),
+    React.createElement('p', { key: 'copy', className: 'timeline-card__excerpt' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
   ]);
+
+  if (!downloads.length) {
+    return [headerCard, React.createElement('div', { className: 'empty-state', key: 'empty' }, 'New assets are being prepared—check back soon.')];
+  }
+
+  const cards = downloads.map((item, index) =>
+    React.createElement(DownloadCard, {
+      item,
+      accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
+      key: index
+    })
+  );
+
+  return [headerCard, ...cards];
 }
 
 function AboutPage() {
-  const highlights = [
-    {
-      icon: 'about',
-      tone: ICON_COLORS.about,
-      title: 'Global deployments',
-      copy: 'Marine engineering roots with a decade of hands-on field work across continents.'
-    },
-    {
-      icon: 'journal',
-      tone: ICON_COLORS.blog,
-      title: 'Documented frameworks',
-      copy: 'Every project contributes playbooks—checklists, brief templates, and cultural context.'
-    },
-    {
-      icon: 'download',
-      tone: ICON_COLORS.downloads,
-      title: 'Practitioner focus',
-      copy: 'Designed for teams shipping in the real world: concise, actionable, and adaptable.'
-    }
-  ];
-
-  return React.createElement('section', { className: 'about-section app-frame' }, [
-    React.createElement('div', { key: 'header', className: 'section-header section-header--split' }, [
-      React.createElement('div', { key: 'titles', className: 'section-header__titles' }, [
-        React.createElement('h1', { key: 'title', className: 'section-title' }, 'About Nils'),
-        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Field service engineer translating complex projects into predictable outcomes.')
-      ])
-    ]),
-    React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--three' },
-      highlights.map(({ icon, tone, title, copy }, index) =>
-        React.createElement('div', { className: 'resource-card resource-card--stacked', key: index }, [
-      React.createElement('div', { className: 'resource-card__icon resource-card__icon--outline' },
-        React.createElement(MonoIcon, { name: icon, tone })
-      ),
-          React.createElement('div', { className: 'resource-card__body' }, [
-            React.createElement('h3', { className: 'resource-card__title', key: 'title' }, title),
-            React.createElement('p', { className: 'resource-card__excerpt', key: 'copy' }, copy)
-          ])
-        ])
-      )
-    )
+  return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
+    React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'About Nils'),
+    React.createElement('p', { key: 'p1', className: 'timeline-card__excerpt' }, 'Field service engineer translating complex projects into predictable outcomes.'),
+    React.createElement('p', { key: 'p2', className: 'timeline-card__excerpt' }, 'Marine engineering roots, live deployments across regions, and a commitment to clear documentation.'),
+    React.createElement('p', { key: 'p3', className: 'timeline-card__excerpt' }, 'This journal is a working log. If you operate in similar environments, I hope these notes help you ship with confidence.')
   ]);
+}
+
+function SecondaryPanel({ page, downloads }) {
+  if (!downloads.length || page === 'downloads') {
+    return null;
+  }
+  const featured = downloads.slice(0, 3);
+
+  return React.createElement('aside', { className: 'context-panel' },
+    React.createElement('div', { className: 'context-card' }, [
+      React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Downloads'),
+      React.createElement('ul', { key: 'list', className: 'context-card__list' },
+        featured.map((item, index) =>
+          React.createElement('li', { key: index }, item.title)
+        )
+      )
+    ])
+  );
 }
 
 function App() {
@@ -379,26 +297,23 @@ function App() {
   if (currentPost) {
     mainContent = React.createElement(PostView, { post: currentPost, onBack: handleBackToPosts });
   } else if (page === 'home') {
-    mainContent = React.createElement(HomePage, {
-      posts,
-      onOpen: handleOpenPost,
-      onExplore: () => handleChangePage('blog')
-    });
+    mainContent = [
+      React.createElement(Hero, { key: 'hero', onExplore: () => handleChangePage('blog') })
+    ].concat(PostList({ posts: posts.slice(0, 6), onOpen: handleOpenPost }));
   } else if (page === 'blog') {
-    mainContent = React.createElement(BlogPage, { posts, onOpen: handleOpenPost });
+    mainContent = PostList({ posts, onOpen: handleOpenPost });
   } else if (page === 'downloads') {
-    mainContent = React.createElement(DownloadsPage, { downloads });
+    mainContent = DownloadsPage({ downloads });
   } else if (page === 'about') {
-    mainContent = React.createElement(AboutPage);
+    mainContent = [AboutPage()];
   } else {
-    mainContent = React.createElement(HomePage, {
-      posts,
-      onOpen: handleOpenPost,
-      onExplore: () => handleChangePage('blog')
-    });
+    mainContent = [
+      React.createElement(Hero, { key: 'hero', onExplore: () => handleChangePage('blog') })
+    ].concat(PostList({ posts: posts.slice(0, 6), onOpen: handleOpenPost }));
   }
 
   const activePage = currentPost ? 'blog' : page;
+  const timelineItems = Array.isArray(mainContent) ? mainContent : [mainContent];
 
   return React.createElement('div', { className: 'app-shell' }, [
     React.createElement(Navigation, {
@@ -407,11 +322,13 @@ function App() {
       onPageChange: handleChangePage,
       onBrandClick: handleBrandClick
     }),
-    React.createElement('main', {
-      key: 'main',
-      className: 'main-area'
-    }, mainContent),
-    React.createElement('footer', { key: 'footer', className: 'site-footer app-frame' }, `\u00A9 ${new Date().getFullYear()} Nils Johansson · Field Notes`)
+    React.createElement('div', { className: 'app-main' }, [
+      React.createElement('main', {
+        key: 'timeline',
+        className: 'timeline' + (currentPost ? ' timeline--detail' : '')
+      }, timelineItems),
+      React.createElement(SecondaryPanel, { key: 'panel', page: activePage, downloads })
+    ])
   ]);
 }
 
