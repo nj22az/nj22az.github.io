@@ -189,6 +189,31 @@ function PostList({ posts, onOpen }) {
   );
 }
 
+function PostView({ post, onBack }) {
+  return React.createElement('article', { className: 'timeline-card post-detail-card' }, [
+    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
+      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
+        React.createElement(MonoIcon, { name: 'journal', tone: ICON_TONES.active })
+      ),
+      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, post.title),
+        React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
+      ]),
+      React.createElement('button', {
+        key: 'back',
+        type: 'button',
+        className: 'pill-button',
+        onClick: onBack
+      }, 'Back')
+    ]),
+    React.createElement('div', {
+      key: 'body',
+      className: 'timeline-card__body content',
+      dangerouslySetInnerHTML: { __html: post.content }
+    })
+  ]);
+}
+
 function DownloadCard({ item, accent }) {
   const metaItems = [
     item.file_type ? `Format: ${item.file_type}` : null,

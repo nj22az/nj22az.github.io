@@ -301,6 +301,14 @@ button:focus-visible,
   font-size: 0.98rem;
 }
 
+.timeline-card__body {
+  color: var(--ink-primary);
+}
+
+.post-detail-card .timeline-card__title {
+  font-size: 1.4rem;
+}
+
 .timeline-card__chevron {
   width: 14px;
   height: 14px;
