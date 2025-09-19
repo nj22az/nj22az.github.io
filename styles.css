@@ -27,7 +27,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background: var(--background);
-  color: var(--ink-primary);
+  color: var(--ink-soft);
   font-family: 'Segoe UI Variable', 'Segoe UI', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -168,19 +168,9 @@ button:focus-visible,
   color: var(--accent);
 }
 
-.nav-item__icon-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-}
-
 .nav-item__icon {
-  width: 16px;
-  height: 16px;
-  color: #fff;
+  width: 18px;
+  height: 18px;
 }
 
 .nav-item__label {
@@ -368,20 +358,25 @@ button:focus-visible,
 }
 
 .resource-card__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 2px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.resource-card__icon--outline {
+  background: rgba(255, 255, 255, 0.92);
+  border-width: 2px;
 }
 
 .resource-card__icon .mono-icon {
-  width: 20px;
-  height: 20px;
-  color: #fff;
+  width: 22px;
+  height: 22px;
+  color: inherit;
 }
 
 .resource-card__body {

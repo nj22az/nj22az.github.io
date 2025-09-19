@@ -31,32 +31,31 @@ function enhancePost(post) {
   };
 }
 
-const ICON_COLORS = {
-  home: '#0F6CBD',
-  blog: '#107C41',
-  downloads: '#C43E1C',
-  about: '#5C2D91',
-  calendar: '#0B6A99',
-  download: '#B7322C',
-  info: '#616161'
+const ICON_TONES = {
+  neutral: '#7a808d',
+  active: '#0F6CBD',
+  calendar: '#107C41',
+  download: '#C43E1C',
+  about: '#5C2D91'
 };
 
 const CARD_COLOR_POOL = ['#0F6CBD', '#107C41', '#C43E1C', '#5C2D91', '#038387', '#744DA9'];
 
-function MonoIcon({ name, className = '', style }) {
+function MonoIcon({ name, className = '', tone, style }) {
+  const toneStyle = tone ? { color: tone } : undefined;
   return React.createElement('span', {
     className: ['mono-icon', `mono-icon--${name}`, className].filter(Boolean).join(' '),
-    style,
+    style: toneStyle || style ? { ...(toneStyle || {}), ...(style || {}) } : undefined,
     'aria-hidden': 'true'
   });
 }
 
 function Navigation({ currentPage, onPageChange, onBrandClick }) {
   const pages = [
-    { id: 'home', label: 'Home', icon: 'home', tone: ICON_COLORS.home },
-    { id: 'blog', label: 'Journal', icon: 'journal', tone: ICON_COLORS.blog },
-    { id: 'downloads', label: 'Downloads', icon: 'download', tone: ICON_COLORS.downloads },
-    { id: 'about', label: 'About', icon: 'about', tone: ICON_COLORS.about }
+    { id: 'home', label: 'Home', icon: 'home' },
+    { id: 'blog', label: 'Journal', icon: 'journal' },
+    { id: 'downloads', label: 'Downloads', icon: 'download' },
+    { id: 'about', label: 'About', icon: 'about' }
   ];
 
   return React.createElement('header', { className: 'top-bar' },
@@ -74,7 +73,7 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
         ])
       ]),
       React.createElement('nav', { className: 'nav-items', key: 'nav', 'aria-label': 'Primary navigation' },
-        pages.map(({ id, label, icon, tone }) =>
+        pages.map(({ id, label, icon }) =>
           React.createElement('button', {
             type: 'button',
             key: id,
@@ -82,14 +81,12 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
             'aria-current': currentPage === id ? 'page' : undefined,
             onClick: () => onPageChange(id)
           }, [
-            React.createElement('span', {
-              key: 'badge',
-              className: 'nav-item__icon-badge',
-              style: { backgroundColor: tone }
-            }, React.createElement(MonoIcon, {
+            React.createElement(MonoIcon, {
+              key: 'icon',
               name: icon,
-              className: 'nav-item__icon'
-            })),
+              className: 'nav-item__icon',
+              tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
+            }),
             React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
           ])
         )
@@ -152,8 +149,8 @@ function PostCard({ post, onOpen, accent }) {
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon', style: { backgroundColor: accent } },
-      React.createElement(MonoIcon, { name: 'journal' })
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: accent } },
+      React.createElement(MonoIcon, { name: 'journal', tone: accent })
     ),
     React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
       React.createElement('h3', { key: 'title', className: 'resource-card__title' }, post.title),
@@ -256,8 +253,8 @@ function DownloadCard({ item, accent }) {
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
   return React.createElement('div', { className: 'resource-card resource-card--horizontal' }, [
-    React.createElement('div', { key: 'icon', className: 'resource-card__icon', style: { backgroundColor: accent } },
-      React.createElement(MonoIcon, { name: 'download' })
+    React.createElement('div', { key: 'icon', className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: accent } },
+      React.createElement(MonoIcon, { name: 'download', tone: accent })
     ),
     React.createElement('div', { key: 'body', className: 'resource-card__body' }, [
       React.createElement('h3', { key: 'title', className: 'resource-card__title' }, item.title),
@@ -334,9 +331,9 @@ function AboutPage() {
     React.createElement('div', { key: 'grid', className: 'resource-grid resource-grid--three' },
       highlights.map(({ icon, tone, title, copy }, index) =>
         React.createElement('div', { className: 'resource-card resource-card--stacked', key: index }, [
-          React.createElement('div', { className: 'resource-card__icon', style: { backgroundColor: tone } },
-            React.createElement(MonoIcon, { name: icon })
-          ),
+      React.createElement('div', { className: 'resource-card__icon resource-card__icon--outline', style: { borderColor: tone } },
+        React.createElement(MonoIcon, { name: icon, tone })
+      ),
           React.createElement('div', { className: 'resource-card__body' }, [
             React.createElement('h3', { className: 'resource-card__title', key: 'title' }, title),
             React.createElement('p', { className: 'resource-card__excerpt', key: 'copy' }, copy)
