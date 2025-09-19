@@ -1,103 +1,223 @@
 const { useState, useEffect } = React;
 
-function Navigation({ currentPage, onChange }) {
-  const pages = ['home','blog','downloads','about'];
-  return React.createElement('nav', { className: 'nav-bar' },
-    pages.map(page =>
-      React.createElement('a', {
-        key: page,
-        href: '#',
-        className: currentPage === page ? 'active' : '',
-        onClick: (e) => { e.preventDefault(); onChange(page); }
-      }, page.charAt(0).toUpperCase() + page.slice(1))
+function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function createExcerpt(text) {
+  if (!text) return '';
+  if (text.length <= 160) {
+    return text;
+  }
+  const slice = text.slice(0, 180);
+  const lastSpace = slice.lastIndexOf(' ');
+  const candidate = lastSpace > 140 ? slice.slice(0, lastSpace) : slice;
+  return `${candidate.trim()}…`;
+}
+
+function enhancePost(post) {
+  const plainText = stripHtml(post.content);
+  const words = plainText.split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.round(words / 200));
+  const excerptSource = post.excerpt && post.excerpt.trim().length ? post.excerpt : plainText;
+  const excerpt = createExcerpt(stripHtml(excerptSource));
+
+  return {
+    ...post,
+    plainText,
+    readingTime,
+    excerpt
+  };
+}
+
+function Navigation({ currentPage, onPageChange, onBrandClick }) {
+  const pages = [
+    { id: 'home', label: 'Home' },
+    { id: 'blog', label: 'Blog' },
+    { id: 'downloads', label: 'Downloads' },
+    { id: 'about', label: 'About' }
+  ];
+
+  return React.createElement('header', { className: 'top-bar' }, [
+    React.createElement('div', { className: 'top-bar__brand', key: 'brand' },
+      React.createElement('button', {
+        type: 'button',
+        className: 'brand-button',
+        onClick: onBrandClick
+      }, [
+        React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
+        React.createElement('span', { key: 'text', className: 'brand-text' }, 'Nils Johansson')
+      ])
+    ),
+    React.createElement('nav', { className: 'nav-items', key: 'nav', 'aria-label': 'Primary navigation' },
+      pages.map(({ id, label }) =>
+        React.createElement('button', {
+          type: 'button',
+          key: id,
+          className: 'nav-item' + (currentPage === id ? ' active' : ''),
+          'aria-current': currentPage === id ? 'page' : undefined,
+          onClick: () => onPageChange(id)
+        }, label)
+      )
     )
-  );
-}
-
-function Hero() {
-  return React.createElement('section', { className: 'hero' },
-    React.createElement('h1', null, 'Welcome to My Site'),
-    React.createElement('p', null, 'Exploring engineering, culture, and more.')
-  );
-}
-
-function PostCard({ post, onOpen }) {
-  return React.createElement('div', {
-    className: 'post-card',
-    onClick: () => onOpen(post)
-  }, [
-    React.createElement('h3', { key: 'title' }, post.title),
-    React.createElement('p', { key: 'meta', className: 'meta' }, post.date),
-    React.createElement('p', { key: 'excerpt', className: 'excerpt' }, post.excerpt)
   ]);
 }
 
-function PostList({ posts, onOpen }) {
-  return React.createElement('div', { className: 'container' },
-    posts.map((post, index) =>
-      React.createElement(PostCard, { post, onOpen, key: index })
-    )
-  );
-}
+function Hero({ onExplore }) {
+  const handleExplore = () => {
+    if (typeof onExplore === 'function') {
+      onExplore();
+    }
+  };
 
-function PostView({ post, onBack }) {
-  const [content, setContent] = useState('');
-  useEffect(() => {
-    fetch('posts/' + post.filename)
-      .then(res => res.text())
-      .then(text => {
-        const html = marked.parse(text);
-        setContent(html);
-      });
-  }, [post]);
-  return React.createElement('div', { className: 'post-content' }, [
-    React.createElement('button', { key: 'back', className: 'button', onClick: onBack }, '\u2190 Back'),
-    React.createElement('h2', { key: 'title' }, post.title),
-    React.createElement('div', { key: 'content', className: 'content', dangerouslySetInnerHTML: { __html: content } })
-  ]);
-}
-
-function DownloadCard({ item }) {
-  return React.createElement('div', { className: 'download-card' }, [
-    React.createElement('h3', { key: 'title' }, item.title),
-    React.createElement('p', { key: 'desc' }, item.description),
-    React.createElement('div', { key: 'meta', className: 'download-meta' }, [
-      React.createElement('span', { key: 'type' }, item.file_type),
-      React.createElement('span', { key: 'size' }, item.file_size),
-      React.createElement('span', { key: 'count' }, item.download_count + ' downloads')
+  return React.createElement('section', { className: 'hero' }, [
+    React.createElement('p', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Engineering, travel, and culture'),
+    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Documenting how we build and live at the edges of the map.'),
+    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Field service adventures, maritime engineering lessons, and cultural reflections collected from Scandinavia to Southeast Asia.'),
+    React.createElement('div', { key: 'cta', className: 'hero__cta' }, [
+      React.createElement('button', {
+        key: 'cta-button',
+        type: 'button',
+        className: 'primary-button',
+        onClick: handleExplore
+      }, 'Explore the blog'),
+      React.createElement('span', { key: 'meta', className: 'hero__meta' }, 'Curated stories, practical frameworks, and the occasional photo essay.')
     ])
   ]);
 }
 
-function DownloadsPage({ downloads }) {
-  return React.createElement('div', { className: 'download-grid' },
-    downloads.map((item, index) =>
-      React.createElement(DownloadCard, { item, key: index })
+function PostCard({ post, onOpen }) {
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onOpen(post);
+    }
+  };
+
+  return React.createElement('article', {
+    className: 'post-card',
+    role: 'button',
+    tabIndex: 0,
+    onClick: () => onOpen(post),
+    onKeyDown: handleKeyDown
+  }, [
+    React.createElement('div', { key: 'meta', className: 'post-card__meta' }, [
+      React.createElement('span', { key: 'date', className: 'post-card__date' }, post.displayDate),
+      React.createElement('span', { key: 'separator', className: 'post-card__separator', 'aria-hidden': 'true' }, '•'),
+      React.createElement('span', { key: 'time', className: 'post-card__time' }, `${post.readingTime} min read`)
+    ]),
+    React.createElement('h3', { key: 'title', className: 'post-card__title' }, post.title),
+    React.createElement('p', { key: 'excerpt', className: 'post-card__excerpt' }, post.excerpt)
+  ]);
+}
+
+function PostList({ posts, onOpen }) {
+  if (!posts.length) {
+    return React.createElement('div', { className: 'empty-state' }, [
+      React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
+      React.createElement('p', { key: 'copy' }, 'I\'m gathering notes and imagery—check back soon for new posts.')
+    ]);
+  }
+
+  return React.createElement('div', { className: 'post-grid' },
+    posts.map((post) =>
+      React.createElement(PostCard, {
+        post,
+        onOpen,
+        key: post.id || post.url || post.title
+      })
     )
   );
 }
 
-function AboutPage() {
-  return React.createElement('div', { className: 'about-content' }, [
-    React.createElement('h2', { key: 'heading' }, 'About Me'),
-    React.createElement('p', { key: 'p1' }, 'I am Nils Johansson, a marine engineer turned field service engineer.'),
-    React.createElement('p', { key: 'p2' }, 'My journey has taken me across oceans and continents. This site shares my passions and experiences.'),
-    React.createElement('p', { key: 'p3' }, 'Thank you for visiting!')
-  ]);
-}
-
-function HomePage({ posts, onOpen }) {
-  return React.createElement('div', null, [
-    React.createElement(Hero, { key: 'hero' }),
-    React.createElement(PostList, { key: 'posts', posts: posts, onOpen })
+function HomePage({ posts, onOpen, onExplore }) {
+  const latestPosts = posts.slice(0, 6);
+  return React.createElement('div', { className: 'home-view' }, [
+    React.createElement(Hero, { key: 'hero', onExplore }),
+    React.createElement('section', { key: 'posts', className: 'posts-section' }, [
+      React.createElement('div', { key: 'header', className: 'section-header' }, [
+        React.createElement('h2', { key: 'title', className: 'section-title' }, 'Latest writing'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Field-tested lessons and cultural reflections from real-world projects.')
+      ]),
+      React.createElement(PostList, { key: 'list', posts: latestPosts, onOpen })
+    ])
   ]);
 }
 
 function BlogPage({ posts, onOpen }) {
-  return React.createElement('div', null,
-    React.createElement('h2', null, 'Blog'),
-    React.createElement(PostList, { posts: posts, onOpen })
-  );
+  return React.createElement('div', { className: 'posts-page' }, [
+    React.createElement('section', { key: 'section', className: 'posts-section' }, [
+      React.createElement('div', { key: 'header', className: 'section-header' }, [
+        React.createElement('h1', { key: 'title', className: 'section-title' }, 'Journal'),
+        React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Long-form thinking, quick dispatches, and frameworks I reach for while working across cultures.')
+      ]),
+      React.createElement(PostList, { key: 'list', posts, onOpen })
+    ])
+  ]);
+}
+
+function PostView({ post, onBack }) {
+  return React.createElement('article', { className: 'post-detail' }, [
+    React.createElement('button', {
+      key: 'back',
+      type: 'button',
+      className: 'pill-button',
+      onClick: onBack
+    }, '\u2190 Back to all posts'),
+    React.createElement('header', { key: 'header', className: 'post-detail__header' }, [
+      React.createElement('p', { key: 'eyebrow', className: 'post-detail__eyebrow' }, 'Journal entry'),
+      React.createElement('h1', { key: 'title', className: 'post-detail__title' }, post.title),
+      React.createElement('p', { key: 'meta', className: 'post-detail__meta' }, `${post.displayDate} \u2022 ${post.readingTime} min read`)
+    ]),
+    React.createElement('div', {
+      key: 'body',
+      className: 'post-detail__body content',
+      dangerouslySetInnerHTML: { __html: post.content }
+    })
+  ]);
+}
+
+function DownloadCard({ item }) {
+  const metaItems = [
+    item.file_type ? `Format: ${item.file_type}` : null,
+    item.file_size ? `Size: ${item.file_size}` : null,
+    typeof item.download_count === 'number' ? `${item.download_count} downloads` : null
+  ].filter(Boolean);
+
+  return React.createElement('article', { className: 'download-card' }, [
+    React.createElement('h3', { key: 'title', className: 'download-card__title' }, item.title),
+    React.createElement('p', { key: 'description', className: 'download-card__description' }, item.description),
+    metaItems.length
+      ? React.createElement('div', { key: 'meta', className: 'download-card__meta' },
+          metaItems.map((meta, index) => React.createElement('span', { key: index }, meta))
+        )
+      : null
+  ]);
+}
+
+function DownloadsPage({ downloads }) {
+  return React.createElement('section', { className: 'downloads-section' }, [
+    React.createElement('div', { key: 'header', className: 'section-header' }, [
+      React.createElement('h1', { key: 'title', className: 'section-title' }, 'Downloads'),
+      React.createElement('p', { key: 'subtitle', className: 'section-subtitle' }, 'Toolkits, checklists, and references I rely on in the field.')
+    ]),
+    downloads.length
+      ? React.createElement('div', { key: 'grid', className: 'download-grid' },
+          downloads.map((item, index) => React.createElement(DownloadCard, { item, key: index }))
+        )
+      : React.createElement('p', { key: 'empty', className: 'empty-state' }, 'Downloads will be available soon—check back shortly.')
+  ]);
+}
+
+function AboutPage() {
+  return React.createElement('section', { className: 'about-section' }, [
+    React.createElement('h1', { key: 'title', className: 'section-title' }, 'About Nils'),
+    React.createElement('p', { key: 'lead', className: 'section-lead' }, 'Marine engineer turned field service specialist, following curiosity from shipyards to innovation labs.'),
+    React.createElement('p', { key: 'p1', className: 'section-body' }, 'I spend my time solving hard technical problems in the field, supporting teams through challenging deployments, and documenting the cultural nuances that shape every project.'),
+    React.createElement('p', { key: 'p2', className: 'section-body' }, 'This site is a living notebook—expect engineering frameworks, travel notes, and honest stories about what it takes to deliver solutions across borders.'),
+    React.createElement('p', { key: 'p3', className: 'section-body' }, 'If any of this resonates, feel free to connect or reach out. I love comparing notes.')
+  ]);
 }
 
 function App() {
@@ -107,42 +227,79 @@ function App() {
   const [currentPost, setCurrentPost] = useState(null);
 
   useEffect(() => {
-    fetch('posts/posts.json')
-      .then(res => res.json())
-      .then(setPosts);
+    fetch('posts.json')
+      .then((res) => res.json())
+      .then((data) => setPosts(data.map(enhancePost)))
+      .catch(() => setPosts([]));
+
     fetch('downloads.json')
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setDownloads)
       .catch(() => setDownloads([]));
   }, []);
 
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleChangePage = (nextPage) => {
+    setCurrentPost(null);
+    setPage(nextPage);
+    scrollToTop();
+  };
+
   const handleOpenPost = (post) => {
     setCurrentPost(post);
+    setPage('blog');
+    scrollToTop();
   };
 
-  const handleBack = () => {
+  const handleBackToPosts = () => {
     setCurrentPost(null);
+    scrollToTop();
   };
 
-  let content;
+  const handleBrandClick = () => handleChangePage('home');
+
+  let mainContent;
   if (currentPost) {
-    content = React.createElement(PostView, { post: currentPost, onBack: handleBack });
+    mainContent = React.createElement(PostView, { post: currentPost, onBack: handleBackToPosts });
+  } else if (page === 'home') {
+    mainContent = React.createElement(HomePage, {
+      posts,
+      onOpen: handleOpenPost,
+      onExplore: () => handleChangePage('blog')
+    });
+  } else if (page === 'blog') {
+    mainContent = React.createElement(BlogPage, { posts, onOpen: handleOpenPost });
+  } else if (page === 'downloads') {
+    mainContent = React.createElement(DownloadsPage, { downloads });
+  } else if (page === 'about') {
+    mainContent = React.createElement(AboutPage);
   } else {
-    if (page === 'home') {
-      content = React.createElement(HomePage, { posts, onOpen: handleOpenPost });
-    } else if (page === 'blog') {
-      content = React.createElement(BlogPage, { posts, onOpen: handleOpenPost });
-    } else if (page === 'downloads') {
-      content = React.createElement(DownloadsPage, { downloads });
-    } else if (page === 'about') {
-      content = React.createElement(AboutPage);
-    }
+    mainContent = React.createElement(HomePage, {
+      posts,
+      onOpen: handleOpenPost,
+      onExplore: () => handleChangePage('blog')
+    });
   }
 
-  return React.createElement('div', null, [
-    React.createElement(Navigation, { key: 'nav', currentPage: page, onChange: setPage }),
-    content,
-    React.createElement('footer', { key: 'footer' }, '\u00A9 ' + new Date().getFullYear() + ' Nils Johansson')
+  const activePage = currentPost ? 'blog' : page;
+
+  return React.createElement('div', { className: 'app-shell' }, [
+    React.createElement(Navigation, {
+      key: 'nav',
+      currentPage: activePage,
+      onPageChange: handleChangePage,
+      onBrandClick: handleBrandClick
+    }),
+    React.createElement('main', {
+      key: 'main',
+      className: 'main-area' + (currentPost ? ' main-area--detail' : '')
+    }, mainContent),
+    React.createElement('footer', { key: 'footer', className: 'site-footer' }, `\u00A9 ${new Date().getFullYear()} Nils Johansson. Crafted with curiosity.`)
   ]);
 }
 
