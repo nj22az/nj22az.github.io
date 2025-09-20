@@ -122,7 +122,7 @@ function FilterBar({
         ['All', ...tags].map((tag) => React.createElement('button', {
           key: tag,
           type: 'button',
-          className: 'tag-chip' + (selectedTag === tag ? ' tag-chip--active' : ''),
+          className: 'filter-chip' + (selectedTag === tag ? ' filter-chip--active' : ''),
           onClick: () => onSelectTag(tag)
         }, tag))
       )
@@ -298,6 +298,18 @@ function FeaturedPostCard({ post, onOpen, onToggleBookmark, isBookmarked }) {
     }
   };
 
+  const hasTags = Array.isArray(post.tags) && post.tags.length;
+  const primaryTag = hasTags ? post.tags[0] : undefined;
+  const additionalTagCount = hasTags && post.tags.length > 1 ? ` +${post.tags.length - 1}` : '';
+
+  const stats = [
+    { id: 'read', icon: 'clock', label: `${post.readingTime} min` }
+  ];
+
+  if (primaryTag) {
+    stats.push({ id: 'tag', icon: 'tag', label: `${primaryTag}${additionalTagCount}` });
+  }
+
   return React.createElement('article', {
     className: 'featured-card app-frame',
     role: 'button',
@@ -305,20 +317,40 @@ function FeaturedPostCard({ post, onOpen, onToggleBookmark, isBookmarked }) {
     onClick: handleClick,
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('div', { key: 'meta', className: 'featured-card__meta' }, [
-      React.createElement('span', { key: 'badge', className: 'featured-card__badge' }, 'Featured dispatch'),
-      React.createElement('span', { key: 'category', className: 'featured-card__category' }, post.categoryLabel),
-      React.createElement('span', { key: 'meta', className: 'featured-card__detail' }, `${post.displayDate} · ${post.readingTime} min read`)
-    ]),
-    React.createElement('div', { key: 'body', className: 'featured-card__body' }, [
+    React.createElement('header', { key: 'head', className: 'featured-card__header' }, [
       React.createElement('div', { key: 'icon', className: 'featured-card__icon' },
         React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
       ),
-      React.createElement('div', { key: 'content', className: 'featured-card__content' }, [
-        React.createElement('h2', { key: 'title', className: 'featured-card__title' }, post.title),
-        React.createElement('p', { key: 'excerpt', className: 'featured-card__excerpt' }, post.excerpt)
+      React.createElement('div', { key: 'meta', className: 'featured-card__meta-block' }, [
+        React.createElement('span', { key: 'badge', className: 'featured-card__badge' }, 'Featured dispatch'),
+        React.createElement('span', { key: 'category', className: 'featured-card__category' }, `${post.categoryLabel} · ${post.displayDate}`),
+        React.createElement('h2', { key: 'title', className: 'featured-card__title' }, post.title)
+      ]),
+      React.createElement('button', {
+        key: 'bookmark',
+        type: 'button',
+        className: 'icon-button icon-button--bookmark featured-card__bookmark',
+        onClick: handleBookmark,
+        'aria-pressed': isBookmarked
+      }, [
+        React.createElement('span', { key: 'label', className: 'visually-hidden' }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
+        React.createElement(MonoIcon, {
+          key: 'icon',
+          name: isBookmarked ? 'bookmark-filled' : 'bookmark',
+          className: 'icon-button__glyph',
+          tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
+        })
       ])
     ]),
+    React.createElement('p', { key: 'excerpt', className: 'featured-card__excerpt' }, post.excerpt),
+    stats.length
+      ? React.createElement('div', { key: 'stats', className: 'timeline-card__stats' },
+          stats.map(({ id, icon, label }) => React.createElement('span', { className: 'timeline-card__stat', key: id }, [
+            React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'timeline-card__stat-icon' }),
+            React.createElement('span', { key: 'label' }, label)
+          ]))
+        )
+      : null,
     React.createElement('div', { key: 'footer', className: 'featured-card__footer' }, [
       React.createElement('span', { key: 'cta', className: 'featured-card__cta' }, 'Read the full field report'),
       React.createElement('button', {
@@ -346,6 +378,18 @@ function PostCard({ post, onOpen, onToggleBookmark, isBookmarked, accent }) {
     }
   };
 
+  const hasTags = Array.isArray(post.tags) && post.tags.length;
+  const primaryTag = hasTags ? post.tags[0] : undefined;
+  const additionalTagCount = hasTags && post.tags.length > 1 ? ` +${post.tags.length - 1}` : '';
+
+  const stats = [
+    { id: 'read', icon: 'clock', label: `${post.readingTime} min` }
+  ];
+
+  if (primaryTag) {
+    stats.push({ id: 'tag', icon: 'tag', label: `${primaryTag}${additionalTagCount}` });
+  }
+
   return React.createElement('article', {
     className: 'timeline-card timeline-card--post',
     role: 'button',
@@ -357,10 +401,9 @@ function PostCard({ post, onOpen, onToggleBookmark, isBookmarked, accent }) {
       React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
         React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: accent })
       ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
-        React.createElement('span', { key: 'category', className: 'timeline-card__badge' }, post.categoryLabel),
-        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, post.title),
-        React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
+      React.createElement('div', { key: 'heading', className: 'timeline-card__meta-block' }, [
+        React.createElement('span', { key: 'category', className: 'timeline-card__category' }, `${post.categoryLabel} · ${post.displayDate}`),
+        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, post.title)
       ]),
       React.createElement('button', {
         key: 'bookmark',
@@ -382,18 +425,20 @@ function PostCard({ post, onOpen, onToggleBookmark, isBookmarked, accent }) {
       ])
     ]),
     React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt),
-    post.tags && post.tags.length
-      ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--inline' },
-          post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
+    stats.length
+      ? React.createElement('div', { key: 'stats', className: 'timeline-card__stats' },
+          stats.map(({ id, icon, label }) => React.createElement('span', { className: 'timeline-card__stat', key: id }, [
+            React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'timeline-card__stat-icon' }),
+            React.createElement('span', { key: 'label' }, label)
+          ]))
         )
       : null,
     React.createElement('div', { key: 'action', className: 'timeline-card__actions' }, [
-      React.createElement('span', { key: 'hint', className: 'timeline-card__action' }, 'Read more'),
+      React.createElement('span', { key: 'hint', className: 'timeline-card__action' }, 'Open post'),
       React.createElement(MonoIcon, {
         key: 'chevron',
         name: 'chevron',
-        className: 'timeline-card__chevron',
-        tone: accent
+        className: 'timeline-card__chevron'
       })
     ])
   ]);
@@ -445,16 +490,19 @@ function ShareBar({ post }) {
     {
       id: 'linkedin',
       label: 'LinkedIn',
+      icon: 'share',
       href: encodedUrl ? `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}` : undefined
     },
     {
       id: 'x',
-      label: 'X',
+      label: 'Post',
+      icon: 'share',
       href: encodedUrl ? `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` : undefined
     },
     {
       id: 'email',
       label: 'Email',
+      icon: 'mail',
       href: encodedUrl ? `mailto:?subject=${encodedTitle}&body=${encodedUrl}` : undefined
     }
   ];
@@ -479,29 +527,38 @@ function ShareBar({ post }) {
 
   return React.createElement('div', { className: 'share-bar', role: 'group', 'aria-label': 'Share tools' }, [
     React.createElement('span', { key: 'label', className: 'share-bar__label' }, 'Share'),
-    ...shareTargets.map(({ id, label, href }) => href
+    ...shareTargets.map(({ id, label, href, icon }) => href
       ? React.createElement('a', {
           key: id,
-          className: 'pill-button pill-button--subtle',
+          className: 'share-chip',
           href,
           target: '_blank',
           rel: 'noreferrer noopener'
-        }, label)
+        }, [
+          React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'share-chip__icon' }),
+          React.createElement('span', { key: 'label', className: 'share-chip__label' }, label)
+        ])
       : null
     ).filter(Boolean),
     React.createElement('button', {
       key: 'copy',
       type: 'button',
-      className: 'pill-button pill-button--subtle',
+      className: 'share-chip share-chip--button',
       onClick: handleCopy,
       disabled: !shareUrl
-    }, copied ? 'Copied' : 'Copy link'),
+    }, [
+      React.createElement(MonoIcon, { key: 'icon', name: 'link', className: 'share-chip__icon' }),
+      React.createElement('span', { key: 'label', className: 'share-chip__label' }, copied ? 'Copied' : 'Copy link')
+    ]),
     React.createElement('button', {
       key: 'print',
       type: 'button',
-      className: 'pill-button pill-button--subtle',
+      className: 'share-chip share-chip--button',
       onClick: handlePrint
-    }, 'Print')
+    }, [
+      React.createElement(MonoIcon, { key: 'icon', name: 'printer', className: 'share-chip__icon' }),
+      React.createElement('span', { key: 'label', className: 'share-chip__label' }, 'Print')
+    ])
   ]);
 }
 
