@@ -1,0 +1,33 @@
+<svg width="400" height="220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="220" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" rx="8"/>
+  <text x="20" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="600" fill="#92400e">Content Structure</text>
+  <g transform="translate(20, 40)">
+    <!-- Folder icon -->
+    <rect x="0" y="20" width="12" height="10" fill="#3b82f6" rx="1"/>
+    <text x="20" y="30" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#374151">_posts/</text>
+
+    <rect x="20" y="40" width="12" height="10" fill="#10b981" rx="1"/>
+    <text x="40" y="50" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">2025-01-15-post-title.md</text>
+
+    <rect x="0" y="60" width="12" height="10" fill="#3b82f6" rx="1"/>
+    <text x="20" y="70" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#374151">assets/images/posts/</text>
+
+    <rect x="20" y="80" width="12" height="10" fill="#3b82f6" rx="1"/>
+    <text x="40" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">post-title/</text>
+
+    <rect x="40" y="100" width="12" height="10" fill="#8b5cf6" rx="1"/>
+    <text x="60" y="110" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">image1.jpg</text>
+
+    <rect x="40" y="120" width="12" height="10" fill="#8b5cf6" rx="1"/>
+    <text x="60" y="130" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">diagram.svg</text>
+
+    <rect x="0" y="140" width="12" height="10" fill="#3b82f6" rx="1"/>
+    <text x="20" y="150" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#374151">_data/</text>
+
+    <rect x="20" y="160" width="12" height="10" fill="#f59e0b" rx="1"/>
+    <text x="40" y="170" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">icons.yml</text>
+
+    <rect x="20" y="180" width="12" height="10" fill="#f59e0b" rx="1"/>
+    <text x="40" y="190" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#374151">ui.yml</text>
+  </g>
+</svg>

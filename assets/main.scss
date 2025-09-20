@@ -3,22 +3,28 @@
 /* Load Minima first, then your overrides */
 @import "minima";
 
-/* Web font */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+/* Apple System Fonts - No web fonts needed */
 
 /* =========================
-   DESIGN TOKENS
+   APPLE DESIGN TOKENS
    ========================= */
-$font-family-base: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans",
-                   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+$font-family-base: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
 
-$accent: #007aff;
-$text: #333;
-$text-muted: #666;
+/* Apple Semantic Colors */
+$system-blue: #007AFF;
+$label-primary: rgba(0, 0, 0, 0.85);
+$label-secondary: rgba(60, 60, 67, 0.6);
+$label-tertiary: rgba(60, 60, 67, 0.3);
+$text: $label-primary;
+$text-muted: $label-secondary;
+$accent: $system-blue;
+
+/* Apple Materials */
 $card-blur: 20px;
-$shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.05);
-$border-soft: 1px solid rgba(0, 0, 0, 0.06);
-$background-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+$vibrancy-opacity: 0.8;
+$shadow-soft: 0 1px 2px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$border-soft: 0.5px solid rgba(0, 0, 0, 0.04);
+$background-gradient: linear-gradient(180deg, #f5f5f7 0%, #f2f2f7 48%, #ffffff 100%);
 
 /* =========================
    GLOBAL
@@ -32,10 +38,12 @@ body {
   font-family: $font-family-base;
   background: $background-gradient;
   color: $text;
+  font-size: 17px; /* Apple's body text size */
+  line-height: 1.47058823529; /* Apple's line height ratio */
+  letter-spacing: -0.022em; /* Apple's letter spacing */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  line-height: 1.6;
 }
 
 /* Let content breathe a bit more than Minima default */

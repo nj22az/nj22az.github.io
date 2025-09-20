@@ -1,0 +1,111 @@
+# UI Text Configuration
+# All user-facing text that appears in buttons, labels, and interface elements
+
+# Navigation
+navigation:
+  brand_name: "Nils Johansson"
+  brand_role: "Field Service Engineer"
+  items:
+    - id: home
+      label: "Home"
+      icon: "home"
+    - id: blog
+      label: "Journal"
+      icon: "notebook-pen"
+    - id: downloads
+      label: "Downloads"
+      icon: "folder"
+    - id: about
+      label: "About"
+      icon: "user"
+
+# Hero Section
+hero:
+  badge: "Field service engineer · Global deployments"
+  headline: "Field operations journal"
+  subhead: "Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently."
+  primary_button: "Browse latest articles"
+  secondary_button: "View downloads"
+
+# Buttons and Actions
+buttons:
+  read_more: "Read more"
+  read_full_report: "Read the full field report"
+  back: "Back"
+  bookmark: "Save for later"
+  bookmarked: "Bookmarked"
+  remove_bookmark: "Remove bookmark"
+  download: "Download"
+  copy_link: "Copy link"
+  copied: "Copied"
+  print: "Print"
+  back_to_top: "Top"
+
+# Search and Filters
+search:
+  placeholder: "Search posts and resources…"
+  sort_label: "Sort"
+  content_type_label: "Content type"
+  all_tags: "All"
+  all_types: "All"
+
+# Sort Options
+sort_options:
+  - id: newest
+    label: "Newest first"
+  - id: oldest
+    label: "Oldest first"
+  - id: shortest
+    label: "Shortest read"
+  - id: longest
+    label: "Longest read"
+
+# Cards and Content
+cards:
+  featured_badge: "Featured dispatch"
+  reading_time_suffix: "min read"
+  downloads_count_suffix: "downloads"
+  resources_count_suffix: "resource"
+  resources_count_plural: "resources"
+
+# Empty States
+empty_states:
+  no_posts:
+    title: "Fresh stories are on the way"
+    message: "New perspectives are being reviewed—check back shortly for updates."
+  no_downloads:
+    message: "New assets are being prepared—check back soon."
+
+# Page Titles and Headers
+pages:
+  downloads:
+    title: "Downloads"
+    description: "Toolkits, briefs, and references designed to accelerate your next engagement."
+  about:
+    fallback_title: "About"
+    unavailable_title: "About content unavailable"
+    unavailable_message: "The about page could not be loaded. Refresh the page or check that about.json is being generated."
+
+# Share and Social
+sharing:
+  label: "Share"
+  platforms:
+    linkedin: "LinkedIn"
+    x: "X"
+    email: "Email"
+
+# Meta Information
+meta:
+  last_updated: "Last updated"
+  format_label: "Format:"
+  size_label: "Size:"
+  related_resources: "Related resources"
+
+# Accessibility Labels
+accessibility:
+  search_label: "Search posts"
+  primary_navigation: "Primary navigation"
+  breadcrumb_navigation: "Breadcrumb"
+  share_tools: "Share tools"
+  current_page: "page"
+  hidden_text: "visually-hidden"

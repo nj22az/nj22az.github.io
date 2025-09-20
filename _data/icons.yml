@@ -1,24 +1,114 @@
-- id: journal
+# Available Lucide icons for blog posts
+# Usage: Add 'cover_icon: icon-name' to your post front matter
+
+# Writing & Content
+- id: notebook-pen
   label: Journal Entry
-  description: General reflections, welcome notes, or meta updates.
+  description: Personal reflections, general notes, and journal-style posts
+- id: text-quote
+  label: Quote or Insight
+  description: Notable quotes, insights, or philosophical reflections
+- id: pencil
+  label: Writing Guide
+  description: Writing tips, tutorials, or content creation guides
+- id: newspaper
+  label: News & Updates
+  description: News, announcements, or regular updates
+
+# Technology & Development
+- id: code
+  label: Code & Development
+  description: Programming tutorials, code snippets, development guides
+- id: terminal
+  label: Command Line
+  description: Terminal commands, CLI tutorials, technical instructions
+- id: laptop
+  label: Tech Review
+  description: Technology reviews, software recommendations, tools
+- id: server
+  label: Infrastructure
+  description: Server setup, hosting, technical infrastructure
+
+# Travel & Location
 - id: globe
-  label: Cultural Insight
-  description: Regional briefings, travel notes, or cultural context.
-- id: checklist
-  label: Checklist
-  description: Step-by-step processes, runbooks, or procedural guides.
-- id: wave
-  label: Field Note
-  description: Short dispatches, quick updates, or radio-call style logs.
+  label: Global Insights
+  description: International content, cultural observations, world events
+- id: map-pin
+  label: Location-Specific
+  description: Location-based content, travel guides, local insights
 - id: compass
-  label: Mission Planning
-  description: Deployment strategy, scoping notes, and pre-engagement plans.
-- id: toolkit
-  label: Technical Dispatch
-  description: Deep technical breakdowns, troubleshooting notes, or equipment specs.
-- id: antenna
-  label: Signal & Comms
-  description: Network readiness, communications, or telemetry summaries.
-- id: safety
-  label: Safety Advisory
-  description: Risk mitigation, safety briefings, and outage responses.
+  label: Navigation & Planning
+  description: Planning guides, direction-setting, strategic content
+- id: plane
+  label: Travel
+  description: Travel experiences, tips, destination guides
+
+# Documentation & Resources
+- id: file-text
+  label: Documentation
+  description: Detailed guides, documentation, reference materials
+- id: clipboard
+  label: Checklists
+  description: Step-by-step processes, checklists, procedural guides
+- id: folder
+  label: Resource Collection
+  description: Collections of resources, curated lists, compilations
+- id: book
+  label: Learning Resource
+  description: Educational content, learning materials, tutorials
+
+# Communication & Social
+- id: message-circle
+  label: Discussion
+  description: Opinion pieces, discussions, conversational content
+- id: mail
+  label: Newsletter
+  description: Newsletter-style content, regular communications
+- id: microphone
+  label: Interview or Podcast
+  description: Interview content, audio-related posts, discussions
+- id: headphones
+  label: Media Content
+  description: Audio, video, or multimedia-focused posts
+
+# Tools & Utilities
+- id: wrench
+  label: Tools & Setup
+  description: Tool recommendations, setup guides, utility reviews
+- id: settings
+  label: Configuration
+  description: Configuration guides, settings tutorials, customization
+- id: shield
+  label: Security
+  description: Security tips, privacy guides, safety recommendations
+- id: key
+  label: Authentication
+  description: Login guides, password management, access control
+
+# Visual Content
+- id: image
+  label: Visual Content
+  description: Photo galleries, visual tutorials, image-focused posts
+- id: video
+  label: Video Content
+  description: Video tutorials, multimedia content, visual guides
+- id: camera
+  label: Photography
+  description: Photography tips, photo essays, visual storytelling
+- id: brush
+  label: Creative Content
+  description: Design tutorials, creative processes, artistic content
+
+# General Categories
+- id: home
+  label: Homepage Content
+  description: Welcome posts, introductory content, site announcements
+- id: alert-circle
+  label: Important Notice
+  description: Important announcements, warnings, critical updates
+- id: badge-check
+  label: Verified Content
+  description: Verified information, official content, authoritative posts
+- id: ruler
+  label: Measurement & Analysis
+  description: Data analysis, measurements, analytical content

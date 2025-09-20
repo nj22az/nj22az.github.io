@@ -47,10 +47,10 @@ function getPostIdentifier(post) {
 }
 
 const ICON_TONES = {
-  neutral: '#687684',
-  active: '#1DA1F2',
-  meta: '#1DA1F2',
-  download: '#1DA1F2'
+  neutral: 'var(--label-tertiary)',
+  active: 'var(--system-blue)',
+  meta: 'var(--system-blue)',
+  download: 'var(--system-blue)'
 };
 
 const CARD_COLOR_POOL = ['#1DA1F2', '#17BF63', '#F45D22', '#794BC4', '#FFAD1F', '#5C6BC0'];
@@ -84,12 +84,14 @@ const SORT_OPTIONS = [
   { id: 'longest', label: 'Longest read' }
 ];
 
-function MonoIcon({ name, className = '', tone, style }) {
+function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }) {
   const toneStyle = tone ? { color: tone } : undefined;
   return React.createElement('span', {
     className: ['mono-icon', `mono-icon--${name}`, className].filter(Boolean).join(' '),
     style: toneStyle || style ? { ...(toneStyle || {}), ...(style || {}) } : undefined,
-    'aria-hidden': 'true'
+    'aria-hidden': ariaLabel ? undefined : 'true',
+    'aria-label': ariaLabel,
+    role: ariaLabel ? 'img' : undefined
   });
 }
 
