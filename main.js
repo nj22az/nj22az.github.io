@@ -47,13 +47,13 @@ function getPostIdentifier(post) {
 }
 
 const ICON_TONES = {
-  neutral: 'var(--label-tertiary)',
-  active: 'var(--system-blue)',
-  meta: 'var(--system-blue)',
-  download: 'var(--system-blue)'
+  neutral: 'var(--ink-tertiary)',
+  active: 'var(--ink-primary)',
+  meta: 'var(--ink-secondary)',
+  download: 'var(--ink-primary)'
 };
 
-const CARD_COLOR_POOL = ['#1DA1F2', '#17BF63', '#F45D22', '#794BC4', '#FFAD1F', '#5C6BC0'];
+const CARD_COLOR_POOL = ['var(--ink-primary)'];
 
 const AVAILABLE_ICONS = [
   { id: 'journal', label: 'Journal Entry' },
@@ -189,42 +189,41 @@ function FilterBar({
 }
 
 function Navigation({ currentPage, onPageChange, onBrandClick }) {
-  return React.createElement('aside', { className: 'side-nav' }, [
-    React.createElement('button', {
-      type: 'button',
-      className: 'brand-button',
-      onClick: onBrandClick,
-      key: 'brand'
-    }, [
-      React.createElement('span', { key: 'glyph', className: 'brand-glyph' }),
-      React.createElement('div', { key: 'text', className: 'brand-text-block' }, [
-        React.createElement('span', { key: 'name', className: 'brand-text' }, 'Nils Johansson'),
-        React.createElement('span', { key: 'role', className: 'brand-role' }, 'Field Service Engineer')
-      ])
-    ]),
-    React.createElement('nav', { className: 'side-nav__items', key: 'nav', 'aria-label': 'Primary navigation' },
-      NAV_ITEMS.map(({ id, label, icon }) =>
-        React.createElement('button', {
-          type: 'button',
-          key: id,
-          className: 'nav-item' + (currentPage === id ? ' active' : ''),
-          'aria-current': currentPage === id ? 'page' : undefined,
-          onClick: () => onPageChange(id)
-        }, [
-          React.createElement(MonoIcon, {
-            key: 'icon',
-            name: icon,
-            className: 'nav-item__icon',
-            tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
-          }),
-          React.createElement('span', { key: 'label', className: 'nav-item__label' }, label),
-          currentPage === id
-            ? React.createElement('span', { key: 'indicator', className: 'nav-item__indicator', 'aria-hidden': 'true' })
-            : null
+  return React.createElement('header', { className: 'masthead' },
+    React.createElement('div', { className: 'masthead__inner' }, [
+      React.createElement('button', {
+        type: 'button',
+        className: 'masthead__brand',
+        onClick: onBrandClick,
+        key: 'brand'
+      }, [
+        React.createElement('span', { key: 'glyph', className: 'masthead__glyph', 'aria-hidden': 'true' }),
+        React.createElement('span', { key: 'copy', className: 'masthead__text' }, [
+          React.createElement('span', { key: 'name', className: 'masthead__name' }, 'Nils Johansson'),
+          React.createElement('span', { key: 'role', className: 'masthead__meta' }, 'Field Service Engineer')
         ])
+      ]),
+      React.createElement('nav', { className: 'masthead__nav', key: 'nav', 'aria-label': 'Primary navigation' },
+        NAV_ITEMS.map(({ id, label, icon }) =>
+          React.createElement('button', {
+            type: 'button',
+            key: id,
+            className: 'masthead__link',
+            'aria-current': currentPage === id ? 'page' : undefined,
+            onClick: () => onPageChange(id)
+          }, [
+            React.createElement(MonoIcon, {
+              key: 'icon',
+              name: icon,
+              className: 'masthead__icon',
+              tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
+            }),
+            React.createElement('span', { key: 'label' }, label)
+          ])
+        )
       )
-    )
-  ]);
+    ])
+  );
 }
 
 function BottomNavigation({ currentPage, onPageChange }) {

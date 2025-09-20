@@ -3,10 +3,11 @@ layout: null
 permalink: about.json
 ---
 {% assign about_page = site.pages | where: "permalink", "/about/" | first %}
+{% assign about_tags = about_page.tags %}
 {
   "title": {{ about_page.title | default: 'About' | jsonify }},
   "category": {{ about_page.category | default: about_page.categories | first | default: 'About' | jsonify }},
-  "tags": {{ about_page.tags | default: [] | jsonify }},
+  "tags": {% if about_tags %}{{ about_tags | jsonify }}{% else %}[]{% endif %},
   "coverIcon": {{ about_page.cover_icon | default: 'journal' | jsonify }},
   "updated": {{ about_page.updated | default: about_page.date | date: "%B %-d, %Y" | jsonify }},
   "content": {{ about_page.content | markdownify | jsonify }}

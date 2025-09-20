@@ -4,6 +4,8 @@ permalink: posts.json
 ---
 [
 {% for post in site.posts %}
+  {% assign post_tags = post.tags %}
+  {% assign post_categories = post.categories %}
   {
     "id": {{ post.id | jsonify }},
     "title": {{ post.title | jsonify }},
@@ -12,8 +14,8 @@ permalink: posts.json
     "excerpt": {{ post.excerpt | strip_html | strip_newlines | jsonify }},
     "content": {{ post.content | jsonify }},
     "url": {{ post.url | relative_url | jsonify }},
-    "tags": {{ post.tags | default: [] | jsonify }},
-    "categories": {{ post.categories | default: [] | jsonify }},
+    "tags": {% if post_tags %}{{ post_tags | jsonify }}{% else %}[]{% endif %},
+    "categories": {% if post_categories %}{{ post_categories | jsonify }}{% else %}[]{% endif %},
     "contentType": {{ post.content_type | default: "Journal" | jsonify }},
     "featured": {{ post.featured | default: false | jsonify }},
     "coverIcon": {{ post.cover_icon | default: "journal" | jsonify }},
