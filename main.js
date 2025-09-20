@@ -1,4 +1,4 @@
-const { useState, useEffect } = React;
+const { useState, useEffect, useMemo, useCallback } = React;
 
 function stripHtml(html) {
   if (!html) return '';
@@ -22,13 +22,28 @@ function enhancePost(post) {
   const readingTime = Math.max(1, Math.round(words / 200));
   const excerptSource = post.excerpt && post.excerpt.trim().length ? post.excerpt : plainText;
   const excerpt = createExcerpt(stripHtml(excerptSource));
+  const tags = Array.isArray(post.tags) ? post.tags : [];
+  const categories = Array.isArray(post.categories) ? post.categories : [];
+  const coverIcon = post.coverIcon || TYPE_ICON_MAP[post.contentType] || 'journal';
+  const categoryLabel = categories[0] || post.contentType || 'Journal';
 
   return {
     ...post,
     plainText,
     readingTime,
-    excerpt
+    excerpt,
+    tags,
+    categories,
+    coverIcon,
+    categoryLabel
   };
+}
+
+function getPostIdentifier(post) {
+  if (!post) {
+    return undefined;
+  }
+  return post.id || post.url || post.title;
 }
 
 const ICON_TONES = {
@@ -39,6 +54,35 @@ const ICON_TONES = {
 };
 
 const CARD_COLOR_POOL = ['#1DA1F2', '#17BF63', '#F45D22', '#794BC4', '#FFAD1F', '#5C6BC0'];
+
+const AVAILABLE_ICONS = [
+  { id: 'journal', label: 'Journal Entry' },
+  { id: 'globe', label: 'Cultural Insight' },
+  { id: 'checklist', label: 'Checklist' },
+  { id: 'wave', label: 'Field Note' },
+  { id: 'compass', label: 'Mission Planning' },
+  { id: 'toolkit', label: 'Technical Dispatch' },
+  { id: 'antenna', label: 'Signal & Comms' },
+  { id: 'safety', label: 'Safety Advisory' }
+];
+
+const TYPE_ICON_MAP = {
+  'Technical Dispatch': 'toolkit',
+  'Cultural Insight': 'globe',
+  Checklist: 'checklist',
+  'Journal Entry': 'journal',
+  'Field Note': 'wave',
+  'Mission Planning': 'compass',
+  'Signal & Comms': 'antenna',
+  'Safety Advisory': 'safety'
+};
+
+const SORT_OPTIONS = [
+  { id: 'newest', label: 'Newest first' },
+  { id: 'oldest', label: 'Oldest first' },
+  { id: 'shortest', label: 'Shortest read' },
+  { id: 'longest', label: 'Longest read' }
+];
 
 function MonoIcon({ name, className = '', tone, style }) {
   const toneStyle = tone ? { color: tone } : undefined;
@@ -55,6 +99,92 @@ const NAV_ITEMS = [
   { id: 'downloads', label: 'Downloads', icon: 'download' },
   { id: 'about', label: 'About', icon: 'about' }
 ];
+
+function FilterBar({
+  searchTerm,
+  onSearch,
+  tags,
+  selectedTag,
+  onSelectTag,
+  sortOrder,
+  onSortChange,
+  contentTypes,
+  selectedContentType,
+  onSelectContentType
+}) {
+  const hasTags = Array.isArray(tags) && tags.length > 0;
+  const hasContentTypes = Array.isArray(contentTypes) && contentTypes.length > 0;
+
+  const tagButtons = hasTags
+    ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--filters' },
+        ['All', ...tags].map((tag) => React.createElement('button', {
+          key: tag,
+          type: 'button',
+          className: 'tag-chip' + (selectedTag === tag ? ' tag-chip--active' : ''),
+          onClick: () => onSelectTag(tag)
+        }, tag))
+      )
+    : null;
+
+  const controls = React.createElement('div', { key: 'controls', className: 'filter-bar__controls' }, [
+    React.createElement('div', { key: 'sort', className: 'filter-bar__control' }, [
+      React.createElement('label', {
+        key: 'label',
+        htmlFor: 'sort-order',
+        className: 'filter-bar__label'
+      }, 'Sort'),
+      React.createElement('select', {
+        key: 'input',
+        id: 'sort-order',
+        className: 'filter-bar__select',
+        value: sortOrder,
+        onChange: (event) => onSortChange(event.target.value)
+      }, SORT_OPTIONS.map(({ id, label }) =>
+        React.createElement('option', { key: id, value: id }, label)
+      ))
+    ]),
+    hasContentTypes
+      ? React.createElement('div', { key: 'type', className: 'filter-bar__control' }, [
+          React.createElement('label', {
+            key: 'label',
+            htmlFor: 'content-type',
+            className: 'filter-bar__label'
+          }, 'Content type'),
+          React.createElement('select', {
+            key: 'input',
+            id: 'content-type',
+            className: 'filter-bar__select',
+            value: selectedContentType,
+            onChange: (event) => onSelectContentType(event.target.value)
+          }, ['All', ...contentTypes].map((type) =>
+            React.createElement('option', { key: type, value: type }, type)
+          ))
+        ])
+      : null
+  ].filter(Boolean));
+
+  return React.createElement('div', { className: 'filter-bar app-frame' }, [
+    React.createElement('div', { key: 'primary', className: 'filter-bar__row' }, [
+      React.createElement('label', {
+        key: 'search-label',
+        htmlFor: 'search-field',
+        className: 'visually-hidden'
+      }, 'Search posts'),
+      React.createElement('div', { key: 'search', className: 'search-field' },
+        React.createElement('input', {
+          id: 'search-field',
+          type: 'search',
+          value: searchTerm,
+          placeholder: 'Search posts and resources…',
+          onChange: (event) => onSearch(event.target.value),
+          className: 'search-field__input'
+        })
+      ),
+      controls
+    ]),
+    tagButtons
+  ].filter(Boolean));
+}
 
 function Navigation({ currentPage, onPageChange, onBrandClick }) {
   return React.createElement('aside', { className: 'side-nav' }, [
@@ -85,7 +215,10 @@ function Navigation({ currentPage, onPageChange, onBrandClick }) {
             className: 'nav-item__icon',
             tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
           }),
-          React.createElement('span', { key: 'label', className: 'nav-item__label' }, label)
+          React.createElement('span', { key: 'label', className: 'nav-item__label' }, label),
+          currentPage === id
+            ? React.createElement('span', { key: 'indicator', className: 'nav-item__indicator', 'aria-hidden': 'true' })
+            : null
         ])
       )
     )
@@ -102,6 +235,7 @@ function BottomNavigation({ currentPage, onPageChange }) {
         'aria-current': currentPage === id ? 'page' : undefined,
         onClick: () => onPageChange(id)
       }, [
+        React.createElement('span', { key: 'active', className: 'bottom-nav__indicator', 'aria-hidden': 'true' }),
         React.createElement(MonoIcon, {
           key: 'icon',
           name: icon,
@@ -141,11 +275,71 @@ function Hero({ onExplore }) {
   ]);
 }
 
-function PostCard({ post, onOpen, accent }) {
+function FeaturedPostCard({ post, onOpen, onToggleBookmark, isBookmarked }) {
+  if (!post) {
+    return null;
+  }
+
+  const handleClick = () => onOpen(post);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       onOpen(post);
+    }
+  };
+
+  const handleBookmark = (event) => {
+    event.stopPropagation();
+    if (typeof onToggleBookmark === 'function') {
+      onToggleBookmark(post);
+    }
+  };
+
+  return React.createElement('article', {
+    className: 'featured-card app-frame',
+    role: 'button',
+    tabIndex: 0,
+    onClick: handleClick,
+    onKeyDown: handleKeyDown
+  }, [
+    React.createElement('div', { key: 'meta', className: 'featured-card__meta' }, [
+      React.createElement('span', { key: 'badge', className: 'featured-card__badge' }, 'Featured dispatch'),
+      React.createElement('span', { key: 'category', className: 'featured-card__category' }, post.categoryLabel),
+      React.createElement('span', { key: 'meta', className: 'featured-card__detail' }, `${post.displayDate} · ${post.readingTime} min read`)
+    ]),
+    React.createElement('div', { key: 'body', className: 'featured-card__body' }, [
+      React.createElement('div', { key: 'icon', className: 'featured-card__icon' },
+        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
+      ),
+      React.createElement('div', { key: 'content', className: 'featured-card__content' }, [
+        React.createElement('h2', { key: 'title', className: 'featured-card__title' }, post.title),
+        React.createElement('p', { key: 'excerpt', className: 'featured-card__excerpt' }, post.excerpt)
+      ])
+    ]),
+    React.createElement('div', { key: 'footer', className: 'featured-card__footer' }, [
+      React.createElement('span', { key: 'cta', className: 'featured-card__cta' }, 'Read the full field report'),
+      React.createElement('button', {
+        key: 'bookmark',
+        type: 'button',
+        className: 'pill-button pill-button--ghost',
+        onClick: handleBookmark
+      }, isBookmarked ? 'Bookmarked' : 'Save for later')
+    ])
+  ]);
+}
+
+function PostCard({ post, onOpen, onToggleBookmark, isBookmarked, accent }) {
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onOpen(post);
+    }
+  };
+
+  const handleBookmark = (event) => {
+    event.stopPropagation();
+    if (typeof onToggleBookmark === 'function') {
+      onToggleBookmark(post);
     }
   };
 
@@ -158,25 +352,52 @@ function PostCard({ post, onOpen, accent }) {
   }, [
     React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
       React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: 'journal', tone: accent })
+        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: accent })
       ),
       React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('span', { key: 'category', className: 'timeline-card__badge' }, post.categoryLabel),
         React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, post.title),
         React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
       ]),
-      React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'timeline-card__chevron' })
+      React.createElement('button', {
+        key: 'bookmark',
+        type: 'button',
+        className: 'icon-button icon-button--bookmark',
+        onClick: handleBookmark,
+        'aria-pressed': isBookmarked
+      }, [
+        React.createElement('span', {
+          key: 'label',
+          className: 'visually-hidden'
+        }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
+        React.createElement(MonoIcon, {
+          key: 'icon',
+          name: isBookmarked ? 'bookmark-filled' : 'bookmark',
+          className: 'icon-button__glyph',
+          tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
+        })
+      ])
     ]),
     React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt),
     post.tags && post.tags.length
       ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--inline' },
           post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
         )
-      : null
+      : null,
+    React.createElement('div', { key: 'action', className: 'timeline-card__actions' }, [
+      React.createElement('span', { key: 'hint', className: 'timeline-card__action' }, 'Read more'),
+      React.createElement(MonoIcon, {
+        key: 'chevron',
+        name: 'chevron',
+        className: 'timeline-card__chevron',
+        tone: accent
+      })
+    ])
   ]);
 }
 
-function PostList({ posts, onOpen }) {
-  if (!posts.length) {
+function PostList({ posts, onOpen, onToggleBookmark, bookmarkedIds }) {
+  if (!Array.isArray(posts) || !posts.length) {
     return [
       React.createElement('div', { className: 'empty-state app-frame', key: 'empty' }, [
         React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
@@ -189,34 +410,148 @@ function PostList({ posts, onOpen }) {
     React.createElement(PostCard, {
       post,
       onOpen,
+      onToggleBookmark,
+      isBookmarked: Boolean(bookmarkedIds && bookmarkedIds.has(getPostIdentifier(post))),
       accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-      key: post.id || post.url || post.title || index
+      key: getPostIdentifier(post) || index
     })
   );
 }
 
-function PostView({ post, onBack }) {
+function ShareBar({ post }) {
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = useMemo(() => {
+    if (!post || !post.url) {
+      return '';
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        return new URL(post.url, window.location.origin).toString();
+      } catch (error) {
+        return post.url;
+      }
+    }
+    return post.url;
+  }, [post]);
+
+  const encodedUrl = shareUrl ? encodeURIComponent(shareUrl) : '';
+  const encodedTitle = post && post.title ? encodeURIComponent(post.title) : '';
+
+  const shareTargets = [
+    {
+      id: 'linkedin',
+      label: 'LinkedIn',
+      href: encodedUrl ? `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}` : undefined
+    },
+    {
+      id: 'x',
+      label: 'X',
+      href: encodedUrl ? `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` : undefined
+    },
+    {
+      id: 'email',
+      label: 'Email',
+      href: encodedUrl ? `mailto:?subject=${encodedTitle}&body=${encodedUrl}` : undefined
+    }
+  ];
+
+  const handleCopy = useCallback(() => {
+    if (!shareUrl || typeof navigator === 'undefined' || !navigator.clipboard) {
+      return;
+    }
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2200);
+      })
+      .catch(() => {});
+  }, [shareUrl]);
+
+  const handlePrint = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  }, []);
+
+  return React.createElement('div', { className: 'share-bar', role: 'group', 'aria-label': 'Share tools' }, [
+    React.createElement('span', { key: 'label', className: 'share-bar__label' }, 'Share'),
+    ...shareTargets.map(({ id, label, href }) => href
+      ? React.createElement('a', {
+          key: id,
+          className: 'pill-button pill-button--subtle',
+          href,
+          target: '_blank',
+          rel: 'noreferrer noopener'
+        }, label)
+      : null
+    ).filter(Boolean),
+    React.createElement('button', {
+      key: 'copy',
+      type: 'button',
+      className: 'pill-button pill-button--subtle',
+      onClick: handleCopy,
+      disabled: !shareUrl
+    }, copied ? 'Copied' : 'Copy link'),
+    React.createElement('button', {
+      key: 'print',
+      type: 'button',
+      className: 'pill-button pill-button--subtle',
+      onClick: handlePrint
+    }, 'Print')
+  ]);
+}
+
+function PostView({ post, onBack, onToggleBookmark, isBookmarked }) {
+  const handleBookmark = () => {
+    if (typeof onToggleBookmark === 'function') {
+      onToggleBookmark(post);
+    }
+  };
+
   return React.createElement('article', { className: 'timeline-card post-detail-card' }, [
-    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
+    React.createElement('header', { key: 'head', className: 'timeline-card__header timeline-card__header--detail' }, [
       React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: 'journal', tone: ICON_TONES.active })
+        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
       ),
       React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('span', { key: 'category', className: 'timeline-card__badge' }, post.categoryLabel),
         React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, post.title),
         React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
       ]),
-      React.createElement('button', {
-        key: 'back',
-        type: 'button',
-        className: 'pill-button',
-        onClick: onBack
-      }, 'Back')
+      React.createElement('div', { key: 'actions', className: 'timeline-card__detail-actions' }, [
+        React.createElement('button', {
+          key: 'bookmark',
+          type: 'button',
+          className: 'icon-button icon-button--bookmark',
+          onClick: handleBookmark,
+          'aria-pressed': isBookmarked
+        }, [
+          React.createElement('span', {
+            key: 'label',
+            className: 'visually-hidden'
+          }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
+          React.createElement(MonoIcon, {
+            key: 'icon',
+            name: isBookmarked ? 'bookmark-filled' : 'bookmark',
+            className: 'icon-button__glyph',
+            tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
+          })
+        ]),
+        React.createElement('button', {
+          key: 'back',
+          type: 'button',
+          className: 'pill-button',
+          onClick: onBack
+        }, 'Back')
+      ])
     ]),
     post.tags && post.tags.length
       ? React.createElement('div', { key: 'meta', className: 'tag-list tag-list--detail' },
           post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
         )
       : null,
+    React.createElement(ShareBar, { key: 'share', post }),
     React.createElement('div', {
       key: 'body',
       className: 'timeline-card__body content',
@@ -225,7 +560,7 @@ function PostView({ post, onBack }) {
   ]);
 }
 
-function DownloadCard({ item, accent }) {
+function DownloadCard({ item, accent, relatedItems }) {
   const metaItems = [
     item.file_type ? `Format: ${item.file_type}` : null,
     item.file_size ? `Size: ${item.file_size}` : null,
@@ -234,28 +569,51 @@ function DownloadCard({ item, accent }) {
 
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
-  return React.createElement('article', { className: 'timeline-card timeline-card--download' }, [
-    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
-      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: 'download', tone: accent })
-      ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
-        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, item.title),
+  return React.createElement('article', { className: 'download-card app-frame' }, [
+    React.createElement('div', { key: 'preview', className: 'download-card__preview' },
+      item.thumbnail
+        ? React.createElement('img', { src: item.thumbnail, alt: `${item.title} preview` })
+        : React.createElement(MonoIcon, { name: 'download', tone: accent })
+    ),
+    React.createElement('div', { key: 'body', className: 'download-card__body' }, [
+      React.createElement('header', { key: 'header', className: 'download-card__header' }, [
+        React.createElement('span', { key: 'category', className: 'download-card__badge' }, item.category || 'Resources'),
+        React.createElement('h3', { key: 'title', className: 'download-card__title' }, item.title),
         metaItems.length
-          ? React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, metaItems.join(' · '))
+          ? React.createElement('span', { key: 'meta', className: 'download-card__meta' }, metaItems.join(' · '))
           : null
       ]),
-      item.url
-        ? React.createElement('a', {
-            key: 'action',
-            className: 'link-button link-button--inline',
-            href: item.url,
-            target: isExternal ? '_blank' : undefined,
-            rel: isExternal ? 'noreferrer noopener' : undefined
-          }, 'Download')
-        : React.createElement(MonoIcon, { key: 'chevron', name: 'chevron', className: 'timeline-card__chevron' })
-    ]),
-    React.createElement('p', { key: 'description', className: 'timeline-card__excerpt' }, item.description)
+      React.createElement('p', { key: 'description', className: 'download-card__description' }, item.description),
+      item.tags && item.tags.length
+        ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--inline' },
+            item.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
+          )
+        : null,
+      React.createElement('div', { key: 'actions', className: 'download-card__actions' }, [
+        item.url
+          ? React.createElement('a', {
+              key: 'download',
+              className: 'primary-button primary-button--small',
+              href: item.url,
+              target: isExternal ? '_blank' : undefined,
+              rel: isExternal ? 'noreferrer noopener' : undefined
+            }, 'Download')
+          : null,
+        metaItems[2]
+          ? React.createElement('span', { key: 'count', className: 'download-card__counter' }, metaItems[2])
+          : null
+      ]),
+      relatedItems && relatedItems.length
+        ? React.createElement('div', { key: 'related', className: 'download-card__related' }, [
+            React.createElement('span', { key: 'label', className: 'download-card__related-label' }, 'Related resources'),
+            React.createElement('ul', { key: 'list' },
+              relatedItems.map((resource) =>
+                React.createElement('li', { key: resource.title }, resource.title)
+              )
+            )
+          ])
+        : null
+    ])
   ]);
 }
 
@@ -269,42 +627,171 @@ function DownloadsPage({ downloads }) {
     return [headerCard, React.createElement('div', { className: 'empty-state', key: 'empty' }, 'New assets are being prepared—check back soon.')];
   }
 
-  const cards = downloads.map((item, index) =>
-    React.createElement(DownloadCard, {
-      item,
-      accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-      key: index
-    })
-  );
+  const byTitle = new Map(downloads.map((item) => [item.title, item]));
+  const grouped = downloads.reduce((acc, item) => {
+    const key = item.category || 'Resources';
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(item);
+    return acc;
+  }, {});
 
-  return [headerCard, ...cards];
-}
-
-function AboutPage() {
-  return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
-    React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'About Nils'),
-    React.createElement('p', { key: 'p1', className: 'timeline-card__excerpt' }, 'Field service engineer translating complex projects into predictable outcomes.'),
-    React.createElement('p', { key: 'p2', className: 'timeline-card__excerpt' }, 'Marine engineering roots, live deployments across regions, and a commitment to clear documentation.'),
-    React.createElement('p', { key: 'p3', className: 'timeline-card__excerpt' }, 'This journal is a working log. If you operate in similar environments, I hope these notes help you ship with confidence.')
-  ]);
-}
-
-function SecondaryPanel({ page, downloads }) {
-  if (!downloads.length || page === 'downloads') {
-    return null;
-  }
-  const featured = downloads.slice(0, 3);
-
-  return React.createElement('aside', { className: 'context-panel' },
-    React.createElement('div', { className: 'context-card' }, [
-      React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Downloads'),
-      React.createElement('ul', { key: 'list', className: 'context-card__list' },
-        featured.map((item, index) =>
-          React.createElement('li', { key: index }, item.title)
-        )
+  const sections = Object.entries(grouped).map(([category, items], sectionIndex) =>
+    React.createElement('section', { key: category, className: 'downloads-section app-frame' }, [
+      React.createElement('header', { key: 'header', className: 'downloads-section__header' }, [
+        React.createElement('h2', { key: 'title' }, category),
+        React.createElement('span', { key: 'count', className: 'downloads-section__count' }, `${items.length} resource${items.length > 1 ? 's' : ''}`)
+      ]),
+      React.createElement('div', { key: 'grid', className: 'downloads-grid' },
+        items.map((item, index) => {
+          const relatedItems = Array.isArray(item.related)
+            ? item.related.map((name) => byTitle.get(name)).filter(Boolean)
+            : [];
+          return React.createElement(DownloadCard, {
+            item,
+            relatedItems,
+            accent: CARD_COLOR_POOL[(sectionIndex + index) % CARD_COLOR_POOL.length],
+            key: item.title
+          });
+        })
       )
     ])
   );
+
+  return [headerCard, ...sections];
+}
+
+function AboutPage({ about, isLoading }) {
+  if (isLoading) {
+    return React.createElement(PostSkeleton, { key: 'about-skeleton' });
+  }
+
+  if (!about) {
+    return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
+      React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'About content unavailable'),
+      React.createElement('p', { key: 'copy', className: 'timeline-card__excerpt' }, 'The about page could not be loaded. Refresh the page or check that about.json is being generated.')
+    ]);
+  }
+
+  return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
+    React.createElement('div', { key: 'header', className: 'timeline-card__header' }, [
+      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
+        React.createElement(MonoIcon, { name: about.coverIcon || 'journal', tone: ICON_TONES.active })
+      ),
+      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
+        React.createElement('span', { key: 'badge', className: 'timeline-card__badge' }, about.category || 'About'),
+        React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, about.title),
+        about.updated
+          ? React.createElement('span', { key: 'updated', className: 'timeline-card__meta' }, `Last updated ${about.updated}`)
+          : null
+      ])
+    ]),
+    about.tags && about.tags.length
+      ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--detail' },
+          about.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
+        )
+      : null,
+    React.createElement('div', {
+      key: 'body',
+      className: 'timeline-card__body content',
+      dangerouslySetInnerHTML: { __html: about.content }
+    })
+  ]);
+}
+
+function SecondaryPanel({ page, downloads, bookmarkedPosts, onOpenBookmark }) {
+  const hasDownloads = Array.isArray(downloads) && downloads.length && page !== 'downloads';
+  const hasBookmarks = Array.isArray(bookmarkedPosts) && bookmarkedPosts.length;
+
+  if (!hasDownloads && !hasBookmarks) {
+    return null;
+  }
+
+  const featuredDownloads = hasDownloads ? downloads.slice(0, 3) : [];
+  const bookmarkDisplay = hasBookmarks ? bookmarkedPosts.slice(0, 5) : [];
+  const bookmarkOverflow = hasBookmarks && bookmarkedPosts.length > 5 ? bookmarkedPosts.length - 5 : 0;
+
+  return React.createElement('aside', { className: 'context-panel' }, [
+    hasBookmarks
+      ? React.createElement('div', { key: 'bookmarks', className: 'context-card' }, [
+          React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Bookmarked'),
+          React.createElement('ul', { key: 'list', className: 'context-card__list' },
+            bookmarkDisplay.map((post) =>
+              React.createElement('li', { key: getPostIdentifier(post) },
+                React.createElement('button', {
+                  type: 'button',
+                  onClick: () => onOpenBookmark(post)
+                }, post.title)
+              )
+            ).concat(bookmarkOverflow
+              ? [React.createElement('li', { key: 'more', className: 'context-card__more' }, `+${bookmarkOverflow} more`)]
+              : []
+            )
+          )
+        ])
+      : null,
+    hasDownloads
+      ? React.createElement('div', { key: 'downloads', className: 'context-card' }, [
+          React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Downloads'),
+          React.createElement('ul', { key: 'list', className: 'context-card__list' },
+            featuredDownloads.map((item) =>
+              React.createElement('li', { key: item.title }, item.title)
+            )
+          )
+        ])
+      : null
+  ].filter(Boolean));
+}
+
+function Breadcrumbs({ segments }) {
+  if (!Array.isArray(segments) || !segments.length) {
+    return null;
+  }
+
+  return React.createElement('nav', { className: 'breadcrumbs', 'aria-label': 'Breadcrumb' },
+    segments.map((segment, index) => {
+      const isCurrent = index === segments.length - 1;
+      const key = segment.id || segment.label || index;
+
+      if (isCurrent || typeof segment.onSelect !== 'function') {
+        return React.createElement('span', {
+          key,
+          className: 'breadcrumbs__item breadcrumbs__item--current',
+          'aria-current': isCurrent ? 'page' : undefined
+        }, segment.label);
+      }
+
+      return React.createElement('button', {
+        key,
+        type: 'button',
+        className: 'breadcrumbs__item',
+        onClick: segment.onSelect
+      }, segment.label);
+    })
+  );
+}
+
+function BackToTopButton({ visible, onClick }) {
+  return React.createElement('button', {
+    type: 'button',
+    className: 'back-to-top' + (visible ? ' back-to-top--visible' : ''),
+    onClick,
+    'aria-hidden': visible ? undefined : 'true',
+    tabIndex: visible ? 0 : -1
+  }, [
+    React.createElement(MonoIcon, { key: 'icon', name: 'arrow-up', className: 'back-to-top__icon' }),
+    React.createElement('span', { key: 'label' }, 'Top')
+  ]);
+}
+
+function PostSkeleton() {
+  return React.createElement('div', { className: 'timeline-card skeleton-card' }, [
+    React.createElement('div', { key: 'header', className: 'skeleton-card__header' }),
+    React.createElement('div', { key: 'line1', className: 'skeleton-card__line skeleton-card__line--wide' }),
+    React.createElement('div', { key: 'line2', className: 'skeleton-card__line' }),
+    React.createElement('div', { key: 'line3', className: 'skeleton-card__line skeleton-card__line--short' })
+  ]);
 }
 
 function App() {
@@ -312,65 +799,330 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [downloads, setDownloads] = useState([]);
   const [currentPost, setCurrentPost] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTag, setSelectedTag] = useState('All');
+  const [selectedContentType, setSelectedContentType] = useState('All');
+  const [sortOrder, setSortOrder] = useState('newest');
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [isLoadingDownloads, setIsLoadingDownloads] = useState(true);
+  const [about, setAbout] = useState(null);
+  const [isLoadingAbout, setIsLoadingAbout] = useState(true);
+  const [bookmarkedIds, setBookmarkedIds] = useState(() => {
+    if (typeof window === 'undefined') {
+      return new Set();
+    }
+    try {
+      const stored = window.localStorage.getItem('bookmarkedPosts');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return new Set(parsed);
+        }
+      }
+    } catch (error) {
+      return new Set();
+    }
+    return new Set();
+  });
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
+    setIsLoadingPosts(true);
     fetch('posts.json')
       .then((res) => res.json())
       .then((data) => setPosts(data.map(enhancePost)))
-      .catch(() => setPosts([]));
+      .catch(() => setPosts([]))
+      .finally(() => setIsLoadingPosts(false));
 
+    setIsLoadingDownloads(true);
     fetch('downloads.json')
       .then((res) => res.json())
       .then(setDownloads)
-      .catch(() => setDownloads([]));
+      .catch(() => setDownloads([]))
+      .finally(() => setIsLoadingDownloads(false));
+
+    setIsLoadingAbout(true);
+    fetch('about.json')
+      .then((res) => res.json())
+      .then((payload) => setAbout(payload))
+      .catch(() => setAbout(null))
+      .finally(() => setIsLoadingAbout(false));
   }, []);
 
-  const scrollToTop = () => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('bookmarkedPosts', JSON.stringify(Array.from(bookmarkedIds)));
+    }
+  }, [bookmarkedIds]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 280);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const uniqueTags = useMemo(() => {
+    const tagSet = new Set();
+    posts.forEach((post) => {
+      if (Array.isArray(post.tags)) {
+        post.tags.forEach((tag) => tagSet.add(tag));
+      }
+    });
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  }, [posts]);
+
+  const uniqueContentTypes = useMemo(() => {
+    const typeSet = new Set();
+    posts.forEach((post) => {
+      if (post.contentType) {
+        typeSet.add(post.contentType);
+      }
+    });
+    return Array.from(typeSet).sort((a, b) => a.localeCompare(b));
+  }, [posts]);
+
+  useEffect(() => {
+    if (selectedTag !== 'All' && !uniqueTags.includes(selectedTag)) {
+      setSelectedTag('All');
+    }
+  }, [uniqueTags, selectedTag]);
+
+  useEffect(() => {
+    if (selectedContentType !== 'All' && !uniqueContentTypes.includes(selectedContentType)) {
+      setSelectedContentType('All');
+    }
+  }, [uniqueContentTypes, selectedContentType]);
+
+  const filteredPosts = useMemo(() => {
+    if (!Array.isArray(posts)) {
+      return [];
+    }
+
+    const term = searchTerm.trim().toLowerCase();
+    const parseDate = (value) => {
+      const result = Date.parse(value);
+      return Number.isNaN(result) ? 0 : result;
+    };
+
+    let result = posts.slice();
+
+    if (term) {
+      result = result.filter((post) => {
+        const haystack = [
+          post.title || '',
+          post.excerpt || '',
+          post.plainText || '',
+          Array.isArray(post.tags) ? post.tags.join(' ') : '',
+          Array.isArray(post.categories) ? post.categories.join(' ') : ''
+        ].join(' ').toLowerCase();
+        return haystack.includes(term);
+      });
+    }
+
+    if (selectedTag !== 'All') {
+      result = result.filter((post) => Array.isArray(post.tags) && post.tags.includes(selectedTag));
+    }
+
+    if (selectedContentType !== 'All') {
+      result = result.filter((post) => post.contentType === selectedContentType);
+    }
+
+    const sorted = result.slice();
+    sorted.sort((a, b) => {
+      if (sortOrder === 'oldest') {
+        return parseDate(a.date) - parseDate(b.date);
+      }
+      if (sortOrder === 'shortest') {
+        return (a.readingTime || 0) - (b.readingTime || 0);
+      }
+      if (sortOrder === 'longest') {
+        return (b.readingTime || 0) - (a.readingTime || 0);
+      }
+      return parseDate(b.date) - parseDate(a.date);
+    });
+
+    return sorted;
+  }, [posts, searchTerm, selectedTag, selectedContentType, sortOrder]);
+
+  const featuredPost = useMemo(
+    () => filteredPosts.find((post) => post.featured),
+    [filteredPosts]
+  );
+
+  const postsWithoutFeatured = useMemo(() => {
+    if (!featuredPost) {
+      return filteredPosts;
+    }
+    const featuredId = getPostIdentifier(featuredPost);
+    return filteredPosts.filter((post) => getPostIdentifier(post) !== featuredId);
+  }, [filteredPosts, featuredPost]);
+
+  const bookmarkedPosts = useMemo(
+    () => posts.filter((post) => bookmarkedIds.has(getPostIdentifier(post))),
+    [posts, bookmarkedIds]
+  );
+
+  const scrollToTop = useCallback(() => {
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+  }, []);
 
-  const handleChangePage = (nextPage) => {
+  const handleChangePage = useCallback((nextPage) => {
     setCurrentPost(null);
     setPage(nextPage);
     scrollToTop();
-  };
+  }, [scrollToTop]);
 
-  const handleOpenPost = (post) => {
+  const handleOpenPost = useCallback((post) => {
     setCurrentPost(post);
     setPage('blog');
     scrollToTop();
-  };
+  }, [scrollToTop]);
 
-  const handleBackToPosts = () => {
+  const handleBackToPosts = useCallback(() => {
     setCurrentPost(null);
     scrollToTop();
-  };
+  }, [scrollToTop]);
 
-  const handleBrandClick = () => handleChangePage('home');
-
-  let mainContent;
-  if (currentPost) {
-    mainContent = React.createElement(PostView, { post: currentPost, onBack: handleBackToPosts });
-  } else if (page === 'home') {
-    mainContent = [
-      React.createElement(Hero, { key: 'hero', onExplore: () => handleChangePage('blog') })
-    ].concat(PostList({ posts: posts.slice(0, 6), onOpen: handleOpenPost }));
-  } else if (page === 'blog') {
-    mainContent = PostList({ posts, onOpen: handleOpenPost });
-  } else if (page === 'downloads') {
-    mainContent = DownloadsPage({ downloads });
-  } else if (page === 'about') {
-    mainContent = [AboutPage()];
-  } else {
-    mainContent = [
-      React.createElement(Hero, { key: 'hero', onExplore: () => handleChangePage('blog') })
-    ].concat(PostList({ posts: posts.slice(0, 6), onOpen: handleOpenPost }));
-  }
+  const handleToggleBookmark = useCallback((post) => {
+    const identifier = getPostIdentifier(post);
+    if (!identifier) {
+      return;
+    }
+    setBookmarkedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(identifier)) {
+        next.delete(identifier);
+      } else {
+        next.add(identifier);
+      }
+      return next;
+    });
+  }, []);
 
   const activePage = currentPost ? 'blog' : page;
-  const timelineItems = Array.isArray(mainContent) ? mainContent : [mainContent];
+  const heroExplore = useCallback(() => handleChangePage('blog'), [handleChangePage]);
+
+  let timelineItems = [];
+
+  if (currentPost) {
+    timelineItems = [
+      React.createElement(PostView, {
+        key: 'post-detail',
+        post: currentPost,
+        onBack: handleBackToPosts,
+        onToggleBookmark: handleToggleBookmark,
+        isBookmarked: bookmarkedIds.has(getPostIdentifier(currentPost))
+      })
+    ];
+  } else if (activePage === 'downloads') {
+    const downloadsContent = DownloadsPage({ downloads });
+    const baseItems = Array.isArray(downloadsContent) ? downloadsContent : [downloadsContent];
+    if (isLoadingDownloads && (!downloads || !downloads.length)) {
+      timelineItems = baseItems.slice(0, 1).concat(
+        Array.from({ length: 2 }, (_, index) => React.createElement(PostSkeleton, { key: `download-skeleton-${index}` }))
+      );
+    } else {
+      timelineItems = baseItems;
+    }
+  } else if (activePage === 'about') {
+    timelineItems = [React.createElement(AboutPage, { key: 'about', about, isLoading: isLoadingAbout })];
+  } else {
+    const filterElement = React.createElement(FilterBar, {
+      key: 'filters',
+      searchTerm,
+      onSearch: setSearchTerm,
+      tags: uniqueTags,
+      selectedTag,
+      onSelectTag: setSelectedTag,
+      sortOrder,
+      onSortChange: setSortOrder,
+      contentTypes: uniqueContentTypes,
+      selectedContentType,
+      onSelectContentType: setSelectedContentType
+    });
+
+    const shouldLimitHome = activePage === 'home'
+      && !searchTerm
+      && selectedTag === 'All'
+      && selectedContentType === 'All';
+
+    const postCollection = activePage === 'home'
+      ? postsWithoutFeatured.slice(0, shouldLimitHome ? 6 : postsWithoutFeatured.length)
+      : postsWithoutFeatured;
+
+    const listItems = isLoadingPosts
+      ? Array.from({ length: 3 }, (_, index) => React.createElement(PostSkeleton, { key: `skeleton-${index}` }))
+      : PostList({
+          posts: postCollection,
+          onOpen: handleOpenPost,
+          onToggleBookmark: handleToggleBookmark,
+          bookmarkedIds
+        });
+
+    timelineItems = [];
+
+    if (activePage === 'home') {
+      timelineItems.push(React.createElement(Hero, { key: 'hero', onExplore: heroExplore }));
+      if (!isLoadingPosts && featuredPost) {
+        timelineItems.push(React.createElement(FeaturedPostCard, {
+          key: 'featured',
+          post: featuredPost,
+          onOpen: handleOpenPost,
+          onToggleBookmark: handleToggleBookmark,
+          isBookmarked: bookmarkedIds.has(getPostIdentifier(featuredPost))
+        }));
+      }
+    }
+
+    timelineItems.push(filterElement);
+    timelineItems = timelineItems.concat(listItems);
+  }
+
+  const breadcrumbSegments = useMemo(() => {
+    if (currentPost) {
+      return [
+        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
+        { id: 'blog', label: 'Journal', onSelect: () => handleChangePage('blog') },
+        { id: 'post', label: currentPost.title }
+      ];
+    }
+    if (activePage === 'home') {
+      return [];
+    }
+    if (activePage === 'blog') {
+      return [
+        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
+        { id: 'blog', label: 'Journal' }
+      ];
+    }
+    if (activePage === 'downloads') {
+      return [
+        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
+        { id: 'downloads', label: 'Downloads' }
+      ];
+    }
+    if (activePage === 'about') {
+      return [
+        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
+        { id: 'about', label: about && about.title ? about.title : 'About' }
+      ];
+    }
+    return [];
+  }, [about, activePage, currentPost, handleChangePage]);
+
+  if (breadcrumbSegments.length) {
+    timelineItems.unshift(React.createElement(Breadcrumbs, { key: 'breadcrumbs', segments: breadcrumbSegments }));
+  }
+
+  const handleBrandClick = useCallback(() => handleChangePage('home'), [handleChangePage]);
 
   return React.createElement('div', { className: 'app-shell' }, [
     React.createElement(Navigation, {
@@ -384,14 +1136,29 @@ function App() {
         key: 'timeline',
         className: 'timeline' + (currentPost ? ' timeline--detail' : '')
       }, timelineItems),
-      React.createElement(SecondaryPanel, { key: 'panel', page: activePage, downloads })
+      React.createElement(SecondaryPanel, {
+        key: 'panel',
+        page: activePage,
+        downloads,
+        bookmarkedPosts,
+        onOpenBookmark: handleOpenPost
+      })
     ]),
     React.createElement(BottomNavigation, {
       key: 'bottom-nav',
       currentPage: activePage,
       onPageChange: handleChangePage
+    }),
+    React.createElement(BackToTopButton, {
+      key: 'back-to-top',
+      visible: showBackToTop,
+      onClick: scrollToTop
     })
   ]);
+}
+
+if (typeof window !== 'undefined') {
+  window.blogIconCatalog = AVAILABLE_ICONS;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(

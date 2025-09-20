@@ -2,6 +2,14 @@
 layout: post
 title: "Culture Brief: Singapore"
 date: 2024-07-04
+categories: [Culture Brief]
+tags:
+  - Culture
+  - Asia
+  - Insight
+content_type: Cultural Insight
+featured: false
+cover_icon: globe
 ---
 
 Singapore is built on punctuality and precision. The workshops mirror the harbour—containers move, cranes swing, and the expectation is that you will match that pace.

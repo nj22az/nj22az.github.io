@@ -58,6 +58,33 @@ A quick reference for running, extending, and publishing the React-driven Jekyll
 4. Tags are displayed automatically; add them in front matter (`tags: [operations, toolkit]`) to prepare for future filtering.
 5. Save, preview locally with `jekyll serve`, then commit/push when ready.
 
+## Choosing post icons & thumbnails
+
+- Add `cover_icon: <icon-name>` to the front matter to display a custom glyph beside the post card. The current catalog lives in `_data/icons.yml` and is also exposed in the browser console as `window.blogIconCatalog` while the app is running.
+- Available icon ids and suggested usage:
+  - `toolkit` — technical dispatches, troubleshooting notes, equipment specs.
+  - `compass` — mission planning, scoping briefs, readiness drills.
+  - `globe` — cultural insights, regional briefings.
+  - `checklist` — SOPs, runbooks, task lists.
+  - `antenna` — comms, telemetry, network health updates.
+  - `safety` — risk advisories, incident reviews, outage retros.
+- `wave` — quick field notes or short updates.
+- `journal` — general reflections, welcome notes, or meta posts.
+- Add an optional thumbnail with `thumbnail: /assets/images/<file>.svg` (or `.jpg`). Drop the asset into `assets/images/` or a subdirectory so GitHub Pages can serve it.
+- About content lives in `about.md`; Jekyll turns it into `about.json` so the React app can hydrate the About view without editing JavaScript.
+- Minimal front matter example:
+
+  ```yaml
+  ---
+  layout: post
+  title: "Signal Health Watch"
+  date: 2025-03-01
+  content_type: Signal & Comms
+  cover_icon: antenna
+  thumbnail: /assets/images/signal-watch.svg
+  ---
+  ```
+
 ### Changing the icon and glass brand treatment
 
 - The round glyph in the sidebar and mobile header is controlled in `styles.css` via the `.brand-glyph` selector. Swap the gradient for your own image by setting `background: url(/assets/images/brand.svg) center/cover;` or adjust the gradients to match a new palette.
@@ -117,6 +144,8 @@ main.js                 React application logic
 styles.css              Apple-inspired global styling for the SPA experience
 downloads.json          Metadata for the Downloads page cards
 posts.json              Auto-generated JSON feed (no manual edits needed)
+about.md                Markdown source for the About page
+about.json              Auto-generated JSON consumed by the React About view
 ```
 
 Happy writing and shipping!

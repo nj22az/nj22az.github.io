@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Deployment Planning Diagram</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8F1FF" />
+      <stop offset="100%" stop-color="#F5FBFF" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="32" fill="url(#bg)" />
+  <g stroke="#0F6CBD" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.4">
+    <circle cx="160" cy="140" r="52" />
+    <circle cx="480" cy="220" r="64" />
+    <path d="M212 140h204" />
+    <path d="M160 192l56 72 208-44" />
+  </g>
+  <g fill="#0F6CBD">
+    <circle cx="160" cy="140" r="10" />
+    <circle cx="480" cy="220" r="10" />
+    <circle cx="216" cy="284" r="8" />
+    <circle cx="368" cy="240" r="8" />
+  </g>
+  <g fill="#1DA1F2" opacity="0.7">
+    <rect x="420" y="72" width="160" height="36" rx="18" />
+    <rect x="60" y="236" width="142" height="32" rx="16" />
+  </g>
+  <text x="480" y="96" text-anchor="middle" font-family="'SF Pro Display', 'Segoe UI', sans-serif" font-size="18" fill="#0F4378">Signal uplink</text>
+  <text x="131" y="255" text-anchor="middle" font-family="'SF Pro Display', 'Segoe UI', sans-serif" font-size="18" fill="#0F4378">Mobile ops team</text>
+</svg>

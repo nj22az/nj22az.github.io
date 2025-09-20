@@ -5,7 +5,11 @@
     "file_type": "PDF",
     "file_size": "1KB",
     "download_count": 34,
-    "url": "/assets/downloads/cv-template.pdf"
+    "url": "/assets/downloads/cv-template.pdf",
+    "category": "Career",
+    "thumbnail": "/assets/previews/cv-template.svg",
+    "tags": ["Resume", "Templates"],
+    "related": ["Project Checklist"]
   },
   {
     "title": "Project Checklist",
@@ -13,6 +17,10 @@
     "file_type": "TXT",
     "file_size": "1KB",
     "download_count": 12,
-    "url": "/assets/downloads/project-checklist.txt"
+    "url": "/assets/downloads/project-checklist.txt",
+    "category": "Deployments",
+    "thumbnail": "/assets/previews/project-checklist.svg",
+    "tags": ["Operations", "Workflow"],
+    "related": ["CV Template"]
   }
 ]

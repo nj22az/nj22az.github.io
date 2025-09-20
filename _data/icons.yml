@@ -1,0 +1,24 @@
+- id: journal
+  label: Journal Entry
+  description: General reflections, welcome notes, or meta updates.
+- id: globe
+  label: Cultural Insight
+  description: Regional briefings, travel notes, or cultural context.
+- id: checklist
+  label: Checklist
+  description: Step-by-step processes, runbooks, or procedural guides.
+- id: wave
+  label: Field Note
+  description: Short dispatches, quick updates, or radio-call style logs.
+- id: compass
+  label: Mission Planning
+  description: Deployment strategy, scoping notes, and pre-engagement plans.
+- id: toolkit
+  label: Technical Dispatch
+  description: Deep technical breakdowns, troubleshooting notes, or equipment specs.
+- id: antenna
+  label: Signal & Comms
+  description: Network readiness, communications, or telemetry summaries.
+- id: safety
+  label: Safety Advisory
+  description: Risk mitigation, safety briefings, and outage responses.

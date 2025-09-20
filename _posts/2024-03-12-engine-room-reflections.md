@@ -2,6 +2,14 @@
 layout: post
 title: "Engine Room Reflections"
 date: 2024-03-12
+categories: [Field Notes]
+tags:
+  - Operations
+  - Technical
+  - Field Dispatch
+content_type: Technical Dispatch
+featured: true
+cover_icon: toolkit
 ---
 
 When the engine room is humming at 2300, you hear the truth of the vessel. Pumps chatter, generators breathe, and the crew keeps time with the gauges.

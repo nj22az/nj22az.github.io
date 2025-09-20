@@ -2,6 +2,14 @@
 layout: post
 title: "Field Service Checklist"
 date: 2024-11-18
+categories: [Checklists]
+tags:
+  - Checklist
+  - Operations
+  - Preflight
+content_type: Checklist
+featured: false
+cover_icon: checklist
 ---
 
 Before wheels up I run the same ritual: talk to the local team, re-read the fault logs, and make sure every adapter and consumable has a duplicate in the case. This checklist is the compressed version of that ritual.
