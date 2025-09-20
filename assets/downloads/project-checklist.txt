@@ -1,3 +1,7 @@
-Placeholder project checklist.
-
-Replace this file with your detailed checklist when ready.
+Project Kickoff Checklist
+==========================
+1. Clarify objectives
+2. Confirm scope
+3. Assemble team
+4. Define success metrics
+5. Communicate plan
