@@ -257,21 +257,23 @@ function Hero({ onExplore }) {
   };
 
   return React.createElement('section', { className: 'hero app-frame' }, [
-    React.createElement('span', { key: 'badge', className: 'hero__badge' }, 'Field service engineer · Global deployments'),
-    React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Field operations journal'),
-    React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently.'),
-    React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
-      React.createElement('button', {
-        key: 'primary',
-        type: 'button',
-        className: 'primary-button',
-        onClick: handleExplore
-      }, 'Browse latest articles'),
-      React.createElement('a', {
-        key: 'secondary',
-        className: 'link-button',
-        href: '#downloads'
-      }, 'View downloads')
+    React.createElement('div', { key: 'content', className: 'hero__content' }, [
+      React.createElement('span', { key: 'badge', className: 'hero__badge' }, 'Field service engineer · Global deployments'),
+      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Field operations journal'),
+      React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently.'),
+      React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
+        React.createElement('button', {
+          key: 'primary',
+          type: 'button',
+          className: 'primary-button',
+          onClick: handleExplore
+        }, 'Browse latest articles'),
+        React.createElement('a', {
+          key: 'secondary',
+          className: 'link-button',
+          href: '#downloads'
+        }, 'View downloads')
+      ])
     ])
   ]);
 }
