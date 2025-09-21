@@ -26,8 +26,8 @@
 
   /* Components */
   --card-radius: 24px;
-  --card-padding: clamp(1.55rem, 3.6vw, 2.2rem);
-  --card-gap: clamp(1.1rem, 2.4vw, 1.6rem);
+  --card-padding: clamp(1.35rem, 2.8vw, 1.9rem);
+  --card-gap: clamp(0.95rem, 2vw, 1.4rem);
 
   /* Radii */
   --radius-large: 18px;
@@ -484,15 +484,15 @@ button:focus-visible,
 }
 
 .timeline-card__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-medium);
-  border: 1px solid var(--separator);
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(0, 102, 204, 0.45);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-secondary);
-  color: var(--ink-primary);
+  background: rgba(0, 102, 204, 0.08);
+  color: var(--accent-contrast);
 }
 
 .timeline-card__icon .mono-icon {
@@ -922,9 +922,10 @@ button:focus-visible,
 }
 
 .featured-card__icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 24px;
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(0, 102, 204, 0.45);
   background: rgba(0, 102, 204, 0.1);
   display: inline-flex;
   align-items: center;
@@ -986,8 +987,8 @@ button:focus-visible,
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--spacing-3);
-  padding: calc(var(--card-padding) * 0.6) calc(var(--card-padding) * 0.65);
+  gap: var(--spacing-2);
+  padding: calc(var(--card-padding) * 0.4) calc(var(--card-padding) * 0.45);
   border-radius: var(--card-radius);
   background: var(--surface-primary);
   border: 1px solid var(--separator);
@@ -996,21 +997,23 @@ button:focus-visible,
 
 .share-bar__label {
   font-weight: 600;
-  color: var(--ink-secondary);
+  color: var(--ink-tertiary);
   margin-right: var(--spacing-1);
-  font-size: var(--font-subheadline);
+  font-size: var(--font-footnote);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .share-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
-  padding: 0.4rem 0.85rem;
+  gap: var(--spacing-1);
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(0, 102, 204, 0.2);
+  border: 1px solid rgba(0, 102, 204, 0.22);
   background: rgba(0, 102, 204, 0.08);
   color: var(--accent-contrast);
-  font-size: var(--font-footnote);
+  font-size: 0.72rem;
   font-weight: 600;
   transition: border 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
@@ -1020,9 +1023,9 @@ button:focus-visible,
 }
 
 .share-chip__icon {
-  width: 16px;
-  height: 16px;
-  color: var(--accent-contrast);
+  width: 14px;
+  height: 14px;
+  color: currentColor;
 }
 
 .share-chip:hover,
