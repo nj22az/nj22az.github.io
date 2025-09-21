@@ -84,6 +84,14 @@ const SORT_OPTIONS = [
   { id: 'longest', label: 'Longest read' }
 ];
 
+const KEYBOARD_SHORTCUTS = [
+  { combo: '⌘ / Ctrl + K', action: 'Focus search' },
+  { combo: '⌘ / Ctrl + J', action: 'Open journal' },
+  { combo: '⌘ / Ctrl + D', action: 'Open downloads' },
+  { combo: '⌘ / Ctrl + H', action: 'Go home' },
+  { combo: '⌘ / Ctrl + ↑', action: 'Scroll to top' }
+];
+
 function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }) {
   const toneStyle = tone ? { color: tone } : undefined;
   return React.createElement('span', {
@@ -112,7 +120,8 @@ function FilterBar({
   onSortChange,
   contentTypes,
   selectedContentType,
-  onSelectContentType
+  onSelectContentType,
+  searchInputRef
 }) {
   const hasTags = Array.isArray(tags) && tags.length > 0;
   const hasContentTypes = Array.isArray(contentTypes) && contentTypes.length > 0;
@@ -179,7 +188,8 @@ function FilterBar({
           value: searchTerm,
           placeholder: 'Search posts and resources…',
           onChange: (event) => onSearch(event.target.value),
-          className: 'search-field__input'
+          className: 'search-field__input',
+          ref: searchInputRef
         })
       ),
       controls
@@ -955,6 +965,117 @@ function SecondaryPanel({ page, downloads, bookmarkedPosts, onOpenBookmark }) {
   ].filter(Boolean));
 }
 
+function InspectorPanel({
+  currentPost,
+  activePage,
+  selectedTag,
+  selectedContentType,
+  sortOrder,
+  onFocusSearch,
+  onNavigate,
+  onScrollTop
+}) {
+  const sections = [];
+
+  if (currentPost) {
+    const tagList = Array.isArray(currentPost.tags) && currentPost.tags.length
+      ? React.createElement('ul', { key: 'tags', className: 'inspector-card__list' },
+          currentPost.tags.map((tag) => React.createElement('li', { key: tag, className: 'inspector-card__row' }, [
+            React.createElement('span', { key: 'label' }, 'Tag'),
+            React.createElement('span', { key: 'value', className: 'inspector-card__value' }, tag)
+          ]))
+        )
+      : null;
+
+    sections.push(
+      React.createElement('section', { className: 'inspector-card', key: 'now-reading' }, [
+        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Now reading'),
+        React.createElement('p', {
+          key: 'meta',
+          className: 'inspector-card__meta'
+        }, `${currentPost.categoryLabel} · ${currentPost.displayDate} · ${currentPost.readingTime} min`),
+        tagList
+      ].filter(Boolean))
+    );
+  } else if (activePage === 'blog' || activePage === 'home') {
+    const sortLabel = (SORT_OPTIONS.find((option) => option.id === sortOrder) || SORT_OPTIONS[0]).label;
+    const filters = [
+      { id: 'tag', label: 'Tag', value: selectedTag === 'All' ? 'All tags' : selectedTag },
+      { id: 'type', label: 'Type', value: selectedContentType === 'All' ? 'All content' : selectedContentType },
+      { id: 'sort', label: 'Sort', value: sortLabel }
+    ];
+
+    sections.push(
+      React.createElement('section', { className: 'inspector-card', key: 'view-settings' }, [
+        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'View settings'),
+        React.createElement('p', { key: 'meta', className: 'inspector-card__meta' }, 'Adjust filters and sorting to find the right briefing faster.'),
+        React.createElement('ul', { key: 'filters', className: 'inspector-card__list' },
+          filters.map(({ id, label, value }) => React.createElement('li', { key: id, className: 'inspector-card__row' }, [
+            React.createElement('span', { key: 'label' }, label),
+            React.createElement('span', { key: 'value', className: 'inspector-card__value' }, value)
+          ]))
+        )
+      ])
+    );
+  }
+
+  const quickActions = [];
+
+  if (typeof onFocusSearch === 'function' && (activePage === 'home' || activePage === 'blog')) {
+    quickActions.push(React.createElement('button', {
+      key: 'search',
+      type: 'button',
+      className: 'pill-button',
+      onClick: onFocusSearch
+    }, 'Focus search'));
+  }
+
+  if (typeof onScrollTop === 'function') {
+    quickActions.push(React.createElement('button', {
+      key: 'top',
+      type: 'button',
+      className: 'pill-button pill-button--ghost',
+      onClick: onScrollTop
+    }, 'Back to top'));
+  }
+
+  if (typeof onNavigate === 'function' && activePage !== 'downloads') {
+    quickActions.push(React.createElement('button', {
+      key: 'downloads',
+      type: 'button',
+      className: 'pill-button pill-button--ghost',
+      onClick: () => onNavigate('downloads')
+    }, 'Open downloads'));
+  }
+
+  if (quickActions.length) {
+    sections.push(
+      React.createElement('section', { className: 'inspector-card', key: 'quick-actions' }, [
+        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Quick actions'),
+        React.createElement('div', { key: 'actions', className: 'inspector-card__actions' }, quickActions)
+      ])
+    );
+  }
+
+  sections.push(
+    React.createElement('section', { className: 'inspector-card', key: 'shortcuts' }, [
+      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Keyboard shortcuts'),
+      React.createElement('ul', { key: 'list', className: 'inspector-card__list' },
+        KEYBOARD_SHORTCUTS.map(({ combo, action }) => React.createElement('li', { key: combo, className: 'inspector-card__row' }, [
+          React.createElement('span', { key: 'action' }, action),
+          React.createElement('span', { key: 'combo', className: 'inspector-card__kbd' }, combo)
+        ]))
+      )
+    ])
+  );
+
+  if (!sections.length) {
+    return null;
+  }
+
+  return React.createElement('aside', { className: 'inspector-panel' }, sections);
+}
+
 function Breadcrumbs({ segments }) {
   if (!Array.isArray(segments) || !segments.length) {
     return null;
@@ -1036,6 +1157,7 @@ function App() {
     return new Set();
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     setIsLoadingPosts(true);
@@ -1185,6 +1307,12 @@ function App() {
     }
   }, []);
 
+  const focusSearchField = useCallback(() => {
+    if (searchInputRef.current && typeof searchInputRef.current.focus === 'function') {
+      searchInputRef.current.focus({ preventScroll: false });
+    }
+  }, []);
+
   const handleChangePage = useCallback((nextPage) => {
     setCurrentPost(null);
     setPage(nextPage);
@@ -1220,6 +1348,40 @@ function App() {
 
   const activePage = currentPost ? 'blog' : page;
   const heroExplore = useCallback(() => handleChangePage('blog'), [handleChangePage]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (!(event.metaKey || event.ctrlKey)) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      if (key === 'k') {
+        event.preventDefault();
+        focusSearchField();
+      } else if (key === 'j') {
+        event.preventDefault();
+        handleChangePage('blog');
+      } else if (key === 'd') {
+        event.preventDefault();
+        handleChangePage('downloads');
+      } else if (key === 'h') {
+        event.preventDefault();
+        handleChangePage('home');
+      } else if (key === 'arrowup') {
+        event.preventDefault();
+        scrollToTop();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [focusSearchField, handleChangePage, scrollToTop]);
 
   let timelineItems = [];
 
@@ -1257,7 +1419,8 @@ function App() {
       onSortChange: setSortOrder,
       contentTypes: uniqueContentTypes,
       selectedContentType,
-      onSelectContentType: setSelectedContentType
+      onSelectContentType: setSelectedContentType,
+      searchInputRef
     });
 
     const shouldLimitHome = activePage === 'home'
@@ -1294,7 +1457,12 @@ function App() {
     }
 
     timelineItems.push(filterElement);
-    timelineItems = timelineItems.concat(listItems);
+    timelineItems.push(
+      React.createElement('section', {
+        key: `post-grid-${activePage}`,
+        className: 'post-grid'
+      }, listItems)
+    );
   }
 
   const breadcrumbSegments = useMemo(() => {
@@ -1353,6 +1521,17 @@ function App() {
         downloads,
         bookmarkedPosts,
         onOpenBookmark: handleOpenPost
+      }),
+      React.createElement(InspectorPanel, {
+        key: 'inspector',
+        currentPost,
+        activePage,
+        selectedTag,
+        selectedContentType,
+        sortOrder,
+        onFocusSearch: focusSearchField,
+        onNavigate: handleChangePage,
+        onScrollTop: scrollToTop
       })
     ]),
     React.createElement(BottomNavigation, {
