@@ -3,7 +3,9 @@ description: "Reflections on engineering, travel, and culture—blending technic
 author: "Nils Johansson"
 url: "https://nj22az.github.io"   # replace if you have a custom domain
 baseurl: ""                       # leave blank for GitHub Pages root
-theme: minima
+
+sass:
+  sass_dir: _sass
 
 # Social links (shows up in minima if enabled)
 twitter_username: yourhandle

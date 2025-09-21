@@ -36,7 +36,7 @@
 }
 
 .button-primary:hover {
-  background-color: darken(var(--color-primary), 10%);
+  background-color: var(--color-primary-dark);
 }
 
 .button-secondary {

@@ -1514,14 +1514,13 @@ function App() {
       React.createElement('main', {
         key: 'timeline',
         className: 'timeline' + (currentPost ? ' timeline--detail' : '')
-      }, timelineItems),
-      React.createElement(SecondaryPanel, {
+      }, timelineItems.concat(React.createElement(SecondaryPanel, {
         key: 'panel',
         page: activePage,
         downloads,
         bookmarkedPosts,
         onOpenBookmark: handleOpenPost
-      }),
+      }))),
       React.createElement(InspectorPanel, {
         key: 'inspector',
         currentPost,

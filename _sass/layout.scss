@@ -20,25 +20,6 @@
   gap: 2rem;
 }
 
-@media (min-width: 768px) {
-  .home-grid {
-    grid-template-columns: 2fr 1fr;
-  }
-}
-
-@media (min-width: 1024px) {
-  .home-grid {
-    grid-template-columns: 3fr 1fr;
-  }
-}
-
-/* Sidebar styling */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 /* Hero section */
 .hero {
   position: relative;
