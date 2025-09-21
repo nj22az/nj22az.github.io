@@ -1,4 +1,4 @@
-const { useState, useEffect, useMemo, useCallback } = React;
+const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
 function stripHtml(html) {
   if (!html) return '';
@@ -468,6 +468,12 @@ function PostList({ posts, onOpen, onToggleBookmark, bookmarkedIds }) {
 
 function ShareBar({ post }) {
   const [copied, setCopied] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const containerRef = useRef(null);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
+  const copyResetTimeoutRef = useRef(null);
 
   const shareUrl = useMemo(() => {
     if (!post || !post.url) {
@@ -507,6 +513,15 @@ function ShareBar({ post }) {
     }
   ];
 
+  const enabledShareTargets = shareTargets.filter(({ href }) => Boolean(href));
+
+  const closeMenu = useCallback((focusTrigger = true) => {
+    setMenuOpen(false);
+    if (focusTrigger && triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  }, []);
+
   const handleCopy = useCallback(() => {
     if (!shareUrl || typeof navigator === 'undefined' || !navigator.clipboard) {
       return;
@@ -514,51 +529,187 @@ function ShareBar({ post }) {
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 2200);
+        closeMenu();
+        if (copyResetTimeoutRef.current) {
+          clearTimeout(copyResetTimeoutRef.current);
+        }
+        copyResetTimeoutRef.current = setTimeout(() => {
+          setCopied(false);
+          copyResetTimeoutRef.current = null;
+        }, 2200);
       })
       .catch(() => {});
-  }, [shareUrl]);
+  }, [shareUrl, closeMenu]);
 
   const handlePrint = useCallback(() => {
     if (typeof window !== 'undefined') {
       window.print();
     }
+    closeMenu();
+  }, [closeMenu]);
+
+  const handleMenuKeyDown = useCallback((event) => {
+    if (!menuOpen || !menuRef.current) {
+      return;
+    }
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+      return;
+    }
+    event.preventDefault();
+    const items = Array.from(menuRef.current.querySelectorAll('.share-menu__item:not([aria-disabled="true"])'));
+    if (!items.length) {
+      return;
+    }
+    const currentIndex = items.indexOf(document.activeElement);
+    let nextIndex = 0;
+    if (event.key === 'ArrowDown') {
+      nextIndex = currentIndex === -1 || currentIndex === items.length - 1 ? 0 : currentIndex + 1;
+    } else {
+      nextIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+    }
+    const nextItem = items[nextIndex];
+    if (nextItem && typeof nextItem.focus === 'function') {
+      nextItem.focus();
+    }
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        closeMenu(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMenu();
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen, closeMenu]);
+
+  useEffect(() => {
+    if (menuOpen && menuRef.current) {
+      const focusableItems = Array.from(menuRef.current.querySelectorAll('.share-menu__item:not([aria-disabled="true"])'));
+      if (focusableItems.length > 0) {
+        focusableItems[0].focus();
+      }
+    }
+  }, [menuOpen]);
+
+  useEffect(() => () => {
+    if (copyResetTimeoutRef.current) {
+      clearTimeout(copyResetTimeoutRef.current);
+    }
   }, []);
 
-  return React.createElement('div', { className: 'share-bar', role: 'group', 'aria-label': 'Share tools' }, [
-    React.createElement('span', { key: 'label', className: 'share-bar__label' }, 'Share'),
-    ...shareTargets.map(({ id, label, href, icon }) => href
-      ? React.createElement('a', {
-          key: id,
-          className: 'share-chip',
-          href,
-          target: '_blank',
-          rel: 'noreferrer noopener'
+  useEffect(() => {
+    if (menuOpen) {
+      setCopied(false);
+    }
+  }, [menuOpen]);
+
+  const identifier = getPostIdentifier(post);
+  const menuId = identifier
+    ? `share-menu-${identifier.toString().replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`
+    : 'share-menu';
+  const shareButtonLabel = copied ? 'Link copied' : 'Share';
+  const triggerClasses = ['share-menu__trigger'];
+  if (menuOpen) {
+    triggerClasses.push('share-menu__trigger--open');
+  }
+  if (copied) {
+    triggerClasses.push('share-menu__trigger--copied');
+  }
+
+  return React.createElement('div', { className: 'share-menu', ref: containerRef }, [
+    React.createElement('button', {
+      key: 'trigger',
+      type: 'button',
+      className: triggerClasses.join(' '),
+      ref: triggerRef,
+      'aria-haspopup': 'menu',
+      'aria-expanded': menuOpen ? 'true' : 'false',
+      'aria-controls': menuOpen ? menuId : undefined,
+      onClick: () => setMenuOpen((open) => !open)
+    }, [
+      React.createElement(MonoIcon, { key: 'icon', name: 'share', className: 'share-menu__trigger-icon' }),
+      React.createElement('span', { key: 'label', className: 'share-menu__trigger-label' }, shareButtonLabel)
+    ]),
+    menuOpen
+      ? React.createElement('div', {
+          key: 'popover',
+          id: menuId,
+          className: 'share-menu__popover',
+          role: 'menu',
+          'aria-label': 'Share options',
+          ref: menuRef,
+          onKeyDown: handleMenuKeyDown
         }, [
-          React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'share-chip__icon' }),
-          React.createElement('span', { key: 'label', className: 'share-chip__label' }, label)
+          enabledShareTargets.length
+            ? React.createElement('div', { key: 'targets', className: 'share-menu__group' },
+                enabledShareTargets.map(({ id, label, href, icon }) =>
+                  React.createElement('a', {
+                    key: id,
+                    className: 'share-menu__item',
+                    href,
+                    target: '_blank',
+                    rel: 'noreferrer noopener',
+                    role: 'menuitem',
+                    tabIndex: -1,
+                    onClick: () => closeMenu(false)
+                  }, [
+                    React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'share-menu__item-icon' }),
+                    React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, label)
+                  ])
+                )
+              )
+            : null,
+          enabledShareTargets.length
+            ? React.createElement('div', { key: 'divider', className: 'share-menu__divider' })
+            : null,
+          React.createElement('div', { key: 'system', className: 'share-menu__group' }, [
+            React.createElement('button', {
+              key: 'copy',
+              type: 'button',
+              className: 'share-menu__item share-menu__item--button',
+              onClick: handleCopy,
+              disabled: !shareUrl,
+              'aria-disabled': !shareUrl ? 'true' : undefined,
+              role: 'menuitem',
+              tabIndex: -1
+            }, [
+              React.createElement(MonoIcon, { key: 'icon', name: 'link', className: 'share-menu__item-icon' }),
+              React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, 'Copy link')
+            ]),
+            React.createElement('button', {
+              key: 'print',
+              type: 'button',
+              className: 'share-menu__item share-menu__item--button',
+              onClick: handlePrint,
+              role: 'menuitem',
+              tabIndex: -1
+            }, [
+              React.createElement(MonoIcon, { key: 'icon', name: 'printer', className: 'share-menu__item-icon' }),
+              React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, 'Print')
+            ])
+          ])
         ])
       : null
-    ).filter(Boolean),
-    React.createElement('button', {
-      key: 'copy',
-      type: 'button',
-      className: 'share-chip share-chip--button',
-      onClick: handleCopy,
-      disabled: !shareUrl
-    }, [
-      React.createElement(MonoIcon, { key: 'icon', name: 'link', className: 'share-chip__icon' }),
-      React.createElement('span', { key: 'label', className: 'share-chip__label' }, copied ? 'Copied' : 'Copy link')
-    ]),
-    React.createElement('button', {
-      key: 'print',
-      type: 'button',
-      className: 'share-chip share-chip--button',
-      onClick: handlePrint
-    }, [
-      React.createElement(MonoIcon, { key: 'icon', name: 'printer', className: 'share-chip__icon' }),
-      React.createElement('span', { key: 'label', className: 'share-chip__label' }, 'Print')
-    ])
   ]);
 }
 
