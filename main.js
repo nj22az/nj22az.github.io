@@ -77,6 +77,93 @@ const TYPE_ICON_MAP = {
   'Safety Advisory': 'safety'
 };
 
+const SHOW_PROFILE = {
+  title: 'Field Notes Radio',
+  tagline: 'Steady tactics for crews in motion.',
+  description: 'Stories, frameworks, and calm perspectives from field service engineer Nils Johansson. Built for teams that need to move fast—without losing composure.',
+  host: 'Hosted by Nils Johansson',
+  cadence: 'New episodes every other Tuesday',
+  location: 'Recorded in Gothenburg, Sweden',
+  artwork: 'assets/images/podcast/show-artwork-placeholder.svg',
+  theme: {
+    start: '#6f5bff',
+    mid: '#a668ff',
+    end: '#ff7bc7'
+  }
+};
+
+const EPISODE_ARTWORKS = [
+  'assets/images/podcast/episode-art-01.svg',
+  'assets/images/podcast/episode-art-02.svg',
+  'assets/images/podcast/episode-art-03.svg',
+  'assets/images/podcast/episode-art-04.svg'
+];
+
+const EPISODE_THEMES = [
+  {
+    gradient: 'linear-gradient(135deg, rgba(118, 76, 255, 0.9), rgba(196, 103, 255, 0.92))',
+    glow: 'radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3), transparent 60%)',
+    accent: '#f4ecff'
+  },
+  {
+    gradient: 'linear-gradient(135deg, rgba(81, 130, 255, 0.85), rgba(130, 211, 255, 0.9))',
+    glow: 'radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.32), transparent 58%)',
+    accent: '#e1f2ff'
+  },
+  {
+    gradient: 'linear-gradient(135deg, rgba(255, 96, 140, 0.88), rgba(255, 162, 97, 0.88))',
+    glow: 'radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.28), transparent 55%)',
+    accent: '#ffe6e6'
+  },
+  {
+    gradient: 'linear-gradient(135deg, rgba(75, 192, 141, 0.88), rgba(117, 219, 198, 0.92))',
+    glow: 'radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.34), transparent 60%)',
+    accent: '#e9fff6'
+  }
+];
+
+function formatEpisodeNumber(value) {
+  return String(value).padStart(2, '0');
+}
+
+function prepareEpisodes(posts) {
+  if (!Array.isArray(posts)) {
+    return [];
+  }
+
+  const sorted = posts.slice().sort((a, b) => {
+    const aDate = Date.parse(a.date);
+    const bDate = Date.parse(b.date);
+    if (Number.isNaN(aDate) && Number.isNaN(bDate)) {
+      return 0;
+    }
+    if (Number.isNaN(aDate)) {
+      return 1;
+    }
+    if (Number.isNaN(bDate)) {
+      return -1;
+    }
+    return bDate - aDate;
+  });
+
+  return sorted.map((post, index, array) => {
+    const episodeNumber = array.length - index;
+    const theme = EPISODE_THEMES[index % EPISODE_THEMES.length];
+    const artwork = EPISODE_ARTWORKS[index % EPISODE_ARTWORKS.length];
+    const durationMinutes = Math.max(12, Math.min(58, Math.round((post.readingTime || 1) * 6)));
+
+    return {
+      ...post,
+      episodeNumber,
+      episodeLabel: `Episode ${formatEpisodeNumber(episodeNumber)}`,
+      episodeCode: `EP${formatEpisodeNumber(episodeNumber)}`,
+      durationMinutes,
+      episodeArtwork: artwork,
+      episodeTheme: theme
+    };
+  });
+}
+
 const SORT_OPTIONS = [
   { id: 'newest', label: 'Newest first' },
   { id: 'oldest', label: 'Oldest first' },
@@ -97,8 +184,8 @@ function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }
 }
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'blog', label: 'Journal', icon: 'journal' },
+  { id: 'home', label: 'Show', icon: 'home' },
+  { id: 'blog', label: 'Episodes', icon: 'journal' },
   { id: 'downloads', label: 'Downloads', icon: 'download' },
   { id: 'about', label: 'About', icon: 'about' }
 ];
@@ -194,7 +281,7 @@ function FilterMenu({
         id: 'search-field',
         type: 'search',
         value: searchTerm,
-        placeholder: 'Search posts and resources…',
+        placeholder: 'Search episodes and resources…',
         onChange: (event) => onSearch(event.target.value),
         className: 'search-field__input',
         ref: searchInputRef
@@ -203,7 +290,7 @@ function FilterMenu({
   ]);
 
   const viewSection = React.createElement('div', { key: 'view', className: 'filter-menu__section filter-menu__section--view' }, [
-    React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'View options'),
+    React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'Episode filters'),
     React.createElement('div', { key: 'controls', className: 'filter-menu__controls' }, controls)
   ]);
 
@@ -229,7 +316,7 @@ function FilterMenu({
           className: 'filter-menu__icon',
           tone: isOpen ? ICON_TONES.active : ICON_TONES.neutral
         }),
-        React.createElement('span', { key: 'label', className: 'filter-menu__trigger-label' }, 'Browse posts'),
+        React.createElement('span', { key: 'label', className: 'filter-menu__trigger-label' }, 'Browse episodes'),
         activeFilters
           ? React.createElement('span', { key: 'badge', className: 'filter-menu__badge' }, `${activeFilters} active`)
           : null
@@ -241,38 +328,42 @@ function FilterMenu({
 }
 
 function Navigation({ currentPage, onPageChange, onBrandClick }) {
-  return React.createElement('header', { className: 'masthead' },
-    React.createElement('div', { className: 'masthead__inner' }, [
+  const handleBrand = () => {
+    if (typeof onBrandClick === 'function') {
+      onBrandClick();
+    }
+  };
+
+  return React.createElement('header', { className: 'show-nav' },
+    React.createElement('div', { className: 'show-nav__inner' }, [
       React.createElement('button', {
+        key: 'brand',
         type: 'button',
-        className: 'masthead__brand',
-        onClick: onBrandClick,
-        key: 'brand'
+        className: 'show-nav__brand',
+        onClick: handleBrand
       }, [
-        React.createElement('span', { key: 'glyph', className: 'masthead__glyph', 'aria-hidden': 'true' }),
-        React.createElement('span', { key: 'copy', className: 'masthead__text' }, [
-          React.createElement('span', { key: 'name', className: 'masthead__name' }, 'Nils Johansson'),
-          React.createElement('span', { key: 'role', className: 'masthead__meta' }, 'Field Service Engineer')
+        React.createElement('span', { key: 'icon', className: 'show-nav__brand-icon', 'aria-hidden': 'true' }),
+        React.createElement('span', { key: 'copy', className: 'show-nav__brand-copy' }, [
+          React.createElement('span', { key: 'title', className: 'show-nav__brand-title' }, SHOW_PROFILE.title),
+          React.createElement('span', { key: 'meta', className: 'show-nav__brand-meta' }, 'by Nils Johansson')
         ])
       ]),
-      React.createElement('nav', { className: 'masthead__nav', key: 'nav', 'aria-label': 'Primary navigation' },
-        NAV_ITEMS.map(({ id, label, icon }) =>
+      React.createElement('nav', { key: 'nav', className: 'show-nav__tabs', 'aria-label': 'Primary navigation' },
+        NAV_ITEMS.map(({ id, label }) =>
           React.createElement('button', {
             type: 'button',
             key: id,
-            className: 'masthead__link',
+            className: 'show-nav__tab' + (currentPage === id ? ' show-nav__tab--active' : ''),
             'aria-current': currentPage === id ? 'page' : undefined,
             onClick: () => onPageChange(id)
-          }, [
-            React.createElement(MonoIcon, {
-              key: 'icon',
-              name: icon,
-              className: 'masthead__icon',
-              tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
-            }),
-            React.createElement('span', { key: 'label' }, label)
-          ])
+          }, label)
         )
+      ),
+      React.createElement('div', { key: 'actions', className: 'show-nav__actions' },
+        React.createElement('button', {
+          type: 'button',
+          className: 'pill-button show-nav__subscribe'
+        }, 'Follow show')
       )
     ])
   );
@@ -301,75 +392,178 @@ function BottomNavigation({ currentPage, onPageChange }) {
   );
 }
 
-function Hero({ onExplore }) {
+function ShowHero({ onExplore, onPlayEpisode, featuredEpisode, totalEpisodes }) {
+  const heroStyle = {
+    '--show-hero-start': SHOW_PROFILE.theme.start,
+    '--show-hero-mid': SHOW_PROFILE.theme.mid,
+    '--show-hero-end': SHOW_PROFILE.theme.end
+  };
+
   const handleExplore = () => {
     if (typeof onExplore === 'function') {
       onExplore();
     }
   };
 
-  return React.createElement('section', { className: 'hero' }, [
-    React.createElement('div', { key: 'inner', className: 'hero__inner' }, [
-      React.createElement('span', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Nils Johansson · Field Service Engineer'),
-      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Calm operations. Shared openly.'),
-      React.createElement('p', { key: 'body', className: 'hero__body' }, 'Field-tested briefs and checklists that keep crews centred when conditions change. Take what you need, adapt it, and deploy with confidence.'),
-      React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
+  const handlePlay = () => {
+    if (featuredEpisode && typeof onPlayEpisode === 'function') {
+      onPlayEpisode(featuredEpisode);
+      return;
+    }
+    handleExplore();
+  };
+
+  const metaItems = [
+    SHOW_PROFILE.host,
+    SHOW_PROFILE.cadence,
+    typeof totalEpisodes === 'number' && totalEpisodes > 0
+      ? `${totalEpisodes} episodes`
+      : null,
+    SHOW_PROFILE.location
+  ].filter(Boolean);
+
+  const highlight = featuredEpisode
+    ? React.createElement('div', { key: 'highlight', className: 'show-hero__highlight' }, [
+        React.createElement('div', { key: 'art', className: 'show-hero__highlight-art' },
+          React.createElement('img', {
+            src: featuredEpisode.episodeArtwork || SHOW_PROFILE.artwork,
+            alt: '',
+            'aria-hidden': 'true'
+          })
+        ),
+        React.createElement('div', { key: 'copy', className: 'show-hero__highlight-copy' }, [
+          React.createElement('span', { key: 'label', className: 'show-hero__highlight-label' }, featuredEpisode.episodeLabel || 'Latest episode'),
+          React.createElement('h3', { key: 'title', className: 'show-hero__highlight-title' }, featuredEpisode.title),
+          React.createElement('p', { key: 'meta', className: 'show-hero__highlight-meta' }, `${featuredEpisode.displayDate} · ${featuredEpisode.durationMinutes || featuredEpisode.readingTime || 20} min`)
+        ]),
         React.createElement('button', {
-          key: 'primary',
+          key: 'play',
           type: 'button',
-          className: 'primary-button hero__button',
-          onClick: handleExplore
-        }, 'Browse journal'),
-        React.createElement('a', {
-          key: 'link',
-          className: 'hero__secondary',
-          href: '#downloads'
-        }, 'Latest downloads')
+          className: 'pill-button show-hero__highlight-play',
+          onClick: handlePlay
+        }, [
+          React.createElement(MonoIcon, { key: 'icon', name: 'play', className: 'show-hero__highlight-icon' }),
+          React.createElement('span', { key: 'label' }, 'Play')
+        ])
+      ])
+    : null;
+
+  return React.createElement('section', { className: 'show-hero', style: heroStyle }, [
+    React.createElement('div', { key: 'bg', className: 'show-hero__backdrop', 'aria-hidden': 'true' }),
+    React.createElement('div', { key: 'inner', className: 'show-hero__inner' }, [
+      React.createElement('div', { key: 'artwrap', className: 'show-hero__artwork-wrap' },
+        React.createElement('div', { className: 'show-hero__artwork-sheen', 'aria-hidden': 'true' }),
+        React.createElement('img', {
+          key: 'art',
+          className: 'show-hero__artwork',
+          src: SHOW_PROFILE.artwork,
+          alt: `${SHOW_PROFILE.title} cover art`
+        })
+      ),
+      React.createElement('div', { key: 'content', className: 'show-hero__content' }, [
+        React.createElement('span', { key: 'eyebrow', className: 'show-hero__eyebrow' }, 'Original Podcast'),
+        React.createElement('h1', { key: 'title', className: 'show-hero__title' }, SHOW_PROFILE.title),
+        React.createElement('p', { key: 'tagline', className: 'show-hero__tagline' }, SHOW_PROFILE.tagline),
+        React.createElement('p', { key: 'description', className: 'show-hero__description' }, SHOW_PROFILE.description),
+        React.createElement('div', { key: 'meta', className: 'show-hero__meta' },
+          metaItems.map((item, index) => React.createElement('span', { key: index }, item))
+        ),
+        React.createElement('div', { key: 'actions', className: 'show-hero__actions' }, [
+          React.createElement('button', {
+            key: 'play-latest',
+            type: 'button',
+            className: 'primary-button show-hero__primary',
+            onClick: handlePlay
+          }, 'Listen now'),
+          React.createElement('button', {
+            key: 'browse',
+            type: 'button',
+            className: 'link-button show-hero__secondary',
+            onClick: handleExplore
+          }, 'Browse episodes')
+        ]),
+        highlight
       ])
     ])
   ]);
 }
 
-function PostCard({ post, onOpen }) {
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
+function EpisodeCard({ post, onOpen }) {
+  if (!post) {
+    return null;
+  }
+
+  const handleOpen = () => {
+    if (typeof onOpen === 'function') {
       onOpen(post);
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleOpen();
+    }
+  };
+
+  const style = post.episodeTheme
+    ? {
+        '--episode-card-gradient': post.episodeTheme.gradient,
+        '--episode-card-glow': post.episodeTheme.glow,
+        '--episode-card-accent': post.episodeTheme.accent
+      }
+    : undefined;
+
+  const metaParts = [
+    post.episodeLabel || post.categoryLabel,
+    post.displayDate,
+    post.durationMinutes ? `${post.durationMinutes} min` : `${post.readingTime || 20} min`
+  ].filter(Boolean);
+
   return React.createElement('article', {
-    className: 'journal-card',
+    className: 'episode-card',
     role: 'button',
     tabIndex: 0,
-    onClick: () => onOpen(post),
-    onKeyDown: handleKeyDown
+    onClick: handleOpen,
+    onKeyDown: handleKeyDown,
+    style
   }, [
-    React.createElement('div', { key: 'meta', className: 'journal-card__meta' }, `${post.categoryLabel} · ${post.displayDate}`),
-    React.createElement('h3', { key: 'title', className: 'journal-card__title' }, post.title),
-    React.createElement('p', { key: 'excerpt', className: 'journal-card__excerpt' }, post.excerpt),
-    React.createElement('div', { key: 'foot', className: 'journal-card__footer' }, [
-      React.createElement('span', { key: 'time', className: 'journal-card__footnote' }, `${post.readingTime} min read`),
-      React.createElement('span', { key: 'cta', className: 'journal-card__cta' }, [
-        'Read',
-        React.createElement(MonoIcon, { key: 'icon', name: 'chevron', className: 'journal-card__icon' })
+    React.createElement('div', { key: 'backdrop', className: 'episode-card__backdrop', 'aria-hidden': 'true' }),
+    React.createElement('div', { key: 'inner', className: 'episode-card__inner' }, [
+      React.createElement('div', { key: 'art', className: 'episode-card__art' },
+        React.createElement('img', {
+          src: post.episodeArtwork || SHOW_PROFILE.artwork,
+          alt: '',
+          'aria-hidden': 'true'
+        })
+      ),
+      React.createElement('div', { key: 'content', className: 'episode-card__content' }, [
+        React.createElement('span', { key: 'meta', className: 'episode-card__meta' }, metaParts.join(' · ')),
+        React.createElement('h3', { key: 'title', className: 'episode-card__title' }, post.title),
+        React.createElement('p', { key: 'excerpt', className: 'episode-card__excerpt' }, post.excerpt),
+        React.createElement('div', { key: 'actions', className: 'episode-card__actions' }, [
+          React.createElement('span', { key: 'cta', className: 'episode-card__cta' }, [
+            React.createElement(MonoIcon, { key: 'icon', name: 'play', className: 'episode-card__cta-icon' }),
+            'Play episode'
+          ])
+        ])
       ])
     ])
   ]);
 }
 
-function PostList({ posts, onOpen }) {
+function EpisodeList({ posts, onOpen }) {
   if (!Array.isArray(posts) || !posts.length) {
     return [
       React.createElement('div', { className: 'empty-state', key: 'empty' }, [
-        React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
-        React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
+        React.createElement('h3', { key: 'title' }, 'New episodes are on the way'),
+        React.createElement('p', { key: 'copy' }, 'Production is in review—check back shortly to listen in.')
       ])
     ];
   }
 
   return posts.map((post) =>
-    React.createElement(PostCard, {
+    React.createElement(EpisodeCard, {
       post,
       onOpen,
       key: getPostIdentifier(post) || post.title
@@ -624,59 +818,100 @@ function ShareBar({ post }) {
   ]);
 }
 
-function PostView({ post, onBack, onToggleBookmark, isBookmarked }) {
+function EpisodeDetail({ post, onBack, onToggleBookmark, isBookmarked }) {
+  const bodyRef = useRef(null);
+
   const handleBookmark = () => {
     if (typeof onToggleBookmark === 'function') {
       onToggleBookmark(post);
     }
   };
 
-  return React.createElement('article', { className: 'timeline-card post-detail-card' }, [
-    React.createElement('header', { key: 'head', className: 'timeline-card__header timeline-card__header--detail' }, [
-      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
-      ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
-        React.createElement('span', { key: 'category', className: 'timeline-card__badge' }, post.categoryLabel),
-        React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, post.title),
-        React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
+  const handleJumpToNotes = () => {
+    if (bodyRef.current) {
+      try {
+        bodyRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (error) {
+        bodyRef.current.scrollIntoView();
+      }
+    }
+  };
+
+  const metaParts = [
+    post.displayDate,
+    post.durationMinutes ? `${post.durationMinutes} min` : `${post.readingTime || 20} min`,
+    post.categoryLabel
+  ].filter(Boolean);
+
+  const style = post.episodeTheme
+    ? {
+        '--episode-detail-gradient': post.episodeTheme.gradient,
+        '--episode-detail-glow': post.episodeTheme.glow,
+        '--episode-detail-accent': post.episodeTheme.accent
+      }
+    : undefined;
+
+  return React.createElement('article', { className: 'episode-detail', style }, [
+    React.createElement('div', { key: 'hero', className: 'episode-detail__hero' }, [
+      React.createElement('button', {
+        key: 'back',
+        type: 'button',
+        className: 'link-button episode-detail__back',
+        onClick: onBack
+      }, [
+        React.createElement(MonoIcon, { key: 'icon', name: 'arrow-left', className: 'episode-detail__back-icon' }),
+        React.createElement('span', { key: 'label' }, 'Back to episodes')
       ]),
-      React.createElement('div', { key: 'actions', className: 'timeline-card__detail-actions' }, [
+      React.createElement('div', { key: 'frame', className: 'episode-detail__frame' },
+        React.createElement('div', { className: 'episode-detail__frame-shine', 'aria-hidden': 'true' }),
+        React.createElement('img', {
+          key: 'art',
+          src: post.episodeArtwork || SHOW_PROFILE.artwork,
+          alt: `${post.title} artwork`
+        })
+      ),
+      React.createElement('div', { key: 'summary', className: 'episode-detail__summary' }, [
+        React.createElement('span', { key: 'label', className: 'episode-detail__label' }, post.episodeLabel || 'Episode'),
+        React.createElement('h1', { key: 'title', className: 'episode-detail__title' }, post.title),
+        React.createElement('p', { key: 'meta', className: 'episode-detail__meta' }, metaParts.join(' · '))
+      ]),
+      React.createElement('div', { key: 'actions', className: 'episode-detail__actions' }, [
+        React.createElement('button', {
+          key: 'play',
+          type: 'button',
+          className: 'primary-button episode-detail__play',
+          onClick: handleJumpToNotes
+        }, [
+          React.createElement(MonoIcon, { key: 'icon', name: 'play', className: 'episode-detail__play-icon' }),
+          React.createElement('span', { key: 'label' }, 'Play episode')
+        ]),
         React.createElement('button', {
           key: 'bookmark',
           type: 'button',
-          className: 'icon-button icon-button--bookmark',
+          className: 'icon-button episode-detail__bookmark',
           onClick: handleBookmark,
           'aria-pressed': isBookmarked
         }, [
-          React.createElement('span', {
-            key: 'label',
-            className: 'visually-hidden'
-          }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
+          React.createElement('span', { key: 'sr', className: 'visually-hidden' }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
           React.createElement(MonoIcon, {
             key: 'icon',
             name: isBookmarked ? 'bookmark-filled' : 'bookmark',
-            className: 'icon-button__glyph',
+            className: 'episode-detail__bookmark-icon',
             tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
           })
-        ]),
-        React.createElement('button', {
-          key: 'back',
-          type: 'button',
-          className: 'pill-button',
-          onClick: onBack
-        }, 'Back')
+        ])
       ])
     ]),
     post.tags && post.tags.length
-      ? React.createElement('div', { key: 'meta', className: 'tag-list tag-list--detail' },
+      ? React.createElement('div', { key: 'meta-tags', className: 'tag-list tag-list--detail' },
           post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
         )
       : null,
     React.createElement(ShareBar, { key: 'share', post }),
     React.createElement('div', {
       key: 'body',
-      className: 'timeline-card__body content',
+      className: 'episode-detail__body content',
+      ref: bodyRef,
       dangerouslySetInnerHTML: { __html: post.content }
     })
   ]);
@@ -744,7 +979,7 @@ function DownloadsPage({ downloads }) {
 
 function AboutPage({ about, isLoading }) {
   if (isLoading) {
-    return React.createElement(PostSkeleton, { key: 'about-skeleton' });
+    return React.createElement(EpisodeSkeleton, { key: 'about-skeleton' });
   }
 
   if (!about) {
@@ -786,21 +1021,34 @@ function InspectorPanel({ currentPost }) {
   }
 
   const tagList = Array.isArray(currentPost.tags) && currentPost.tags.length
-    ? React.createElement('ul', { className: 'inspector-card__list' },
-        currentPost.tags.map((tag) => React.createElement('li', { key: tag, className: 'inspector-card__row' }, [
-          React.createElement('span', { key: 'label' }, 'Tag'),
-          React.createElement('span', { key: 'value', className: 'inspector-card__value' }, tag)
-        ]))
+    ? React.createElement('div', { className: 'inspector-card__tags' },
+        currentPost.tags.map((tag) => React.createElement('span', { key: tag, className: 'inspector-card__tag' }, tag))
       )
     : null;
 
+  const metaParts = [
+    currentPost.durationMinutes ? `${currentPost.durationMinutes} min` : `${currentPost.readingTime || 20} min`,
+    currentPost.displayDate
+  ].filter(Boolean);
+
+  const style = currentPost.episodeTheme
+    ? {
+        '--inspector-accent-gradient': currentPost.episodeTheme.gradient,
+        '--inspector-accent-glow': currentPost.episodeTheme.glow
+      }
+    : undefined;
+
   return React.createElement('aside', { className: 'inspector-panel' },
-    React.createElement('section', { className: 'inspector-card' }, [
-      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Now reading'),
-      React.createElement('p', {
-        key: 'meta',
-        className: 'inspector-card__meta'
-      }, `${currentPost.categoryLabel} · ${currentPost.displayDate} · ${currentPost.readingTime} min`),
+    React.createElement('section', { className: 'inspector-card inspector-card--now-playing', style }, [
+      React.createElement('span', { key: 'label', className: 'inspector-card__label' }, 'Now playing'),
+      React.createElement('div', { key: 'art', className: 'inspector-card__art' },
+        React.createElement('img', {
+          src: currentPost.episodeArtwork || SHOW_PROFILE.artwork,
+          alt: `${currentPost.title} artwork`
+        })
+      ),
+      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, currentPost.title),
+      React.createElement('p', { key: 'meta', className: 'inspector-card__meta' }, metaParts.join(' · ')),
       tagList
     ].filter(Boolean))
   );
@@ -847,12 +1095,17 @@ function BackToTopButton({ visible, onClick }) {
   ]);
 }
 
-function PostSkeleton() {
-  return React.createElement('div', { className: 'timeline-card skeleton-card' }, [
-    React.createElement('div', { key: 'header', className: 'skeleton-card__header' }),
-    React.createElement('div', { key: 'line1', className: 'skeleton-card__line skeleton-card__line--wide' }),
-    React.createElement('div', { key: 'line2', className: 'skeleton-card__line' }),
-    React.createElement('div', { key: 'line3', className: 'skeleton-card__line skeleton-card__line--short' })
+function EpisodeSkeleton() {
+  return React.createElement('article', { className: 'episode-card episode-card--skeleton' }, [
+    React.createElement('div', { key: 'backdrop', className: 'episode-card__backdrop', 'aria-hidden': 'true' }),
+    React.createElement('div', { key: 'inner', className: 'episode-card__inner' }, [
+      React.createElement('div', { key: 'art', className: 'episode-card__art episode-card__art--skeleton' }),
+      React.createElement('div', { key: 'content', className: 'episode-card__content' }, [
+        React.createElement('div', { key: 'line1', className: 'episode-card__skeleton-line episode-card__skeleton-line--short' }),
+        React.createElement('div', { key: 'line2', className: 'episode-card__skeleton-line episode-card__skeleton-line--title' }),
+        React.createElement('div', { key: 'line3', className: 'episode-card__skeleton-line episode-card__skeleton-line--body' })
+      ])
+    ])
   ]);
 }
 
@@ -894,7 +1147,10 @@ function App() {
     setIsLoadingPosts(true);
     fetch('posts.json')
       .then((res) => res.json())
-      .then((data) => setPosts(data.map(enhancePost)))
+      .then((data) => {
+        const enhanced = data.map(enhancePost);
+        setPosts(prepareEpisodes(enhanced));
+      })
       .catch(() => setPosts([]))
       .finally(() => setIsLoadingPosts(false));
 
@@ -1020,13 +1276,18 @@ function App() {
     [filteredPosts]
   );
 
-  const postsWithoutFeatured = useMemo(() => {
-    if (!featuredPost) {
+  const heroEpisode = useMemo(
+    () => featuredPost || (filteredPosts.length ? filteredPosts[0] : null),
+    [featuredPost, filteredPosts]
+  );
+
+  const postsWithoutHeroEpisode = useMemo(() => {
+    if (!heroEpisode) {
       return filteredPosts;
     }
-    const featuredId = getPostIdentifier(featuredPost);
-    return filteredPosts.filter((post) => getPostIdentifier(post) !== featuredId);
-  }, [filteredPosts, featuredPost]);
+    const heroId = getPostIdentifier(heroEpisode);
+    return filteredPosts.filter((post) => getPostIdentifier(post) !== heroId);
+  }, [filteredPosts, heroEpisode]);
 
   const bookmarkedPosts = useMemo(
     () => posts.filter((post) => bookmarkedIds.has(getPostIdentifier(post))),
@@ -1130,7 +1391,7 @@ function App() {
 
   if (currentPost) {
     timelineItems = [
-      React.createElement(PostView, {
+      React.createElement(EpisodeDetail, {
         key: 'post-detail',
         post: currentPost,
         onBack: handleBackToPosts,
@@ -1143,7 +1404,7 @@ function App() {
     const baseItems = Array.isArray(downloadsContent) ? downloadsContent : [downloadsContent];
     if (isLoadingDownloads && (!downloads || !downloads.length)) {
       timelineItems = baseItems.slice(0, 1).concat(
-        Array.from({ length: 2 }, (_, index) => React.createElement(PostSkeleton, { key: `download-skeleton-${index}` }))
+        Array.from({ length: 2 }, (_, index) => React.createElement(EpisodeSkeleton, { key: `download-skeleton-${index}` }))
       );
     } else {
       timelineItems = baseItems;
@@ -1174,12 +1435,12 @@ function App() {
       && selectedContentType === 'All';
 
     const postCollection = activePage === 'home'
-      ? postsWithoutFeatured.slice(0, shouldLimitHome ? 6 : postsWithoutFeatured.length)
-      : postsWithoutFeatured;
+      ? postsWithoutHeroEpisode.slice(0, shouldLimitHome ? 6 : postsWithoutHeroEpisode.length)
+      : postsWithoutHeroEpisode;
 
     const listItems = isLoadingPosts
-      ? Array.from({ length: 3 }, (_, index) => React.createElement(PostSkeleton, { key: `skeleton-${index}` }))
-      : PostList({
+      ? Array.from({ length: 3 }, (_, index) => React.createElement(EpisodeSkeleton, { key: `skeleton-${index}` }))
+      : EpisodeList({
           posts: postCollection,
           onOpen: handleOpenPost
         });
@@ -1187,14 +1448,20 @@ function App() {
     timelineItems = [];
 
     if (activePage === 'home') {
-      timelineItems.push(React.createElement(Hero, { key: 'hero', onExplore: heroExplore }));
+      timelineItems.push(React.createElement(ShowHero, {
+        key: 'hero',
+        onExplore: heroExplore,
+        onPlayEpisode: heroEpisode ? () => handleOpenPost(heroEpisode) : undefined,
+        featuredEpisode: heroEpisode,
+        totalEpisodes: filteredPosts.length
+      }));
     }
 
     timelineItems.push(filterElement);
     timelineItems.push(
       React.createElement('section', {
-        key: `post-grid-${activePage}`,
-        className: 'post-grid'
+        key: `episode-collection-${activePage}`,
+        className: 'episode-collection'
       }, listItems)
     );
   }
@@ -1203,7 +1470,7 @@ function App() {
     if (currentPost) {
       return [
         { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'blog', label: 'Journal', onSelect: () => handleChangePage('blog') },
+        { id: 'blog', label: 'Episodes', onSelect: () => handleChangePage('blog') },
         { id: 'post', label: currentPost.title }
       ];
     }
@@ -1213,7 +1480,7 @@ function App() {
     if (activePage === 'blog') {
       return [
         { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'blog', label: 'Journal' }
+        { id: 'blog', label: 'Episodes' }
       ];
     }
     if (activePage === 'downloads') {
