@@ -110,7 +110,7 @@ const NAV_ITEMS = [
   { id: 'about', label: 'About', icon: 'about' }
 ];
 
-function FilterBar({
+function FilterMenu({
   searchTerm,
   onSearch,
   tags,
@@ -121,80 +121,129 @@ function FilterBar({
   contentTypes,
   selectedContentType,
   onSelectContentType,
-  searchInputRef
+  searchInputRef,
+  isOpen,
+  onToggle
 }) {
   const hasTags = Array.isArray(tags) && tags.length > 0;
   const hasContentTypes = Array.isArray(contentTypes) && contentTypes.length > 0;
+  const toggleMenu = typeof onToggle === 'function' ? onToggle : () => {};
+  const activeFilters = [
+    Boolean(searchTerm && searchTerm.trim().length),
+    selectedTag !== 'All',
+    selectedContentType !== 'All',
+    sortOrder !== 'newest'
+  ].filter(Boolean).length;
+  const hintText = 'Shortcut: ⌘ / Ctrl + K';
 
-  const tagButtons = hasTags
-    ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--filters' },
-        ['All', ...tags].map((tag) => React.createElement('button', {
-          key: tag,
-          type: 'button',
-          className: 'filter-chip' + (selectedTag === tag ? ' filter-chip--active' : ''),
-          onClick: () => onSelectTag(tag)
-        }, tag))
-      )
+  const tagSection = hasTags
+    ? React.createElement('div', { key: 'tags', className: 'filter-menu__section filter-menu__section--tags' }, [
+        React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'Tags'),
+        React.createElement('div', { key: 'chips', className: 'filter-menu__chips' },
+          ['All', ...tags].map((tag) => React.createElement('button', {
+            key: tag,
+            type: 'button',
+            className: 'filter-chip' + (selectedTag === tag ? ' filter-chip--active' : ''),
+            onClick: () => onSelectTag(tag)
+          }, tag))
+        )
+      ])
     : null;
 
-  const controls = React.createElement('div', { key: 'controls', className: 'filter-bar__controls' }, [
-    React.createElement('div', { key: 'sort', className: 'filter-bar__control' }, [
+  const controls = [
+    React.createElement('div', { key: 'sort', className: 'filter-menu__control' }, [
       React.createElement('label', {
         key: 'label',
         htmlFor: 'sort-order',
-        className: 'filter-bar__label'
+        className: 'filter-menu__control-label'
       }, 'Sort'),
       React.createElement('select', {
         key: 'input',
         id: 'sort-order',
-        className: 'filter-bar__select',
+        className: 'filter-menu__select',
         value: sortOrder,
         onChange: (event) => onSortChange(event.target.value)
       }, SORT_OPTIONS.map(({ id, label }) =>
         React.createElement('option', { key: id, value: id }, label)
       ))
-    ]),
-    hasContentTypes
-      ? React.createElement('div', { key: 'type', className: 'filter-bar__control' }, [
-          React.createElement('label', {
-            key: 'label',
-            htmlFor: 'content-type',
-            className: 'filter-bar__label'
-          }, 'Content type'),
-          React.createElement('select', {
-            key: 'input',
-            id: 'content-type',
-            className: 'filter-bar__select',
-            value: selectedContentType,
-            onChange: (event) => onSelectContentType(event.target.value)
-          }, ['All', ...contentTypes].map((type) =>
-            React.createElement('option', { key: type, value: type }, type)
-          ))
-        ])
-      : null
-  ].filter(Boolean));
+    ])
+  ];
 
-  return React.createElement('div', { className: 'filter-bar app-frame' }, [
-    React.createElement('div', { key: 'primary', className: 'filter-bar__row' }, [
-      React.createElement('label', {
-        key: 'search-label',
-        htmlFor: 'search-field',
-        className: 'visually-hidden'
-      }, 'Search posts'),
-      React.createElement('div', { key: 'search', className: 'search-field' },
-        React.createElement('input', {
-          id: 'search-field',
-          type: 'search',
-          value: searchTerm,
-          placeholder: 'Search posts and resources…',
-          onChange: (event) => onSearch(event.target.value),
-          className: 'search-field__input',
-          ref: searchInputRef
-        })
-      ),
-      controls
+  if (hasContentTypes) {
+    controls.push(
+      React.createElement('div', { key: 'type', className: 'filter-menu__control' }, [
+        React.createElement('label', {
+          key: 'label',
+          htmlFor: 'content-type',
+          className: 'filter-menu__control-label'
+        }, 'Content type'),
+        React.createElement('select', {
+          key: 'input',
+          id: 'content-type',
+          className: 'filter-menu__select',
+          value: selectedContentType,
+          onChange: (event) => onSelectContentType(event.target.value)
+        }, ['All', ...contentTypes].map((type) =>
+          React.createElement('option', { key: type, value: type }, type)
+        ))
+      ])
+    );
+  }
+
+  const searchSection = React.createElement('div', { key: 'search', className: 'filter-menu__section filter-menu__section--search' }, [
+    React.createElement('label', {
+      key: 'label',
+      htmlFor: 'search-field',
+      className: 'filter-menu__label'
+    }, 'Search'),
+    React.createElement('div', { key: 'input', className: 'search-field' },
+      React.createElement('input', {
+        id: 'search-field',
+        type: 'search',
+        value: searchTerm,
+        placeholder: 'Search posts and resources…',
+        onChange: (event) => onSearch(event.target.value),
+        className: 'search-field__input',
+        ref: searchInputRef
+      })
+    )
+  ]);
+
+  const viewSection = React.createElement('div', { key: 'view', className: 'filter-menu__section filter-menu__section--view' }, [
+    React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'View options'),
+    React.createElement('div', { key: 'controls', className: 'filter-menu__controls' }, controls)
+  ]);
+
+  const bodySections = [searchSection, viewSection, tagSection].filter(Boolean);
+
+  const body = isOpen
+    ? React.createElement('div', { key: 'panel', className: 'filter-menu__panel', id: 'filter-menu-panel' }, bodySections)
+    : null;
+
+  return React.createElement('section', { className: 'filter-menu app-frame' }, [
+    React.createElement('div', { key: 'header', className: 'filter-menu__header' }, [
+      React.createElement('button', {
+        key: 'trigger',
+        type: 'button',
+        className: 'filter-menu__trigger',
+        onClick: toggleMenu,
+        'aria-expanded': isOpen ? 'true' : 'false',
+        'aria-controls': 'filter-menu-panel'
+      }, [
+        React.createElement(MonoIcon, {
+          key: 'icon',
+          name: 'settings',
+          className: 'filter-menu__icon',
+          tone: isOpen ? ICON_TONES.active : ICON_TONES.neutral
+        }),
+        React.createElement('span', { key: 'label', className: 'filter-menu__trigger-label' }, 'Browse posts'),
+        activeFilters
+          ? React.createElement('span', { key: 'badge', className: 'filter-menu__badge' }, `${activeFilters} active`)
+          : null
+      ].filter(Boolean)),
+      React.createElement('span', { key: 'hint', className: 'filter-menu__hint' }, hintText)
     ]),
-    tagButtons
+    body
   ].filter(Boolean));
 }
 
@@ -781,74 +830,45 @@ function PostView({ post, onBack, onToggleBookmark, isBookmarked }) {
   ]);
 }
 
-function DownloadCard({ item, accent, relatedItems }) {
-  const metaItems = [
-    item.file_type ? `Format: ${item.file_type}` : null,
-    item.file_size ? `Size: ${item.file_size}` : null,
-    typeof item.download_count === 'number' ? `${item.download_count} downloads` : null
-  ].filter(Boolean);
+function DownloadCard({ item }) {
+  if (!item || !item.title || !item.url) {
+    return null;
+  }
 
+  const description = item.description && item.description.trim().length
+    ? item.description.trim()
+    : null;
   const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
 
-  return React.createElement('article', { className: 'download-card app-frame' }, [
-    React.createElement('div', { key: 'preview', className: 'download-card__preview' },
-      item.thumbnail
-        ? React.createElement('img', { src: item.thumbnail, alt: `${item.title} preview` })
-        : React.createElement(MonoIcon, { name: 'download', tone: accent })
-    ),
-    React.createElement('div', { key: 'body', className: 'download-card__body' }, [
-      React.createElement('header', { key: 'header', className: 'download-card__header' }, [
-        React.createElement('span', { key: 'category', className: 'download-card__badge' }, item.category || 'Resources'),
-        React.createElement('h3', { key: 'title', className: 'download-card__title' }, item.title),
-        metaItems.length
-          ? React.createElement('span', { key: 'meta', className: 'download-card__meta' }, metaItems.join(' · '))
-          : null
-      ]),
-      React.createElement('p', { key: 'description', className: 'download-card__description' }, item.description),
-      item.tags && item.tags.length
-        ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--inline' },
-            item.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
-          )
-        : null,
-      React.createElement('div', { key: 'actions', className: 'download-card__actions' }, [
-        item.url
-          ? React.createElement('a', {
-              key: 'download',
-              className: 'primary-button primary-button--small',
-              href: item.url,
-              target: isExternal ? '_blank' : undefined,
-              rel: isExternal ? 'noreferrer noopener' : undefined
-            }, 'Download')
-          : null,
-        metaItems[2]
-          ? React.createElement('span', { key: 'count', className: 'download-card__counter' }, metaItems[2])
-          : null
-      ]),
-      relatedItems && relatedItems.length
-        ? React.createElement('div', { key: 'related', className: 'download-card__related' }, [
-            React.createElement('span', { key: 'label', className: 'download-card__related-label' }, 'Related resources'),
-            React.createElement('ul', { key: 'list' },
-              relatedItems.map((resource) =>
-                React.createElement('li', { key: resource.title }, resource.title)
-              )
-            )
-          ])
+  return React.createElement('li', { className: 'download-item' }, [
+    React.createElement('div', { key: 'details', className: 'download-item__details' }, [
+      React.createElement('h3', { key: 'title', className: 'download-item__title' }, item.title),
+      description
+        ? React.createElement('p', { key: 'description', className: 'download-item__description' }, description)
         : null
-    ])
+    ].filter(Boolean)),
+    React.createElement('a', {
+      key: 'action',
+      className: 'download-item__link',
+      href: item.url,
+      download: isExternal ? undefined : '',
+      target: isExternal ? '_blank' : undefined,
+      rel: isExternal ? 'noreferrer noopener' : undefined,
+      'aria-label': `Download ${item.title}`
+    }, 'Download')
   ]);
 }
 
 function DownloadsPage({ downloads }) {
-  const headerCard = React.createElement('article', { className: 'timeline-card timeline-card--intro', key: 'header' }, [
-    React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'Downloads'),
-    React.createElement('p', { key: 'copy', className: 'timeline-card__excerpt' }, 'Toolkits, briefs, and references designed to accelerate your next engagement.')
+  const introBlock = React.createElement('section', { className: 'download-intro-block', key: 'intro' }, [
+    React.createElement('h1', { key: 'title', className: 'download-group__title' }, 'Downloads'),
+    React.createElement('p', { key: 'copy', className: 'download-intro' }, 'Grab the files you need for field work, planning, or follow-up. Each link opens or saves the resource directly.')
   ]);
 
   if (!downloads.length) {
-    return [headerCard, React.createElement('div', { className: 'empty-state', key: 'empty' }, 'New assets are being prepared—check back soon.')];
+    return [introBlock, React.createElement('p', { className: 'download-empty', key: 'empty' }, 'No downloads are available yet. Check back soon for new resources.')];
   }
 
-  const byTitle = new Map(downloads.map((item) => [item.title, item]));
   const grouped = downloads.reduce((acc, item) => {
     const key = item.category || 'Resources';
     if (!acc[key]) {
@@ -858,29 +878,16 @@ function DownloadsPage({ downloads }) {
     return acc;
   }, {});
 
-  const sections = Object.entries(grouped).map(([category, items], sectionIndex) =>
-    React.createElement('section', { key: category, className: 'downloads-section app-frame' }, [
-      React.createElement('header', { key: 'header', className: 'downloads-section__header' }, [
-        React.createElement('h2', { key: 'title' }, category),
-        React.createElement('span', { key: 'count', className: 'downloads-section__count' }, `${items.length} resource${items.length > 1 ? 's' : ''}`)
-      ]),
-      React.createElement('div', { key: 'grid', className: 'downloads-grid' },
-        items.map((item, index) => {
-          const relatedItems = Array.isArray(item.related)
-            ? item.related.map((name) => byTitle.get(name)).filter(Boolean)
-            : [];
-          return React.createElement(DownloadCard, {
-            item,
-            relatedItems,
-            accent: CARD_COLOR_POOL[(sectionIndex + index) % CARD_COLOR_POOL.length],
-            key: item.title
-          });
-        })
+  const sections = Object.entries(grouped).map(([category, items]) =>
+    React.createElement('section', { key: category, className: 'download-group' }, [
+      React.createElement('h2', { key: 'title', className: 'download-group__title' }, category),
+      React.createElement('ul', { key: 'list', className: 'download-list' },
+        items.map((item) => React.createElement(DownloadCard, { item, key: item.title || item.url }))
       )
     ])
   );
 
-  return [headerCard, ...sections];
+  return [introBlock, ...sections];
 }
 
 function AboutPage({ about, isLoading }) {
@@ -1158,6 +1165,12 @@ function App() {
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
   const searchInputRef = useRef(null);
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(min-width: 1024px)').matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     setIsLoadingPosts(true);
@@ -1198,6 +1211,31 @@ function App() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const updateMenuState = (event) => {
+      setIsFilterMenuOpen((prev) => {
+        if (event.matches) {
+          return true;
+        }
+        return event.matches ? prev : false;
+      });
+    };
+    updateMenuState(mediaQuery);
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateMenuState);
+      return () => mediaQuery.removeEventListener('change', updateMenuState);
+    }
+    if (typeof mediaQuery.addListener === 'function') {
+      mediaQuery.addListener(updateMenuState);
+      return () => mediaQuery.removeListener(updateMenuState);
+    }
+    return undefined;
   }, []);
 
   const uniqueTags = useMemo(() => {
@@ -1308,6 +1346,7 @@ function App() {
   }, []);
 
   const focusSearchField = useCallback(() => {
+    setIsFilterMenuOpen(true);
     if (searchInputRef.current && typeof searchInputRef.current.focus === 'function') {
       searchInputRef.current.focus({ preventScroll: false });
     }
@@ -1330,6 +1369,10 @@ function App() {
     scrollToTop();
   }, [scrollToTop]);
 
+  const toggleFilterMenu = useCallback(() => {
+    setIsFilterMenuOpen((prev) => !prev);
+  }, []);
+
   const handleToggleBookmark = useCallback((post) => {
     const identifier = getPostIdentifier(post);
     if (!identifier) {
@@ -1348,6 +1391,19 @@ function App() {
 
   const activePage = currentPost ? 'blog' : page;
   const heroExplore = useCallback(() => handleChangePage('blog'), [handleChangePage]);
+
+  useEffect(() => {
+    if (activePage !== 'home' && activePage !== 'blog') {
+      setIsFilterMenuOpen(false);
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(min-width: 1024px)');
+      if (mediaQuery.matches) {
+        setIsFilterMenuOpen(true);
+      }
+    }
+  }, [activePage]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -1408,7 +1464,7 @@ function App() {
   } else if (activePage === 'about') {
     timelineItems = [React.createElement(AboutPage, { key: 'about', about, isLoading: isLoadingAbout })];
   } else {
-    const filterElement = React.createElement(FilterBar, {
+    const filterElement = React.createElement(FilterMenu, {
       key: 'filters',
       searchTerm,
       onSearch: setSearchTerm,
@@ -1420,7 +1476,9 @@ function App() {
       contentTypes: uniqueContentTypes,
       selectedContentType,
       onSelectContentType: setSelectedContentType,
-      searchInputRef
+      searchInputRef,
+      isOpen: isFilterMenuOpen,
+      onToggle: toggleFilterMenu
     });
 
     const shouldLimitHome = activePage === 'home'

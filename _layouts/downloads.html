@@ -3,12 +3,13 @@ layout: default
 ---
 
 <div class="downloads-page">
-  <div class="downloads-content">
+  <section class="download-intro-block">
+    <h1 class="download-group__title">Downloads</h1>
+    <p class="download-intro">Grab the files you need for field work, planning, or follow-up. Each link opens or saves the resource directly.</p>
+  </section>
+  <ul class="download-list">
     {% for item in site.downloads %}
       {% include download-card.html item=item %}
     {% endfor %}
-  </div>
-  <aside class="downloads-sidebar">
-    {% include sidebar.html %}
-  </aside>
+  </ul>
 </div>

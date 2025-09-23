@@ -16,41 +16,8 @@ layout: default
 
 <div class="home-content-grid">
   <div class="home-main">
-    {% assign featured_post = site.posts | where: "featured", true | first %}
-
-    {% if featured_post %}
-      {% assign featured_category = featured_post.categories | first | default: featured_post.content_type | default: 'Journal' %}
-      {% assign featured_reading = featured_post.content | number_of_words | divided_by: 200 | plus: 1 %}
-      <article class="featured-card app-frame">
-        <div class="featured-card__meta">
-          <span class="featured-card__badge">Featured dispatch</span>
-          <span class="featured-card__category">{{ featured_category }}</span>
-          <span class="featured-card__detail">{{ featured_post.date | date: "%B %d, %Y" }} · {{ featured_reading }} min read</span>
-        </div>
-        <div class="featured-card__body">
-          <div class="featured-card__icon">
-            <span class="mono-icon mono-icon--{{ featured_post.cover_icon | default: 'journal' }}"></span>
-          </div>
-          <div class="featured-card__content">
-            <h2 class="featured-card__title"><a href="{{ featured_post.url | relative_url }}">{{ featured_post.title }}</a></h2>
-            <p class="featured-card__excerpt">{{ featured_post.excerpt | strip_html | truncate: 200 }}</p>
-          </div>
-        </div>
-        <div class="featured-card__footer">
-          <span class="featured-card__cta">Read the full field report</span>
-          <a class="pill-button pill-button--ghost" href="{{ featured_post.url | relative_url }}">Open post</a>
-        </div>
-      </article>
-    {% endif %}
-
     {% for post in site.posts %}
-      {% if featured_post and post.id == featured_post.id %}
-        {% continue %}
-      {% endif %}
       {% include post-card.html post=post %}
     {% endfor %}
   </div>
-  <aside class="home-sidebar">
-    {% include sidebar.html %}
-  </aside>
 </div>

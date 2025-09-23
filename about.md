@@ -14,6 +14,16 @@ updated: 2025-02-23
 
 I keep complex deployments on schedule by translating technical chaos into clear, shareable plans. Marine engineering roots taught me to listen to the machinery first, then speak calmly to the people who depend on it.
 
+<figure class="about-video">
+  <video controls preload="metadata" class="about-video__player">
+    <source src="/assets/video/High_Seas_to_High_Tech.mp4" type="video/mp4">
+    Your browser does not support embedded videos. You can
+    <a href="/assets/video/High_Seas_to_High_Tech.mp4">download the video</a>
+    instead.
+  </video>
+  <figcaption>High Seas to High Tech — a quick look at how I bridge deployments from offshore to on-site execution.</figcaption>
+</figure>
+
 ## What you will find here
 
 - Dispatches and checklists captured after on-site engagements.

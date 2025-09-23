@@ -1,13 +1,9 @@
-<div class="download-card">
-  <div class="download-thumbnail">
-    {% if item.thumbnail %}
-      <img src="{{ item.thumbnail | relative_url }}" alt="{{ item.title }}">
+<li class="download-item">
+  <div class="download-item__details">
+    <h3 class="download-item__title"><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h3>
+    {% if item.description %}
+      <p class="download-item__description">{{ item.description }}</p>
     {% endif %}
   </div>
-  <div class="download-content">
-    <h3><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h3>
-    <p class="description">{{ item.description }}</p>
-    <p class="file-info">{{ item.file_type }} • {{ item.file_size }} • {{ item.download_count }} downloads</p>
-    <a class="download-button" href="{{ item.file_url | relative_url }}" download>Download</a>
-  </div>
-</div>
+  <a class="download-item__link" href="{{ item.url | relative_url }}" download>Download</a>
+</li>
