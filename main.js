@@ -84,13 +84,6 @@ const SORT_OPTIONS = [
   { id: 'longest', label: 'Longest read' }
 ];
 
-const KEYBOARD_SHORTCUTS = [
-  { combo: '⌘ / Ctrl + K', action: 'Focus search' },
-  { combo: '⌘ / Ctrl + J', action: 'Open journal' },
-  { combo: '⌘ / Ctrl + D', action: 'Open downloads' },
-  { combo: '⌘ / Ctrl + H', action: 'Go home' },
-  { combo: '⌘ / Ctrl + ↑', action: 'Scroll to top' }
-];
 
 function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }) {
   const toneStyle = tone ? { color: tone } : undefined;
@@ -220,7 +213,7 @@ function FilterMenu({
     ? React.createElement('div', { key: 'panel', className: 'filter-menu__panel', id: 'filter-menu-panel' }, bodySections)
     : null;
 
-  return React.createElement('section', { className: 'filter-menu app-frame' }, [
+  return React.createElement('section', { className: 'filter-menu' }, [
     React.createElement('div', { key: 'header', className: 'filter-menu__header' }, [
       React.createElement('button', {
         key: 'trigger',
@@ -315,34 +308,29 @@ function Hero({ onExplore }) {
     }
   };
 
-  return React.createElement('section', { className: 'hero app-frame' }, [
-    React.createElement('div', { key: 'content', className: 'hero__content' }, [
-      React.createElement('span', { key: 'badge', className: 'hero__badge' }, 'Field service engineer · Global deployments'),
-      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Field operations journal'),
-      React.createElement('p', { key: 'subhead', className: 'hero__subhead' }, 'Carefully captured dispatches from live deployments—use them to brief teams, align expectations, and ship confidently.'),
+  return React.createElement('section', { className: 'hero' }, [
+    React.createElement('div', { key: 'inner', className: 'hero__inner' }, [
+      React.createElement('span', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Nils Johansson · Field Service Engineer'),
+      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Calm operations. Shared openly.'),
+      React.createElement('p', { key: 'body', className: 'hero__body' }, 'Field-tested briefs and checklists that keep crews centred when conditions change. Take what you need, adapt it, and deploy with confidence.'),
       React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
         React.createElement('button', {
           key: 'primary',
           type: 'button',
-          className: 'primary-button',
+          className: 'primary-button hero__button',
           onClick: handleExplore
-        }, 'Browse latest articles'),
+        }, 'Browse journal'),
         React.createElement('a', {
-          key: 'secondary',
-          className: 'link-button',
+          key: 'link',
+          className: 'hero__secondary',
           href: '#downloads'
-        }, 'View downloads')
+        }, 'Latest downloads')
       ])
     ])
   ]);
 }
 
-function FeaturedPostCard({ post, onOpen, onToggleBookmark, isBookmarked }) {
-  if (!post) {
-    return null;
-  }
-
-  const handleClick = () => onOpen(post);
+function PostCard({ post, onOpen }) {
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -350,177 +338,41 @@ function FeaturedPostCard({ post, onOpen, onToggleBookmark, isBookmarked }) {
     }
   };
 
-  const handleBookmark = (event) => {
-    event.stopPropagation();
-    if (typeof onToggleBookmark === 'function') {
-      onToggleBookmark(post);
-    }
-  };
-
-  const hasTags = Array.isArray(post.tags) && post.tags.length;
-  const primaryTag = hasTags ? post.tags[0] : undefined;
-  const additionalTagCount = hasTags && post.tags.length > 1 ? ` +${post.tags.length - 1}` : '';
-
-  const stats = [
-    { id: 'read', icon: 'clock', label: `${post.readingTime} min` }
-  ];
-
-  if (primaryTag) {
-    stats.push({ id: 'tag', icon: 'tag', label: `${primaryTag}${additionalTagCount}` });
-  }
-
   return React.createElement('article', {
-    className: 'featured-card app-frame',
-    role: 'button',
-    tabIndex: 0,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown
-  }, [
-    React.createElement('header', { key: 'head', className: 'featured-card__header' }, [
-      React.createElement('div', { key: 'icon', className: 'featured-card__icon' },
-        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
-      ),
-      React.createElement('div', { key: 'meta', className: 'featured-card__meta-block' }, [
-        React.createElement('span', { key: 'badge', className: 'featured-card__badge' }, 'Featured dispatch'),
-        React.createElement('span', { key: 'category', className: 'featured-card__category' }, `${post.categoryLabel} · ${post.displayDate}`),
-        React.createElement('h2', { key: 'title', className: 'featured-card__title' }, post.title)
-      ]),
-      React.createElement('button', {
-        key: 'bookmark',
-        type: 'button',
-        className: 'icon-button icon-button--bookmark featured-card__bookmark',
-        onClick: handleBookmark,
-        'aria-pressed': isBookmarked
-      }, [
-        React.createElement('span', { key: 'label', className: 'visually-hidden' }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
-        React.createElement(MonoIcon, {
-          key: 'icon',
-          name: isBookmarked ? 'bookmark-filled' : 'bookmark',
-          className: 'icon-button__glyph',
-          tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
-        })
-      ])
-    ]),
-    React.createElement('p', { key: 'excerpt', className: 'featured-card__excerpt' }, post.excerpt),
-    stats.length
-      ? React.createElement('div', { key: 'stats', className: 'timeline-card__stats' },
-          stats.map(({ id, icon, label }) => React.createElement('span', { className: 'timeline-card__stat', key: id }, [
-            React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'timeline-card__stat-icon' }),
-            React.createElement('span', { key: 'label' }, label)
-          ]))
-        )
-      : null,
-    React.createElement('div', { key: 'footer', className: 'featured-card__footer' }, [
-      React.createElement('span', { key: 'cta', className: 'featured-card__cta' }, 'Read the full field report'),
-      React.createElement('button', {
-        key: 'bookmark',
-        type: 'button',
-        className: 'pill-button pill-button--ghost',
-        onClick: handleBookmark
-      }, isBookmarked ? 'Bookmarked' : 'Save for later')
-    ])
-  ]);
-}
-
-function PostCard({ post, onOpen, onToggleBookmark, isBookmarked, accent }) {
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onOpen(post);
-    }
-  };
-
-  const handleBookmark = (event) => {
-    event.stopPropagation();
-    if (typeof onToggleBookmark === 'function') {
-      onToggleBookmark(post);
-    }
-  };
-
-  const hasTags = Array.isArray(post.tags) && post.tags.length;
-  const primaryTag = hasTags ? post.tags[0] : undefined;
-  const additionalTagCount = hasTags && post.tags.length > 1 ? ` +${post.tags.length - 1}` : '';
-
-  const stats = [
-    { id: 'read', icon: 'clock', label: `${post.readingTime} min` }
-  ];
-
-  if (primaryTag) {
-    stats.push({ id: 'tag', icon: 'tag', label: `${primaryTag}${additionalTagCount}` });
-  }
-
-  return React.createElement('article', {
-    className: 'timeline-card timeline-card--post',
+    className: 'journal-card',
     role: 'button',
     tabIndex: 0,
     onClick: () => onOpen(post),
     onKeyDown: handleKeyDown
   }, [
-    React.createElement('header', { key: 'head', className: 'timeline-card__header' }, [
-      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: accent })
-      ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__meta-block' }, [
-        React.createElement('span', { key: 'category', className: 'timeline-card__category' }, `${post.categoryLabel} · ${post.displayDate}`),
-        React.createElement('h3', { key: 'title', className: 'timeline-card__title' }, post.title)
-      ]),
-      React.createElement('button', {
-        key: 'bookmark',
-        type: 'button',
-        className: 'icon-button icon-button--bookmark',
-        onClick: handleBookmark,
-        'aria-pressed': isBookmarked
-      }, [
-        React.createElement('span', {
-          key: 'label',
-          className: 'visually-hidden'
-        }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
-        React.createElement(MonoIcon, {
-          key: 'icon',
-          name: isBookmarked ? 'bookmark-filled' : 'bookmark',
-          className: 'icon-button__glyph',
-          tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
-        })
+    React.createElement('div', { key: 'meta', className: 'journal-card__meta' }, `${post.categoryLabel} · ${post.displayDate}`),
+    React.createElement('h3', { key: 'title', className: 'journal-card__title' }, post.title),
+    React.createElement('p', { key: 'excerpt', className: 'journal-card__excerpt' }, post.excerpt),
+    React.createElement('div', { key: 'foot', className: 'journal-card__footer' }, [
+      React.createElement('span', { key: 'time', className: 'journal-card__footnote' }, `${post.readingTime} min read`),
+      React.createElement('span', { key: 'cta', className: 'journal-card__cta' }, [
+        'Read',
+        React.createElement(MonoIcon, { key: 'icon', name: 'chevron', className: 'journal-card__icon' })
       ])
-    ]),
-    React.createElement('p', { key: 'excerpt', className: 'timeline-card__excerpt' }, post.excerpt),
-    stats.length
-      ? React.createElement('div', { key: 'stats', className: 'timeline-card__stats' },
-          stats.map(({ id, icon, label }) => React.createElement('span', { className: 'timeline-card__stat', key: id }, [
-            React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'timeline-card__stat-icon' }),
-            React.createElement('span', { key: 'label' }, label)
-          ]))
-        )
-      : null,
-    React.createElement('div', { key: 'action', className: 'timeline-card__actions' }, [
-      React.createElement('span', { key: 'hint', className: 'timeline-card__action' }, 'Open post'),
-      React.createElement(MonoIcon, {
-        key: 'chevron',
-        name: 'chevron',
-        className: 'timeline-card__chevron'
-      })
     ])
   ]);
 }
 
-function PostList({ posts, onOpen, onToggleBookmark, bookmarkedIds }) {
+function PostList({ posts, onOpen }) {
   if (!Array.isArray(posts) || !posts.length) {
     return [
-      React.createElement('div', { className: 'empty-state app-frame', key: 'empty' }, [
+      React.createElement('div', { className: 'empty-state', key: 'empty' }, [
         React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
         React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
       ])
     ];
   }
 
-  return posts.map((post, index) =>
+  return posts.map((post) =>
     React.createElement(PostCard, {
       post,
       onOpen,
-      onToggleBookmark,
-      isBookmarked: Boolean(bookmarkedIds && bookmarkedIds.has(getPostIdentifier(post))),
-      accent: CARD_COLOR_POOL[index % CARD_COLOR_POOL.length],
-      key: getPostIdentifier(post) || index
+      key: getPostIdentifier(post) || post.title
     })
   );
 }
@@ -928,159 +780,30 @@ function AboutPage({ about, isLoading }) {
   ]);
 }
 
-function SecondaryPanel({ page, downloads, bookmarkedPosts, onOpenBookmark }) {
-  const hasDownloads = Array.isArray(downloads) && downloads.length && page !== 'downloads';
-  const hasBookmarks = Array.isArray(bookmarkedPosts) && bookmarkedPosts.length;
-
-  if (!hasDownloads && !hasBookmarks) {
+function InspectorPanel({ currentPost }) {
+  if (!currentPost) {
     return null;
   }
 
-  const featuredDownloads = hasDownloads ? downloads.slice(0, 3) : [];
-  const bookmarkDisplay = hasBookmarks ? bookmarkedPosts.slice(0, 5) : [];
-  const bookmarkOverflow = hasBookmarks && bookmarkedPosts.length > 5 ? bookmarkedPosts.length - 5 : 0;
-
-  return React.createElement('aside', { className: 'context-panel' }, [
-    hasBookmarks
-      ? React.createElement('div', { key: 'bookmarks', className: 'context-card' }, [
-          React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Bookmarked'),
-          React.createElement('ul', { key: 'list', className: 'context-card__list' },
-            bookmarkDisplay.map((post) =>
-              React.createElement('li', { key: getPostIdentifier(post) },
-                React.createElement('button', {
-                  type: 'button',
-                  onClick: () => onOpenBookmark(post)
-                }, post.title)
-              )
-            ).concat(bookmarkOverflow
-              ? [React.createElement('li', { key: 'more', className: 'context-card__more' }, `+${bookmarkOverflow} more`)]
-              : []
-            )
-          )
-        ])
-      : null,
-    hasDownloads
-      ? React.createElement('div', { key: 'downloads', className: 'context-card' }, [
-          React.createElement('h3', { key: 'title', className: 'context-card__title' }, 'Downloads'),
-          React.createElement('ul', { key: 'list', className: 'context-card__list' },
-            featuredDownloads.map((item) =>
-              React.createElement('li', { key: item.title }, item.title)
-            )
-          )
-        ])
-      : null
-  ].filter(Boolean));
-}
-
-function InspectorPanel({
-  currentPost,
-  activePage,
-  selectedTag,
-  selectedContentType,
-  sortOrder,
-  onFocusSearch,
-  onNavigate,
-  onScrollTop
-}) {
-  const sections = [];
-
-  if (currentPost) {
-    const tagList = Array.isArray(currentPost.tags) && currentPost.tags.length
-      ? React.createElement('ul', { key: 'tags', className: 'inspector-card__list' },
-          currentPost.tags.map((tag) => React.createElement('li', { key: tag, className: 'inspector-card__row' }, [
-            React.createElement('span', { key: 'label' }, 'Tag'),
-            React.createElement('span', { key: 'value', className: 'inspector-card__value' }, tag)
-          ]))
-        )
-      : null;
-
-    sections.push(
-      React.createElement('section', { className: 'inspector-card', key: 'now-reading' }, [
-        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Now reading'),
-        React.createElement('p', {
-          key: 'meta',
-          className: 'inspector-card__meta'
-        }, `${currentPost.categoryLabel} · ${currentPost.displayDate} · ${currentPost.readingTime} min`),
-        tagList
-      ].filter(Boolean))
-    );
-  } else if (activePage === 'blog' || activePage === 'home') {
-    const sortLabel = (SORT_OPTIONS.find((option) => option.id === sortOrder) || SORT_OPTIONS[0]).label;
-    const filters = [
-      { id: 'tag', label: 'Tag', value: selectedTag === 'All' ? 'All tags' : selectedTag },
-      { id: 'type', label: 'Type', value: selectedContentType === 'All' ? 'All content' : selectedContentType },
-      { id: 'sort', label: 'Sort', value: sortLabel }
-    ];
-
-    sections.push(
-      React.createElement('section', { className: 'inspector-card', key: 'view-settings' }, [
-        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'View settings'),
-        React.createElement('p', { key: 'meta', className: 'inspector-card__meta' }, 'Adjust filters and sorting to find the right briefing faster.'),
-        React.createElement('ul', { key: 'filters', className: 'inspector-card__list' },
-          filters.map(({ id, label, value }) => React.createElement('li', { key: id, className: 'inspector-card__row' }, [
-            React.createElement('span', { key: 'label' }, label),
-            React.createElement('span', { key: 'value', className: 'inspector-card__value' }, value)
-          ]))
-        )
-      ])
-    );
-  }
-
-  const quickActions = [];
-
-  if (typeof onFocusSearch === 'function' && (activePage === 'home' || activePage === 'blog')) {
-    quickActions.push(React.createElement('button', {
-      key: 'search',
-      type: 'button',
-      className: 'pill-button',
-      onClick: onFocusSearch
-    }, 'Focus search'));
-  }
-
-  if (typeof onScrollTop === 'function') {
-    quickActions.push(React.createElement('button', {
-      key: 'top',
-      type: 'button',
-      className: 'pill-button pill-button--ghost',
-      onClick: onScrollTop
-    }, 'Back to top'));
-  }
-
-  if (typeof onNavigate === 'function' && activePage !== 'downloads') {
-    quickActions.push(React.createElement('button', {
-      key: 'downloads',
-      type: 'button',
-      className: 'pill-button pill-button--ghost',
-      onClick: () => onNavigate('downloads')
-    }, 'Open downloads'));
-  }
-
-  if (quickActions.length) {
-    sections.push(
-      React.createElement('section', { className: 'inspector-card', key: 'quick-actions' }, [
-        React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Quick actions'),
-        React.createElement('div', { key: 'actions', className: 'inspector-card__actions' }, quickActions)
-      ])
-    );
-  }
-
-  sections.push(
-    React.createElement('section', { className: 'inspector-card', key: 'shortcuts' }, [
-      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Keyboard shortcuts'),
-      React.createElement('ul', { key: 'list', className: 'inspector-card__list' },
-        KEYBOARD_SHORTCUTS.map(({ combo, action }) => React.createElement('li', { key: combo, className: 'inspector-card__row' }, [
-          React.createElement('span', { key: 'action' }, action),
-          React.createElement('span', { key: 'combo', className: 'inspector-card__kbd' }, combo)
+  const tagList = Array.isArray(currentPost.tags) && currentPost.tags.length
+    ? React.createElement('ul', { className: 'inspector-card__list' },
+        currentPost.tags.map((tag) => React.createElement('li', { key: tag, className: 'inspector-card__row' }, [
+          React.createElement('span', { key: 'label' }, 'Tag'),
+          React.createElement('span', { key: 'value', className: 'inspector-card__value' }, tag)
         ]))
       )
-    ])
+    : null;
+
+  return React.createElement('aside', { className: 'inspector-panel' },
+    React.createElement('section', { className: 'inspector-card' }, [
+      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Now reading'),
+      React.createElement('p', {
+        key: 'meta',
+        className: 'inspector-card__meta'
+      }, `${currentPost.categoryLabel} · ${currentPost.displayDate} · ${currentPost.readingTime} min`),
+      tagList
+    ].filter(Boolean))
   );
-
-  if (!sections.length) {
-    return null;
-  }
-
-  return React.createElement('aside', { className: 'inspector-panel' }, sections);
 }
 
 function Breadcrumbs({ segments }) {
@@ -1165,12 +888,7 @@ function App() {
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
   const searchInputRef = useRef(null);
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(min-width: 1024px)').matches;
-    }
-    return false;
-  });
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsLoadingPosts(true);
@@ -1213,30 +931,6 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    const updateMenuState = (event) => {
-      setIsFilterMenuOpen((prev) => {
-        if (event.matches) {
-          return true;
-        }
-        return event.matches ? prev : false;
-      });
-    };
-    updateMenuState(mediaQuery);
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', updateMenuState);
-      return () => mediaQuery.removeEventListener('change', updateMenuState);
-    }
-    if (typeof mediaQuery.addListener === 'function') {
-      mediaQuery.addListener(updateMenuState);
-      return () => mediaQuery.removeListener(updateMenuState);
-    }
-    return undefined;
-  }, []);
 
   const uniqueTags = useMemo(() => {
     const tagSet = new Set();
@@ -1395,13 +1089,6 @@ function App() {
   useEffect(() => {
     if (activePage !== 'home' && activePage !== 'blog') {
       setIsFilterMenuOpen(false);
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(min-width: 1024px)');
-      if (mediaQuery.matches) {
-        setIsFilterMenuOpen(true);
-      }
     }
   }, [activePage]);
 
@@ -1494,24 +1181,13 @@ function App() {
       ? Array.from({ length: 3 }, (_, index) => React.createElement(PostSkeleton, { key: `skeleton-${index}` }))
       : PostList({
           posts: postCollection,
-          onOpen: handleOpenPost,
-          onToggleBookmark: handleToggleBookmark,
-          bookmarkedIds
+          onOpen: handleOpenPost
         });
 
     timelineItems = [];
 
     if (activePage === 'home') {
       timelineItems.push(React.createElement(Hero, { key: 'hero', onExplore: heroExplore }));
-      if (!isLoadingPosts && featuredPost) {
-        timelineItems.push(React.createElement(FeaturedPostCard, {
-          key: 'featured',
-          post: featuredPost,
-          onOpen: handleOpenPost,
-          onToggleBookmark: handleToggleBookmark,
-          isBookmarked: bookmarkedIds.has(getPostIdentifier(featuredPost))
-        }));
-      }
     }
 
     timelineItems.push(filterElement);
@@ -1572,23 +1248,10 @@ function App() {
       React.createElement('main', {
         key: 'timeline',
         className: 'timeline' + (currentPost ? ' timeline--detail' : '')
-      }, timelineItems.concat(React.createElement(SecondaryPanel, {
-        key: 'panel',
-        page: activePage,
-        downloads,
-        bookmarkedPosts,
-        onOpenBookmark: handleOpenPost
-      }))),
+      }, timelineItems),
       React.createElement(InspectorPanel, {
         key: 'inspector',
-        currentPost,
-        activePage,
-        selectedTag,
-        selectedContentType,
-        sortOrder,
-        onFocusSearch: focusSearchField,
-        onNavigate: handleChangePage,
-        onScrollTop: scrollToTop
+        currentPost
       })
     ]),
     React.createElement(BottomNavigation, {
