@@ -2964,6 +2964,11 @@ button:focus-visible,
     left: 0;
   }
 
+  /* Hide sidebar header on mobile only - we have mobile header */
+  .sidebar__header {
+    display: none;
+  }
+
   /* Add top padding to sidebar nav on mobile since no header */
   .sidebar__nav {
     padding-top: 20px;

@@ -1208,6 +1208,10 @@ function FeedPostCard({ post, onClick }) {
 // Apple Podcasts-style Sidebar Component
 function PodcastSidebar({ currentPage, onPageChange, isOpen, onClose }) {
   return React.createElement('div', { className: `sidebar${isOpen ? ' open' : ''}` }, [
+    // Header - hidden on mobile via CSS
+    React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
+      React.createElement('h2', { style: { margin: 0, fontSize: '20px', fontWeight: '700', color: 'var(--ink-primary)' } }, 'The Office of Nils Johansson')
+    ]),
     React.createElement('nav', { key: 'nav', className: 'sidebar__nav' }, [
       // Primary navigation
       React.createElement('div', { key: 'primary', className: 'sidebar__section' },
