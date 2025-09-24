@@ -1207,9 +1207,6 @@ function FeedPostCard({ post, onClick }) {
 
 // Apple Podcasts-style Sidebar Component
 function PodcastSidebar({ currentPage, onPageChange, isOpen, onClose }) {
-  // Debug: log navigation items and current page
-  console.log('PodcastSidebar - NAV_ITEMS:', NAV_ITEMS);
-  console.log('PodcastSidebar - currentPage:', currentPage);
 
   return React.createElement('div', { className: `sidebar${isOpen ? ' open' : ''}` }, [
     // Header - hidden on mobile via CSS

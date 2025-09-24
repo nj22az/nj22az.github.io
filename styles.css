@@ -2953,8 +2953,9 @@ button:focus-visible,
   .sidebar {
     width: 280px;
     position: fixed;
-    top: 0;
+    top: 60px; /* Position below mobile header */
     left: -280px;
+    height: calc(100vh - 60px); /* Full height minus header */
     transition: left 0.3s ease;
     z-index: 200;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
@@ -3043,6 +3044,7 @@ button:focus-visible,
     min-height: 44px;
     padding: 10px;
   }
+
 
   .journal-sort-button {
     min-height: 44px;
