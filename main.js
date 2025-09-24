@@ -98,7 +98,7 @@ function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'posts', label: 'Journal', icon: 'journal' },
+  { id: 'blog', label: 'Journal', icon: 'journal' },
   { id: 'downloads', label: 'Downloads', icon: 'download' }
 ];
 
