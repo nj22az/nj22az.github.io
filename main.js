@@ -1318,7 +1318,8 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
     switch(page) {
       case 'home': return 'Home';
       case 'new': return 'New';
-      case 'posts': return 'Journal';
+      case 'posts':
+      case 'blog': return 'Journal';
       case 'downloads': return 'Downloads';
       case 'about': return 'About';
       default: return 'Home';
@@ -1335,7 +1336,7 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
     });
   }
 
-  if (page === 'posts') {
+  if (page === 'posts' || page === 'blog') {
     return React.createElement(JournalArchive, {
       posts: posts,
       onPostClick: onPostClick
