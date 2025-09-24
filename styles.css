@@ -2356,6 +2356,146 @@ button:focus-visible,
   mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect width='7' height='7' x='3' y='3' rx='1'/%3e%3crect width='7' height='7' x='14' y='3' rx='1'/%3e%3crect width='7' height='7' x='14' y='14' rx='1'/%3e%3crect width='7' height='7' x='3' y='14' rx='1'/%3e%3c/svg%3e");
 }
 
+/* About page styles - Apple Podcasts aesthetic */
+.about-hero {
+  background: var(--surface-card);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-soft);
+}
+
+.about-hero__content {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-hero__avatar {
+  flex-shrink: 0;
+}
+
+.about-hero__image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent);
+  box-shadow: 0 8px 24px rgba(153, 102, 255, 0.3);
+}
+
+.about-hero__text {
+  flex: 1;
+}
+
+.about-hero__title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.about-hero__subtitle {
+  font-size: 18px;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.about-hero__description {
+  font-size: 16px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.about-video-section {
+  margin-bottom: 48px;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  background: var(--surface-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.about-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.feature-card {
+  background: var(--surface-card);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.feature-card__icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.feature-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin: 0 0 12px;
+}
+
+.feature-card__description {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.philosophy-content {
+  background: var(--surface-card);
+  border-radius: 16px;
+  padding: 32px;
+  margin-top: 24px;
+}
+
+.philosophy-content p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-secondary);
+  margin: 0 0 16px;
+}
+
+.philosophy-content p:last-child {
+  margin-bottom: 0;
+}
+
 /* Mobile responsive styles for Apple Podcasts layout */
 @media (max-width: 768px) {
   .sidebar {
@@ -2399,6 +2539,35 @@ button:focus-visible,
 
   .section-title {
     font-size: 20px;
+  }
+
+  /* About page mobile styles */
+  .about-hero {
+    padding: 24px;
+  }
+
+  .about-hero__content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .about-hero__title {
+    font-size: 28px;
+  }
+
+  .about-hero__image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .philosophy-content {
+    padding: 24px;
   }
 
   .hero {

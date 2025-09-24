@@ -107,7 +107,8 @@ const LIBRARY_ITEMS = [
   { id: 'posts', label: 'Posts', icon: 'journal' },
   { id: 'categories', label: 'Categories', icon: 'grid' },
   { id: 'saved', label: 'Saved', icon: 'bookmark' },
-  { id: 'downloads', label: 'Downloads', icon: 'download' }
+  { id: 'downloads', label: 'Downloads', icon: 'download' },
+  { id: 'about', label: 'About', icon: 'user' }
 ];
 
 const SIDEBAR_SECTIONS = [
@@ -1055,6 +1056,34 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
           })
         )
       )
+    ]);
+  }
+
+  if (page === 'about') {
+    return React.createElement('div', {}, [
+      React.createElement('div', { key: 'about-hero', className: 'about-hero' }, [
+        React.createElement('div', { className: 'about-hero__content' }, [
+          React.createElement('div', { key: 'avatar', className: 'about-hero__avatar' }, [
+            React.createElement('img', {
+              src: '/assets/images/nils-profile.jpg',
+              alt: 'Nils Johansson',
+              className: 'about-hero__image'
+            })
+          ]),
+          React.createElement('div', { key: 'text', className: 'about-hero__text' }, [
+            React.createElement('h1', { className: 'about-hero__title' }, 'Nils Johansson'),
+            React.createElement('p', { className: 'about-hero__subtitle' }, 'Field Service Engineer'),
+            React.createElement('p', { className: 'about-hero__description' },
+              'Field service engineer in perpetual motion. I keep complex deployments on schedule by translating technical chaos into clear, shareable plans. Marine engineering roots taught me to listen to the machinery first, then speak calmly to the people who depend on it.'
+            )
+          ])
+        ])
+      ]),
+      about ? React.createElement('div', {
+        key: 'about-content',
+        className: 'content',
+        dangerouslySetInnerHTML: { __html: about.content }
+      }) : React.createElement('p', { key: 'loading' }, 'Loading about content...')
     ]);
   }
 
