@@ -97,10 +97,42 @@ function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }
 }
 
 const NAV_ITEMS = [
+  { id: 'search', label: 'Search', icon: 'search' },
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'blog', label: 'Journal', icon: 'journal' },
-  { id: 'downloads', label: 'Downloads', icon: 'download' },
-  { id: 'about', label: 'About', icon: 'about' }
+  { id: 'new', label: 'New', icon: 'plus' }
+];
+
+const LIBRARY_ITEMS = [
+  { id: 'recently-updated', label: 'Recently Updated', icon: 'clock' },
+  { id: 'posts', label: 'Posts', icon: 'journal' },
+  { id: 'categories', label: 'Categories', icon: 'grid' },
+  { id: 'saved', label: 'Saved', icon: 'bookmark' },
+  { id: 'downloads', label: 'Downloads', icon: 'download' }
+];
+
+const SIDEBAR_SECTIONS = [
+  {
+    id: 'primary',
+    items: [
+      { id: 'search', label: 'Search', icon: 'search', action: 'search' },
+      { id: 'home', label: 'Home', icon: 'home', page: 'home' },
+      { id: 'blog', label: 'Journal', icon: 'journal', page: 'blog' }
+    ]
+  },
+  {
+    id: 'library',
+    heading: 'Library',
+    items: [
+      { id: 'downloads', label: 'Downloads', icon: 'download', page: 'downloads' },
+      { id: 'bookmarks', label: 'Saved', icon: 'bookmark', action: 'bookmarks' }
+    ]
+  },
+  {
+    id: 'about-section',
+    items: [
+      { id: 'about', label: 'About', icon: 'about', page: 'about' }
+    ]
+  }
 ];
 
 function FilterMenu({
@@ -240,42 +272,88 @@ function FilterMenu({
   ].filter(Boolean));
 }
 
-function Navigation({ currentPage, onPageChange, onBrandClick }) {
-  return React.createElement('header', { className: 'masthead' },
-    React.createElement('div', { className: 'masthead__inner' }, [
+function Sidebar({
+  collapsed,
+  onToggle,
+  currentPage,
+  onPageChange,
+  onFocusSearch,
+  bookmarkedCount
+}) {
+  const handleItemSelect = (item) => {
+    if (!item) {
+      return;
+    }
+    if (item.action === 'search' && typeof onFocusSearch === 'function') {
+      onFocusSearch();
+      if (typeof onToggle === 'function') {
+        onToggle(true);
+      }
+      return;
+    }
+    if (item.action === 'bookmarks') {
+      if (typeof onPageChange === 'function') {
+        onPageChange('bookmarks');
+      }
+      return;
+    }
+    if (item.page && typeof onPageChange === 'function') {
+      onPageChange(item.page);
+    }
+  };
+
+  return React.createElement('aside', {
+    className: 'sidebar' + (collapsed ? ' sidebar--collapsed' : '')
+  }, [
+    React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
       React.createElement('button', {
+        key: 'toggle',
         type: 'button',
-        className: 'masthead__brand',
-        onClick: onBrandClick,
-        key: 'brand'
-      }, [
-        React.createElement('span', { key: 'glyph', className: 'masthead__glyph', 'aria-hidden': 'true' }),
-        React.createElement('span', { key: 'copy', className: 'masthead__text' }, [
-          React.createElement('span', { key: 'name', className: 'masthead__name' }, 'Nils Johansson'),
-          React.createElement('span', { key: 'role', className: 'masthead__meta' }, 'Field Service Engineer')
-        ])
-      ]),
-      React.createElement('nav', { className: 'masthead__nav', key: 'nav', 'aria-label': 'Primary navigation' },
-        NAV_ITEMS.map(({ id, label, icon }) =>
-          React.createElement('button', {
-            type: 'button',
-            key: id,
-            className: 'masthead__link',
-            'aria-current': currentPage === id ? 'page' : undefined,
-            onClick: () => onPageChange(id)
-          }, [
-            React.createElement(MonoIcon, {
-              key: 'icon',
-              name: icon,
-              className: 'masthead__icon',
-              tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
-            }),
-            React.createElement('span', { key: 'label' }, label)
+        className: 'sidebar__toggle',
+        onClick: () => (typeof onToggle === 'function' ? onToggle(!collapsed) : undefined),
+        'aria-label': collapsed ? 'Expand menu' : 'Collapse menu'
+      }, React.createElement(MonoIcon, { name: collapsed ? 'chevron-right' : 'chevron-left' })),
+      collapsed
+        ? null
+        : React.createElement('div', { key: 'identity', className: 'sidebar__identity' }, [
+            React.createElement('div', { key: 'avatar', className: 'sidebar__avatar', 'aria-hidden': 'true' }),
+            React.createElement('div', { key: 'meta', className: 'sidebar__meta' }, [
+              React.createElement('span', { key: 'name', className: 'sidebar__name' }, 'Nils Johansson'),
+              React.createElement('span', { key: 'role', className: 'sidebar__role' }, 'Field Notes Journal')
+            ])
           ])
-        )
+    ]),
+    React.createElement('nav', { key: 'nav', className: 'sidebar__nav', 'aria-label': 'Site navigation' },
+      SIDEBAR_SECTIONS.map((section) =>
+        React.createElement('div', { key: section.id, className: 'sidebar__section' }, [
+          !collapsed && section.heading
+            ? React.createElement('span', { key: 'heading', className: 'sidebar__heading' }, section.heading)
+            : null,
+          React.createElement('ul', { key: 'list', className: 'sidebar__list' },
+            section.items.map((item) => {
+              const isActive = item.page && currentPage === item.page;
+              const badge = item.action === 'bookmarks' && bookmarkedCount > 0
+                ? React.createElement('span', { key: 'badge', className: 'sidebar__badge' }, bookmarkedCount)
+                : null;
+
+              return React.createElement('li', { key: item.id },
+                React.createElement('button', {
+                  type: 'button',
+                  className: 'sidebar__item' + (isActive ? ' sidebar__item--active' : ''),
+                  onClick: () => handleItemSelect(item),
+                  'aria-current': isActive ? 'page' : undefined
+                }, [
+                  React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__icon' }),
+                  collapsed ? null : React.createElement('span', { key: 'label', className: 'sidebar__label' }, item.label),
+                  collapsed ? null : badge
+                ].filter(Boolean))
+              );
+            })
+          )
+        ])
       )
-    ])
-  );
+    )
+  ]);
 }
 
 function BottomNavigation({ currentPage, onPageChange }) {
@@ -856,6 +934,221 @@ function PostSkeleton() {
   ]);
 }
 
+// Apple Podcasts-style Sidebar Component
+function PodcastSidebar({ currentPage, onPageChange }) {
+  return React.createElement('div', { className: 'sidebar' }, [
+    React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
+      React.createElement('h2', { style: { margin: 0, fontSize: '20px', fontWeight: '700', color: 'var(--ink-primary)' } }, 'The Office of Nils Johansson')
+    ]),
+    React.createElement('nav', { key: 'nav', className: 'sidebar__nav' }, [
+      // Primary navigation
+      React.createElement('div', { key: 'primary', className: 'sidebar__section' },
+        NAV_ITEMS.map(item =>
+          React.createElement('a', {
+            key: item.id,
+            href: '#',
+            className: `sidebar__nav-item ${currentPage === item.id ? 'active' : ''}`,
+            onClick: (e) => {
+              e.preventDefault();
+              onPageChange(item.id);
+            }
+          }, [
+            React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__nav-icon' }),
+            React.createElement('span', { key: 'label' }, item.label)
+          ])
+        )
+      ),
+      // Library section
+      React.createElement('div', { key: 'library', className: 'sidebar__section' }, [
+        React.createElement('h3', { key: 'title', className: 'sidebar__section-title' }, 'Library'),
+        ...LIBRARY_ITEMS.map(item =>
+          React.createElement('a', {
+            key: item.id,
+            href: '#',
+            className: `sidebar__nav-item ${currentPage === item.id ? 'active' : ''}`,
+            onClick: (e) => {
+              e.preventDefault();
+              onPageChange(item.id);
+            }
+          }, [
+            React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__nav-icon' }),
+            React.createElement('span', { key: 'label' }, item.label)
+          ])
+        )
+      ])
+    ])
+  ]);
+}
+
+// Main content area component
+function MainContentArea({ page, posts, downloads, about, onPostClick, isLoadingPosts }) {
+  const getPageTitle = () => {
+    switch(page) {
+      case 'home': return 'Home';
+      case 'new': return 'New';
+      case 'posts': return 'Posts';
+      case 'downloads': return 'Downloads';
+      case 'about': return 'About';
+      default: return 'Home';
+    }
+  };
+
+  const getFeaturedPosts = () => posts.slice(0, 3);
+  const getRecentPosts = () => posts.slice(0, 12);
+
+  if (page === 'home') {
+    return React.createElement('div', {}, [
+      React.createElement('div', { key: 'header', className: 'page-header' }, [
+        React.createElement('h1', { className: 'page-title' }, 'Home')
+      ]),
+
+      // Featured section
+      React.createElement('div', { key: 'featured', className: 'content-section' }, [
+        React.createElement('div', { key: 'header', className: 'section-header' }, [
+          React.createElement('div', {}, [
+            React.createElement('h2', { className: 'section-title' }, 'Up Next'),
+            React.createElement('p', { className: 'section-subtitle' }, 'Latest insights and dispatches')
+          ]),
+          React.createElement('a', { href: '#', className: 'see-all-link' }, 'See All')
+        ]),
+        React.createElement('div', { className: 'featured-grid' },
+          getFeaturedPosts().map(post =>
+            React.createElement(FeaturedCard, {
+              key: post.id,
+              post: post,
+              onClick: () => onPostClick(post)
+            })
+          )
+        )
+      ]),
+
+      // Recent posts grid
+      React.createElement('div', { key: 'recent', className: 'content-section' }, [
+        React.createElement('div', { key: 'header', className: 'section-header' }, [
+          React.createElement('h2', { className: 'section-title' }, 'You Might Like'),
+          React.createElement('a', { href: '#', className: 'see-all-link' }, 'See All')
+        ]),
+        React.createElement('div', { className: 'posts-grid' },
+          getRecentPosts().map(post =>
+            React.createElement(PostCard, {
+              key: post.id,
+              post: post,
+              onClick: () => onPostClick(post)
+            })
+          )
+        )
+      ])
+    ]);
+  }
+
+  if (page === 'posts') {
+    return React.createElement('div', {}, [
+      React.createElement('div', { key: 'header', className: 'page-header' }, [
+        React.createElement('h1', { className: 'page-title' }, 'Posts')
+      ]),
+      React.createElement('div', { className: 'posts-grid' },
+        posts.map(post =>
+          React.createElement(PostCard, {
+            key: post.id,
+            post: post,
+            onClick: () => onPostClick(post)
+          })
+        )
+      )
+    ]);
+  }
+
+  // Other pages...
+  return React.createElement('div', {}, [
+    React.createElement('div', { key: 'header', className: 'page-header' }, [
+      React.createElement('h1', { className: 'page-title' }, getPageTitle())
+    ]),
+    React.createElement('p', {}, `${getPageTitle()} content coming soon...`)
+  ]);
+}
+
+// Featured card component
+function FeaturedCard({ post, onClick }) {
+  return React.createElement('div', {
+    className: 'featured-card',
+    onClick: onClick
+  }, [
+    React.createElement('div', {
+      key: 'image',
+      className: 'featured-card__image',
+      style: post.thumbnail ? { backgroundImage: `url(${post.thumbnail})` } : {}
+    }),
+    React.createElement('div', { key: 'overlay', className: 'featured-card__overlay' }, [
+      React.createElement('div', { key: 'meta', className: 'featured-card__meta' },
+        `New • ${post.readingTime} min read • ${post.categoryLabel}`
+      ),
+      React.createElement('h3', { key: 'title', className: 'featured-card__title' }, post.title),
+      React.createElement('p', { key: 'subtitle', className: 'featured-card__subtitle' }, post.excerpt),
+      React.createElement('div', { key: 'actions', className: 'featured-card__actions' }, [
+        React.createElement('button', {
+          key: 'play',
+          className: 'play-button',
+          onClick: (e) => {
+            e.stopPropagation();
+            onClick();
+          }
+        }, [
+          React.createElement('span', { key: 'icon' }, '▶'),
+          React.createElement('span', { key: 'text' }, `${post.readingTime} min`)
+        ])
+      ])
+    ])
+  ]);
+}
+
+// Post card component
+function PostCard({ post, onClick }) {
+  return React.createElement('div', {
+    className: 'post-card',
+    onClick: onClick
+  }, [
+    React.createElement('div', {
+      key: 'image',
+      className: 'post-card__image',
+      style: post.thumbnail ? { backgroundImage: `url(${post.thumbnail})` } : {}
+    }, !post.thumbnail ? React.createElement(MonoIcon, { name: post.coverIcon }) : null),
+    React.createElement('div', { key: 'content', className: 'post-card__content' }, [
+      React.createElement('div', { key: 'category', className: 'post-card__category' }, post.categoryLabel),
+      React.createElement('h3', { key: 'title', className: 'post-card__title' }, post.title),
+      React.createElement('p', { key: 'meta', className: 'post-card__meta' }, `${post.readingTime} min read`)
+    ])
+  ]);
+}
+
+// Post detail view (similar to episode detail in Apple Podcasts)
+function PostDetailView({ post, onBack }) {
+  return React.createElement('div', { className: 'post-detail' }, [
+    React.createElement('button', {
+      key: 'back',
+      onClick: onBack,
+      style: {
+        background: 'none',
+        border: 'none',
+        color: 'var(--accent)',
+        fontSize: '16px',
+        marginBottom: '24px',
+        cursor: 'pointer'
+      }
+    }, '← Back'),
+    React.createElement('div', { key: 'header', className: 'post-detail__header' }, [
+      React.createElement('h1', { style: { fontSize: '32px', margin: '0 0 16px' } }, post.title),
+      React.createElement('div', { style: { color: 'var(--ink-tertiary)' } },
+        `${post.categoryLabel} • ${post.readingTime} min read • ${new Date(post.date).toLocaleDateString()}`
+      )
+    ]),
+    React.createElement('div', {
+      key: 'content',
+      className: 'content',
+      dangerouslySetInnerHTML: { __html: post.content }
+    })
+  ]);
+}
+
 function App() {
   const [page, setPage] = useState('home');
   const [posts, setPosts] = useState([]);
@@ -889,6 +1182,7 @@ function App() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const searchInputRef = useRef(null);
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     setIsLoadingPosts(true);
@@ -1083,6 +1377,19 @@ function App() {
     });
   }, []);
 
+  const handleSidebarToggle = useCallback((nextState) => {
+    setIsSidebarCollapsed((prev) => {
+      if (typeof nextState === 'boolean') {
+        return nextState;
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handleRevealSidebar = useCallback(() => {
+    setIsSidebarCollapsed(false);
+  }, []);
+
   const activePage = currentPost ? 'blog' : page;
   const heroExplore = useCallback(() => handleChangePage('blog'), [handleChangePage]);
 
@@ -1091,6 +1398,12 @@ function App() {
       setIsFilterMenuOpen(false);
     }
   }, [activePage]);
+
+  useEffect(() => {
+    if (currentPost) {
+      setIsSidebarCollapsed(true);
+    }
+  }, [currentPost]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -1150,6 +1463,18 @@ function App() {
     }
   } else if (activePage === 'about') {
     timelineItems = [React.createElement(AboutPage, { key: 'about', about, isLoading: isLoadingAbout })];
+  } else if (activePage === 'bookmarks') {
+    const savedList = bookmarkedPosts.length
+      ? PostList({ posts: bookmarkedPosts, onOpen: handleOpenPost })
+      : [
+          React.createElement('div', { className: 'empty-state', key: 'empty' }, [
+            React.createElement('h3', { key: 'title' }, 'Nothing saved yet'),
+            React.createElement('p', { key: 'copy' }, 'Tap the save icon on any journal entry to keep it handy here.')
+          ])
+        ];
+    timelineItems = [
+      React.createElement('section', { key: 'saved-grid', className: 'post-grid post-grid--saved' }, savedList)
+    ];
   } else {
     const filterElement = React.createElement(FilterMenu, {
       key: 'filters',
@@ -1238,32 +1563,30 @@ function App() {
   const handleBrandClick = useCallback(() => handleChangePage('home'), [handleChangePage]);
 
   return React.createElement('div', { className: 'app-shell' }, [
-    React.createElement(Navigation, {
-      key: 'nav',
-      currentPage: activePage,
-      onPageChange: handleChangePage,
-      onBrandClick: handleBrandClick
-    }),
-    React.createElement('div', { className: 'app-main' }, [
-      React.createElement('main', {
-        key: 'timeline',
-        className: 'timeline' + (currentPost ? ' timeline--detail' : '')
-      }, timelineItems),
-      React.createElement(InspectorPanel, {
-        key: 'inspector',
-        currentPost
-      })
-    ]),
-    React.createElement(BottomNavigation, {
-      key: 'bottom-nav',
+    React.createElement(PodcastSidebar, {
+      key: 'sidebar',
       currentPage: activePage,
       onPageChange: handleChangePage
     }),
-    React.createElement(BackToTopButton, {
-      key: 'back-to-top',
-      visible: showBackToTop,
-      onClick: scrollToTop
-    })
+    React.createElement('div', { className: 'main-content' }, [
+      React.createElement('div', { className: 'app-main' },
+        currentPost ?
+          React.createElement(PostDetailView, {
+            key: 'post-detail',
+            post: currentPost,
+            onBack: () => setCurrentPost(null)
+          }) :
+          React.createElement(MainContentArea, {
+            key: 'main-content',
+            page: activePage,
+            posts: filteredPosts,
+            downloads: downloads,
+            about: about,
+            onPostClick: setCurrentPost,
+            isLoadingPosts: isLoadingPosts
+          })
+      )
+    ])
   ]);
 }
 
