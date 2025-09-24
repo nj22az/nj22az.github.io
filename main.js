@@ -1041,6 +1041,113 @@ function InfiniteScrollFeed({ posts, onPostClick }) {
   ]);
 }
 
+// Journal Archive Component with Apple HIG sorting
+function JournalArchive({ posts, onPostClick }) {
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [showSortMenu, setShowSortMenu] = useState(false);
+
+  const sortOptions = [
+    { id: 'date-desc', label: 'Newest First', sortBy: 'date', order: 'desc' },
+    { id: 'date-asc', label: 'Oldest First', sortBy: 'date', order: 'asc' },
+    { id: 'title-asc', label: 'Title A-Z', sortBy: 'title', order: 'asc' },
+    { id: 'title-desc', label: 'Title Z-A', sortBy: 'title', order: 'desc' },
+    { id: 'content-asc', label: 'Content Type A-Z', sortBy: 'content_type', order: 'asc' },
+    { id: 'content-desc', label: 'Content Type Z-A', sortBy: 'content_type', order: 'desc' }
+  ];
+
+  const currentSortLabel = sortOptions.find(opt => opt.sortBy === sortBy && opt.order === sortOrder)?.label || 'Newest First';
+
+  const sortedPosts = useMemo(() => {
+    return [...posts].sort((a, b) => {
+      let aValue, bValue;
+
+      switch(sortBy) {
+        case 'date':
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case 'title':
+          aValue = a.title?.toLowerCase() || '';
+          bValue = b.title?.toLowerCase() || '';
+          break;
+        case 'content_type':
+          aValue = a.content_type?.toLowerCase() || '';
+          bValue = b.content_type?.toLowerCase() || '';
+          break;
+        default:
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+  }, [posts, sortBy, sortOrder]);
+
+  const handleSortChange = useCallback((option) => {
+    setSortBy(option.sortBy);
+    setSortOrder(option.order);
+    setShowSortMenu(false);
+  }, []);
+
+  return React.createElement('div', { className: 'journal-archive' }, [
+    // Journal Introduction
+    React.createElement('div', { key: 'intro', className: 'journal-intro' }, [
+      React.createElement('div', { className: 'journal-intro__content' }, [
+        React.createElement('h1', { className: 'journal-intro__title' }, 'Journal Archive'),
+        React.createElement('p', { className: 'journal-intro__text' },
+          'Welcome to my digital archive — a curated collection of thoughts, insights, and discoveries from my journey through engineering, travel, and culture. Each entry captures a moment of learning or reflection, organized for easy exploration.'
+        ),
+
+        // Apple HIG-style sort button
+        React.createElement('div', { className: 'journal-sort-container' }, [
+          React.createElement('button', {
+            className: `journal-sort-button ${showSortMenu ? 'active' : ''}`,
+            onClick: () => setShowSortMenu(!showSortMenu),
+            'aria-label': 'Sort journal entries'
+          }, [
+            React.createElement(MonoIcon, { key: 'icon', name: 'grid', className: 'journal-sort-icon' }),
+            React.createElement('span', { key: 'label', className: 'journal-sort-label' }, currentSortLabel),
+            React.createElement('span', { key: 'chevron', className: `journal-sort-chevron ${showSortMenu ? 'rotated' : ''}` }, '▼')
+          ]),
+
+          // Sort menu
+          showSortMenu && React.createElement('div', { className: 'journal-sort-menu' },
+            sortOptions.map(option =>
+              React.createElement('button', {
+                key: option.id,
+                className: `journal-sort-option ${option.sortBy === sortBy && option.order === sortOrder ? 'selected' : ''}`,
+                onClick: () => handleSortChange(option)
+              }, [
+                React.createElement('span', { key: 'label' }, option.label),
+                option.sortBy === sortBy && option.order === sortOrder &&
+                  React.createElement(MonoIcon, { key: 'check', name: 'badge-check', className: 'journal-sort-check' })
+              ])
+            )
+          )
+        ])
+      ])
+    ]),
+
+    // Journal entries grid
+    React.createElement('div', { key: 'entries', className: 'journal-entries' }, [
+      React.createElement('div', { className: 'journal-grid' },
+        sortedPosts.map(post =>
+          React.createElement(PostCard, {
+            key: post.id,
+            post: post,
+            onClick: () => onPostClick(post)
+          })
+        )
+      )
+    ])
+  ]);
+}
+
 // Feed Post Card Component (Facebook-style)
 function FeedPostCard({ post, onClick }) {
   const formatDate = (date) => {
@@ -1209,7 +1316,7 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
     switch(page) {
       case 'home': return 'Home';
       case 'new': return 'New';
-      case 'posts': return 'Posts';
+      case 'posts': return 'Journal';
       case 'downloads': return 'Downloads';
       case 'about': return 'About';
       default: return 'Home';
@@ -1227,20 +1334,10 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
   }
 
   if (page === 'posts') {
-    return React.createElement('div', {}, [
-      React.createElement('div', { key: 'header', className: 'page-header' }, [
-        React.createElement('h1', { className: 'page-title' }, 'Posts')
-      ]),
-      React.createElement('div', { className: 'posts-grid' },
-        posts.map(post =>
-          React.createElement(PostCard, {
-            key: post.id,
-            post: post,
-            onClick: () => onPostClick(post)
-          })
-        )
-      )
-    ]);
+    return React.createElement(JournalArchive, {
+      posts: posts,
+      onPostClick: onPostClick
+    });
   }
 
   if (page === 'about') {
