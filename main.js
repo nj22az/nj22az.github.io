@@ -981,6 +981,68 @@ function PodcastSidebar({ currentPage, onPageChange }) {
   ]);
 }
 
+// About page component with scroll effects
+function AboutPageWithScroll({ about }) {
+  useEffect(() => {
+    const handleScroll = () => {
+      const hero = document.getElementById('about-hero');
+      const background = hero?.querySelector('.about-hero-large__background');
+      const content = hero?.querySelector('.about-hero-large__content');
+
+      if (hero && background && content) {
+        const scrollY = window.scrollY;
+        const heroHeight = hero.offsetHeight;
+        const scrollProgress = Math.min(scrollY / (heroHeight * 0.5), 1);
+
+        // Parallax background movement
+        const translateY = scrollY * 0.5;
+        const scale = 1 + (scrollProgress * 0.1);
+        const blur = scrollProgress * 8;
+
+        background.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        background.style.filter = `blur(${blur}px)`;
+
+        // Fade out content as user scrolls
+        content.style.opacity = `${1 - scrollProgress}`;
+        content.style.transform = `translateY(${scrollY * 0.3}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return React.createElement('div', { className: 'about-page' }, [
+    // Apple-style hero section with morphing background
+    React.createElement('div', {
+      key: 'hero',
+      className: 'about-hero-large',
+      id: 'about-hero'
+    }, [
+      React.createElement('div', { className: 'about-hero-large__background' }),
+      React.createElement('div', { className: 'about-hero-large__content' }, [
+        React.createElement('div', { className: 'about-hero-large__text' }, [
+          React.createElement('h1', { className: 'about-hero-large__title' }, 'Nils Johansson'),
+          React.createElement('p', { className: 'about-hero-large__subtitle' }, 'Field Service Engineer'),
+          React.createElement('p', { className: 'about-hero-large__description' },
+            'Bridging offshore experience with onshore execution'
+          )
+        ])
+      ])
+    ]),
+
+    // Content section with about content from about.md
+    about ? React.createElement('div', {
+      key: 'about-content',
+      className: 'about-content-section',
+      dangerouslySetInnerHTML: { __html: about.content }
+    }) : React.createElement('div', {
+      key: 'loading',
+      className: 'about-loading'
+    }, 'Loading about content...')
+  ]);
+}
+
 // Main content area component
 function MainContentArea({ page, posts, downloads, about, onPostClick, isLoadingPosts }) {
   const getPageTitle = () => {
@@ -1060,71 +1122,7 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
   }
 
   if (page === 'about') {
-    return React.createElement('div', {}, [
-      React.createElement('div', { key: 'about-hero', className: 'about-hero' }, [
-        React.createElement('div', { className: 'about-hero__content' }, [
-          React.createElement('div', { key: 'avatar', className: 'about-hero__avatar' }, [
-            React.createElement('img', {
-              src: '/assets/images/nils-profile.jpg',
-              alt: 'Nils Johansson',
-              className: 'about-hero__image'
-            })
-          ]),
-          React.createElement('div', { key: 'text', className: 'about-hero__text' }, [
-            React.createElement('h1', { className: 'about-hero__title' }, 'Nils Johansson'),
-            React.createElement('p', { className: 'about-hero__subtitle' }, 'Field Service Engineer'),
-            React.createElement('p', { className: 'about-hero__description' },
-              'Field service engineer in perpetual motion. I keep complex deployments on schedule by translating technical chaos into clear, shareable plans. Marine engineering roots taught me to listen to the machinery first, then speak calmly to the people who depend on it.'
-            )
-          ])
-        ])
-      ]),
-
-      React.createElement('div', { key: 'about-video-section', className: 'about-video-section' }, [
-        React.createElement('h2', { className: 'section-title' }, 'High Seas to High Tech'),
-        React.createElement('p', { className: 'section-subtitle' }, 'A quick look at how I bridge deployments from offshore to on-site execution'),
-        React.createElement('div', { className: 'video-container' }, [
-          React.createElement('iframe', {
-            src: 'https://www.youtube.com/embed/YU1sK4GqEXs',
-            title: 'High Seas to High Tech',
-            frameBorder: '0',
-            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
-            allowFullScreen: true
-          })
-        ])
-      ]),
-
-      React.createElement('div', { key: 'about-content', className: 'about-content' }, [
-        React.createElement('div', { className: 'content-section' }, [
-          React.createElement('h2', { className: 'section-title' }, 'What You\'ll Find Here'),
-          React.createElement('div', { className: 'feature-grid' }, [
-            React.createElement('div', { className: 'feature-card' }, [
-              React.createElement('div', { className: 'feature-card__icon' }, '📋'),
-              React.createElement('h3', { className: 'feature-card__title' }, 'Dispatches & Checklists'),
-              React.createElement('p', { className: 'feature-card__description' }, 'Real-world insights captured after on-site engagements, ready for your next deployment.')
-            ]),
-            React.createElement('div', { className: 'feature-card' }, [
-              React.createElement('div', { className: 'feature-card__icon' }, '🌍'),
-              React.createElement('h3', { className: 'feature-card__title' }, 'Culture Briefs'),
-              React.createElement('p', { className: 'feature-card__description' }, 'Navigation guides for teams crossing borders, ports, and diverse work styles.')
-            ]),
-            React.createElement('div', { className: 'feature-card' }, [
-              React.createElement('div', { className: 'feature-card__icon' }, '🛠️'),
-              React.createElement('h3', { className: 'feature-card__title' }, 'Toolkits & Runbooks'),
-              React.createElement('p', { className: 'feature-card__description' }, 'Downloads and documentation designed to scale beyond a single job or project.')
-            ])
-          ])
-        ]),
-
-        React.createElement('div', { className: 'content-section' }, [
-          React.createElement('h2', { className: 'section-title' }, 'Why I Publish These Notes'),
-          React.createElement('div', { className: 'philosophy-content' }, [
-            React.createElement('p', {}, 'Every engagement improves when information moves faster than the stress. These entries exist so the next crew can see the pressure points before they board and stay aligned when the unexpected hits.'),
-            React.createElement('p', {}, 'If you\'re gearing up for a similar deployment, take what you need, remix it, and ship safely.')
-          ])
-        ])
-      ])
-    ]);
+    return React.createElement(AboutPageWithScroll, { about: about });
   }
 
   // Other pages...
