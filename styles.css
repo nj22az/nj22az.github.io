@@ -288,6 +288,96 @@ button:focus-visible,
   opacity: 0.8;
 }
 
+.sidebar__footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--separator);
+  margin-top: auto;
+}
+
+.sidebar__footer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  color: var(--ink-tertiary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar__footer-link:hover {
+  color: var(--ink-secondary);
+}
+
+.sidebar__footer-link.active {
+  color: var(--accent);
+}
+
+.sidebar__footer-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+/* Mobile Header */
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--surface-sidebar);
+  border-bottom: 1px solid var(--separator);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.mobile-header__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin: 0;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  gap: 4px;
+}
+
+.hamburger-line {
+  width: 22px;
+  height: 2px;
+  background: var(--ink-primary);
+  transition: all 0.3s ease;
+  border-radius: 1px;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+}
+
 .main-content {
   flex: 1;
   margin-left: 260px;
@@ -2496,21 +2586,31 @@ button:focus-visible,
 
 /* Mobile responsive styles for Apple Podcasts layout */
 @media (max-width: 768px) {
+  .mobile-header {
+    display: flex;
+  }
+
   .sidebar {
-    width: 100%;
+    width: 280px;
     position: fixed;
     top: 0;
-    left: -100%;
+    left: -280px;
     transition: left 0.3s ease;
     z-index: 200;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   }
 
   .sidebar.open {
     left: 0;
   }
 
+  .sidebar-overlay {
+    display: block;
+  }
+
   .main-content {
     margin-left: 0;
+    padding-top: 60px;
   }
 
   .app-main {

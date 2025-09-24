@@ -97,18 +97,13 @@ function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }
 }
 
 const NAV_ITEMS = [
-  { id: 'search', label: 'Search', icon: 'search' },
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'new', label: 'New', icon: 'plus' }
+  { id: 'posts', label: 'Journal', icon: 'journal' },
+  { id: 'downloads', label: 'Downloads', icon: 'download' }
 ];
 
 const LIBRARY_ITEMS = [
-  { id: 'recently-updated', label: 'Recently Updated', icon: 'clock' },
-  { id: 'posts', label: 'Posts', icon: 'journal' },
-  { id: 'categories', label: 'Categories', icon: 'grid' },
-  { id: 'saved', label: 'Saved', icon: 'bookmark' },
-  { id: 'downloads', label: 'Downloads', icon: 'download' },
-  { id: 'about', label: 'About', icon: 'user' }
+  // Removed - items moved to main navigation or footer
 ];
 
 const SIDEBAR_SECTIONS = [
@@ -935,9 +930,29 @@ function PostSkeleton() {
   ]);
 }
 
+// Mobile Header with Hamburger Menu
+function MobileHeader({ onToggleSidebar, isSidebarOpen }) {
+  return React.createElement('div', { className: 'mobile-header' }, [
+    React.createElement('button', {
+      key: 'hamburger',
+      className: 'hamburger-menu',
+      onClick: onToggleSidebar,
+      'aria-label': 'Toggle navigation menu'
+    }, [
+      React.createElement('span', { key: 'line1', className: 'hamburger-line' }),
+      React.createElement('span', { key: 'line2', className: 'hamburger-line' }),
+      React.createElement('span', { key: 'line3', className: 'hamburger-line' })
+    ]),
+    React.createElement('h2', {
+      key: 'title',
+      className: 'mobile-header__title'
+    }, 'The Office of Nils Johansson')
+  ]);
+}
+
 // Apple Podcasts-style Sidebar Component
-function PodcastSidebar({ currentPage, onPageChange }) {
-  return React.createElement('div', { className: 'sidebar' }, [
+function PodcastSidebar({ currentPage, onPageChange, isOpen, onClose }) {
+  return React.createElement('div', { className: `sidebar${isOpen ? ' open' : ''}` }, [
     React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
       React.createElement('h2', { style: { margin: 0, fontSize: '20px', fontWeight: '700', color: 'var(--ink-primary)' } }, 'The Office of Nils Johansson')
     ]),
@@ -958,24 +973,21 @@ function PodcastSidebar({ currentPage, onPageChange }) {
             React.createElement('span', { key: 'label' }, item.label)
           ])
         )
-      ),
-      // Library section
-      React.createElement('div', { key: 'library', className: 'sidebar__section' }, [
-        React.createElement('h3', { key: 'title', className: 'sidebar__section-title' }, 'Library'),
-        ...LIBRARY_ITEMS.map(item =>
-          React.createElement('a', {
-            key: item.id,
-            href: '#',
-            className: `sidebar__nav-item ${currentPage === item.id ? 'active' : ''}`,
-            onClick: (e) => {
-              e.preventDefault();
-              onPageChange(item.id);
-            }
-          }, [
-            React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__nav-icon' }),
-            React.createElement('span', { key: 'label' }, item.label)
-          ])
-        )
+      )
+    ]),
+    // About footer link
+    React.createElement('div', { key: 'footer', className: 'sidebar__footer' }, [
+      React.createElement('a', {
+        key: 'about',
+        href: '#',
+        className: `sidebar__footer-link ${currentPage === 'about' ? 'active' : ''}`,
+        onClick: (e) => {
+          e.preventDefault();
+          onPageChange('about');
+        }
+      }, [
+        React.createElement(MonoIcon, { key: 'icon', name: 'user', className: 'sidebar__footer-icon' }),
+        React.createElement('span', { key: 'label' }, 'About')
       ])
     ])
   ]);
@@ -1229,6 +1241,7 @@ function App() {
   const [isLoadingDownloads, setIsLoadingDownloads] = useState(true);
   const [about, setAbout] = useState(null);
   const [isLoadingAbout, setIsLoadingAbout] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState(() => {
     if (typeof window === 'undefined') {
       return new Set();
@@ -1628,10 +1641,22 @@ function App() {
   const handleBrandClick = useCallback(() => handleChangePage('home'), [handleChangePage]);
 
   return React.createElement('div', { className: 'app-shell' }, [
+    React.createElement(MobileHeader, {
+      key: 'mobile-header',
+      onToggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
+      isSidebarOpen: isSidebarOpen
+    }),
+    isSidebarOpen && React.createElement('div', {
+      key: 'overlay',
+      className: 'sidebar-overlay',
+      onClick: () => setIsSidebarOpen(false)
+    }),
     React.createElement(PodcastSidebar, {
       key: 'sidebar',
       currentPage: activePage,
-      onPageChange: handleChangePage
+      onPageChange: handleChangePage,
+      isOpen: isSidebarOpen,
+      onClose: () => setIsSidebarOpen(false)
     }),
     React.createElement('div', { className: 'main-content' }, [
       React.createElement('div', { className: 'app-main' },

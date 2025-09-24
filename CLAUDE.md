@@ -115,7 +115,7 @@ about.json             # Auto-generated from about.md
 
 ## Development Notes
 
-- Ruby 3.4+ required (PATH configured in `~/.zshrc`)
+- Ruby 3.4.6+ required with Jekyll 4.4.1 and plugins (jekyll-feed, jekyll-seo-tag, jekyll-sitemap)
 - No package.json - uses Jekyll for build, React via CDN
 - Jekyll's `_site/` and `.jekyll-cache/` are git-ignored
 - GitHub Pages handles deployment automatically
