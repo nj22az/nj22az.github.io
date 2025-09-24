@@ -950,6 +950,154 @@ function MobileHeader({ onToggleSidebar, isSidebarOpen }) {
   ]);
 }
 
+// Infinite Scroll Feed Component for Home Page
+function InfiniteScrollFeed({ posts, onPostClick }) {
+  const [displayedPosts, setDisplayedPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const postsPerPage = 5;
+
+  // Sort posts by date (newest first)
+  const sortedPosts = useMemo(() => {
+    return [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [posts]);
+
+  // Initialize with first batch
+  useEffect(() => {
+    if (sortedPosts.length > 0) {
+      setDisplayedPosts(sortedPosts.slice(0, postsPerPage));
+      setHasMore(sortedPosts.length > postsPerPage);
+    }
+  }, [sortedPosts]);
+
+  // Load more posts
+  const loadMore = useCallback(() => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    setTimeout(() => {
+      const currentLength = displayedPosts.length;
+      const nextBatch = sortedPosts.slice(currentLength, currentLength + postsPerPage);
+
+      if (nextBatch.length > 0) {
+        setDisplayedPosts(prev => [...prev, ...nextBatch]);
+        setHasMore(currentLength + nextBatch.length < sortedPosts.length);
+      } else {
+        setHasMore(false);
+      }
+      setIsLoading(false);
+    }, 800); // Simulate loading delay
+  }, [displayedPosts.length, sortedPosts, isLoading, hasMore]);
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+        loadMore();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMore]);
+
+  return React.createElement('div', { className: 'infinite-scroll-feed' }, [
+    // Introduction section
+    React.createElement('div', { key: 'intro', className: 'feed-intro' }, [
+      React.createElement('div', { className: 'feed-intro__content' }, [
+        React.createElement('h1', { className: 'feed-intro__title' }, 'Welcome to my Office'),
+        React.createElement('p', { className: 'feed-intro__text' },
+          'Join me as I share insights from engineering, travel, and culture. Discover stories that blend technical expertise with global curiosity — your next great read awaits below.'
+        ),
+        React.createElement('div', { className: 'feed-intro__cta' }, [
+          React.createElement('span', { className: 'feed-intro__arrow' }, '👇'),
+          React.createElement('span', { className: 'feed-intro__cta-text' }, 'Start reading')
+        ])
+      ])
+    ]),
+
+    // Posts feed
+    React.createElement('div', { key: 'feed', className: 'posts-feed' },
+      displayedPosts.map(post =>
+        React.createElement(FeedPostCard, {
+          key: post.id,
+          post: post,
+          onClick: () => onPostClick(post)
+        })
+      )
+    ),
+
+    // Loading indicator
+    isLoading && React.createElement('div', { key: 'loading', className: 'feed-loading' }, [
+      React.createElement('div', { className: 'loading-spinner' }),
+      React.createElement('span', { className: 'loading-text' }, 'Loading more posts...')
+    ]),
+
+    // End message
+    !hasMore && displayedPosts.length > 0 && React.createElement('div', { key: 'end', className: 'feed-end' }, [
+      React.createElement('p', { className: 'feed-end__text' }, 'You\'ve reached the end! 🎉'),
+      React.createElement('p', { className: 'feed-end__subtext' }, 'Thanks for reading all my posts.')
+    ])
+  ]);
+}
+
+// Feed Post Card Component (Facebook-style)
+function FeedPostCard({ post, onClick }) {
+  const formatDate = (date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diffTime = now - postDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return postDate.toLocaleDateString();
+  };
+
+  return React.createElement('article', {
+    className: 'feed-post-card',
+    onClick: onClick
+  }, [
+    React.createElement('div', { key: 'header', className: 'feed-post-card__header' }, [
+      React.createElement('div', { className: 'feed-post-card__meta' }, [
+        React.createElement('span', { className: 'feed-post-card__author' }, 'Nils Johansson'),
+        React.createElement('span', { className: 'feed-post-card__dot' }, '•'),
+        React.createElement('span', { className: 'feed-post-card__date' }, formatDate(post.date))
+      ]),
+      post.cover_icon && React.createElement(MonoIcon, {
+        key: 'icon',
+        name: post.cover_icon,
+        className: 'feed-post-card__icon'
+      })
+    ]),
+
+    React.createElement('div', { key: 'content', className: 'feed-post-card__content' }, [
+      React.createElement('h2', { className: 'feed-post-card__title' }, post.title),
+      post.excerpt && React.createElement('p', { className: 'feed-post-card__excerpt' }, post.excerpt),
+
+      post.thumbnail && React.createElement('div', { className: 'feed-post-card__image' }, [
+        React.createElement('img', {
+          src: post.thumbnail,
+          alt: post.title,
+          loading: 'lazy'
+        })
+      ]),
+
+      React.createElement('div', { className: 'feed-post-card__footer' }, [
+        post.content_type && React.createElement('span', { className: 'feed-post-card__type' }, post.content_type),
+        post.reading_time && React.createElement('span', { className: 'feed-post-card__reading-time' }, `${post.reading_time} min read`),
+        post.tags && post.tags.length > 0 && React.createElement('div', { className: 'feed-post-card__tags' },
+          post.tags.slice(0, 3).map(tag =>
+            React.createElement('span', { key: tag, className: 'feed-post-card__tag' }, `#${tag}`)
+          )
+        )
+      ])
+    ])
+  ]);
+}
+
 // Apple Podcasts-style Sidebar Component
 function PodcastSidebar({ currentPage, onPageChange, isOpen, onClose }) {
   return React.createElement('div', { className: `sidebar${isOpen ? ' open' : ''}` }, [
@@ -1072,48 +1220,10 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
   const getRecentPosts = () => posts.slice(0, 12);
 
   if (page === 'home') {
-    return React.createElement('div', {}, [
-      React.createElement('div', { key: 'header', className: 'page-header' }, [
-        React.createElement('h1', { className: 'page-title' }, 'Home')
-      ]),
-
-      // Featured section
-      React.createElement('div', { key: 'featured', className: 'content-section' }, [
-        React.createElement('div', { key: 'header', className: 'section-header' }, [
-          React.createElement('div', {}, [
-            React.createElement('h2', { className: 'section-title' }, 'Up Next'),
-            React.createElement('p', { className: 'section-subtitle' }, 'Latest insights and dispatches')
-          ]),
-          React.createElement('a', { href: '#', className: 'see-all-link' }, 'See All')
-        ]),
-        React.createElement('div', { className: 'featured-grid' },
-          getFeaturedPosts().map(post =>
-            React.createElement(FeaturedCard, {
-              key: post.id,
-              post: post,
-              onClick: () => onPostClick(post)
-            })
-          )
-        )
-      ]),
-
-      // Recent posts grid
-      React.createElement('div', { key: 'recent', className: 'content-section' }, [
-        React.createElement('div', { key: 'header', className: 'section-header' }, [
-          React.createElement('h2', { className: 'section-title' }, 'You Might Like'),
-          React.createElement('a', { href: '#', className: 'see-all-link' }, 'See All')
-        ]),
-        React.createElement('div', { className: 'posts-grid' },
-          getRecentPosts().map(post =>
-            React.createElement(PostCard, {
-              key: post.id,
-              post: post,
-              onClick: () => onPostClick(post)
-            })
-          )
-        )
-      ])
-    ]);
+    return React.createElement(InfiniteScrollFeed, {
+      posts: posts,
+      onPostClick: onPostClick
+    });
   }
 
   if (page === 'posts') {
