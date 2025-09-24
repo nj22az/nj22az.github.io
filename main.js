@@ -1079,11 +1079,51 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
           ])
         ])
       ]),
-      about ? React.createElement('div', {
-        key: 'about-content',
-        className: 'content',
-        dangerouslySetInnerHTML: { __html: about.content }
-      }) : React.createElement('p', { key: 'loading' }, 'Loading about content...')
+
+      React.createElement('div', { key: 'about-video-section', className: 'about-video-section' }, [
+        React.createElement('h2', { className: 'section-title' }, 'High Seas to High Tech'),
+        React.createElement('p', { className: 'section-subtitle' }, 'A quick look at how I bridge deployments from offshore to on-site execution'),
+        React.createElement('div', { className: 'video-container' }, [
+          React.createElement('iframe', {
+            src: 'https://www.youtube.com/embed/YU1sK4GqEXs',
+            title: 'High Seas to High Tech',
+            frameBorder: '0',
+            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+            allowFullScreen: true
+          })
+        ])
+      ]),
+
+      React.createElement('div', { key: 'about-content', className: 'about-content' }, [
+        React.createElement('div', { className: 'content-section' }, [
+          React.createElement('h2', { className: 'section-title' }, 'What You\'ll Find Here'),
+          React.createElement('div', { className: 'feature-grid' }, [
+            React.createElement('div', { className: 'feature-card' }, [
+              React.createElement('div', { className: 'feature-card__icon' }, '📋'),
+              React.createElement('h3', { className: 'feature-card__title' }, 'Dispatches & Checklists'),
+              React.createElement('p', { className: 'feature-card__description' }, 'Real-world insights captured after on-site engagements, ready for your next deployment.')
+            ]),
+            React.createElement('div', { className: 'feature-card' }, [
+              React.createElement('div', { className: 'feature-card__icon' }, '🌍'),
+              React.createElement('h3', { className: 'feature-card__title' }, 'Culture Briefs'),
+              React.createElement('p', { className: 'feature-card__description' }, 'Navigation guides for teams crossing borders, ports, and diverse work styles.')
+            ]),
+            React.createElement('div', { className: 'feature-card' }, [
+              React.createElement('div', { className: 'feature-card__icon' }, '🛠️'),
+              React.createElement('h3', { className: 'feature-card__title' }, 'Toolkits & Runbooks'),
+              React.createElement('p', { className: 'feature-card__description' }, 'Downloads and documentation designed to scale beyond a single job or project.')
+            ])
+          ])
+        ]),
+
+        React.createElement('div', { className: 'content-section' }, [
+          React.createElement('h2', { className: 'section-title' }, 'Why I Publish These Notes'),
+          React.createElement('div', { className: 'philosophy-content' }, [
+            React.createElement('p', {}, 'Every engagement improves when information moves faster than the stress. These entries exist so the next crew can see the pressure points before they board and stay aligned when the unexpected hits.'),
+            React.createElement('p', {}, 'If you\'re gearing up for a similar deployment, take what you need, remix it, and ship safely.')
+          ])
+        ])
+      ])
     ]);
   }
 
@@ -1490,8 +1530,6 @@ function App() {
     } else {
       timelineItems = baseItems;
     }
-  } else if (activePage === 'about') {
-    timelineItems = [React.createElement(AboutPage, { key: 'about', about, isLoading: isLoadingAbout })];
   } else if (activePage === 'bookmarks') {
     const savedList = bookmarkedPosts.length
       ? PostList({ posts: bookmarkedPosts, onOpen: handleOpenPost })
