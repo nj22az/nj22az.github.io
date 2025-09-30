@@ -46,6 +46,38 @@ header h1 {
   letter-spacing: -0.02em !important;
 }
 
+/* Back Button - iOS Native Style */
+.back-button {
+  color: var(--color-accent) !important;
+  background: transparent !important;
+  padding: 8px 12px 8px 8px !important;
+  border-radius: 10px !important;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 500 !important;
+  font-size: 17px !important;
+  box-shadow: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.back-button:hover {
+  background: var(--color-accent-light) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.back-button:active {
+  background: rgba(153, 102, 255, 0.25) !important;
+  transform: scale(0.97) !important;
+}
+
+.back-button svg {
+  color: var(--color-accent) !important;
+}
+
 /* Form Card Styling */
 .lg\:col-span-1 > div,
 .lg\:col-span-2 > div {

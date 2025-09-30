@@ -5,6 +5,7 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { generateScrutinyReport } from './services/geminiService';
 import { AssessmentForm } from './components/AssessmentForm';
 import { AssessmentList } from './components/AssessmentList';
+import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
 
 function App() {
   const [assessments, setAssessments] = useLocalStorage<Assessment[]>('hotel-assessments', []);
@@ -62,13 +63,27 @@ function App() {
     setAssessments((prev) => prev.filter((assessment) => assessment.id !== id));
   };
 
+  const handleBackToMain = () => {
+    window.location.href = '/';
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto py-3 sm:py-5 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-lg sm:text-2xl font-bold leading-tight text-gray-900 tracking-tight">
-            Hotel Journal - By Nils Johansson
-          </h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBackToMain}
+              className="back-button flex items-center gap-1 text-sm font-medium"
+              aria-label="Back to main site"
+            >
+              <ChevronLeftIcon className="w-5 h-5" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+            <h1 className="text-lg sm:text-2xl font-bold leading-tight text-gray-900 tracking-tight">
+              Hotel Journal - By Nils Johansson
+            </h1>
+          </div>
         </div>
       </header>
       <main>
