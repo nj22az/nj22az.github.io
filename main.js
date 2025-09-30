@@ -1,5 +1,58 @@
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
+function syncBrowserThemeColor() {
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (!themeMeta) {
+    return;
+  }
+
+  const navMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
+  const tileMeta = document.querySelector('meta[name="msapplication-TileColor"]');
+
+  const applyColor = () => {
+    const surface = getComputedStyle(document.documentElement)
+      .getPropertyValue('--surface-page')
+      .trim();
+
+    if (!surface) {
+      return;
+    }
+
+    themeMeta.setAttribute('content', surface);
+
+    if (navMeta) {
+      navMeta.setAttribute('content', surface);
+    }
+
+    if (tileMeta) {
+      tileMeta.setAttribute('content', surface);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyColor, { once: true });
+  } else {
+    applyColor();
+  }
+
+  window.addEventListener('load', applyColor, { once: true });
+
+  const mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (!mediaQuery) {
+    return;
+  }
+
+  const listener = () => applyColor();
+
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', listener);
+  } else if (typeof mediaQuery.addListener === 'function') {
+    mediaQuery.addListener(listener);
+  }
+}
+
+syncBrowserThemeColor();
+
 function stripHtml(html) {
   if (!html) return '';
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();

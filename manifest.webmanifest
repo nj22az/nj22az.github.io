@@ -1,0 +1,17 @@
+{
+  "name": "Nils Johansson — Field Notes & Journal",
+  "short_name": "Field Notes",
+  "start_url": "/",
+  "display": "minimal-ui",
+  "background_color": "#1c1c1e",
+  "theme_color": "#1c1c1e",
+  "description": "Engineering stories, deployment frameworks, and calm reflections from field service engineer Nils Johansson.",
+  "icons": [
+    {
+      "src": "/assets/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

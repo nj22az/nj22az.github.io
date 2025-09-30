@@ -6,6 +6,23 @@
   box-sizing: border-box;
 }
 
+body {
+  background: var(--surface-page) !important;
+  color: var(--ink-primary);
+}
+
+.app-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--surface-page);
+  color: var(--ink-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
 /* Assessment App Specific Overrides */
 .app-main {
   max-width: var(--content-max-width);
@@ -14,12 +31,15 @@
 }
 
 /* Form Container - Match main site .content form styling */
-form, .bg-white.shadow-sm.rounded-lg {
-  background: var(--surface-card) !important;
-  border: 1px solid var(--separator) !important;
+form,
+.bg-white.shadow-sm.rounded-lg {
+  background: rgba(44, 44, 46, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: var(--card-radius) !important;
   padding: clamp(1.2rem, 3vw, 1.8rem) !important;
   box-shadow: var(--shadow-soft) !important;
+  backdrop-filter: saturate(180%) blur(24px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(24px) !important;
 }
 
 /* Form Labels */
@@ -41,10 +61,10 @@ select {
   width: 100% !important;
   min-height: 44px !important;
   border-radius: var(--radius-medium) !important;
-  border: 1px solid var(--separator) !important;
+  border: 1px solid rgba(84, 84, 88, 0.4) !important;
   padding: 0.7rem 0.9rem !important;
   font-size: var(--font-body) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(44, 44, 46, 0.85) !important;
   color: var(--ink-primary) !important;
   transition: all 0.2s ease !important;
   box-shadow: none !important;
@@ -63,17 +83,17 @@ textarea::placeholder {
 input:hover,
 textarea:hover,
 select:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(58, 58, 60, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.22) !important;
   outline: none !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(58, 58, 60, 0.92) !important;
 }
 
 /* Buttons - Override Tailwind to use main site pill-button style */
@@ -86,7 +106,7 @@ button {
   border-radius: 999px !important;
   background: var(--accent-soft) !important;
   color: var(--ink-primary) !important;
-  border: 1px solid var(--separator) !important;
+  border: 1px solid rgba(84, 84, 88, 0.45) !important;
   min-height: 44px !important;
   font-weight: 600 !important;
   font-size: var(--font-body) !important;
@@ -96,7 +116,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(10, 132, 255, 0.18) !important;
 }
 
 button:disabled {
@@ -118,14 +138,14 @@ button[type="submit"]:hover:not(:disabled) {
 /* Destructive buttons */
 button.text-red-600,
 button.hover\:text-red-700 {
-  background: rgba(255, 69, 58, 0.15) !important;
-  color: rgb(255, 105, 97) !important;
-  border-color: rgba(255, 69, 58, 0.3) !important;
+  background: rgba(255, 69, 58, 0.18) !important;
+  color: var(--system-red) !important;
+  border-color: rgba(255, 69, 58, 0.32) !important;
 }
 
 button.text-red-600:hover,
 button.hover\:text-red-700:hover {
-  background: rgba(255, 69, 58, 0.25) !important;
+  background: rgba(255, 69, 58, 0.28) !important;
 }
 
 /* Pill/Tag buttons */
@@ -139,12 +159,12 @@ button.rounded-full {
 button.bg-indigo-100 {
   background: var(--accent-soft) !important;
   color: var(--accent-contrast) !important;
-  border-color: rgba(153, 102, 255, 0.3) !important;
+  border-color: rgba(10, 132, 255, 0.3) !important;
 }
 
 button.border-gray-300 {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: var(--separator) !important;
+  background: rgba(58, 58, 60, 0.7) !important;
+  border-color: rgba(84, 84, 88, 0.4) !important;
   color: var(--ink-secondary) !important;
 }
 
@@ -168,12 +188,12 @@ button.border-gray-300 {
 
 /* Error Banner */
 .error-banner {
-  background: rgba(255, 69, 58, 0.15);
-  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: rgba(255, 69, 58, 0.18);
+  border: 1px solid rgba(255, 69, 58, 0.32);
   border-radius: var(--radius-medium);
   padding: 16px;
   margin-bottom: 24px;
-  color: rgb(255, 105, 97);
+  color: var(--system-red);
 }
 
 /* Assessment Database Header */
@@ -193,17 +213,19 @@ button.border-gray-300 {
 
 /* Assessment Cards */
 .assessment-card {
-  background: var(--surface-card);
-  border: 1px solid var(--separator);
+  background: rgba(44, 44, 46, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--card-radius);
   padding: 20px;
   margin-bottom: 16px;
   box-shadow: var(--shadow-soft);
   transition: all 0.2s ease;
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
 }
 
 .assessment-card:hover {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-elevated);
   transform: translateY(-2px);
 }
 
@@ -245,7 +267,7 @@ button.border-gray-300 {
   gap: 8px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--separator);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Chevron Icon */
