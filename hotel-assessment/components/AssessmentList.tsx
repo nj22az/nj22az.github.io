@@ -15,13 +15,13 @@ const Toggle: React.FC<{ isEnabled: boolean; onToggle: () => void; label: string
         <button
             onClick={onToggle}
             type="button"
-            className={`${isEnabled ? 'bg-red-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2`}
+            className={`journal-toggle ${isEnabled ? 'bg-red-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2`}
             role="switch"
             aria-checked={isEnabled}
         >
             <span
                 aria-hidden="true"
-                className={`${isEnabled ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
+                className={`${isEnabled ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out toggle-thumb`}
             />
         </button>
     </div>
@@ -83,7 +83,7 @@ export const AssessmentList: React.FC<AssessmentListProps> = ({ assessments, onD
       const link = document.createElement('a');
       link.href = url;
       const date = new Date().toISOString().split('T')[0];
-      link.download = `hotel_assessments_${date}.csv`;
+      link.download = `hotel_journal_${date}.csv`;
       
       document.body.appendChild(link);
       link.click();
@@ -95,9 +95,9 @@ export const AssessmentList: React.FC<AssessmentListProps> = ({ assessments, onD
   };
 
   return (
-    <div>
-      <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Assessment Database</h2>
+    <div className="journal-panel journal-panel--list">
+      <div className="flex flex-wrap gap-4 justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Hotel Journal Archive</h2>
         <div className="flex items-center gap-4">
           {assessments.some(a => a.hasSeriousIssues) && (
              <Toggle 
@@ -110,17 +110,17 @@ export const AssessmentList: React.FC<AssessmentListProps> = ({ assessments, onD
             <button
               onClick={handleExportCSV}
               disabled={isExporting}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
-              aria-label="Export all assessments to CSV"
+              className="journal-button journal-button--ghost"
+              aria-label="Export all journal entries to CSV"
             >
               {isExporting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="journal-button__spinner" aria-hidden="true" />
                   Exporting...
                 </>
               ) : (
                 <>
-                  <DownloadIcon className="w-4 h-4" />
+                  <DownloadIcon className="journal-button__icon" />
                   Export CSV
                 </>
               )}
@@ -130,23 +130,23 @@ export const AssessmentList: React.FC<AssessmentListProps> = ({ assessments, onD
       </div>
 
       {assessments.length === 0 ? (
-        <div className="text-center py-20 px-6 bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col justify-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 text-gray-300 mb-6" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-          <h3 className="text-xl font-semibold text-gray-800">Your Database is Empty</h3>
-          <p className="mt-2 text-sm text-gray-500 max-w-sm">
-            Create your first hotel assessment using the form to start building your personal hotel scrutiny database.
+        <div className="journal-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="journal-empty__icon" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+          <h3 className="journal-empty__title">Your Journal is Empty</h3>
+          <p className="journal-empty__subtitle">
+            Create your first hotel journal entry using the form to start building your personal field archive.
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="journal-list">
           {filteredAssessments.length > 0 ? (
             filteredAssessments.map((assessment) => (
               <AssessmentCard key={assessment.id} assessment={assessment} onDelete={onDelete} />
             ))
           ) : (
-            <div className="text-center py-20 px-6 bg-white rounded-2xl shadow-lg border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-800">No Matching Assessments</h3>
-              <p className="mt-2 text-sm text-gray-500">All assessments with serious issues are currently hidden.</p>
+            <div className="journal-empty">
+              <h3 className="journal-empty__title">No Matching Entries</h3>
+              <p className="journal-empty__subtitle">All entries flagged as critical are currently hidden.</p>
             </div>
           )}
         </div>

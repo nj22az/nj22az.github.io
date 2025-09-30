@@ -860,8 +860,8 @@ function EngineeringToolsPage({ downloads }) {
       tools: [
         {
           id: 'hotel-assessment',
-          title: 'Hotel Facility Assessment',
-          description: 'Comprehensive checklist for evaluating hotel facilities, systems, and operations. Covers mechanical, electrical, safety, and guest experience factors.',
+          title: 'Hotel Journal',
+          description: 'A liquid-glass inspired console for recording hotel walkthroughs, AI summaries, and operational evaluations that sync with your field reports.',
           url: '/hotel-assessment/dist/',
           icon: 'clipboard',
           category: 'Assessment'

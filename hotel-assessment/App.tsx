@@ -68,9 +68,9 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
-      <div className="main-content" style={{ marginLeft: 0 }}>
-        <header className="masthead">
+    <div className="app-shell app-shell--single assessment-shell">
+      <div className="main-content assessment-main">
+        <header className="masthead assessment-masthead">
           <div className="masthead__inner">
             <button
               onClick={handleBackToMain}
@@ -80,12 +80,37 @@ function App() {
               <ChevronLeftIcon style={{ width: '20px', height: '20px' }} />
               <span>Back</span>
             </button>
-            <h1 style={{ fontSize: 'var(--font-title2)', fontWeight: 600, margin: 0 }}>
-              Hotel Assessment
-            </h1>
+            <div className="assessment-masthead__context">
+              <span className="assessment-masthead__eyebrow">Field Tools</span>
+              <h1 className="assessment-masthead__title">Hotel Journal</h1>
+            </div>
           </div>
         </header>
-        <main className="app-main">
+        <main className="app-main assessment-content">
+          <section className="assessment-hero">
+            <div className="assessment-hero__content">
+              <p className="assessment-hero__eyebrow">Operational Journal</p>
+              <h2 className="assessment-hero__headline">Bring Apple-grade clarity to every hotel walkthrough.</h2>
+              <p className="assessment-hero__description">
+                Capture property conditions, surface guest experience gaps, and generate AI-assisted briefs that sync with your field notes. Every entry mirrors the Liquid Glass readability used across the main site.
+              </p>
+              <div className="assessment-hero__meta">
+                <span className="assessment-hero__pill">AI summary with Gemini</span>
+                <span className="assessment-hero__pill">Offline-first storage</span>
+                <span className="assessment-hero__pill">Exports coming soon</span>
+              </div>
+            </div>
+            <div className="assessment-hero__panel">
+              <div className="assessment-hero__stat">
+                <span className="assessment-hero__stat-value">{assessments.length}</span>
+                <span className="assessment-hero__stat-label">Entries logged</span>
+              </div>
+              <div className="assessment-hero__stat">
+                <span className="assessment-hero__stat-value">5 min</span>
+                <span className="assessment-hero__stat-label">Average report turnaround</span>
+              </div>
+            </div>
+          </section>
           {error && (
             <div className="error-banner" role="alert">
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
