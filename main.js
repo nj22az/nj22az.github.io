@@ -99,7 +99,7 @@ function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'blog', label: 'Journal', icon: 'journal' },
-  { id: 'downloads', label: 'Downloads', icon: 'download' }
+  { id: 'downloads', label: 'Tools', icon: 'wrench' }
 ];
 
 const LIBRARY_ITEMS = [
@@ -119,7 +119,7 @@ const SIDEBAR_SECTIONS = [
     id: 'library',
     heading: 'Library',
     items: [
-      { id: 'downloads', label: 'Downloads', icon: 'download', page: 'downloads' },
+      { id: 'downloads', label: 'Engineering Tools', icon: 'wrench', page: 'downloads' },
       { id: 'bookmarks', label: 'Saved', icon: 'bookmark', action: 'bookmarks' }
     ]
   },
@@ -785,35 +785,121 @@ function DownloadCard({ item }) {
   ]);
 }
 
-function DownloadsPage({ downloads }) {
-  const introBlock = React.createElement('section', { className: 'download-intro-block', key: 'intro' }, [
-    React.createElement('h1', { key: 'title', className: 'download-group__title' }, 'Downloads'),
-    React.createElement('p', { key: 'copy', className: 'download-intro' }, 'Grab the files you need for field work, planning, or follow-up. Each link opens or saves the resource directly.')
-  ]);
-
-  if (!downloads.length) {
-    return [introBlock, React.createElement('p', { className: 'download-empty', key: 'empty' }, 'No downloads are available yet. Check back soon for new resources.')];
-  }
-
-  const grouped = downloads.reduce((acc, item) => {
-    const key = item.category || 'Resources';
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(item);
-    return acc;
-  }, {});
-
-  const sections = Object.entries(grouped).map(([category, items]) =>
-    React.createElement('section', { key: category, className: 'download-group' }, [
-      React.createElement('h2', { key: 'title', className: 'download-group__title' }, category),
-      React.createElement('ul', { key: 'list', className: 'download-list' },
-        items.map((item) => React.createElement(DownloadCard, { item, key: item.title || item.url }))
+function EngineeringToolsPage({ downloads }) {
+  const introBlock = React.createElement('section', { className: 'tools-intro', key: 'intro' }, [
+    React.createElement('div', { key: 'hero-icon', className: 'tools-intro__hero-icon' },
+      React.createElement(MonoIcon, { name: 'wrench', className: 'tools-intro__icon' })
+    ),
+    React.createElement('div', { key: 'content', className: 'tools-intro__content' }, [
+      React.createElement('h1', { key: 'title', className: 'tools-intro__title' }, 'Engineering Tools'),
+      React.createElement('p', { key: 'text', className: 'tools-intro__text' },
+        'Field-tested utilities, assessment frameworks, and practical resources for engineering operations. Built from real-world experience to solve real-world problems.'
       )
     ])
-  );
+  ]);
+
+  // Define tool sections with placeholders
+  const toolSections = [
+    {
+      id: 'assessment-tools',
+      title: 'Assessment & Inspection',
+      description: 'Systematic evaluation frameworks for field operations',
+      tools: [
+        {
+          id: 'hotel-assessment',
+          title: 'Hotel Facility Assessment',
+          description: 'Comprehensive checklist for evaluating hotel facilities, systems, and operations. Covers mechanical, electrical, safety, and guest experience factors.',
+          status: 'coming-soon',
+          icon: 'clipboard',
+          category: 'Assessment'
+        }
+      ]
+    },
+    {
+      id: 'documentation',
+      title: 'Documentation & Templates',
+      description: 'Ready-to-use templates and checklists',
+      tools: downloads.filter(item => item.category === 'Career' || item.category === 'Deployments')
+    },
+    {
+      id: 'calculators',
+      title: 'Calculators & Utilities',
+      description: 'Quick reference tools for field calculations',
+      tools: []
+    }
+  ];
+
+  const renderToolCard = (tool) => {
+    if (tool.status === 'coming-soon') {
+      return React.createElement('div', { key: tool.id, className: 'tool-card tool-card--placeholder' }, [
+        React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
+          React.createElement(MonoIcon, { name: tool.icon || 'wrench', className: 'tool-card__icon-svg' })
+        ),
+        React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
+          React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
+            React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
+            React.createElement('span', { key: 'badge', className: 'tool-card__badge' }, 'Coming Soon')
+          ]),
+          React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
+        ])
+      ]);
+    }
+
+    // Existing download item
+    return React.createElement('a', {
+      key: tool.title,
+      href: tool.url,
+      className: 'tool-card tool-card--download',
+      download: tool.url && !/^https?:\/\//i.test(tool.url) ? '' : undefined,
+      target: tool.url && /^https?:\/\//i.test(tool.url) ? '_blank' : undefined,
+      rel: tool.url && /^https?:\/\//i.test(tool.url) ? 'noreferrer noopener' : undefined
+    }, [
+      React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
+        React.createElement(MonoIcon, { name: 'file-text', className: 'tool-card__icon-svg' })
+      ),
+      React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
+        React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
+          React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
+          React.createElement('span', { key: 'meta', className: 'tool-card__meta' }, `${tool.file_type} · ${tool.file_size}`)
+        ]),
+        React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
+      ]),
+      React.createElement('div', { key: 'action', className: 'tool-card__action' },
+        React.createElement(MonoIcon, { name: 'download', className: 'tool-card__action-icon' })
+      )
+    ]);
+  };
+
+  const sections = toolSections.map(section => {
+    if (!section.tools || section.tools.length === 0) {
+      return React.createElement('section', { key: section.id, className: 'tool-section tool-section--empty' }, [
+        React.createElement('div', { key: 'header', className: 'tool-section__header' }, [
+          React.createElement('h2', { key: 'title', className: 'tool-section__title' }, section.title),
+          React.createElement('p', { key: 'description', className: 'tool-section__description' }, section.description)
+        ]),
+        React.createElement('div', { key: 'empty', className: 'tool-section__empty-state' },
+          React.createElement('p', { className: 'tool-section__empty-text' }, 'Tools coming soon')
+        )
+      ]);
+    }
+
+    return React.createElement('section', { key: section.id, className: 'tool-section' }, [
+      React.createElement('div', { key: 'header', className: 'tool-section__header' }, [
+        React.createElement('h2', { key: 'title', className: 'tool-section__title' }, section.title),
+        React.createElement('p', { key: 'description', className: 'tool-section__description' }, section.description)
+      ]),
+      React.createElement('div', { key: 'grid', className: 'tool-section__grid' },
+        section.tools.map(tool => renderToolCard(tool))
+      )
+    ]);
+  });
 
   return [introBlock, ...sections];
+}
+
+// Keep the old name as an alias for backwards compatibility
+function DownloadsPage({ downloads }) {
+  return EngineeringToolsPage({ downloads });
 }
 
 function AboutPage({ about, isLoading }) {
@@ -1004,15 +1090,39 @@ function InfiniteScrollFeed({ posts, onPostClick }) {
   return React.createElement('div', { className: 'infinite-scroll-feed' }, [
     // Introduction section
     React.createElement('div', { key: 'intro', className: 'feed-intro' }, [
+      React.createElement('div', { className: 'feed-intro__hero-icon' },
+        React.createElement(MonoIcon, { name: 'compass', className: 'feed-intro__icon' })
+      ),
       React.createElement('div', { className: 'feed-intro__content' }, [
-        React.createElement('h1', { className: 'feed-intro__title' }, 'Welcome to my Office'),
+        React.createElement('h1', { className: 'feed-intro__title' }, 'Field Notes & Insights'),
         React.createElement('p', { className: 'feed-intro__text' },
-          'Join me as I share insights from engineering, travel, and culture. Discover stories that blend technical expertise with global curiosity — your next great read awaits below.'
+          'Engineering stories from the field, cultural observations from around the world, and practical frameworks for navigating complex systems. Real experience, shared openly.'
+        )
+      ])
+    ]),
+
+    // Feature cards
+    React.createElement('div', { key: 'features', className: 'home-features' }, [
+      React.createElement('div', { className: 'home-feature-card' }, [
+        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
+          React.createElement(MonoIcon, { name: 'clipboard', className: 'home-feature-icon-svg' })
         ),
-        React.createElement('div', { className: 'feed-intro__cta' }, [
-          React.createElement('span', { className: 'feed-intro__arrow' }, '👇'),
-          React.createElement('span', { className: 'feed-intro__cta-text' }, 'Start reading')
-        ])
+        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Dispatches & Checklists'),
+        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Field reports and systematic runbooks captured after on-site engagements.')
+      ]),
+      React.createElement('div', { className: 'home-feature-card' }, [
+        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
+          React.createElement(MonoIcon, { name: 'globe', className: 'home-feature-icon-svg' })
+        ),
+        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Culture Briefs'),
+        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Regional insights for teams crossing borders, ports, and work styles.')
+      ]),
+      React.createElement('div', { className: 'home-feature-card' }, [
+        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
+          React.createElement(MonoIcon, { name: 'wrench', className: 'home-feature-icon-svg' })
+        ),
+        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Toolkits & Runbooks'),
+        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Engineering tools designed to scale beyond one job.')
       ])
     ]),
 
@@ -1097,39 +1207,42 @@ function JournalArchive({ posts, onPostClick }) {
   return React.createElement('div', { className: 'journal-archive' }, [
     // Journal Introduction
     React.createElement('div', { key: 'intro', className: 'journal-intro' }, [
+      React.createElement('div', { className: 'journal-intro__hero-icon' },
+        React.createElement(MonoIcon, { name: 'notebook-pen', className: 'journal-intro__icon' })
+      ),
       React.createElement('div', { className: 'journal-intro__content' }, [
         React.createElement('h1', { className: 'journal-intro__title' }, 'Journal Archive'),
         React.createElement('p', { className: 'journal-intro__text' },
-          'Welcome to my digital archive — a curated collection of thoughts, insights, and discoveries from my journey through engineering, travel, and culture. Each entry captures a moment of learning or reflection, organized for easy exploration.'
-        ),
+          'A chronological collection of field reports, technical dispatches, and reflections from engineering projects around the world. Each entry documents lessons learned, challenges solved, and insights gained.'
+        )
+      ]),
 
-        // Apple HIG-style sort button
-        React.createElement('div', { className: 'journal-sort-container' }, [
-          React.createElement('button', {
-            className: `journal-sort-button ${showSortMenu ? 'active' : ''}`,
-            onClick: () => setShowSortMenu(!showSortMenu),
-            'aria-label': 'Sort journal entries'
-          }, [
-            React.createElement(MonoIcon, { key: 'icon', name: 'grid', className: 'journal-sort-icon' }),
-            React.createElement('span', { key: 'label', className: 'journal-sort-label' }, currentSortLabel),
-            React.createElement('span', { key: 'chevron', className: `journal-sort-chevron ${showSortMenu ? 'rotated' : ''}` }, '▼')
-          ]),
+      // Apple HIG-style sort button
+      React.createElement('div', { className: 'journal-sort-container' }, [
+        React.createElement('button', {
+          className: `journal-sort-button ${showSortMenu ? 'active' : ''}`,
+          onClick: () => setShowSortMenu(!showSortMenu),
+          'aria-label': 'Sort journal entries'
+        }, [
+          React.createElement(MonoIcon, { key: 'icon', name: 'settings', className: 'journal-sort-icon' }),
+          React.createElement('span', { key: 'label', className: 'journal-sort-label' }, currentSortLabel),
+          React.createElement('span', { key: 'chevron', className: `journal-sort-chevron ${showSortMenu ? 'rotated' : ''}` }, '▼')
+        ]),
 
-          // Sort menu
-          showSortMenu && React.createElement('div', { className: 'journal-sort-menu' },
-            sortOptions.map(option =>
-              React.createElement('button', {
-                key: option.id,
-                className: `journal-sort-option ${option.sortBy === sortBy && option.order === sortOrder ? 'selected' : ''}`,
-                onClick: () => handleSortChange(option)
-              }, [
-                React.createElement('span', { key: 'label' }, option.label),
-                option.sortBy === sortBy && option.order === sortOrder &&
-                  React.createElement(MonoIcon, { key: 'check', name: 'badge-check', className: 'journal-sort-check' })
-              ])
-            )
+        // Sort menu
+        showSortMenu && React.createElement('div', { className: 'journal-sort-menu' },
+          sortOptions.map(option =>
+            React.createElement('button', {
+              key: option.id,
+              className: `journal-sort-option ${option.sortBy === sortBy && option.order === sortOrder ? 'selected' : ''}`,
+              onClick: () => handleSortChange(option)
+            }, [
+              React.createElement('span', { key: 'label' }, option.label),
+              option.sortBy === sortBy && option.order === sortOrder &&
+                React.createElement(MonoIcon, { key: 'check', name: 'badge-check', className: 'journal-sort-check' })
+            ])
           )
-        ])
+        )
       ])
     ]),
 
@@ -1140,7 +1253,7 @@ function JournalArchive({ posts, onPostClick }) {
           React.createElement(PostCard, {
             key: post.id,
             post: post,
-            onClick: () => onPostClick(post)
+            onOpen: onPostClick
           })
         )
       )
@@ -1320,7 +1433,7 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
       case 'new': return 'New';
       case 'posts':
       case 'blog': return 'Journal';
-      case 'downloads': return 'Downloads';
+      case 'downloads': return 'Engineering Tools';
       case 'about': return 'About';
       default: return 'Home';
     }
@@ -1340,6 +1453,12 @@ function MainContentArea({ page, posts, downloads, about, onPostClick, isLoading
     return React.createElement(JournalArchive, {
       posts: posts,
       onPostClick: onPostClick
+    });
+  }
+
+  if (page === 'downloads') {
+    return React.createElement(EngineeringToolsPage, {
+      downloads: downloads
     });
   }
 
@@ -1832,7 +1951,7 @@ function App() {
     if (activePage === 'downloads') {
       return [
         { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'downloads', label: 'Downloads' }
+        { id: 'downloads', label: 'Engineering Tools' }
       ];
     }
     if (activePage === 'about') {

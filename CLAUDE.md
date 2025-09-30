@@ -44,6 +44,8 @@ This is a hybrid Jekyll + React blog with an Apple-inspired glass aesthetic. The
 - Main application logic in `main.js` (vanilla React via CDN)
 - Consumes `posts.json`, `downloads.json`, and `about.json` for content
 - Implements glass morphism design with backdrop filters and translucent cards
+- Responsive navigation: sidebar on desktop, hamburger menu + bottom nav on mobile
+- Pages: Home (infinite scroll feed), Journal (archive grid), Downloads, About (with parallax scrolling)
 
 **Styling System**
 - Primary styles in `styles.css` (Apple-inspired glass aesthetic)
@@ -81,15 +83,17 @@ thumbnail: /assets/images/thumbnail.jpg
 ---
 ```
 
-**Icons** - Defined in `_data/icons.yml` with 8 categories:
-- `journal` - General reflections, meta posts
-- `globe` - Cultural insights, travel notes
-- `checklist` - Processes, runbooks, guides
-- `wave` - Short dispatches, quick updates
-- `compass` - Mission planning, strategy
-- `toolkit` - Technical breakdowns, specs
-- `antenna` - Network, communications, telemetry
-- `safety` - Risk mitigation, safety briefings
+**Icons** - Defined in `_data/icons.yml` with Lucide icon IDs organized by category:
+- Writing & Content: `notebook-pen`, `text-quote`, `pencil`, `newspaper`
+- Technology: `code`, `terminal`, `laptop`, `server`
+- Travel & Location: `globe`, `map-pin`, `compass`, `plane`
+- Documentation: `file-text`, `clipboard`, `folder`, `book`
+- Communication: `message-circle`, `mail`, `microphone`, `headphones`
+- Tools & Utilities: `wrench`, `settings`, `shield`, `key`
+- Visual Content: `image`, `video`, `camera`, `brush`
+- General: `home`, `alert-circle`, `badge-check`, `ruler`
+
+Full list available in `_data/icons.yml` or via browser console as `window.blogIconCatalog`
 
 **Downloads** - Managed via `downloads.json` with assets in `assets/downloads/`
 
@@ -126,7 +130,31 @@ about.json             # Auto-generated from about.md
 ## Content Guidelines
 
 - Posts use `YYYY-MM-DD-slug.md` naming convention
-- Tags appear in UI but filtering not yet implemented
 - Reading time calculated automatically (200 words/minute)
 - Excerpts auto-generated from content if not provided in front matter
-- Cover icons must match IDs from `_data/icons.yml`
+- Cover icons must match IDs from `_data/icons.yml` (uses Lucide icon system)
+- Tags and filtering fully implemented in React frontend
+- Featured posts appear prominently on home page when `featured: true` is set
+
+## React Component Structure
+
+Key components in `main.js`:
+- `App` - Main application shell with page routing and state management
+- `PodcastSidebar` - Desktop sidebar navigation (Apple Podcasts style)
+- `MobileHeader` - Mobile hamburger menu and header
+- `BottomNavigation` - Mobile bottom navigation bar
+- `InfiniteScrollFeed` - Home page with infinite scroll
+- `JournalArchive` - Blog archive with sorting controls
+- `PostDetailView` - Individual post view
+- `AboutPageWithScroll` - About page with parallax effects
+- `DownloadsPage` - Downloads listing with categorization
+- `FilterMenu` - Search and filter controls for posts
+- `ShareBar` - Social sharing and link copying
+- `MonoIcon` - Icon wrapper component for Lucide icons
+
+Keyboard shortcuts:
+- `Cmd/Ctrl + K` - Focus search
+- `Cmd/Ctrl + J` - Navigate to Journal
+- `Cmd/Ctrl + D` - Navigate to Downloads
+- `Cmd/Ctrl + H` - Navigate to Home
+- `Cmd/Ctrl + ↑` - Scroll to top

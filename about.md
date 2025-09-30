@@ -10,32 +10,50 @@ cover_icon: user
 updated: 2025-09-24
 ---
 
-## Field service engineer in perpetual motion
+<div class="about-story">
+  <p class="about-lead">Nils Johansson has spent decades where engines meet oceans and innovation meets tradition. He began deep in ship engine rooms, rising to lead multinational crews across every sea.</p>
 
-I keep complex deployments on schedule by translating technical chaos into clear, shareable plans. Marine engineering roots taught me to listen to the machinery first, then speak calmly to the people who depend on it.
+  <div class="video-container">
+    <iframe
+      src="https://www.youtube.com/embed/YU1sK4GqEXs"
+      title="High Seas to High Tech"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
 
-<div class="video-container">
-  <iframe
-    src="https://www.youtube.com/embed/YU1sK4GqEXs"
-    title="High Seas to High Tech"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen>
-  </iframe>
+  <p class="video-caption">From ship engine rooms to high-tech commissioning across Asia</p>
+
+  <div class="about-journey">
+    <div class="journey-section">
+      <div class="journey-icon">
+        <span class="mono-icon mono-icon--anchor"></span>
+      </div>
+      <div class="journey-content">
+        <h3 class="journey-title">Maritime Foundations</h3>
+        <p class="journey-text">Started in ship engine rooms, rising to lead multinational crews across every sea. Marine engineering taught precision under pressure and the art of listening to machinery.</p>
+      </div>
+    </div>
+
+    <div class="journey-section">
+      <div class="journey-icon">
+        <span class="mono-icon mono-icon--settings"></span>
+      </div>
+      <div class="journey-content">
+        <h3 class="journey-title">Technical Mastery</h3>
+        <p class="journey-text">Coming ashore, mastered high-precision testing systems and energy automation. Commissioned complex technology across Europe and Southeast Asia.</p>
+      </div>
+    </div>
+
+    <div class="journey-section">
+      <div class="journey-icon">
+        <span class="mono-icon mono-icon--map-pin"></span>
+      </div>
+      <div class="journey-content">
+        <h3 class="journey-title">Global Perspective</h3>
+        <p class="journey-text">Now rooted in Vietnam and inspired by Japan's blend of craft and cutting-edge engineering. Brings global field expertise and curiosity for cultures that shape the future of technology.</p>
+      </div>
+    </div>
+  </div>
 </div>
-
-*High Seas to High Tech — a quick look at how I bridge deployments from offshore to on-site execution.*
-
-## What you will find here
-
-**Dispatches and checklists** captured after on-site engagements.
-
-**Culture briefs** for teams crossing borders, ports, and work styles.
-
-**Toolkits, downloads, and runbooks** meant to scale beyond one job.
-
-## Why I publish the notes
-
-Every engagement improves when information moves faster than the stress. These entries exist so the next crew can see the pressure points before they board and stay aligned when the unexpected hits.
-
-If you are gearing up for a similar deployment, take what you need, remix it, and ship safely.
