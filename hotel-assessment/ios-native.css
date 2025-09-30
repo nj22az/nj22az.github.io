@@ -124,19 +124,29 @@ header h1 {
   padding: 24px !important;
 }
 
-/* Input Fields - Dark Theme */
+/* Input Fields - iOS Native Style */
 input[type="text"],
 input[type="number"],
 input[type="email"],
 textarea,
 select {
-  background: var(--surface-elevated) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid var(--separator) !important;
   border-radius: var(--radius-medium) !important;
-  padding: 10px 14px !important;
+  padding: 12px 16px !important;
   font-size: var(--font-body) !important;
   color: var(--ink-primary) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-height: 44px !important;
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="email"]:hover,
+textarea:hover,
+select:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 input[type="text"]:focus,
@@ -146,8 +156,8 @@ textarea:focus,
 select:focus {
   outline: none !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 4px var(--focus-ring) !important;
-  background: var(--surface-secondary) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 input[type="text"]::placeholder,
@@ -166,32 +176,38 @@ label {
   display: block !important;
 }
 
-/* Buttons - Main Site Style */
+/* iOS-Native Buttons - Tinted Style (Apple HIG Compliant) */
 button {
-  background: var(--accent) !important;
-  color: white !important;
-  border-radius: var(--radius-medium) !important;
-  padding: 12px 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 20px !important;
+  border-radius: 999px !important;
+  background: var(--accent-soft) !important;
+  color: var(--accent-contrast) !important;
+  border: 1px solid var(--separator) !important;
   font-weight: 600 !important;
   font-size: var(--font-body) !important;
-  border: none !important;
   cursor: pointer !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 8px rgba(153, 102, 255, 0.3) !important;
+  min-height: 44px !important;
+  box-shadow: none !important;
 }
 
 button:hover:not(:disabled) {
-  background: var(--accent-hover) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 16px rgba(153, 102, 255, 0.4) !important;
+  background: rgba(153, 102, 255, 0.25) !important;
+  border-color: rgba(153, 102, 255, 0.3) !important;
 }
 
 button:active:not(:disabled) {
-  transform: translateY(0) !important;
+  background: rgba(153, 102, 255, 0.3) !important;
+  transform: scale(0.98) !important;
 }
 
 button:disabled {
-  background: var(--ink-quaternary) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--ink-quaternary) !important;
+  border-color: var(--separator) !important;
   cursor: not-allowed !important;
   opacity: 0.5 !important;
 }
@@ -201,19 +217,47 @@ button:focus-visible {
   outline-offset: 2px !important;
 }
 
-/* Secondary/Delete Buttons */
+/* Primary Action Button - Filled Style */
+button[type="submit"],
+button.primary {
+  background: var(--accent) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px rgba(153, 102, 255, 0.3) !important;
+}
+
+button[type="submit"]:hover:not(:disabled),
+button.primary:hover:not(:disabled) {
+  background: var(--accent-hover) !important;
+  box-shadow: 0 4px 12px rgba(153, 102, 255, 0.4) !important;
+}
+
+button[type="submit"]:active:not(:disabled),
+button.primary:active:not(:disabled) {
+  background: #8c59eb !important;
+}
+
+/* Destructive Buttons - iOS Red Tint */
 button[class*="red"],
 button[class*="delete"],
 button[class*="danger"] {
-  background: rgb(255, 69, 58) !important;
-  box-shadow: 0 2px 8px rgba(255, 69, 58, 0.3) !important;
+  background: rgba(255, 69, 58, 0.15) !important;
+  color: rgb(255, 105, 97) !important;
+  border-color: rgba(255, 69, 58, 0.3) !important;
+  box-shadow: none !important;
 }
 
 button[class*="red"]:hover,
 button[class*="delete"]:hover,
 button[class*="danger"]:hover {
-  background: rgb(255, 89, 78) !important;
-  box-shadow: 0 4px 16px rgba(255, 69, 58, 0.4) !important;
+  background: rgba(255, 69, 58, 0.25) !important;
+  border-color: rgba(255, 69, 58, 0.4) !important;
+}
+
+button[class*="red"]:active,
+button[class*="delete"]:active,
+button[class*="danger"]:active {
+  background: rgba(255, 69, 58, 0.35) !important;
 }
 
 /* Assessment Cards - Glass Morphism */
