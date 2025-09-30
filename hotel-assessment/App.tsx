@@ -68,53 +68,47 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto py-3 sm:py-5 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+    <div className="app-shell">
+      <div className="main-content" style={{ marginLeft: 0 }}>
+        <header className="masthead">
+          <div className="masthead__inner">
             <button
               onClick={handleBackToMain}
-              className="back-button flex items-center gap-1 text-sm font-medium"
+              className="masthead__brand"
               aria-label="Back to main site"
             >
-              <ChevronLeftIcon className="w-5 h-5" />
-              <span className="hidden sm:inline">Back</span>
+              <ChevronLeftIcon style={{ width: '20px', height: '20px' }} />
+              <span>Back</span>
             </button>
-            <h1 className="text-lg sm:text-2xl font-bold leading-tight text-gray-900 tracking-tight">
-              Hotel Journal - By Nils Johansson
+            <h1 style={{ fontSize: 'var(--font-title2)', fontWeight: 600, margin: 0 }}>
+              Hotel Assessment
             </h1>
           </div>
-        </div>
-      </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        </header>
+        <main className="app-main">
           {error && (
-            <div className="mb-6 rounded-md bg-red-50 p-4" role="alert">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                   <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <div className="mt-2 text-sm text-red-700">
-                    <p>{error}</p>
-                  </div>
+            <div className="error-banner" role="alert">
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <svg style={{ width: '20px', height: '20px', color: 'rgb(255, 105, 97)', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <h3 style={{ fontSize: 'var(--font-callout)', fontWeight: 600, margin: '0 0 4px' }}>Error</h3>
+                  <p style={{ fontSize: 'var(--font-body)', margin: 0 }}>{error}</p>
                 </div>
               </div>
             </div>
           )}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-1">
+          <div className="assessment-layout">
+            <div className="assessment-form-column">
               <AssessmentForm onSubmit={handleCreateAssessment} isLoading={isLoading} />
             </div>
-            <div className="lg:col-span-2">
+            <div className="assessment-list-column">
               <AssessmentList assessments={sortedAssessments} onDelete={handleDeleteAssessment} />
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

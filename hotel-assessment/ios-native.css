@@ -1,353 +1,261 @@
-/* iOS Native Styling for Hotel Assessment App - Matching Main Site */
+/* Import Main Site Design System */
+@import url('../styles.css');
 
-:root {
-  color-scheme: dark;
-
-  /* Main Site Color System */
-  --surface-page: #1c1c1c;
-  --surface-primary: #2c2c2c;
-  --surface-secondary: #3c3c3c;
-  --surface-card: #2c2c2c;
-  --surface-elevated: #3c3c3c;
-
-  /* Ink */
-  --ink-primary: #ffffff;
-  --ink-secondary: #cccccc;
-  --ink-tertiary: #999999;
-  --ink-quaternary: #666666;
-
-  /* Purple Accents */
-  --accent: #9966ff;
-  --accent-contrast: #bb88ff;
-  --accent-soft: rgba(153, 102, 255, 0.2);
-  --accent-hover: #bb88ff;
-  --focus-ring: rgba(153, 102, 255, 0.4);
-
-  /* Structure */
-  --separator: rgba(255, 255, 255, 0.1);
-  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
-
-  /* Components */
-  --card-radius: 18px;
-  --radius-medium: 14px;
-  --radius-small: 8px;
-
-  /* Typography */
-  --font-title1: clamp(1.5rem, 3vw, 2rem);
-  --font-title2: clamp(1.25rem, 2.4vw, 1.75rem);
-  --font-title3: clamp(1.125rem, 1.8vw, 1.5rem);
-  --font-headline: clamp(1rem, 1.2vw, 1.25rem);
-  --font-body: clamp(0.9rem, 0.28vw + 0.92rem, 1rem);
-  --font-callout: clamp(0.9rem, 0.25vw + 0.9rem, 1rem);
-  --font-footnote: clamp(0.75rem, 0.2vw + 0.78rem, 0.85rem);
+/* Reset Tailwind Styles to Match Main Site */
+* {
+  box-sizing: border-box;
 }
 
-/* Override Tailwind body background */
-body {
-  background: var(--surface-page) !important;
-  color: var(--ink-primary) !important;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif !important;
-  font-weight: 400 !important;
-  line-height: 1.5 !important;
-  letter-spacing: -0.01em !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
-  min-height: 100vh;
+/* Assessment App Specific Overrides */
+.app-main {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--page-vertical-padding) var(--page-horizontal-padding);
 }
 
-/* Header Styling */
-header {
-  background: rgba(44, 44, 44, 0.95) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  box-shadow: none !important;
-  border-bottom: 1px solid var(--separator) !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 50 !important;
-}
-
-header h1 {
-  color: var(--ink-primary) !important;
-  font-size: var(--font-title2) !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-}
-
-/* Back Button - iOS Native Style */
-.back-button {
-  color: var(--accent-contrast) !important;
-  background: transparent !important;
-  padding: 8px 12px 8px 8px !important;
-  border-radius: var(--radius-small) !important;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-weight: 500 !important;
-  font-size: var(--font-callout) !important;
-  box-shadow: none !important;
-  border: none !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-
-.back-button:hover {
-  background: var(--accent-soft) !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-.back-button:active {
-  background: rgba(153, 102, 255, 0.3) !important;
-  transform: scale(0.97) !important;
-}
-
-.back-button svg {
-  color: var(--accent-contrast) !important;
-}
-
-.back-button:focus-visible {
-  outline: 2px solid var(--focus-ring) !important;
-  outline-offset: 2px !important;
-}
-
-/* Form Card Styling - Glass Morphism */
-.lg\:col-span-1 > div,
-.lg\:col-span-2 > div {
+/* Form Container - Match main site .content form styling */
+form, .bg-white.shadow-sm.rounded-lg {
   background: var(--surface-card) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-radius: var(--card-radius) !important;
   border: 1px solid var(--separator) !important;
+  border-radius: var(--card-radius) !important;
+  padding: clamp(1.2rem, 3vw, 1.8rem) !important;
   box-shadow: var(--shadow-soft) !important;
-  padding: 24px !important;
 }
 
-/* Input Fields - iOS Native Style */
+/* Form Labels */
+label {
+  color: var(--ink-primary) !important;
+  font-size: var(--font-callout) !important;
+  font-weight: 600 !important;
+}
+
+label.text-sm {
+  font-size: var(--font-body) !important;
+}
+
+/* Input Fields - Override Tailwind */
 input[type="text"],
-input[type="number"],
 input[type="email"],
 textarea,
 select {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid var(--separator) !important;
-  border-radius: var(--radius-medium) !important;
-  padding: 12px 16px !important;
-  font-size: var(--font-body) !important;
-  color: var(--ink-primary) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 100% !important;
   min-height: 44px !important;
+  border-radius: var(--radius-medium) !important;
+  border: 1px solid var(--separator) !important;
+  padding: 0.7rem 0.9rem !important;
+  font-size: var(--font-body) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--ink-primary) !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
 }
 
-input[type="text"]:hover,
-input[type="number"]:hover,
-input[type="email"]:hover,
+textarea {
+  min-height: 120px !important;
+  resize: vertical !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-quaternary) !important;
+}
+
+input:hover,
 textarea:hover,
 select:hover {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
+input:focus,
 textarea:focus,
 select:focus {
-  outline: none !important;
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 3px var(--focus-ring) !important;
+  outline: none !important;
   background: rgba(255, 255, 255, 0.08) !important;
 }
 
-input[type="text"]::placeholder,
-input[type="number"]::placeholder,
-input[type="email"]::placeholder,
-textarea::placeholder {
-  color: var(--ink-quaternary) !important;
-}
-
-/* Labels */
-label {
-  color: var(--ink-secondary) !important;
-  font-size: var(--font-callout) !important;
-  font-weight: 500 !important;
-  margin-bottom: 6px !important;
-  display: block !important;
-}
-
-/* iOS-Native Buttons - Tinted Style (Apple HIG Compliant) */
+/* Buttons - Override Tailwind to use main site pill-button style */
 button {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 10px 20px !important;
+  gap: 0.45rem !important;
+  padding: 0.5rem 1.2rem !important;
   border-radius: 999px !important;
   background: var(--accent-soft) !important;
-  color: var(--accent-contrast) !important;
+  color: var(--ink-primary) !important;
   border: 1px solid var(--separator) !important;
+  min-height: 44px !important;
   font-weight: 600 !important;
   font-size: var(--font-body) !important;
   cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  min-height: 44px !important;
+  transition: all 0.2s ease !important;
   box-shadow: none !important;
 }
 
 button:hover:not(:disabled) {
-  background: rgba(153, 102, 255, 0.25) !important;
-  border-color: rgba(153, 102, 255, 0.3) !important;
-}
-
-button:active:not(:disabled) {
-  background: rgba(153, 102, 255, 0.3) !important;
-  transform: scale(0.98) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
 }
 
 button:disabled {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--ink-quaternary) !important;
-  border-color: var(--separator) !important;
-  cursor: not-allowed !important;
   opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
-button:focus-visible {
-  outline: 2px solid var(--focus-ring) !important;
-  outline-offset: 2px !important;
-}
-
-/* Primary Action Button - Filled Style */
-button[type="submit"],
-button.primary {
+/* Primary button (type="submit") */
+button[type="submit"] {
   background: var(--accent) !important;
   color: white !important;
   border-color: transparent !important;
-  box-shadow: 0 2px 8px rgba(153, 102, 255, 0.3) !important;
 }
 
-button[type="submit"]:hover:not(:disabled),
-button.primary:hover:not(:disabled) {
+button[type="submit"]:hover:not(:disabled) {
   background: var(--accent-hover) !important;
-  box-shadow: 0 4px 12px rgba(153, 102, 255, 0.4) !important;
 }
 
-button[type="submit"]:active:not(:disabled),
-button.primary:active:not(:disabled) {
-  background: #8c59eb !important;
-}
-
-/* Destructive Buttons - iOS Red Tint */
-button[class*="red"],
-button[class*="delete"],
-button[class*="danger"] {
+/* Destructive buttons */
+button.text-red-600,
+button.hover\:text-red-700 {
   background: rgba(255, 69, 58, 0.15) !important;
   color: rgb(255, 105, 97) !important;
   border-color: rgba(255, 69, 58, 0.3) !important;
-  box-shadow: none !important;
 }
 
-button[class*="red"]:hover,
-button[class*="delete"]:hover,
-button[class*="danger"]:hover {
+button.text-red-600:hover,
+button.hover\:text-red-700:hover {
   background: rgba(255, 69, 58, 0.25) !important;
-  border-color: rgba(255, 69, 58, 0.4) !important;
 }
 
-button[class*="red"]:active,
-button[class*="delete"]:active,
-button[class*="danger"]:active {
-  background: rgba(255, 69, 58, 0.35) !important;
+/* Pill/Tag buttons */
+button.px-3.py-1\.5,
+button.rounded-full {
+  min-height: auto !important;
+  padding: 0.4rem 1rem !important;
+  font-size: var(--font-footnote) !important;
 }
 
-/* Assessment Cards - Glass Morphism */
-.space-y-4 > div {
-  background: var(--surface-card) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-radius: var(--card-radius) !important;
-  border: 1px solid var(--separator) !important;
-  box-shadow: var(--shadow-soft) !important;
-  padding: 20px !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+button.bg-indigo-100 {
+  background: var(--accent-soft) !important;
+  color: var(--accent-contrast) !important;
+  border-color: rgba(153, 102, 255, 0.3) !important;
 }
 
-.space-y-4 > div:hover {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* Error Messages - Dark Theme */
-.bg-red-50 {
-  background: rgba(255, 69, 58, 0.15) !important;
-  border: 1px solid rgba(255, 69, 58, 0.3) !important;
-  border-radius: var(--radius-medium) !important;
-}
-
-.text-red-800 {
-  color: rgb(255, 105, 97) !important;
-}
-
-.text-red-700 {
-  color: rgb(255, 69, 58) !important;
-}
-
-/* Headings - SF Typography */
-h2 {
-  color: var(--ink-primary) !important;
-  font-size: var(--font-title3) !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.015em !important;
-}
-
-h3 {
-  color: var(--ink-primary) !important;
-  font-size: var(--font-headline) !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.015em !important;
-}
-
-/* Text */
-p {
+button.border-gray-300 {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--separator) !important;
   color: var(--ink-secondary) !important;
-  font-size: var(--font-body) !important;
-  line-height: 1.5 !important;
 }
 
-/* Loading State */
-.animate-spin {
-  color: var(--accent) !important;
+.assessment-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--layout-column-gap);
+  align-items: start;
 }
 
-/* Scrollbar - Dark Theme */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--separator);
-  border-radius: 6px;
-  border: 3px solid var(--surface-page);
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-  background-clip: padding-box;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 20px !important;
+@media (max-width: 1024px) {
+  .assessment-layout {
+    grid-template-columns: 1fr;
   }
+}
 
-  .lg\:col-span-1 > div,
-  .lg\:col-span-2 > div {
-    padding: 20px !important;
-  }
+.assessment-form-column,
+.assessment-list-column {
+  min-width: 0;
+}
+
+/* Error Banner */
+.error-banner {
+  background: rgba(255, 69, 58, 0.15);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: var(--radius-medium);
+  padding: 16px;
+  margin-bottom: 24px;
+  color: rgb(255, 105, 97);
+}
+
+/* Assessment Database Header */
+.assessment-database-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.assessment-database-title {
+  font-size: var(--font-title3);
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin: 0;
+}
+
+/* Assessment Cards */
+.assessment-card {
+  background: var(--surface-card);
+  border: 1px solid var(--separator);
+  border-radius: var(--card-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
+}
+
+.assessment-card:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.assessment-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.assessment-card__location {
+  font-size: var(--font-headline);
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin: 0;
+}
+
+.assessment-card__date {
+  font-size: var(--font-footnote);
+  color: var(--ink-tertiary);
+  margin: 0 0 12px;
+}
+
+.assessment-card__content {
+  display: grid;
+  gap: 12px;
+}
+
+.assessment-card__report {
+  font-size: var(--font-body);
+  color: var(--ink-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.assessment-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--separator);
+}
+
+/* Chevron Icon */
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
 }
