@@ -845,6 +845,29 @@ function EngineeringToolsPage({ downloads }) {
       ]);
     }
 
+    // Assessment/interactive tool (has category but not file_type)
+    if (tool.category && !tool.file_type) {
+      return React.createElement('a', {
+        key: tool.id,
+        href: tool.url,
+        className: 'tool-card tool-card--interactive'
+      }, [
+        React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
+          React.createElement(MonoIcon, { name: tool.icon || 'wrench', className: 'tool-card__icon-svg' })
+        ),
+        React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
+          React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
+            React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
+            React.createElement('span', { key: 'category', className: 'tool-card__category' }, tool.category)
+          ]),
+          React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
+        ]),
+        React.createElement('div', { key: 'action', className: 'tool-card__action' },
+          React.createElement(MonoIcon, { name: 'arrow-right', className: 'tool-card__action-icon' })
+        )
+      ]);
+    }
+
     // Existing download item
     return React.createElement('a', {
       key: tool.title,
