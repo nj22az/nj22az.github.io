@@ -809,7 +809,7 @@ function EngineeringToolsPage({ downloads }) {
           id: 'hotel-assessment',
           title: 'Hotel Facility Assessment',
           description: 'Comprehensive checklist for evaluating hotel facilities, systems, and operations. Covers mechanical, electrical, safety, and guest experience factors.',
-          status: 'coming-soon',
+          url: '/hotel-assessment/',
           icon: 'clipboard',
           category: 'Assessment'
         }
