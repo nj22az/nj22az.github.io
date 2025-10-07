@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-    <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
-    {% seo %}
-  </head>
-  <body>
-    <main>
-      {{ content }}
-    </main>
-    {% include footer.html %}
-    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <lirel="stylesheet"eet" href="{{ '/assets/main.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/styles_light.css' | relative_url }}">
+  
+      <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/styles_light.css' | relative_url }}">{% seo %}
+</head>
+<body>
+  <main>
+    {{ content }}
+  </main>
+  {% include footer.html %}
+  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+</body>
 </html>
