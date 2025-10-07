@@ -1,29 +1,29 @@
 :root {
   /* Light color scheme inspired by Apple design */
   color-scheme: light;
-  /* Surface colours: neutral whites and light greys for backgrounds */
+  /* Surface colours: predominantly white with subtle grey accents */
   --surface-page: #ffffff;
-  --surface-primary: #f8f8f9;
-  --surface-secondary: #f2f2f4;
-  --surface-sidebar: #f5f5f7;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f5f5f5;
+  --surface-sidebar: #f5f5f5;
   --surface-card: #ffffff;
-  --surface-elevated: #fafafb;
-  /* Ink colours: dark neutrals for text */
-  --ink-primary: #1d1d1f;
-  --ink-secondary: rgba(29, 29, 31, 0.7);
-  --ink-tertiary: rgba(60, 60, 67, 0.48);
-  --ink-quaternary: rgba(60, 60, 67, 0.3);
-  /* Accent colours: subtle blues reminiscent of iOS */
-  --accent: #007aff;
+  --surface-elevated: #ffffff;
+  /* Ink colours: dark neutrals for text (black) */
+  --ink-primary: #000000;
+  --ink-secondary: rgba(0, 0, 0, 0.65);
+  --ink-tertiary: rgba(0, 0, 0, 0.48);
+  --ink-quaternary: rgba(0, 0, 0, 0.3);
+  /* Accent colours: red reminiscent of Apple's system red */
+  --accent: #ff3b30;
   --accent-contrast: #ffffff;
-  --accent-soft: rgba(0, 122, 255, 0.12);
-  --accent-hover: #005ecb;
-  --accent-press: #004ea3;
-  --focus-ring: rgba(0, 122, 255, 0.4);
+  --accent-soft: rgba(255, 59, 48, 0.12);
+  --accent-hover: #e53935;
+  --accent-press: #d32f2f;
+  --focus-ring: rgba(255, 59, 48, 0.4);
   /* Shadows: gentle, light shadows for elevation */
   --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
   --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --panel-glow: 0 0 0 1px rgba(0, 122, 255, 0.1), 0 12px 32px rgba(0, 0, 0, 0.05);
+  --panel-glow: 0 0 1px rgba(255, 59, 48, 0.1), 0 12px 32px rgba(0, 0, 0, 0.05);
   /* Radii */
   --card-radius: 16px;
   --radius-large: 24px;
