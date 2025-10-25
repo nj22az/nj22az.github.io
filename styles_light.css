@@ -1,69 +1,69 @@
 :root {
-  /* Simple white and black color scheme */
+  /* Simple white and black color scheme - Japanese-inspired readability */
   color-scheme: light;
-  /* Surface colours: pure white */
+  /* Surface colours: white with subtle gray accents for sections */
   --surface-page: #ffffff;
   --surface-primary: #ffffff;
-  --surface-secondary: #ffffff;
-  --surface-sidebar: #ffffff;
+  --surface-secondary: #f2f2f2;
+  --surface-sidebar: #fafafa;
   --surface-card: #ffffff;
   --surface-elevated: #ffffff;
-  /* Ink colours: black text with hierarchy */
-  --ink-primary: #000000;
+  /* Ink colours: black text with clear hierarchy */
+  --ink-primary: #1a1a1a;
   --ink-secondary: rgba(0, 0, 0, 0.7);
-  --ink-tertiary: rgba(0, 0, 0, 0.5);
-  --ink-quaternary: rgba(0, 0, 0, 0.3);
+  --ink-tertiary: rgba(0, 0, 0, 0.55);
+  --ink-quaternary: rgba(0, 0, 0, 0.35);
   /* Accent colours: black */
   --accent: #000000;
   --accent-contrast: #ffffff;
-  --accent-soft: rgba(0, 0, 0, 0.08);
+  --accent-soft: rgba(0, 0, 0, 0.06);
   --accent-hover: #333333;
   --accent-press: #000000;
   --focus-ring: rgba(0, 0, 0, 0.3);
   /* Minimal shadows */
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.08);
-  --shadow-elevated: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.08);
   --panel-glow: none;
   /* Radii: minimal rounded corners */
-  --card-radius: 4px;
-  --radius-large: 8px;
-  --radius-medium: 4px;
-  --radius-small: 2px;
-  /* Typography scaling (adjust as needed) */
+  --card-radius: 2px;
+  --radius-large: 4px;
+  --radius-medium: 2px;
+  --radius-small: 0px;
+  /* Typography scaling - larger, more readable */
   --type-scale: 1;
-  --font-largetitle: calc(clamp(2rem, 4vw, 2.5rem) * var(--type-scale));
-  --font-title1: calc(clamp(1.5rem, 3vw, 2rem) * var(--type-scale));
-  --font-title2: calc(clamp(1.25rem, 2.4vw, 1.75rem) * var(--type-scale));
-  --font-title3: calc(clamp(1.125rem, 1.8vw, 1.5rem) * var(--type-scale));
-  --font-headline: calc(clamp(1rem, 1.2vw, 1.25rem) * var(--type-scale));
-  --font-body: calc(clamp(0.95rem, 0.28vw + 0.92rem, 1rem) * var(--type-scale));
-  --font-callout: calc(clamp(0.95rem, 0.25vw + 0.9rem, 1rem) * var(--type-scale));
-  --font-subheadline: calc(clamp(0.85rem, 0.22vw + 0.84rem, 0.95rem) * var(--type-scale));
-  --font-footnote: calc(clamp(0.8rem, 0.2vw + 0.78rem, 0.85rem) * var(--type-scale));
-  --font-caption1: calc(clamp(0.75rem, 0.18vw + 0.72rem, 0.8rem) * var(--type-scale));
-  /* Spacing (8pt grid) */
+  --font-largetitle: calc(clamp(2.25rem, 4.5vw, 3rem) * var(--type-scale));
+  --font-title1: calc(clamp(1.75rem, 3.5vw, 2.25rem) * var(--type-scale));
+  --font-title2: calc(clamp(1.5rem, 2.8vw, 1.875rem) * var(--type-scale));
+  --font-title3: calc(clamp(1.25rem, 2vw, 1.5rem) * var(--type-scale));
+  --font-headline: calc(clamp(1.125rem, 1.4vw, 1.25rem) * var(--type-scale));
+  --font-body: calc(clamp(1rem, 0.3vw + 0.95rem, 1.0625rem) * var(--type-scale));
+  --font-callout: calc(clamp(1rem, 0.28vw + 0.95rem, 1.0625rem) * var(--type-scale));
+  --font-subheadline: calc(clamp(0.9375rem, 0.24vw + 0.9rem, 1rem) * var(--type-scale));
+  --font-footnote: calc(clamp(0.875rem, 0.22vw + 0.85rem, 0.9375rem) * var(--type-scale));
+  --font-caption1: calc(clamp(0.8125rem, 0.2vw + 0.8rem, 0.875rem) * var(--type-scale));
+  /* Spacing (8pt grid) - more generous for readability */
   --spacing-0: 0px;
-  --spacing-1: 4px;
-  --spacing-2: 8px;
-  --spacing-3: 12px;
-  --spacing-4: 16px;
-  --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-7: 28px;
-  --spacing-8: 32px;
-  --spacing-10: 40px;
-  --spacing-12: 48px;
-  --spacing-16: 64px;
-  --spacing-20: 80px;
-  /* Layout */
-  --page-horizontal-padding: clamp(1rem, 4.6vw, 2rem);
-  --page-vertical-padding: clamp(1.5rem, 8vw, 3rem);
-  --layout-column-gap: clamp(1rem, 5vw, 2rem);
-  --content-max-width: 960px;
-  --reading-max-width: min(600px, 100%);
-  /* Borders and separators */
-  --separator: rgba(0, 0, 0, 0.15);
-  --border-color: rgba(0, 0, 0, 0.15);
+  --spacing-1: 6px;
+  --spacing-2: 12px;
+  --spacing-3: 18px;
+  --spacing-4: 24px;
+  --spacing-5: 30px;
+  --spacing-6: 36px;
+  --spacing-7: 42px;
+  --spacing-8: 48px;
+  --spacing-10: 60px;
+  --spacing-12: 72px;
+  --spacing-16: 96px;
+  --spacing-20: 120px;
+  /* Layout - generous spacing like Japanese templates */
+  --page-horizontal-padding: clamp(1.5rem, 5vw, 3rem);
+  --page-vertical-padding: clamp(2rem, 10vw, 4rem);
+  --layout-column-gap: clamp(1.5rem, 6vw, 3rem);
+  --content-max-width: 1120px;
+  --reading-max-width: min(720px, 100%);
+  /* Borders and separators - subtle like Japanese design */
+  --separator: rgba(0, 0, 0, 0.1);
+  --border-color: rgba(0, 0, 0, 0.12);
   /* Remove gradients */
   --hero-gradient-start: #ffffff;
   --hero-gradient-end: #ffffff;
@@ -80,11 +80,11 @@ body {
   min-height: 100vh;
   background-color: var(--surface-page);
   color: var(--ink-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
   font-size: var(--font-body);
   font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -125,22 +125,65 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Cards and surfaces */
+/* Cards and surfaces - spacious and clean */
 .card {
   background-color: var(--surface-card);
   border-radius: var(--card-radius);
-  padding: var(--spacing-4);
+  padding: var(--spacing-6);
   border: 1px solid var(--separator);
   box-shadow: none;
+  margin-bottom: var(--spacing-5);
 }
 
-/* Sidebar styling example */
+/* Add spacing to paragraphs */
+p {
+  margin-bottom: 1.5em;
+  line-height: 1.8;
+}
+
+/* Headings with Japanese-style spacing */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  letter-spacing: 0.01em;
+}
+
+h1 { font-size: var(--font-largetitle); margin-top: 0; }
+h2 { font-size: var(--font-title1); }
+h3 { font-size: var(--font-title2); }
+h4 { font-size: var(--font-title3); }
+
+/* Sidebar styling - clean separation */
 .sidebar {
   background-color: var(--surface-sidebar);
   color: var(--ink-primary);
-  padding: var(--spacing-5);
+  padding: var(--spacing-6);
   border-right: 1px solid var(--separator);
   border-radius: 0;
+}
+
+/* Lists with better spacing */
+ul, ol {
+  margin-bottom: 1.5em;
+  padding-left: 1.75em;
+}
+
+li {
+  margin-bottom: 0.5em;
+  line-height: 1.8;
+}
+
+/* Section backgrounds for visual hierarchy */
+.section-gray {
+  background-color: var(--surface-secondary);
+  padding: var(--spacing-10) 0;
+}
+
+.section-white {
+  background-color: var(--surface-page);
+  padding: var(--spacing-10) 0;
 }
 
 /* Remove glass-morphism effects */
@@ -149,7 +192,65 @@ button:focus-visible {
   -webkit-backdrop-filter: none !important;
 }
 
+/* Code blocks - clean and readable */
+code {
+  background-color: var(--surface-secondary);
+  padding: 0.2em 0.4em;
+  border-radius: 2px;
+  font-size: 0.9em;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Courier New", monospace;
+}
+
+pre {
+  background-color: var(--surface-secondary);
+  padding: var(--spacing-5);
+  border-radius: var(--card-radius);
+  overflow-x: auto;
+  margin-bottom: 1.5em;
+  border: 1px solid var(--separator);
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Tables with Japanese-style borders */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5em;
+}
+
+th, td {
+  padding: var(--spacing-3) var(--spacing-4);
+  text-align: left;
+  border-bottom: 1px solid var(--separator);
+}
+
+th {
+  font-weight: 600;
+  background-color: var(--surface-secondary);
+}
+
+/* Blockquotes */
+blockquote {
+  margin: 1.5em 0;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-left: 3px solid var(--ink-primary);
+  background-color: var(--surface-secondary);
+  font-style: normal;
+}
+
+/* Horizontal rules */
+hr {
+  border: none;
+  border-top: 1px solid var(--separator);
+  margin: var(--spacing-8) 0;
+}
+
 /* Utility classes for spacing */
 .mt-4 { margin-top: var(--spacing-4); }
 .mb-4 { margin-bottom: var(--spacing-4); }
 .p-4  { padding: var(--spacing-4); }
+.container { max-width: var(--content-max-width); margin: 0 auto; padding: 0 var(--page-horizontal-padding); }
