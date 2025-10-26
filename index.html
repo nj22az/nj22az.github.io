@@ -1,98 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Office of Nils Johansson</title>
-  <script src="https://unpkg.com/feather-icons"></script>
-  <style>
-    :root {
-      --background: #f7f7f7;
-      --text-primary: #1c1c1e;
-      --accent: #007aff;
-      --card-bg: #ffffff;
-      --border: #e0e0e0;
-      --disabled: #c7c7cc;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: var(--background);
-      color: var(--text-primary);
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      max-width: 500px;
-      width: 100%;
-      padding: 40px 20px;
-      text-align: center;
-    }
-    h1 {
-      margin-top: 0;
-      font-size: 2rem;
-      color: var(--accent);
-    }
-    .tagline {
-      font-size: 1rem;
-      color: var(--text-primary);
-    }
-    .sections {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      margin-top: 40px;
-    }
-    .section-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      width: 280px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .section-card svg {
-      width: 32px;
-      height: 32px;
-      margin-bottom: 10px;
-    }
-    .section-card h3 {
-      margin: 0;
-      font-size: 1.25rem;
-    }
-    .section-card p {
-      margin: 8px 0 0;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Office of Nils Johansson</title>
+<script src="https://unpkg.com/feather-icons"></script>
+<style>
+:root {
+  --background: #f7f7f7;
+  --text-primary: #1c1c1e;
+  --accent: #007aff;
+  --card-bg: #ffffff;
+  --border: #e0e0e0;
+  --disabled: #c7c7cc;
+  --about-color: #34C759;
+  --blog-color: #007AFF;
+  --downloads-color: #FF9500;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--text-primary);
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+p.tagline {
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+}
+.sections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+.section-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 30px 25px;
+  width: 280px;
+  max-width: 90%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.section-card .icon svg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 15px;
+}
+.section-card.about .icon svg { stroke: var(--about-color); }
+.section-card.blog .icon svg { stroke: var(--blog-color); }
+.section-card.downloads .icon svg { stroke: var(--downloads-color); }
+.section-card h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+.section-card p {
+  margin: 0;
+  font-size: 1rem;
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 40px 15px;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  p.tagline {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .sections {
+    gap: 20px;
+  }
+}
+</style>
 </head>
 <body>
   <div class="container">
     <h1>The Office of Nils Johansson</h1>
     <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
     <div class="sections">
-      <div class="section-card">
-        <i data-feather="user" style="stroke:#34C759;"></i>
-        <h3>About Me</h3>
+      <div class="section-card about">
+        <div class="icon"><i data-feather="user"></i></div>
+        <h2>About Me</h2>
         <p>Learn about my journey and passions.</p>
       </div>
-      <div class="section-card">
-        <i data-feather="book-open" style="stroke:#007AFF;"></i>
-        <h3>Blog</h3>
-        <p>Read posts on engineering, travel &amp; culture.</p>
+      <div class="section-card blog">
+        <div class="icon"><i data-feather="file-text"></i></div>
+        <h2>Blog</h2>
+        <p>Read posts on engineering, travel & culture.</p>
       </div>
-      <div class="section-card">
-        <i data-feather="download" style="stroke:#FF9500;"></i>
-        <h3>Downloads</h3>
-        <p>Get digital resources &amp; products (coming soon).</p>
+      <div class="section-card downloads">
+        <div class="icon"><i data-feather="download"></i></div>
+        <h2>Downloads</h2>
+        <p>Get digital resources & products.</p>
       </div>
     </div>
-    <footer>© 2025 Nils Johansson</footer>
   </div>
   <script>
     feather.replace();
