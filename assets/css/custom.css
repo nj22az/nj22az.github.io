@@ -1,0 +1,48 @@
+:root {
+  --pastel-pink: #ffe5e5;
+  --pastel-green: #e5ffe5;
+  --pastel-yellow: #fff5cc;
+  --pastel-blue: #e5f0ff;
+  --accent-color: #0078d4;
+  --text-color: #333333;
+  --border-radius: 8px;
+  --panel-padding: 1rem;
+  --panel-margin: 1rem 0;
+}
+
+.panel-pink {
+  background-color: var(--pastel-pink);
+  padding: var(--panel-padding);
+  border-radius: var(--border-radius);
+  margin: var(--panel-margin);
+}
+
+.panel-green {
+  background-color: var(--pastel-green);
+  padding: var(--panel-padding);
+  border-radius: var(--border-radius);
+  margin: var(--panel-margin);
+}
+
+.panel-yellow {
+  background-color: var(--pastel-yellow);
+  padding: var(--panel-padding);
+  border-radius: var(--border-radius);
+  margin: var(--panel-margin);
+}
+
+.panel-blue {
+  background-color: var(--pastel-blue);
+  padding: var(--panel-padding);
+  border-radius: var(--border-radius);
+  margin: var(--panel-margin);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+body {
+  color: var(--text-color);
+}
