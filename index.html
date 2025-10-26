@@ -2,17 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Office of Nils Johansson – Coming Soon</title>
+  <script src="https://unpkg.com/feather-icons"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
-    h1 { font-size: 2em; margin-bottom: 0.5em; }
-    p { font-size: 1.2em; }
-    .icons { font-size: 80px; margin-top: 20px; }
+    :root {
+      --accent: #007aff;
+      --bg: #f9f9f9;
+      --text: #1c1c1e;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .icons {
+      display: flex;
+      gap: 24px;
+      color: var(--accent);
+    }
+    .icons i {
+      width: 48px;
+      height: 48px;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.875rem;
+      color: #8e8e93;
+    }
   </style>
 </head>
 <body>
   <h1>The Office of Nils Johansson</h1>
-  <p>Coming soon...</p>
-  <div class="icons">🚧 🛠️ 🚧</div>
+  <p>Our new website is coming soon.</p>
+  <div class="icons">
+    <i data-feather="tool"></i>
+    <i data-feather="clock"></i>
+    <i data-feather="aperture"></i>
+  </div>
+  <footer>© 2025 Nils Johansson</footer>
+  <script>feather.replace();</script>
 </body>
 </html>
