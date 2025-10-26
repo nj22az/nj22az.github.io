@@ -1,33 +1,49 @@
-/* Typography SCSS: font system and hierarchy */
+/* Typography SCSS: Clear hierarchy inspired by Japanese Microsoft templates */
 
 h1 {
-  font-size: 2rem;
-  line-height: 1.3;
+  font-size: 2.25rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
 }
 
 h2 {
-  font-size: 1.5rem;
-  line-height: 1.4;
+  font-size: 1.75rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.875rem;
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   line-height: 1.4;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
 }
 
 h4 {
   font-size: 1.125rem;
   line-height: 1.5;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
 }
 
 h5 {
   font-size: 1rem;
   line-height: 1.5;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 h6 {
   font-size: 0.875rem;
   line-height: 1.5;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
 }
 
 .lead {
