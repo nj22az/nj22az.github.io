@@ -13,6 +13,7 @@
       --card-background: #ffffff;
       --card-border: #e5e5ea;
       --card-hover: #f2f2f7;
+      --disabled: #c7c7cc;
     }
     body {
       margin: 0;
@@ -52,12 +53,14 @@
       width: 220px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       transition: background 0.2s;
+      opacity: 0.5;
+      pointer-events: none;
     }
     .section-card:hover {
       background: var(--card-hover);
     }
     .section-card i {
-      color: var(--accent);
+      color: var(--disabled);
       width: 32px;
       height: 32px;
       margin-bottom: 0.5rem;
@@ -81,7 +84,7 @@
 <body>
   <div class="container">
     <h1>The Office of Nils Johansson</h1>
-    <p class="tagline">Welcome! Explore different parts of my world.</p>
+    <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
     <div class="sections">
       <div class="section-card">
         <i data-feather="user"></i>
