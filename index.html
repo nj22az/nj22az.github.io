@@ -7,80 +7,70 @@
   <script src="https://unpkg.com/feather-icons"></script>
   <style>
     :root {
+      --background: #f7f7f7;
+      --text-primary: #1c1c1e;
       --accent: #007aff;
-      --background: #f9f9f9;
-      --text-color: #1c1c1e;
-   
-.section-card svg {
-      stroke: var(--disabled);
-    }   --card-background: #ffffff;
-      --card-border: #e5e5ea;
-      --card-hover: #f2f2f7;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
       --disabled: #c7c7cc;
     }
     body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 0;
       background: var(--background);
-      color: var(--text-color);
+      color: var(--text-primary);
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
-      text-align: center;
     }
     .container {
-      max-width: 800px;
-      padding: 2rem;
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
+      text-align: center;
+      padding: 40px;
     }
     .tagline {
       font-size: 1.2rem;
-      margin-bottom: 2rem;
-      color: var(--accent);
+      margin-top: 10px;
+      color: var(--text-primary);
     }
     .sections {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 40px;
     }
     .section-card {
-      background: var(--card-background);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      width: 220px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      width: 280px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      transition: background 0.2s;
       opacity: 0.5;
       pointer-events: none;
     }
-    .section-card:hover {
-      background: var(--card-hover);
-    }
-    .section-card i {
-      color: var(--disabled);
+    .section-card i,
+    .section-card svg {
+      stroke: var(--disabled);
       width: 32px;
       height: 32px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 10px;
     }
     .section-card h3 {
-      margin: 0.5rem 0;
+      margin: 0;
       font-size: 1.25rem;
     }
-    footer {
-      margin-top: 2rem;
-      font-size: 0.875rem;
-      color: #8e8e93;
+    .section-card p {
+      margin: 8px 0 0;
+      font-size: 0.9rem;
+      color: var(--text-primary);
     }
-    @media (max-width: 600px) {
-      .section-card {
-        width: 100%;
-      }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: #888;
     }
   </style>
 </head>
@@ -97,12 +87,12 @@
       <div class="section-card">
         <i data-feather="book-open"></i>
         <h3>Blog</h3>
-        <p>Read posts on engineering, travel & culture.</p>
+        <p>Read posts on engineering, travel &amp; culture.</p>
       </div>
       <div class="section-card">
         <i data-feather="download"></i>
         <h3>Downloads</h3>
-        <p>Get digital resources & products (coming soon).</p>
+        <p>Get digital resources &amp; products (coming soon).</p>
       </div>
     </div>
     <footer>© 2025 Nils Johansson</footer>
