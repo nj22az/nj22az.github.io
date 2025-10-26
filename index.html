@@ -8,56 +8,62 @@
   <style>
     :root {
       --accent: #007aff;
-      --bg: #f9f9f9;
-      --text: #1c1c1e;
+      --bg: #f7f7f7;
+      --text: #1d1d1f;
     }
     body {
       margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
-      flex-direction: column;
+      min-height: 100vh;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      padding: 0 24px;
       text-align: center;
     }
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
     }
     p {
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      line-height: 1.5;
     }
     .icons {
       display: flex;
-      gap: 24px;
+      justify-content: center;
+      gap: 32px;
       color: var(--accent);
     }
     .icons i {
-      width: 48px;
-      height: 48px;
+      width: 64px;
+      height: 64px;
     }
     footer {
-      margin-top: 2rem;
+      margin-top: 3rem;
       font-size: 0.875rem;
       color: #8e8e93;
     }
   </style>
 </head>
 <body>
-  <h1>The Office of Nils Johansson</h1>
-  <p>Our new website is coming soon.</p>
-  <div class="icons">
-    <i data-feather="tool"></i>
-    <i data-feather="clock"></i>
-    <i data-feather="aperture"></i>
+  <div class="container">
+    <h1>The Office of Nils Johansson</h1>
+    <p>We're working hard on our new website.<br>Check back soon for updates.</p>
+    <div class="icons">
+      <i data-feather="tool"></i>
+      <i data-feather="clock"></i>
+      <i data-feather="aperture"></i>
+    </div>
+    <footer>&copy; 2025 Nils Johansson</footer>
   </div>
-  <footer>© 2025 Nils Johansson</footer>
   <script>feather.replace();</script>
 </body>
 </html>
