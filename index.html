@@ -3,67 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Office of Nils Johansson – Coming Soon</title>
+  <title>The Office of Nils Johansson</title>
   <script src="https://unpkg.com/feather-icons"></script>
   <style>
     :root {
       --accent: #007aff;
-      --bg: #f7f7f7;
-      --text: #1d1d1f;
+      --background: #f9f9f9;
+      --text-color: #1c1c1e;
+      --card-background: #ffffff;
+      --card-border: #e5e5ea;
+      --card-hover: #f2f2f7;
     }
     body {
       margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      color: var(--text-color);
       display: flex;
-      min-height: 100vh;
       justify-content: center;
       align-items: center;
-    }
-    .container {
-      max-width: 600px;
-      padding: 0 24px;
+      min-height: 100vh;
       text-align: center;
     }
+    .container {
+      max-width: 800px;
+      padding: 2rem;
+    }
     h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
     }
-    p {
-      font-size: 1.25rem;
+    .tagline {
+      font-size: 1.2rem;
       margin-bottom: 2rem;
-      line-height: 1.5;
-    }
-    .icons {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
       color: var(--accent);
     }
-    .icons i {
-      width: 64px;
-      height: 64px;
+    .sections {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    .section-card {
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 220px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: background 0.2s;
+    }
+    .section-card:hover {
+      background: var(--card-hover);
+    }
+    .section-card i {
+      color: var(--accent);
+      width: 32px;
+      height: 32px;
+      margin-bottom: 0.5rem;
+    }
+    .section-card h3 {
+      margin: 0.5rem 0;
+      font-size: 1.25rem;
     }
     footer {
-      margin-top: 3rem;
+      margin-top: 2rem;
       font-size: 0.875rem;
       color: #8e8e93;
+    }
+    @media (max-width: 600px) {
+      .section-card {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>The Office of Nils Johansson</h1>
-    <p>We're working hard on our new website.<br>Check back soon for updates.</p>
-    <div class="icons">
-      <i data-feather="tool"></i>
-      <i data-feather="clock"></i>
-      <i data-feather="aperture"></i>
+    <p class="tagline">Welcome! Explore different parts of my world.</p>
+    <div class="sections">
+      <div class="section-card">
+        <i data-feather="user"></i>
+        <h3>About Me</h3>
+        <p>Learn about my journey and passions.</p>
+      </div>
+      <div class="section-card">
+        <i data-feather="book-open"></i>
+        <h3>Blog</h3>
+        <p>Read posts on engineering, travel & culture.</p>
+      </div>
+      <div class="section-card">
+        <i data-feather="download"></i>
+        <h3>Downloads</h3>
+        <p>Get digital resources & products (coming soon).</p>
+      </div>
     </div>
-    <footer>&copy; 2025 Nils Johansson</footer>
+    <footer>© 2025 Nils Johansson</footer>
   </div>
-  <script>feather.replace();</script>
+  <script>
+    feather.replace();
+  </script>
 </body>
 </html>
