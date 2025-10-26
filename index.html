@@ -21,17 +21,21 @@
       background: var(--background);
       color: var(--text-primary);
       display: flex;
-      align-items: center;
       justify-content: center;
-      min-height: 100vh;
     }
     .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 40px 20px;
       text-align: center;
-      padding: 40px;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: var(--accent);
     }
     .tagline {
-      font-size: 1.2rem;
-      margin-top: 10px;
+      font-size: 1rem;
       color: var(--text-primary);
     }
     .sections {
@@ -47,32 +51,15 @@
       border-radius: 8px;
       padding: 20px;
       width: 280px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       opacity: 0.5;
       pointer-events: none;
     }
-    .section-card i,
     .section-card svg {
-      stroke: var(--disabled);
       width: 32px;
       height: 32px;
       margin-bottom: 10px;
     }
-/* Colorize icons and logo heading */
-h1 {
-  color: var(--accent);
-}
-/* Assign individual colors to each section icon */
-.section-card:nth-child(1) svg {
-  stroke: #34C759;
-}
-.section-card:nth-child(2) svg {
-  stroke: #007AFF;
-}
-.section-card:nth-child(3) svg {
-  stroke: #FF9500;
-}
-
     .section-card h3 {
       margin: 0;
       font-size: 1.25rem;
@@ -82,11 +69,6 @@ h1 {
       font-size: 0.9rem;
       color: var(--text-primary);
     }
-    footer {
-      margin-top: 40px;
-      font-size: 0.8rem;
-      color: #888;
-    }
   </style>
 </head>
 <body>
@@ -95,17 +77,17 @@ h1 {
     <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
     <div class="sections">
       <div class="section-card">
-        <i data-feather="user"></i>
+        <i data-feather="user" style="stroke:#34C759;"></i>
         <h3>About Me</h3>
         <p>Learn about my journey and passions.</p>
       </div>
       <div class="section-card">
-        <i data-feather="book-open"></i>
+        <i data-feather="book-open" style="stroke:#007AFF;"></i>
         <h3>Blog</h3>
         <p>Read posts on engineering, travel &amp; culture.</p>
       </div>
       <div class="section-card">
-        <i data-feather="download"></i>
+        <i data-feather="download" style="stroke:#FF9500;"></i>
         <h3>Downloads</h3>
         <p>Get digital resources &amp; products (coming soon).</p>
       </div>
