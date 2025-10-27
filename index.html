@@ -10,117 +10,133 @@
   --background: #f7f7f7;
   --text-primary: #1c1c1e;
   --accent: #007aff;
+  --about-color: #34c759;
+  --blog-color: #007aff;
+  --downloads-color: #ff9500;
+  --disabled: #c7c7cc;
   --card-bg: #ffffff;
   --border: #e0e0e0;
-  --disabled: #c7c7cc;
-  --about-color: #34C759;
-  --blog-color: #007AFF;
-  --downloads-color: #FF9500;
 }
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background-color: var(--background);
   margin: 0;
   padding: 0;
-  background: var(--background);
   color: var(--text-primary);
 }
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 60px 20px;
+  padding: 80px 20px 100px;
   text-align: center;
 }
+
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: var(--accent);
 }
-p.tagline {
+
+.tagline {
   font-size: 1.2rem;
   margin-bottom: 3rem;
+  color: var(--text-primary);
 }
+
 .sections {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 40px;
+  gap: 1.5rem;
 }
+
 .section-card {
-  background: var(--card-bg);
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 30px 25px;
+  padding: 1.5rem;
   width: 280px;
-  max-width: 90%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  opacity: 0.6;
+  box-sizing: border-box;
+  text-align: center;
+  opacity: 0.5;
   pointer-events: none;
-  transition: opacity 0.3s;
 }
-.section-card .icon svg {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 15px;
+
+.section-card.active {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
 }
-.section-card.about .icon svg { stroke: var(--about-color); }
-.section-card.blog .icon svg { stroke: var(--blog-color); }
-.section-card.downloads .icon svg { stroke: var(--downloads-color); }
+
+.section-card .icon {
+  margin-bottom: 1rem;
+}
+
+.section-card.about .icon svg {
+  stroke: var(--about-color);
+}
+
+.section-card.blog .icon svg {
+  stroke: var(--blog-color);
+}
+
+.section-card.downloads .icon svg {
+  stroke: var(--downloads-color);
+}
+
 .section-card h2 {
-  margin: 0;
+  margin: 0.5rem 0;
   font-size: 1.3rem;
-  margin-bottom: 0.5rem;
 }
+
 .section-card p {
-  margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
 }
+
 footer {
-  margin-top: 4rem;
+  margin-top: 5rem;
   font-size: 0.9rem;
   color: var(--disabled);
 }
+
 @media (max-width: 600px) {
   .container {
-    padding: 40px 15px;
+    padding: 60px 20px 80px;
   }
-  h1 {
-    font-size: 2rem;
-  }
-  p.tagline {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-  .sections {
-    gap: 20px;
+  .section-card {
+    width: 100%;
   }
 }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>The Office of Nils Johansson</h1>
-    <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
-    <div class="sections">
-      <div class="section-card about">
-        <div class="icon"><i data-feather="user"></i></div>
-        <h2>About Me</h2>
-        <p>Learn about my journey and passions.</p>
-      </div>
-      <div class="section-card blog">
-        <div class="icon"><i data-feather="file-text"></i></div>
-        <h2>Blog</h2>
-        <p>Read posts on engineering, travel &amp; culture.</p>
-      </div>
-      <div class="section-card downloads">
-        <div class="icon"><i data-feather="download"></i></div>
-        <h2>Downloads</h2>
-        <p>Get digital resources &amp; products.</p>
-      </div>
+<div class="container">
+  <h1>The Office of Nils Johansson</h1>
+  <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
+  <div class="sections">
+    <div class="section-card about">
+      <div class="icon"><i data-feather="user"></i></div>
+      <h2>About Me</h2>
+      <p>Learn about my journey and passions.</p>
     </div>
-    <footer>© 2025 Nils Johansson</footer>
+    <a class="section-card blog active" href="blog/index.html">
+      <div class="icon"><i data-feather="book-open"></i></div>
+      <h2>Blog</h2>
+      <p>Read posts on engineering, travel & culture.</p>
+    </a>
+    <div class="section-card downloads">
+      <div class="icon"><i data-feather="download"></i></div>
+      <h2>Downloads</h2>
+      <p>Get digital resources & products.</p>
+    </div>
   </div>
-  <script>
-    feather.replace();
-  </script>
+  <footer>© 2025 Nils Johansson</footer>
+</div>
+<script>
+feather.replace();
+</script>
 </body>
 </html>
