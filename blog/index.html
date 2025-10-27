@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog – The Office of Nils Johansson</title>
+<script src="https://unpkg.com/feather-icons"></script>
+<style>
+:root {
+  --background: #f7f7f7;
+  --text-primary: #1c1c1e;
+  --accent: #007aff;
+  --card-bg: #ffffff;
+  --border: #e0e0e0;
+  --disabled: #c7c7cc;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background-color: var(--background);
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 20px 100px;
+}
+
+h1 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 2rem;
+}
+
+.post-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.post-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.post-card h2 a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.post-card .meta {
+  font-size: 0.9rem;
+  color: var(--disabled);
+  margin-bottom: 1rem;
+}
+
+.post-card p {
+  margin-bottom: 1rem;
+}
+
+.post-card .tags {
+  margin-top: 1rem;
+}
+
+.post-card .tag {
+  display: inline-block;
+  background-color: #e5e5ea;
+  color: var(--text-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-right: 0.3rem;
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 60px 20px 80px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Blog</h1>
+  <div class="post-card">
+    <h2><a href="first-post.html">Discovering the Balance Between Engine Rooms and Exploration</a></h2>
+    <div class="meta">By Nils Johansson – October 25, 2025</div>
+    <p>From the deepest engine rooms to the farthest ports of call, here's how a marine engineer found his way ashore and into the world of field service engineering…</p>
+    <div class="tags">
+      <span class="tag">Engineering</span><span class="tag">Travel</span><span class="tag">Culture</span>
+    </div>
+  </div>
+</div>
+<script>
+feather.replace();
+</script>
+</body>
+</html>
