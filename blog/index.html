@@ -35,6 +35,17 @@ h1 {
   margin-bottom: 2rem;
 }
 
+.intro {
+  text-align: center;
+  color: #3a3a3c;
+  margin: 0 auto 2rem;
+  max-width: 600px;
+}
+
+.intro a {
+  color: inherit;
+}
+
 .post-card {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
@@ -76,6 +87,30 @@ h1 {
   font-size: 0.8rem;
   margin-right: 0.3rem;
 }
+
+.status {
+  text-align: center;
+  background-color: #fff;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  color: #8e8e93;
+}
+
+.read-more {
+  margin-top: 1rem;
+}
+
+.read-more a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.read-more a:hover,
+.intro a:hover {
+  text-decoration: underline;
+}
 @media (max-width: 600px) {
   .container {
     padding: 60px 20px 80px;
@@ -86,16 +121,78 @@ h1 {
 <body>
 <div class="container">
   <h1>Blog</h1>
-  <div class="post-card">
-    <h2><a href="first-post.html">Discovering the Balance Between Engine Rooms and Exploration</a></h2>
-    <div class="meta">By Nils Johansson – October 25, 2025</div>
-    <p>From the deepest engine rooms to the farthest ports of call, here's how a marine engineer found his way ashore and into the world of field service engineering…</p>
-    <div class="tags">
-      <span class="tag">Engineering</span><span class="tag">Travel</span><span class="tag">Culture</span>
-    </div>
-  </div>
+  <p class="intro">The latest stories from <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">theofficeofnils.wordpress.com</a> pulled straight into this page.</p>
+  <div id="status" class="status">Fetching the most recent posts…</div>
+  <div id="posts"></div>
 </div>
 <script>
+const postsContainer = document.getElementById('posts');
+const statusBanner = document.getElementById('status');
+const WORDPRESS_API = 'https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts?_embed&per_page=6';
+
+function stripHTML(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function safeText(input) {
+  return stripHTML(input || '').trim();
+}
+
+function formatDate(dateString) {
+  return new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(dateString));
+}
+
+function buildTags(post) {
+  const tags = post?._embedded?.['wp:term']?.flat() || [];
+  return tags
+    .filter(tag => tag.taxonomy === 'post_tag')
+    .slice(0, 5)
+    .map(tag => `<span class="tag">${safeText(tag.name)}</span>`)
+    .join('');
+}
+
+function createPostCard(post) {
+  const title = safeText(post.title.rendered) || 'Untitled';
+  const excerpt = safeText(post.excerpt.rendered);
+  const summary = excerpt.length > 220 ? `${excerpt.slice(0, 217)}…` : excerpt;
+  const tagsMarkup = buildTags(post);
+  const author = safeText(post._embedded?.author?.[0]?.name) || 'Nils Johansson';
+
+  return `
+    <article class="post-card">
+      <h2><a href="${post.link}" target="_blank" rel="noopener">${title}</a></h2>
+      <div class="meta">By ${author} – ${formatDate(post.date)}</div>
+      <p>${summary || 'Visit WordPress to read the full story.'}</p>
+      ${tagsMarkup ? `<div class="tags">${tagsMarkup}</div>` : ''}
+      <div class="read-more"><a href="${post.link}" target="_blank" rel="noopener">Read the full article</a></div>
+    </article>
+  `;
+}
+
+async function loadPosts() {
+  try {
+    const response = await fetch(WORDPRESS_API);
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+
+    const posts = await response.json();
+    if (!posts.length) {
+      statusBanner.textContent = 'No posts are available yet. Please check back soon!';
+      return;
+    }
+
+    statusBanner.remove();
+    postsContainer.innerHTML = posts.map(createPostCard).join('');
+  } catch (error) {
+    console.error('Failed to load WordPress posts', error);
+    statusBanner.textContent = 'We could not reach the WordPress blog right now. Try refreshing the page in a moment.';
+  }
+}
+
+loadPosts();
 feather.replace();
 </script>
 </body>
