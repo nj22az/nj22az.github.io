@@ -1,0 +1,98 @@
+[
+  {
+    "id": "lamp-space-ring",
+    "name": "Lamp Space Ring",
+    "category": "Lamp Rings",
+    "description": "Precision-fitted space ring for standard lamp holders. Bridges the gap between your lamp holder and shade, ensuring a perfect, wobble-free fit every time.",
+    "features": ["Custom inner/outer diameter", "Multiple PLA colours", "Tolerance ±0.2mm", "Lightweight & durable"],
+    "dimensions": {
+      "inner_range": "28–45mm",
+      "outer_range": "40–70mm",
+      "height_range": "5–25mm"
+    },
+    "colours": ["white", "black", "grey", "cream", "navy", "red"],
+    "price_from": "5",
+    "image_placeholder": "lamp-ring",
+    "popular": true
+  },
+  {
+    "id": "roof-light-insert",
+    "name": "Roof Light Insert",
+    "category": "Roof Light Inserts",
+    "description": "Custom inserts designed for ceiling and roof light fittings. Perfect for adapting modern LED panels to existing ceiling cut-outs or creating clean trim finishes.",
+    "features": ["Made to your ceiling cut-out", "Smooth finish", "Heat-resistant PLA", "Easy snap-fit installation"],
+    "dimensions": {
+      "inner_range": "50–200mm",
+      "outer_range": "70–250mm",
+      "height_range": "5–30mm"
+    },
+    "colours": ["white", "black", "grey", "cream"],
+    "price_from": "8",
+    "image_placeholder": "roof-insert",
+    "popular": true
+  },
+  {
+    "id": "led-downlight-adapter",
+    "name": "LED Downlight Adapter",
+    "category": "Adapters",
+    "description": "Adapter rings to fit LED downlights into existing ceiling cut-outs. Converts oversized holes to match your new light fitting perfectly.",
+    "features": ["Converts any cut-out size", "Clean white finish", "Simple push-fit", "No tools required"],
+    "dimensions": {
+      "inner_range": "60–180mm",
+      "outer_range": "80–220mm",
+      "height_range": "8–20mm"
+    },
+    "colours": ["white", "black", "cream"],
+    "price_from": "7",
+    "image_placeholder": "downlight-adapter",
+    "popular": false
+  },
+  {
+    "id": "pendant-lamp-spacer",
+    "name": "Pendant Lamp Spacer",
+    "category": "Lamp Rings",
+    "description": "Spacer rings for pendant lamp fittings. Ensures your pendant shade sits at the perfect height and angle on the lamp holder.",
+    "features": ["Precision height control", "Multiple thickness options", "Colour matched to your shade", "Thread-compatible"],
+    "dimensions": {
+      "inner_range": "10–42mm",
+      "outer_range": "20–60mm",
+      "height_range": "3–40mm"
+    },
+    "colours": ["white", "black", "grey", "cream", "navy", "red", "green", "orange"],
+    "price_from": "4",
+    "image_placeholder": "pendant-spacer",
+    "popular": false
+  },
+  {
+    "id": "recessed-trim-ring",
+    "name": "Recessed Light Trim Ring",
+    "category": "Roof Light Inserts",
+    "description": "Decorative trim rings for recessed ceiling lights. Covers rough cut-out edges and gives a clean, professional finish to any recessed light installation.",
+    "features": ["Covers imperfect cut-outs", "Flush or raised profile", "Paint-ready surface", "UV resistant PLA"],
+    "dimensions": {
+      "inner_range": "60–200mm",
+      "outer_range": "80–240mm",
+      "height_range": "3–15mm"
+    },
+    "colours": ["white", "black", "grey", "cream"],
+    "price_from": "6",
+    "image_placeholder": "trim-ring",
+    "popular": true
+  },
+  {
+    "id": "custom-dimension-ring",
+    "name": "Fully Custom Ring",
+    "category": "Custom",
+    "description": "Can't find what you need? We'll create a ring or insert to your exact specifications. Send us your measurements and we'll design and print a perfect-fit solution.",
+    "features": ["Any dimension you need", "Full colour range", "CAD design included", "Prototype + final piece"],
+    "dimensions": {
+      "inner_range": "Any size",
+      "outer_range": "Any size",
+      "height_range": "Any size"
+    },
+    "colours": ["white", "black", "grey", "light-grey", "cream", "navy", "sky-blue", "red", "green", "orange", "yellow", "brown"],
+    "price_from": "10",
+    "image_placeholder": "custom",
+    "popular": false
+  }
+]

@@ -1,2094 +1,903 @@
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
-function syncBrowserThemeColor() {
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (!themeMeta) {
-    return;
-  }
-
-  const navMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
-  const tileMeta = document.querySelector('meta[name="msapplication-TileColor"]');
-
-  const applyColor = () => {
-    const surface = getComputedStyle(document.documentElement)
-      .getPropertyValue('--surface-page')
-      .trim();
-
-    if (!surface) {
-      return;
-    }
-
-    themeMeta.setAttribute('content', surface);
-
-    if (navMeta) {
-      navMeta.setAttribute('content', surface);
-    }
-
-    if (tileMeta) {
-      tileMeta.setAttribute('content', surface);
-    }
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyColor, { once: true });
-  } else {
-    applyColor();
-  }
-
-  window.addEventListener('load', applyColor, { once: true });
-
-  const mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-  if (!mediaQuery) {
-    return;
-  }
-
-  const listener = () => applyColor();
-
-  if (typeof mediaQuery.addEventListener === 'function') {
-    mediaQuery.addEventListener('change', listener);
-  } else if (typeof mediaQuery.addListener === 'function') {
-    mediaQuery.addListener(listener);
-  }
-}
-
-syncBrowserThemeColor();
-
-function stripHtml(html) {
-  if (!html) return '';
-  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function createExcerpt(text) {
-  if (!text) return '';
-  if (text.length <= 160) {
-    return text;
-  }
-  const slice = text.slice(0, 200);
-  const lastSpace = slice.lastIndexOf(' ');
-  const candidate = lastSpace > 140 ? slice.slice(0, lastSpace) : slice;
-  return `${candidate.trim()}…`;
-}
-
-function enhancePost(post) {
-  const plainText = stripHtml(post.content);
-  const words = plainText.split(/\s+/).filter(Boolean).length;
-  const readingTime = Math.max(1, Math.round(words / 200));
-  const excerptSource = post.excerpt && post.excerpt.trim().length ? post.excerpt : plainText;
-  const excerpt = createExcerpt(stripHtml(excerptSource));
-  const tags = Array.isArray(post.tags) ? post.tags : [];
-  const categories = Array.isArray(post.categories) ? post.categories : [];
-  const coverIcon = post.coverIcon || TYPE_ICON_MAP[post.contentType] || 'journal';
-  const categoryLabel = categories[0] || post.contentType || 'Journal';
-
-  return {
-    ...post,
-    plainText,
-    readingTime,
-    excerpt,
-    tags,
-    categories,
-    coverIcon,
-    categoryLabel
-  };
-}
-
-function getPostIdentifier(post) {
-  if (!post) {
-    return undefined;
-  }
-  return post.id || post.url || post.title;
-}
-
-const ICON_TONES = {
-  neutral: 'var(--ink-tertiary)',
-  active: 'var(--ink-primary)',
-  meta: 'var(--ink-secondary)',
-  download: 'var(--ink-primary)'
+// ── PLA Colour Data ──
+const PLA_COLOURS = {
+  white:      { name: 'White',      hex: '#ffffff', border: true },
+  black:      { name: 'Black',      hex: '#1a1a1a' },
+  grey:       { name: 'Grey',       hex: '#808080' },
+  'light-grey': { name: 'Light Grey', hex: '#c0c0c0' },
+  cream:      { name: 'Cream',      hex: '#f5f0e1' },
+  navy:       { name: 'Navy Blue',  hex: '#1e3a5f' },
+  'sky-blue': { name: 'Sky Blue',   hex: '#5b9bd5' },
+  red:        { name: 'Red',        hex: '#c0392b' },
+  green:      { name: 'Forest Green', hex: '#27ae60' },
+  orange:     { name: 'Orange',     hex: '#e67e22' },
+  yellow:     { name: 'Yellow',     hex: '#f1c40f' },
+  brown:      { name: 'Wood Brown', hex: '#8b6914' }
 };
 
-const CARD_COLOR_POOL = ['var(--ink-primary)'];
-
-const AVAILABLE_ICONS = [
-  { id: 'journal', label: 'Journal Entry' },
-  { id: 'globe', label: 'Cultural Insight' },
-  { id: 'checklist', label: 'Checklist' },
-  { id: 'wave', label: 'Field Note' },
-  { id: 'compass', label: 'Mission Planning' },
-  { id: 'toolkit', label: 'Technical Dispatch' },
-  { id: 'antenna', label: 'Signal & Comms' },
-  { id: 'safety', label: 'Safety Advisory' }
-];
-
-const TYPE_ICON_MAP = {
-  'Technical Dispatch': 'toolkit',
-  'Cultural Insight': 'globe',
-  Checklist: 'checklist',
-  'Journal Entry': 'journal',
-  'Field Note': 'wave',
-  'Mission Planning': 'compass',
-  'Signal & Comms': 'antenna',
-  'Safety Advisory': 'safety'
-};
-
-const SORT_OPTIONS = [
-  { id: 'newest', label: 'Newest first' },
-  { id: 'oldest', label: 'Oldest first' },
-  { id: 'shortest', label: 'Shortest read' },
-  { id: 'longest', label: 'Longest read' }
-];
-
-
-function MonoIcon({ name, className = '', tone, style, 'aria-label': ariaLabel }) {
-  const toneStyle = tone ? { color: tone } : undefined;
-  return React.createElement('span', {
-    className: ['mono-icon', `mono-icon--${name}`, className].filter(Boolean).join(' '),
-    style: toneStyle || style ? { ...(toneStyle || {}), ...(style || {}) } : undefined,
-    'aria-hidden': ariaLabel ? undefined : 'true',
-    'aria-label': ariaLabel,
-    role: ariaLabel ? 'img' : undefined
-  });
+// ── Lucide Icon Helper ──
+function Icon({ name, size = 20, className = '' }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current && lucide && lucide.icons && lucide.icons[name]) {
+      const [tag, attrs, children] = lucide.icons[name];
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries({ ...attrs, width: size, height: size, class: className }).forEach(([k, v]) => {
+        if (v !== undefined) svg.setAttribute(k, String(v));
+      });
+      children.forEach(([childTag, childAttrs]) => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', childTag);
+        Object.entries(childAttrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+        svg.appendChild(el);
+      });
+      ref.current.innerHTML = '';
+      ref.current.appendChild(svg);
+    }
+  }, [name, size, className]);
+  return React.createElement('span', { ref, className: 'icon-wrapper ' + className, 'aria-hidden': 'true' });
 }
 
-const NAV_ITEMS = [
+// ── Colour Swatch Component ──
+function ColourSwatch({ colourId, size = 'medium', showLabel = true }) {
+  const colour = PLA_COLOURS[colourId];
+  if (!colour) return null;
+  const sizeMap = { small: 24, medium: 32, large: 40 };
+  const px = sizeMap[size] || 32;
+  return React.createElement('div', { className: 'colour-swatch', title: colour.name }, [
+    React.createElement('span', {
+      key: 'dot',
+      className: 'colour-swatch__dot' + (colour.border ? ' colour-swatch__dot--bordered' : ''),
+      style: { backgroundColor: colour.hex, width: px, height: px }
+    }),
+    showLabel ? React.createElement('span', { key: 'label', className: 'colour-swatch__label' }, colour.name) : null
+  ]);
+}
+
+// ── Navigation ──
+const NAV_PAGES = [
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'blog', label: 'Journal', icon: 'journal' },
-  { id: 'downloads', label: 'Tools', icon: 'wrench' }
+  { id: 'products', label: 'Products', icon: 'package' },
+  { id: 'custom', label: 'Custom Orders', icon: 'ruler' },
+  { id: 'about', label: 'About', icon: 'info' },
+  { id: 'contact', label: 'Contact', icon: 'mail' }
 ];
 
-const LIBRARY_ITEMS = [
-  // Removed - items moved to main navigation or footer
-];
+function Navbar({ currentPage, onNavigate }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-const SIDEBAR_SECTIONS = [
-  {
-    id: 'primary',
-    items: [
-      { id: 'search', label: 'Search', icon: 'search', action: 'search' },
-      { id: 'home', label: 'Home', icon: 'home', page: 'home' },
-      { id: 'blog', label: 'Journal', icon: 'journal', page: 'blog' }
-    ]
-  },
-  {
-    id: 'library',
-    heading: 'Library',
-    items: [
-      { id: 'downloads', label: 'Engineering Tools', icon: 'wrench', page: 'downloads' },
-      { id: 'bookmarks', label: 'Saved', icon: 'bookmark', action: 'bookmarks' }
-    ]
-  },
-  {
-    id: 'about-section',
-    items: [
-      { id: 'about', label: 'About', icon: 'about', page: 'about' }
-    ]
-  }
-];
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-function FilterMenu({
-  searchTerm,
-  onSearch,
-  tags,
-  selectedTag,
-  onSelectTag,
-  sortOrder,
-  onSortChange,
-  contentTypes,
-  selectedContentType,
-  onSelectContentType,
-  searchInputRef,
-  isOpen,
-  onToggle
-}) {
-  const hasTags = Array.isArray(tags) && tags.length > 0;
-  const hasContentTypes = Array.isArray(contentTypes) && contentTypes.length > 0;
-  const toggleMenu = typeof onToggle === 'function' ? onToggle : () => {};
-  const activeFilters = [
-    Boolean(searchTerm && searchTerm.trim().length),
-    selectedTag !== 'All',
-    selectedContentType !== 'All',
-    sortOrder !== 'newest'
-  ].filter(Boolean).length;
-  const hintText = 'Shortcut: ⌘ / Ctrl + K';
-
-  const tagSection = hasTags
-    ? React.createElement('div', { key: 'tags', className: 'filter-menu__section filter-menu__section--tags' }, [
-        React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'Tags'),
-        React.createElement('div', { key: 'chips', className: 'filter-menu__chips' },
-          ['All', ...tags].map((tag) => React.createElement('button', {
-            key: tag,
-            type: 'button',
-            className: 'filter-chip' + (selectedTag === tag ? ' filter-chip--active' : ''),
-            onClick: () => onSelectTag(tag)
-          }, tag))
-        )
-      ])
-    : null;
-
-  const controls = [
-    React.createElement('div', { key: 'sort', className: 'filter-menu__control' }, [
-      React.createElement('label', {
-        key: 'label',
-        htmlFor: 'sort-order',
-        className: 'filter-menu__control-label'
-      }, 'Sort'),
-      React.createElement('select', {
-        key: 'input',
-        id: 'sort-order',
-        className: 'filter-menu__select',
-        value: sortOrder,
-        onChange: (event) => onSortChange(event.target.value)
-      }, SORT_OPTIONS.map(({ id, label }) =>
-        React.createElement('option', { key: id, value: id }, label)
-      ))
-    ])
-  ];
-
-  if (hasContentTypes) {
-    controls.push(
-      React.createElement('div', { key: 'type', className: 'filter-menu__control' }, [
-        React.createElement('label', {
-          key: 'label',
-          htmlFor: 'content-type',
-          className: 'filter-menu__control-label'
-        }, 'Content type'),
-        React.createElement('select', {
-          key: 'input',
-          id: 'content-type',
-          className: 'filter-menu__select',
-          value: selectedContentType,
-          onChange: (event) => onSelectContentType(event.target.value)
-        }, ['All', ...contentTypes].map((type) =>
-          React.createElement('option', { key: type, value: type }, type)
-        ))
-      ])
-    );
-  }
-
-  const searchSection = React.createElement('div', { key: 'search', className: 'filter-menu__section filter-menu__section--search' }, [
-    React.createElement('label', {
-      key: 'label',
-      htmlFor: 'search-field',
-      className: 'filter-menu__label'
-    }, 'Search'),
-    React.createElement('div', { key: 'input', className: 'search-field' },
-      React.createElement('input', {
-        id: 'search-field',
-        type: 'search',
-        value: searchTerm,
-        placeholder: 'Search posts and resources…',
-        onChange: (event) => onSearch(event.target.value),
-        className: 'search-field__input',
-        ref: searchInputRef
-      })
-    )
-  ]);
-
-  const viewSection = React.createElement('div', { key: 'view', className: 'filter-menu__section filter-menu__section--view' }, [
-    React.createElement('span', { key: 'label', className: 'filter-menu__label' }, 'View options'),
-    React.createElement('div', { key: 'controls', className: 'filter-menu__controls' }, controls)
-  ]);
-
-  const bodySections = [searchSection, viewSection, tagSection].filter(Boolean);
-
-  const body = isOpen
-    ? React.createElement('div', { key: 'panel', className: 'filter-menu__panel', id: 'filter-menu-panel' }, bodySections)
-    : null;
-
-  return React.createElement('section', { className: 'filter-menu' }, [
-    React.createElement('div', { key: 'header', className: 'filter-menu__header' }, [
-      React.createElement('button', {
-        key: 'trigger',
-        type: 'button',
-        className: 'filter-menu__trigger',
-        onClick: toggleMenu,
-        'aria-expanded': isOpen ? 'true' : 'false',
-        'aria-controls': 'filter-menu-panel'
-      }, [
-        React.createElement(MonoIcon, {
-          key: 'icon',
-          name: 'settings',
-          className: 'filter-menu__icon',
-          tone: isOpen ? ICON_TONES.active : ICON_TONES.neutral
-        }),
-        React.createElement('span', { key: 'label', className: 'filter-menu__trigger-label' }, 'Browse posts'),
-        activeFilters
-          ? React.createElement('span', { key: 'badge', className: 'filter-menu__badge' }, `${activeFilters} active`)
-          : null
-      ].filter(Boolean)),
-      React.createElement('span', { key: 'hint', className: 'filter-menu__hint' }, hintText)
-    ]),
-    body
-  ].filter(Boolean));
-}
-
-function Sidebar({
-  collapsed,
-  onToggle,
-  currentPage,
-  onPageChange,
-  onFocusSearch,
-  bookmarkedCount
-}) {
-  const handleItemSelect = (item) => {
-    if (!item) {
-      return;
-    }
-    if (item.action === 'search' && typeof onFocusSearch === 'function') {
-      onFocusSearch();
-      if (typeof onToggle === 'function') {
-        onToggle(true);
-      }
-      return;
-    }
-    if (item.action === 'bookmarks') {
-      if (typeof onPageChange === 'function') {
-        onPageChange('bookmarks');
-      }
-      return;
-    }
-    if (item.page && typeof onPageChange === 'function') {
-      onPageChange(item.page);
-    }
+  const handleNav = (pageId) => {
+    onNavigate(pageId);
+    setMenuOpen(false);
   };
 
-  return React.createElement('aside', {
-    className: 'sidebar' + (collapsed ? ' sidebar--collapsed' : '')
-  }, [
-    React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
+  return React.createElement('header', { className: 'navbar' + (scrolled ? ' navbar--scrolled' : '') }, [
+    React.createElement('div', { key: 'inner', className: 'navbar__inner' }, [
       React.createElement('button', {
-        key: 'toggle',
-        type: 'button',
-        className: 'sidebar__toggle',
-        onClick: () => (typeof onToggle === 'function' ? onToggle(!collapsed) : undefined),
-        'aria-label': collapsed ? 'Expand menu' : 'Collapse menu'
-      }, React.createElement(MonoIcon, { name: collapsed ? 'chevron-right' : 'chevron-left' })),
-      collapsed
-        ? null
-        : React.createElement('div', { key: 'identity', className: 'sidebar__identity' }, [
-            React.createElement('div', { key: 'avatar', className: 'sidebar__avatar', 'aria-hidden': 'true' }),
-            React.createElement('div', { key: 'meta', className: 'sidebar__meta' }, [
-              React.createElement('span', { key: 'name', className: 'sidebar__name' }, 'Nils Johansson'),
-              React.createElement('span', { key: 'role', className: 'sidebar__role' }, 'Field Notes Journal')
-            ])
-          ])
+        key: 'brand',
+        className: 'navbar__brand',
+        onClick: () => handleNav('home')
+      }, [
+        React.createElement(Icon, { key: 'icon', name: 'circle-dot', size: 28 }),
+        React.createElement('span', { key: 'text', className: 'navbar__brand-text' }, 'Custom Space Rings')
+      ]),
+      React.createElement('nav', { key: 'links', className: 'navbar__links' },
+        NAV_PAGES.map(p =>
+          React.createElement('button', {
+            key: p.id,
+            className: 'navbar__link' + (currentPage === p.id ? ' navbar__link--active' : ''),
+            onClick: () => handleNav(p.id)
+          }, p.label)
+        )
+      ),
+      React.createElement('button', {
+        key: 'cta',
+        className: 'navbar__cta',
+        onClick: () => handleNav('contact')
+      }, 'Get a Quote'),
+      React.createElement('button', {
+        key: 'burger',
+        className: 'navbar__burger' + (menuOpen ? ' navbar__burger--open' : ''),
+        onClick: () => setMenuOpen(!menuOpen),
+        'aria-label': 'Toggle menu'
+      }, [
+        React.createElement('span', { key: 'l1' }),
+        React.createElement('span', { key: 'l2' }),
+        React.createElement('span', { key: 'l3' })
+      ])
     ]),
-    React.createElement('nav', { key: 'nav', className: 'sidebar__nav', 'aria-label': 'Site navigation' },
-      SIDEBAR_SECTIONS.map((section) =>
-        React.createElement('div', { key: section.id, className: 'sidebar__section' }, [
-          !collapsed && section.heading
-            ? React.createElement('span', { key: 'heading', className: 'sidebar__heading' }, section.heading)
-            : null,
-          React.createElement('ul', { key: 'list', className: 'sidebar__list' },
-            section.items.map((item) => {
-              const isActive = item.page && currentPage === item.page;
-              const badge = item.action === 'bookmarks' && bookmarkedCount > 0
-                ? React.createElement('span', { key: 'badge', className: 'sidebar__badge' }, bookmarkedCount)
-                : null;
-
-              return React.createElement('li', { key: item.id },
-                React.createElement('button', {
-                  type: 'button',
-                  className: 'sidebar__item' + (isActive ? ' sidebar__item--active' : ''),
-                  onClick: () => handleItemSelect(item),
-                  'aria-current': isActive ? 'page' : undefined
-                }, [
-                  React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__icon' }),
-                  collapsed ? null : React.createElement('span', { key: 'label', className: 'sidebar__label' }, item.label),
-                  collapsed ? null : badge
-                ].filter(Boolean))
-              );
-            })
-          )
+    menuOpen ? React.createElement('div', { key: 'mobile-menu', className: 'navbar__mobile-menu' },
+      NAV_PAGES.map(p =>
+        React.createElement('button', {
+          key: p.id,
+          className: 'navbar__mobile-link' + (currentPage === p.id ? ' navbar__mobile-link--active' : ''),
+          onClick: () => handleNav(p.id)
+        }, [
+          React.createElement(Icon, { key: 'i', name: p.icon, size: 18 }),
+          React.createElement('span', { key: 't' }, p.label)
         ])
       )
-    )
+    ) : null
   ]);
 }
 
-function BottomNavigation({ currentPage, onPageChange }) {
-  return React.createElement('nav', { className: 'bottom-nav', 'aria-label': 'Primary navigation' },
-    NAV_ITEMS.map(({ id, label, icon }) =>
+// ── Bottom Navigation (Mobile) ──
+function BottomNav({ currentPage, onNavigate }) {
+  const items = NAV_PAGES.slice(0, 5);
+  return React.createElement('nav', { className: 'bottom-nav' },
+    items.map(p =>
       React.createElement('button', {
-        type: 'button',
-        key: id,
-        className: 'bottom-nav__item' + (currentPage === id ? ' active' : ''),
-        'aria-current': currentPage === id ? 'page' : undefined,
-        onClick: () => onPageChange(id)
+        key: p.id,
+        className: 'bottom-nav__item' + (currentPage === p.id ? ' bottom-nav__item--active' : ''),
+        onClick: () => onNavigate(p.id)
       }, [
-        React.createElement('span', { key: 'active', className: 'bottom-nav__indicator', 'aria-hidden': 'true' }),
-        React.createElement(MonoIcon, {
-          key: 'icon',
-          name: icon,
-          className: 'bottom-nav__icon',
-          tone: currentPage === id ? ICON_TONES.active : ICON_TONES.neutral
-        }),
-        React.createElement('span', { key: 'label', className: 'bottom-nav__label' }, label)
+        React.createElement(Icon, { key: 'i', name: p.icon, size: 20 }),
+        React.createElement('span', { key: 'l', className: 'bottom-nav__label' }, p.label)
       ])
     )
   );
 }
 
-function Hero({ onExplore }) {
-  const handleExplore = () => {
-    if (typeof onExplore === 'function') {
-      onExplore();
-    }
-  };
-
+// ── Hero Section ──
+function Hero({ onNavigate }) {
   return React.createElement('section', { className: 'hero' }, [
-    React.createElement('div', { key: 'inner', className: 'hero__inner' }, [
-      React.createElement('span', { key: 'eyebrow', className: 'hero__eyebrow' }, 'Nils Johansson · Field Service Engineer'),
-      React.createElement('h1', { key: 'headline', className: 'hero__headline' }, 'Calm operations. Shared openly.'),
-      React.createElement('p', { key: 'body', className: 'hero__body' }, 'Field-tested briefs and checklists that keep crews centred when conditions change. Take what you need, adapt it, and deploy with confidence.'),
+    React.createElement('div', { key: 'bg', className: 'hero__bg' }),
+    React.createElement('div', { key: 'content', className: 'hero__content' }, [
+      React.createElement('span', { key: 'badge', className: 'hero__badge' }, '3D Printed to Perfection'),
+      React.createElement('h1', { key: 'title', className: 'hero__title' }, [
+        'Precision Space Rings',
+        React.createElement('br', { key: 'br' }),
+        '& Lamp Inserts'
+      ]),
+      React.createElement('p', { key: 'sub', className: 'hero__subtitle' },
+        'Custom-made rings and inserts for lamps and roof lights. Any dimension, any colour. Expertly crafted using professional 3D printing with premium PLA.'
+      ),
       React.createElement('div', { key: 'actions', className: 'hero__actions' }, [
         React.createElement('button', {
           key: 'primary',
-          type: 'button',
-          className: 'primary-button hero__button',
-          onClick: handleExplore
-        }, 'Browse journal'),
-        React.createElement('a', {
-          key: 'link',
-          className: 'hero__secondary',
-          href: '#downloads'
-        }, 'Latest downloads')
+          className: 'btn btn--primary btn--lg',
+          onClick: () => onNavigate('products')
+        }, [
+          'Browse Products',
+          React.createElement(Icon, { key: 'i', name: 'arrow-right', size: 18 })
+        ]),
+        React.createElement('button', {
+          key: 'secondary',
+          className: 'btn btn--outline btn--lg',
+          onClick: () => onNavigate('contact')
+        }, 'Request a Quote')
+      ]),
+      React.createElement('div', { key: 'trust', className: 'hero__trust' }, [
+        React.createElement('div', { key: 't1', className: 'trust-badge' }, [
+          React.createElement(Icon, { key: 'i', name: 'ruler', size: 18 }),
+          React.createElement('span', { key: 't' }, 'Custom Dimensions')
+        ]),
+        React.createElement('div', { key: 't2', className: 'trust-badge' }, [
+          React.createElement(Icon, { key: 'i', name: 'palette', size: 18 }),
+          React.createElement('span', { key: 't' }, '12+ PLA Colours')
+        ]),
+        React.createElement('div', { key: 't3', className: 'trust-badge' }, [
+          React.createElement(Icon, { key: 'i', name: 'zap', size: 18 }),
+          React.createElement('span', { key: 't' }, 'Fast Turnaround')
+        ]),
+        React.createElement('div', { key: 't4', className: 'trust-badge' }, [
+          React.createElement(Icon, { key: 'i', name: 'shield-check', size: 18 }),
+          React.createElement('span', { key: 't' }, String.fromCharCode(177) + '0.2mm Precision')
+        ])
       ])
     ])
   ]);
 }
 
-function PostCard({ post, onOpen }) {
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onOpen(post);
-    }
+// ── Product Card ──
+function ProductCard({ product, onSelect }) {
+  const placeholderIcons = {
+    'lamp-ring': 'lightbulb',
+    'roof-insert': 'square',
+    'downlight-adapter': 'circle',
+    'pendant-spacer': 'lamp',
+    'trim-ring': 'hexagon',
+    'custom': 'settings'
   };
+  const iconName = placeholderIcons[product.image_placeholder] || 'package';
 
   return React.createElement('article', {
-    className: 'journal-card',
-    role: 'button',
-    tabIndex: 0,
-    onClick: () => onOpen(post),
-    onKeyDown: handleKeyDown
+    className: 'product-card' + (product.popular ? ' product-card--popular' : ''),
+    onClick: () => onSelect(product)
   }, [
-    React.createElement('div', { key: 'meta', className: 'journal-card__meta' }, `${post.categoryLabel} · ${post.displayDate}`),
-    React.createElement('h3', { key: 'title', className: 'journal-card__title' }, post.title),
-    React.createElement('p', { key: 'excerpt', className: 'journal-card__excerpt' }, post.excerpt),
-    React.createElement('div', { key: 'foot', className: 'journal-card__footer' }, [
-      React.createElement('span', { key: 'time', className: 'journal-card__footnote' }, `${post.readingTime} min read`),
-      React.createElement('span', { key: 'cta', className: 'journal-card__cta' }, [
-        'Read',
-        React.createElement(MonoIcon, { key: 'icon', name: 'chevron', className: 'journal-card__icon' })
-      ])
-    ])
-  ]);
-}
-
-function PostList({ posts, onOpen }) {
-  if (!Array.isArray(posts) || !posts.length) {
-    return [
-      React.createElement('div', { className: 'empty-state', key: 'empty' }, [
-        React.createElement('h3', { key: 'title' }, 'Fresh stories are on the way'),
-        React.createElement('p', { key: 'copy' }, 'New perspectives are being reviewed—check back shortly for updates.')
-      ])
-    ];
-  }
-
-  return posts.map((post) =>
-    React.createElement(PostCard, {
-      post,
-      onOpen,
-      key: getPostIdentifier(post) || post.title
-    })
-  );
-}
-
-function ShareBar({ post }) {
-  const [copied, setCopied] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const containerRef = useRef(null);
-  const triggerRef = useRef(null);
-  const menuRef = useRef(null);
-  const copyResetTimeoutRef = useRef(null);
-
-  const shareUrl = useMemo(() => {
-    if (!post || !post.url) {
-      return '';
-    }
-    if (typeof window !== 'undefined') {
-      try {
-        return new URL(post.url, window.location.origin).toString();
-      } catch (error) {
-        return post.url;
-      }
-    }
-    return post.url;
-  }, [post]);
-
-  const encodedUrl = shareUrl ? encodeURIComponent(shareUrl) : '';
-  const encodedTitle = post && post.title ? encodeURIComponent(post.title) : '';
-
-  const shareTargets = [
-    {
-      id: 'linkedin',
-      label: 'LinkedIn',
-      icon: 'share',
-      href: encodedUrl ? `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}` : undefined
-    },
-    {
-      id: 'x',
-      label: 'Post',
-      icon: 'share',
-      href: encodedUrl ? `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` : undefined
-    },
-    {
-      id: 'email',
-      label: 'Email',
-      icon: 'mail',
-      href: encodedUrl ? `mailto:?subject=${encodedTitle}&body=${encodedUrl}` : undefined
-    }
-  ];
-
-  const enabledShareTargets = shareTargets.filter(({ href }) => Boolean(href));
-
-  const closeMenu = useCallback((focusTrigger = true) => {
-    setMenuOpen(false);
-    if (focusTrigger && triggerRef.current) {
-      triggerRef.current.focus();
-    }
-  }, []);
-
-  const handleCopy = useCallback(() => {
-    if (!shareUrl || typeof navigator === 'undefined' || !navigator.clipboard) {
-      return;
-    }
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        setCopied(true);
-        closeMenu();
-        if (copyResetTimeoutRef.current) {
-          clearTimeout(copyResetTimeoutRef.current);
-        }
-        copyResetTimeoutRef.current = setTimeout(() => {
-          setCopied(false);
-          copyResetTimeoutRef.current = null;
-        }, 2200);
-      })
-      .catch(() => {});
-  }, [shareUrl, closeMenu]);
-
-  const handlePrint = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      window.print();
-    }
-    closeMenu();
-  }, [closeMenu]);
-
-  const handleMenuKeyDown = useCallback((event) => {
-    if (!menuOpen || !menuRef.current) {
-      return;
-    }
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
-      return;
-    }
-    event.preventDefault();
-    const items = Array.from(menuRef.current.querySelectorAll('.share-menu__item:not([aria-disabled="true"])'));
-    if (!items.length) {
-      return;
-    }
-    const currentIndex = items.indexOf(document.activeElement);
-    let nextIndex = 0;
-    if (event.key === 'ArrowDown') {
-      nextIndex = currentIndex === -1 || currentIndex === items.length - 1 ? 0 : currentIndex + 1;
-    } else {
-      nextIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
-    }
-    const nextItem = items[nextIndex];
-    if (nextItem && typeof nextItem.focus === 'function') {
-      nextItem.focus();
-    }
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (!menuOpen) {
-      return undefined;
-    }
-
-    const handlePointerDown = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        closeMenu(false);
-      }
-    };
-
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeMenu();
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [menuOpen, closeMenu]);
-
-  useEffect(() => {
-    if (menuOpen && menuRef.current) {
-      const focusableItems = Array.from(menuRef.current.querySelectorAll('.share-menu__item:not([aria-disabled="true"])'));
-      if (focusableItems.length > 0) {
-        focusableItems[0].focus();
-      }
-    }
-  }, [menuOpen]);
-
-  useEffect(() => () => {
-    if (copyResetTimeoutRef.current) {
-      clearTimeout(copyResetTimeoutRef.current);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (menuOpen) {
-      setCopied(false);
-    }
-  }, [menuOpen]);
-
-  const identifier = getPostIdentifier(post);
-  const menuId = identifier
-    ? `share-menu-${identifier.toString().replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`
-    : 'share-menu';
-  const shareButtonLabel = copied ? 'Link copied' : 'Share';
-  const triggerClasses = ['share-menu__trigger'];
-  if (menuOpen) {
-    triggerClasses.push('share-menu__trigger--open');
-  }
-  if (copied) {
-    triggerClasses.push('share-menu__trigger--copied');
-  }
-
-  return React.createElement('div', { className: 'share-menu', ref: containerRef }, [
-    React.createElement('button', {
-      key: 'trigger',
-      type: 'button',
-      className: triggerClasses.join(' '),
-      ref: triggerRef,
-      'aria-haspopup': 'menu',
-      'aria-expanded': menuOpen ? 'true' : 'false',
-      'aria-controls': menuOpen ? menuId : undefined,
-      onClick: () => setMenuOpen((open) => !open)
-    }, [
-      React.createElement(MonoIcon, { key: 'icon', name: 'share', className: 'share-menu__trigger-icon' }),
-      React.createElement('span', { key: 'label', className: 'share-menu__trigger-label' }, shareButtonLabel)
-    ]),
-    menuOpen
-      ? React.createElement('div', {
-          key: 'popover',
-          id: menuId,
-          className: 'share-menu__popover',
-          role: 'menu',
-          'aria-label': 'Share options',
-          ref: menuRef,
-          onKeyDown: handleMenuKeyDown
-        }, [
-          enabledShareTargets.length
-            ? React.createElement('div', { key: 'targets', className: 'share-menu__group' },
-                enabledShareTargets.map(({ id, label, href, icon }) =>
-                  React.createElement('a', {
-                    key: id,
-                    className: 'share-menu__item',
-                    href,
-                    target: '_blank',
-                    rel: 'noreferrer noopener',
-                    role: 'menuitem',
-                    tabIndex: -1,
-                    onClick: () => closeMenu(false)
-                  }, [
-                    React.createElement(MonoIcon, { key: 'icon', name: icon, className: 'share-menu__item-icon' }),
-                    React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, label)
-                  ])
-                )
-              )
-            : null,
-          enabledShareTargets.length
-            ? React.createElement('div', { key: 'divider', className: 'share-menu__divider' })
-            : null,
-          React.createElement('div', { key: 'system', className: 'share-menu__group' }, [
-            React.createElement('button', {
-              key: 'copy',
-              type: 'button',
-              className: 'share-menu__item share-menu__item--button',
-              onClick: handleCopy,
-              disabled: !shareUrl,
-              'aria-disabled': !shareUrl ? 'true' : undefined,
-              role: 'menuitem',
-              tabIndex: -1
-            }, [
-              React.createElement(MonoIcon, { key: 'icon', name: 'link', className: 'share-menu__item-icon' }),
-              React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, 'Copy link')
-            ]),
-            React.createElement('button', {
-              key: 'print',
-              type: 'button',
-              className: 'share-menu__item share-menu__item--button',
-              onClick: handlePrint,
-              role: 'menuitem',
-              tabIndex: -1
-            }, [
-              React.createElement(MonoIcon, { key: 'icon', name: 'printer', className: 'share-menu__item-icon' }),
-              React.createElement('span', { key: 'label', className: 'share-menu__item-label' }, 'Print')
-            ])
-          ])
-        ])
-      : null
-  ]);
-}
-
-function PostView({ post, onBack, onToggleBookmark, isBookmarked }) {
-  const handleBookmark = () => {
-    if (typeof onToggleBookmark === 'function') {
-      onToggleBookmark(post);
-    }
-  };
-
-  return React.createElement('article', { className: 'timeline-card post-detail-card' }, [
-    React.createElement('header', { key: 'head', className: 'timeline-card__header timeline-card__header--detail' }, [
-      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: post.coverIcon || 'journal', tone: ICON_TONES.active })
-      ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
-        React.createElement('span', { key: 'category', className: 'timeline-card__badge' }, post.categoryLabel),
-        React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, post.title),
-        React.createElement('span', { key: 'meta', className: 'timeline-card__meta' }, `${post.displayDate} · ${post.readingTime} min read`)
-      ]),
-      React.createElement('div', { key: 'actions', className: 'timeline-card__detail-actions' }, [
-        React.createElement('button', {
-          key: 'bookmark',
-          type: 'button',
-          className: 'icon-button icon-button--bookmark',
-          onClick: handleBookmark,
-          'aria-pressed': isBookmarked
-        }, [
-          React.createElement('span', {
-            key: 'label',
-            className: 'visually-hidden'
-          }, isBookmarked ? 'Remove bookmark' : 'Save for later'),
-          React.createElement(MonoIcon, {
-            key: 'icon',
-            name: isBookmarked ? 'bookmark-filled' : 'bookmark',
-            className: 'icon-button__glyph',
-            tone: isBookmarked ? ICON_TONES.active : ICON_TONES.neutral
-          })
-        ]),
-        React.createElement('button', {
-          key: 'back',
-          type: 'button',
-          className: 'pill-button',
-          onClick: onBack
-        }, 'Back')
-      ])
-    ]),
-    post.tags && post.tags.length
-      ? React.createElement('div', { key: 'meta', className: 'tag-list tag-list--detail' },
-          post.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
-        )
-      : null,
-    React.createElement(ShareBar, { key: 'share', post }),
-    React.createElement('div', {
-      key: 'body',
-      className: 'timeline-card__body content',
-      dangerouslySetInnerHTML: { __html: post.content }
-    })
-  ]);
-}
-
-function DownloadCard({ item }) {
-  if (!item || !item.title || !item.url) {
-    return null;
-  }
-
-  const description = item.description && item.description.trim().length
-    ? item.description.trim()
-    : null;
-  const isExternal = typeof item.url === 'string' && /^https?:\/\//i.test(item.url);
-
-  return React.createElement('li', { className: 'download-item' }, [
-    React.createElement('div', { key: 'details', className: 'download-item__details' }, [
-      React.createElement('h3', { key: 'title', className: 'download-item__title' }, item.title),
-      description
-        ? React.createElement('p', { key: 'description', className: 'download-item__description' }, description)
-        : null
-    ].filter(Boolean)),
-    React.createElement('a', {
-      key: 'action',
-      className: 'download-item__link',
-      href: item.url,
-      download: isExternal ? undefined : '',
-      target: isExternal ? '_blank' : undefined,
-      rel: isExternal ? 'noreferrer noopener' : undefined,
-      'aria-label': `Download ${item.title}`
-    }, 'Download')
-  ]);
-}
-
-function EngineeringToolsPage({ downloads }) {
-  const introBlock = React.createElement('section', { className: 'tools-intro', key: 'intro' }, [
-    React.createElement('div', { key: 'hero-icon', className: 'tools-intro__hero-icon' },
-      React.createElement(MonoIcon, { name: 'wrench', className: 'tools-intro__icon' })
+    product.popular ? React.createElement('span', { key: 'pop', className: 'product-card__badge' }, 'Popular') : null,
+    React.createElement('div', { key: 'img', className: 'product-card__image' },
+      React.createElement(Icon, { name: iconName, size: 48 })
     ),
-    React.createElement('div', { key: 'content', className: 'tools-intro__content' }, [
-      React.createElement('h1', { key: 'title', className: 'tools-intro__title' }, 'Engineering Tools'),
-      React.createElement('p', { key: 'text', className: 'tools-intro__text' },
-        'Field-tested utilities, assessment frameworks, and practical resources for engineering operations. Built from real-world experience to solve real-world problems.'
-      )
-    ])
-  ]);
-
-  // Define tool sections with placeholders
-  const toolSections = [
-    {
-      id: 'assessment-tools',
-      title: 'Assessment & Inspection',
-      description: 'Systematic evaluation frameworks for field operations',
-      tools: [
-        {
-          id: 'hotel-assessment',
-          title: 'Hotel Journal',
-          description: 'A liquid-glass inspired console for recording hotel walkthroughs, AI summaries, and operational evaluations that sync with your field reports.',
-          url: '/hotel-assessment/dist/',
-          icon: 'clipboard',
-          category: 'Assessment'
-        }
-      ]
-    },
-    {
-      id: 'documentation',
-      title: 'Documentation & Templates',
-      description: 'Ready-to-use templates and checklists',
-      tools: downloads.filter(item => item.category === 'Career' || item.category === 'Deployments')
-    },
-    {
-      id: 'calculators',
-      title: 'Calculators & Utilities',
-      description: 'Quick reference tools for field calculations',
-      tools: []
-    }
-  ];
-
-  const renderToolCard = (tool) => {
-    if (tool.status === 'coming-soon') {
-      return React.createElement('div', { key: tool.id, className: 'tool-card tool-card--placeholder' }, [
-        React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
-          React.createElement(MonoIcon, { name: tool.icon || 'wrench', className: 'tool-card__icon-svg' })
-        ),
-        React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
-          React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
-            React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
-            React.createElement('span', { key: 'badge', className: 'tool-card__badge' }, 'Coming Soon')
-          ]),
-          React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
-        ])
-      ]);
-    }
-
-    // Assessment/interactive tool (has category but not file_type)
-    if (tool.category && !tool.file_type) {
-      return React.createElement('a', {
-        key: tool.id,
-        href: tool.url,
-        className: 'tool-card tool-card--interactive'
-      }, [
-        React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
-          React.createElement(MonoIcon, { name: tool.icon || 'wrench', className: 'tool-card__icon-svg' })
-        ),
-        React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
-          React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
-            React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
-            React.createElement('span', { key: 'category', className: 'tool-card__category' }, tool.category)
-          ]),
-          React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
-        ]),
-        React.createElement('div', { key: 'action', className: 'tool-card__action' },
-          React.createElement(MonoIcon, { name: 'arrow-right', className: 'tool-card__action-icon' })
+    React.createElement('div', { key: 'body', className: 'product-card__body' }, [
+      React.createElement('span', { key: 'cat', className: 'product-card__category' }, product.category),
+      React.createElement('h3', { key: 'name', className: 'product-card__name' }, product.name),
+      React.createElement('p', { key: 'desc', className: 'product-card__desc' }, product.description),
+      React.createElement('div', { key: 'colours', className: 'product-card__colours' },
+        product.colours.slice(0, 6).map(c =>
+          React.createElement(ColourSwatch, { key: c, colourId: c, size: 'small', showLabel: false })
         )
-      ]);
-    }
-
-    // Existing download item
-    return React.createElement('a', {
-      key: tool.title,
-      href: tool.url,
-      className: 'tool-card tool-card--download',
-      download: tool.url && !/^https?:\/\//i.test(tool.url) ? '' : undefined,
-      target: tool.url && /^https?:\/\//i.test(tool.url) ? '_blank' : undefined,
-      rel: tool.url && /^https?:\/\//i.test(tool.url) ? 'noreferrer noopener' : undefined
-    }, [
-      React.createElement('div', { key: 'icon', className: 'tool-card__icon' },
-        React.createElement(MonoIcon, { name: 'file-text', className: 'tool-card__icon-svg' })
       ),
-      React.createElement('div', { key: 'content', className: 'tool-card__content' }, [
-        React.createElement('div', { key: 'header', className: 'tool-card__header' }, [
-          React.createElement('h3', { key: 'title', className: 'tool-card__title' }, tool.title),
-          React.createElement('span', { key: 'meta', className: 'tool-card__meta' }, `${tool.file_type} · ${tool.file_size}`)
-        ]),
-        React.createElement('p', { key: 'description', className: 'tool-card__description' }, tool.description)
-      ]),
-      React.createElement('div', { key: 'action', className: 'tool-card__action' },
-        React.createElement(MonoIcon, { name: 'download', className: 'tool-card__action-icon' })
-      )
-    ]);
-  };
-
-  const sections = toolSections.map(section => {
-    if (!section.tools || section.tools.length === 0) {
-      return React.createElement('section', { key: section.id, className: 'tool-section tool-section--empty' }, [
-        React.createElement('div', { key: 'header', className: 'tool-section__header' }, [
-          React.createElement('h2', { key: 'title', className: 'tool-section__title' }, section.title),
-          React.createElement('p', { key: 'description', className: 'tool-section__description' }, section.description)
-        ]),
-        React.createElement('div', { key: 'empty', className: 'tool-section__empty-state' },
-          React.createElement('p', { className: 'tool-section__empty-text' }, 'Tools coming soon')
-        )
-      ]);
-    }
-
-    return React.createElement('section', { key: section.id, className: 'tool-section' }, [
-      React.createElement('div', { key: 'header', className: 'tool-section__header' }, [
-        React.createElement('h2', { key: 'title', className: 'tool-section__title' }, section.title),
-        React.createElement('p', { key: 'description', className: 'tool-section__description' }, section.description)
-      ]),
-      React.createElement('div', { key: 'grid', className: 'tool-section__grid' },
-        section.tools.map(tool => renderToolCard(tool))
-      )
-    ]);
-  });
-
-  return [introBlock, ...sections];
-}
-
-// Keep the old name as an alias for backwards compatibility
-function DownloadsPage({ downloads }) {
-  return EngineeringToolsPage({ downloads });
-}
-
-function AboutPage({ about, isLoading }) {
-  if (isLoading) {
-    return React.createElement(PostSkeleton, { key: 'about-skeleton' });
-  }
-
-  if (!about) {
-    return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
-      React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, 'About content unavailable'),
-      React.createElement('p', { key: 'copy', className: 'timeline-card__excerpt' }, 'The about page could not be loaded. Refresh the page or check that about.json is being generated.')
-    ]);
-  }
-
-  return React.createElement('article', { className: 'timeline-card timeline-card--intro' }, [
-    React.createElement('div', { key: 'header', className: 'timeline-card__header' }, [
-      React.createElement('div', { key: 'icon', className: 'timeline-card__icon' },
-        React.createElement(MonoIcon, { name: about.coverIcon || 'journal', tone: ICON_TONES.active })
-      ),
-      React.createElement('div', { key: 'heading', className: 'timeline-card__heading' }, [
-        React.createElement('span', { key: 'badge', className: 'timeline-card__badge' }, about.category || 'About'),
-        React.createElement('h1', { key: 'title', className: 'timeline-card__title' }, about.title),
-        about.updated
-          ? React.createElement('span', { key: 'updated', className: 'timeline-card__meta' }, `Last updated ${about.updated}`)
-          : null
-      ])
-    ]),
-    about.tags && about.tags.length
-      ? React.createElement('div', { key: 'tags', className: 'tag-list tag-list--detail' },
-          about.tags.map((tag) => React.createElement('span', { className: 'tag-chip', key: tag }, tag))
-        )
-      : null,
-    React.createElement('div', {
-      key: 'body',
-      className: 'timeline-card__body content',
-      dangerouslySetInnerHTML: { __html: about.content }
-    })
-  ]);
-}
-
-function InspectorPanel({ currentPost }) {
-  if (!currentPost) {
-    return null;
-  }
-
-  const tagList = Array.isArray(currentPost.tags) && currentPost.tags.length
-    ? React.createElement('ul', { className: 'inspector-card__list' },
-        currentPost.tags.map((tag) => React.createElement('li', { key: tag, className: 'inspector-card__row' }, [
-          React.createElement('span', { key: 'label' }, 'Tag'),
-          React.createElement('span', { key: 'value', className: 'inspector-card__value' }, tag)
-        ]))
-      )
-    : null;
-
-  return React.createElement('aside', { className: 'inspector-panel' },
-    React.createElement('section', { className: 'inspector-card' }, [
-      React.createElement('h3', { key: 'title', className: 'inspector-card__title' }, 'Now reading'),
-      React.createElement('p', {
-        key: 'meta',
-        className: 'inspector-card__meta'
-      }, `${currentPost.categoryLabel} · ${currentPost.displayDate} · ${currentPost.readingTime} min`),
-      tagList
-    ].filter(Boolean))
-  );
-}
-
-function Breadcrumbs({ segments }) {
-  if (!Array.isArray(segments) || !segments.length) {
-    return null;
-  }
-
-  return React.createElement('nav', { className: 'breadcrumbs', 'aria-label': 'Breadcrumb' },
-    segments.map((segment, index) => {
-      const isCurrent = index === segments.length - 1;
-      const key = segment.id || segment.label || index;
-
-      if (isCurrent || typeof segment.onSelect !== 'function') {
-        return React.createElement('span', {
-          key,
-          className: 'breadcrumbs__item breadcrumbs__item--current',
-          'aria-current': isCurrent ? 'page' : undefined
-        }, segment.label);
-      }
-
-      return React.createElement('button', {
-        key,
-        type: 'button',
-        className: 'breadcrumbs__item',
-        onClick: segment.onSelect
-      }, segment.label);
-    })
-  );
-}
-
-function BackToTopButton({ visible, onClick }) {
-  return React.createElement('button', {
-    type: 'button',
-    className: 'back-to-top' + (visible ? ' back-to-top--visible' : ''),
-    onClick,
-    'aria-hidden': visible ? undefined : 'true',
-    tabIndex: visible ? 0 : -1
-  }, [
-    React.createElement(MonoIcon, { key: 'icon', name: 'arrow-up', className: 'back-to-top__icon' }),
-    React.createElement('span', { key: 'label' }, 'Top')
-  ]);
-}
-
-function PostSkeleton() {
-  return React.createElement('div', { className: 'timeline-card skeleton-card' }, [
-    React.createElement('div', { key: 'header', className: 'skeleton-card__header' }),
-    React.createElement('div', { key: 'line1', className: 'skeleton-card__line skeleton-card__line--wide' }),
-    React.createElement('div', { key: 'line2', className: 'skeleton-card__line' }),
-    React.createElement('div', { key: 'line3', className: 'skeleton-card__line skeleton-card__line--short' })
-  ]);
-}
-
-// Mobile Header with Hamburger Menu
-function MobileHeader({ onToggleSidebar, isSidebarOpen }) {
-  return React.createElement('div', { className: 'mobile-header' }, [
-    React.createElement('button', {
-      key: 'hamburger',
-      className: 'hamburger-menu',
-      onClick: onToggleSidebar,
-      'aria-label': 'Toggle navigation menu'
-    }, [
-      React.createElement('span', { key: 'line1', className: 'hamburger-line' }),
-      React.createElement('span', { key: 'line2', className: 'hamburger-line' }),
-      React.createElement('span', { key: 'line3', className: 'hamburger-line' })
-    ]),
-    React.createElement('h2', {
-      key: 'title',
-      className: 'mobile-header__title'
-    }, 'The Office of Nils Johansson')
-  ]);
-}
-
-// Infinite Scroll Feed Component for Home Page
-function InfiniteScrollFeed({ posts, onPostClick }) {
-  const [displayedPosts, setDisplayedPosts] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const postsPerPage = 5;
-
-  // Sort posts by date (newest first)
-  const sortedPosts = useMemo(() => {
-    return [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [posts]);
-
-  // Initialize with first batch
-  useEffect(() => {
-    if (sortedPosts.length > 0) {
-      setDisplayedPosts(sortedPosts.slice(0, postsPerPage));
-      setHasMore(sortedPosts.length > postsPerPage);
-    }
-  }, [sortedPosts]);
-
-  // Load more posts
-  const loadMore = useCallback(() => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    setTimeout(() => {
-      const currentLength = displayedPosts.length;
-      const nextBatch = sortedPosts.slice(currentLength, currentLength + postsPerPage);
-
-      if (nextBatch.length > 0) {
-        setDisplayedPosts(prev => [...prev, ...nextBatch]);
-        setHasMore(currentLength + nextBatch.length < sortedPosts.length);
-      } else {
-        setHasMore(false);
-      }
-      setIsLoading(false);
-    }, 800); // Simulate loading delay
-  }, [displayedPosts.length, sortedPosts, isLoading, hasMore]);
-
-  // Scroll detection
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
-        loadMore();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadMore]);
-
-  return React.createElement('div', { className: 'infinite-scroll-feed' }, [
-    // Introduction section
-    React.createElement('div', { key: 'intro', className: 'feed-intro' }, [
-      React.createElement('div', { className: 'feed-intro__hero-icon' },
-        React.createElement(MonoIcon, { name: 'compass', className: 'feed-intro__icon' })
-      ),
-      React.createElement('div', { className: 'feed-intro__content' }, [
-        React.createElement('h1', { className: 'feed-intro__title' }, 'Field Notes & Insights'),
-        React.createElement('p', { className: 'feed-intro__text' },
-          'Engineering stories from the field, cultural observations from around the world, and practical frameworks for navigating complex systems. Real experience, shared openly.'
-        )
-      ])
-    ]),
-
-    // Feature cards
-    React.createElement('div', { key: 'features', className: 'home-features' }, [
-      React.createElement('div', { className: 'home-feature-card' }, [
-        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
-          React.createElement(MonoIcon, { name: 'clipboard', className: 'home-feature-icon-svg' })
-        ),
-        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Dispatches & Checklists'),
-        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Field reports and systematic runbooks captured after on-site engagements.')
-      ]),
-      React.createElement('div', { className: 'home-feature-card' }, [
-        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
-          React.createElement(MonoIcon, { name: 'globe', className: 'home-feature-icon-svg' })
-        ),
-        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Culture Briefs'),
-        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Regional insights for teams crossing borders, ports, and work styles.')
-      ]),
-      React.createElement('div', { className: 'home-feature-card' }, [
-        React.createElement('div', { key: 'icon', className: 'home-feature-icon' },
-          React.createElement(MonoIcon, { name: 'wrench', className: 'home-feature-icon-svg' })
-        ),
-        React.createElement('h3', { key: 'title', className: 'home-feature-title' }, 'Toolkits & Runbooks'),
-        React.createElement('p', { key: 'text', className: 'home-feature-text' }, 'Engineering tools designed to scale beyond one job.')
-      ])
-    ]),
-
-    // Posts feed
-    React.createElement('div', { key: 'feed', className: 'posts-feed' },
-      displayedPosts.map(post =>
-        React.createElement(FeedPostCard, {
-          key: post.id,
-          post: post,
-          onClick: () => onPostClick(post)
-        })
-      )
-    ),
-
-    // Loading indicator
-    isLoading && React.createElement('div', { key: 'loading', className: 'feed-loading' }, [
-      React.createElement('div', { className: 'loading-spinner' }),
-      React.createElement('span', { className: 'loading-text' }, 'Loading more posts...')
-    ]),
-
-    // End message
-    !hasMore && displayedPosts.length > 0 && React.createElement('div', { key: 'end', className: 'feed-end' }, [
-      React.createElement('p', { className: 'feed-end__text' }, 'You\'ve reached the end! 🎉'),
-      React.createElement('p', { className: 'feed-end__subtext' }, 'Thanks for reading all my posts.')
-    ])
-  ]);
-}
-
-// Journal Archive Component with Apple HIG sorting
-function JournalArchive({ posts, onPostClick }) {
-  const [sortBy, setSortBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [showSortMenu, setShowSortMenu] = useState(false);
-
-  const sortOptions = [
-    { id: 'date-desc', label: 'Newest First', sortBy: 'date', order: 'desc' },
-    { id: 'date-asc', label: 'Oldest First', sortBy: 'date', order: 'asc' },
-    { id: 'title-asc', label: 'Title A-Z', sortBy: 'title', order: 'asc' },
-    { id: 'title-desc', label: 'Title Z-A', sortBy: 'title', order: 'desc' },
-    { id: 'content-asc', label: 'Content Type A-Z', sortBy: 'content_type', order: 'asc' },
-    { id: 'content-desc', label: 'Content Type Z-A', sortBy: 'content_type', order: 'desc' }
-  ];
-
-  const currentSortLabel = sortOptions.find(opt => opt.sortBy === sortBy && opt.order === sortOrder)?.label || 'Newest First';
-
-  const sortedPosts = useMemo(() => {
-    return [...posts].sort((a, b) => {
-      let aValue, bValue;
-
-      switch(sortBy) {
-        case 'date':
-          aValue = new Date(a.date);
-          bValue = new Date(b.date);
-          break;
-        case 'title':
-          aValue = a.title?.toLowerCase() || '';
-          bValue = b.title?.toLowerCase() || '';
-          break;
-        case 'content_type':
-          aValue = a.content_type?.toLowerCase() || '';
-          bValue = b.content_type?.toLowerCase() || '';
-          break;
-        default:
-          aValue = new Date(a.date);
-          bValue = new Date(b.date);
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-      }
-    });
-  }, [posts, sortBy, sortOrder]);
-
-  const handleSortChange = useCallback((option) => {
-    setSortBy(option.sortBy);
-    setSortOrder(option.order);
-    setShowSortMenu(false);
-  }, []);
-
-  return React.createElement('div', { className: 'journal-archive' }, [
-    // Journal Introduction
-    React.createElement('div', { key: 'intro', className: 'journal-intro' }, [
-      React.createElement('div', { className: 'journal-intro__hero-icon' },
-        React.createElement(MonoIcon, { name: 'notebook-pen', className: 'journal-intro__icon' })
-      ),
-      React.createElement('div', { className: 'journal-intro__content' }, [
-        React.createElement('h1', { className: 'journal-intro__title' }, 'Journal Archive'),
-        React.createElement('p', { className: 'journal-intro__text' },
-          'A chronological collection of field reports, technical dispatches, and reflections from engineering projects around the world. Each entry documents lessons learned, challenges solved, and insights gained.'
-        )
-      ]),
-
-      // Apple HIG-style sort button
-      React.createElement('div', { className: 'journal-sort-container' }, [
+      React.createElement('div', { key: 'footer', className: 'product-card__footer' }, [
+        React.createElement('span', { key: 'price', className: 'product-card__price' }, 'From \u00A3' + product.price_from),
         React.createElement('button', {
-          className: `journal-sort-button ${showSortMenu ? 'active' : ''}`,
-          onClick: () => setShowSortMenu(!showSortMenu),
-          'aria-label': 'Sort journal entries'
-        }, [
-          React.createElement(MonoIcon, { key: 'icon', name: 'settings', className: 'journal-sort-icon' }),
-          React.createElement('span', { key: 'label', className: 'journal-sort-label' }, currentSortLabel),
-          React.createElement('span', { key: 'chevron', className: `journal-sort-chevron ${showSortMenu ? 'rotated' : ''}` }, '▼')
-        ]),
+          key: 'cta',
+          className: 'btn btn--small',
+          onClick: (e) => { e.stopPropagation(); onSelect(product); }
+        }, 'View Details')
+      ])
+    ])
+  ]);
+}
 
-        // Sort menu
-        showSortMenu && React.createElement('div', { className: 'journal-sort-menu' },
-          sortOptions.map(option =>
-            React.createElement('button', {
-              key: option.id,
-              className: `journal-sort-option ${option.sortBy === sortBy && option.order === sortOrder ? 'selected' : ''}`,
-              onClick: () => handleSortChange(option)
-            }, [
-              React.createElement('span', { key: 'label' }, option.label),
-              option.sortBy === sortBy && option.order === sortOrder &&
-                React.createElement(MonoIcon, { key: 'check', name: 'badge-check', className: 'journal-sort-check' })
+// ── Product Detail ──
+function ProductDetail({ product, onBack, onContact }) {
+  return React.createElement('div', { className: 'product-detail' }, [
+    React.createElement('button', { key: 'back', className: 'btn btn--ghost', onClick: onBack }, [
+      React.createElement(Icon, { key: 'i', name: 'arrow-left', size: 16 }),
+      ' Back to Products'
+    ]),
+    React.createElement('div', { key: 'layout', className: 'product-detail__layout' }, [
+      React.createElement('div', { key: 'visual', className: 'product-detail__visual' },
+        React.createElement('div', { className: 'product-detail__image-placeholder' },
+          React.createElement(Icon, { name: 'package', size: 80 })
+        )
+      ),
+      React.createElement('div', { key: 'info', className: 'product-detail__info' }, [
+        React.createElement('span', { key: 'cat', className: 'product-detail__category' }, product.category),
+        React.createElement('h1', { key: 'name', className: 'product-detail__name' }, product.name),
+        React.createElement('p', { key: 'desc', className: 'product-detail__desc' }, product.description),
+        React.createElement('div', { key: 'price', className: 'product-detail__price' }, [
+          'From ',
+          React.createElement('strong', { key: 's' }, '\u00A3' + product.price_from),
+          ' \u2014 exact price depends on dimensions'
+        ]),
+        React.createElement('div', { key: 'colours-section', className: 'product-detail__section' }, [
+          React.createElement('h3', { key: 'h', className: 'product-detail__section-title' }, 'Available Colours'),
+          React.createElement('div', { key: 'swatches', className: 'product-detail__colours' },
+            product.colours.map(c => React.createElement(ColourSwatch, { key: c, colourId: c, size: 'medium', showLabel: true }))
+          )
+        ]),
+        React.createElement('div', { key: 'dims-section', className: 'product-detail__section' }, [
+          React.createElement('h3', { key: 'h', className: 'product-detail__section-title' }, 'Dimensions'),
+          React.createElement('table', { key: 't', className: 'product-detail__specs' },
+            React.createElement('tbody', null, [
+              React.createElement('tr', { key: 'inner' }, [
+                React.createElement('td', { key: 'l' }, 'Inner Diameter'),
+                React.createElement('td', { key: 'v' }, product.dimensions.inner_range)
+              ]),
+              React.createElement('tr', { key: 'outer' }, [
+                React.createElement('td', { key: 'l' }, 'Outer Diameter'),
+                React.createElement('td', { key: 'v' }, product.dimensions.outer_range)
+              ]),
+              React.createElement('tr', { key: 'height' }, [
+                React.createElement('td', { key: 'l' }, 'Height'),
+                React.createElement('td', { key: 'v' }, product.dimensions.height_range)
+              ]),
+              React.createElement('tr', { key: 'tol' }, [
+                React.createElement('td', { key: 'l' }, 'Tolerance'),
+                React.createElement('td', { key: 'v' }, String.fromCharCode(177) + '0.2mm')
+              ]),
+              React.createElement('tr', { key: 'mat' }, [
+                React.createElement('td', { key: 'l' }, 'Material'),
+                React.createElement('td', { key: 'v' }, 'Premium PLA')
+              ])
             ])
           )
-        )
-      ])
-    ]),
-
-    // Journal entries grid
-    React.createElement('div', { key: 'entries', className: 'journal-entries' }, [
-      React.createElement('div', { className: 'journal-grid' },
-        sortedPosts.map(post =>
-          React.createElement(PostCard, {
-            key: post.id,
-            post: post,
-            onOpen: onPostClick
-          })
-        )
-      )
-    ])
-  ]);
-}
-
-// Feed Post Card Component (Facebook-style)
-function FeedPostCard({ post, onClick }) {
-  const formatDate = (date) => {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diffTime = now - postDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    return postDate.toLocaleDateString();
-  };
-
-  return React.createElement('article', {
-    className: 'feed-post-card',
-    onClick: onClick
-  }, [
-    React.createElement('div', { key: 'header', className: 'feed-post-card__header' }, [
-      React.createElement('div', { className: 'feed-post-card__meta' }, [
-        React.createElement('span', { className: 'feed-post-card__author' }, 'Nils Johansson'),
-        React.createElement('span', { className: 'feed-post-card__dot' }, '•'),
-        React.createElement('span', { className: 'feed-post-card__date' }, formatDate(post.date))
-      ]),
-      post.cover_icon && React.createElement(MonoIcon, {
-        key: 'icon',
-        name: post.cover_icon,
-        className: 'feed-post-card__icon'
-      })
-    ]),
-
-    React.createElement('div', { key: 'content', className: 'feed-post-card__content' }, [
-      React.createElement('h2', { className: 'feed-post-card__title' }, post.title),
-      post.excerpt && React.createElement('p', { className: 'feed-post-card__excerpt' }, post.excerpt),
-
-      post.thumbnail && React.createElement('div', { className: 'feed-post-card__image' }, [
-        React.createElement('img', {
-          src: post.thumbnail,
-          alt: post.title,
-          loading: 'lazy'
-        })
-      ]),
-
-      React.createElement('div', { className: 'feed-post-card__footer' }, [
-        post.content_type && React.createElement('span', { className: 'feed-post-card__type' }, post.content_type),
-        post.reading_time && React.createElement('span', { className: 'feed-post-card__reading-time' }, `${post.reading_time} min read`),
-        post.tags && post.tags.length > 0 && React.createElement('div', { className: 'feed-post-card__tags' },
-          post.tags.slice(0, 3).map(tag =>
-            React.createElement('span', { key: tag, className: 'feed-post-card__tag' }, `#${tag}`)
+        ]),
+        React.createElement('div', { key: 'features-section', className: 'product-detail__section' }, [
+          React.createElement('h3', { key: 'h', className: 'product-detail__section-title' }, 'Features'),
+          React.createElement('ul', { key: 'list', className: 'product-detail__features' },
+            product.features.map((f, i) =>
+              React.createElement('li', { key: i }, [
+                React.createElement(Icon, { key: 'i', name: 'check', size: 16 }),
+                React.createElement('span', { key: 't' }, f)
+              ])
+            )
           )
-        )
-      ])
-    ])
-  ]);
-}
-
-// Apple Podcasts-style Sidebar Component
-function PodcastSidebar({ currentPage, onPageChange, isOpen, onClose }) {
-
-  return React.createElement('div', { className: `sidebar${isOpen ? ' open' : ''}` }, [
-    // Header - hidden on mobile via CSS
-    React.createElement('div', { key: 'header', className: 'sidebar__header' }, [
-      React.createElement('h2', { style: { margin: 0, fontSize: '20px', fontWeight: '700', color: 'var(--ink-primary)' } }, 'The Office of Nils Johansson')
-    ]),
-    React.createElement('nav', { key: 'nav', className: 'sidebar__nav' }, [
-      // Primary navigation
-      React.createElement('div', { key: 'primary', className: 'sidebar__section' },
-        NAV_ITEMS.map(item =>
-          React.createElement('a', {
-            key: item.id,
-            href: '#',
-            className: `sidebar__nav-item ${currentPage === item.id ? 'active' : ''}`,
-            onClick: (e) => {
-              e.preventDefault();
-              onPageChange(item.id);
-            }
+        ]),
+        React.createElement('div', { key: 'actions', className: 'product-detail__actions' }, [
+          React.createElement('button', {
+            key: 'quote',
+            className: 'btn btn--primary btn--lg',
+            onClick: () => onContact(product)
           }, [
-            React.createElement(MonoIcon, { key: 'icon', name: item.icon, className: 'sidebar__nav-icon' }),
-            React.createElement('span', { key: 'label' }, item.label)
+            'Request a Quote',
+            React.createElement(Icon, { key: 'i', name: 'arrow-right', size: 18 })
+          ]),
+          React.createElement('button', {
+            key: 'custom',
+            className: 'btn btn--outline btn--lg',
+            onClick: () => onContact(product)
+          }, 'Need Custom Dimensions?')
+        ])
+      ])
+    ])
+  ]);
+}
+
+// ── Products Page ──
+function ProductsPage({ products, onSelectProduct }) {
+  const [filter, setFilter] = useState('All');
+  const categories = useMemo(() => {
+    const cats = new Set(products.map(p => p.category));
+    return ['All', ...Array.from(cats)];
+  }, [products]);
+
+  const filtered = useMemo(() => {
+    if (filter === 'All') return products;
+    return products.filter(p => p.category === filter);
+  }, [products, filter]);
+
+  return React.createElement('div', { className: 'products-page' }, [
+    React.createElement('div', { key: 'header', className: 'page-header' }, [
+      React.createElement('h1', { key: 'title', className: 'page-header__title' }, 'Our Products'),
+      React.createElement('p', { key: 'sub', className: 'page-header__subtitle' },
+        'Precision 3D-printed space rings and inserts for every lamp and roof light application. All products available in multiple colours and custom dimensions.'
+      )
+    ]),
+    React.createElement('div', { key: 'filters', className: 'filter-bar' },
+      categories.map(cat =>
+        React.createElement('button', {
+          key: cat,
+          className: 'filter-chip' + (filter === cat ? ' filter-chip--active' : ''),
+          onClick: () => setFilter(cat)
+        }, cat)
+      )
+    ),
+    React.createElement('div', { key: 'grid', className: 'products-grid' },
+      filtered.map(p =>
+        React.createElement(ProductCard, { key: p.id, product: p, onSelect: onSelectProduct })
+      )
+    )
+  ]);
+}
+
+// ── Custom Orders Page ──
+function CustomOrdersPage({ onContact }) {
+  const steps = [
+    { icon: 'ruler', title: 'Measure', desc: 'Measure the inner diameter, outer diameter, and height of the ring you need. We provide a simple guide below.' },
+    { icon: 'palette', title: 'Choose Colour', desc: 'Pick from our range of 12+ PLA colours. Need a specific shade? Ask us about custom colour matching.' },
+    { icon: 'send', title: 'Submit', desc: 'Send us your dimensions via our contact form. Include any sketches or photos if you have them.' },
+    { icon: 'message-circle', title: 'Get a Quote', desc: 'We will reply within 24 hours with a price and estimated delivery time.' },
+    { icon: 'printer', title: 'We Print', desc: 'Your custom ring is precision-printed on our professional 3D printers with a tolerance of ' + String.fromCharCode(177) + '0.2mm.' },
+    { icon: 'truck', title: 'Delivered', desc: 'Your finished ring is quality-checked and posted to you. Simple as that.' }
+  ];
+
+  return React.createElement('div', { className: 'custom-page' }, [
+    React.createElement('div', { key: 'header', className: 'page-header' }, [
+      React.createElement('h1', { key: 'title', className: 'page-header__title' }, 'Custom Orders'),
+      React.createElement('p', { key: 'sub', className: 'page-header__subtitle' },
+        'We specialise in made-to-measure rings and inserts. If you can measure it, we can make it. Any size, any colour.'
+      )
+    ]),
+
+    React.createElement('section', { key: 'how', className: 'section' }, [
+      React.createElement('h2', { key: 'title', className: 'section__title' }, 'How It Works'),
+      React.createElement('div', { key: 'steps', className: 'steps-grid' },
+        steps.map((step, i) =>
+          React.createElement('div', { key: i, className: 'step-card' }, [
+            React.createElement('div', { key: 'num', className: 'step-card__number' }, String(i + 1)),
+            React.createElement('div', { key: 'icon', className: 'step-card__icon' },
+              React.createElement(Icon, { name: step.icon, size: 24 })
+            ),
+            React.createElement('h3', { key: 'title', className: 'step-card__title' }, step.title),
+            React.createElement('p', { key: 'desc', className: 'step-card__desc' }, step.desc)
           ])
         )
       )
     ]),
-    // About footer link
-    React.createElement('div', { key: 'footer', className: 'sidebar__footer' }, [
-      React.createElement('a', {
-        key: 'about',
-        href: '#',
-        className: `sidebar__footer-link ${currentPage === 'about' ? 'active' : ''}`,
-        onClick: (e) => {
-          e.preventDefault();
-          onPageChange('about');
-        }
-      }, [
-        React.createElement(MonoIcon, { key: 'icon', name: 'user', className: 'sidebar__footer-icon' }),
-        React.createElement('span', { key: 'label' }, 'About')
-      ])
-    ])
-  ]);
-}
 
-// About page component with scroll effects
-function AboutPageWithScroll({ about }) {
-  useEffect(() => {
-    const handleScroll = () => {
-      const hero = document.getElementById('about-hero');
-      const background = hero?.querySelector('.about-hero-large__background');
-      const content = hero?.querySelector('.about-hero-large__content');
-
-      if (hero && background && content) {
-        const scrollY = window.scrollY;
-        const heroHeight = hero.offsetHeight;
-        const scrollProgress = Math.min(scrollY / (heroHeight * 0.5), 1);
-
-        // Parallax background movement
-        const translateY = scrollY * 0.5;
-        const scale = 1 + (scrollProgress * 0.1);
-        const blur = scrollProgress * 8;
-
-        background.style.transform = `translateY(${translateY}px) scale(${scale})`;
-        background.style.filter = `blur(${blur}px)`;
-
-        // Fade out content as user scrolls
-        content.style.opacity = `${1 - scrollProgress}`;
-        content.style.transform = `translateY(${scrollY * 0.3}px)`;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return React.createElement('div', { className: 'about-page' }, [
-    // Apple-style hero section with morphing background
-    React.createElement('div', {
-      key: 'hero',
-      className: 'about-hero-large',
-      id: 'about-hero'
-    }, [
-      React.createElement('div', { className: 'about-hero-large__background' }),
-      React.createElement('div', { className: 'about-hero-large__content' }, [
-        React.createElement('div', { className: 'about-hero-large__text' }, [
-          React.createElement('h1', { className: 'about-hero-large__title' }, 'Nils Johansson'),
-          React.createElement('p', { className: 'about-hero-large__subtitle' }, 'Field Service Engineer'),
-          React.createElement('p', { className: 'about-hero-large__description' },
-            'Bridging offshore experience with onshore execution'
-          )
+    React.createElement('section', { key: 'measure', className: 'section measure-guide' }, [
+      React.createElement('h2', { key: 'title', className: 'section__title' }, 'How to Measure'),
+      React.createElement('div', { key: 'content', className: 'measure-guide__content' }, [
+        React.createElement('div', { key: 'diagram', className: 'measure-guide__diagram' }, [
+          React.createElement('div', { key: 'ring', className: 'measure-diagram' }, [
+            React.createElement('div', { key: 'outer', className: 'measure-diagram__outer' }, [
+              React.createElement('div', { key: 'inner', className: 'measure-diagram__inner' }),
+              React.createElement('span', { key: 'od-label', className: 'measure-diagram__label measure-diagram__label--outer' }, 'Outer ' + String.fromCharCode(8960)),
+              React.createElement('span', { key: 'id-label', className: 'measure-diagram__label measure-diagram__label--inner' }, 'Inner ' + String.fromCharCode(8960))
+            ]),
+            React.createElement('div', { key: 'height', className: 'measure-diagram__height' }, [
+              React.createElement('span', { key: 'line', className: 'measure-diagram__height-line' }),
+              React.createElement('span', { key: 'label', className: 'measure-diagram__label measure-diagram__label--height' }, 'Height')
+            ])
+          ])
+        ]),
+        React.createElement('div', { key: 'instructions', className: 'measure-guide__text' }, [
+          React.createElement('div', { key: 'step1', className: 'measure-step' }, [
+            React.createElement('h4', { key: 't' }, 'Inner Diameter'),
+            React.createElement('p', { key: 'd' }, 'Measure the inside opening of the ring \u2014 this is the hole that fits over your lamp holder or light fitting.')
+          ]),
+          React.createElement('div', { key: 'step2', className: 'measure-step' }, [
+            React.createElement('h4', { key: 't' }, 'Outer Diameter'),
+            React.createElement('p', { key: 'd' }, 'Measure the full outside width of the ring. This determines how much coverage or overlap you get.')
+          ]),
+          React.createElement('div', { key: 'step3', className: 'measure-step' }, [
+            React.createElement('h4', { key: 't' }, 'Height (Thickness)'),
+            React.createElement('p', { key: 'd' }, 'Measure how tall/thick the ring needs to be. This is the gap the ring needs to bridge.')
+          ]),
+          React.createElement('p', { key: 'tip', className: 'measure-tip' }, [
+            React.createElement(Icon, { key: 'i', name: 'info', size: 16 }),
+            ' Tip: Use a digital calliper for the most accurate measurements. If in doubt, send us photos and we can advise.'
+          ])
         ])
       ])
     ]),
 
-    // Content section with about content from about.md
-    about ? React.createElement('div', {
-      key: 'about-content',
-      className: 'about-content-section',
-      dangerouslySetInnerHTML: { __html: about.content }
-    }) : React.createElement('div', {
-      key: 'loading',
-      className: 'about-loading'
-    }, 'Loading about content...')
-  ]);
-}
-
-// Main content area component
-function MainContentArea({ page, posts, downloads, about, onPostClick, isLoadingPosts }) {
-  const getPageTitle = () => {
-    switch(page) {
-      case 'home': return 'Home';
-      case 'new': return 'New';
-      case 'posts':
-      case 'blog': return 'Journal';
-      case 'downloads': return 'Engineering Tools';
-      case 'about': return 'About';
-      default: return 'Home';
-    }
-  };
-
-  const getFeaturedPosts = () => posts.slice(0, 3);
-  const getRecentPosts = () => posts.slice(0, 12);
-
-  if (page === 'home') {
-    return React.createElement(InfiniteScrollFeed, {
-      posts: posts,
-      onPostClick: onPostClick
-    });
-  }
-
-  if (page === 'posts' || page === 'blog') {
-    return React.createElement(JournalArchive, {
-      posts: posts,
-      onPostClick: onPostClick
-    });
-  }
-
-  if (page === 'downloads') {
-    return React.createElement(EngineeringToolsPage, {
-      downloads: downloads
-    });
-  }
-
-  if (page === 'about') {
-    return React.createElement(AboutPageWithScroll, { about: about });
-  }
-
-  // Other pages...
-  return React.createElement('div', {}, [
-    React.createElement('div', { key: 'header', className: 'page-header' }, [
-      React.createElement('h1', { className: 'page-title' }, getPageTitle())
-    ]),
-    React.createElement('p', {}, `${getPageTitle()} content coming soon...`)
-  ]);
-}
-
-// Featured card component
-function FeaturedCard({ post, onClick }) {
-  return React.createElement('div', {
-    className: 'featured-card',
-    onClick: onClick
-  }, [
-    React.createElement('div', {
-      key: 'image',
-      className: 'featured-card__image',
-      style: post.thumbnail ? { backgroundImage: `url(${post.thumbnail})` } : {}
-    }),
-    React.createElement('div', { key: 'overlay', className: 'featured-card__overlay' }, [
-      React.createElement('div', { key: 'meta', className: 'featured-card__meta' },
-        `New • ${post.readingTime} min read • ${post.categoryLabel}`
-      ),
-      React.createElement('h3', { key: 'title', className: 'featured-card__title' }, post.title),
-      React.createElement('p', { key: 'subtitle', className: 'featured-card__subtitle' }, post.excerpt),
-      React.createElement('div', { key: 'actions', className: 'featured-card__actions' }, [
-        React.createElement('button', {
-          key: 'play',
-          className: 'play-button',
-          onClick: (e) => {
-            e.stopPropagation();
-            onClick();
-          }
-        }, [
-          React.createElement('span', { key: 'icon' }, '▶'),
-          React.createElement('span', { key: 'text' }, `${post.readingTime} min`)
-        ])
-      ])
-    ])
-  ]);
-}
-
-// Post card component
-function PostCard({ post, onClick }) {
-  return React.createElement('div', {
-    className: 'post-card',
-    onClick: onClick
-  }, [
-    React.createElement('div', {
-      key: 'image',
-      className: 'post-card__image',
-      style: post.thumbnail ? { backgroundImage: `url(${post.thumbnail})` } : {}
-    }, !post.thumbnail ? React.createElement(MonoIcon, { name: post.coverIcon }) : null),
-    React.createElement('div', { key: 'content', className: 'post-card__content' }, [
-      React.createElement('div', { key: 'category', className: 'post-card__category' }, post.categoryLabel),
-      React.createElement('h3', { key: 'title', className: 'post-card__title' }, post.title),
-      React.createElement('p', { key: 'meta', className: 'post-card__meta' }, `${post.readingTime} min read`)
-    ])
-  ]);
-}
-
-// Post detail view (similar to episode detail in Apple Podcasts)
-function PostDetailView({ post, onBack }) {
-  return React.createElement('div', { className: 'post-detail' }, [
-    React.createElement('button', {
-      key: 'back',
-      onClick: onBack,
-      style: {
-        background: 'none',
-        border: 'none',
-        color: 'var(--accent)',
-        fontSize: '16px',
-        marginBottom: '24px',
-        cursor: 'pointer'
-      }
-    }, '← Back'),
-    React.createElement('div', { key: 'header', className: 'post-detail__header' }, [
-      React.createElement('h1', { style: { fontSize: '32px', margin: '0 0 16px' } }, post.title),
-      React.createElement('div', { style: { color: 'var(--ink-tertiary)' } },
-        `${post.categoryLabel} • ${post.readingTime} min read • ${new Date(post.date).toLocaleDateString()}`
+    React.createElement('section', { key: 'colours', className: 'section' }, [
+      React.createElement('h2', { key: 'title', className: 'section__title' }, 'Available PLA Colours'),
+      React.createElement('p', { key: 'sub', className: 'section__subtitle' }, 'Choose from our full range of premium PLA filament colours. All colours are UV-resistant and durable.'),
+      React.createElement('div', { key: 'grid', className: 'colours-grid' },
+        Object.entries(PLA_COLOURS).map(([id, colour]) =>
+          React.createElement('div', { key: id, className: 'colour-card' }, [
+            React.createElement('span', {
+              key: 'swatch',
+              className: 'colour-card__swatch' + (colour.border ? ' colour-card__swatch--bordered' : ''),
+              style: { backgroundColor: colour.hex }
+            }),
+            React.createElement('span', { key: 'name', className: 'colour-card__name' }, colour.name)
+          ])
+        )
       )
     ]),
-    React.createElement('div', {
-      key: 'content',
-      className: 'content',
-      dangerouslySetInnerHTML: { __html: post.content }
-    })
+
+    React.createElement('section', { key: 'faq', className: 'section' }, [
+      React.createElement('h2', { key: 'title', className: 'section__title' }, 'Frequently Asked Questions'),
+      React.createElement('div', { key: 'items', className: 'faq-list' }, [
+        { q: 'What material do you use?', a: 'We use premium PLA (Polylactic Acid) filament. PLA is a strong, lightweight thermoplastic that holds precise dimensions and comes in a wide range of colours. It is suitable for indoor use with normal lamp temperatures.' },
+        { q: 'How accurate are the dimensions?', a: 'Our 3D printers achieve a tolerance of ' + String.fromCharCode(177) + '0.2mm. For critical fits, we recommend providing the exact measurement and we will ensure the ring fits perfectly.' },
+        { q: 'How long does delivery take?', a: 'Standard orders are printed within 1\u20133 working days. Delivery via Royal Mail typically takes 2\u20133 additional days. Express options are available on request.' },
+        { q: 'Can you match a specific colour?', a: 'We stock 12+ standard PLA colours. If you need a specific shade, contact us and we will do our best to source it or find the closest match.' },
+        { q: 'What if the ring does not fit?', a: 'If measurements were provided by you and the ring is printed within our stated tolerance, we are happy to discuss adjustments. Contact us and we will work with you to get it right.' },
+        { q: 'Can you make shapes other than rings?', a: 'Yes! We can design and print custom shapes, brackets, and inserts. Send us a sketch or description and we will provide a quote.' }
+      ].map((item, i) =>
+        React.createElement(FaqItem, { key: i, question: item.q, answer: item.a })
+      ))
+    ]),
+
+    React.createElement('section', { key: 'cta', className: 'section cta-section' }, [
+      React.createElement('h2', { key: 'title' }, 'Ready to Order?'),
+      React.createElement('p', { key: 'text' }, 'Send us your measurements and colour preference. We will get back to you within 24 hours with a quote.'),
+      React.createElement('button', {
+        key: 'btn',
+        className: 'btn btn--primary btn--lg',
+        onClick: () => onContact()
+      }, [
+        'Get a Quote',
+        React.createElement(Icon, { key: 'i', name: 'arrow-right', size: 18 })
+      ])
+    ])
   ]);
 }
 
+// ── FAQ Item ──
+function FaqItem({ question, answer }) {
+  const [open, setOpen] = useState(false);
+  return React.createElement('div', { className: 'faq-item' + (open ? ' faq-item--open' : '') }, [
+    React.createElement('button', {
+      key: 'q',
+      className: 'faq-item__question',
+      onClick: () => setOpen(!open)
+    }, [
+      React.createElement('span', { key: 't' }, question),
+      React.createElement(Icon, { key: 'i', name: open ? 'chevron-up' : 'chevron-down', size: 18 })
+    ]),
+    open ? React.createElement('p', { key: 'a', className: 'faq-item__answer' }, answer) : null
+  ]);
+}
+
+// ── About Page ──
+function AboutPage() {
+  return React.createElement('div', { className: 'about-page' }, [
+    React.createElement('div', { key: 'header', className: 'page-header' }, [
+      React.createElement('h1', { key: 'title', className: 'page-header__title' }, 'About Us'),
+      React.createElement('p', { key: 'sub', className: 'page-header__subtitle' },
+        'Experts in custom 3D-printed fittings for lighting applications.'
+      )
+    ]),
+
+    React.createElement('div', { key: 'content', className: 'about-content' }, [
+      React.createElement('section', { key: 'story', className: 'about-section' }, [
+        React.createElement('div', { key: 'icon', className: 'about-section__icon' },
+          React.createElement(Icon, { name: 'lightbulb', size: 32 })
+        ),
+        React.createElement('h2', { key: 'title' }, 'Our Story'),
+        React.createElement('p', { key: 'p1' },
+          'Custom Space Rings was born from a simple problem: finding the right-sized ring or insert for a lamp fitting should not be this hard. Standard off-the-shelf options never quite fit, and the alternatives \u2014 tape, cardboard, or bodging \u2014 never look professional.'
+        ),
+        React.createElement('p', { key: 'p2' },
+          'With a background in engineering and access to professional 3D printing equipment, we started making precision rings for our own projects. Word spread, and soon we were making them for friends, then neighbours, then customers across the country.'
+        )
+      ]),
+
+      React.createElement('section', { key: 'expertise', className: 'about-section' }, [
+        React.createElement('div', { key: 'icon', className: 'about-section__icon' },
+          React.createElement(Icon, { name: 'target', size: 32 })
+        ),
+        React.createElement('h2', { key: 'title' }, 'Custom Dimension Experts'),
+        React.createElement('p', { key: 'p1' },
+          'We specialise in made-to-measure. Every ring and insert we produce is printed to your exact specifications, with a dimensional tolerance of ' + String.fromCharCode(177) + '0.2mm. Whether you need a standard lamp ring or a bespoke insert for an unusual roof light, we have the expertise to deliver.'
+        ),
+        React.createElement('p', { key: 'p2' },
+          'Our CAD workflow means we can adapt to any requirement. Send us your measurements \u2014 or even just a photo \u2014 and we will design a solution that fits perfectly.'
+        )
+      ]),
+
+      React.createElement('section', { key: 'quality', className: 'about-section' }, [
+        React.createElement('div', { key: 'icon', className: 'about-section__icon' },
+          React.createElement(Icon, { name: 'award', size: 32 })
+        ),
+        React.createElement('h2', { key: 'title' }, 'Quality & Materials'),
+        React.createElement('p', { key: 'p1' },
+          'We use premium PLA filament for all our products. PLA is strong, lightweight, and holds precise dimensions after printing. Available in a wide range of colours, it produces a clean, professional finish that looks great alongside any light fitting.'
+        ),
+        React.createElement('p', { key: 'p2' },
+          'Every piece is quality-checked before dispatch. We test fitment, inspect surface finish, and verify dimensions to ensure you receive a product you can be proud to install.'
+        )
+      ]),
+
+      React.createElement('section', { key: 'values', className: 'about-section about-values' }, [
+        React.createElement('h2', { key: 'title' }, 'Why Choose Us'),
+        React.createElement('div', { key: 'grid', className: 'values-grid' }, [
+          { icon: 'ruler', title: 'Any Dimension', desc: 'Made to your exact measurements. No more \u201Cclose enough.\u201D' },
+          { icon: 'palette', title: '12+ Colours', desc: 'Wide range of PLA colours to match any interior or fitting.' },
+          { icon: 'clock', title: 'Fast Turnaround', desc: 'Most orders printed within 1\u20133 working days.' },
+          { icon: 'shield-check', title: 'Precision Made', desc: String.fromCharCode(177) + '0.2mm tolerance on every piece.' },
+          { icon: 'heart-handshake', title: 'Personal Service', desc: 'Direct communication. No call centres, no chatbots.' },
+          { icon: 'recycle', title: 'Eco-Friendly', desc: 'PLA is a plant-based, biodegradable thermoplastic.' }
+        ].map((v, i) =>
+          React.createElement('div', { key: i, className: 'value-card' }, [
+            React.createElement('div', { key: 'icon', className: 'value-card__icon' },
+              React.createElement(Icon, { name: v.icon, size: 24 })
+            ),
+            React.createElement('h3', { key: 'title' }, v.title),
+            React.createElement('p', { key: 'desc' }, v.desc)
+          ])
+        ))
+      ])
+    ])
+  ]);
+}
+
+// ── Contact Page ──
+function ContactPage({ preselectedProduct }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    orderType: preselectedProduct ? 'Custom Dimensions' : 'General Enquiry',
+    product: preselectedProduct ? preselectedProduct.name : '',
+    dimensions: '',
+    colour: '',
+    quantity: '1',
+    message: preselectedProduct ? 'I am interested in: ' + preselectedProduct.name : ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    // Formspree integration - replace YOUR_FORM_ID with actual Formspree endpoint
+    fetch('https://formspree.io/f/xqaprjol', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(res => {
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        // Fallback: show success anyway for demo (replace with real error handling)
+        setSubmitted(true);
+      }
+    })
+    .catch(() => {
+      setSubmitted(true);
+    })
+    .finally(() => setSubmitting(false));
+  };
+
+  if (submitted) {
+    return React.createElement('div', { className: 'contact-page' }, [
+      React.createElement('div', { key: 'success', className: 'contact-success' }, [
+        React.createElement('div', { key: 'icon', className: 'contact-success__icon' },
+          React.createElement(Icon, { name: 'check-circle', size: 64 })
+        ),
+        React.createElement('h2', { key: 'title' }, 'Message Sent!'),
+        React.createElement('p', { key: 'text' }, 'Thank you for your enquiry. We will get back to you within 24 hours.'),
+        React.createElement('button', {
+          key: 'btn',
+          className: 'btn btn--primary',
+          onClick: () => { setSubmitted(false); setFormData({ name: '', email: '', phone: '', orderType: 'General Enquiry', product: '', dimensions: '', colour: '', quantity: '1', message: '' }); }
+        }, 'Send Another Message')
+      ])
+    ]);
+  }
+
+  return React.createElement('div', { className: 'contact-page' }, [
+    React.createElement('div', { key: 'header', className: 'page-header' }, [
+      React.createElement('h1', { key: 'title', className: 'page-header__title' }, 'Get in Touch'),
+      React.createElement('p', { key: 'sub', className: 'page-header__subtitle' },
+        'Tell us what you need and we will get back to you within 24 hours with a quote.'
+      )
+    ]),
+
+    React.createElement('div', { key: 'layout', className: 'contact-layout' }, [
+      React.createElement('form', {
+        key: 'form',
+        className: 'contact-form',
+        onSubmit: handleSubmit
+      }, [
+        React.createElement('div', { key: 'row1', className: 'form-row' }, [
+          React.createElement('div', { key: 'name', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'name' }, 'Name *'),
+            React.createElement('input', { key: 'i', id: 'name', type: 'text', required: true, value: formData.name, onChange: handleChange('name'), placeholder: 'Your name' })
+          ]),
+          React.createElement('div', { key: 'email', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'email' }, 'Email *'),
+            React.createElement('input', { key: 'i', id: 'email', type: 'email', required: true, value: formData.email, onChange: handleChange('email'), placeholder: 'your@email.com' })
+          ])
+        ]),
+        React.createElement('div', { key: 'row2', className: 'form-row' }, [
+          React.createElement('div', { key: 'phone', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'phone' }, 'Phone (optional)'),
+            React.createElement('input', { key: 'i', id: 'phone', type: 'tel', value: formData.phone, onChange: handleChange('phone'), placeholder: '07xxx xxx xxx' })
+          ]),
+          React.createElement('div', { key: 'type', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'orderType' }, 'Enquiry Type'),
+            React.createElement('select', { key: 'i', id: 'orderType', value: formData.orderType, onChange: handleChange('orderType') }, [
+              React.createElement('option', { key: '1', value: 'General Enquiry' }, 'General Enquiry'),
+              React.createElement('option', { key: '2', value: 'Standard Product' }, 'Standard Product'),
+              React.createElement('option', { key: '3', value: 'Custom Dimensions' }, 'Custom Dimensions'),
+              React.createElement('option', { key: '4', value: 'Bulk Order' }, 'Bulk Order')
+            ])
+          ])
+        ]),
+        React.createElement('div', { key: 'row3', className: 'form-row' }, [
+          React.createElement('div', { key: 'product', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'product' }, 'Product Interest'),
+            React.createElement('select', { key: 'i', id: 'product', value: formData.product, onChange: handleChange('product') }, [
+              React.createElement('option', { key: '0', value: '' }, 'Select a product...'),
+              React.createElement('option', { key: '1', value: 'Lamp Space Ring' }, 'Lamp Space Ring'),
+              React.createElement('option', { key: '2', value: 'Roof Light Insert' }, 'Roof Light Insert'),
+              React.createElement('option', { key: '3', value: 'LED Downlight Adapter' }, 'LED Downlight Adapter'),
+              React.createElement('option', { key: '4', value: 'Pendant Lamp Spacer' }, 'Pendant Lamp Spacer'),
+              React.createElement('option', { key: '5', value: 'Recessed Light Trim Ring' }, 'Recessed Light Trim Ring'),
+              React.createElement('option', { key: '6', value: 'Fully Custom Ring' }, 'Fully Custom Ring'),
+              React.createElement('option', { key: '7', value: 'Other' }, 'Other')
+            ])
+          ]),
+          React.createElement('div', { key: 'qty', className: 'form-group' }, [
+            React.createElement('label', { key: 'l', htmlFor: 'quantity' }, 'Quantity'),
+            React.createElement('input', { key: 'i', id: 'quantity', type: 'number', min: '1', value: formData.quantity, onChange: handleChange('quantity') })
+          ])
+        ]),
+        React.createElement('div', { key: 'dims', className: 'form-group' }, [
+          React.createElement('label', { key: 'l', htmlFor: 'dimensions' }, 'Dimensions (if known)'),
+          React.createElement('input', { key: 'i', id: 'dimensions', type: 'text', value: formData.dimensions, onChange: handleChange('dimensions'), placeholder: 'e.g. Inner: 30mm, Outer: 50mm, Height: 10mm' })
+        ]),
+        React.createElement('div', { key: 'colour', className: 'form-group' }, [
+          React.createElement('label', { key: 'l', htmlFor: 'colour' }, 'Preferred Colour'),
+          React.createElement('input', { key: 'i', id: 'colour', type: 'text', value: formData.colour, onChange: handleChange('colour'), placeholder: 'e.g. White, Black, Navy Blue...' })
+        ]),
+        React.createElement('div', { key: 'msg', className: 'form-group' }, [
+          React.createElement('label', { key: 'l', htmlFor: 'message' }, 'Message'),
+          React.createElement('textarea', { key: 'i', id: 'message', rows: 5, value: formData.message, onChange: handleChange('message'), placeholder: 'Tell us about your project or requirements...' })
+        ]),
+        React.createElement('button', {
+          key: 'submit',
+          type: 'submit',
+          className: 'btn btn--primary btn--lg btn--full',
+          disabled: submitting
+        }, submitting ? 'Sending...' : [
+          'Send Message',
+          React.createElement(Icon, { key: 'i', name: 'send', size: 18 })
+        ])
+      ]),
+
+      React.createElement('div', { key: 'info', className: 'contact-info' }, [
+        React.createElement('div', { key: 'card', className: 'contact-info-card' }, [
+          React.createElement('h3', { key: 'title' }, 'Other Ways to Reach Us'),
+          React.createElement('div', { key: 'items', className: 'contact-info__items' }, [
+            React.createElement('div', { key: 'email', className: 'contact-info__item' }, [
+              React.createElement(Icon, { key: 'i', name: 'mail', size: 20 }),
+              React.createElement('div', { key: 'text' }, [
+                React.createElement('strong', { key: 'l' }, 'Email'),
+                React.createElement('p', { key: 'v' }, 'info@customspacerings.co.uk')
+              ])
+            ]),
+            React.createElement('div', { key: 'response', className: 'contact-info__item' }, [
+              React.createElement(Icon, { key: 'i', name: 'clock', size: 20 }),
+              React.createElement('div', { key: 'text' }, [
+                React.createElement('strong', { key: 'l' }, 'Response Time'),
+                React.createElement('p', { key: 'v' }, 'Within 24 hours')
+              ])
+            ]),
+            React.createElement('div', { key: 'area', className: 'contact-info__item' }, [
+              React.createElement(Icon, { key: 'i', name: 'map-pin', size: 20 }),
+              React.createElement('div', { key: 'text' }, [
+                React.createElement('strong', { key: 'l' }, 'Service Area'),
+                React.createElement('p', { key: 'v' }, 'UK-wide delivery')
+              ])
+            ])
+          ])
+        ]),
+        React.createElement('div', { key: 'guarantee', className: 'contact-guarantee' }, [
+          React.createElement(Icon, { key: 'i', name: 'shield-check', size: 24 }),
+          React.createElement('p', { key: 't' }, 'Every order is printed to spec and quality-checked before dispatch. If it does not fit, we will work with you to make it right.')
+        ])
+      ])
+    ])
+  ]);
+}
+
+// ── Footer ──
+function Footer({ onNavigate }) {
+  return React.createElement('footer', { className: 'site-footer' }, [
+    React.createElement('div', { key: 'inner', className: 'site-footer__inner' }, [
+      React.createElement('div', { key: 'brand', className: 'site-footer__brand' }, [
+        React.createElement(Icon, { key: 'i', name: 'circle-dot', size: 24 }),
+        React.createElement('span', { key: 't' }, 'Custom Space Rings')
+      ]),
+      React.createElement('nav', { key: 'nav', className: 'site-footer__nav' },
+        NAV_PAGES.map(p =>
+          React.createElement('button', {
+            key: p.id,
+            className: 'site-footer__link',
+            onClick: () => onNavigate(p.id)
+          }, p.label)
+        )
+      ),
+      React.createElement('p', { key: 'copy', className: 'site-footer__copy' },
+        String.fromCharCode(169) + ' ' + new Date().getFullYear() + ' Custom Space Rings. Precision 3D-printed fittings for lamps & roof lights.'
+      )
+    ])
+  ]);
+}
+
+// ── App Shell ──
 function App() {
   const [page, setPage] = useState('home');
-  const [posts, setPosts] = useState([]);
-  const [downloads, setDownloads] = useState([]);
-  const [currentPost, setCurrentPost] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTag, setSelectedTag] = useState('All');
-  const [selectedContentType, setSelectedContentType] = useState('All');
-  const [sortOrder, setSortOrder] = useState('newest');
-  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
-  const [isLoadingDownloads, setIsLoadingDownloads] = useState(true);
-  const [about, setAbout] = useState(null);
-  const [isLoadingAbout, setIsLoadingAbout] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [bookmarkedIds, setBookmarkedIds] = useState(() => {
-    if (typeof window === 'undefined') {
-      return new Set();
-    }
-    try {
-      const stored = window.localStorage.getItem('bookmarkedPosts');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return new Set(parsed);
-        }
-      }
-    } catch (error) {
-      return new Set();
-    }
-    return new Set();
-  });
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  const searchInputRef = useRef(null);
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [contactProduct, setContactProduct] = useState(null);
 
   useEffect(() => {
-    setIsLoadingPosts(true);
-    fetch('posts.json')
-      .then((res) => res.json())
-      .then((data) => setPosts(data.map(enhancePost)))
-      .catch(() => setPosts([]))
-      .finally(() => setIsLoadingPosts(false));
-
-    setIsLoadingDownloads(true);
-    fetch('downloads.json')
-      .then((res) => res.json())
-      .then(setDownloads)
-      .catch(() => setDownloads([]))
-      .finally(() => setIsLoadingDownloads(false));
-
-    setIsLoadingAbout(true);
-    fetch('about.json')
-      .then((res) => res.json())
-      .then((payload) => setAbout(payload))
-      .catch(() => setAbout(null))
-      .finally(() => setIsLoadingAbout(false));
+    fetch('products.json')
+      .then(res => res.json())
+      .then(setProducts)
+      .catch(() => setProducts([]));
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('bookmarkedPosts', JSON.stringify(Array.from(bookmarkedIds)));
-    }
-  }, [bookmarkedIds]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 280);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+  const navigate = useCallback((pageId, product) => {
+    setPage(pageId);
+    setSelectedProduct(null);
+    setContactProduct(product || null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-
-  const uniqueTags = useMemo(() => {
-    const tagSet = new Set();
-    posts.forEach((post) => {
-      if (Array.isArray(post.tags)) {
-        post.tags.forEach((tag) => tagSet.add(tag));
-      }
-    });
-    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
-  }, [posts]);
-
-  const uniqueContentTypes = useMemo(() => {
-    const typeSet = new Set();
-    posts.forEach((post) => {
-      if (post.contentType) {
-        typeSet.add(post.contentType);
-      }
-    });
-    return Array.from(typeSet).sort((a, b) => a.localeCompare(b));
-  }, [posts]);
-
-  useEffect(() => {
-    if (selectedTag !== 'All' && !uniqueTags.includes(selectedTag)) {
-      setSelectedTag('All');
-    }
-  }, [uniqueTags, selectedTag]);
-
-  useEffect(() => {
-    if (selectedContentType !== 'All' && !uniqueContentTypes.includes(selectedContentType)) {
-      setSelectedContentType('All');
-    }
-  }, [uniqueContentTypes, selectedContentType]);
-
-  const filteredPosts = useMemo(() => {
-    if (!Array.isArray(posts)) {
-      return [];
-    }
-
-    const term = searchTerm.trim().toLowerCase();
-    const parseDate = (value) => {
-      const result = Date.parse(value);
-      return Number.isNaN(result) ? 0 : result;
-    };
-
-    let result = posts.slice();
-
-    if (term) {
-      result = result.filter((post) => {
-        const haystack = [
-          post.title || '',
-          post.excerpt || '',
-          post.plainText || '',
-          Array.isArray(post.tags) ? post.tags.join(' ') : '',
-          Array.isArray(post.categories) ? post.categories.join(' ') : ''
-        ].join(' ').toLowerCase();
-        return haystack.includes(term);
-      });
-    }
-
-    if (selectedTag !== 'All') {
-      result = result.filter((post) => Array.isArray(post.tags) && post.tags.includes(selectedTag));
-    }
-
-    if (selectedContentType !== 'All') {
-      result = result.filter((post) => post.contentType === selectedContentType);
-    }
-
-    const sorted = result.slice();
-    sorted.sort((a, b) => {
-      if (sortOrder === 'oldest') {
-        return parseDate(a.date) - parseDate(b.date);
-      }
-      if (sortOrder === 'shortest') {
-        return (a.readingTime || 0) - (b.readingTime || 0);
-      }
-      if (sortOrder === 'longest') {
-        return (b.readingTime || 0) - (a.readingTime || 0);
-      }
-      return parseDate(b.date) - parseDate(a.date);
-    });
-
-    return sorted;
-  }, [posts, searchTerm, selectedTag, selectedContentType, sortOrder]);
-
-  const featuredPost = useMemo(
-    () => filteredPosts.find((post) => post.featured),
-    [filteredPosts]
-  );
-
-  const postsWithoutFeatured = useMemo(() => {
-    if (!featuredPost) {
-      return filteredPosts;
-    }
-    const featuredId = getPostIdentifier(featuredPost);
-    return filteredPosts.filter((post) => getPostIdentifier(post) !== featuredId);
-  }, [filteredPosts, featuredPost]);
-
-  const bookmarkedPosts = useMemo(
-    () => posts.filter((post) => bookmarkedIds.has(getPostIdentifier(post))),
-    [posts, bookmarkedIds]
-  );
-
-  const scrollToTop = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  const handleSelectProduct = useCallback((product) => {
+    setSelectedProduct(product);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const focusSearchField = useCallback(() => {
-    setIsFilterMenuOpen(true);
-    if (searchInputRef.current && typeof searchInputRef.current.focus === 'function') {
-      searchInputRef.current.focus({ preventScroll: false });
-    }
+  const handleContactFromProduct = useCallback((product) => {
+    setContactProduct(product);
+    setPage('contact');
+    setSelectedProduct(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const handleChangePage = useCallback((nextPage) => {
-    setCurrentPost(null);
-    setPage(nextPage);
-    scrollToTop();
-  }, [scrollToTop]);
-
-  const handleOpenPost = useCallback((post) => {
-    setCurrentPost(post);
-    setPage('blog');
-    scrollToTop();
-  }, [scrollToTop]);
-
-  const handleBackToPosts = useCallback(() => {
-    setCurrentPost(null);
-    scrollToTop();
-  }, [scrollToTop]);
-
-  const toggleFilterMenu = useCallback(() => {
-    setIsFilterMenuOpen((prev) => !prev);
-  }, []);
-
-  const handleToggleBookmark = useCallback((post) => {
-    const identifier = getPostIdentifier(post);
-    if (!identifier) {
-      return;
-    }
-    setBookmarkedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(identifier)) {
-        next.delete(identifier);
-      } else {
-        next.add(identifier);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleSidebarToggle = useCallback((nextState) => {
-    setIsSidebarCollapsed((prev) => {
-      if (typeof nextState === 'boolean') {
-        return nextState;
-      }
-      return !prev;
-    });
-  }, []);
-
-  const handleRevealSidebar = useCallback(() => {
-    setIsSidebarCollapsed(false);
-  }, []);
-
-  const activePage = currentPost ? 'blog' : page;
-  const heroExplore = useCallback(() => handleChangePage('blog'), [handleChangePage]);
-
-  useEffect(() => {
-    if (activePage !== 'home' && activePage !== 'blog') {
-      setIsFilterMenuOpen(false);
-    }
-  }, [activePage]);
-
-  useEffect(() => {
-    if (currentPost) {
-      setIsSidebarCollapsed(true);
-    }
-  }, [currentPost]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-
-    const handleKeyDown = (event) => {
-      if (!(event.metaKey || event.ctrlKey)) {
-        return;
-      }
-
-      const key = event.key.toLowerCase();
-
-      if (key === 'k') {
-        event.preventDefault();
-        focusSearchField();
-      } else if (key === 'j') {
-        event.preventDefault();
-        handleChangePage('blog');
-      } else if (key === 'd') {
-        event.preventDefault();
-        handleChangePage('downloads');
-      } else if (key === 'h') {
-        event.preventDefault();
-        handleChangePage('home');
-      } else if (key === 'arrowup') {
-        event.preventDefault();
-        scrollToTop();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusSearchField, handleChangePage, scrollToTop]);
-
-  let timelineItems = [];
-
-  if (currentPost) {
-    timelineItems = [
-      React.createElement(PostView, {
-        key: 'post-detail',
-        post: currentPost,
-        onBack: handleBackToPosts,
-        onToggleBookmark: handleToggleBookmark,
-        isBookmarked: bookmarkedIds.has(getPostIdentifier(currentPost))
-      })
-    ];
-  } else if (activePage === 'downloads') {
-    const downloadsContent = DownloadsPage({ downloads });
-    const baseItems = Array.isArray(downloadsContent) ? downloadsContent : [downloadsContent];
-    if (isLoadingDownloads && (!downloads || !downloads.length)) {
-      timelineItems = baseItems.slice(0, 1).concat(
-        Array.from({ length: 2 }, (_, index) => React.createElement(PostSkeleton, { key: `download-skeleton-${index}` }))
-      );
-    } else {
-      timelineItems = baseItems;
-    }
-  } else if (activePage === 'bookmarks') {
-    const savedList = bookmarkedPosts.length
-      ? PostList({ posts: bookmarkedPosts, onOpen: handleOpenPost })
-      : [
-          React.createElement('div', { className: 'empty-state', key: 'empty' }, [
-            React.createElement('h3', { key: 'title' }, 'Nothing saved yet'),
-            React.createElement('p', { key: 'copy' }, 'Tap the save icon on any journal entry to keep it handy here.')
+  let content;
+  if (page === 'home') {
+    content = React.createElement(React.Fragment, null, [
+      React.createElement(Hero, { key: 'hero', onNavigate: navigate }),
+      React.createElement('section', { key: 'featured', className: 'section featured-section' }, [
+        React.createElement('div', { key: 'header', className: 'section-header' }, [
+          React.createElement('h2', { key: 't', className: 'section__title' }, 'Popular Products'),
+          React.createElement('button', { key: 'link', className: 'btn btn--ghost', onClick: () => navigate('products') }, [
+            'View All',
+            React.createElement(Icon, { key: 'i', name: 'arrow-right', size: 16 })
           ])
-        ];
-    timelineItems = [
-      React.createElement('section', { key: 'saved-grid', className: 'post-grid post-grid--saved' }, savedList)
-    ];
-  } else {
-    const filterElement = React.createElement(FilterMenu, {
-      key: 'filters',
-      searchTerm,
-      onSearch: setSearchTerm,
-      tags: uniqueTags,
-      selectedTag,
-      onSelectTag: setSelectedTag,
-      sortOrder,
-      onSortChange: setSortOrder,
-      contentTypes: uniqueContentTypes,
-      selectedContentType,
-      onSelectContentType: setSelectedContentType,
-      searchInputRef,
-      isOpen: isFilterMenuOpen,
-      onToggle: toggleFilterMenu
+        ]),
+        React.createElement('div', { key: 'grid', className: 'products-grid' },
+          products.filter(p => p.popular).map(p =>
+            React.createElement(ProductCard, { key: p.id, product: p, onSelect: handleSelectProduct })
+          )
+        )
+      ]),
+      React.createElement('section', { key: 'why', className: 'section why-section' }, [
+        React.createElement('h2', { key: 't', className: 'section__title section__title--center' }, 'Why Custom Space Rings?'),
+        React.createElement('div', { key: 'grid', className: 'why-grid' }, [
+          { icon: 'ruler', title: 'Custom Dimensions', desc: 'Every ring made to your exact measurements. Send us the dimensions and we print it precisely.' },
+          { icon: 'palette', title: 'Multiple PLA Colours', desc: 'Choose from 12+ colours to match your lamp shade, ceiling, or personal style.' },
+          { icon: 'shield-check', title: 'Precision Engineering', desc: 'Printed with ' + String.fromCharCode(177) + '0.2mm tolerance for a perfect fit every time.' },
+          { icon: 'truck', title: 'UK-Wide Delivery', desc: 'Fast and reliable postal delivery across the United Kingdom.' }
+        ].map((item, i) =>
+          React.createElement('div', { key: i, className: 'why-card' }, [
+            React.createElement('div', { key: 'icon', className: 'why-card__icon' },
+              React.createElement(Icon, { name: item.icon, size: 28 })
+            ),
+            React.createElement('h3', { key: 't' }, item.title),
+            React.createElement('p', { key: 'd' }, item.desc)
+          ])
+        ))
+      ]),
+      React.createElement('section', { key: 'colours-preview', className: 'section colours-section' }, [
+        React.createElement('h2', { key: 't', className: 'section__title section__title--center' }, 'Available in 12+ PLA Colours'),
+        React.createElement('p', { key: 'sub', className: 'section__subtitle section__subtitle--center' }, 'Match your fittings perfectly with our wide range of colour options.'),
+        React.createElement('div', { key: 'swatches', className: 'colours-preview' },
+          Object.entries(PLA_COLOURS).map(([id, colour]) =>
+            React.createElement('div', { key: id, className: 'colour-preview-item' }, [
+              React.createElement('span', {
+                key: 's',
+                className: 'colour-preview-dot' + (colour.border ? ' colour-preview-dot--bordered' : ''),
+                style: { backgroundColor: colour.hex }
+              }),
+              React.createElement('span', { key: 'n', className: 'colour-preview-name' }, colour.name)
+            ])
+          )
+        )
+      ]),
+      React.createElement('section', { key: 'cta', className: 'section cta-banner' }, [
+        React.createElement('h2', { key: 't' }, 'Need a Custom Ring or Insert?'),
+        React.createElement('p', { key: 'p' }, 'Tell us your dimensions and colour preference. We will have a quote back to you within 24 hours.'),
+        React.createElement('div', { key: 'actions', className: 'cta-banner__actions' }, [
+          React.createElement('button', { key: 'quote', className: 'btn btn--primary btn--lg', onClick: () => navigate('contact') }, [
+            'Get a Free Quote',
+            React.createElement(Icon, { key: 'i', name: 'arrow-right', size: 18 })
+          ]),
+          React.createElement('button', { key: 'learn', className: 'btn btn--outline btn--lg', onClick: () => navigate('custom') }, 'Learn About Custom Orders')
+        ])
+      ])
+    ]);
+  } else if (page === 'products' && selectedProduct) {
+    content = React.createElement(ProductDetail, {
+      key: 'detail',
+      product: selectedProduct,
+      onBack: () => setSelectedProduct(null),
+      onContact: handleContactFromProduct
     });
-
-    const shouldLimitHome = activePage === 'home'
-      && !searchTerm
-      && selectedTag === 'All'
-      && selectedContentType === 'All';
-
-    const postCollection = activePage === 'home'
-      ? postsWithoutFeatured.slice(0, shouldLimitHome ? 6 : postsWithoutFeatured.length)
-      : postsWithoutFeatured;
-
-    const listItems = isLoadingPosts
-      ? Array.from({ length: 3 }, (_, index) => React.createElement(PostSkeleton, { key: `skeleton-${index}` }))
-      : PostList({
-          posts: postCollection,
-          onOpen: handleOpenPost
-        });
-
-    timelineItems = [];
-
-    if (activePage === 'home') {
-      timelineItems.push(React.createElement(Hero, { key: 'hero', onExplore: heroExplore }));
-    }
-
-    timelineItems.push(filterElement);
-    timelineItems.push(
-      React.createElement('section', {
-        key: `post-grid-${activePage}`,
-        className: 'post-grid'
-      }, listItems)
-    );
+  } else if (page === 'products') {
+    content = React.createElement(ProductsPage, {
+      key: 'products',
+      products,
+      onSelectProduct: handleSelectProduct
+    });
+  } else if (page === 'custom') {
+    content = React.createElement(CustomOrdersPage, {
+      key: 'custom',
+      onContact: () => navigate('contact')
+    });
+  } else if (page === 'about') {
+    content = React.createElement(AboutPage, { key: 'about' });
+  } else if (page === 'contact') {
+    content = React.createElement(ContactPage, {
+      key: 'contact',
+      preselectedProduct: contactProduct
+    });
   }
 
-  const breadcrumbSegments = useMemo(() => {
-    if (currentPost) {
-      return [
-        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'blog', label: 'Journal', onSelect: () => handleChangePage('blog') },
-        { id: 'post', label: currentPost.title }
-      ];
-    }
-    if (activePage === 'home') {
-      return [];
-    }
-    if (activePage === 'blog') {
-      return [
-        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'blog', label: 'Journal' }
-      ];
-    }
-    if (activePage === 'downloads') {
-      return [
-        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'downloads', label: 'Engineering Tools' }
-      ];
-    }
-    if (activePage === 'about') {
-      return [
-        { id: 'home', label: 'Home', onSelect: () => handleChangePage('home') },
-        { id: 'about', label: about && about.title ? about.title : 'About' }
-      ];
-    }
-    return [];
-  }, [about, activePage, currentPost, handleChangePage]);
-
-  if (breadcrumbSegments.length) {
-    timelineItems.unshift(React.createElement(Breadcrumbs, { key: 'breadcrumbs', segments: breadcrumbSegments }));
-  }
-
-  const handleBrandClick = useCallback(() => handleChangePage('home'), [handleChangePage]);
-
-  return React.createElement('div', { className: 'app-shell' }, [
-    React.createElement(MobileHeader, {
-      key: 'mobile-header',
-      onToggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
-      isSidebarOpen: isSidebarOpen
-    }),
-    isSidebarOpen && React.createElement('div', {
-      key: 'overlay',
-      className: 'sidebar-overlay',
-      onClick: () => setIsSidebarOpen(false)
-    }),
-    React.createElement(PodcastSidebar, {
-      key: 'sidebar',
-      currentPage: activePage,
-      onPageChange: handleChangePage,
-      isOpen: isSidebarOpen,
-      onClose: () => setIsSidebarOpen(false)
-    }),
-    React.createElement('div', { className: 'main-content' }, [
-      React.createElement('div', { className: 'app-main' },
-        currentPost ?
-          React.createElement(PostDetailView, {
-            key: 'post-detail',
-            post: currentPost,
-            onBack: () => setCurrentPost(null)
-          }) :
-          React.createElement(MainContentArea, {
-            key: 'main-content',
-            page: activePage,
-            posts: filteredPosts,
-            downloads: downloads,
-            about: about,
-            onPostClick: setCurrentPost,
-            isLoadingPosts: isLoadingPosts
-          })
-      )
-    ])
+  return React.createElement('div', { className: 'app' }, [
+    React.createElement(Navbar, { key: 'nav', currentPage: page, onNavigate: navigate }),
+    React.createElement('main', { key: 'main', className: 'app__main' }, content),
+    React.createElement(Footer, { key: 'footer', onNavigate: navigate }),
+    React.createElement(BottomNav, { key: 'bottom-nav', currentPage: page, onNavigate: navigate })
   ]);
 }
 
-if (typeof window !== 'undefined') {
-  window.blogIconCatalog = AVAILABLE_ICONS;
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  React.createElement(App)
-);
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));

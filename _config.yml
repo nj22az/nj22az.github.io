@@ -1,22 +1,20 @@
-title: "Nils Johansson Blog"
-description: "A personal blog exploring engineering, travel, and cultural insights."
-author: "Nils Johansson"
+title: "Custom Space Rings"
+description: "Precision 3D-printed space rings and inserts for lamps and roof lights. Custom dimensions, multiple PLA colours."
+author: "Custom Space Rings"
 url: "https://nj22az.github.io"
-# replace if you have a custom domain
 baseurl: ""
-# leave blank for GitHub Pages root
 
-# Use the minima theme for a clean, minimalist blog
-theme: minima
+# Exclude unnecessary files from build
+exclude:
+  - PLAN.md
+  - CLAUDE.md
+  - README.md
+  - Gemfile
+  - Gemfile.lock
 
-# Social links (shown in minima if provided)
-twitter_username: yourhandle
-github_username: nj22az
-linkedin_username: nils-johansson-86744583
+# Build settings
+markdown: kramdown
 
 # Plugins
 plugins:
   - jekyll-seo-tag
-
-# Build settings
-markdown: kramdown
