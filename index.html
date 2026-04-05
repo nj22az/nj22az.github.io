@@ -175,7 +175,7 @@
           var cells = '<td>' + row.time + '</td>' +
             row.slots.map(function (on, i) {
               var cls = i === currentDay ? ' class="schedule-today"' : '';
-              return '<td' + cls + '>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off">\u2014</span>') + '</td>';
+              return '<td' + cls + '>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off"></span>') + '</td>';
             }).join("");
           return '<tr>' + cells + '</tr>';
         }).join("");

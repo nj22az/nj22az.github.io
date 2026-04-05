@@ -121,15 +121,16 @@
   display: inline-block;
   width: 22px; height: 22px;
   border-radius: 50%;
+  border: 2px solid var(--ink);
   background: var(--accent);
-  opacity: 0.85;
 }
 .slot-off {
   display: inline-block;
-  font-size: 1rem;
-  color: var(--ink-faint);
-  letter-spacing: 0;
-  opacity: 0.4;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-faint);
+  background: transparent;
+  opacity: 0.35;
 }
 
 /* ── Footer note ── */
