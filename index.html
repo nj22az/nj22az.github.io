@@ -166,40 +166,116 @@
         var weekNum = getWeekNumber(now);
         var currentDay = (now.getDay() + 6) % 7; // 0=Mon, 6=Sun
 
-        var headCells = '<th>' + sched.title + '</th>' +
-          sched.days.map(function (d, i) {
-            var cls = i === currentDay ? ' class="schedule-today"' : '';
-            return '<th' + cls + '>' + d + '</th>';
-          }).join("");
-        var bodyRows = sched.rows.map(function (row) {
-          var cells = '<td>' + row.time + '</td>' +
-            row.slots.map(function (on, i) {
-              var cls = i === currentDay ? ' class="schedule-today"' : '';
-              return '<td' + cls + '>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off"></span>') + '</td>';
+        // Get Monday of this week
+        function getMonday(d) {
+          var day = d.getDay();
+          var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+          return new Date(d.getFullYear(), d.getMonth(), diff);
+        }
+        var monday = getMonday(now);
+
+        // Render schedule (called once plain, then again if holidays load)
+        function renderSchedule(holidays) {
+          // Build holiday map: day index (0=Mon..6=Sun) -> holiday name
+          var holidayMap = {};
+          if (holidays && holidays.length) {
+            for (var h = 0; h < holidays.length; h++) {
+              var parts = holidays[h].date.split("-");
+              var hDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+              var diff = Math.round((hDate - monday) / 86400000);
+              if (diff >= 0 && diff < 7) {
+                holidayMap[diff] = holidays[h].localName || holidays[h].name;
+              }
+            }
+          }
+
+          var headCells = '<th>' + sched.title + '</th>' +
+            sched.days.map(function (d, i) {
+              var classes = [];
+              if (i === currentDay) classes.push("schedule-today");
+              if (holidayMap[i]) classes.push("schedule-holiday");
+              var cls = classes.length ? ' class="' + classes.join(" ") + '"' : '';
+              var label = holidayMap[i] ? d + '<span class="schedule-holiday-dot" title="' + holidayMap[i] + '"></span>' : d;
+              return '<th' + cls + '>' + label + '</th>';
             }).join("");
-          return '<tr>' + cells + '</tr>';
-        }).join("");
-        var locationHtml = '';
-        if (sched.currentLocation) {
-          var loc = sched.currentLocation;
-          var pinIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="' + CONFIG.icons.mappin + '"/></svg>';
-          locationHtml = '<div class="schedule-location">' + pinIcon +
-            '<span class="schedule-location-town">' + loc.town + '</span>, ' +
-            '<span class="schedule-location-country">' + loc.country + '</span>' +
-          '</div>';
+
+          var bodyRows = sched.rows.map(function (row) {
+            var cells = '<td>' + row.time + '</td>' +
+              row.slots.map(function (on, i) {
+                var classes = [];
+                if (i === currentDay) classes.push("schedule-today");
+                if (holidayMap[i]) classes.push("schedule-holiday");
+                var cls = classes.length ? ' class="' + classes.join(" ") + '"' : '';
+                var isHoliday = !!holidayMap[i];
+                var indicator = on && !isHoliday ? '<span class="slot-on"></span>' :
+                                isHoliday ? '<span class="slot-holiday" title="' + holidayMap[i] + '"></span>' :
+                                '<span class="slot-off"></span>';
+                return '<td' + cls + '>' + indicator + '</td>';
+              }).join("");
+            return '<tr>' + cells + '</tr>';
+          }).join("");
+
+          var locationHtml = '';
+          if (sched.currentLocation) {
+            var loc = sched.currentLocation;
+            var pinIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="' + CONFIG.icons.mappin + '"/></svg>';
+            locationHtml = '<div class="schedule-location">' + pinIcon +
+              '<span class="schedule-location-town">' + loc.town + '</span>, ' +
+              '<span class="schedule-location-country">' + loc.country + '</span>' +
+            '</div>';
+          }
+
+          // Holiday names for footer
+          var holidayNames = [];
+          for (var idx in holidayMap) { holidayNames.push(holidayMap[idx]); }
+          var holidayNote = holidayNames.length ?
+            '<p class="schedule-holidays">' + holidayNames.join(" &middot; ") + '</p>' : '';
+
+          $("#schedule-widget").innerHTML =
+            '<div class="schedule-frame">' +
+              '<div class="schedule-header">' +
+                '<span class="schedule-week">Week ' + weekNum + '</span>' +
+                locationHtml +
+                '<span class="schedule-header-right">' +
+                  '<span class="schedule-year">' + now.getFullYear() + '</span>' +
+                  '<button class="schedule-info-btn" aria-label="Legend" type="button">i</button>' +
+                '</span>' +
+              '</div>' +
+              '<div class="schedule-legend" hidden>' +
+                '<div class="schedule-legend-item"><span class="slot-on"></span> Available</div>' +
+                '<div class="schedule-legend-item"><span class="slot-off"></span> Off</div>' +
+                '<div class="schedule-legend-item"><span class="slot-holiday"></span> Holiday</div>' +
+                '<div class="schedule-legend-item"><span class="schedule-today-sample"></span> Today</div>' +
+              '</div>' +
+              '<table class="schedule-table"><thead><tr>' + headCells + '</tr></thead>' +
+              '<tbody>' + bodyRows + '</tbody></table>' +
+              holidayNote +
+              '<p class="schedule-note">' + sched.note + '</p>' +
+            '</div>';
+
+          // Info toggle
+          var infoBtn = document.querySelector(".schedule-info-btn");
+          var legend = document.querySelector(".schedule-legend");
+          if (infoBtn && legend) {
+            infoBtn.addEventListener("click", function () {
+              var open = !legend.hidden;
+              legend.hidden = open;
+              infoBtn.classList.toggle("active", !open);
+            });
+          }
         }
 
-        $("#schedule-widget").innerHTML =
-          '<div class="schedule-frame">' +
-            '<div class="schedule-header">' +
-              '<span class="schedule-week">Week ' + weekNum + '</span>' +
-              locationHtml +
-              '<span class="schedule-year">' + now.getFullYear() + '</span>' +
-            '</div>' +
-            '<table class="schedule-table"><thead><tr>' + headCells + '</tr></thead>' +
-            '<tbody>' + bodyRows + '</tbody></table>' +
-            '<p class="schedule-note">' + sched.note + '</p>' +
-          '</div>';
+        // Initial render without holidays
+        renderSchedule(null);
+
+        // Fetch holidays from Nager.Date API
+        if (sched.currentLocation && sched.currentLocation.countryCode) {
+          var cc = sched.currentLocation.countryCode;
+          fetch("https://date.nager.at/api/v3/PublicHolidays/" + now.getFullYear() + "/" + cc)
+            .then(function (r) { return r.ok ? r.json() : []; })
+            .then(function (data) { renderSchedule(data); })
+            .catch(function () { /* silent — holidays are a nice-to-have */ });
+        }
       }
 
       /* Decorative leaf icons above section headers */

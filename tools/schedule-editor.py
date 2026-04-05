@@ -64,10 +64,19 @@ def read_schedule(config_path):
 
     # Extract current location
     loc_match = re.search(
-        r'currentLocation:\s*\{\s*town:\s*"([^"]*)"\s*,\s*country:\s*"([^"]*)"\s*\}',
+        r'currentLocation:\s*\{\s*town:\s*"([^"]*)"\s*,\s*country:\s*"([^"]*)"\s*,\s*countryCode:\s*"([^"]*)"\s*\}',
         block,
     )
-    location = {"town": loc_match.group(1), "country": loc_match.group(2)} if loc_match else {"town": "", "country": ""}
+    if not loc_match:
+        loc_match = re.search(
+            r'currentLocation:\s*\{\s*town:\s*"([^"]*)"\s*,\s*country:\s*"([^"]*)"\s*\}',
+            block,
+        )
+    location = {
+        "town": loc_match.group(1) if loc_match else "",
+        "country": loc_match.group(2) if loc_match else "",
+        "countryCode": loc_match.group(3) if loc_match and loc_match.lastindex >= 3 else "",
+    }
 
     # Extract rows
     rows = []
@@ -98,9 +107,11 @@ def write_schedule(config_path, original_text, schedule):
 
     rows_str = ",\n".join(format_row(r) for r in schedule["rows"])
 
-    loc = schedule.get("location", {"town": "", "country": ""})
-    if loc["town"] or loc["country"]:
-        loc_line = '      currentLocation: { town: "' + loc["town"] + '", country: "' + loc["country"] + '" },\n'
+    loc = schedule.get("location", {"town": "", "country": "", "countryCode": ""})
+    if loc.get("town") or loc.get("country"):
+        cc = loc.get("countryCode", "")
+        cc_part = ', countryCode: "' + cc + '"' if cc else ""
+        loc_line = '      currentLocation: { town: "' + loc["town"] + '", country: "' + loc["country"] + '"' + cc_part + ' },\n'
     else:
         loc_line = ''
 
@@ -278,8 +289,16 @@ class ScheduleEditor(tk.Tk):
             loc_fields, textvariable=self.country_var, font=("Helvetica", 10),
             fg=INK, bg=CARD_BG, relief="flat", width=16,
             highlightbackground=BORDER, highlightthickness=1,
+        ).pack(side="left", padx=(4, 12), ipady=4)
+        tk.Label(loc_fields, text="Code:", font=("Helvetica", 10),
+                 fg=INK_LIGHT, bg=BG).pack(side="left")
+        self.cc_var = tk.StringVar(value=loc.get("countryCode", ""))
+        tk.Entry(
+            loc_fields, textvariable=self.cc_var, font=("Helvetica", 10),
+            fg=INK, bg=CARD_BG, relief="flat", width=4,
+            highlightbackground=BORDER, highlightthickness=1,
         ).pack(side="left", padx=(4, 0), ipady=4)
-        tk.Label(loc_frame, text="Leave both empty to hide location from schedule.",
+        tk.Label(loc_frame, text="Leave empty to hide. Code = ISO 2-letter (SE, VN) for holiday API.",
                  font=("Helvetica", 9), fg=INK_LIGHT, bg=BG).pack(anchor="w", pady=(4, 0))
 
         # Note field
@@ -374,6 +393,7 @@ class ScheduleEditor(tk.Tk):
             self.schedule["location"] = {
                 "town": self.town_var.get().strip(),
                 "country": self.country_var.get().strip(),
+                "countryCode": self.cc_var.get().strip().upper(),
             }
 
     def _save(self):
