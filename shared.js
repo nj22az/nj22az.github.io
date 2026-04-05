@@ -40,11 +40,23 @@
     return "dark";
   }
 
-  /** Apply theme class to <html> */
+  /** Apply theme to <html> and sync Giscus iframes */
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
     updateToggleIcon(theme);
+    syncGiscusTheme(theme);
+  }
+
+  /** Tell every Giscus iframe to switch theme */
+  function syncGiscusTheme(theme) {
+    var giscusTheme = theme === "dark" ? "noborder_dark" : "noborder_light";
+    document.querySelectorAll("iframe.giscus-frame").forEach(function (frame) {
+      frame.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: giscusTheme } } },
+        "https://giscus.app"
+      );
+    });
   }
 
   /** Swap the sun/moon icon inside the toggle button */
@@ -76,7 +88,7 @@
 
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a href="/" class="nav-brand">' + CONFIG.author.name + '</a>' +
+        '<a href="/" class="nav-brand logo-seal">' + CONFIG.logo(32) + '</a>' +
         '<div class="nav-links">' + links.join("") + '</div>' +
         '<div class="nav-actions">' +
           '<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">' +
@@ -183,7 +195,44 @@
     init();
   }
 
-  /* ── Expose icon helper for page-specific scripts ── */
+  /* ══════════════════════════════════════════
+     GISCUS LOADER
+     ══════════════════════════════════════════ */
+
+  /**
+   * Inject a Giscus comment widget into a container element.
+   * @param {string} selector - CSS selector of the container
+   * @param {object} [overrides] - Optional Giscus config overrides (e.g. { term: "..." })
+   */
+  function loadGiscus(selector, overrides) {
+    var container = $(selector);
+    if (!container) return;
+
+    var g = CONFIG.giscus;
+    var theme = getTheme() === "dark" ? "noborder_dark" : "noborder_light";
+    var opts = Object.assign({}, g, overrides || {});
+
+    var script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.setAttribute("data-repo", opts.repo);
+    script.setAttribute("data-repo-id", opts.repoId);
+    script.setAttribute("data-category", opts.category);
+    script.setAttribute("data-category-id", opts.categoryId);
+    script.setAttribute("data-mapping", opts.mapping);
+    script.setAttribute("data-reactions-enabled", opts.reactionsEnabled);
+    script.setAttribute("data-emit-metadata", opts.emitMetadata);
+    script.setAttribute("data-input-position", opts.inputPosition);
+    script.setAttribute("data-theme", theme);
+    script.setAttribute("data-lang", opts.lang);
+    script.setAttribute("data-loading", opts.loading);
+    script.crossOrigin = "anonymous";
+    script.async = true;
+
+    container.appendChild(script);
+  }
+
+  /* ── Expose helpers for page-specific scripts ── */
   window.siteIcon = icon;
+  window.loadGiscus = loadGiscus;
 
 })();

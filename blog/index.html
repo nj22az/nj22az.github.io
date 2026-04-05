@@ -19,7 +19,7 @@
   <main>
     <section class="page-hero">
       <h1>Blog</h1>
-      <p>The latest stories from <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener" style="color:var(--accent)">theofficeofnils.wordpress.com</a></p>
+      <p>The latest from <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener" style="color:var(--accent)">theofficeofnils.wordpress.com</a> — leave comments with your GitHub account.</p>
     </section>
 
     <div class="page-content">
@@ -36,9 +36,9 @@
     (function () {
       "use strict";
 
-      var postsContainer = document.getElementById("posts");
-      var statusBanner = document.getElementById("status");
-      var API = "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts?_embed&per_page=6";
+      var postsEl = document.getElementById("posts");
+      var statusEl = document.getElementById("status");
+      var API = CONFIG.wordpressApi + "?_embed&per_page=6";
 
       function strip(html) {
         var el = document.createElement("div");
@@ -46,12 +46,10 @@
         return el.textContent || "";
       }
 
-      function safeText(input) {
-        return strip(input || "").trim();
-      }
+      function safe(input) { return strip(input || "").trim(); }
 
-      function fmtDate(dateStr) {
-        return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(dateStr));
+      function fmtDate(d) {
+        return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(d));
       }
 
       function buildTags(post) {
@@ -60,24 +58,37 @@
         return flat
           .filter(function (t) { return t.taxonomy === "post_tag"; })
           .slice(0, 5)
-          .map(function (t) { return '<span class="tag">' + safeText(t.name) + '</span>'; })
+          .map(function (t) { return '<span class="tag">' + safe(t.name) + '</span>'; })
           .join("");
       }
 
-      function buildPostCard(post) {
-        var title = safeText(post.title.rendered) || "Untitled";
-        var excerpt = safeText(post.excerpt.rendered);
+      /**
+       * Build a post card with an expandable Giscus comment section.
+       * Each post gets a unique comment thread keyed by its WordPress slug.
+       */
+      function buildPostCard(post, index) {
+        var title = safe(post.title.rendered) || "Untitled";
+        var excerpt = safe(post.excerpt.rendered);
         var summary = excerpt.length > 220 ? excerpt.slice(0, 217) + "\u2026" : excerpt;
         var tags = buildTags(post);
         var author = (post._embedded && post._embedded.author && post._embedded.author[0])
-          ? safeText(post._embedded.author[0].name) : "Nils Johansson";
+          ? safe(post._embedded.author[0].name) : "Nils Johansson";
+        var commentId = "comments-" + index;
+        var toggleId = "toggle-" + index;
+        var slug = post.slug || ("post-" + index);
 
         return '<article class="post-card">' +
           '<h2><a href="' + post.link + '" target="_blank" rel="noopener">' + title + '</a></h2>' +
           '<div class="meta">By ' + author + ' &ndash; ' + fmtDate(post.date) + '</div>' +
           '<p>' + (summary || "Visit the blog to read the full story.") + '</p>' +
           (tags ? '<div class="tags">' + tags + '</div>' : '') +
-          '<div class="read-more"><a href="' + post.link + '" target="_blank" rel="noopener">Read the full article &rarr;</a></div>' +
+          '<div class="post-actions">' +
+            '<a href="' + post.link + '" target="_blank" rel="noopener" class="post-link">Read full article &rarr;</a>' +
+            '<button class="comment-toggle" id="' + toggleId + '" data-target="' + commentId + '" data-slug="' + slug + '">' +
+              siteIcon("messageCircle") + ' Comments' +
+            '</button>' +
+          '</div>' +
+          '<div class="comment-section hidden" id="' + commentId + '"></div>' +
         '</article>';
       }
 
@@ -88,14 +99,32 @@
         })
         .then(function (posts) {
           if (!posts.length) {
-            statusBanner.textContent = "No posts are available yet. Check back soon.";
+            statusEl.textContent = "No posts available yet. Check back soon.";
             return;
           }
-          statusBanner.remove();
-          postsContainer.innerHTML = posts.map(buildPostCard).join("");
+          statusEl.remove();
+          postsEl.innerHTML = posts.map(buildPostCard).join("");
+
+          /* Wire up comment toggles */
+          postsEl.querySelectorAll(".comment-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var target = document.getElementById(btn.dataset.target);
+              var isHidden = target.classList.contains("hidden");
+              target.classList.toggle("hidden", !isHidden);
+
+              /* Load Giscus on first open */
+              if (isHidden && !target.dataset.loaded) {
+                target.dataset.loaded = "true";
+                loadGiscus("#" + btn.dataset.target, {
+                  mapping: "specific",
+                  term: "blog/" + btn.dataset.slug,
+                });
+              }
+            });
+          });
         })
         .catch(function () {
-          statusBanner.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
+          statusEl.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
         });
     })();
   </script>

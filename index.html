@@ -15,13 +15,13 @@
 </head>
 <body>
 
-  <!-- Nav and footer are injected by shared.js -->
   <nav id="site-nav"></nav>
 
   <main>
 
     <!-- Hero -->
     <section class="hero" id="home">
+      <div class="hero-logo logo-seal" id="hero-logo"></div>
       <p class="hero-role" id="hero-role"></p>
       <h1 class="hero-title" id="hero-title"></h1>
       <p class="hero-description" id="hero-description"></p>
@@ -39,7 +39,7 @@
       <div class="container">
         <div class="section-header">
           <h2>Featured Projects</h2>
-          <p>Tools, writing, and resources built from real-world engineering deployments.</p>
+          <p>Platforms, shops, and profiles where I build, write, and share.</p>
         </div>
         <div class="card-grid" id="projects-grid"></div>
       </div>
@@ -62,8 +62,19 @@
       </div>
     </section>
 
+    <!-- Guestbook -->
+    <section class="section" id="guestbook">
+      <div class="container">
+        <div class="section-header">
+          <h2>Guestbook</h2>
+          <p>Leave a message, share a thought, or say hello. Sign in with GitHub to post — photos and markdown supported.</p>
+        </div>
+        <div class="giscus-wrapper" id="giscus-container"></div>
+      </div>
+    </section>
+
     <!-- About -->
-    <section class="section" id="about">
+    <section class="section section-alt" id="about">
       <div class="container">
         <div class="about-layout">
           <img id="about-photo" alt="Nils Johansson" class="about-photo" loading="lazy">
@@ -80,7 +91,6 @@
 
   <footer id="site-footer" class="site-footer"></footer>
 
-  <!-- Config + shared components + page-specific logic -->
   <script src="/config.js"></script>
   <script src="/shared.js"></script>
   <script>
@@ -90,25 +100,21 @@
       function $(sel) { return document.querySelector(sel); }
 
       /* Hero */
+      $("#hero-logo").innerHTML = CONFIG.logo(80);
       $("#hero-role").textContent = CONFIG.author.role;
       $("#hero-title").textContent = CONFIG.site.title;
       $("#hero-description").textContent = CONFIG.site.description;
 
-      /* Projects grid */
+      /* Projects grid — all external links */
       $("#projects-grid").innerHTML = CONFIG.projects.map(function (p) {
-        var isDownload = p.url.endsWith(".pdf") || p.url.endsWith(".txt");
-        var isExternal = p.url.startsWith("http");
-        var attrs = isExternal ? ' target="_blank" rel="noopener"' : "";
-        attrs += isDownload ? " download" : "";
-
         var tags = p.tags.map(function (t) {
           return '<span class="tag">' + t + '</span>';
         }).join("");
 
-        return '<a href="' + p.url + '"' + attrs + ' class="card">' +
+        return '<a href="' + p.url + '" target="_blank" rel="noopener" class="card">' +
           '<div class="card-header">' +
             '<div class="card-icon">' + siteIcon(p.icon) + '</div>' +
-            '<div class="card-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
+            '<div class="card-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
           '</div>' +
           '<h3>' + p.title + '</h3>' +
           '<p>' + p.description + '</p>' +
@@ -117,7 +123,7 @@
       }).join("");
 
       /* Journal posts (WordPress API) */
-      var API = "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts?_embed&per_page=3";
+      var API = CONFIG.wordpressApi + "?_embed&per_page=3";
 
       function strip(html) {
         var el = document.createElement("div");
@@ -147,8 +153,11 @@
           }).join("");
         })
         .catch(function () {
-          $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="/blog/">Visit the blog directly.</a></p>';
+          $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
         });
+
+      /* Guestbook (Giscus) */
+      loadGiscus("#giscus-container", { term: "Guestbook" });
 
       /* About */
       $("#about-photo").src = CONFIG.author.photo;
@@ -160,7 +169,7 @@
       }).join("");
 
       /* Scroll-triggered reveal */
-      var reveals = document.querySelectorAll("#projects, #journal, #about");
+      var reveals = document.querySelectorAll("#projects, #journal, #guestbook, #about");
       reveals.forEach(function (el) { el.classList.add("reveal"); });
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
