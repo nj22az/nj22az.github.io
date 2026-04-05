@@ -212,8 +212,8 @@
   opacity: 0.5;
 }
 .schedule-legend-dot.holiday-sample {
-  background: rgba(211, 95, 95, 0.15);
-  border: 1.5px solid #d35f5f;
+  background: rgba(211, 95, 95, 0.06);
+  border: 1px dashed rgba(211, 95, 95, 0.25);
 }
 
 /* ── Day strip ── */
@@ -276,14 +276,6 @@
 .schedule-day.holiday .schedule-day-name {
   color: #d35f5f;
 }
-.schedule-day-holiday {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #d35f5f;
-  position: absolute;
-  bottom: 4px;
-}
-
 /* Today always wins — overrides weekend dimming and holiday red */
 .schedule-day.today.weekend {
   opacity: 1;

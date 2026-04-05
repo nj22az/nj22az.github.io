@@ -92,6 +92,12 @@ Edit `CONFIG.projects` in `config.js`. Add icon path to `CONFIG.icons` if needed
 
 All icons are SVG path strings in `CONFIG.icons` (24x24 viewBox, stroke-based). Rendered by `siteIcon()` from shared.js.
 
+## Design Principles
+
+- **No decorative dots, badges, or redundant indicators.** If information is already conveyed by color, shape, or text — do not add dots, circles, or extra markers on top. One signal per concept.
+- **Today is always the most prominent element** in any calendar/schedule widget. It must never be dimmed by weekend styling or overridden by holiday colors.
+- **Keep it clean.** When in doubt, remove visual noise rather than add it. The user prefers minimal, sophisticated design over busy/cluttered UI.
+
 ## Key Directories
 
 ```
