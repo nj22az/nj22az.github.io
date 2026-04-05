@@ -15,9 +15,7 @@
 /* ── Week header row ── */
 .schedule-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.875rem;
@@ -33,6 +31,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
 }
 .schedule-year {
   font-size: 0.8125rem;
@@ -164,20 +163,10 @@
 /* ── Today column highlight ── */
 .schedule-today {
   background: var(--accent-glow);
-  position: relative;
 }
 .schedule-table th.schedule-today {
   color: var(--accent);
   font-weight: 800;
-}
-.schedule-table thead th.schedule-today::after {
-  content: "";
-  display: block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  margin: 4px auto 0;
 }
 
 /* ── Holiday column ── */
