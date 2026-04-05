@@ -228,11 +228,16 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.625rem 0.25rem 0.5rem;
+  border: none;
   border-radius: 0.875rem;
   background: var(--surface-raised);
-  transition: background 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
   position: relative;
-  cursor: default;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.schedule-day:active {
+  transform: scale(0.93);
 }
 .schedule-day-name {
   font-size: 0.6875rem;
@@ -288,6 +293,25 @@
 .schedule-day.today.holiday .schedule-day-name,
 .schedule-day.today.holiday .schedule-day-num {
   color: #fff;
+}
+
+/* ── Day popup ── */
+.schedule-popup {
+  margin-top: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+  animation: popupIn 0.15s ease;
+}
+.schedule-popup[hidden] { display: none; }
+@keyframes popupIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Footer ── */

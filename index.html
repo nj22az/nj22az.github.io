@@ -211,6 +211,7 @@
 
           // Day cells
           var dayCells = '';
+          var FULL_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
           for (var i = 0; i < 7; i++) {
             var d = new Date(monday.getTime() + i * 86400000);
             var isToday = isSameDay(d, today);
@@ -221,12 +222,17 @@
             if (isWeekend) classes.push("weekend");
             if (isHoliday) classes.push("holiday");
 
-            var tooltip = isHoliday ? ' title="' + holidayMap[i] + '"' : '';
-            dayCells += '<div class="' + classes.join(" ") + '"' + tooltip + '>' +
+            // Build popup info
+            var popupParts = [FULL_DAYS[i] + " " + d.getDate() + " " + MONTHS[d.getMonth()]];
+            if (isToday) popupParts.push("Today");
+            if (isHoliday) popupParts.push(holidayMap[i]);
+            if (isWeekend && !isHoliday) popupParts.push("Weekend");
+
+            dayCells += '<button class="' + classes.join(" ") + '" data-popup="' + popupParts.join(" · ") + '">' +
               '<span class="schedule-day-name">' + DAYS[i] + '</span>' +
               '<span class="schedule-day-num">' + d.getDate() + '</span>' +
               (isHoliday ? '<span class="schedule-day-holiday"></span>' : '') +
-            '</div>';
+            '</button>';
           }
 
           // Holiday names
@@ -273,9 +279,29 @@
                 '<div class="schedule-legend-item"><span class="schedule-legend-dot holiday-sample"></span> Holiday</div>' +
               '</div>' +
               '<div class="schedule-days">' + dayCells + '</div>' +
+              '<div class="schedule-popup" hidden></div>' +
               holidayNote +
               '<p class="schedule-note">' + sched.note + '</p>' +
             '</div>';
+
+          // Day cell click — show popup
+          var popup = document.querySelector(".schedule-popup");
+          document.querySelectorAll(".schedule-day").forEach(function (dayEl) {
+            dayEl.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var text = dayEl.dataset.popup;
+              if (popup.hidden === false && popup.textContent === text) {
+                popup.hidden = true;
+                return;
+              }
+              popup.textContent = text;
+              popup.hidden = false;
+            });
+          });
+          document.addEventListener("click", function dismissPopup() {
+            if (popup && !popup.hidden) popup.hidden = true;
+            document.removeEventListener("click", dismissPopup);
+          });
 
           // Event listeners
           document.querySelectorAll(".schedule-nav-btn").forEach(function (btn) {
