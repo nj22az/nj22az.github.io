@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,34 +10,47 @@
   <link rel="icon" href="/assets/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
-  <nav id="site-nav" class="site-nav"></nav>
+  <nav id="site-nav"></nav>
 
   <main>
 
-    <!-- Hero -->
+    <!-- Hero — split layout -->
     <section class="hero" id="home">
-      <div class="hero-logo logo-seal" id="hero-logo"></div>
-      <p class="hero-role" id="hero-role"></p>
-      <h1 class="hero-title" id="hero-title"></h1>
-      <p class="hero-description" id="hero-description"></p>
-      <div class="hero-actions">
-        <a href="#projects" class="btn-primary">
-          View Projects
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#about" class="btn-secondary">About Me</a>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <div class="hero-logo logo-seal" id="hero-logo"></div>
+          <p class="hero-role" id="hero-role"></p>
+          <h1 class="hero-title" id="hero-title"></h1>
+          <p class="hero-description" id="hero-description"></p>
+          <div class="hero-actions">
+            <a href="#projects" class="btn-primary">
+              View Projects
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#about" class="btn-secondary">About Me</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="/assets/images/nils-lake-hero.jpg" alt="Field engineering in the field" loading="eager">
+        </div>
       </div>
     </section>
 
+    <!-- Wave divider: hero → projects -->
+    <svg class="wave-divider" viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0,20 C200,50 400,0 600,25 C800,50 1000,5 1200,20 L1200,60 L0,60 Z"/>
+    </svg>
+
     <!-- Projects -->
-    <section class="section" id="projects">
+    <section class="section section-alt" id="projects">
       <div class="container">
         <div class="section-header">
+          <div class="section-label">Projects</div>
           <h2>Featured Projects</h2>
           <p>Platforms, shops, and profiles where I build, write, and share.</p>
         </div>
@@ -45,10 +58,16 @@
       </div>
     </section>
 
+    <!-- Wave divider: projects → journal -->
+    <svg class="wave-divider wave-divider-flip" viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0,20 C200,50 400,0 600,25 C800,50 1000,5 1200,20 L1200,60 L0,60 Z"/>
+    </svg>
+
     <!-- Journal -->
-    <section class="section section-alt" id="journal">
+    <section class="section" id="journal">
       <div class="container">
         <div class="section-header">
+          <div class="section-label">Journal</div>
           <h2>From the Journal</h2>
           <p>Technical dispatches and reflections from the field.</p>
         </div>
@@ -62,13 +81,19 @@
       </div>
     </section>
 
+    <!-- Wave divider: journal → about -->
+    <svg class="wave-divider" viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0,25 C150,50 350,0 550,30 C750,55 950,10 1200,25 L1200,60 L0,60 Z"/>
+    </svg>
+
     <!-- About -->
     <section class="section section-alt" id="about">
       <div class="container">
         <div class="about-layout">
           <div id="about-logo" class="about-logo logo-seal"></div>
+          <div class="section-label">About</div>
           <div class="about-content">
-            <h2>About</h2>
+            <h2 id="about-heading">About</h2>
             <p class="about-bio" id="about-bio"></p>
             <div class="social-links" id="social-links"></div>
           </div>
@@ -89,7 +114,7 @@
       function $(sel) { return document.querySelector(sel); }
 
       /* Hero */
-      $("#hero-logo").innerHTML = CONFIG.logo(140);
+      $("#hero-logo").innerHTML = CONFIG.logo(120);
       $("#hero-role").textContent = CONFIG.author.role;
       $("#hero-title").textContent = CONFIG.site.title;
       $("#hero-description").textContent = CONFIG.site.description;
@@ -140,13 +165,19 @@
               '<p>' + (summary || "Read the full article.") + '</p>' +
             '</a>';
           }).join("");
+
+          /* Reveal journal cards after they load */
+          document.querySelectorAll(".journal-card").forEach(function (el) {
+            el.classList.add("reveal");
+            obs.observe(el);
+          });
         })
         .catch(function () {
           $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
         });
 
       /* About */
-      $("#about-logo").innerHTML = CONFIG.logo(160);
+      $("#about-logo").innerHTML = CONFIG.logo(140);
       $("#about-bio").textContent = CONFIG.author.bio;
 
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
@@ -154,15 +185,15 @@
           siteIcon(key) + '</a>';
       }).join("");
 
-      /* Scroll-triggered reveal */
-      var reveals = document.querySelectorAll("#projects, #journal, #about");
-      reveals.forEach(function (el) { el.classList.add("reveal"); });
+      /* Staggered scroll-triggered reveals */
+      var items = document.querySelectorAll(".card, .section-header, .about-layout");
+      items.forEach(function (el) { el.classList.add("reveal"); });
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
         });
-      }, { threshold: 0.1 });
-      reveals.forEach(function (el) { obs.observe(el); });
+      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+      items.forEach(function (el) { obs.observe(el); });
 
     })();
   </script>

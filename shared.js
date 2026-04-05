@@ -33,12 +33,11 @@
 
   var THEME_KEY = "nj-theme";
 
-  /** Read stored preference, respect system setting, default to light */
+  /** Read stored preference or default to "dark" */
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
     if (stored === "light" || stored === "dark") return stored;
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    return "light";
+    return "dark";
   }
 
   /** Apply theme to <html> */
@@ -60,15 +59,6 @@
   // Apply immediately to prevent flash
   applyTheme(getTheme());
 
-  // Listen for system theme changes when no explicit preference stored
-  if (window.matchMedia) {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
-      if (!localStorage.getItem(THEME_KEY)) {
-        applyTheme(e.matches ? "dark" : "light");
-      }
-    });
-  }
-
   /* ══════════════════════════════════════════
      NAVIGATION (injected into #site-nav)
      ══════════════════════════════════════════ */
@@ -80,9 +70,12 @@
 
     // Determine which nav links to show based on current page
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
+    var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user" };
     var links = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="nav-link">' + n.label + '</a>';
+      return '<a href="' + href + '" class="nav-link">' +
+        icon(navIcons[n.id] || "") +
+        '<span>' + n.label + '</span></a>';
     });
 
     nav.innerHTML =
@@ -107,7 +100,9 @@
     mobileMenu.id = "mobile-menu";
     mobileMenu.innerHTML = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="mobile-nav-link">' + n.label + '</a>';
+      return '<a href="' + href + '" class="mobile-nav-link">' +
+        icon(navIcons[n.id] || "") +
+        '<span>' + n.label + '</span></a>';
     }).join("");
     nav.parentNode.insertBefore(mobileMenu, nav.nextSibling);
 

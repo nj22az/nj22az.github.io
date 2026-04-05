@@ -88,8 +88,8 @@ const CONFIG = {
     var width = Math.round(height * 5.6);
     return '<svg viewBox="0 0 280 50" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
       '<rect x="1.5" y="1.5" width="277" height="47" rx="8" stroke="currentColor" stroke-width="2"/>' +
-      '<text x="140" y="21" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
-      '<text x="140" y="38" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
+      '<text x="140" y="21" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
+      '<text x="140" y="38" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
     '</svg>';
   },
 
@@ -103,13 +103,13 @@ const CONFIG = {
         '<defs><path id="' + uid + '" d="M 40 100 A 60 60 0 0 1 160 100"/></defs>' +
         '<circle cx="100" cy="100" r="96" stroke="currentColor" stroke-width="3"/>' +
         '<circle cx="100" cy="100" r="84" stroke="currentColor" stroke-width="1.5"/>' +
-        '<text font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="14" fill="currentColor" letter-spacing="3">' +
+        '<text font-family="Nunito, system-ui, sans-serif" font-weight="700" font-size="14" fill="currentColor" letter-spacing="3">' +
           '<textPath href="#' + uid + '" startOffset="50%" text-anchor="middle">THE OFFICE OF</textPath>' +
         '</text>' +
-        '<text x="100" y="108" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
-        '<text x="100" y="130" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
+        '<text x="100" y="108" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
+        '<text x="100" y="130" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
         '<line x1="65" y1="137" x2="135" y2="137" stroke="currentColor" stroke-width="1" opacity="0.4"/>' +
-        '<text x="100" y="155" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
+        '<text x="100" y="155" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
       '</svg>';
     };
   })(),
@@ -135,5 +135,7 @@ const CONFIG = {
     external: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3",
     sun: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z",
     moon: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z",
+    home: "M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z",
+    user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
   },
 };
