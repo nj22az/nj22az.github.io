@@ -1,13 +1,14 @@
 /*
  * The Office of Nils Johansson
- * Dark-first design with manual light/dark toggle via [data-theme].
+ * Light-first design with system preference detection.
+ * Japanese information design: Ma, Kanso, LINE/MUJI aesthetic.
  * No external CSS framework — fully self-contained.
  */
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 4rem; -webkit-text-size-adjust: 100%; }
-::selection { background: rgba(41, 151, 255, 0.3); color: inherit; }
+::selection { background: rgba(0, 102, 204, 0.2); color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
@@ -15,52 +16,67 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 
 /* ══════════════════════════════════════════
    DESIGN TOKENS
-   Dark theme (default)
+   Light theme (default) — warm paper, MUJI-inspired
    ══════════════════════════════════════════ */
 
 :root,
-[data-theme="dark"] {
-  --ink:           #f5f5f7;
-  --ink-light:     #a1a1a6;
-  --ink-faint:     #6e6e73;
-  --surface:       #000000;
-  --surface-raised:#0d0d0d;
-  --surface-card:  #1c1c1e;
-  --surface-hover: #2c2c2e;
-  --border:        rgba(255, 255, 255, 0.06);
-  --border-hover:  rgba(255, 255, 255, 0.12);
-  --accent:        #2997ff;
-  --accent-hover:  #40a9ff;
-  --accent-glow:   rgba(41, 151, 255, 0.2);
-  --shadow-card:   0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-lift:   0 12px 40px rgba(0, 0, 0, 0.5);
-  --nav-bg:        rgba(0, 0, 0, 0.82);
-  --hero-grad-start: #000000;
-  --hero-grad-end:   #0a0a0a;
-  --font-display:  "Nunito", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body:     system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+[data-theme="light"] {
+  /* Ink — warm dark, not pure black */
+  --ink:           #1a1a1a;
+  --ink-light:     #5c5c5c;
+  --ink-faint:     #8a8a8a;
+
+  /* Surfaces — warm paper whites */
+  --surface:       #fafaf8;
+  --surface-raised:#f4f4f2;
+  --surface-card:  #ffffff;
+  --surface-hover: #f0f0ee;
+
+  /* Borders — barely there (LINE style) */
+  --border:        rgba(0, 0, 0, 0.05);
+  --border-hover:  rgba(0, 0, 0, 0.09);
+
+  /* Accent */
+  --accent:        #0066cc;
+  --accent-hover:  #0055aa;
+  --accent-glow:   rgba(0, 102, 204, 0.10);
+
+  /* Shadows — subtle, diffused */
+  --shadow-card:   0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lift:   0 8px 24px rgba(0, 0, 0, 0.06);
+
+  /* Navigation */
+  --nav-bg:        rgba(250, 250, 248, 0.85);
+
+  /* Hero */
+  --hero-grad-start: #fafaf8;
+  --hero-grad-end:   #f4f4f2;
+
+  /* Typography — Inter: clean, geometric, high legibility */
+  --font-display:  "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:     "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --max-w:         1120px;
 }
 
-/* ── Light theme override ── */
-[data-theme="light"] {
-  --ink:           #1d1d1f;
-  --ink-light:     #6e6e73;
-  --ink-faint:     #86868b;
-  --surface:       #fbfbfd;
-  --surface-raised:#f5f5f7;
-  --surface-card:  #ffffff;
-  --surface-hover: #f5f5f7;
-  --border:        rgba(0, 0, 0, 0.06);
-  --border-hover:  rgba(0, 0, 0, 0.1);
-  --accent:        #0071e3;
-  --accent-hover:  #0077ed;
-  --accent-glow:   rgba(0, 113, 227, 0.15);
-  --shadow-card:   0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lift:   0 12px 40px rgba(0, 0, 0, 0.08);
-  --nav-bg:        rgba(251, 251, 253, 0.82);
-  --hero-grad-start: #fbfbfd;
-  --hero-grad-end:   #f5f5f7;
+/* ── Dark theme override ── */
+[data-theme="dark"] {
+  --ink:           #e8e8e8;
+  --ink-light:     #9a9a9a;
+  --ink-faint:     #6a6a6a;
+  --surface:       #0a0a0a;
+  --surface-raised:#111111;
+  --surface-card:  #1a1a1a;
+  --surface-hover: #252525;
+  --border:        rgba(255, 255, 255, 0.06);
+  --border-hover:  rgba(255, 255, 255, 0.10);
+  --accent:        #4da6ff;
+  --accent-hover:  #6ab6ff;
+  --accent-glow:   rgba(77, 166, 255, 0.15);
+  --shadow-card:   0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lift:   0 8px 24px rgba(0, 0, 0, 0.4);
+  --nav-bg:        rgba(10, 10, 10, 0.85);
+  --hero-grad-start: #0a0a0a;
+  --hero-grad-end:   #111111;
 }
 
 /* ── Body ── */
@@ -95,7 +111,7 @@ body {
 }
 .site-nav.scrolled {
   border-bottom-color: var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .nav-inner {
@@ -114,9 +130,10 @@ body {
 }
 .nav-brand:hover { color: var(--accent); }
 
-.nav-links { display: flex; align-items: center; gap: 2rem; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
 .nav-link {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--ink-light);
   transition: color 0.2s;
   letter-spacing: 0.01em;
@@ -163,6 +180,7 @@ body {
 .mobile-menu a {
   display: block; padding: 0.625rem 0;
   font-size: 0.9375rem;
+  font-weight: 500;
   color: var(--ink-light);
   transition: color 0.2s;
 }
@@ -178,7 +196,7 @@ body {
    ══════════════════════════════════════════ */
 
 .hero {
-  padding: 10rem 1.5rem 5rem;
+  padding: 9rem 1.5rem 4rem;
   text-align: center;
   background: linear-gradient(180deg, var(--hero-grad-start), var(--hero-grad-end));
   transition: background 0.3s;
@@ -190,7 +208,7 @@ body {
 }
 
 .hero-role {
-  font-size: 0.6875rem; font-weight: 600;
+  font-size: 0.75rem; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.12em;
   color: var(--ink-faint);
   margin-bottom: 1.5rem;
@@ -201,7 +219,7 @@ body {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(2.25rem, 6vw, 4.5rem);
-  line-height: 1.08; letter-spacing: -0.03em;
+  line-height: 1.08; letter-spacing: -0.02em;
   color: var(--ink);
   margin-bottom: 1.5rem;
   animation: fadeUp 0.7s ease-out both;
@@ -212,7 +230,7 @@ body {
   line-height: 1.6;
   color: var(--ink-light);
   max-width: 40rem;
-  margin: 0 auto 2.5rem;
+  margin: 0 auto 2rem;
   animation: fadeUp 0.7s ease-out 0.15s both;
 }
 
@@ -234,8 +252,8 @@ body {
 }
 .btn-primary:hover {
   background: var(--accent-hover);
-  box-shadow: 0 8px 24px var(--accent-glow);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transform: translateY(-1px);
 }
 .btn-primary svg { width: 16px; height: 16px; }
 
@@ -250,17 +268,17 @@ body {
 }
 .btn-secondary:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 /* ══════════════════════════════════════════
    SECTIONS
    ══════════════════════════════════════════ */
 
-.section { padding: 5rem 1.5rem; }
+.section { padding: 4rem 1.5rem; }
 .section-alt { background: var(--surface-raised); transition: background 0.3s; }
 
-.section-header { text-align: center; margin-bottom: 4rem; }
+.section-header { text-align: center; margin-bottom: 3rem; }
 .section-header h2 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -274,26 +292,25 @@ body {
   max-width: 32rem; margin: 0 auto;
 }
 
-@media (min-width: 640px) { .section { padding: 7rem 1.5rem; } }
+@media (min-width: 640px) { .section { padding: 5rem 1.5rem; } }
 
 /* ══════════════════════════════════════════
    PROJECT CARDS
    ══════════════════════════════════════════ */
 
-.card-grid { display: grid; gap: 1.5rem; max-width: var(--max-w); margin: 0 auto; }
+.card-grid { display: grid; gap: 1rem; max-width: var(--max-w); margin: 0 auto; }
 @media (min-width: 640px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
 
 .card {
   display: block;
   background: var(--surface-card);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--border);
-  padding: 1.75rem;
-  transition: all 0.3s ease;
-  will-change: transform, box-shadow;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
 }
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lift);
   border-color: var(--border-hover);
 }
@@ -334,20 +351,20 @@ body {
    JOURNAL CARDS
    ══════════════════════════════════════════ */
 
-.journal-grid { display: grid; gap: 1.5rem; max-width: var(--max-w); margin: 0 auto; }
+.journal-grid { display: grid; gap: 1rem; max-width: var(--max-w); margin: 0 auto; }
 @media (min-width: 640px) { .journal-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .journal-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .journal-card {
   display: block;
   background: var(--surface-card);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--border);
-  padding: 1.75rem;
-  transition: all 0.3s ease;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
 }
 .journal-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lift);
   border-color: var(--border-hover);
 }
@@ -463,7 +480,7 @@ body {
   text-align: center;
   background: var(--surface-card);
   border: 1px dashed var(--border);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   padding: 1.25rem;
   color: var(--ink-faint);
   font-size: 0.9375rem;
@@ -475,10 +492,10 @@ body {
 .post-card {
   background: var(--surface-card);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.75rem;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 .post-card:hover {
   border-color: var(--border-hover);
@@ -511,9 +528,8 @@ body {
   display: inline-block;
   transition: transform 0.3s ease;
 }
-.logo-seal:hover { transform: scale(1.08); }
+.logo-seal:hover { transform: scale(1.05); }
 .logo-seal svg { display: block; }
-/* Logo uses currentColor so it adapts to dark/light theme automatically */
 
 /* ══════════════════════════════════════════
    FOOTER

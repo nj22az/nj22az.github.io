@@ -33,11 +33,12 @@
 
   var THEME_KEY = "nj-theme";
 
-  /** Read stored preference or default to "dark" */
+  /** Read stored preference, respect system setting, default to light */
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
     if (stored === "light" || stored === "dark") return stored;
-    return "dark";
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+    return "light";
   }
 
   /** Apply theme to <html> */
@@ -58,6 +59,15 @@
 
   // Apply immediately to prevent flash
   applyTheme(getTheme());
+
+  // Listen for system theme changes when no explicit preference stored
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+      if (!localStorage.getItem(THEME_KEY)) {
+        applyTheme(e.matches ? "dark" : "light");
+      }
+    });
+  }
 
   /* ══════════════════════════════════════════
      NAVIGATION (injected into #site-nav)

@@ -88,8 +88,8 @@ const CONFIG = {
     var width = Math.round(height * 5.6);
     return '<svg viewBox="0 0 280 50" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
       '<rect x="1.5" y="1.5" width="277" height="47" rx="8" stroke="currentColor" stroke-width="2"/>' +
-      '<text x="140" y="21" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
-      '<text x="140" y="38" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
+      '<text x="140" y="21" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
+      '<text x="140" y="38" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
     '</svg>';
   },
 
@@ -104,7 +104,7 @@ const CONFIG = {
     var totalArc = 150; // degrees to spread text across
     var step = totalArc / (text.length - 1);
     var offsetAngle = startAngle - totalArc / 2;
-    var font = 'font-family="Nunito, system-ui, sans-serif" font-weight="700" font-size="12" fill="currentColor"';
+    var font = 'font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="12" fill="currentColor"';
     var chars = "";
     for (var i = 0; i < text.length; i++) {
       var angle = offsetAngle + i * step;
@@ -118,10 +118,10 @@ const CONFIG = {
       '<circle cx="100" cy="100" r="96" stroke="currentColor" stroke-width="3"/>' +
       '<circle cx="100" cy="100" r="84" stroke="currentColor" stroke-width="1.5"/>' +
       chars +
-      '<text x="100" y="108" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
-      '<text x="100" y="130" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
+      '<text x="100" y="108" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
+      '<text x="100" y="130" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
       '<line x1="65" y1="137" x2="135" y2="137" stroke="currentColor" stroke-width="1" opacity="0.4"/>' +
-      '<text x="100" y="155" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
+      '<text x="100" y="155" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
     '</svg>';
   },
 
