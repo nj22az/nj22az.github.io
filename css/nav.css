@@ -84,9 +84,8 @@
 /* ── Desktop: compact dropdown panel ── */
 @media (min-width: 769px) {
   .menu-overlay {
-    position: absolute;
-    top: 60px;
-    right: 1.5rem;
+    top: 64px;
+    right: max(1.5rem, calc((100vw - var(--max-w)) / 2 + 1.5rem));
     left: auto;
     bottom: auto;
     width: 360px;

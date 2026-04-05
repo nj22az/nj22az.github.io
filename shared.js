@@ -121,9 +121,7 @@
         '<a href="#about" class="menu-cta menu-cta-secondary">About Me</a>' +
       '</div>';
 
-    // On desktop, append inside nav-inner for positioning; on mobile, append to body
-    var navInner = nav.querySelector(".nav-inner");
-    navInner.appendChild(overlay);
+    document.body.appendChild(overlay);
 
     // Backdrop for click-outside-to-close on desktop
     var backdrop = document.createElement("div");
