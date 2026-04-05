@@ -1,0 +1,100 @@
+/*
+ * Sections — headers, dividers, labels, decorative elements
+ */
+
+.section { padding: 5rem 1.5rem; }
+.section-alt { background: var(--surface-raised); transition: background 0.3s; }
+.section-mint {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-mint) 100%);
+  transition: background 0.3s;
+}
+
+@media (min-width: 640px) { .section { padding: 6rem 2rem; } }
+
+/* ── Section header ── */
+.section-header { text-align: center; margin-bottom: 3.5rem; }
+
+.section-decor { margin-bottom: 0.75rem; }
+.section-decor svg {
+  width: 32px; height: 32px;
+  color: var(--accent);
+  opacity: 0.7;
+  display: inline-block;
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  color: var(--ink-light);
+  max-width: 32rem; margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* ── Dashed terracotta divider ── */
+.section-divider {
+  border: none;
+  border-top: 2px dashed var(--divider);
+  margin: 0 2rem;
+  opacity: 0.45;
+}
+
+/* ── Label with vertical bars: | ABOUT | ── */
+.section-label-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.75rem;
+  color: var(--accent);
+  font-size: 0.8125rem; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.section-label-bar::before,
+.section-label-bar::after {
+  content: "|";
+  color: var(--accent);
+  font-weight: 300;
+  opacity: 0.6;
+}
+
+/* ── Decorative blob shapes ── */
+.decor-blob {
+  position: absolute;
+  border-radius: 60% 40% 50% 70% / 50% 60% 40% 50%;
+  background: var(--surface-mint);
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+}
+.decor-blob-sm { width: 80px; height: 80px; }
+.decor-blob-md { width: 140px; height: 140px; }
+.decor-blob-lg { width: 200px; height: 200px; }
+.decor-blob-tr { top: -40px; right: -40px; }
+.decor-blob-bl { bottom: -40px; left: -40px; }
+.decor-blob-tl { top: -30px; left: -30px; }
+
+/* ── Frame container ── */
+.frame {
+  border: 2px solid var(--border);
+  border-radius: 2rem;
+  padding: 3rem 2rem;
+  position: relative;
+  background: var(--surface-card);
+  overflow: hidden;
+}
+@media (max-width: 640px) { .frame { padding: 2rem 1.25rem; border-radius: 1.5rem; } }

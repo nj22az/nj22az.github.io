@@ -1,0 +1,149 @@
+/*
+ * Navigation — green circle hamburger + full-screen overlay
+ */
+
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.site-nav.scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: 0 2px 8px rgba(80, 60, 40, 0.06);
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto; padding: 0 1.5rem;
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  transition: color 0.2s;
+}
+.nav-brand:hover { color: var(--accent); }
+
+.nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+/* ── Theme toggle ── */
+.theme-toggle {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  color: var(--ink-light);
+  transition: color 0.2s, background 0.2s;
+}
+.theme-toggle:hover { color: var(--accent); background: var(--accent-glow); }
+.theme-toggle svg { width: 18px; height: 18px; }
+
+/* ── Green circle hamburger button ── */
+.nav-hamburger {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+.nav-hamburger:hover { background: var(--accent-hover); transform: scale(1.05); }
+.nav-hamburger svg { width: 22px; height: 22px; }
+
+/* ── Full-screen overlay menu ── */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--surface);
+  z-index: 100;
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  overflow-y: auto;
+}
+.menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 64px;
+}
+
+.menu-overlay-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  background: var(--surface-raised);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: background 0.2s, transform 0.2s;
+}
+.menu-row:hover {
+  background: var(--surface-hover);
+  transform: translateX(4px);
+}
+.menu-row-icon {
+  width: 40px; height: 40px;
+  border-radius: 0.75rem;
+  background: var(--accent-glow);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.menu-row-icon svg { width: 20px; height: 20px; }
+.menu-row-label { flex: 1; }
+.menu-row-arrow {
+  color: var(--ink-faint);
+  font-size: 1.25rem;
+}
+.menu-row-arrow svg { width: 16px; height: 16px; }
+
+.menu-overlay-footer {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.menu-cta {
+  display: block;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  transition: opacity 0.2s;
+}
+.menu-cta:hover { opacity: 0.85; }
+.menu-cta-primary { background: var(--accent); color: #fff; }
+.menu-cta-secondary { background: #2a3a2e; color: #fff; }
+
+[data-theme="dark"] .menu-cta-secondary { background: var(--surface-card); }

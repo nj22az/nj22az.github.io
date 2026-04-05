@@ -1,0 +1,82 @@
+/*
+ * Buttons, logo, footer, animations
+ */
+
+/* ── Buttons ── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--accent); color: #fff;
+  font-size: 0.875rem; font-weight: 700;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transform: translateY(-1px);
+}
+.btn-primary svg { width: 16px; height: 16px; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: var(--ink);
+  font-size: 0.875rem; font-weight: 700;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  border: 2px solid var(--border-hover);
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ── SVG Logo ── */
+.logo-seal {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+.logo-seal:hover { transform: scale(1.05); }
+.logo-seal svg { display: block; }
+
+/* ── Footer ── */
+.site-footer {
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 1.5rem;
+  transition: background 0.3s, border-color 0.3s;
+}
+.footer-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 1rem;
+  font-size: 0.8125rem; color: var(--ink-faint);
+}
+@media (min-width: 640px) { .footer-inner { flex-direction: row; justify-content: space-between; } }
+
+.footer-links { display: flex; align-items: center; gap: 1.5rem; }
+.footer-links a { text-transform: capitalize; transition: color 0.2s; font-weight: 600; }
+.footer-links a:hover { color: var(--accent); }
+
+/* ── Animations ── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Stagger reveals within grids */
+.bento-grid .reveal:nth-child(2) { transition-delay: 0.1s; }
+.bento-grid .reveal:nth-child(3) { transition-delay: 0.2s; }
+.bento-grid .reveal:nth-child(4) { transition-delay: 0.3s; }
+.journal-list .reveal:nth-child(2) { transition-delay: 0.1s; }
+.journal-list .reveal:nth-child(3) { transition-delay: 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

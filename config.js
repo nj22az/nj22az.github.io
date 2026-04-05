@@ -42,6 +42,7 @@ const CONFIG = {
       url: "https://github.com/nj22az",
       icon: "github",
       tags: ["Code", "Open Source", "Projects"],
+      bento: "large",
       featured: true,
     },
     {
@@ -51,6 +52,7 @@ const CONFIG = {
       url: "https://www.linkedin.com/in/nils-johansson-86744583",
       icon: "linkedin",
       tags: ["Career", "Networking", "Engineering"],
+      bento: "wide",
       featured: true,
     },
     {
@@ -60,6 +62,7 @@ const CONFIG = {
       url: "https://www.etsy.com/shop/Colonialclub",
       icon: "store",
       tags: ["Templates", "Digital Products", "Shop"],
+      bento: "normal",
       featured: true,
     },
     {
@@ -69,6 +72,7 @@ const CONFIG = {
       url: "https://theofficeofnils.wordpress.com",
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
+      bento: "normal",
       featured: true,
     },
   ],
@@ -137,5 +141,7 @@ const CONFIG = {
     moon: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z",
     home: "M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z",
     user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
+    leaf: "M12 22V8M12 8C12 8 7 3 2 3c0 5 4 9 10 13M12 8c0 0 5-5 10-5 0 5-4 9-10 13",
+    plus: "M12 5v14M5 12h14",
   },
 };

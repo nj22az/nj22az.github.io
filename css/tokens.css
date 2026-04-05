@@ -1,0 +1,72 @@
+/*
+ * Design Tokens — Warm cream + teal green (c-morinosato style)
+ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 4rem; -webkit-text-size-adjust: 100%; }
+::selection { background: rgba(62, 168, 140, 0.2); color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { border: none; background: none; cursor: pointer; font: inherit; color: inherit; }
+
+/* ── Light theme (default) ── */
+:root,
+[data-theme="light"] {
+  --ink:            #3d3a37;
+  --ink-light:      #6b6560;
+  --ink-faint:      #9b9590;
+  --surface:        #f5f0e8;
+  --surface-raised: #edeae2;
+  --surface-card:   #ffffff;
+  --surface-hover:  #e5e0d6;
+  --surface-mint:   #e8f4ee;
+  --border:         rgba(139, 119, 101, 0.10);
+  --border-hover:   rgba(139, 119, 101, 0.20);
+  --accent:         #3ea88c;
+  --accent-hover:   #35967b;
+  --accent-glow:    rgba(62, 168, 140, 0.10);
+  --divider:        #d4a574;
+  --shadow-card:    0 2px 12px rgba(80, 60, 40, 0.06);
+  --shadow-lift:    0 8px 32px rgba(80, 60, 40, 0.10);
+  --nav-bg:         rgba(245, 240, 232, 0.92);
+  --font-display:   "Nunito", system-ui, -apple-system, sans-serif;
+  --font-body:      "Nunito", system-ui, -apple-system, sans-serif;
+  --max-w:          1120px;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --ink:            #e8e2d8;
+  --ink-light:      #a89e94;
+  --ink-faint:      #7a726a;
+  --surface:        #1a1816;
+  --surface-raised: #222018;
+  --surface-card:   #2a2720;
+  --surface-hover:  #333028;
+  --surface-mint:   #1a2420;
+  --border:         rgba(255, 255, 255, 0.06);
+  --border-hover:   rgba(255, 255, 255, 0.10);
+  --accent:         #5ec4a6;
+  --accent-hover:   #6ed4b6;
+  --accent-glow:    rgba(94, 196, 166, 0.12);
+  --divider:        #8a6b4a;
+  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lift:    0 8px 32px rgba(0, 0, 0, 0.4);
+  --nav-bg:         rgba(26, 24, 22, 0.92);
+}
+
+/* ── Body ── */
+body {
+  font-family: var(--font-body);
+  background: var(--surface);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.container { max-width: var(--max-w); margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }

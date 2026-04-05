@@ -20,17 +20,26 @@ GitHub Pages auto-deploys on push to main.
 
 ## Architecture
 
-Multi-page static portfolio: **The Office of Nils Johansson**. Apple-inspired dark-first design. No frameworks, no build step.
+Multi-page static portfolio: **The Office of Nils Johansson**. Warm organic design inspired by c-morinosato.com — cream backgrounds, teal-green accents, bento grids, full-screen overlay menu. No frameworks, no build step.
 
 ### Core Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Main portal — hero, projects, journal feed, guestbook, about |
-| `blog/index.html` | Blog page — WordPress API with per-article Giscus comments |
+| `index.html` | Main portal — hero, bento projects, journal feed, about |
+| `blog/index.html` | Blog page — WordPress API posts |
 | `config.js` | All site data: projects, author, icons, SVG logo, nav, Giscus config |
 | `shared.js` | Shared nav, footer, theme toggle, Giscus loader — included on every page |
-| `styles.css` | Complete stylesheet with dark/light tokens |
+| `styles.css` | CSS entry point — imports modular files from `css/` |
+| `css/tokens.css` | Design tokens, reset, color palette |
+| `css/nav.css` | Sticky nav, hamburger button, overlay menu |
+| `css/hero.css` | Hero vertical stack layout |
+| `css/sections.css` | Section headers, dividers, labels, decorative blobs |
+| `css/bento.css` | Bento grid layout and project cards |
+| `css/journal.css` | Journal row-style list items |
+| `css/about.css` | About section centered layout |
+| `css/blog.css` | Blog page post cards |
+| `css/buttons.css` | Buttons, logo, footer, animations |
 
 ### Multi-Page Consistency
 
@@ -42,7 +51,7 @@ Every HTML page includes:
 
 ### Theme System
 
-- Dark mode is default (`data-theme="dark"` on `<html>`)
+- Light mode is default (`data-theme="light"` on `<html>`, respects `prefers-color-scheme`)
 - Toggle button in nav switches between dark/light
 - Preference persisted in `localStorage` key `nj-theme`
 - All colors use CSS custom properties in `:root` / `[data-theme="light"]`

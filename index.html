@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,63 +15,60 @@
 </head>
 <body>
 
-  <nav id="site-nav"></nav>
+  <nav id="site-nav" class="site-nav"></nav>
 
   <main>
 
-    <!-- Hero — split layout -->
+    <!-- Hero — vertical stack: text + photo -->
     <section class="hero" id="home">
-      <div class="hero-inner">
-        <div class="hero-content">
-          <div class="hero-logo logo-seal" id="hero-logo"></div>
-          <p class="hero-role" id="hero-role"></p>
-          <h1 class="hero-title" id="hero-title"></h1>
-          <p class="hero-description" id="hero-description"></p>
-          <div class="hero-actions">
-            <a href="#projects" class="btn-primary">
-              View Projects
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="#about" class="btn-secondary">About Me</a>
-          </div>
+      <div class="container">
+        <div class="hero-logo logo-seal" id="hero-logo"></div>
+        <p class="hero-role" id="hero-role"></p>
+        <h1 class="hero-tagline" id="hero-title"></h1>
+        <p class="hero-sub" id="hero-description"></p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">
+            View Projects
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#about" class="btn-secondary">About Me</a>
         </div>
-        <div class="hero-image">
-          <img src="/assets/images/nils-lake-hero.jpg" alt="Field engineering in the field" loading="eager">
-        </div>
+      </div>
+      <div class="hero-photo">
+        <img src="/assets/images/nils-lake-hero.jpg" alt="Field engineering in the field" loading="eager">
       </div>
     </section>
 
-    <!-- Wave divider: hero → projects -->
-    <svg class="wave-divider" viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,20 C200,50 400,0 600,25 C800,50 1000,5 1200,20 L1200,60 L0,60 Z"/>
-    </svg>
+    <!-- Dashed divider -->
+    <hr class="section-divider">
 
-    <!-- Projects -->
-    <section class="section section-alt" id="projects">
+    <!-- Projects — bento grid -->
+    <section class="section" id="projects">
       <div class="container">
         <div class="section-header">
-          <div class="section-label">Projects</div>
+          <div class="section-decor" id="decor-projects"></div>
           <h2>Featured Projects</h2>
+          <div class="section-subtitle">Projects</div>
           <p>Platforms, shops, and profiles where I build, write, and share.</p>
         </div>
-        <div class="card-grid" id="projects-grid"></div>
+        <div class="bento-grid" id="bento-grid"></div>
       </div>
     </section>
 
-    <!-- Wave divider: projects → journal -->
-    <svg class="wave-divider wave-divider-flip" viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,20 C200,50 400,0 600,25 C800,50 1000,5 1200,20 L1200,60 L0,60 Z"/>
-    </svg>
+    <!-- Dashed divider -->
+    <hr class="section-divider">
 
-    <!-- Journal -->
-    <section class="section" id="journal">
-      <div class="container">
+    <!-- Journal — row-style list -->
+    <section class="section section-alt" id="journal">
+      <div class="container" style="position:relative; overflow:hidden;">
+        <div class="decor-blob decor-blob-md decor-blob-tr"></div>
         <div class="section-header">
-          <div class="section-label">Journal</div>
+          <div class="section-decor" id="decor-journal"></div>
           <h2>From the Journal</h2>
+          <div class="section-subtitle">News</div>
           <p>Technical dispatches and reflections from the field.</p>
         </div>
-        <div class="journal-grid" id="journal-grid"></div>
+        <div class="journal-list" id="journal-list"></div>
         <div class="read-all">
           <a href="/blog/">
             Read all posts
@@ -81,17 +78,17 @@
       </div>
     </section>
 
-    <!-- Wave divider: journal → about -->
-    <svg class="wave-divider" viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,25 C150,50 350,0 550,30 C750,55 950,10 1200,25 L1200,60 L0,60 Z"/>
-    </svg>
+    <!-- Dashed divider -->
+    <hr class="section-divider">
 
-    <!-- About -->
-    <section class="section section-alt" id="about">
-      <div class="container">
+    <!-- About — gradient + centered -->
+    <section class="section section-mint" id="about">
+      <div class="container" style="position:relative; overflow:hidden;">
+        <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
+        <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
         <div class="about-layout">
           <div id="about-logo" class="about-logo logo-seal"></div>
-          <div class="section-label">About</div>
+          <div class="section-label-bar">About</div>
           <div class="about-content">
             <h2 id="about-heading">About</h2>
             <p class="about-bio" id="about-bio"></p>
@@ -116,27 +113,36 @@
       /* Hero */
       $("#hero-logo").innerHTML = CONFIG.logo(120);
       $("#hero-role").textContent = CONFIG.author.role;
-      $("#hero-title").textContent = CONFIG.site.title;
+      $("#hero-title").textContent = CONFIG.site.tagline;
       $("#hero-description").textContent = CONFIG.site.description;
 
-      /* Projects grid — all external links */
-      $("#projects-grid").innerHTML = CONFIG.projects.map(function (p) {
+      /* Decorative leaf icons above section headers */
+      var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
+      document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
+
+      /* Bento grid — project cards */
+      $("#bento-grid").innerHTML = CONFIG.projects.map(function (p) {
+        var bentoClass = p.bento === "large" ? "bento-large" :
+                         p.bento === "wide" ? "bento-wide" :
+                         p.bento === "tall" ? "bento-tall" : "";
         var tags = p.tags.map(function (t) {
           return '<span class="tag">' + t + '</span>';
         }).join("");
 
-        return '<a href="' + p.url + '" target="_blank" rel="noopener" class="card">' +
-          '<div class="card-header">' +
-            '<div class="card-icon">' + siteIcon(p.icon) + '</div>' +
-            '<div class="card-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
+        return '<a href="' + p.url + '" target="_blank" rel="noopener" class="bento-card ' + bentoClass + '">' +
+          '<div class="bento-card-top">' +
+            '<div class="bento-icon">' + siteIcon(p.icon) + '</div>' +
+            '<div class="bento-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
           '</div>' +
-          '<h3>' + p.title + '</h3>' +
-          '<p>' + p.description + '</p>' +
-          '<div class="card-tags">' + tags + '</div>' +
+          '<div>' +
+            '<h3>' + p.title + '</h3>' +
+            '<p>' + p.description + '</p>' +
+            '<div class="card-tags">' + tags + '</div>' +
+          '</div>' +
         '</a>';
       }).join("");
 
-      /* Journal posts (WordPress API) */
+      /* Journal posts (WordPress API) — row-style list */
       var API = CONFIG.wordpressApi + "?_embed&per_page=3";
 
       function strip(html) {
@@ -145,35 +151,33 @@
         return el.textContent || "";
       }
       function fmtDate(d) {
-        return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(d));
+        return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d));
       }
 
       fetch(API)
         .then(function (r) { return r.json(); })
         .then(function (posts) {
           if (!posts.length) {
-            $("#journal-grid").innerHTML = '<p class="journal-empty">New posts coming soon.</p>';
+            $("#journal-list").innerHTML = '<p class="journal-empty">New posts coming soon.</p>';
             return;
           }
-          $("#journal-grid").innerHTML = posts.map(function (post) {
+          $("#journal-list").innerHTML = posts.map(function (post) {
             var title = strip(post.title.rendered) || "Untitled";
-            var exc = strip(post.excerpt.rendered).trim();
-            var summary = exc.length > 140 ? exc.slice(0, 137) + "\u2026" : exc;
-            return '<a href="' + post.link + '" target="_blank" rel="noopener" class="journal-card">' +
-              '<time>' + fmtDate(post.date) + '</time>' +
+            return '<a href="' + post.link + '" target="_blank" rel="noopener" class="journal-item reveal">' +
+              '<div class="journal-item-meta">' +
+                '<span class="journal-tag">Journal</span>' +
+                '<time>' + fmtDate(post.date) + '</time>' +
+              '</div>' +
               '<h3>' + title + '</h3>' +
-              '<p>' + (summary || "Read the full article.") + '</p>' +
             '</a>';
           }).join("");
 
-          /* Reveal journal cards after they load */
-          document.querySelectorAll(".journal-card").forEach(function (el) {
-            el.classList.add("reveal");
+          document.querySelectorAll(".journal-item").forEach(function (el) {
             obs.observe(el);
           });
         })
         .catch(function () {
-          $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
+          $("#journal-list").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
         });
 
       /* About */
@@ -186,7 +190,7 @@
       }).join("");
 
       /* Staggered scroll-triggered reveals */
-      var items = document.querySelectorAll(".card, .section-header, .about-layout");
+      var items = document.querySelectorAll(".bento-card, .section-header, .about-layout, .hero-photo");
       items.forEach(function (el) { el.classList.add("reveal"); });
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {

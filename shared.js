@@ -1,20 +1,10 @@
 /**
- * shared.js — Shared navigation, footer, and theme toggle.
+ * shared.js — Navigation, footer, theme toggle, smooth scrolling.
  * Include config.js before this file on every page.
- *
- * Usage:
- *   <script src="/config.js"></script>
- *   <script src="/shared.js"></script>
- *
- * Expects these elements in the page:
- *   <nav id="site-nav"></nav>
- *   <footer id="site-footer"></footer>
  */
 
 (function () {
   "use strict";
-
-  /* ── Helpers ── */
 
   function $(sel) { return document.querySelector(sel); }
 
@@ -27,145 +17,131 @@
       '<path d="' + d + '"/></svg>';
   }
 
-  /* ══════════════════════════════════════════
-     THEME: dark by default, toggle persisted
-     ══════════════════════════════════════════ */
+  /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
 
-  /** Read stored preference or default to "dark" */
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
     if (stored === "light" || stored === "dark") return stored;
-    return "dark";
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+    return "light";
   }
 
-  /** Apply theme to <html> */
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
     updateToggleIcon(theme);
   }
 
-  /** Swap the sun/moon icon inside the toggle button */
   function updateToggleIcon(theme) {
     var btn = $("#theme-toggle");
     if (!btn) return;
-    // Sun icon for dark mode (click to go light), moon for light mode (click to go dark)
     btn.innerHTML = theme === "dark" ? icon("sun") : icon("moon");
     btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
   }
 
-  // Apply immediately to prevent flash
   applyTheme(getTheme());
 
-  /* ══════════════════════════════════════════
-     NAVIGATION (injected into #site-nav)
-     ══════════════════════════════════════════ */
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+      if (!localStorage.getItem(THEME_KEY)) {
+        applyTheme(e.matches ? "dark" : "light");
+      }
+    });
+  }
+
+  /* ── Navigation — green circle hamburger + overlay ── */
+
+  var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user" };
 
   function buildNav() {
     var nav = $("#site-nav");
     if (!nav) return;
     nav.classList.add("site-nav");
 
-    // Determine which nav links to show based on current page
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
-    var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user" };
-    var links = CONFIG.navigation.map(function (n) {
-      var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="nav-link">' +
-        icon(navIcons[n.id] || "") +
-        '<span>' + n.label + '</span></a>';
-    });
 
     nav.innerHTML =
       '<div class="nav-inner">' +
         '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
-        '<div class="nav-links">' + links.join("") + '</div>' +
         '<div class="nav-actions">' +
           '<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">' +
             icon(getTheme() === "dark" ? "sun" : "moon") +
           '</button>' +
-          '<button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Menu">' +
-            '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">' +
-              '<path id="menu-icon-path" d="' + CONFIG.icons.menu + '"/>' +
-            '</svg>' +
+          '<button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu">' +
+            icon("menu") +
           '</button>' +
         '</div>' +
       '</div>';
 
-    // Mobile dropdown (appended after nav)
-    var mobileMenu = document.createElement("div");
-    mobileMenu.className = "mobile-menu";
-    mobileMenu.id = "mobile-menu";
-    mobileMenu.innerHTML = CONFIG.navigation.map(function (n) {
+    // Full-screen overlay menu
+    var overlay = document.createElement("div");
+    overlay.className = "menu-overlay";
+    overlay.id = "menu-overlay";
+
+    var menuRows = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="mobile-nav-link">' +
-        icon(navIcons[n.id] || "") +
-        '<span>' + n.label + '</span></a>';
+      var iconName = navIcons[n.id] || "arrow";
+      return '<a href="' + href + '" class="menu-row">' +
+        '<span class="menu-row-icon">' + icon(iconName) + '</span>' +
+        '<span class="menu-row-label">' + n.label + '</span>' +
+        '<span class="menu-row-arrow">' + icon("arrow") + '</span>' +
+      '</a>';
     }).join("");
-    nav.parentNode.insertBefore(mobileMenu, nav.nextSibling);
 
-    /* ── Theme toggle ── */
+    var socialLinks = Object.keys(CONFIG.author.social).map(function (key) {
+      return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="menu-row">' +
+        '<span class="menu-row-icon">' + icon(key) + '</span>' +
+        '<span class="menu-row-label">' + key.charAt(0).toUpperCase() + key.slice(1) + '</span>' +
+        '<span class="menu-row-arrow">' + icon("external") + '</span>' +
+      '</a>';
+    }).join("");
+
+    overlay.innerHTML =
+      '<div class="menu-overlay-header">' +
+        '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
+        '<button id="menu-close" class="nav-hamburger" aria-label="Close menu">' +
+          icon("close") +
+        '</button>' +
+      '</div>' +
+      '<div class="menu-overlay-body">' +
+        menuRows +
+        '<hr class="section-divider" style="margin:0.5rem 0;">' +
+        socialLinks +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var hamburger = $("#nav-hamburger");
+    var closeBtn = overlay.querySelector("#menu-close");
+
+    function openMenu() {
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMenu() {
+      overlay.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    hamburger.addEventListener("click", openMenu);
+    closeBtn.addEventListener("click", closeMenu);
+
+    overlay.querySelectorAll(".menu-row").forEach(function (link) {
+      link.addEventListener("click", closeMenu);
+    });
+
     $("#theme-toggle").addEventListener("click", function () {
-      var next = getTheme() === "dark" ? "light" : "dark";
-      applyTheme(next);
+      applyTheme(getTheme() === "dark" ? "light" : "dark");
     });
 
-    /* ── Mobile menu toggle ── */
-    var menuBtn = $("#mobile-menu-btn");
-    var menuPath = $("#menu-icon-path");
-    var menuOpen = false;
-
-    menuBtn.addEventListener("click", function () {
-      menuOpen = !menuOpen;
-      mobileMenu.classList.toggle("open", menuOpen);
-      menuPath.setAttribute("d", menuOpen ? CONFIG.icons.close : CONFIG.icons.menu);
-    });
-
-    mobileMenu.querySelectorAll(".mobile-nav-link").forEach(function (link) {
-      link.addEventListener("click", function () {
-        menuOpen = false;
-        mobileMenu.classList.remove("open");
-        menuPath.setAttribute("d", CONFIG.icons.menu);
-      });
-    });
-
-    /* ── Scroll border effect ── */
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);
     }, { passive: true });
-
-    /* ── Active section highlighting (homepage only) ── */
-    var isHomePage = (location.pathname === "/" || location.pathname === "/index.html");
-    if (isHomePage) {
-      var sections = CONFIG.navigation.map(function (n) {
-        return document.getElementById(n.id);
-      }).filter(Boolean);
-
-      var navLinks = nav.querySelectorAll(".nav-link");
-      var mobileLinks = document.querySelectorAll(".mobile-nav-link");
-
-      var sectionObs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          var id = entry.target.id;
-          navLinks.forEach(function (link) {
-            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
-          });
-          mobileLinks.forEach(function (link) {
-            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
-          });
-        });
-      }, { threshold: 0.3, rootMargin: "-56px 0px 0px 0px" });
-
-      sections.forEach(function (s) { sectionObs.observe(s); });
-    }
   }
 
-  /* ══════════════════════════════════════════
-     FOOTER (injected into #site-footer)
-     ══════════════════════════════════════════ */
+  /* ── Footer ── */
 
   function buildFooter() {
     var footer = $("#site-footer");
@@ -182,9 +158,7 @@
       '</div>';
   }
 
-  /* ══════════════════════════════════════════
-     SMOOTH SCROLLING (for anchor links)
-     ══════════════════════════════════════════ */
+  /* ── Smooth Scrolling ── */
 
   function initSmoothScroll() {
     document.addEventListener("click", function (e) {
@@ -199,9 +173,7 @@
     });
   }
 
-  /* ══════════════════════════════════════════
-     INIT — run when DOM is ready
-     ══════════════════════════════════════════ */
+  /* ── Init ── */
 
   function init() {
     buildNav();
@@ -215,7 +187,6 @@
     init();
   }
 
-  /* ── Expose icon helper for page-specific scripts ── */
   window.siteIcon = icon;
 
 })();
