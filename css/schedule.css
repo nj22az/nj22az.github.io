@@ -170,19 +170,6 @@
   font-weight: 800;
 }
 
-/* ── Holiday column ── */
-.schedule-holiday {
-  position: relative;
-}
-.schedule-holiday-dot {
-  display: inline-block;
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #d35f5f;
-  margin-left: 3px;
-  vertical-align: super;
-}
-
 /* ── Available / unavailable / holiday indicators ── */
 .slot-on {
   display: inline-block;

@@ -196,7 +196,7 @@
               if (holidayMap[i]) classes.push("schedule-holiday");
               var cls = classes.length ? ' class="' + classes.join(" ") + '"' : '';
               var shorts = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-              var label = holidayMap[i] ? shorts[i] + '<span class="schedule-holiday-dot" title="' + holidayMap[i] + '"></span>' : shorts[i];
+              var label = shorts[i];
               return '<th' + cls + '>' + label + '</th>';
             }).join("");
 
