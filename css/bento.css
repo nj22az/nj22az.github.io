@@ -56,8 +56,35 @@
   color: var(--accent);
   transition: background 0.2s;
 }
-.bento-card:hover .bento-icon { background: rgba(62, 168, 140, 0.18); }
-.bento-icon svg { width: 24px; height: 24px; }
+.bento-icon svg { width: 24px; height: 24px; stroke-width: 2; }
+
+/* Brand icon colors */
+.bento-icon[data-icon="github"] {
+  background: #24292e;
+  color: #fff;
+}
+.bento-card:hover .bento-icon[data-icon="github"] { background: #1a1e22; }
+
+.bento-icon[data-icon="linkedin"] {
+  background: rgba(10, 102, 194, 0.12);
+  color: #0a66c2;
+  border: 1.5px solid rgba(10, 102, 194, 0.2);
+}
+.bento-card:hover .bento-icon[data-icon="linkedin"] { background: rgba(10, 102, 194, 0.2); }
+
+.bento-icon[data-icon="store"] {
+  background: rgba(241, 165, 0, 0.12);
+  color: #f1a500;
+  border: 1.5px solid rgba(241, 165, 0, 0.2);
+}
+.bento-card:hover .bento-icon[data-icon="store"] { background: rgba(241, 165, 0, 0.2); }
+
+.bento-icon[data-icon="wordpress"] {
+  background: rgba(33, 117, 56, 0.12);
+  color: #217538;
+  border: 1.5px solid rgba(33, 117, 56, 0.2);
+}
+.bento-card:hover .bento-icon[data-icon="wordpress"] { background: rgba(33, 117, 56, 0.2); }
 
 .bento-arrow {
   color: var(--ink-faint);
