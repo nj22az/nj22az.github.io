@@ -60,6 +60,34 @@
   letter-spacing: 0;
 }
 
+/* Week header */
+.schedule-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+.schedule-week {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.schedule-year {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+/* Today column highlight */
+.schedule-today {
+  background: var(--accent-glow);
+}
+.schedule-table th.schedule-today {
+  color: var(--accent);
+}
+
 .schedule-note {
   margin-top: 1.25rem;
   font-size: 0.75rem;

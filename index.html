@@ -153,17 +153,38 @@
       /* Schedule table */
       if (CONFIG.author.schedule) {
         var sched = CONFIG.author.schedule;
+
+        // ISO week number
+        function getWeekNumber(d) {
+          var date = new Date(d.getTime());
+          date.setHours(0, 0, 0, 0);
+          date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+          var week1 = new Date(date.getFullYear(), 0, 4);
+          return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        }
+        var now = new Date();
+        var weekNum = getWeekNumber(now);
+        var currentDay = (now.getDay() + 6) % 7; // 0=Mon, 6=Sun
+
         var headCells = '<th>' + sched.title + '</th>' +
-          sched.days.map(function (d) { return '<th>' + d + '</th>'; }).join("");
+          sched.days.map(function (d, i) {
+            var cls = i === currentDay ? ' class="schedule-today"' : '';
+            return '<th' + cls + '>' + d + '</th>';
+          }).join("");
         var bodyRows = sched.rows.map(function (row) {
           var cells = '<td>' + row.time + '</td>' +
-            row.slots.map(function (on) {
-              return '<td>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off">\u2014</span>') + '</td>';
+            row.slots.map(function (on, i) {
+              var cls = i === currentDay ? ' class="schedule-today"' : '';
+              return '<td' + cls + '>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off">\u2014</span>') + '</td>';
             }).join("");
           return '<tr>' + cells + '</tr>';
         }).join("");
         $("#schedule-widget").innerHTML =
           '<div class="schedule-frame">' +
+            '<div class="schedule-header">' +
+              '<span class="schedule-week">Week ' + weekNum + '</span>' +
+              '<span class="schedule-year">' + now.getFullYear() + '</span>' +
+            '</div>' +
             '<table class="schedule-table"><thead><tr>' + headCells + '</tr></thead>' +
             '<tbody>' + bodyRows + '</tbody></table>' +
             '<p class="schedule-note">' + sched.note + '</p>' +
