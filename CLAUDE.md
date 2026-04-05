@@ -5,10 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Local Development
+Open `index.html` directly in a browser, or use any static server:
 ```bash
-jekyll serve --livereload
+npx serve .
+# or
+python3 -m http.server 8000
 ```
-Builds the site into `_site/` and serves it at `http://127.0.0.1:4000` with live reload.
 
 ### Publishing
 ```bash
@@ -18,143 +20,85 @@ git push origin main
 ```
 GitHub Pages rebuilds automatically on push to main branch.
 
-### Stop Development Server
-```bash
-# Standard stop
-Ctrl+C
-
-# Force stop if detached
-pkill -f jekyll
-```
-
 ## Architecture Overview
 
-This is a hybrid Jekyll + React blog with an Apple-inspired glass aesthetic. The architecture combines static generation with a dynamic React frontend:
+This is a static portfolio site called **The Office of Nils Johansson**. Apple-inspired flat design with Tailwind CSS and vanilla JavaScript. No build step required.
 
-### Core Components
+### Core Files
 
-**Jekyll Backend (Static Generation)**
-- Processes Markdown posts in `_posts/` into HTML and JSON feeds
-- Generates `posts.json` consumed by React frontend
-- Handles about page content via `about.md` → `about.json` transformation
-- Uses Minima theme with custom Sass overrides in `assets/main.scss`
+| File | Purpose |
+|------|---------|
+| `index.html` | Main portal — hero, projects grid, journal feed, about section, footer |
+| `config.js` | All site data: projects, author info, icons, navigation, strings |
+| `styles.css` | Custom styles extending Tailwind (dark mode, animations, glassmorphism) |
+| `blog/index.html` | Standalone blog page pulling posts from WordPress API |
 
-**React Frontend (Dynamic UI)**
-- Single-page application loaded via `index.html`
-- Main application logic in `main.js` (vanilla React via CDN)
-- Consumes `posts.json`, `downloads.json`, and `about.json` for content
-- Implements glass morphism design with backdrop filters and translucent cards
-- Responsive navigation: sidebar on desktop, hamburger menu + bottom nav on mobile
-- Pages: Home (infinite scroll feed), Journal (archive grid), Downloads, About (with parallax scrolling)
+### Design System
 
-**Styling System**
-- Primary styles in `styles.css` (Apple-inspired glass aesthetic)
-- Jekyll Sass compilation via `assets/css/style.scss` entry point
-- Modular Sass architecture in `_sass/` directory:
-  - `base.scss` - foundational styles and reset
-  - `layout.scss` - grid and layout utilities
-  - `components.scss` - reusable component styles
-  - `context-panel.scss` - specific panel styling
-  - `typography.scss` - font and text styling
-  - `utilities.scss` - helper classes
-- Responsive design with mobile-first approach
-- Dark mode support via CSS `prefers-color-scheme`
+- **Framework**: Tailwind CSS via CDN (no build step)
+- **Typography**: Nunito (rounded gothic display) + system-ui (body)
+- **Icons**: Inline SVG paths in `config.js` (Lucide/SF Symbols style, 24x24 viewBox)
+- **Dark mode**: Automatic via `prefers-color-scheme` in `styles.css`
+- **Animations**: Scroll-triggered fade-up via IntersectionObserver
+- **Navigation**: Fixed glassmorphism bar, responsive hamburger on mobile
 
 ### Data Flow
 
-1. Jekyll processes Markdown → generates JSON feeds
-2. React app fetches JSON data on load
-3. Enhanced post objects created with reading time, excerpts, and categorization
-4. Dynamic rendering based on current view state (posts list, post detail, downloads, about)
+1. `config.js` exports a `CONFIG` object with all site data
+2. `index.html` inline script reads CONFIG and renders DOM
+3. Journal section fetches latest 3 posts from WordPress API at runtime
+4. Projects link to sub-apps (`/hotel-assessment/`) and downloadable assets
 
-### Content Management
+### Sub-Projects
 
-**Blog Posts** (`_posts/YYYY-MM-DD-title.md`)
-```yaml
----
-layout: post
-title: "Post Title"
-date: YYYY-MM-DD
-categories: [Category]
-tags: [tag1, tag2]
-content_type: "Type Label"
-cover_icon: icon_id
-thumbnail: /assets/images/thumbnail.jpg
----
-```
+- **`hotel-assessment/`** — Separate React + Vite + TypeScript app for hotel reviews (has own build pipeline)
+- **`_posts/`** — Markdown blog post archive (content source, not actively processed)
 
-**Icons** - Defined in `_data/icons.yml` with Lucide icon IDs organized by category:
-- Writing & Content: `notebook-pen`, `text-quote`, `pencil`, `newspaper`
-- Technology: `code`, `terminal`, `laptop`, `server`
-- Travel & Location: `globe`, `map-pin`, `compass`, `plane`
-- Documentation: `file-text`, `clipboard`, `folder`, `book`
-- Communication: `message-circle`, `mail`, `microphone`, `headphones`
-- Tools & Utilities: `wrench`, `settings`, `shield`, `key`
-- Visual Content: `image`, `video`, `camera`, `brush`
-- General: `home`, `alert-circle`, `badge-check`, `ruler`
-
-Full list available in `_data/icons.yml` or via browser console as `window.blogIconCatalog`
-
-**Downloads** - Managed via `downloads.json` with assets in `assets/downloads/`
-
-## Key Files & Directories
+## Key Directories
 
 ```
-_posts/                 # Markdown blog posts (Jekyll processes these)
-_layouts/               # Jekyll layout templates
-_includes/              # Reusable Jekyll template partials
-_data/                  # Site data files (icons.yml, ui.yml)
-_sass/                  # Modular Sass stylesheets
-_plugins/               # Custom Jekyll plugins (if any)
-assets/downloads/       # Downloadable files
-assets/images/         # Static images
-assets/css/style.scss  # Sass entry point for Jekyll compilation
-main.js                # React application entry point
-styles.css             # Primary CSS (glass aesthetic)
-index.html             # SPA entry point, loads React
-downloads.json         # Download metadata for React app
-posts.json             # Auto-generated by Jekyll (do not edit manually)
-about.json             # Auto-generated from about.md
+index.html              # Main portal page
+config.js               # Centralized site configuration
+styles.css              # Custom CSS (dark mode, animations)
+blog/index.html         # WordPress-powered blog page
+hotel-assessment/       # React sub-app (separate build)
+_posts/                 # Blog post markdown archive
+assets/
+  downloads/            # Downloadable files (PDF, TXT)
+  images/               # Profile photos, icons, post images
+  previews/             # Download preview thumbnails
+  video/                # Video assets for blog posts
 ```
+
+## How to Add a New Project
+
+1. Open `config.js`
+2. Add an entry to the `CONFIG.projects` array:
+   ```js
+   {
+     title: "Project Name",
+     description: "One-line description.",
+     url: "/path/or/url",
+     icon: "iconName",       // Must exist in CONFIG.icons
+     tags: ["Tag1", "Tag2"],
+     featured: true,
+   }
+   ```
+3. If the project needs a new icon, add an SVG path string to `CONFIG.icons`
+
+## How to Add a New Icon
+
+Add an entry to `CONFIG.icons` in `config.js`:
+```js
+iconName: "M... SVG path data ...",
+```
+Use 24x24 viewBox, stroke-based (no fill). Match Lucide/SF Symbols style.
 
 ## Development Notes
 
-- Ruby 3.4.6+ required with Jekyll 4.4.1 and plugins (jekyll-feed, jekyll-seo-tag, jekyll-sitemap)
-- No package.json - uses Jekyll for build, React via CDN
-- Jekyll's `_site/` and `.jekyll-cache/` are git-ignored
-- GitHub Pages handles deployment automatically
-- Post images should go in `assets/images/posts/<post-slug>/`
-- Use site-relative URLs (`/assets/...`) for cross-environment compatibility
-- Jekyll processes Sass automatically: `_sass/` files compiled via `assets/css/style.scss`
-
-## Content Guidelines
-
-- Posts use `YYYY-MM-DD-slug.md` naming convention
-- Reading time calculated automatically (200 words/minute)
-- Excerpts auto-generated from content if not provided in front matter
-- Cover icons must match IDs from `_data/icons.yml` (uses Lucide icon system)
-- Tags and filtering fully implemented in React frontend
-- Featured posts appear prominently on home page when `featured: true` is set
-
-## React Component Structure
-
-Key components in `main.js`:
-- `App` - Main application shell with page routing and state management
-- `PodcastSidebar` - Desktop sidebar navigation (Apple Podcasts style)
-- `MobileHeader` - Mobile hamburger menu and header
-- `BottomNavigation` - Mobile bottom navigation bar
-- `InfiniteScrollFeed` - Home page with infinite scroll
-- `JournalArchive` - Blog archive with sorting controls
-- `PostDetailView` - Individual post view
-- `AboutPageWithScroll` - About page with parallax effects
-- `DownloadsPage` - Downloads listing with categorization
-- `FilterMenu` - Search and filter controls for posts
-- `ShareBar` - Social sharing and link copying
-- `MonoIcon` - Icon wrapper component for Lucide icons
-
-Keyboard shortcuts:
-- `Cmd/Ctrl + K` - Focus search
-- `Cmd/Ctrl + J` - Navigate to Journal
-- `Cmd/Ctrl + D` - Navigate to Downloads
-- `Cmd/Ctrl + H` - Navigate to Home
-- `Cmd/Ctrl + ↑` - Scroll to top
+- No package.json, no build step — pure static HTML/CSS/JS
+- `.nojekyll` file tells GitHub Pages to skip Jekyll processing
+- Tailwind loaded via CDN (`cdn.tailwindcss.com`) — config is inline in `index.html`
+- Dark mode handled entirely in CSS `@media (prefers-color-scheme: dark)`
+- Reduced motion respected via `prefers-reduced-motion`
+- All external links open in new tab with `rel="noopener"`

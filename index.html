@@ -1,142 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Office of Nils Johansson</title>
-<script src="https://unpkg.com/feather-icons"></script>
-<style>
-:root {
-  --background: #f7f7f7;
-  --text-primary: #1c1c1e;
-  --accent: #007aff;
-  --about-color: #34c759;
-  --blog-color: #007aff;
-  --downloads-color: #ff9500;
-  --disabled: #c7c7cc;
-  --card-bg: #ffffff;
-  --border: #e0e0e0;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Office of Nils Johansson</title>
+  <meta name="description" content="A digital hub for field engineering projects, technical writing, and tools built from real-world deployments.">
+  <meta name="author" content="Nils Johansson">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" href="/assets/images/apple-touch-icon.png">
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  background-color: var(--background);
-  margin: 0;
-  padding: 0;
-  color: var(--text-primary);
-}
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"HGMaruGothicMPRO"', '"Nunito"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            body: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            ink: { DEFAULT: '#1d1d1f', light: '#6e6e73', faint: '#86868b' },
+            surface: { DEFAULT: '#fbfbfd', card: '#ffffff', hover: '#f5f5f7' },
+            accent: { DEFAULT: '#0071e3', hover: '#0077ed' },
+          },
+          maxWidth: {
+            site: '1120px',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out both',
+            'fade-up': 'fadeUp 0.7s ease-out both',
+            'slide-in': 'slideIn 0.5s ease-out both',
+          },
+          keyframes: {
+            fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+            fadeUp: { from: { opacity: '0', transform: 'translateY(24px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+            slideIn: { from: { opacity: '0', transform: 'translateX(-12px)' }, to: { opacity: '1', transform: 'translateX(0)' } },
+          },
+        },
+      },
+    };
+  </script>
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 20px 100px;
-  text-align: center;
-}
+  <!-- Google Fonts: Nunito (rounded gothic sans-serif fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--accent);
-}
-
-.tagline {
-  font-size: 1.2rem;
-  margin-bottom: 3rem;
-  color: var(--text-primary);
-}
-
-.sections {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-}
-
-.section-card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  width: 280px;
-  box-sizing: border-box;
-  text-align: center;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.section-card.active {
-  opacity: 1;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.section-card .icon {
-  margin-bottom: 1rem;
-}
-
-.section-card.about .icon svg {
-  stroke: var(--about-color);
-}
-
-.section-card.blog .icon svg {
-  stroke: var(--blog-color);
-}
-
-.section-card.downloads .icon svg {
-  stroke: var(--downloads-color);
-}
-
-.section-card h2 {
-  margin: 0.5rem 0;
-  font-size: 1.3rem;
-}
-
-.section-card p {
-  font-size: 0.95rem;
-  color: var(--text-primary);
-}
-
-footer {
-  margin-top: 5rem;
-  font-size: 0.9rem;
-  color: var(--disabled);
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 60px 20px 80px;
-  }
-  .section-card {
-    width: 100%;
-  }
-}
-</style>
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-<div class="container">
-  <h1>The Office of Nils Johansson</h1>
-  <p class="tagline">We're working hard on our new website. Check back soon for updates.</p>
-  <div class="sections">
-    <div class="section-card about">
-      <div class="icon"><i data-feather="user"></i></div>
-      <h2>About Me</h2>
-      <p>Learn about my journey and passions.</p>
+
+<body class="bg-surface font-body text-ink antialiased">
+
+  <!-- ─── Navigation ─── -->
+  <nav id="site-nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-surface/80 backdrop-blur-xl border-b border-transparent">
+    <div class="max-w-site mx-auto px-6 h-12 flex items-center justify-between">
+      <a href="#" class="font-display font-bold text-sm tracking-tight text-ink hover:text-accent transition-colors" id="nav-brand"></a>
+      <!-- Desktop links -->
+      <div class="hidden sm:flex items-center gap-8" id="nav-links"></div>
+      <!-- Mobile menu button -->
+      <button class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-hover transition-colors" id="mobile-menu-btn" aria-label="Menu">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path id="menu-icon-path" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
     </div>
-    <a class="section-card blog active" href="https://theofficeofnils.wordpress.com">
-      <div class="icon"><i data-feather="book-open"></i></div>
-      <h2>Blog</h2>
-      <p>Read posts on engineering, travel & culture.</p>
-    </a>
-    <div class="section-card downloads">
-      <div class="icon"><i data-feather="download"></i></div>
-      <h2>Downloads</h2>
-      <p>Get digital resources & products.</p>
+    <!-- Mobile dropdown -->
+    <div class="sm:hidden hidden border-t border-black/5 bg-surface/95 backdrop-blur-xl" id="mobile-menu">
+      <div class="px-6 py-4 flex flex-col gap-1" id="mobile-nav-links"></div>
     </div>
-  </div>
-  <footer>© 2025 Nils Johansson</footer>
-</div>
-<script>
-feather.replace();
-</script>
+  </nav>
+
+  <main>
+
+    <!-- ─── Hero ─── -->
+    <section id="home" class="pt-32 pb-20 sm:pt-44 sm:pb-28 px-6">
+      <div class="max-w-site mx-auto text-center">
+        <p class="text-ink-faint text-xs font-semibold uppercase tracking-widest mb-6 animate-fade-in" id="hero-role"></p>
+        <h1 class="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight mb-6 animate-fade-up" id="hero-title"></h1>
+        <p class="text-ink-light text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10 animate-fade-up" style="animation-delay:0.15s" id="hero-description"></p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay:0.3s">
+          <a href="#projects" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-7 py-3 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-accent/25 hover:-translate-y-0.5">
+            View Projects
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#about" class="inline-flex items-center gap-2 text-accent hover:text-accent-hover text-sm font-semibold px-7 py-3 rounded-full border border-accent/20 hover:border-accent/40 transition-all duration-200 hover:-translate-y-0.5">
+            About Me
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Projects ─── -->
+    <section id="projects" class="py-20 sm:py-28 px-6">
+      <div class="max-w-site mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">Featured Projects</h2>
+          <p class="text-ink-light text-base sm:text-lg max-w-lg mx-auto">Tools, writing, and resources built from real-world engineering deployments.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-6" id="projects-grid"></div>
+      </div>
+    </section>
+
+    <!-- ─── Journal ─── -->
+    <section id="journal" class="py-20 sm:py-28 px-6 bg-surface-hover/50">
+      <div class="max-w-site mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">From the Journal</h2>
+          <p class="text-ink-light text-base sm:text-lg max-w-lg mx-auto">Technical dispatches and reflections from the field.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="journal-grid"></div>
+        <div class="text-center mt-12">
+          <a href="/blog/" class="inline-flex items-center gap-2 text-accent hover:text-accent-hover text-sm font-semibold transition-colors">
+            Read all posts
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── About ─── -->
+    <section id="about" class="py-20 sm:py-28 px-6">
+      <div class="max-w-site mx-auto">
+        <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-10 sm:gap-16">
+          <img
+            id="about-photo"
+            alt="Nils Johansson"
+            class="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl object-cover shadow-lg flex-shrink-0"
+            loading="lazy"
+          >
+          <div>
+            <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">About</h2>
+            <p class="text-ink-light text-base sm:text-lg leading-relaxed mb-6" id="about-bio"></p>
+            <div class="flex items-center gap-4" id="social-links"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── Footer ─── -->
+  <footer class="border-t border-black/5 py-8 px-6">
+    <div class="max-w-site mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-faint">
+      <span id="footer-copyright"></span>
+      <div class="flex items-center gap-6" id="footer-links"></div>
+    </div>
+  </footer>
+
+  <!-- ─── Scripts ─── -->
+  <script src="/config.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      /* ── Helpers ── */
+
+      function icon(name, cls) {
+        const d = CONFIG.icons[name];
+        if (!d) return "";
+        return `<svg class="${cls || "w-6 h-6"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+      }
+
+      function $(sel) { return document.querySelector(sel); }
+
+      /* ── Populate hero ── */
+
+      $("#hero-role").textContent = CONFIG.author.role;
+      $("#hero-title").textContent = CONFIG.site.title;
+      $("#hero-description").textContent = CONFIG.site.description;
+
+      /* ── Navigation ── */
+
+      $("#nav-brand").textContent = CONFIG.author.name;
+
+      const navLinksHTML = CONFIG.navigation
+        .map(n => `<a href="#${n.id}" class="text-xs text-ink-light hover:text-ink transition-colors">${n.label}</a>`)
+        .join("");
+      $("#nav-links").innerHTML = navLinksHTML;
+
+      const mobileLinksHTML = CONFIG.navigation
+        .map(n => `<a href="#${n.id}" class="block text-sm text-ink-light hover:text-ink py-2 transition-colors mobile-nav-link">${n.label}</a>`)
+        .join("");
+      $("#mobile-nav-links").innerHTML = mobileLinksHTML;
+
+      /* ── Mobile menu toggle ── */
+
+      const menuBtn = $("#mobile-menu-btn");
+      const mobileMenu = $("#mobile-menu");
+      const menuIconPath = $("#menu-icon-path");
+      let menuOpen = false;
+
+      menuBtn.addEventListener("click", function () {
+        menuOpen = !menuOpen;
+        mobileMenu.classList.toggle("hidden", !menuOpen);
+        menuIconPath.setAttribute("d", menuOpen ? CONFIG.icons.close : CONFIG.icons.menu);
+      });
+
+      document.querySelectorAll(".mobile-nav-link").forEach(function (link) {
+        link.addEventListener("click", function () {
+          menuOpen = false;
+          mobileMenu.classList.add("hidden");
+          menuIconPath.setAttribute("d", CONFIG.icons.menu);
+        });
+      });
+
+      /* ── Nav scroll effect ── */
+
+      const nav = $("#site-nav");
+      window.addEventListener("scroll", function () {
+        if (window.scrollY > 20) {
+          nav.classList.add("border-black/5", "shadow-sm");
+          nav.classList.remove("border-transparent");
+        } else {
+          nav.classList.remove("border-black/5", "shadow-sm");
+          nav.classList.add("border-transparent");
+        }
+      }, { passive: true });
+
+      /* ── Projects grid ── */
+
+      const projectsHTML = CONFIG.projects.map(function (p) {
+        const isExternal = p.url.startsWith("http");
+        const isDownload = p.url.endsWith(".pdf") || p.url.endsWith(".txt");
+        const target = isExternal ? ' target="_blank" rel="noopener"' : "";
+        const download = isDownload ? " download" : "";
+        const tagHTML = p.tags.map(function (t) {
+          return '<span class="text-[11px] font-medium text-ink-faint bg-surface-hover rounded-full px-2.5 py-0.5">' + t + "</span>";
+        }).join("");
+
+        return '<a href="' + p.url + '"' + target + download + ' class="group block bg-surface-card rounded-2xl border border-black/[0.04] p-7 sm:p-8 transition-all duration-300 hover:shadow-lg hover:shadow-black/[0.06] hover:-translate-y-1">' +
+          '<div class="flex items-start justify-between mb-5">' +
+            '<div class="w-11 h-11 rounded-xl bg-accent/[0.07] flex items-center justify-center text-accent">' +
+              icon(p.icon, "w-5 h-5") +
+            "</div>" +
+            '<svg class="w-4 h-4 text-ink-faint opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
+          "</div>" +
+          '<h3 class="font-display font-bold text-lg tracking-tight mb-2">' + p.title + "</h3>" +
+          '<p class="text-ink-light text-sm leading-relaxed mb-4">' + p.description + "</p>" +
+          '<div class="flex flex-wrap gap-1.5">' + tagHTML + "</div>" +
+        "</a>";
+      }).join("");
+
+      $("#projects-grid").innerHTML = projectsHTML;
+
+      /* ── Journal posts (from WordPress API) ── */
+
+      var WORDPRESS_API = "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts?_embed&per_page=3";
+
+      function stripHTML(html) {
+        var tmp = document.createElement("div");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+      }
+
+      function formatDate(dateStr) {
+        return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(dateStr));
+      }
+
+      function buildPostCard(post) {
+        var title = stripHTML(post.title.rendered) || "Untitled";
+        var excerpt = stripHTML(post.excerpt.rendered).trim();
+        var summary = excerpt.length > 140 ? excerpt.slice(0, 137) + "\u2026" : excerpt;
+
+        return '<a href="' + post.link + '" target="_blank" rel="noopener" class="group block bg-surface-card rounded-2xl border border-black/[0.04] p-7 transition-all duration-300 hover:shadow-lg hover:shadow-black/[0.06] hover:-translate-y-1">' +
+          '<time class="text-[11px] font-semibold uppercase tracking-widest text-ink-faint">' + formatDate(post.date) + "</time>" +
+          '<h3 class="font-display font-bold text-base tracking-tight mt-3 mb-2 group-hover:text-accent transition-colors">' + title + "</h3>" +
+          '<p class="text-ink-light text-sm leading-relaxed">' + (summary || "Read the full article.") + "</p>" +
+        "</a>";
+      }
+
+      fetch(WORDPRESS_API)
+        .then(function (res) { return res.json(); })
+        .then(function (posts) {
+          if (posts.length) {
+            $("#journal-grid").innerHTML = posts.map(buildPostCard).join("");
+          } else {
+            $("#journal-grid").innerHTML = '<p class="text-ink-faint text-sm col-span-full text-center py-8">New posts coming soon.</p>';
+          }
+        })
+        .catch(function () {
+          $("#journal-grid").innerHTML = '<p class="text-ink-faint text-sm col-span-full text-center py-8">Could not load posts. <a href="/blog/" class="text-accent hover:underline">Visit the blog directly.</a></p>';
+        });
+
+      /* ── About ── */
+
+      $("#about-photo").src = CONFIG.author.photo;
+      $("#about-bio").textContent = CONFIG.author.bio;
+
+      var socialHTML = Object.keys(CONFIG.author.social).map(function (key) {
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-surface-hover flex items-center justify-center text-ink-light hover:text-accent hover:bg-accent/[0.07] transition-all duration-200" aria-label="' + key + '">' +
+          icon(key, "w-4 h-4") +
+        "</a>";
+      }).join("");
+      $("#social-links").innerHTML = socialHTML;
+
+      /* ── Footer ── */
+
+      $("#footer-copyright").textContent = CONFIG.site.copyright;
+      var footerLinksHTML = Object.keys(CONFIG.author.social).map(function (key) {
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="hover:text-ink transition-colors capitalize">' + key + "</a>";
+      }).join("");
+      $("#footer-links").innerHTML = footerLinksHTML;
+
+      /* ── Smooth scrolling ── */
+
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var target = document.querySelector(a.getAttribute("href"));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.pushState(null, "", a.getAttribute("href"));
+          }
+        });
+      });
+
+      /* ── Scroll-triggered reveal ── */
+
+      var reveals = document.querySelectorAll("#projects, #journal, #about");
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-fade-up");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      reveals.forEach(function (el) { observer.observe(el); });
+
+    })();
+  </script>
 </body>
 </html>

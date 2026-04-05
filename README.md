@@ -1,151 +1,119 @@
-# Nils Johansson — Site Playbook
+# The Office of Nils Johansson
 
-A quick reference for running, extending, and publishing the React-driven Jekyll blog that powers [nj22az.github.io](https://nj22az.github.io).
+A premium, Apple-inspired personal project portal hosted on GitHub Pages.
 
-## Tech Overview
+**Live site:** [nj22az.github.io](https://nj22az.github.io)
 
-- **Static generator:** Jekyll builds the Markdown posts into HTML and also emits the JSON feed consumed by React (`posts.json`).
-- **Front-end:** `index.html` loads the custom React app in `main.js` for the full browsing experience.
-- **Styling:** Global design system lives in `styles.css` (modern workspace/SharePoint-inspired) and a few Jekyll overrides in `assets/main.scss`.
-- **Data:**
-  - Blog content lives in `_posts/` as Markdown files with front matter.
-  - Download metadata lives in `downloads.json`.
+---
 
-## Local Development
+## What This Is
 
-1. Ensure Ruby 3.4+ is on your `PATH` (already configured in `~/.zshrc`). If you open a new terminal the exported PATH is applied automatically.
-2. From the project root run:
+A clean digital hub that links to all of Nils Johansson's projects — engineering tools, technical writing, and downloadable resources. Built as a fast, zero-dependency static site with an Apple-inspired design language: extreme whitespace, sophisticated typography, subtle interactions, and flat icons.
 
-   ```bash
-   jekyll serve --livereload
-   ```
+## Tech Stack
 
-   Jekyll builds the site into `_site/` and serves it at `http://127.0.0.1:4000`.
+| Layer | Technology |
+|-------|-----------|
+| Markup | Semantic HTML5 |
+| Styling | [Tailwind CSS](https://tailwindcss.com) via CDN + custom CSS |
+| Scripts | Vanilla JavaScript (no frameworks) |
+| Typography | [Nunito](https://fonts.google.com/specimen/Nunito) (display) + system-ui (body) |
+| Icons | Inline SVG paths (Lucide / SF Symbols style) |
+| Hosting | GitHub Pages (auto-deploys on push to `main`) |
 
-3. Stop the local server with `Ctrl+C` (or `pkill -f jekyll` if it is detached).
+**No build step.** No `npm install`. No bundler. Just open `index.html`.
 
-> **Tip:** Jekyll’s output is ignored by Git (`_site/`, `.jekyll-cache/`), so you can freely rebuild without affecting version control.
+## Run Locally
 
-## Publishing Changes
+```bash
+# Option 1: Any static server
+npx serve .
 
-1. Commit your edits:
+# Option 2: Python
+python3 -m http.server 8000
 
-   ```bash
-   git add -A
-   git commit -m "Describe your change"
-   git push origin main
-   ```
-
-2. GitHub Pages rebuilds automatically after each push. The deployment usually appears within a couple of minutes. You can verify it by refreshing `https://nj22az.github.io/` or hitting `https://nj22az.github.io/posts.json`.
-
-## Writing a New Blog Post
-
-1. Create a Markdown file in `_posts/` using the `YYYY-MM-DD-title.md` convention. Example:
-
-   ```markdown
-   ---
-   layout: post
-   title: "Working Between Shipyards"
-   date: 2025-01-15
-   tags: [deployments, checklists]
-   ---
-
-   Start with a short intro paragraph. The React UI uses this to build the excerpt and estimate reading time.
-   ```
-
-2. Use standard Markdown for headings, lists, code blocks, and images. Everything between the front matter and the end of the file becomes the post body.
-3. Reference images by placing them under `assets/images/posts/<slug>/` (create the folder if needed) and linking with Markdown, e.g. `![Engine room gauges](/assets/images/posts/engine-room/gauges.jpg)`.
-4. Tags are displayed automatically; add them in front matter (`tags: [operations, toolkit]`) to prepare for future filtering.
-5. Save, preview locally with `jekyll serve`, then commit/push when ready.
-
-## Choosing post icons & thumbnails
-
-- Add `cover_icon: <icon-name>` to the front matter to display a custom glyph beside the post card. The current catalog lives in `_data/icons.yml` and is also exposed in the browser console as `window.blogIconCatalog` while the app is running.
-- Available icon ids and suggested usage:
-  - `toolkit` — technical dispatches, troubleshooting notes, equipment specs.
-  - `compass` — mission planning, scoping briefs, readiness drills.
-  - `globe` — cultural insights, regional briefings.
-  - `checklist` — SOPs, runbooks, task lists.
-  - `antenna` — comms, telemetry, network health updates.
-  - `safety` — risk advisories, incident reviews, outage retros.
-- `wave` — quick field notes or short updates.
-- `journal` — general reflections, welcome notes, or meta posts.
-- Add an optional thumbnail with `thumbnail: /assets/images/<file>.svg` (or `.jpg`). Drop the asset into `assets/images/` or a subdirectory so GitHub Pages can serve it.
-- About content lives in `about.md`; Jekyll turns it into `about.json` so the React app can hydrate the About view without editing JavaScript.
-- Minimal front matter example:
-
-  ```yaml
-  ---
-  layout: post
-  title: "Signal Health Watch"
-  date: 2025-03-01
-  content_type: Signal & Comms
-  cover_icon: antenna
-  thumbnail: /assets/images/signal-watch.svg
-  ---
-  ```
-
-### Changing the icon and glass brand treatment
-
-- The round glyph in the sidebar and mobile header is controlled in `styles.css` via the `.brand-glyph` selector. Swap the gradient for your own image by setting `background: url(/assets/images/brand.svg) center/cover;` or adjust the gradients to match a new palette.
-- Navigation icons are monochrome masks defined in `main.js` and `styles.css` via the `MonoIcon` component. Add a new icon by supplying a new CSS mask (`.mono-icon--<name>`) and referencing it inside `NAV_ITEMS` in `main.js`.
-
-### Where to put photos
-
-- Store post-specific assets inside `assets/images/posts/<post-slug>/` to keep things organised.
-- Reference them with site-relative URLs (`/assets/images/...`) so they work both locally and on GitHub Pages.
-
-### Tags and filtering roadmap
-
-- Tags defined in front matter are baked into `posts.json` and already surface in the UI.
-- When you are ready to add filtering, the React app can reuse the `post.tags` array that is now exposed on every card.
-
-## Managing Downloads
-
-Downloads are driven by the `downloads.json` file and any binary assets you add.
-
-1. Place downloadable files inside `assets/downloads/` (create subfolders if you prefer). A `.gitkeep` file is already present to keep the directory in Git.
-2. Update `downloads.json` with an entry per document:
-
-   ```json
-   {
-     "title": "Engine Room Checklist",
-     "description": "Quick reference before boarding night shift.",
-     "file_type": "PDF",
-     "file_size": "140KB",
-     "download_count": 0,
-     "url": "/assets/downloads/engine-room-checklist.pdf"
-   }
-   ```
-
-   - `title`, `description`, `file_type`, and `file_size` show up on the Downloads page.
-   - `download_count` is informational only—update it manually if you want to display real numbers.
-   - `url` is optional; if provided the UI will render a **Download** button pointing to that path. Use either a site-relative path (recommended) or a full external URL.
-
-3. Commit both the updated JSON and any new files in `assets/downloads/`.
-4. After the GitHub Pages build completes, confirm the links resolve (e.g., `https://nj22az.github.io/assets/downloads/engine-room-checklist.pdf`).
-
-> **Current placeholders:** `cv-template.pdf` and `project-checklist.txt` live in `assets/downloads/` so the Downloads page has working links. Replace these with your real files and adjust `downloads.json` when you are ready.
-
-## Troubleshooting
-
-- **`jekyll` command not found:** run `source ~/.zshrc` in the current terminal or start a new shell so the PATH updates apply.
-- **Feed serving raw Liquid:** make sure `.nojekyll` does not exist in the repo (already handled). GitHub must process the site with Jekyll for `posts.json` to render.
-- **Stale styles/scripts:** Bust your cache with a hard refresh (`Cmd+Shift+R`) or by appending `?v=timestamp` to the URL while testing.
-
-## Directory Highlights
-
-```
-_posts/                 Markdown sources for the blog
-assets/downloads/       Bucket for downloadable files (add your assets here)
-assets/main.scss        Sass entry point for the Jekyll theme overrides
-index.html              Entry page that loads the React app
-main.js                 React application logic
-styles.css              Apple-inspired global styling for the SPA experience
-downloads.json          Metadata for the Downloads page cards
-posts.json              Auto-generated JSON feed (no manual edits needed)
-about.md                Markdown source for the About page
-about.json              Auto-generated JSON consumed by the React About view
+# Option 3: Just open the file
+open index.html
 ```
 
-Happy writing and shipping!
+Then visit `http://localhost:8000` (or whatever port your server uses).
+
+## Folder Structure
+
+```
+.
+├── index.html              # Main portal (hero, projects, journal, about)
+├── config.js               # All site data, project list, icons, strings
+├── styles.css              # Custom CSS (dark mode, glassmorphism, animations)
+├── blog/
+│   └── index.html          # Blog page (fetches from WordPress API)
+├── hotel-assessment/       # React + TypeScript sub-app (own build pipeline)
+├── _posts/                 # Markdown blog post archive
+├── assets/
+│   ├── downloads/          # Downloadable files (PDF, TXT)
+│   ├── images/             # Profile photos, post images
+│   ├── previews/           # Download preview thumbnails
+│   └── video/              # Video assets
+├── CLAUDE.md               # AI assistant instructions
+├── .nojekyll               # Tells GitHub Pages to skip Jekyll
+└── .gitignore
+```
+
+## How to Add a New Project
+
+1. Open **`config.js`**
+2. Add an object to the `CONFIG.projects` array:
+
+```js
+{
+  title: "My New Project",
+  description: "A short description of what it does.",
+  url: "/path-to-project/",   // or full URL
+  icon: "iconName",            // must exist in CONFIG.icons
+  tags: ["Tag1", "Tag2"],
+  featured: true,
+}
+```
+
+3. If you need a new icon, add an SVG path to `CONFIG.icons`:
+
+```js
+iconName: "M... path data ...",  // 24x24 viewBox, stroke-based
+```
+
+4. Commit and push — the site updates automatically.
+
+## How to Edit Content
+
+| What | Where |
+|------|-------|
+| Site title, tagline, description | `config.js` → `CONFIG.site` |
+| Author name, bio, social links | `config.js` → `CONFIG.author` |
+| Projects list | `config.js` → `CONFIG.projects` |
+| Navigation items | `config.js` → `CONFIG.navigation` |
+| Icon SVG paths | `config.js` → `CONFIG.icons` |
+| Colors, dark mode, animations | `styles.css` |
+| Tailwind config (fonts, colors) | `index.html` → `<script>tailwind.config = {...}</script>` |
+| Blog posts source | WordPress at `theofficeofnils.wordpress.com` |
+
+## Design Principles
+
+- **Apple-inspired**: Generous whitespace, subtle shadows, no visual noise
+- **Mobile-first**: Responsive from 320px to ultrawide
+- **Dark mode**: Automatic, system-preference aware
+- **Accessible**: Focus rings, reduced-motion support, semantic HTML
+- **Fast**: No build step, minimal dependencies, CDN-delivered assets
+- **Data-driven**: Everything configurable from one `config.js` file
+
+## Environment Variables
+
+None required. The site is entirely static with no server-side dependencies.
+
+## Sub-Projects
+
+### Hotel Assessment Journal (`/hotel-assessment/`)
+A separate React + Vite + TypeScript application for generating AI-powered hotel assessment reports. Has its own `package.json` and build pipeline. See `hotel-assessment/` for details.
+
+## License
+
+Copyright Nils Johansson. All rights reserved.
