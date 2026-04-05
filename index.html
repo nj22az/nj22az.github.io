@@ -66,7 +66,7 @@
     <section class="section section-alt" id="about">
       <div class="container">
         <div class="about-layout">
-          <img id="about-photo" alt="Nils Johansson" class="about-photo" loading="lazy">
+          <div id="about-logo" class="about-logo logo-seal"></div>
           <div class="about-content">
             <h2>About</h2>
             <p class="about-bio" id="about-bio"></p>
@@ -146,7 +146,7 @@
         });
 
       /* About */
-      $("#about-photo").src = CONFIG.author.photo;
+      $("#about-logo").innerHTML = CONFIG.logo(140);
       $("#about-bio").textContent = CONFIG.author.bio;
 
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
