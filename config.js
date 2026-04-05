@@ -31,7 +31,6 @@ const CONFIG = {
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
     { id: "journal", label: "Journal" },
-    { id: "guestbook", label: "Guestbook" },
     { id: "about", label: "About" },
   ],
 
@@ -74,20 +73,6 @@ const CONFIG = {
     },
   ],
 
-  /** Giscus configuration — powered by GitHub Discussions */
-  giscus: {
-    repo: "nj22az/nj22az.github.io",
-    repoId: "",
-    category: "General",
-    categoryId: "",
-    mapping: "pathname",
-    reactionsEnabled: "1",
-    emitMetadata: "0",
-    inputPosition: "top",
-    lang: "en",
-    loading: "lazy",
-  },
-
   /** WordPress API for journal feed */
   wordpressApi:
     "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts",
@@ -109,7 +94,7 @@ const CONFIG = {
       '<text x="100" y="108" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
       '<text x="100" y="130" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
       '<line x1="65" y1="137" x2="135" y2="137" stroke="currentColor" stroke-width="1" opacity="0.4"/>' +
-      '<text x="100" y="155" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXXIV</text>' +
+      '<text x="100" y="155" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
     '</svg>';
   },
 
@@ -127,8 +112,6 @@ const CONFIG = {
       "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2ZM9 16V8h5.5v1.5H10.5V11h3v1.5h-3V14.5H15V16Z",
     notebook:
       "M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20M8 7h6M8 11h4",
-    messageCircle:
-      "M7.9 20A9 9 0 1 0 4 16.1L2 22Z",
     arrow:
       "M5 12h14M12 5l7 7-7 7",
     menu: "M4 6h16M4 12h16M4 18h16",

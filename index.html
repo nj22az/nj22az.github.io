@@ -62,17 +62,6 @@
       </div>
     </section>
 
-    <!-- Guestbook -->
-    <section class="section" id="guestbook">
-      <div class="container">
-        <div class="section-header">
-          <h2>Guestbook</h2>
-          <p>Leave a message, share a thought, or say hello. Sign in with GitHub to post — photos and markdown supported.</p>
-        </div>
-        <div class="giscus-wrapper" id="giscus-container"></div>
-      </div>
-    </section>
-
     <!-- About -->
     <section class="section section-alt" id="about">
       <div class="container">
@@ -156,9 +145,6 @@
           $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
         });
 
-      /* Guestbook (Giscus) */
-      loadGiscus("#giscus-container", { term: "Guestbook" });
-
       /* About */
       $("#about-photo").src = CONFIG.author.photo;
       $("#about-bio").textContent = CONFIG.author.bio;
@@ -169,7 +155,7 @@
       }).join("");
 
       /* Scroll-triggered reveal */
-      var reveals = document.querySelectorAll("#projects, #journal, #guestbook, #about");
+      var reveals = document.querySelectorAll("#projects, #journal, #about");
       reveals.forEach(function (el) { el.classList.add("reveal"); });
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {

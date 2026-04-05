@@ -62,20 +62,13 @@
           .join("");
       }
 
-      /**
-       * Build a post card with an expandable Giscus comment section.
-       * Each post gets a unique comment thread keyed by its WordPress slug.
-       */
-      function buildPostCard(post, index) {
+      function buildPostCard(post) {
         var title = safe(post.title.rendered) || "Untitled";
         var excerpt = safe(post.excerpt.rendered);
         var summary = excerpt.length > 220 ? excerpt.slice(0, 217) + "\u2026" : excerpt;
         var tags = buildTags(post);
         var author = (post._embedded && post._embedded.author && post._embedded.author[0])
           ? safe(post._embedded.author[0].name) : "Nils Johansson";
-        var commentId = "comments-" + index;
-        var toggleId = "toggle-" + index;
-        var slug = post.slug || ("post-" + index);
 
         return '<article class="post-card">' +
           '<h2><a href="' + post.link + '" target="_blank" rel="noopener">' + title + '</a></h2>' +
@@ -84,11 +77,7 @@
           (tags ? '<div class="tags">' + tags + '</div>' : '') +
           '<div class="post-actions">' +
             '<a href="' + post.link + '" target="_blank" rel="noopener" class="post-link">Read full article &rarr;</a>' +
-            '<button class="comment-toggle" id="' + toggleId + '" data-target="' + commentId + '" data-slug="' + slug + '">' +
-              siteIcon("messageCircle") + ' Comments' +
-            '</button>' +
           '</div>' +
-          '<div class="comment-section hidden" id="' + commentId + '"></div>' +
         '</article>';
       }
 
@@ -104,24 +93,6 @@
           }
           statusEl.remove();
           postsEl.innerHTML = posts.map(buildPostCard).join("");
-
-          /* Wire up comment toggles */
-          postsEl.querySelectorAll(".comment-toggle").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              var target = document.getElementById(btn.dataset.target);
-              var isHidden = target.classList.contains("hidden");
-              target.classList.toggle("hidden", !isHidden);
-
-              /* Load Giscus on first open */
-              if (isHidden && !target.dataset.loaded) {
-                target.dataset.loaded = "true";
-                loadGiscus("#" + btn.dataset.target, {
-                  mapping: "specific",
-                  term: "blog/" + btn.dataset.slug,
-                });
-              }
-            });
-          });
         })
         .catch(function () {
           statusEl.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
