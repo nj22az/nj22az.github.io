@@ -189,13 +189,14 @@
             }
           }
 
-          var headCells = '<th>' + sched.title + '</th>' +
+          var headCells = '<th></th>' +
             sched.days.map(function (d, i) {
               var classes = [];
               if (i === currentDay) classes.push("schedule-today");
               if (holidayMap[i]) classes.push("schedule-holiday");
               var cls = classes.length ? ' class="' + classes.join(" ") + '"' : '';
-              var label = holidayMap[i] ? d + '<span class="schedule-holiday-dot" title="' + holidayMap[i] + '"></span>' : d;
+              var shorts = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+              var label = holidayMap[i] ? shorts[i] + '<span class="schedule-holiday-dot" title="' + holidayMap[i] + '"></span>' : shorts[i];
               return '<th' + cls + '>' + label + '</th>';
             }).join("");
 
@@ -234,7 +235,7 @@
           $("#schedule-widget").innerHTML =
             '<div class="schedule-frame">' +
               '<div class="schedule-header">' +
-                '<span class="schedule-week">Week ' + weekNum + '</span>' +
+                '<span class="schedule-week">Wk ' + weekNum + '</span>' +
                 locationHtml +
                 '<span class="schedule-header-right">' +
                   '<span class="schedule-year">' + now.getFullYear() + '</span>' +
