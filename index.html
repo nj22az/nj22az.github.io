@@ -132,6 +132,16 @@
       $("#hero-title").textContent = CONFIG.site.tagline;
       $("#hero-description").textContent = CONFIG.site.description;
 
+      /* Hero photo fades out on scroll */
+      var heroPhoto = $(".hero-photo");
+      if (heroPhoto) {
+        window.addEventListener("scroll", function () {
+          var rect = heroPhoto.getBoundingClientRect();
+          var visible = Math.max(0, Math.min(1, rect.bottom / (window.innerHeight * 0.7)));
+          heroPhoto.style.opacity = visible;
+        }, { passive: true });
+      }
+
       /* Decorative leaf icons above section headers */
       var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
       document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
