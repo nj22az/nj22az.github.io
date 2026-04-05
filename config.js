@@ -55,7 +55,7 @@ const CONFIG = {
       url: "https://github.com/nj22az",
       icon: "github",
       tags: ["Code", "Open Source", "Projects"],
-      bento: "large",
+      bento: "wide",
       featured: true,
     },
     {
@@ -65,7 +65,7 @@ const CONFIG = {
       url: "https://www.linkedin.com/in/nils-johansson-86744583",
       icon: "linkedin",
       tags: ["Career", "Networking", "Engineering"],
-      bento: "wide",
+      bento: "normal",
       featured: true,
     },
     {
@@ -85,7 +85,7 @@ const CONFIG = {
       url: "https://theofficeofnils.wordpress.com",
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
-      bento: "normal",
+      bento: "wide",
       featured: true,
     },
   ],
