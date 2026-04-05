@@ -270,8 +270,8 @@
 
 /* Holiday */
 .schedule-day.holiday {
-  background: rgba(211, 95, 95, 0.08);
-  border: 1.5px solid rgba(211, 95, 95, 0.3);
+  background: rgba(211, 95, 95, 0.06);
+  border: 1px dashed rgba(211, 95, 95, 0.25);
 }
 .schedule-day.holiday .schedule-day-name {
   color: #d35f5f;
@@ -284,10 +284,13 @@
   bottom: 4px;
 }
 
-/* Holiday overrides today */
+/* Today always wins — overrides weekend dimming and holiday red */
+.schedule-day.today.weekend {
+  opacity: 1;
+}
 .schedule-day.today.holiday {
-  background: #d35f5f;
-  box-shadow: 0 2px 12px rgba(211, 95, 95, 0.3);
+  background: var(--accent);
+  box-shadow: 0 2px 12px rgba(62, 168, 140, 0.3);
   border-color: transparent;
 }
 .schedule-day.today.holiday .schedule-day-name,
