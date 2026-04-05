@@ -106,12 +106,6 @@
     }).join("");
 
     overlay.innerHTML =
-      '<div class="menu-overlay-header">' +
-        '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
-        '<button id="menu-close" class="nav-hamburger" aria-label="Close menu">' +
-          icon("close") +
-        '</button>' +
-      '</div>' +
       '<div class="menu-overlay-body">' +
         menuRows +
         socialLinks +
@@ -123,32 +117,33 @@
 
     document.body.appendChild(overlay);
 
-    // Backdrop for click-outside-to-close on desktop
+    // Backdrop for click-outside-to-close
     var backdrop = document.createElement("div");
     backdrop.className = "menu-backdrop";
     backdrop.id = "menu-backdrop";
     document.body.appendChild(backdrop);
 
     var hamburger = $("#nav-hamburger");
-    var closeBtn = overlay.querySelector("#menu-close");
 
-    function openMenu() {
-      overlay.classList.add("open");
-      backdrop.classList.add("open");
+    function toggleMenu() {
+      var isOpen = overlay.classList.contains("open");
+      if (isOpen) {
+        overlay.classList.remove("open");
+        backdrop.classList.remove("open");
+        hamburger.innerHTML = icon("menu");
+      } else {
+        overlay.classList.add("open");
+        backdrop.classList.add("open");
+        hamburger.innerHTML = icon("close");
+      }
     }
     function closeMenu() {
       overlay.classList.remove("open");
       backdrop.classList.remove("open");
+      hamburger.innerHTML = icon("menu");
     }
 
-    hamburger.addEventListener("click", function () {
-      if (overlay.classList.contains("open")) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-    closeBtn.addEventListener("click", closeMenu);
+    hamburger.addEventListener("click", toggleMenu);
     backdrop.addEventListener("click", closeMenu);
 
     overlay.querySelectorAll(".menu-row, .menu-cta").forEach(function (link) {
