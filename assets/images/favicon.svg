@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#f5f0e8"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#3ea88c" stroke-width="12"/>
+  <circle cx="256" cy="256" r="172" fill="none" stroke="#3ea88c" stroke-width="6"/>
+  <text x="256" y="240" font-family="system-ui, sans-serif" font-weight="800" font-size="120" fill="#3ea88c" text-anchor="middle" dominant-baseline="central" letter-spacing="4">NJ</text>
+  <line x1="180" y1="310" x2="332" y2="310" stroke="#3ea88c" stroke-width="4" opacity="0.4"/>
+  <text x="256" y="348" font-family="system-ui, sans-serif" font-weight="600" font-size="36" fill="#3ea88c" text-anchor="middle" letter-spacing="8" opacity="0.6">EST. MMXI</text>
+</svg>
