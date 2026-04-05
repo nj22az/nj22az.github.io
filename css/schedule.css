@@ -1,47 +1,76 @@
 /*
- * Schedule — availability table with week number, location, holidays, legend
+ * Schedule — interactive week calendar with location selector + holidays
  */
 
 .schedule-frame {
-  max-width: 640px;
+  max-width: 520px;
   margin: 0 auto;
   background: var(--surface-card);
   border: 1px solid var(--border);
   border-radius: 1.5rem;
-  padding: 2rem 1.5rem;
-  overflow: hidden;
+  padding: 1.5rem;
+  overflow: visible;
 }
 
-/* ── Week header row ── */
+/* ── Header row ── */
 .schedule-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.875rem;
   border-bottom: 1px dashed var(--border);
 }
+
+/* Week nav (arrows + week number) */
+.schedule-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.schedule-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--ink-light);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+.schedule-nav-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
 .schedule-week {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--accent);
-  letter-spacing: -0.01em;
   white-space: nowrap;
+  min-width: 3.5rem;
+  text-align: center;
 }
+
+/* Right side: month/year + info */
 .schedule-header-right {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
+  flex-shrink: 0;
 }
-.schedule-year {
-  font-size: 0.8125rem;
+.schedule-month {
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--ink-faint);
-  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
-/* ── Info / legend button ── */
+/* Info button */
 .schedule-info-btn {
   display: inline-flex;
   align-items: center;
@@ -67,52 +96,32 @@
   border-color: var(--accent);
 }
 
-/* ── Legend panel ── */
-.schedule-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  background: var(--surface-raised);
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
+/* ── Location pill + dropdown ── */
+.schedule-loc-wrap {
+  position: relative;
+  flex-shrink: 1;
+  min-width: 0;
 }
-.schedule-legend[hidden] { display: none; }
-.schedule-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--ink-light);
-}
-.schedule-legend-item .slot-on,
-.schedule-legend-item .slot-off,
-.schedule-legend-item .slot-holiday {
-  width: 16px; height: 16px;
-}
-.schedule-today-sample {
-  display: inline-block;
-  width: 16px; height: 16px;
-  border-radius: 4px;
-  background: var(--accent-glow);
-  border: 1.5px solid var(--accent);
-}
-
-/* ── Current location pill ── */
 .schedule-location {
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--ink-light);
   background: var(--accent-glow);
   border: 1px solid rgba(62, 168, 140, 0.18);
   border-radius: 9999px;
-  padding: 0.3rem 0.875rem 0.3rem 0.625rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.5rem;
   gap: 3px;
   line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.schedule-location:hover {
+  border-color: var(--accent);
 }
 .schedule-location svg {
   color: var(--accent);
@@ -126,98 +135,186 @@
   color: var(--ink-light);
 }
 
-/* ── Table ── */
-.schedule-table {
+.schedule-loc-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 180px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  padding: 0.375rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.schedule-loc-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.schedule-loc-item {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.schedule-table th {
-  padding: 0.75rem 0.25rem;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  color: var(--ink);
-  border-bottom: 1.5px solid var(--border);
-}
-.schedule-table th:first-child {
   text-align: left;
-  color: var(--ink-light);
-  font-weight: 600;
-}
-
-.schedule-table td {
-  padding: 0.875rem 0.25rem;
-  color: var(--ink-light);
-  border-bottom: 1px solid var(--border);
-}
-.schedule-table tr:last-child td { border-bottom: none; }
-.schedule-table td:first-child {
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.8125rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: none;
   color: var(--ink);
-  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
 }
-
-/* ── Today column highlight ── */
-.schedule-today {
+.schedule-loc-item:hover {
+  background: var(--surface-raised);
+}
+.schedule-loc-item.active {
+  color: var(--accent);
   background: var(--accent-glow);
 }
-.schedule-table th.schedule-today {
-  color: var(--accent);
-  font-weight: 800;
-}
 
-/* ── Available / unavailable / holiday indicators ── */
-.slot-on {
+/* ── Legend panel ── */
+.schedule-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.75rem;
+  background: var(--surface-raised);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+}
+.schedule-legend[hidden] { display: none; }
+.schedule-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ink-light);
+}
+.schedule-legend-dot {
   display: inline-block;
-  width: 22px; height: 22px;
+  width: 14px; height: 14px;
   border-radius: 50%;
-  border: 2px solid var(--ink);
+}
+.schedule-legend-dot.today-sample {
   background: var(--accent);
 }
-.slot-off {
-  display: inline-block;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--ink-faint);
-  background: transparent;
-  opacity: 0.35;
+.schedule-legend-dot.weekend-sample {
+  background: var(--surface-raised);
+  border: 1.5px solid var(--ink-faint);
+  opacity: 0.5;
 }
-.slot-holiday {
-  display: inline-block;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  border: 2px solid #d35f5f;
+.schedule-legend-dot.holiday-sample {
   background: rgba(211, 95, 95, 0.15);
+  border: 1.5px solid #d35f5f;
 }
 
-/* ── Holiday names & footer note ── */
+/* ── Day strip ── */
+.schedule-days {
+  display: flex;
+  gap: 0.375rem;
+}
+.schedule-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.625rem 0.25rem 0.5rem;
+  border-radius: 0.875rem;
+  background: var(--surface-raised);
+  transition: background 0.15s, box-shadow 0.15s;
+  position: relative;
+  cursor: default;
+}
+.schedule-day-name {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.schedule-day-num {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+/* Today */
+.schedule-day.today {
+  background: var(--accent);
+  box-shadow: 0 2px 12px rgba(62, 168, 140, 0.3);
+}
+.schedule-day.today .schedule-day-name,
+.schedule-day.today .schedule-day-num {
+  color: #fff;
+}
+
+/* Weekend */
+.schedule-day.weekend {
+  opacity: 0.45;
+}
+
+/* Holiday */
+.schedule-day.holiday {
+  background: rgba(211, 95, 95, 0.08);
+  border: 1.5px solid rgba(211, 95, 95, 0.3);
+}
+.schedule-day.holiday .schedule-day-name {
+  color: #d35f5f;
+}
+.schedule-day-holiday {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #d35f5f;
+  position: absolute;
+  bottom: 4px;
+}
+
+/* Holiday overrides today */
+.schedule-day.today.holiday {
+  background: #d35f5f;
+  box-shadow: 0 2px 12px rgba(211, 95, 95, 0.3);
+  border-color: transparent;
+}
+.schedule-day.today.holiday .schedule-day-name,
+.schedule-day.today.holiday .schedule-day-num {
+  color: #fff;
+}
+
+/* ── Footer ── */
 .schedule-holidays {
   margin-top: 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: #d35f5f;
   line-height: 1.6;
 }
 .schedule-note {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
   color: var(--ink-faint);
   line-height: 1.6;
 }
 
 /* ── Mobile ── */
 @media (max-width: 480px) {
-  .schedule-frame { padding: 1.25rem 1rem; }
-  .schedule-table { font-size: 0.8125rem; }
-  .schedule-table th,
-  .schedule-table td { padding: 0.5rem 0.125rem; }
-  .slot-on, .slot-off, .slot-holiday { width: 18px; height: 18px; }
-  .schedule-header { gap: 0.375rem; }
-  .schedule-week { font-size: 1.0625rem; }
-  .schedule-location { font-size: 0.6875rem; padding: 0.25rem 0.625rem 0.25rem 0.5rem; }
-  .schedule-legend { gap: 0.625rem; padding: 0.625rem 0.75rem; }
+  .schedule-frame { padding: 1.125rem; }
+  .schedule-days { gap: 0.25rem; }
+  .schedule-day { padding: 0.5rem 0.125rem 0.375rem; border-radius: 0.625rem; }
+  .schedule-day-name { font-size: 0.625rem; }
+  .schedule-day-num { font-size: 0.9375rem; }
+  .schedule-header { flex-wrap: wrap; gap: 0.375rem; }
+  .schedule-nav-btn { width: 24px; height: 24px; }
+  .schedule-week { font-size: 0.875rem; min-width: 2.75rem; }
+  .schedule-month { font-size: 0.6875rem; }
+  .schedule-legend { gap: 0.5rem; padding: 0.5rem 0.625rem; }
 }

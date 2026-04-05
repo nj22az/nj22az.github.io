@@ -29,24 +29,19 @@ const CONFIG = {
       {
         name: "\u00d6rebro",
         label: "Sweden",
+        countryCode: "SE",
         embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63295.76!2d15.18!3d59.27!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465c14e0b5e1b8a1%3A0x4020b28f4020b20!2s%C3%96rebro%2C%20Sweden!5e0!3m2!1sen!2s!4v1",
       },
       {
         name: "Nam Phuoc",
         label: "Vietnam",
+        countryCode: "VN",
         embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15350.0!2d108.27!3d15.85!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142b1a8c7fbc96f%3A0x3b7e9c7f9a8c1d3e!2sNam%20Ph%C6%B0%E1%BB%9Bc%2C%20Duy%20Xuy%C3%AAn%2C%20Quang%20Nam%2C%20Vietnam!5e0!3m2!1sen!2s!4v1",
       },
     ],
     schedule: {
-      title: "Availability",
-      subtitle: "Schedule",
-      currentLocation: { town: "Örebro", country: "Sweden", countryCode: "SE" },
-      note: "Times shown in local time zones. Subject to project assignments.",
-      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      rows: [
-        { time: "08:00 \u2013 12:00", slots: [true, true, true, true, true, false, false] },
-        { time: "13:00 \u2013 17:00", slots: [true, true, true, true, true, false, false] },
-      ],
+      note: "Available Mon\u2013Fri, office hours. Not available on public holidays.",
+      defaultLocation: 0,
     },
   },
 
