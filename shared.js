@@ -66,6 +66,7 @@
   function buildNav() {
     var nav = $("#site-nav");
     if (!nav) return;
+    nav.classList.add("site-nav");
 
     // Determine which nav links to show based on current page
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
