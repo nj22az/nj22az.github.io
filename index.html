@@ -179,10 +179,21 @@
             }).join("");
           return '<tr>' + cells + '</tr>';
         }).join("");
+        var locationHtml = '';
+        if (sched.currentLocation) {
+          var loc = sched.currentLocation;
+          var pinIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="' + CONFIG.icons.mappin + '"/></svg>';
+          locationHtml = '<div class="schedule-location">' + pinIcon +
+            '<span class="schedule-location-town">' + loc.town + '</span>, ' +
+            '<span class="schedule-location-country">' + loc.country + '</span>' +
+          '</div>';
+        }
+
         $("#schedule-widget").innerHTML =
           '<div class="schedule-frame">' +
             '<div class="schedule-header">' +
               '<span class="schedule-week">Week ' + weekNum + '</span>' +
+              locationHtml +
               '<span class="schedule-year">' + now.getFullYear() + '</span>' +
             '</div>' +
             '<table class="schedule-table"><thead><tr>' + headCells + '</tr></thead>' +

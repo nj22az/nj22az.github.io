@@ -62,6 +62,13 @@ def read_schedule(config_path):
     note_match = re.search(r'note:\s*"([^"]*)"', block)
     note = note_match.group(1) if note_match else ""
 
+    # Extract current location
+    loc_match = re.search(
+        r'currentLocation:\s*\{\s*town:\s*"([^"]*)"\s*,\s*country:\s*"([^"]*)"\s*\}',
+        block,
+    )
+    location = {"town": loc_match.group(1), "country": loc_match.group(2)} if loc_match else {"town": "", "country": ""}
+
     # Extract rows
     rows = []
     row_pattern = re.compile(
@@ -78,7 +85,7 @@ def read_schedule(config_path):
     if not rows:
         rows = DEFAULT_ROWS
 
-    return {"note": note, "rows": rows}, text
+    return {"note": note, "rows": rows, "location": location}, text
 
 
 def write_schedule(config_path, original_text, schedule):
@@ -91,10 +98,17 @@ def write_schedule(config_path, original_text, schedule):
 
     rows_str = ",\n".join(format_row(r) for r in schedule["rows"])
 
+    loc = schedule.get("location", {"town": "", "country": ""})
+    if loc["town"] or loc["country"]:
+        loc_line = '      currentLocation: { town: "' + loc["town"] + '", country: "' + loc["country"] + '" },\n'
+    else:
+        loc_line = ''
+
     new_block = (
         'schedule: {\n'
         '      title: "Availability",\n'
         '      subtitle: "Schedule",\n'
+        + loc_line +
         '      note: "' + schedule["note"] + '",\n'
         '      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],\n'
         '      rows: [\n' + rows_str + ',\n'
@@ -240,6 +254,34 @@ class ScheduleEditor(tk.Tk):
             command=self._remove_row,
         ).pack(side="left")
 
+        # Current location
+        loc_frame = tk.Frame(self, bg=BG, padx=20)
+        loc_frame.pack(fill="x", pady=(10, 4))
+        tk.Label(loc_frame, text="📍 Current Location:", font=("Helvetica", 10, "bold"),
+                 fg=ACCENT, bg=BG).pack(anchor="w")
+        loc_fields = tk.Frame(loc_frame, bg=BG)
+        loc_fields.pack(fill="x", pady=(4, 0))
+
+        loc = self.schedule.get("location", {"town": "", "country": ""})
+        tk.Label(loc_fields, text="Town:", font=("Helvetica", 10),
+                 fg=INK_LIGHT, bg=BG).pack(side="left")
+        self.town_var = tk.StringVar(value=loc.get("town", ""))
+        tk.Entry(
+            loc_fields, textvariable=self.town_var, font=("Helvetica", 10),
+            fg=INK, bg=CARD_BG, relief="flat", width=16,
+            highlightbackground=BORDER, highlightthickness=1,
+        ).pack(side="left", padx=(4, 12), ipady=4)
+        tk.Label(loc_fields, text="Country:", font=("Helvetica", 10),
+                 fg=INK_LIGHT, bg=BG).pack(side="left")
+        self.country_var = tk.StringVar(value=loc.get("country", ""))
+        tk.Entry(
+            loc_fields, textvariable=self.country_var, font=("Helvetica", 10),
+            fg=INK, bg=CARD_BG, relief="flat", width=16,
+            highlightbackground=BORDER, highlightthickness=1,
+        ).pack(side="left", padx=(4, 0), ipady=4)
+        tk.Label(loc_frame, text="Leave both empty to hide location from schedule.",
+                 font=("Helvetica", 9), fg=INK_LIGHT, bg=BG).pack(anchor="w", pady=(4, 0))
+
         # Note field
         note_frame = tk.Frame(self, bg=BG, padx=20)
         note_frame.pack(fill="x", pady=(10, 10))
@@ -328,6 +370,11 @@ class ScheduleEditor(tk.Tk):
             self.schedule["rows"] = rows
         if hasattr(self, "note_var"):
             self.schedule["note"] = self.note_var.get()
+        if hasattr(self, "town_var"):
+            self.schedule["location"] = {
+                "town": self.town_var.get().strip(),
+                "country": self.country_var.get().strip(),
+            }
 
     def _save(self):
         self._collect_data()

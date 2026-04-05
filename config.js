@@ -40,6 +40,7 @@ const CONFIG = {
     schedule: {
       title: "Availability",
       subtitle: "Schedule",
+      currentLocation: { town: "Örebro", country: "Sweden" },
       note: "Times shown in local time zones. Subject to project assignments.",
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       rows: [
