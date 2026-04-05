@@ -121,22 +121,42 @@
         '<a href="#about" class="menu-cta menu-cta-secondary">About Me</a>' +
       '</div>';
 
-    document.body.appendChild(overlay);
+    // On desktop, append inside nav-inner for positioning; on mobile, append to body
+    var navInner = nav.querySelector(".nav-inner");
+    navInner.appendChild(overlay);
+
+    // Backdrop for click-outside-to-close on desktop
+    var backdrop = document.createElement("div");
+    backdrop.className = "menu-backdrop";
+    backdrop.id = "menu-backdrop";
+    document.body.appendChild(backdrop);
 
     var hamburger = $("#nav-hamburger");
     var closeBtn = overlay.querySelector("#menu-close");
 
     function openMenu() {
       overlay.classList.add("open");
-      document.body.style.overflow = "hidden";
+      backdrop.classList.add("open");
+      // Only lock scroll on mobile
+      if (window.innerWidth <= 768) {
+        document.body.style.overflow = "hidden";
+      }
     }
     function closeMenu() {
       overlay.classList.remove("open");
+      backdrop.classList.remove("open");
       document.body.style.overflow = "";
     }
 
-    hamburger.addEventListener("click", openMenu);
+    hamburger.addEventListener("click", function () {
+      if (overlay.classList.contains("open")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
     closeBtn.addEventListener("click", closeMenu);
+    backdrop.addEventListener("click", closeMenu);
 
     overlay.querySelectorAll(".menu-row, .menu-cta").forEach(function (link) {
       link.addEventListener("click", closeMenu);
