@@ -89,7 +89,7 @@
       function $(sel) { return document.querySelector(sel); }
 
       /* Hero */
-      $("#hero-logo").innerHTML = CONFIG.logo(80);
+      $("#hero-logo").innerHTML = CONFIG.logo(140);
       $("#hero-role").textContent = CONFIG.author.role;
       $("#hero-title").textContent = CONFIG.site.title;
       $("#hero-description").textContent = CONFIG.site.description;
@@ -146,7 +146,7 @@
         });
 
       /* About */
-      $("#about-logo").innerHTML = CONFIG.logo(140);
+      $("#about-logo").innerHTML = CONFIG.logo(160);
       $("#about-bio").textContent = CONFIG.author.bio;
 
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {

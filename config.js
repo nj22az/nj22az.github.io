@@ -82,8 +82,20 @@ const CONFIG = {
    * Uses currentColor for theme adaptability.
    * @param {number} size - width/height in px
    */
+  /** Rectangular nav logo — wide, readable at small sizes */
+  navLogo: function (h) {
+    var height = h || 28;
+    var width = Math.round(height * 6.5);
+    return '<svg viewBox="0 0 260 40" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
+      '<rect x="1" y="1" width="258" height="38" rx="6" stroke="currentColor" stroke-width="1.5"/>' +
+      '<text x="130" y="18" font-family="Nunito, system-ui, sans-serif" font-weight="700" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="3">THE OFFICE OF</text>' +
+      '<text x="130" y="31" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="2">NILS JOHANSSON</text>' +
+    '</svg>';
+  },
+
+  /** Circular seal logo — for hero and about sections */
   logo: function (size) {
-    var s = size || 40;
+    var s = size || 120;
     return '<svg viewBox="0 0 200 200" width="' + s + '" height="' + s + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
       '<circle cx="100" cy="100" r="96" stroke="currentColor" stroke-width="3"/>' +
       '<circle cx="100" cy="100" r="84" stroke="currentColor" stroke-width="1.5"/>' +
