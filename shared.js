@@ -114,8 +114,11 @@
       '</div>' +
       '<div class="menu-overlay-body">' +
         menuRows +
-        '<hr class="section-divider" style="margin:0.5rem 0;">' +
         socialLinks +
+      '</div>' +
+      '<div class="menu-overlay-footer">' +
+        '<a href="#projects" class="menu-cta menu-cta-primary">View Projects</a>' +
+        '<a href="#about" class="menu-cta menu-cta-secondary">About Me</a>' +
       '</div>';
 
     document.body.appendChild(overlay);
@@ -135,7 +138,7 @@
     hamburger.addEventListener("click", openMenu);
     closeBtn.addEventListener("click", closeMenu);
 
-    overlay.querySelectorAll(".menu-row").forEach(function (link) {
+    overlay.querySelectorAll(".menu-row, .menu-cta").forEach(function (link) {
       link.addEventListener("click", closeMenu);
     });
 
