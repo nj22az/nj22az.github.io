@@ -121,7 +121,7 @@ body {
   transition: color 0.2s;
   letter-spacing: 0.01em;
 }
-.nav-link:hover { color: var(--ink); }
+.nav-link:hover, .nav-link.active { color: var(--ink); }
 
 .nav-actions { display: flex; align-items: center; gap: 0.25rem; }
 
@@ -166,7 +166,7 @@ body {
   color: var(--ink-light);
   transition: color 0.2s;
 }
-.mobile-menu a:hover { color: var(--ink); }
+.mobile-menu a:hover, .mobile-menu a.active { color: var(--ink); }
 
 @media (max-width: 639px) {
   .nav-links { display: none; }

@@ -129,6 +129,32 @@
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);
     }, { passive: true });
+
+    /* ── Active section highlighting (homepage only) ── */
+    var isHomePage = (location.pathname === "/" || location.pathname === "/index.html");
+    if (isHomePage) {
+      var sections = CONFIG.navigation.map(function (n) {
+        return document.getElementById(n.id);
+      }).filter(Boolean);
+
+      var navLinks = nav.querySelectorAll(".nav-link");
+      var mobileLinks = document.querySelectorAll(".mobile-nav-link");
+
+      var sectionObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var id = entry.target.id;
+          navLinks.forEach(function (link) {
+            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+          });
+          mobileLinks.forEach(function (link) {
+            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+          });
+        });
+      }, { threshold: 0.3, rootMargin: "-56px 0px 0px 0px" });
+
+      sections.forEach(function (s) { sectionObs.observe(s); });
+    }
   }
 
   /* ══════════════════════════════════════════
