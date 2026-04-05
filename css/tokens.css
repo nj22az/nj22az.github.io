@@ -41,20 +41,20 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --ink:            #e8e2d8;
   --ink-light:      #a89e94;
   --ink-faint:      #7a726a;
-  --surface:        #1a1816;
-  --surface-raised: #222018;
-  --surface-card:   #2a2720;
-  --surface-hover:  #333028;
-  --surface-mint:   #1a2420;
+  --surface:        #000000;
+  --surface-raised: #0a0a08;
+  --surface-card:   #141210;
+  --surface-hover:  #1e1c18;
+  --surface-mint:   #0a1210;
   --border:         rgba(255, 255, 255, 0.06);
   --border-hover:   rgba(255, 255, 255, 0.10);
   --accent:         #5ec4a6;
   --accent-hover:   #6ed4b6;
   --accent-glow:    rgba(94, 196, 166, 0.12);
   --divider:        #8a6b4a;
-  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lift:    0 8px 32px rgba(0, 0, 0, 0.4);
-  --nav-bg:         rgba(26, 24, 22, 0.92);
+  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lift:    0 8px 32px rgba(0, 0, 0, 0.6);
+  --nav-bg:         rgba(0, 0, 0, 0.92);
 }
 
 /* ── Body ── */
