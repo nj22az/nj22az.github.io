@@ -82,14 +82,14 @@ const CONFIG = {
    * Uses currentColor for theme adaptability.
    * @param {number} size - width/height in px
    */
-  /** Rectangular nav logo — wide, readable at small sizes */
+  /** Rectangular nav logo — wide, readable at nav bar height */
   navLogo: function (h) {
-    var height = h || 28;
-    var width = Math.round(height * 6.5);
-    return '<svg viewBox="0 0 260 40" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
-      '<rect x="1" y="1" width="258" height="38" rx="6" stroke="currentColor" stroke-width="1.5"/>' +
-      '<text x="130" y="18" font-family="Nunito, system-ui, sans-serif" font-weight="700" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="3">THE OFFICE OF</text>' +
-      '<text x="130" y="31" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="2">NILS JOHANSSON</text>' +
+    var height = h || 32;
+    var width = Math.round(height * 5.6);
+    return '<svg viewBox="0 0 280 50" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
+      '<rect x="1.5" y="1.5" width="277" height="47" rx="8" stroke="currentColor" stroke-width="2"/>' +
+      '<text x="140" y="21" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
+      '<text x="140" y="38" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
     '</svg>';
   },
 

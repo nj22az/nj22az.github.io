@@ -76,7 +76,7 @@
 
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(28) + '</a>' +
+        '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
         '<div class="nav-links">' + links.join("") + '</div>' +
         '<div class="nav-actions">' +
           '<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">' +
