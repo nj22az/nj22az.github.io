@@ -17,7 +17,7 @@ const CONFIG = {
     name: "Nils Johansson",
     role: "Field Service Engineer (Marine Engineer)",
     location: "Southeast Asia",
-    bio: "Marine engineer turned field service engineer (Marine Engineer) with a background in maritime operations, precision material testing systems, and industrial commissioning. Used to working independently in complex technical environments, I combine hands-on engineering experience with structured execution and strong cross-cultural awareness.",
+    bio: "Marine engineer turned field service engineer with a background in maritime operations, precision material testing systems, and industrial commissioning. Used to working independently in complex technical environments, I combine hands-on engineering experience with structured execution and strong cross-cultural awareness.",
     photo: "/assets/images/nils-profile.jpg",
     social: {
       github: "https://github.com/nj22az",
