@@ -1,5 +1,5 @@
 /*
- * Schedule — availability table (c-morinosato 診療時間 style)
+ * Schedule — availability table with week number + location
  */
 
 .schedule-frame {
@@ -12,86 +12,43 @@
   overflow: hidden;
 }
 
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.schedule-table th {
-  padding: 0.625rem 0.25rem;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  color: var(--ink);
-  border-bottom: 1px solid var(--border);
-}
-.schedule-table th:first-child {
-  text-align: left;
-  color: var(--ink-light);
-  font-weight: 600;
-}
-
-.schedule-table td {
-  padding: 0.75rem 0.25rem;
-  color: var(--ink-light);
-  border-bottom: 1px solid var(--border);
-}
-.schedule-table tr:last-child td { border-bottom: none; }
-.schedule-table td:first-child {
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-/* Available / unavailable indicators */
-.slot-on {
-  display: inline-block;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-}
-.slot-off {
-  display: inline-block;
-  font-size: 1rem;
-  color: var(--ink-faint);
-  letter-spacing: 0;
-}
-
-/* Week header */
+/* ── Week header row ── */
 .schedule-header {
   display: flex;
-  align-items: baseline;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.875rem;
   border-bottom: 1px dashed var(--border);
 }
 .schedule-week {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--accent);
+  letter-spacing: -0.01em;
 }
 .schedule-year {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--ink-faint);
+  letter-spacing: 0.04em;
 }
 
-/* Current location badge */
+/* ── Current location pill ── */
 .schedule-location {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--ink-light);
   background: var(--accent-glow);
-  border: 1px solid rgba(62, 168, 140, 0.15);
+  border: 1px solid rgba(62, 168, 140, 0.18);
   border-radius: 9999px;
-  padding: 0.25rem 0.875rem;
-  gap: 2px;
+  padding: 0.3rem 0.875rem 0.3rem 0.625rem;
+  gap: 3px;
+  line-height: 1;
 }
 .schedule-location svg {
   color: var(--accent);
@@ -105,14 +62,77 @@
   color: var(--ink-light);
 }
 
-/* Today column highlight */
+/* ── Table ── */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.schedule-table th {
+  padding: 0.75rem 0.25rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  border-bottom: 1.5px solid var(--border);
+}
+.schedule-table th:first-child {
+  text-align: left;
+  color: var(--ink-light);
+  font-weight: 600;
+}
+
+.schedule-table td {
+  padding: 0.875rem 0.25rem;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--border);
+}
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ── Today column highlight ── */
 .schedule-today {
   background: var(--accent-glow);
+  position: relative;
 }
 .schedule-table th.schedule-today {
   color: var(--accent);
+  font-weight: 800;
+}
+.schedule-table thead th.schedule-today::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 4px auto 0;
 }
 
+/* ── Available / unavailable indicators ── */
+.slot-on {
+  display: inline-block;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.85;
+}
+.slot-off {
+  display: inline-block;
+  font-size: 1rem;
+  color: var(--ink-faint);
+  letter-spacing: 0;
+  opacity: 0.4;
+}
+
+/* ── Footer note ── */
 .schedule-note {
   margin-top: 1.25rem;
   font-size: 0.75rem;
@@ -120,10 +140,14 @@
   line-height: 1.6;
 }
 
+/* ── Mobile ── */
 @media (max-width: 480px) {
   .schedule-frame { padding: 1.25rem 1rem; }
   .schedule-table { font-size: 0.8125rem; }
   .schedule-table th,
   .schedule-table td { padding: 0.5rem 0.125rem; }
   .slot-on { width: 18px; height: 18px; }
+  .schedule-header { gap: 0.375rem; }
+  .schedule-week { font-size: 1.0625rem; }
+  .schedule-location { font-size: 0.6875rem; padding: 0.25rem 0.625rem 0.25rem 0.5rem; }
 }
