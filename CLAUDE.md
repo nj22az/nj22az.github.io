@@ -28,8 +28,8 @@ Multi-page static portfolio: **The Office of Nils Johansson**. Warm organic desi
 |------|---------|
 | `index.html` | Main portal — hero, bento projects, journal feed, about |
 | `blog/index.html` | Blog page — WordPress API posts |
-| `config.js` | All site data: projects, author, icons, SVG logo, nav, Giscus config |
-| `shared.js` | Shared nav, footer, theme toggle, Giscus loader — included on every page |
+| `config.js` | All site data: projects, author, icons, SVG logo, nav |
+| `shared.js` | Shared nav, footer, theme toggle — included on every page |
 | `styles.css` | CSS entry point — imports modular files from `css/` |
 | `css/tokens.css` | Design tokens, reset, color palette |
 | `css/nav.css` | Sticky nav, hamburger button, overlay menu |
@@ -44,7 +44,7 @@ Multi-page static portfolio: **The Office of Nils Johansson**. Warm organic desi
 ### Multi-Page Consistency
 
 Every HTML page includes:
-1. `<html data-theme="dark">` — dark by default
+1. `<html data-theme="light">` — light by default
 2. `<nav id="site-nav"></nav>` — shared.js injects navigation + logo + theme toggle
 3. `<footer id="site-footer" class="site-footer"></footer>` — shared.js injects footer
 4. `<script src="/config.js"></script>` then `<script src="/shared.js"></script>`
@@ -55,7 +55,6 @@ Every HTML page includes:
 - Toggle button in nav switches between dark/light
 - Preference persisted in `localStorage` key `nj-theme`
 - All colors use CSS custom properties in `:root` / `[data-theme="light"]`
-- Giscus theme auto-syncs when toggled
 
 ### SVG Logo
 
@@ -64,21 +63,13 @@ Every HTML page includes:
 - Rendered in nav (32px) and hero (80px)
 - Hover scale animation via `.logo-seal` class
 
-### Giscus Comments
-
-- Powered by GitHub Discussions on `nj22az/nj22az.github.io`
-- Guestbook on homepage: `loadGiscus("#container", { term: "Guestbook" })`
-- Blog comments: each article has a collapsible comment section
-- Theme syncs with dark/light toggle
-- Config in `CONFIG.giscus` — needs `repoId` and `categoryId` filled in after enabling Discussions
-
 ### Adding a New Page
 
 1. Create `new-page/index.html`
 2. Copy the standard HTML shell:
    ```html
    <!DOCTYPE html>
-   <html lang="en" data-theme="dark">
+   <html lang="en" data-theme="light">
    <head>
      <!-- same head as other pages: meta, fonts, styles.css -->
    </head>
@@ -105,9 +96,9 @@ All icons are SVG path strings in `CONFIG.icons` (24x24 viewBox, stroke-based). 
 
 ```
 index.html              # Main portal
-blog/index.html         # Blog (WordPress API + Giscus comments)
+blog/index.html         # Blog (WordPress API)
 config.js               # Site configuration + SVG logo
-shared.js               # Shared nav/footer/theme/Giscus
+shared.js               # Shared nav/footer/theme
 styles.css              # Complete stylesheet
 _posts/                 # Blog post markdown archive
 assets/
