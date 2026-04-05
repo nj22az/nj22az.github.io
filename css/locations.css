@@ -1,0 +1,58 @@
+/*
+ * Locations — map cards with Google Maps embeds
+ */
+
+.locations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .locations-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.location-card {
+  background: var(--surface-card);
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.location-card:hover {
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
+}
+
+.location-map {
+  width: 100%;
+  height: 200px;
+  border: none;
+  display: block;
+}
+
+.location-info {
+  padding: 1.25rem 1.5rem;
+}
+
+.location-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.location-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--ink);
+}
+
+/* Invert map colors in dark mode for visual consistency */
+[data-theme="dark"] .location-map {
+  filter: invert(0.9) hue-rotate(180deg);
+}

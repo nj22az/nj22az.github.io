@@ -20,6 +20,13 @@
   /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
+  var DESIGN_VER = "nj-design-v2";
+
+  // One-time migration: reset dark preference from old design
+  if (!localStorage.getItem(DESIGN_VER)) {
+    localStorage.removeItem(THEME_KEY);
+    localStorage.setItem(DESIGN_VER, "1");
+  }
 
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
@@ -53,7 +60,7 @@
 
   /* ── Navigation — green circle hamburger + overlay ── */
 
-  var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user" };
+  var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user", locations: "mappin" };
 
   function buildNav() {
     var nav = $("#site-nav");

@@ -25,6 +25,18 @@ const CONFIG = {
       etsy: "https://www.etsy.com/shop/Colonialclub",
       wordpress: "https://theofficeofnils.wordpress.com",
     },
+    locations: [
+      {
+        name: "\u00d6rebro, Sweden",
+        label: "Home Base",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63295.76!2d15.18!3d59.27!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465c14e0b5e1b8a1%3A0x4020b28f4020b20!2s%C3%96rebro%2C%20Sweden!5e0!3m2!1sen!2s!4v1",
+      },
+      {
+        name: "Nam Phuoc, Vietnam",
+        label: "Field Office",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15350.0!2d108.27!3d15.85!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142b1a8c7fbc96f%3A0x3b7e9c7f9a8c1d3e!2sNam%20Ph%C6%B0%E1%BB%9Bc%2C%20Duy%20Xuy%C3%AAn%2C%20Quang%20Nam%2C%20Vietnam!5e0!3m2!1sen!2s!4v1",
+      },
+    ],
   },
 
   navigation: [
@@ -32,6 +44,7 @@ const CONFIG = {
     { id: "projects", label: "Projects" },
     { id: "journal", label: "Journal" },
     { id: "about", label: "About" },
+    { id: "locations", label: "Locations" },
   ],
 
   projects: [
@@ -143,5 +156,6 @@ const CONFIG = {
     user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
     leaf: "M12 22V8M12 8C12 8 7 3 2 3c0 5 4 9 10 13M12 8c0 0 5-5 10-5 0 5-4 9-10 13",
     plus: "M12 5v14M5 12h14",
+    mappin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
   },
 };

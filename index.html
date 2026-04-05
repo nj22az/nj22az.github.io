@@ -98,6 +98,22 @@
       </div>
     </section>
 
+    <!-- Dashed divider -->
+    <hr class="section-divider">
+
+    <!-- Locations — map cards -->
+    <section class="section" id="locations">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-decor"></div>
+          <h2>Locations</h2>
+          <div class="section-subtitle">Where I Work</div>
+          <p>Based between Sweden and Southeast Asia.</p>
+        </div>
+        <div class="locations-grid" id="locations-grid"></div>
+      </div>
+    </section>
+
   </main>
 
   <footer id="site-footer" class="site-footer"></footer>
@@ -189,8 +205,21 @@
           siteIcon(key) + '</a>';
       }).join("");
 
+      /* Locations — map cards */
+      if (CONFIG.author.locations) {
+        $("#locations-grid").innerHTML = CONFIG.author.locations.map(function (loc) {
+          return '<div class="location-card reveal">' +
+            '<iframe class="location-map" src="' + loc.embed + '" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' +
+            '<div class="location-info">' +
+              '<div class="location-label">' + loc.label + '</div>' +
+              '<div class="location-name">' + loc.name + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join("");
+      }
+
       /* Staggered scroll-triggered reveals */
-      var items = document.querySelectorAll(".bento-card, .section-header, .about-layout, .hero-photo");
+      var items = document.querySelectorAll(".bento-card, .section-header, .about-layout, .hero-photo, .location-card");
       items.forEach(function (el) { el.classList.add("reveal"); });
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
