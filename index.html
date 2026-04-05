@@ -9,40 +9,7 @@
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="icon" href="/assets/images/apple-touch-icon.png">
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['"HGMaruGothicMPRO"', '"Nunito"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            body: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-          },
-          colors: {
-            ink: { DEFAULT: '#1d1d1f', light: '#6e6e73', faint: '#86868b' },
-            surface: { DEFAULT: '#fbfbfd', card: '#ffffff', hover: '#f5f5f7' },
-            accent: { DEFAULT: '#0071e3', hover: '#0077ed' },
-          },
-          maxWidth: {
-            site: '1120px',
-          },
-          animation: {
-            'fade-in': 'fadeIn 0.6s ease-out both',
-            'fade-up': 'fadeUp 0.7s ease-out both',
-            'slide-in': 'slideIn 0.5s ease-out both',
-          },
-          keyframes: {
-            fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
-            fadeUp: { from: { opacity: '0', transform: 'translateY(24px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
-            slideIn: { from: { opacity: '0', transform: 'translateX(-12px)' }, to: { opacity: '1', transform: 'translateX(0)' } },
-          },
-        },
-      },
-    };
-  </script>
-
-  <!-- Google Fonts: Nunito (rounded gothic sans-serif fallback) -->
+  <!-- Google Fonts: Nunito (rounded gothic display font) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -50,87 +17,75 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 
-<body class="bg-surface font-body text-ink antialiased">
+<body>
 
   <!-- ─── Navigation ─── -->
-  <nav id="site-nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-surface/80 backdrop-blur-xl border-b border-transparent">
-    <div class="max-w-site mx-auto px-6 h-12 flex items-center justify-between">
-      <a href="#" class="font-display font-bold text-sm tracking-tight text-ink hover:text-accent transition-colors" id="nav-brand"></a>
-      <!-- Desktop links -->
-      <div class="hidden sm:flex items-center gap-8" id="nav-links"></div>
-      <!-- Mobile menu button -->
-      <button class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-hover transition-colors" id="mobile-menu-btn" aria-label="Menu">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path id="menu-icon-path" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <nav class="site-nav" id="site-nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand" id="nav-brand"></a>
+      <div class="nav-links" id="nav-links"></div>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path id="menu-icon-path" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
       </button>
     </div>
-    <!-- Mobile dropdown -->
-    <div class="sm:hidden hidden border-t border-black/5 bg-surface/95 backdrop-blur-xl" id="mobile-menu">
-      <div class="px-6 py-4 flex flex-col gap-1" id="mobile-nav-links"></div>
-    </div>
   </nav>
+  <div class="mobile-menu" id="mobile-menu"></div>
 
   <main>
 
     <!-- ─── Hero ─── -->
-    <section id="home" class="pt-32 pb-20 sm:pt-44 sm:pb-28 px-6">
-      <div class="max-w-site mx-auto text-center">
-        <p class="text-ink-faint text-xs font-semibold uppercase tracking-widest mb-6 animate-fade-in" id="hero-role"></p>
-        <h1 class="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight mb-6 animate-fade-up" id="hero-title"></h1>
-        <p class="text-ink-light text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10 animate-fade-up" style="animation-delay:0.15s" id="hero-description"></p>
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay:0.3s">
-          <a href="#projects" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-7 py-3 rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-accent/25 hover:-translate-y-0.5">
-            View Projects
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="#about" class="inline-flex items-center gap-2 text-accent hover:text-accent-hover text-sm font-semibold px-7 py-3 rounded-full border border-accent/20 hover:border-accent/40 transition-all duration-200 hover:-translate-y-0.5">
-            About Me
-          </a>
-        </div>
+    <section class="hero" id="home">
+      <p class="hero-role" id="hero-role"></p>
+      <h1 class="hero-title" id="hero-title"></h1>
+      <p class="hero-description" id="hero-description"></p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">
+          View Projects
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#about" class="btn-secondary">About Me</a>
       </div>
     </section>
 
     <!-- ─── Projects ─── -->
-    <section id="projects" class="py-20 sm:py-28 px-6">
-      <div class="max-w-site mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">Featured Projects</h2>
-          <p class="text-ink-light text-base sm:text-lg max-w-lg mx-auto">Tools, writing, and resources built from real-world engineering deployments.</p>
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <h2>Featured Projects</h2>
+          <p>Tools, writing, and resources built from real-world engineering deployments.</p>
         </div>
-        <div class="grid sm:grid-cols-2 gap-6" id="projects-grid"></div>
+        <div class="card-grid" id="projects-grid"></div>
       </div>
     </section>
 
     <!-- ─── Journal ─── -->
-    <section id="journal" class="py-20 sm:py-28 px-6 bg-surface-hover/50">
-      <div class="max-w-site mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">From the Journal</h2>
-          <p class="text-ink-light text-base sm:text-lg max-w-lg mx-auto">Technical dispatches and reflections from the field.</p>
+    <section class="section section-alt" id="journal">
+      <div class="container">
+        <div class="section-header">
+          <h2>From the Journal</h2>
+          <p>Technical dispatches and reflections from the field.</p>
         </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="journal-grid"></div>
-        <div class="text-center mt-12">
-          <a href="/blog/" class="inline-flex items-center gap-2 text-accent hover:text-accent-hover text-sm font-semibold transition-colors">
+        <div class="journal-grid" id="journal-grid"></div>
+        <div class="read-all">
+          <a href="/blog/">
             Read all posts
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
       </div>
     </section>
 
     <!-- ─── About ─── -->
-    <section id="about" class="py-20 sm:py-28 px-6">
-      <div class="max-w-site mx-auto">
-        <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-10 sm:gap-16">
-          <img
-            id="about-photo"
-            alt="Nils Johansson"
-            class="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl object-cover shadow-lg flex-shrink-0"
-            loading="lazy"
-          >
-          <div>
-            <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4">About</h2>
-            <p class="text-ink-light text-base sm:text-lg leading-relaxed mb-6" id="about-bio"></p>
-            <div class="flex items-center gap-4" id="social-links"></div>
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-layout">
+          <img id="about-photo" alt="Nils Johansson" class="about-photo" loading="lazy">
+          <div class="about-content">
+            <h2>About</h2>
+            <p class="about-bio" id="about-bio"></p>
+            <div class="social-links" id="social-links"></div>
           </div>
         </div>
       </div>
@@ -139,10 +94,10 @@
   </main>
 
   <!-- ─── Footer ─── -->
-  <footer class="border-t border-black/5 py-8 px-6">
-    <div class="max-w-site mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-faint">
+  <footer class="site-footer">
+    <div class="footer-inner">
       <span id="footer-copyright"></span>
-      <div class="flex items-center gap-6" id="footer-links"></div>
+      <div class="footer-links" id="footer-links"></div>
     </div>
   </footer>
 
@@ -152,98 +107,79 @@
     (function () {
       "use strict";
 
-      /* ── Helpers ── */
-
       function icon(name, cls) {
-        const d = CONFIG.icons[name];
+        var d = CONFIG.icons[name];
         if (!d) return "";
-        return `<svg class="${cls || "w-6 h-6"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+        return '<svg class="' + (cls || "") + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + d + '"/></svg>';
       }
 
       function $(sel) { return document.querySelector(sel); }
 
-      /* ── Populate hero ── */
-
+      /* ── Hero ── */
       $("#hero-role").textContent = CONFIG.author.role;
       $("#hero-title").textContent = CONFIG.site.title;
       $("#hero-description").textContent = CONFIG.site.description;
 
       /* ── Navigation ── */
-
       $("#nav-brand").textContent = CONFIG.author.name;
 
-      const navLinksHTML = CONFIG.navigation
-        .map(n => `<a href="#${n.id}" class="text-xs text-ink-light hover:text-ink transition-colors">${n.label}</a>`)
+      $("#nav-links").innerHTML = CONFIG.navigation
+        .map(function (n) { return '<a href="#' + n.id + '">' + n.label + '</a>'; })
         .join("");
-      $("#nav-links").innerHTML = navLinksHTML;
 
-      const mobileLinksHTML = CONFIG.navigation
-        .map(n => `<a href="#${n.id}" class="block text-sm text-ink-light hover:text-ink py-2 transition-colors mobile-nav-link">${n.label}</a>`)
+      $("#mobile-menu").innerHTML = CONFIG.navigation
+        .map(function (n) { return '<a href="#' + n.id + '" class="mobile-nav-link">' + n.label + '</a>'; })
         .join("");
-      $("#mobile-nav-links").innerHTML = mobileLinksHTML;
 
       /* ── Mobile menu toggle ── */
-
-      const menuBtn = $("#mobile-menu-btn");
-      const mobileMenu = $("#mobile-menu");
-      const menuIconPath = $("#menu-icon-path");
-      let menuOpen = false;
+      var menuBtn = $("#mobile-menu-btn");
+      var mobileMenu = $("#mobile-menu");
+      var menuIconPath = $("#menu-icon-path");
+      var menuOpen = false;
 
       menuBtn.addEventListener("click", function () {
         menuOpen = !menuOpen;
-        mobileMenu.classList.toggle("hidden", !menuOpen);
+        mobileMenu.classList.toggle("open", menuOpen);
         menuIconPath.setAttribute("d", menuOpen ? CONFIG.icons.close : CONFIG.icons.menu);
       });
 
       document.querySelectorAll(".mobile-nav-link").forEach(function (link) {
         link.addEventListener("click", function () {
           menuOpen = false;
-          mobileMenu.classList.add("hidden");
+          mobileMenu.classList.remove("open");
           menuIconPath.setAttribute("d", CONFIG.icons.menu);
         });
       });
 
       /* ── Nav scroll effect ── */
-
-      const nav = $("#site-nav");
+      var nav = $("#site-nav");
       window.addEventListener("scroll", function () {
-        if (window.scrollY > 20) {
-          nav.classList.add("border-black/5", "shadow-sm");
-          nav.classList.remove("border-transparent");
-        } else {
-          nav.classList.remove("border-black/5", "shadow-sm");
-          nav.classList.add("border-transparent");
-        }
+        nav.classList.toggle("scrolled", window.scrollY > 20);
       }, { passive: true });
 
       /* ── Projects grid ── */
+      $("#projects-grid").innerHTML = CONFIG.projects.map(function (p) {
+        var isDownload = p.url.endsWith(".pdf") || p.url.endsWith(".txt");
+        var isExternal = p.url.startsWith("http");
+        var attrs = isExternal ? ' target="_blank" rel="noopener"' : "";
+        attrs += isDownload ? " download" : "";
 
-      const projectsHTML = CONFIG.projects.map(function (p) {
-        const isExternal = p.url.startsWith("http");
-        const isDownload = p.url.endsWith(".pdf") || p.url.endsWith(".txt");
-        const target = isExternal ? ' target="_blank" rel="noopener"' : "";
-        const download = isDownload ? " download" : "";
-        const tagHTML = p.tags.map(function (t) {
-          return '<span class="text-[11px] font-medium text-ink-faint bg-surface-hover rounded-full px-2.5 py-0.5">' + t + "</span>";
+        var tags = p.tags.map(function (t) {
+          return '<span class="tag">' + t + '</span>';
         }).join("");
 
-        return '<a href="' + p.url + '"' + target + download + ' class="group block bg-surface-card rounded-2xl border border-black/[0.04] p-7 sm:p-8 transition-all duration-300 hover:shadow-lg hover:shadow-black/[0.06] hover:-translate-y-1">' +
-          '<div class="flex items-start justify-between mb-5">' +
-            '<div class="w-11 h-11 rounded-xl bg-accent/[0.07] flex items-center justify-center text-accent">' +
-              icon(p.icon, "w-5 h-5") +
-            "</div>" +
-            '<svg class="w-4 h-4 text-ink-faint opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
-          "</div>" +
-          '<h3 class="font-display font-bold text-lg tracking-tight mb-2">' + p.title + "</h3>" +
-          '<p class="text-ink-light text-sm leading-relaxed mb-4">' + p.description + "</p>" +
-          '<div class="flex flex-wrap gap-1.5">' + tagHTML + "</div>" +
-        "</a>";
+        return '<a href="' + p.url + '"' + attrs + ' class="card">' +
+          '<div class="card-header">' +
+            '<div class="card-icon">' + icon(p.icon) + '</div>' +
+            '<div class="card-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
+          '</div>' +
+          '<h3>' + p.title + '</h3>' +
+          '<p>' + p.description + '</p>' +
+          '<div class="card-tags">' + tags + '</div>' +
+        '</a>';
       }).join("");
 
-      $("#projects-grid").innerHTML = projectsHTML;
-
-      /* ── Journal posts (from WordPress API) ── */
-
+      /* ── Journal posts (WordPress API) ── */
       var WORDPRESS_API = "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts?_embed&per_page=3";
 
       function stripHTML(html) {
@@ -256,53 +192,46 @@
         return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(dateStr));
       }
 
-      function buildPostCard(post) {
-        var title = stripHTML(post.title.rendered) || "Untitled";
-        var excerpt = stripHTML(post.excerpt.rendered).trim();
-        var summary = excerpt.length > 140 ? excerpt.slice(0, 137) + "\u2026" : excerpt;
-
-        return '<a href="' + post.link + '" target="_blank" rel="noopener" class="group block bg-surface-card rounded-2xl border border-black/[0.04] p-7 transition-all duration-300 hover:shadow-lg hover:shadow-black/[0.06] hover:-translate-y-1">' +
-          '<time class="text-[11px] font-semibold uppercase tracking-widest text-ink-faint">' + formatDate(post.date) + "</time>" +
-          '<h3 class="font-display font-bold text-base tracking-tight mt-3 mb-2 group-hover:text-accent transition-colors">' + title + "</h3>" +
-          '<p class="text-ink-light text-sm leading-relaxed">' + (summary || "Read the full article.") + "</p>" +
-        "</a>";
-      }
-
       fetch(WORDPRESS_API)
         .then(function (res) { return res.json(); })
         .then(function (posts) {
           if (posts.length) {
-            $("#journal-grid").innerHTML = posts.map(buildPostCard).join("");
+            $("#journal-grid").innerHTML = posts.map(function (post) {
+              var title = stripHTML(post.title.rendered) || "Untitled";
+              var excerpt = stripHTML(post.excerpt.rendered).trim();
+              var summary = excerpt.length > 140 ? excerpt.slice(0, 137) + "\u2026" : excerpt;
+
+              return '<a href="' + post.link + '" target="_blank" rel="noopener" class="journal-card">' +
+                '<time>' + formatDate(post.date) + '</time>' +
+                '<h3>' + title + '</h3>' +
+                '<p>' + (summary || "Read the full article.") + '</p>' +
+              '</a>';
+            }).join("");
           } else {
-            $("#journal-grid").innerHTML = '<p class="text-ink-faint text-sm col-span-full text-center py-8">New posts coming soon.</p>';
+            $("#journal-grid").innerHTML = '<p class="journal-empty">New posts coming soon.</p>';
           }
         })
         .catch(function () {
-          $("#journal-grid").innerHTML = '<p class="text-ink-faint text-sm col-span-full text-center py-8">Could not load posts. <a href="/blog/" class="text-accent hover:underline">Visit the blog directly.</a></p>';
+          $("#journal-grid").innerHTML = '<p class="journal-empty">Could not load posts. <a href="/blog/">Visit the blog directly.</a></p>';
         });
 
       /* ── About ── */
-
       $("#about-photo").src = CONFIG.author.photo;
       $("#about-bio").textContent = CONFIG.author.bio;
 
-      var socialHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-surface-hover flex items-center justify-center text-ink-light hover:text-accent hover:bg-accent/[0.07] transition-all duration-200" aria-label="' + key + '">' +
-          icon(key, "w-4 h-4") +
-        "</a>";
+      $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" aria-label="' + key + '">' +
+          icon(key) +
+        '</a>';
       }).join("");
-      $("#social-links").innerHTML = socialHTML;
 
       /* ── Footer ── */
-
       $("#footer-copyright").textContent = CONFIG.site.copyright;
-      var footerLinksHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="hover:text-ink transition-colors capitalize">' + key + "</a>";
+      $("#footer-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener">' + key + '</a>';
       }).join("");
-      $("#footer-links").innerHTML = footerLinksHTML;
 
       /* ── Smooth scrolling ── */
-
       document.querySelectorAll('a[href^="#"]').forEach(function (a) {
         a.addEventListener("click", function (e) {
           var target = document.querySelector(a.getAttribute("href"));
@@ -315,12 +244,13 @@
       });
 
       /* ── Scroll-triggered reveal ── */
-
       var reveals = document.querySelectorAll("#projects, #journal, #about");
+      reveals.forEach(function (el) { el.classList.add("reveal"); });
+
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-up");
+            entry.target.classList.add("visible");
             observer.unobserve(entry.target);
           }
         });
