@@ -1,6 +1,6 @@
 # The Office of Nils Johansson
 
-A premium, Apple-inspired personal project portal. Dark mode by default, custom SVG seal logo, Giscus-powered guestbook, and WordPress blog integration.
+My Personal website, Where I share about my life.
 
 **Live:** [nj22az.github.io](https://nj22az.github.io)
 
