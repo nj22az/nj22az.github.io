@@ -70,9 +70,12 @@
 
     // Determine which nav links to show based on current page
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
+    var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user" };
     var links = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="nav-link">' + n.label + '</a>';
+      return '<a href="' + href + '" class="nav-link">' +
+        icon(navIcons[n.id] || "") +
+        '<span>' + n.label + '</span></a>';
     });
 
     nav.innerHTML =
@@ -97,7 +100,9 @@
     mobileMenu.id = "mobile-menu";
     mobileMenu.innerHTML = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
-      return '<a href="' + href + '" class="mobile-nav-link">' + n.label + '</a>';
+      return '<a href="' + href + '" class="mobile-nav-link">' +
+        icon(navIcons[n.id] || "") +
+        '<span>' + n.label + '</span></a>';
     }).join("");
     nav.parentNode.insertBefore(mobileMenu, nav.nextSibling);
 
