@@ -1,5 +1,5 @@
 /*
- * Navigation — green circle hamburger + dropdown/overlay menu
+ * Navigation — green circle hamburger + compact dropdown menu
  */
 
 .site-nav {
@@ -25,7 +25,6 @@
   margin: 0 auto; padding: 0 1.5rem;
   width: 100%;
   display: flex; align-items: center; justify-content: space-between;
-  position: relative;
 }
 
 .nav-brand {
@@ -64,126 +63,68 @@
 .nav-hamburger svg { width: 22px; height: 22px; }
 
 /* ══════════════════════════════════════════
-   MENU OVERLAY — compact dropdown on desktop,
-   full-screen on mobile
+   DROPDOWN MENU — compact icon-card grid
+   Same on all screen sizes
    ══════════════════════════════════════════ */
 
 .menu-overlay {
   position: fixed;
+  top: 64px;
+  right: 1rem;
   z-index: 100;
+  width: min(360px, calc(100vw - 2rem));
+  max-height: calc(100vh - 80px);
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 40px rgba(80, 60, 40, 0.15);
+  padding: 1rem;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  transform: translateY(-8px) scale(0.97);
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
   overflow-y: auto;
 }
 .menu-overlay.open {
   opacity: 1;
   visibility: visible;
+  transform: translateY(0) scale(1);
 }
 
-/* ── Desktop: compact dropdown panel ── */
-@media (min-width: 769px) {
-  .menu-overlay {
-    top: 64px;
-    right: max(1.5rem, calc((100vw - var(--max-w)) / 2 + 1.5rem));
-    left: auto;
-    bottom: auto;
-    width: 360px;
-    max-height: calc(100vh - 80px);
-    background: var(--surface-card);
-    border: 1px solid var(--border);
-    border-radius: 1.25rem;
-    box-shadow: 0 12px 40px rgba(80, 60, 40, 0.12);
-    padding: 1rem;
-    transform: translateY(-8px);
-  }
-  .menu-overlay.open { transform: translateY(0); }
-  .menu-overlay-header { display: none; }
-  .menu-overlay-body {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.625rem;
-    padding: 0;
-  }
-  .menu-row {
-    flex-direction: column;
-    text-align: center;
-    padding: 1rem 0.5rem;
-    gap: 0.625rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    border: none;
-    background: var(--surface-raised);
-  }
-  .menu-row:hover { transform: translateY(-2px); transform: none; }
-  .menu-row-arrow { display: none; }
-  .menu-row-label { text-align: center; font-size: 0.75rem; }
-  .menu-row-icon { width: 42px; height: 42px; }
-  .menu-overlay-footer {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    padding: 0.75rem 0 0;
-    margin-top: 0.25rem;
-    border-top: 1px solid var(--border);
-  }
-  .menu-cta { flex: 1; padding: 0.625rem; font-size: 0.8125rem; border-radius: 0.625rem; }
+/* Hide the mobile header — not needed for dropdown */
+.menu-overlay-header { display: none; }
+
+.menu-overlay-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0;
 }
 
-/* ── Mobile: full-screen overlay ── */
-@media (max-width: 768px) {
-  .menu-overlay {
-    inset: 0;
-    background: var(--surface);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-  }
-  .menu-overlay-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
-    height: 64px;
-    flex-shrink: 0;
-  }
-  .menu-overlay-body {
-    padding: 1rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-  }
-  .menu-overlay-footer {
-    padding: 1.25rem 1.25rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-    flex-shrink: 0;
-  }
-}
-
-/* ── Menu row ── */
+/* ── Menu card — icon + label ── */
 .menu-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
+  text-align: center;
+  background: var(--surface-raised);
   border-radius: 1rem;
-  padding: 1.125rem 1.25rem;
-  gap: 1.125rem;
+  padding: 1rem 0.5rem;
+  gap: 0.5rem;
   color: var(--accent);
   font-weight: 600;
-  font-size: 0.9375rem;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  font-size: 0.6875rem;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.02em;
 }
 .menu-row:hover {
-  background: var(--surface-raised);
+  background: var(--accent-glow);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-card);
 }
 
 .menu-row-icon {
-  width: 48px; height: 48px;
+  width: 42px; height: 42px;
   border-radius: 50%;
   background: var(--accent-glow);
   border: 1.5px solid rgba(62, 168, 140, 0.15);
@@ -191,44 +132,39 @@
   flex-shrink: 0;
   color: var(--accent);
 }
-.menu-row-icon svg { width: 22px; height: 22px; }
+.menu-row-icon svg { width: 20px; height: 20px; }
 
-.menu-row-label {
-  flex: 1;
-  text-align: left;
-  letter-spacing: 0.03em;
+.menu-row-label { line-height: 1.2; }
+
+/* Hide arrow in card mode */
+.menu-row-arrow { display: none; }
+
+/* ── Footer with CTA buttons ── */
+.menu-overlay-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border);
 }
 
-.menu-row-arrow {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border-hover);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--ink-faint);
-  opacity: 0.5;
-  flex-shrink: 0;
-}
-.menu-row-arrow svg { width: 12px; height: 12px; }
-.menu-row:hover .menu-row-arrow { opacity: 1; border-color: var(--accent); color: var(--accent); }
-
-/* ── CTA buttons ── */
 .menu-cta {
+  flex: 1;
   display: block;
   text-align: center;
-  padding: 1rem;
-  border-radius: 0.75rem;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 0.75rem;
   transition: opacity 0.2s, transform 0.2s;
   letter-spacing: 0.02em;
 }
 .menu-cta:hover { opacity: 0.9; transform: translateY(-1px); }
 .menu-cta-primary { background: var(--accent); color: #fff; }
 .menu-cta-secondary { background: #1e2e24; color: #fff; }
+[data-theme="dark"] .menu-cta-secondary { background: var(--surface-hover); }
 
-[data-theme="dark"] .menu-cta-secondary { background: var(--surface-card); }
-
-/* ── Click-outside backdrop (desktop only) ── */
+/* ── Click-outside backdrop ── */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -236,3 +172,8 @@
   display: none;
 }
 .menu-backdrop.open { display: block; }
+
+/* ── Small phone: 2-column grid ── */
+@media (max-width: 360px) {
+  .menu-overlay-body { grid-template-columns: repeat(2, 1fr); }
+}

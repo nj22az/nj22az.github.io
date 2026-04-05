@@ -135,15 +135,10 @@
     function openMenu() {
       overlay.classList.add("open");
       backdrop.classList.add("open");
-      // Only lock scroll on mobile
-      if (window.innerWidth <= 768) {
-        document.body.style.overflow = "hidden";
-      }
     }
     function closeMenu() {
       overlay.classList.remove("open");
       backdrop.classList.remove("open");
-      document.body.style.overflow = "";
     }
 
     hamburger.addEventListener("click", function () {
