@@ -1,0 +1,76 @@
+/*
+ * Schedule — availability table (c-morinosato 診療時間 style)
+ */
+
+.schedule-frame {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.schedule-table th {
+  padding: 0.625rem 0.25rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+.schedule-table th:first-child {
+  text-align: left;
+  color: var(--ink-light);
+  font-weight: 600;
+}
+
+.schedule-table td {
+  padding: 0.75rem 0.25rem;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--border);
+}
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Available / unavailable indicators */
+.slot-on {
+  display: inline-block;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+.slot-off {
+  display: inline-block;
+  font-size: 1rem;
+  color: var(--ink-faint);
+  letter-spacing: 0;
+}
+
+.schedule-note {
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .schedule-frame { padding: 1.25rem 1rem; }
+  .schedule-table { font-size: 0.8125rem; }
+  .schedule-table th,
+  .schedule-table td { padding: 0.5rem 0.125rem; }
+  .slot-on { width: 18px; height: 18px; }
+}

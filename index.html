@@ -40,6 +40,13 @@
       </div>
     </section>
 
+    <!-- Schedule — availability table -->
+    <section class="section" id="schedule">
+      <div class="container">
+        <div id="schedule-widget"></div>
+      </div>
+    </section>
+
     <!-- Dashed divider -->
     <hr class="section-divider">
 
@@ -141,6 +148,26 @@
           var visible = Math.max(0, Math.min(1, rect.bottom / (window.innerHeight * 0.7)));
           heroPhoto.style.opacity = visible;
         }, { passive: true });
+      }
+
+      /* Schedule table */
+      if (CONFIG.author.schedule) {
+        var sched = CONFIG.author.schedule;
+        var headCells = '<th>' + sched.title + '</th>' +
+          sched.days.map(function (d) { return '<th>' + d + '</th>'; }).join("");
+        var bodyRows = sched.rows.map(function (row) {
+          var cells = '<td>' + row.time + '</td>' +
+            row.slots.map(function (on) {
+              return '<td>' + (on ? '<span class="slot-on"></span>' : '<span class="slot-off">\u2014</span>') + '</td>';
+            }).join("");
+          return '<tr>' + cells + '</tr>';
+        }).join("");
+        $("#schedule-widget").innerHTML =
+          '<div class="schedule-frame">' +
+            '<table class="schedule-table"><thead><tr>' + headCells + '</tr></thead>' +
+            '<tbody>' + bodyRows + '</tbody></table>' +
+            '<p class="schedule-note">' + sched.note + '</p>' +
+          '</div>';
       }
 
       /* Decorative leaf icons above section headers */
