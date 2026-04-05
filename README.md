@@ -1,118 +1,110 @@
 # The Office of Nils Johansson
 
-A premium, Apple-inspired personal project portal hosted on GitHub Pages.
+A premium, Apple-inspired personal project portal. Dark mode by default, fully responsive, zero build dependencies.
 
-**Live site:** [nj22az.github.io](https://nj22az.github.io)
+**Live:** [nj22az.github.io](https://nj22az.github.io)
 
 ---
-
-## What This Is
-
-A clean digital hub that links to all of Nils Johansson's projects — engineering tools, technical writing, and downloadable resources. Built as a fast, zero-dependency static site with an Apple-inspired design language: extreme whitespace, sophisticated typography, subtle interactions, and flat icons.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Markup | Semantic HTML5 |
-| Styling | [Tailwind CSS](https://tailwindcss.com) via CDN + custom CSS |
-| Scripts | Vanilla JavaScript (no frameworks) |
+| Markup | Semantic HTML5, multi-page |
+| Styling | Self-contained CSS with dark/light design tokens |
+| Scripts | Vanilla JavaScript, no frameworks |
 | Typography | [Nunito](https://fonts.google.com/specimen/Nunito) (display) + system-ui (body) |
-| Icons | Inline SVG paths (Lucide / SF Symbols style) |
-| Hosting | GitHub Pages (auto-deploys on push to `main`) |
+| Icons | Inline SVG paths (Lucide / SF Symbols aesthetic) |
+| Hosting | GitHub Pages (auto-deploys on push) |
 
-**No build step.** No `npm install`. No bundler. Just open `index.html`.
+**No build step.** No npm. No bundler. Just static files.
 
 ## Run Locally
 
 ```bash
-# Option 1: Any static server
 npx serve .
-
-# Option 2: Python
+# or
 python3 -m http.server 8000
-
-# Option 3: Just open the file
-open index.html
+# or just open index.html
 ```
-
-Then visit `http://localhost:8000` (or whatever port your server uses).
 
 ## Folder Structure
 
 ```
 .
-├── index.html              # Main portal (hero, projects, journal, about)
-├── config.js               # All site data, project list, icons, strings
-├── styles.css              # Custom CSS (dark mode, glassmorphism, animations)
-├── blog/
-│   └── index.html          # Blog page (fetches from WordPress API)
-├── hotel-assessment/       # React + TypeScript sub-app (own build pipeline)
-├── _posts/                 # Markdown blog post archive
+├── index.html              Main portal (hero, projects, journal, about)
+├── blog/index.html         Blog page (fetches from WordPress API)
+├── config.js               All site data, projects, icons, strings
+├── shared.js               Shared nav, footer, theme toggle (loaded on every page)
+├── styles.css              Complete stylesheet (dark-first design tokens)
+├── hotel-assessment/       React + TypeScript sub-app (separate build)
+├── _posts/                 Markdown blog post archive
 ├── assets/
-│   ├── downloads/          # Downloadable files (PDF, TXT)
-│   ├── images/             # Profile photos, post images
-│   ├── previews/           # Download preview thumbnails
-│   └── video/              # Video assets
-├── CLAUDE.md               # AI assistant instructions
-├── .nojekyll               # Tells GitHub Pages to skip Jekyll
+│   ├── downloads/          Downloadable files (PDF, TXT)
+│   ├── images/             Photos, app icons
+│   ├── previews/           Download preview thumbnails
+│   └── video/              Video assets
+├── CLAUDE.md               AI assistant instructions
+├── .nojekyll               Tells GitHub Pages to skip Jekyll
 └── .gitignore
 ```
 
+## How Dark Mode Works
+
+1. `<html data-theme="dark">` is set by default on every page
+2. CSS uses custom properties scoped to `[data-theme="dark"]` and `[data-theme="light"]`
+3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
+4. A sun/moon toggle button in the top nav switches the theme
+5. The preference persists across pages and sessions
+
 ## How to Add a New Project
 
-1. Open **`config.js`**
-2. Add an object to the `CONFIG.projects` array:
+Edit **`config.js`** → `CONFIG.projects`:
 
 ```js
 {
-  title: "My New Project",
-  description: "A short description of what it does.",
-  url: "/path-to-project/",   // or full URL
-  icon: "iconName",            // must exist in CONFIG.icons
+  title: "Project Name",
+  description: "Short description.",
+  url: "/path-or-url/",
+  icon: "iconName",           // must exist in CONFIG.icons
   tags: ["Tag1", "Tag2"],
   featured: true,
 }
 ```
 
-3. If you need a new icon, add an SVG path to `CONFIG.icons`:
-
+Need a new icon? Add to `CONFIG.icons`:
 ```js
-iconName: "M... path data ...",  // 24x24 viewBox, stroke-based
+iconName: "M... SVG path data ...",   // 24x24 viewBox, stroke-based
 ```
 
-4. Commit and push — the site updates automatically.
+## How to Add a New Page
 
-## How to Edit Content
+1. Create `new-page/index.html`
+2. Use the same HTML shell as existing pages:
+   - `<html lang="en" data-theme="dark">`
+   - `<nav id="site-nav"></nav>` in body
+   - `<footer id="site-footer" class="site-footer"></footer>`
+   - Load `config.js` then `shared.js`
+3. Navigation, footer, and theme toggle are automatically injected
+4. Optionally add the page to `CONFIG.navigation` in config.js
 
-| What | Where |
-|------|-------|
-| Site title, tagline, description | `config.js` → `CONFIG.site` |
-| Author name, bio, social links | `config.js` → `CONFIG.author` |
-| Projects list | `config.js` → `CONFIG.projects` |
-| Navigation items | `config.js` → `CONFIG.navigation` |
-| Icon SVG paths | `config.js` → `CONFIG.icons` |
-| Colors, dark mode, animations | `styles.css` |
-| Tailwind config (fonts, colors) | `index.html` → `<script>tailwind.config = {...}</script>` |
-| Blog posts source | WordPress at `theofficeofnils.wordpress.com` |
+## Multi-Page Consistency
 
-## Design Principles
+All pages share:
+- **`shared.js`** — injects identical nav (with theme toggle) and footer
+- **`styles.css`** — single stylesheet with all component styles
+- **`config.js`** — single source of truth for all data
 
-- **Apple-inspired**: Generous whitespace, subtle shadows, no visual noise
-- **Mobile-first**: Responsive from 320px to ultrawide
-- **Dark mode**: Automatic, system-preference aware
-- **Accessible**: Focus rings, reduced-motion support, semantic HTML
-- **Fast**: No build step, minimal dependencies, CDN-delivered assets
-- **Data-driven**: Everything configurable from one `config.js` file
+This means every page automatically gets the same navigation, dark/light toggle, footer, typography, colors, and hover states.
 
 ## Environment Variables
 
-None required. The site is entirely static with no server-side dependencies.
+None. The site is entirely static.
 
 ## Sub-Projects
 
 ### Hotel Assessment Journal (`/hotel-assessment/`)
-A separate React + Vite + TypeScript application for generating AI-powered hotel assessment reports. Has its own `package.json` and build pipeline. See `hotel-assessment/` for details.
+Separate React + Vite + TypeScript app. Has its own `package.json` and build pipeline. Not affected by the main site's design system.
 
 ## License
 

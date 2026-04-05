@@ -1,104 +1,95 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
 ## Commands
 
 ### Local Development
-Open `index.html` directly in a browser, or use any static server:
 ```bash
 npx serve .
 # or
 python3 -m http.server 8000
 ```
+Then open `http://localhost:8000`. No build step required.
 
 ### Publishing
 ```bash
-git add -A
-git commit -m "Describe your change"
-git push origin main
+git add -A && git commit -m "Describe change" && git push origin main
 ```
-GitHub Pages rebuilds automatically on push to main branch.
+GitHub Pages auto-deploys on push to main.
 
-## Architecture Overview
+## Architecture
 
-This is a static portfolio site called **The Office of Nils Johansson**. Apple-inspired flat design with Tailwind CSS and vanilla JavaScript. No build step required.
+Multi-page static portfolio: **The Office of Nils Johansson**. Apple-inspired dark-first design. No frameworks, no build step.
 
 ### Core Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Main portal — hero, projects grid, journal feed, about section, footer |
-| `config.js` | All site data: projects, author info, icons, navigation, strings |
-| `styles.css` | Custom styles extending Tailwind (dark mode, animations, glassmorphism) |
-| `blog/index.html` | Standalone blog page pulling posts from WordPress API |
+| `index.html` | Main portal — hero, projects, journal feed, about |
+| `blog/index.html` | Blog page — WordPress API integration |
+| `config.js` | All site data: projects, author, icons, nav items |
+| `shared.js` | Shared nav, footer, theme toggle — included on every page |
+| `styles.css` | Complete stylesheet with dark/light tokens |
 
-### Design System
+### Multi-Page Consistency
 
-- **Framework**: Tailwind CSS via CDN (no build step)
-- **Typography**: Nunito (rounded gothic display) + system-ui (body)
-- **Icons**: Inline SVG paths in `config.js` (Lucide/SF Symbols style, 24x24 viewBox)
-- **Dark mode**: Automatic via `prefers-color-scheme` in `styles.css`
-- **Animations**: Scroll-triggered fade-up via IntersectionObserver
-- **Navigation**: Fixed glassmorphism bar, responsive hamburger on mobile
+Every HTML page includes:
+1. `<html data-theme="dark">` — dark by default
+2. `<nav id="site-nav"></nav>` — shared.js injects navigation + theme toggle
+3. `<footer id="site-footer" class="site-footer"></footer>` — shared.js injects footer
+4. `<script src="/config.js"></script>` then `<script src="/shared.js"></script>`
 
-### Data Flow
+### Theme System
 
-1. `config.js` exports a `CONFIG` object with all site data
-2. `index.html` inline script reads CONFIG and renders DOM
-3. Journal section fetches latest 3 posts from WordPress API at runtime
-4. Projects link to sub-apps (`/hotel-assessment/`) and downloadable assets
+- Dark mode is default (`data-theme="dark"` on `<html>`)
+- Toggle button in nav switches between dark/light
+- Preference persisted in `localStorage` key `nj-theme`
+- All colors use CSS custom properties in `:root` / `[data-theme="light"]`
+- No `@media (prefers-color-scheme)` — manual toggle only
 
-### Sub-Projects
+### Adding a New Page
 
-- **`hotel-assessment/`** — Separate React + Vite + TypeScript app for hotel reviews (has own build pipeline)
-- **`_posts/`** — Markdown blog post archive (content source, not actively processed)
+1. Create `new-page/index.html`
+2. Copy the standard HTML shell:
+   ```html
+   <!DOCTYPE html>
+   <html lang="en" data-theme="dark">
+   <head>
+     <!-- same head as other pages: meta, fonts, styles.css -->
+   </head>
+   <body>
+     <nav id="site-nav"></nav>
+     <main><!-- page content --></main>
+     <footer id="site-footer" class="site-footer"></footer>
+     <script src="/config.js"></script>
+     <script src="/shared.js"></script>
+   </body>
+   </html>
+   ```
+3. Add to `CONFIG.navigation` in config.js if it should appear in nav
+
+### Adding a New Project
+
+Edit `CONFIG.projects` in `config.js`. Add icon path to `CONFIG.icons` if needed.
+
+### Icons
+
+All icons are SVG path strings in `CONFIG.icons` (24x24 viewBox, stroke-based). Rendered by `siteIcon()` from shared.js.
 
 ## Key Directories
 
 ```
-index.html              # Main portal page
-config.js               # Centralized site configuration
-styles.css              # Custom CSS (dark mode, animations)
-blog/index.html         # WordPress-powered blog page
-hotel-assessment/       # React sub-app (separate build)
+index.html              # Main portal
+blog/index.html         # Blog (WordPress API)
+config.js               # Site configuration
+shared.js               # Shared nav/footer/theme
+styles.css              # Complete stylesheet
+hotel-assessment/       # Separate React sub-app
 _posts/                 # Blog post markdown archive
 assets/
-  downloads/            # Downloadable files (PDF, TXT)
-  images/               # Profile photos, icons, post images
-  previews/             # Download preview thumbnails
-  video/                # Video assets for blog posts
+  downloads/            # Downloadable files
+  images/               # Photos, icons
+  previews/             # Download thumbnails
+  video/                # Video assets
 ```
-
-## How to Add a New Project
-
-1. Open `config.js`
-2. Add an entry to the `CONFIG.projects` array:
-   ```js
-   {
-     title: "Project Name",
-     description: "One-line description.",
-     url: "/path/or/url",
-     icon: "iconName",       // Must exist in CONFIG.icons
-     tags: ["Tag1", "Tag2"],
-     featured: true,
-   }
-   ```
-3. If the project needs a new icon, add an SVG path string to `CONFIG.icons`
-
-## How to Add a New Icon
-
-Add an entry to `CONFIG.icons` in `config.js`:
-```js
-iconName: "M... SVG path data ...",
-```
-Use 24x24 viewBox, stroke-based (no fill). Match Lucide/SF Symbols style.
-
-## Development Notes
-
-- No package.json, no build step — pure static HTML/CSS/JS
-- `.nojekyll` file tells GitHub Pages to skip Jekyll processing
-- Tailwind loaded via CDN (`cdn.tailwindcss.com`) — config is inline in `index.html`
-- Dark mode handled entirely in CSS `@media (prefers-color-scheme: dark)`
-- Reduced motion respected via `prefers-reduced-motion`
-- All external links open in new tab with `rel="noopener"`

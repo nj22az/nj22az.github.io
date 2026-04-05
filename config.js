@@ -17,7 +17,7 @@ const CONFIG = {
     name: "Nils Johansson",
     role: "Field Service Engineer",
     location: "Southeast Asia",
-    bio: "Marine engineer turned field service engineer with Swedish\u2013Caribbean heritage. I commission precision testing systems and gas-turbine installations across Southeast Asia, blending engine-room discipline with a love of cross-cultural collaboration.",
+    bio: "Marine engineer turned field service engineer with a background in maritime operations, precision material testing systems, and industrial commissioning. Used to working independently in complex technical environments, I combine hands-on engineering experience with structured execution and strong cross-cultural awareness.",
     photo: "/assets/images/nils-profile.jpg",
     social: {
       github: "https://github.com/nj22az",
@@ -93,5 +93,7 @@ const CONFIG = {
     menu: "M4 6h16M4 12h16M4 18h16",
     close: "M18 6 6 18M6 6l12 12",
     external: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3",
+    sun: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z",
+    moon: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z",
   },
 };
