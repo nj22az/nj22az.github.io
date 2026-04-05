@@ -22,7 +22,7 @@ const CONFIG = {
     social: {
       github: "https://github.com/nj22az",
       linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
-      etsy: "https://www.etsy.com/shop/TheOfficeOfNils",
+      etsy: "https://www.etsy.com/shop/Colonialclub",
       wordpress: "https://theofficeofnils.wordpress.com",
     },
   },
@@ -58,7 +58,7 @@ const CONFIG = {
       title: "Etsy Shop",
       description:
         "Curated digital products and templates built from real engineering workflows and field deployments.",
-      url: "https://www.etsy.com/shop/TheOfficeOfNils",
+      url: "https://www.etsy.com/shop/Colonialclub",
       icon: "store",
       tags: ["Templates", "Digital Products", "Shop"],
       featured: true,
