@@ -95,7 +95,7 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "StepBuddy",
+      title: "StepWise",
       description:
         "Interactive step-by-step calculator for engineering workflows. Built for precision and clarity.",
       url: "https://nj22az.github.io/stepbuddy/",
