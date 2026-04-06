@@ -447,7 +447,7 @@
       $("#about-bio").textContent = CONFIG.author.bio;
 
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" aria-label="' + key + '">' +
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + key + '">' +
           siteIcon(key) + '</a>';
       }).join("");
 

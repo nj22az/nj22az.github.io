@@ -41,6 +41,26 @@
   display: flex; align-items: center; justify-content: center;
   color: var(--accent);
   transition: all 0.2s;
+  transform: scale(1);
 }
-.social-link:hover { color: #fff; background: var(--accent); transform: scale(1.1); }
+.social-link:hover { transform: scale(1.1); }
 .social-link svg { width: 16px; height: 16px; }
+
+/* Brand colors */
+.social-link[data-icon="github"] { color: #24292e; background: rgba(36, 41, 46, 0.1); }
+.social-link[data-icon="github"]:hover { color: #fff; background: #24292e; }
+
+.social-link[data-icon="linkedin"] { color: #0a66c2; background: rgba(10, 102, 194, 0.1); }
+.social-link[data-icon="linkedin"]:hover { color: #fff; background: #0a66c2; }
+
+.social-link[data-icon="etsy"],
+.social-link[data-icon="store"] { color: #f1a500; background: rgba(241, 165, 0, 0.1); }
+.social-link[data-icon="etsy"]:hover,
+.social-link[data-icon="store"]:hover { color: #fff; background: #f1a500; }
+
+.social-link[data-icon="wordpress"] { color: #217538; background: rgba(33, 117, 56, 0.1); }
+.social-link[data-icon="wordpress"]:hover { color: #fff; background: #217538; }
+
+/* Dark mode adjustments */
+[data-theme="dark"] .social-link[data-icon="github"] { color: #fff; background: rgba(255, 255, 255, 0.1); }
+[data-theme="dark"] .social-link[data-icon="github"]:hover { background: #fff; color: #24292e; }
