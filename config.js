@@ -94,6 +94,16 @@ const CONFIG = {
       bento: "wide",
       featured: true,
     },
+    {
+      title: "StepBuddy",
+      description:
+        "Interactive step-by-step calculator for engineering workflows. Built for precision and clarity.",
+      url: "https://nj22az.github.io/stepbuddy/",
+      icon: "calculator",
+      tags: ["Tool", "Calculator", "Engineering"],
+      bento: "normal",
+      featured: true,
+    },
   ],
 
   /** WordPress API for journal feed */
@@ -163,5 +173,7 @@ const CONFIG = {
     leaf: "M12 22V8M12 8C12 8 7 3 2 3c0 5 4 9 10 13M12 8c0 0 5-5 10-5 0 5-4 9-10 13",
     plus: "M12 5v14M5 12h14",
     mappin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+    calculator:
+      "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",
   },
 };

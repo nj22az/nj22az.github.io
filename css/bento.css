@@ -86,6 +86,13 @@
 }
 .bento-card:hover .bento-icon[data-icon="wordpress"] { background: rgba(33, 117, 56, 0.2); }
 
+.bento-icon[data-icon="calculator"] {
+  background: rgba(99, 55, 170, 0.12);
+  color: #6337aa;
+  border: 1.5px solid rgba(99, 55, 170, 0.2);
+}
+.bento-card:hover .bento-icon[data-icon="calculator"] { background: rgba(99, 55, 170, 0.2); }
+
 .bento-arrow {
   color: var(--ink-faint);
   opacity: 0;
