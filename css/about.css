@@ -37,7 +37,8 @@
 .social-link {
   width: 2.75rem; height: 2.75rem;
   border-radius: 50%;
-  background: var(--accent-glow);
+  background: #fff;
+  border: 1.5px solid var(--border);
   display: flex; align-items: center; justify-content: center;
   color: var(--accent);
   transition: all 0.2s;
@@ -46,21 +47,22 @@
 .social-link:hover { transform: scale(1.1); }
 .social-link svg { width: 16px; height: 16px; }
 
-/* Brand colors */
-.social-link[data-icon="github"] { color: #24292e; background: rgba(36, 41, 46, 0.12); border: 1.5px solid rgba(36, 41, 46, 0.15); }
+/* Brand colors — white bg with colored icon + border */
+.social-link[data-icon="github"] { color: #24292e; border-color: rgba(36, 41, 46, 0.25); }
 .social-link[data-icon="github"]:hover { color: #fff; background: #24292e; border-color: #24292e; }
 
-.social-link[data-icon="linkedin"] { color: #0a66c2; background: rgba(10, 102, 194, 0.1); border: 1.5px solid rgba(10, 102, 194, 0.18); }
+.social-link[data-icon="linkedin"] { color: #0a66c2; border-color: rgba(10, 102, 194, 0.3); }
 .social-link[data-icon="linkedin"]:hover { color: #fff; background: #0a66c2; border-color: #0a66c2; }
 
 .social-link[data-icon="etsy"],
-.social-link[data-icon="store"] { color: #f1a500; background: rgba(241, 165, 0, 0.1); border: 1.5px solid rgba(241, 165, 0, 0.18); }
+.social-link[data-icon="store"] { color: #f1a500; border-color: rgba(241, 165, 0, 0.3); }
 .social-link[data-icon="etsy"]:hover,
 .social-link[data-icon="store"]:hover { color: #fff; background: #f1a500; border-color: #f1a500; }
 
-.social-link[data-icon="wordpress"] { color: #217538; background: rgba(33, 117, 56, 0.1); border: 1.5px solid rgba(33, 117, 56, 0.18); }
+.social-link[data-icon="wordpress"] { color: #217538; border-color: rgba(33, 117, 56, 0.3); }
 .social-link[data-icon="wordpress"]:hover { color: #fff; background: #217538; border-color: #217538; }
 
 /* Dark mode */
-[data-theme="dark"] .social-link[data-icon="github"] { color: #fff; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.15); }
+[data-theme="dark"] .social-link { background: var(--surface-card); }
+[data-theme="dark"] .social-link[data-icon="github"] { color: #fff; border-color: rgba(255, 255, 255, 0.2); }
 [data-theme="dark"] .social-link[data-icon="github"]:hover { background: #fff; color: #24292e; border-color: #fff; }
