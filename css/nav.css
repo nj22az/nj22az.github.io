@@ -134,6 +134,51 @@
 }
 .menu-row-icon svg { width: 20px; height: 20px; }
 
+/* Per-icon flat colors — light mode */
+.menu-row-icon[data-icon="home"] {
+  color: #8b7355;
+  background: rgba(139, 115, 85, 0.1);
+  border-color: rgba(139, 115, 85, 0.15);
+}
+.menu-row-icon[data-icon="notebook"] {
+  color: #5b6abf;
+  background: rgba(91, 106, 191, 0.1);
+  border-color: rgba(91, 106, 191, 0.15);
+}
+.menu-row-icon[data-icon="wordpress"] {
+  color: #217538;
+  background: rgba(33, 117, 56, 0.1);
+  border-color: rgba(33, 117, 56, 0.15);
+}
+/* user (About) keeps default var(--accent) */
+.menu-row-icon[data-icon="mappin"] {
+  color: #c4724e;
+  background: rgba(196, 114, 78, 0.1);
+  border-color: rgba(196, 114, 78, 0.15);
+}
+
+/* Per-icon flat colors — dark mode */
+[data-theme="dark"] .menu-row-icon[data-icon="home"] {
+  color: #b89a72;
+  background: rgba(184, 154, 114, 0.12);
+  border-color: rgba(184, 154, 114, 0.18);
+}
+[data-theme="dark"] .menu-row-icon[data-icon="notebook"] {
+  color: #8b9aef;
+  background: rgba(139, 154, 239, 0.12);
+  border-color: rgba(139, 154, 239, 0.18);
+}
+[data-theme="dark"] .menu-row-icon[data-icon="wordpress"] {
+  color: #3ea868;
+  background: rgba(62, 168, 104, 0.12);
+  border-color: rgba(62, 168, 104, 0.18);
+}
+[data-theme="dark"] .menu-row-icon[data-icon="mappin"] {
+  color: #e0906a;
+  background: rgba(224, 144, 106, 0.12);
+  border-color: rgba(224, 144, 106, 0.18);
+}
+
 .menu-row-label { line-height: 1.2; }
 
 /* Hide arrow in card mode */

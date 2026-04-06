@@ -91,7 +91,7 @@
       var href = isHome ? "#" + n.id : "/#" + n.id;
       var iconName = navIcons[n.id] || "arrow";
       return '<a href="' + href + '" class="menu-row">' +
-        '<span class="menu-row-icon">' + icon(iconName) + '</span>' +
+        '<span class="menu-row-icon" data-icon="' + iconName + '">' + icon(iconName) + '</span>' +
         '<span class="menu-row-label">' + n.label + '</span>' +
         '<span class="menu-row-arrow">' + icon("arrow") + '</span>' +
       '</a>';
