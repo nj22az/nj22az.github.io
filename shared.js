@@ -97,22 +97,9 @@
       '</a>';
     }).join("");
 
-    var socialLinks = Object.keys(CONFIG.author.social).map(function (key) {
-      return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="menu-row">' +
-        '<span class="menu-row-icon">' + icon(key) + '</span>' +
-        '<span class="menu-row-label">' + key.charAt(0).toUpperCase() + key.slice(1) + '</span>' +
-        '<span class="menu-row-arrow">' + icon("external") + '</span>' +
-      '</a>';
-    }).join("");
-
     overlay.innerHTML =
       '<div class="menu-overlay-body">' +
         menuRows +
-        socialLinks +
-      '</div>' +
-      '<div class="menu-overlay-footer">' +
-        '<a href="#projects" class="menu-cta menu-cta-primary">View Projects</a>' +
-        '<a href="#about" class="menu-cta menu-cta-secondary">About Me</a>' +
       '</div>';
 
     document.body.appendChild(overlay);

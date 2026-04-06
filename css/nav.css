@@ -139,31 +139,6 @@
 /* Hide arrow in card mode */
 .menu-row-arrow { display: none; }
 
-/* ── Footer with CTA buttons ── */
-.menu-overlay-footer {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem 0 0;
-  margin-top: 0.5rem;
-  border-top: 1px solid var(--border);
-}
-
-.menu-cta {
-  flex: 1;
-  display: block;
-  text-align: center;
-  padding: 0.625rem;
-  border-radius: 0.625rem;
-  font-weight: 700;
-  font-size: 0.75rem;
-  transition: opacity 0.2s, transform 0.2s;
-  letter-spacing: 0.02em;
-}
-.menu-cta:hover { opacity: 0.9; transform: translateY(-1px); }
-.menu-cta-primary { background: var(--accent); color: #fff; }
-.menu-cta-secondary { background: #1e2e24; color: #fff; }
-[data-theme="dark"] .menu-cta-secondary { background: var(--surface-hover); }
-
 /* ── Click-outside backdrop ── */
 .menu-backdrop {
   position: fixed;
