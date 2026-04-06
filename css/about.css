@@ -2,6 +2,15 @@
  * About — centered layout with gradient + decorative elements
  */
 
+/* Blob wrapper — clips decorative blobs without clipping interactive content */
+.about-blobs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .about-layout {
   max-width: 40rem; margin: 0 auto;
   display: flex; flex-direction: column;
