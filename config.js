@@ -104,6 +104,16 @@ const CONFIG = {
       bento: "normal",
       featured: true,
     },
+    {
+      title: "JNJ 3D Printing",
+      description:
+        "Custom 3D printed products made in \u00d6rebro, Sweden. Browse the catalog, order online, and pay with Swish.",
+      url: "/shop/",
+      icon: "printer3d",
+      tags: ["3D Printing", "Products", "Shop"],
+      bento: "wide",
+      featured: true,
+    },
   ],
 
   /** WordPress API for journal feed */
@@ -175,5 +185,7 @@ const CONFIG = {
     mappin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
     calculator:
       "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",
+    printer3d:
+      "M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z",
   },
 };
