@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JNJ 3D Printing — Custom 3D Printed Products</title>
+  <meta name="description" content="Quality 3D printed products made in Sweden. From practical everyday items to custom designs. Payment via Swish.">
+  <meta name="author" content="JNJ 3D Printing">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shop/styles.css">
+</head>
+<body>
+
+  <nav id="site-nav" class="site-nav"></nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-logo logo-seal" id="hero-logo"></div>
+        <p class="hero-role" id="hero-role"></p>
+        <h1 class="hero-tagline" id="hero-title"></h1>
+        <p class="hero-sub" id="hero-description"></p>
+        <div class="hero-actions">
+          <a href="#products" class="btn-primary">
+            Browse Products
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#how-it-works" class="btn-secondary">How to Order</a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Products -->
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-decor" id="decor-products"></div>
+          <h2>Our Products</h2>
+          <div class="section-subtitle">Catalog</div>
+          <p>All items are 3D printed to order. Prices in SEK. Custom requests welcome.</p>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- How It Works -->
+    <section class="section section-alt" id="how-it-works">
+      <div class="container" style="position:relative; overflow:hidden;">
+        <div class="decor-blob decor-blob-md decor-blob-tr"></div>
+        <div class="section-header">
+          <div class="section-decor"></div>
+          <h2>How to Order</h2>
+          <div class="section-subtitle">Simple Process</div>
+          <p>Getting your 3D printed product is easy.</p>
+        </div>
+        <div class="steps-grid" id="steps-grid"></div>
+        <div class="swish-banner">
+          <div class="swish-logo">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2ZM8 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm8-4c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
+          </div>
+          <div class="swish-text">
+            <strong>We accept Swish</strong>
+            Fast and secure mobile payment. You'll receive Swish details after placing your order.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- About -->
+    <section class="section section-mint" id="about">
+      <div class="container" style="position:relative;">
+        <div class="about-blobs">
+          <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
+          <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
+        </div>
+        <div class="shop-about-layout">
+          <div id="about-logo" class="about-logo logo-seal"></div>
+          <div class="section-label-bar">About Us</div>
+          <p class="shop-about-bio" id="about-bio"></p>
+          <span class="shop-about-location" id="about-location"></span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <!-- Order Modal -->
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal" id="order-modal">
+    <button class="modal-close" aria-label="Close">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2>Place Order</h2>
+    <p class="modal-product-name"></p>
+    <form id="order-form" autocomplete="on">
+      <input type="hidden" id="order-product" name="product">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="order-name">Your Name *</label>
+          <input type="text" id="order-name" name="name" required autocomplete="name" placeholder="Namn Namnsson">
+        </div>
+        <div class="form-group">
+          <label for="order-email">Your Email *</label>
+          <input type="email" id="order-email" name="email" required autocomplete="email" placeholder="namn@example.se">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="order-phone">Phone (optional)</label>
+          <input type="tel" id="order-phone" name="phone" autocomplete="tel" placeholder="07X XXX XX XX">
+        </div>
+        <div class="form-group">
+          <label for="order-qty">Quantity *</label>
+          <select id="order-qty" name="quantity" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="order-message">Message (optional)</label>
+        <textarea id="order-message" name="message" placeholder="Custom colour, special requests, questions..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary form-submit">
+        Send Order
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="form-note">
+        This opens your email app with the order details pre-filled.<br>
+        Payment instructions (Swish) will be included in our reply.
+      </p>
+    </form>
+  </div>
+
+  <script src="/shop/config.js"></script>
+  <script src="/shop/shop.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      function $(sel) { return document.querySelector(sel); }
+
+      /* Hero */
+      $("#hero-logo").innerHTML = SHOP.logo(120);
+      $("#hero-role").textContent = SHOP.about.location;
+      $("#hero-title").textContent = SHOP.site.tagline;
+      $("#hero-description").textContent = SHOP.site.description;
+
+      /* Decorative leaf icons */
+      var leafIcon = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + SHOP.icons.leaf + '"/></svg>';
+      document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafIcon; });
+
+      /* How It Works — steps */
+      var steps = [
+        { icon: "cube", title: "Browse & Choose", desc: "Pick your product from our catalog. All items are 3D printed to order." },
+        { icon: "mail", title: "Place Your Order", desc: "Click the Order button and fill in your details. We\u2019ll get back to you quickly." },
+        { icon: "swish", title: "Pay with Swish", desc: "Fast, easy, and secure. We\u2019ll send you our Swish number with your confirmation." },
+        { icon: "package", title: "Receive Your Item", desc: "We print and ship your product. Local pickup in \u00d6rebro also available." },
+      ];
+
+      $("#steps-grid").innerHTML = steps.map(function (s, i) {
+        return '<div class="step-card reveal">' +
+          '<div class="step-number">' + (i + 1) + '</div>' +
+          '<div class="step-icon">' + shopIcon(s.icon) + '</div>' +
+          '<h3 class="step-title">' + s.title + '</h3>' +
+          '<p class="step-desc">' + s.desc + '</p>' +
+        '</div>';
+      }).join("");
+
+      /* About */
+      $("#about-logo").innerHTML = SHOP.logo(140);
+      $("#about-bio").textContent = SHOP.about.bio;
+
+      var mapIcon = '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="' + SHOP.icons.mappin + '"/></svg>';
+      $("#about-location").innerHTML = mapIcon + " " + SHOP.about.location;
+
+    })();
+  </script>
+</body>
+</html>

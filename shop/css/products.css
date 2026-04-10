@@ -1,0 +1,409 @@
+/*
+ * Products — grid, cards, prices, order modal, Swish badge, how-it-works
+ */
+
+/* ── Product grid ── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+@media (max-width: 768px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .product-grid { grid-template-columns: 1fr; } }
+
+/* ── Product card ── */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Placeholder image area */
+.product-image {
+  aspect-ratio: 4 / 3;
+  background: var(--surface-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+.product-image svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.25;
+  stroke-width: 1;
+}
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Featured badge */
+.product-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.product-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.375rem;
+}
+
+.product-desc {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--ink-light);
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.product-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.product-price {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.product-price .currency {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 0.125rem;
+}
+
+.product-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.product-order-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+.product-order-btn svg { width: 14px; height: 14px; }
+
+/* ── How It Works — steps ── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+@media (max-width: 768px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
+
+.step-card {
+  text-align: center;
+  padding: 2rem 1.25rem;
+  background: var(--surface-card);
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  border: 1.5px solid rgba(62, 168, 140, 0.15);
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.step-icon svg { width: 24px; height: 24px; stroke-width: 1.5; }
+
+.step-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-desc {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--ink-light);
+}
+
+/* ── Swish info banner ── */
+.swish-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.25rem 2rem;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  max-width: 32rem;
+  margin: 2.5rem auto 0;
+  font-size: 0.875rem;
+  color: var(--ink-light);
+}
+.swish-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: #63c390;
+  color: #fff;
+  flex-shrink: 0;
+}
+.swish-logo svg { width: 24px; height: 24px; }
+.swish-text strong { color: var(--ink); display: block; margin-bottom: 0.125rem; }
+
+/* ── Order Modal ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.modal-backdrop.open { opacity: 1; visibility: visible; }
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  z-index: 201;
+  width: min(520px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+}
+.modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  transition: color 0.2s, background 0.2s;
+}
+.modal-close:hover { color: var(--ink); background: var(--surface-raised); }
+.modal-close svg { width: 18px; height: 18px; }
+
+.modal h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.375rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.modal-product-name {
+  font-size: 0.875rem;
+  color: var(--ink-light);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-bottom: 0.375rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%239b9590' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+  padding-right: 2.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+.form-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.form-note {
+  font-size: 0.6875rem;
+  color: var(--ink-faint);
+  text-align: center;
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+
+/* ── About section (shop variant) ── */
+.shop-about-layout {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.shop-about-layout .about-logo { margin-bottom: 1.5rem; }
+
+.shop-about-bio {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.8;
+  color: var(--ink-light);
+  margin-bottom: 1.5rem;
+}
+
+.shop-about-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.shop-about-location svg { width: 16px; height: 16px; }
+
+/* ── Stagger reveals for product grid ── */
+.product-grid .reveal:nth-child(2) { transition-delay: 0.05s; }
+.product-grid .reveal:nth-child(3) { transition-delay: 0.1s; }
+.product-grid .reveal:nth-child(4) { transition-delay: 0.15s; }
+.product-grid .reveal:nth-child(5) { transition-delay: 0.2s; }
+.product-grid .reveal:nth-child(6) { transition-delay: 0.25s; }
+.product-grid .reveal:nth-child(7) { transition-delay: 0.3s; }
+.product-grid .reveal:nth-child(8) { transition-delay: 0.35s; }
+.product-grid .reveal:nth-child(9) { transition-delay: 0.4s; }
+
+.steps-grid .reveal:nth-child(2) { transition-delay: 0.1s; }
+.steps-grid .reveal:nth-child(3) { transition-delay: 0.2s; }
+.steps-grid .reveal:nth-child(4) { transition-delay: 0.3s; }
