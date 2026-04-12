@@ -100,6 +100,13 @@
 }
 .bento-card:hover .bento-icon[data-icon="printer3d"] { background: rgba(230, 80, 50, 0.2); }
 
+.bento-icon[data-icon="package"] {
+  background: rgba(196, 114, 78, 0.12);
+  color: #c4724e;
+  border: 1.5px solid rgba(196, 114, 78, 0.2);
+}
+.bento-card:hover .bento-icon[data-icon="package"] { background: rgba(196, 114, 78, 0.2); }
+
 .bento-arrow {
   color: var(--ink-faint);
   opacity: 0;

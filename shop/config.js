@@ -53,10 +53,10 @@ var SHOP = {
       lang: "sv",
       htmlLang: "sv",
       siteTitle: "Jonsson's Anslagstavla",
-      siteSubtitle: "3D-printade produkter",
-      metaDescription: "Kvalitets-3D-printade produkter tillverkade i Sverige. Beställ online och betala med Swish.",
-      tagline: "3D-printade produkter",
-      description: "Kvalitets-3D-printade produkter tillverkade i \u00d6rebro. Från praktiska vardagsting till personliga beställningar \u2014 printade med omsorg.",
+      siteSubtitle: "Produkter fr\u00e5n verkstaden",
+      metaDescription: "Kvalitetsprodukter tillverkade i \u00d6rebro, Sverige. Best\u00e4ll online och betala med Swish.",
+      tagline: "Produkter fr\u00e5n verkstaden",
+      description: "Praktiska och snygga produkter, skapade med omsorg i \u00d6rebro. Fr\u00e5n vardagsprylar till personliga best\u00e4llningar.",
       location: "\u00d6rebro, Sverige",
 
       // Nav
@@ -74,7 +74,7 @@ var SHOP = {
       // Products section
       productsTitle: "V\u00e5ra produkter",
       productsSubtitle: "Katalog",
-      productsIntro: "Alla produkter 3D-printas p\u00e5 best\u00e4llning. Priser i SEK. Anpassade \u00f6nskem\u00e5l \u00e4r v\u00e4lkomna.",
+      productsIntro: "Alla produkter g\u00f6rs p\u00e5 best\u00e4llning. Priser i SEK. Anpassade \u00f6nskem\u00e5l \u00e4r v\u00e4lkomna.",
       orderBtn: "Best\u00e4ll",
       popularBadge: "Popul\u00e4r",
 
@@ -83,13 +83,13 @@ var SHOP = {
       howSubtitle: "Enkel process",
       howIntro: "Det \u00e4r enkelt att f\u00e5 din 3D-printade produkt.",
       step1Title: "Bl\u00e4ddra & v\u00e4lj",
-      step1Desc: "V\u00e4lj din produkt i katalogen. Alla artiklar printas p\u00e5 best\u00e4llning.",
+      step1Desc: "V\u00e4lj din produkt i katalogen. Alla artiklar g\u00f6rs p\u00e5 best\u00e4llning.",
       step2Title: "L\u00e4gg best\u00e4llning",
       step2Desc: "Klicka p\u00e5 Best\u00e4ll och fyll i dina uppgifter. Vi \u00e5terkommer snabbt.",
       step3Title: "Betala med Swish",
       step3Desc: "Snabbt, enkelt och s\u00e4kert. Vi skickar v\u00e5rt Swish-nummer med din bekr\u00e4ftelse.",
       step4Title: "F\u00e5 din vara",
-      step4Desc: "Vi printar och skickar din produkt. Lokalh\u00e4mtning i \u00d6rebro g\u00e5r ocks\u00e5 bra.",
+      step4Desc: "Vi f\u00e4rdigst\u00e4ller och skickar din produkt. Lokalh\u00e4mtning i \u00d6rebro g\u00e5r ocks\u00e5 bra.",
 
       // Swish banner
       swishTitle: "Vi tar Swish",
@@ -97,7 +97,7 @@ var SHOP = {
 
       // About
       aboutLabel: "Om oss",
-      aboutBio: "Vi \u00e4r grannar som delar ett intresse f\u00f6r 3D-printing. Fr\u00e5n v\u00e5r verkstad i \u00d6rebro designar och printar vi praktiska, snygga produkter f\u00f6r vardagen. Varje artikel printas p\u00e5 best\u00e4llning med omsorg och noggrannhet. Har du en egen id\u00e9? Vi lyssnar g\u00e4rna.",
+      aboutBio: "Vi \u00e4r grannar som delar en passion f\u00f6r att g\u00f6ra saker. Fr\u00e5n v\u00e5r verkstad i \u00d6rebro designar och tillverkar vi praktiska, snygga produkter f\u00f6r vardagen. Varje artikel g\u00f6rs p\u00e5 best\u00e4llning med omsorg och noggrannhet. Har du en egen id\u00e9? Vi lyssnar g\u00e4rna.",
 
       // Modal
       modalTitle: "L\u00e4gg best\u00e4llning",
@@ -130,7 +130,7 @@ var SHOP = {
       footerMoreCol: "Mer",
       footerBackToMain: "\u2190 Tillbaka till",
       footerComingSoon: "Kommer snart",
-      footerTagline: "3D-printade produkter fr\u00e5n \u00d6rebro, Sverige.",
+      footerTagline: "Produkter fr\u00e5n \u00d6rebro, Sverige.",
 
       // Filters & search
       filterAll: "Alla",
@@ -139,7 +139,7 @@ var SHOP = {
 
       // Custom order card
       customTitle: "Har du en egen id\u00e9?",
-      customDesc: "Beh\u00f6ver du n\u00e5got som inte finns i katalogen? Ber\u00e4tta vad du vill ha s\u00e5 hj\u00e4lper vi dig ta fram det.",
+      customDesc: "Beh\u00f6ver du n\u00e5got som inte finns i katalogen? Vi kan 3D-printa egna designer \u2014 ber\u00e4tta vad du t\u00e4nker dig s\u00e5 tar vi fram det tillsammans.",
       customBtn: "Best\u00e4ll anpassat",
       customProductName: "Anpassad best\u00e4llning",
       customPriceLabel: "Pris p\u00e5 beg\u00e4ran",
@@ -149,10 +149,10 @@ var SHOP = {
       lang: "en",
       htmlLang: "en",
       siteTitle: "Jonsson's Board",
-      siteSubtitle: "3D Printed Products",
-      metaDescription: "Quality 3D printed products made in Sweden. Order online and pay with Swish.",
-      tagline: "Custom 3D Printed Products",
-      description: "Quality 3D printed products made in \u00d6rebro, Sweden. From practical everyday items to custom designs \u2014 printed with care.",
+      siteSubtitle: "Products from the workshop",
+      metaDescription: "Quality products made in \u00d6rebro, Sweden. Order online and pay with Swish.",
+      tagline: "Products from the workshop",
+      description: "Practical and beautiful products, made with care in \u00d6rebro, Sweden. From everyday essentials to personal commissions.",
       location: "\u00d6rebro, Sweden",
 
       navHome: "Home",
@@ -167,7 +167,7 @@ var SHOP = {
 
       productsTitle: "Our Products",
       productsSubtitle: "Catalog",
-      productsIntro: "All items are 3D printed to order. Prices in SEK. Custom requests welcome.",
+      productsIntro: "All items are made to order. Prices in SEK. Custom requests welcome.",
       orderBtn: "Order",
       popularBadge: "Popular",
 
@@ -175,19 +175,19 @@ var SHOP = {
       howSubtitle: "Simple Process",
       howIntro: "Getting your 3D printed product is easy.",
       step1Title: "Browse & Choose",
-      step1Desc: "Pick your product from our catalog. All items are 3D printed to order.",
+      step1Desc: "Pick your product from our catalog. All items are made to order.",
       step2Title: "Place Your Order",
       step2Desc: "Click the Order button and fill in your details. We\u2019ll get back to you quickly.",
       step3Title: "Pay with Swish",
       step3Desc: "Fast, easy, and secure. We\u2019ll send you our Swish number with your confirmation.",
       step4Title: "Receive Your Item",
-      step4Desc: "We print and ship your product. Local pickup in \u00d6rebro also available.",
+      step4Desc: "We prepare and ship your product. Local pickup in \u00d6rebro also available.",
 
       swishTitle: "We accept Swish",
       swishText: "Fast and secure mobile payment. You\u2019ll receive Swish details after placing your order.",
 
       aboutLabel: "About Us",
-      aboutBio: "We are neighbours who share a passion for 3D printing. From our workshop in \u00d6rebro, Sweden, we design and print practical, beautiful products for everyday life. Every item is printed to order with care and attention to detail. Got a custom idea? We\u2019d love to hear it.",
+      aboutBio: "We are neighbours who share a love of making things. From our workshop in \u00d6rebro, Sweden, we design and produce practical, beautiful products for everyday life. Every item is made to order with care and attention to detail. Got a custom idea? We\u2019d love to hear it.",
 
       modalTitle: "Place Order",
       formName: "Your Name *",
@@ -218,7 +218,7 @@ var SHOP = {
       footerMoreCol: "More",
       footerBackToMain: "\u2190 Back to",
       footerComingSoon: "Coming soon",
-      footerTagline: "3D printed products from \u00d6rebro, Sweden.",
+      footerTagline: "Products from \u00d6rebro, Sweden.",
 
       // Filters & search
       filterAll: "All",
@@ -227,7 +227,7 @@ var SHOP = {
 
       // Custom order card
       customTitle: "Got a custom idea?",
-      customDesc: "Need something not in the catalog? Tell us what you have in mind and we\u2019ll help bring it to life.",
+      customDesc: "Need something not in the catalog? We can 3D print custom designs \u2014 tell us what you have in mind and we\u2019ll bring it to life.",
       customBtn: "Request custom order",
       customProductName: "Custom Order",
       customPriceLabel: "Price on request",
