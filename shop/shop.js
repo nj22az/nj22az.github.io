@@ -203,10 +203,38 @@
   function buildFooter() {
     var footer = $("#site-footer");
     if (!footer) return;
+
+    var marketplaces = (SHOP.marketplaces || []).map(function (m) {
+      if (m.url && m.url.trim()) {
+        return '<li><a href="' + m.url + '" target="_blank" rel="noopener">' + m.name + '</a></li>';
+      }
+      return '<li><span class="footer-coming">' + m.name + '</span> <em class="footer-coming-tag">' + t("footerComingSoon") + '</em></li>';
+    }).join("");
+
+    var main = SHOP.mainSite || { url: "https://nj22az.github.io/", label: "nj22az.github.io" };
+
     footer.innerHTML =
       '<div class="footer-inner">' +
-        '<span>\u00A9 ' + new Date().getFullYear() + ' ' + t("siteTitle") + '</span>' +
-        '<span style="font-size:0.75rem;" data-i18n="footerPayment">' + t("footerPayment") + '</span>' +
+        '<div class="footer-cols">' +
+          '<div class="footer-col footer-col-brand">' +
+            '<div class="footer-brand-title">' + t("siteTitle") + '</div>' +
+            '<p class="footer-brand-tagline">' + t("footerTagline") + '</p>' +
+          '</div>' +
+          '<div class="footer-col">' +
+            '<h4 class="footer-col-title">' + t("footerShopCol") + '</h4>' +
+            '<ul class="footer-links-list">' + marketplaces + '</ul>' +
+          '</div>' +
+          '<div class="footer-col">' +
+            '<h4 class="footer-col-title">' + t("footerMoreCol") + '</h4>' +
+            '<ul class="footer-links-list">' +
+              '<li><a href="' + main.url + '">' + t("footerBackToMain") + ' ' + main.label + '</a></li>' +
+            '</ul>' +
+          '</div>' +
+        '</div>' +
+        '<div class="footer-bottom">' +
+          '<span>\u00A9 ' + new Date().getFullYear() + ' ' + t("siteTitle") + '</span>' +
+          '<span>' + t("footerPayment") + '</span>' +
+        '</div>' +
       '</div>';
   }
 

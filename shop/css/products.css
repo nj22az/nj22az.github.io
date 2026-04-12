@@ -449,6 +449,103 @@
 }
 .shop-about-location svg { width: 16px; height: 16px; }
 
+/* ── Shop footer — richer, with columns ── */
+.site-footer { padding: 3rem 1.5rem 2rem; }
+.footer-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.footer-cols {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .footer-cols { grid-template-columns: 1fr; gap: 1.75rem; }
+}
+
+.footer-col-brand { max-width: 20rem; }
+.footer-brand-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+.footer-brand-tagline {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--ink-light);
+  margin: 0;
+}
+
+.footer-col-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+  margin-bottom: 1rem;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.footer-links-list li {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.footer-links-list a {
+  color: var(--ink-light);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.footer-links-list a:hover { color: var(--accent); }
+
+.footer-coming {
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+.footer-coming-tag {
+  font-style: normal;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+@media (min-width: 640px) {
+  .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; }
+}
+
 /* ── Stagger reveals for product grid ── */
 .product-grid .reveal:nth-child(2) { transition-delay: 0.05s; }
 .product-grid .reveal:nth-child(3) { transition-delay: 0.1s; }

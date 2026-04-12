@@ -15,6 +15,24 @@ var SHOP = {
   _b: "jonssons-anslagstavla",
   _c: "se",
 
+  /**
+   * External marketplaces — add your URLs here.
+   * Entries with an empty url render as "Coming soon" (non-clickable).
+   */
+  marketplaces: [
+    { name: "Tradera", url: "" },
+    { name: "Gumroad", url: "" },
+    { name: "Etsy", url: "" },
+    { name: "Facebook", url: "" },
+    { name: "Instagram", url: "" },
+  ],
+
+  /** Link back to the main portfolio */
+  mainSite: {
+    url: "https://nj22az.github.io/",
+    label: "nj22az.github.io",
+  },
+
   /** Translations — all visible text lives here */
   i18n: {
     sv: {
@@ -94,6 +112,11 @@ var SHOP = {
 
       // Footer
       footerPayment: "Betalning via Swish",
+      footerShopCol: "Hitta oss p\u00e5",
+      footerMoreCol: "Mer",
+      footerBackToMain: "\u2190 Tillbaka till",
+      footerComingSoon: "Kommer snart",
+      footerTagline: "3D-printade produkter fr\u00e5n \u00d6rebro, Sverige.",
     },
 
     en: {
@@ -165,6 +188,11 @@ var SHOP = {
       mailSubject: "Order",
 
       footerPayment: "Payment via Swish",
+      footerShopCol: "Find us on",
+      footerMoreCol: "More",
+      footerBackToMain: "\u2190 Back to",
+      footerComingSoon: "Coming soon",
+      footerTagline: "3D printed products from \u00d6rebro, Sweden.",
     },
   },
 
