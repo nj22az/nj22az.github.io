@@ -105,7 +105,7 @@ var SHOP = {
       step3Title: "Betala med Swish",
       step3Desc: "Snabbt, enkelt och s\u00e4kert. Vi skickar v\u00e5rt Swish-nummer med din bekr\u00e4ftelse.",
       step4Title: "F\u00e5 din vara",
-      step4Desc: "Vi f\u00e4rdigst\u00e4ller och skickar din produkt. Lokalh\u00e4mtning i Stora Mell\u00f6sa g\u00e5r ocks\u00e5 bra.",
+      step4Desc: "Vi f\u00e4rdigst\u00e4ller och skickar din produkt. H\u00e4mtning i Stora Mell\u00f6sa g\u00e5r ocks\u00e5 bra.",
 
       // Swish banner
       swishTitle: "Vi tar Swish",
