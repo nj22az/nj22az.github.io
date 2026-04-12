@@ -1,5 +1,5 @@
 /**
- * shop.js — Navigation, footer, theme toggle, product rendering, order form.
+ * shop.js — Bilingual shop with automatic Sweden detection.
  * Include config.js before this file.
  */
 
@@ -7,14 +7,64 @@
   "use strict";
 
   function $(sel) { return document.querySelector(sel); }
+  function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
 
-  /** Render an inline SVG icon from SHOP.icons */
   function icon(name) {
     var d = SHOP.icons[name];
     if (!d) return "";
     return '<svg fill="none" stroke="currentColor" stroke-width="1.5" ' +
       'stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' +
       '<path d="' + d + '"/></svg>';
+  }
+
+  /* ── Language detection ── */
+
+  var LANG_KEY = "shop-lang";
+
+  function isInSweden() {
+    // Timezone check (most reliable non-intrusive signal)
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === "Europe/Stockholm") return true;
+    } catch (e) { /* noop */ }
+
+    // Browser language
+    var langs = [];
+    if (navigator.languages && navigator.languages.length) langs = navigator.languages;
+    else if (navigator.language) langs = [navigator.language];
+
+    for (var i = 0; i < langs.length; i++) {
+      var l = (langs[i] || "").toLowerCase();
+      if (l.indexOf("sv") === 0 || l === "sv-se" || l.indexOf("-se") > -1) return true;
+    }
+
+    return false;
+  }
+
+  function detectLang() {
+    // If Sweden detected → force Swedish (overrides manual pref per request)
+    if (isInSweden()) return "sv";
+
+    // Otherwise respect stored preference, else default to English
+    var stored = localStorage.getItem(LANG_KEY);
+    if (stored === "sv" || stored === "en") return stored;
+    return "en";
+  }
+
+  var currentLang = detectLang();
+
+  function t(key) {
+    var dict = SHOP.i18n[currentLang] || SHOP.i18n.en;
+    return dict[key] != null ? dict[key] : key;
+  }
+
+  function setLang(newLang) {
+    if (newLang !== "sv" && newLang !== "en") return;
+    // In Sweden, stay in Swedish even if manually toggled (per request).
+    // But we still allow a toggle to work once, so users can see the English version on request.
+    localStorage.setItem(LANG_KEY, newLang);
+    currentLang = newLang;
+    applyLanguage();
   }
 
   /* ── Theme ── */
@@ -31,24 +81,29 @@
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
-    updateToggleIcon(theme);
-  }
-
-  function updateToggleIcon(theme) {
     var btn = $("#theme-toggle");
-    if (!btn) return;
-    btn.innerHTML = theme === "dark" ? icon("sun") : icon("moon");
-    btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    if (btn) {
+      btn.innerHTML = theme === "dark" ? icon("sun") : icon("moon");
+      btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    }
   }
 
   applyTheme(getTheme());
 
-  if (window.matchMedia) {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
-      if (!localStorage.getItem(THEME_KEY)) {
-        applyTheme(e.matches ? "dark" : "light");
-      }
-    });
+  /* ── Nav logo (text SVG, switches with language) ── */
+
+  function navLogoSvg(h) {
+    var height = h || 34;
+    var width = Math.round(height * 5.6);
+    var line1 = "JONSSON'S";
+    var line2 = currentLang === "sv" ? "ANSLAGSTAVLA" : "BOARD";
+    var fontSize2 = currentLang === "sv" ? 11 : 14;
+    var letterSpacing2 = currentLang === "sv" ? 2 : 2.5;
+    return '<svg viewBox="0 0 280 50" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jonsson\'s ' + line2 + '">' +
+      '<rect x="1.5" y="1.5" width="277" height="47" rx="8" stroke="currentColor" stroke-width="2"/>' +
+      '<text x="140" y="21" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">' + line1 + '</text>' +
+      '<text x="140" y="38" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="' + fontSize2 + '" fill="currentColor" text-anchor="middle" letter-spacing="' + letterSpacing2 + '">' + line2 + '</text>' +
+    '</svg>';
   }
 
   /* ── Navigation ── */
@@ -62,8 +117,11 @@
 
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a href="/shop/" class="nav-brand logo-seal">' + SHOP.navLogo(34) + '</a>' +
+        '<a href="/shop/" class="nav-brand logo-seal" id="nav-brand">' + navLogoSvg(34) + '</a>' +
         '<div class="nav-actions">' +
+          '<button id="lang-toggle" class="lang-toggle" aria-label="' + t("langToggleLabel") + '">' +
+            '<span class="lang-toggle-label">' + t("langToggle") + '</span>' +
+          '</button>' +
           '<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">' +
             icon(getTheme() === "dark" ? "sun" : "moon") +
           '</button>' +
@@ -73,22 +131,26 @@
         '</div>' +
       '</div>';
 
-    // Overlay menu
     var overlay = document.createElement("div");
     overlay.className = "menu-overlay";
     overlay.id = "menu-overlay";
 
-    var menuRows = SHOP.navigation.map(function (n) {
-      var href = "#" + n.id;
+    var navItems = [
+      { id: "home", key: "navHome" },
+      { id: "products", key: "navProducts" },
+      { id: "how-it-works", key: "navHowItWorks" },
+      { id: "about", key: "navAbout" },
+    ];
+
+    overlay.innerHTML = '<div class="menu-overlay-body">' + navItems.map(function (n) {
       var iconName = navIcons[n.id] || "arrow";
-      return '<a href="' + href + '" class="menu-row">' +
+      return '<a href="#' + n.id + '" class="menu-row">' +
         '<span class="menu-row-icon" data-icon="' + iconName + '">' + icon(iconName) + '</span>' +
-        '<span class="menu-row-label">' + n.label + '</span>' +
+        '<span class="menu-row-label" data-i18n="' + n.key + '">' + t(n.key) + '</span>' +
         '<span class="menu-row-arrow">' + icon("arrow") + '</span>' +
       '</a>';
-    }).join("");
+    }).join("") + '</div>';
 
-    overlay.innerHTML = '<div class="menu-overlay-body">' + menuRows + '</div>';
     document.body.appendChild(overlay);
 
     var backdrop = document.createElement("div");
@@ -123,7 +185,12 @@
     });
 
     $("#theme-toggle").addEventListener("click", function () {
-      applyTheme(getTheme() === "dark" ? "light" : "dark");
+      var next = getTheme() === "dark" ? "light" : "dark";
+      applyTheme(next);
+    });
+
+    $("#lang-toggle").addEventListener("click", function () {
+      setLang(currentLang === "sv" ? "en" : "sv");
     });
 
     window.addEventListener("scroll", function () {
@@ -138,12 +205,12 @@
     if (!footer) return;
     footer.innerHTML =
       '<div class="footer-inner">' +
-        '<span>' + SHOP.site.copyright + '</span>' +
-        '<span style="font-size:0.75rem;">Payment via Swish</span>' +
+        '<span>\u00A9 ' + new Date().getFullYear() + ' ' + t("siteTitle") + '</span>' +
+        '<span style="font-size:0.75rem;" data-i18n="footerPayment">' + t("footerPayment") + '</span>' +
       '</div>';
   }
 
-  /* ── Smooth Scrolling ── */
+  /* ── Smooth scroll ── */
 
   function initSmoothScroll() {
     document.addEventListener("click", function (e) {
@@ -158,7 +225,7 @@
     });
   }
 
-  /* ── Email assembly (never stored as single string in source) ── */
+  /* ── Email — assembled at runtime ── */
 
   function _addr() {
     return SHOP._a + String.fromCharCode(64) + SHOP._b + String.fromCharCode(46) + SHOP._c;
@@ -171,34 +238,97 @@
     if (!grid) return;
 
     grid.innerHTML = SHOP.products.map(function (p) {
-      var imgHtml;
-      if (p.image) {
-        imgHtml = '<img src="' + p.image + '" alt="' + p.title + '" loading="lazy">';
-      } else {
-        imgHtml = icon("cube");
-      }
+      var imgHtml = p.image
+        ? '<img src="' + p.image + '" alt="' + p.title[currentLang] + '" loading="lazy">'
+        : icon("cube");
 
-      var badge = p.featured ? '<span class="product-badge">Popular</span>' : '';
+      var badge = p.featured ? '<span class="product-badge" data-i18n="popularBadge">' + t("popularBadge") + '</span>' : '';
 
-      var tags = p.tags.map(function (t) {
-        return '<span class="tag">' + t + '</span>';
+      var tags = (p.tags[currentLang] || []).map(function (tg) {
+        return '<span class="tag">' + tg + '</span>';
       }).join("");
 
       return '<div class="product-card reveal">' +
         '<div class="product-image">' + imgHtml + badge + '</div>' +
         '<div class="product-body">' +
-          '<h3 class="product-title">' + p.title + '</h3>' +
-          '<p class="product-desc">' + p.description + '</p>' +
+          '<h3 class="product-title">' + p.title[currentLang] + '</h3>' +
+          '<p class="product-desc">' + p.description[currentLang] + '</p>' +
           '<div class="product-tags">' + tags + '</div>' +
           '<div class="product-footer">' +
-            '<span class="product-price">' + p.price + ' <span class="currency">' + SHOP.site.currency + '</span></span>' +
+            '<span class="product-price">' + p.price + ' <span class="currency">' + SHOP.currency + '</span></span>' +
             '<button class="product-order-btn" data-product="' + p.id + '">' +
-              icon("mail") + ' Order' +
+              icon("mail") + ' <span>' + t("orderBtn") + '</span>' +
             '</button>' +
           '</div>' +
         '</div>' +
       '</div>';
     }).join("");
+  }
+
+  /* ── Steps (How to Order) ── */
+
+  function renderSteps() {
+    var grid = $("#steps-grid");
+    if (!grid) return;
+    var steps = [
+      { icon: "cube",    titleKey: "step1Title", descKey: "step1Desc" },
+      { icon: "mail",    titleKey: "step2Title", descKey: "step2Desc" },
+      { icon: "swish",   titleKey: "step3Title", descKey: "step3Desc" },
+      { icon: "package", titleKey: "step4Title", descKey: "step4Desc" },
+    ];
+    grid.innerHTML = steps.map(function (s, i) {
+      return '<div class="step-card reveal">' +
+        '<div class="step-number">' + (i + 1) + '</div>' +
+        '<div class="step-icon">' + icon(s.icon) + '</div>' +
+        '<h3 class="step-title">' + t(s.titleKey) + '</h3>' +
+        '<p class="step-desc">' + t(s.descKey) + '</p>' +
+      '</div>';
+    }).join("");
+  }
+
+  /* ── Apply language to all static content ── */
+
+  function applyLanguage() {
+    var dict = SHOP.i18n[currentLang];
+    document.documentElement.setAttribute("lang", dict.htmlLang);
+    document.title = dict.siteTitle + " \u2014 " + dict.siteSubtitle;
+
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", dict.metaDescription);
+
+    // Nav brand swap
+    var brand = $("#nav-brand");
+    if (brand) brand.innerHTML = navLogoSvg(34);
+
+    // Lang toggle label
+    var langBtn = $("#lang-toggle");
+    if (langBtn) {
+      langBtn.innerHTML = '<span class="lang-toggle-label">' + dict.langToggle + '</span>';
+      langBtn.setAttribute("aria-label", dict.langToggleLabel);
+    }
+
+    // Any element with data-i18n → replace textContent (except ones with data-i18n-html)
+    $$("[data-i18n]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n");
+      var val = dict[key];
+      if (val == null) return;
+      if (el.hasAttribute("data-i18n-html")) el.innerHTML = val;
+      else el.textContent = val;
+    });
+
+    // Placeholders
+    $$("[data-i18n-ph]").forEach(function (el) {
+      var val = dict[el.getAttribute("data-i18n-ph")];
+      if (val != null) el.setAttribute("placeholder", val);
+    });
+
+    // Re-render dynamic grids
+    renderProducts();
+    renderSteps();
+    buildFooter();
+
+    // Re-bind reveal observers on new nodes
+    initReveals();
   }
 
   /* ── Order modal ── */
@@ -215,8 +345,9 @@
     function openModal(productId) {
       var product = SHOP.products.find(function (p) { return p.id === productId; });
       if (!product) return;
-      productNameEl.textContent = product.title + " — " + product.price + " " + SHOP.site.currency;
-      productInput.value = product.title;
+      var title = product.title[currentLang];
+      productNameEl.textContent = title + " \u2014 " + product.price + " " + SHOP.currency;
+      productInput.value = title;
       modal.classList.add("open");
       modalBackdrop.classList.add("open");
       document.body.style.overflow = "hidden";
@@ -228,7 +359,6 @@
       document.body.style.overflow = "";
     }
 
-    // Delegate clicks on order buttons
     document.addEventListener("click", function (e) {
       var btn = e.target.closest(".product-order-btn");
       if (btn) {
@@ -239,15 +369,13 @@
 
     modal.querySelector(".modal-close").addEventListener("click", closeModal);
     modalBackdrop.addEventListener("click", closeModal);
-
-    // ESC key closes modal
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") closeModal();
     });
 
-    // Form submission — constructs mailto link at runtime
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      var dict = SHOP.i18n[currentLang];
 
       var name = form.querySelector("#order-name").value.trim();
       var email = form.querySelector("#order-email").value.trim();
@@ -256,20 +384,19 @@
       var qty = form.querySelector("#order-qty").value;
       var message = form.querySelector("#order-message").value.trim();
 
-      var subject = encodeURIComponent("Order: " + product);
+      var subject = encodeURIComponent(dict.mailSubject + ": " + product);
       var body = encodeURIComponent(
-        "Hi JNJ 3D Printing!\n\n" +
-        "I would like to order:\n\n" +
-        "Product: " + product + "\n" +
-        "Quantity: " + qty + "\n\n" +
-        "Name: " + name + "\n" +
-        "Email: " + email + "\n" +
-        "Phone: " + (phone || "Not provided") + "\n\n" +
-        (message ? "Message:\n" + message + "\n\n" : "") +
-        "Looking forward to hearing from you!"
+        dict.mailGreeting + "\n\n" +
+        dict.mailIntro + "\n\n" +
+        dict.mailProduct + ": " + product + "\n" +
+        dict.mailQty + ": " + qty + "\n\n" +
+        dict.mailName + ": " + name + "\n" +
+        dict.mailEmail + ": " + email + "\n" +
+        dict.mailPhone + ": " + (phone || dict.mailPhoneEmpty) + "\n\n" +
+        (message ? dict.mailMessage + ":\n" + message + "\n\n" : "") +
+        dict.mailClose
       );
 
-      // Assemble address at the moment of click only
       window.location.href = "mail" + "to:" + _addr() + "?subject=" + subject + "&body=" + body;
 
       closeModal();
@@ -277,17 +404,21 @@
     });
   }
 
-  /* ── Scroll-triggered reveals ── */
+  /* ── Reveals ── */
 
+  var revealObserver;
   function initReveals() {
-    var items = document.querySelectorAll(".product-card, .step-card, .section-header, .shop-about-layout, .hero-photo");
-    items.forEach(function (el) { el.classList.add("reveal"); });
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
-      });
-    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
-    items.forEach(function (el) { obs.observe(el); });
+    if (!revealObserver) {
+      revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("visible"); revealObserver.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+    }
+    $$(".product-card, .step-card, .section-header, .shop-about-layout, .hero-photo").forEach(function (el) {
+      if (!el.classList.contains("reveal")) el.classList.add("reveal");
+      if (!el.classList.contains("visible")) revealObserver.observe(el);
+    });
   }
 
   /* ── Init ── */
@@ -296,8 +427,8 @@
     buildNav();
     buildFooter();
     initSmoothScroll();
-    renderProducts();
     initOrderModal();
+    applyLanguage(); // renders products, steps, translates everything
     initReveals();
   }
 

@@ -105,9 +105,9 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "JNJ 3D Printing",
+      title: "Jonsson's Anslagstavla",
       description:
-        "Custom 3D printed products made in \u00d6rebro, Sweden. Browse the catalog, order online, and pay with Swish.",
+        "Custom 3D printed products made in \u00d6rebro, Sweden. Browse the catalog, order online, and pay with Swish. Available in Swedish and English.",
       url: "/shop/",
       icon: "printer3d",
       tags: ["3D Printing", "Products", "Shop"],

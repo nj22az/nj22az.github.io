@@ -2,6 +2,61 @@
  * Products — grid, cards, prices, order modal, Swish badge, how-it-works
  */
 
+/* ── Shop logo (PNG) — hero + about ── */
+.shop-hero-logo {
+  margin: 0 auto 1.5rem;
+  max-width: 360px;
+  animation: fadeIn 0.6s ease-out both;
+}
+.shop-hero-logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 1.25rem;
+}
+[data-theme="dark"] .shop-hero-logo img {
+  background: #f5f0e8;
+  padding: 0.5rem;
+}
+
+.about-logo-img {
+  margin: 0 auto 1.5rem;
+  max-width: 260px;
+}
+.about-logo-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 1rem;
+}
+[data-theme="dark"] .about-logo-img img {
+  background: #f5f0e8;
+  padding: 0.5rem;
+}
+
+/* ── Language toggle button ── */
+.lang-toggle {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.lang-toggle:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(1.05);
+}
+.lang-toggle-label { line-height: 1; }
+
 /* ── Product grid ── */
 .product-grid {
   display: grid;
