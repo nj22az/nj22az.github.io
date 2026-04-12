@@ -1,0 +1,7 @@
+# Cloudflare Pages configuration
+# Used by `wrangler pages dev` for local development.
+# Production config (project name, env vars) is set via the CF dashboard.
+
+name = "nj22az-github-io"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "."

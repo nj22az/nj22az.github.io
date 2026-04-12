@@ -227,6 +227,7 @@
           '<div class="footer-col">' +
             '<h4 class="footer-col-title">' + t("footerMoreCol") + '</h4>' +
             '<ul class="footer-links-list">' +
+              '<li><a href="/shop/privacy/">' + t("footerPrivacy") + '</a></li>' +
               '<li><a href="' + main.url + '">' + t("footerBackToMain") + ' ' + main.label + '</a></li>' +
             '</ul>' +
           '</div>' +
@@ -419,6 +420,9 @@
     var searchInput = document.getElementById("product-search");
     if (searchInput) searchInput.setAttribute("placeholder", dict.searchPlaceholder || "");
 
+    // Refresh open modal (shipping labels, total, submit copy all depend on lang)
+    if (typeof window.shopRefreshModal === "function") window.shopRefreshModal();
+
     // Re-bind reveal observers on new nodes
     initReveals();
   }
@@ -432,21 +436,90 @@
 
     var productNameEl = modal.querySelector(".modal-product-name");
     var productInput = modal.querySelector("#order-product");
+    var shippingSelect = modal.querySelector("#order-shipping");
+    var shippingGroup = shippingSelect ? shippingSelect.closest(".form-group") : null;
+    var qtySelect = modal.querySelector("#order-qty");
+    var totalRow = modal.querySelector(".order-total-row");
+    var totalValueEl = modal.querySelector("#order-total-value");
+    var submitBtn = modal.querySelector("#order-submit");
+    var submitLabel = modal.querySelector(".form-submit-label");
+    var mailtoNote = modal.querySelector(".form-note:not(.form-note-stripe)");
+    var stripeNote = modal.querySelector("#order-stripe-note");
     var form = modal.querySelector("#order-form");
+
+    var currentOrderContext = null; // { product, custom }
+
+    function useStripe() {
+      return !!(SHOP.stripePublishableKey && SHOP.stripePublishableKey.trim());
+    }
+
+    function formatAmount(amount) {
+      var currency = currentLang === "sv" ? "kr" : "SEK";
+      return amount + "\u00A0" + currency;
+    }
+
+    function populateShipping(product) {
+      if (!shippingSelect || !shippingGroup) return;
+      if (!product) {
+        // Custom orders: hide shipping — quoted later by reply
+        shippingGroup.style.display = "none";
+        return;
+      }
+      shippingGroup.style.display = "";
+      var options = (SHOP.shippingOptions || []).filter(function (o) {
+        return !o.classes || o.classes.indexOf(product.shipping_class) !== -1;
+      });
+      shippingSelect.innerHTML = options.map(function (o) {
+        var label = (o.label && o.label[currentLang]) || o.id;
+        var price = o.price > 0 ? " \u2014 " + formatAmount(o.price) : " \u2014 " + t("shippingFree");
+        var eta = (o.eta && o.eta[currentLang]) ? " (" + o.eta[currentLang] + ")" : "";
+        return '<option value="' + o.id + '" data-price="' + o.price + '">' + label + price + eta + '</option>';
+      }).join("");
+    }
+
+    function updateTotal() {
+      if (!totalRow || !totalValueEl) return;
+      if (!currentOrderContext || currentOrderContext.custom) {
+        totalRow.style.display = "none";
+        return;
+      }
+      totalRow.style.display = "";
+      var product = currentOrderContext.product;
+      var qty = parseInt((qtySelect && qtySelect.value) || "1", 10) || 1;
+      var shipId = shippingSelect ? shippingSelect.value : null;
+      var ship = (SHOP.shippingOptions || []).find(function (o) { return o.id === shipId; });
+      var shipPrice = ship ? ship.price : 0;
+      var total = product.price * qty + shipPrice;
+      totalValueEl.textContent = formatAmount(total);
+    }
+
+    function updateSubmitCopy() {
+      if (!submitLabel) return;
+      var customFlow = currentOrderContext && currentOrderContext.custom;
+      var stripeFlow = useStripe() && !customFlow;
+      submitLabel.textContent = stripeFlow ? t("formSubmitPay") : t("formSubmit");
+      if (mailtoNote) mailtoNote.hidden = stripeFlow;
+      if (stripeNote) stripeNote.hidden = !stripeFlow;
+    }
 
     function openModal(productId) {
       var title, summary;
       if (productId === "__custom__") {
         title = t("customProductName");
         summary = title + " \u2014 " + t("customPriceLabel");
+        currentOrderContext = { custom: true };
       } else {
         var product = (SHOP.products || []).find(function (p) { return p.id === productId; });
         if (!product) return;
         title = product.title[currentLang];
-        summary = title + " \u2014 " + product.price + " " + SHOP.currency;
+        summary = title + " \u2014 " + formatAmount(product.price);
+        currentOrderContext = { product: product, custom: false };
       }
       productNameEl.textContent = summary;
       productInput.value = title;
+      populateShipping(currentOrderContext.product || null);
+      updateTotal();
+      updateSubmitCopy();
       modal.classList.add("open");
       modalBackdrop.classList.add("open");
       document.body.style.overflow = "hidden";
@@ -456,6 +529,7 @@
       modal.classList.remove("open");
       modalBackdrop.classList.remove("open");
       document.body.style.overflow = "";
+      currentOrderContext = null;
     }
 
     document.addEventListener("click", function (e) {
@@ -478,6 +552,17 @@
       if (e.key === "Escape") closeModal();
     });
 
+    if (qtySelect) qtySelect.addEventListener("change", updateTotal);
+    if (shippingSelect) shippingSelect.addEventListener("change", updateTotal);
+
+    // Expose for applyLanguage() so copy refreshes when user toggles SV/EN
+    window.shopRefreshModal = function () {
+      if (!currentOrderContext) return;
+      populateShipping(currentOrderContext.product || null);
+      updateTotal();
+      updateSubmitCopy();
+    };
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var dict = SHOP.i18n[currentLang];
@@ -487,14 +572,52 @@
       var phone = form.querySelector("#order-phone").value.trim();
       var product = form.querySelector("#order-product").value;
       var qty = form.querySelector("#order-qty").value;
+      var shipping = shippingSelect ? shippingSelect.value : null;
       var message = form.querySelector("#order-message").value.trim();
 
-      var subject = encodeURIComponent(dict.mailSubject + ": " + product);
+      var customFlow = currentOrderContext && currentOrderContext.custom;
+      var stripeFlow = useStripe() && !customFlow;
+
+      if (stripeFlow) {
+        submitBtn.disabled = true;
+        fetch("/api/create-checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productId: currentOrderContext.product.id,
+            qty: parseInt(qty, 10) || 1,
+            shippingId: shipping,
+            customer: { name: name, email: email, phone: phone },
+            message: message,
+            lang: currentLang,
+          }),
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.url) throw new Error("No checkout URL");
+            window.location.href = data.url;
+          })
+          .catch(function (err) {
+            console.error("Checkout error:", err);
+            alert(t("checkoutErrorGeneric"));
+            submitBtn.disabled = false;
+          });
+        return;
+      }
+
+      // Fallback: mailto (used for custom orders and until Stripe is live)
+      var subjectLabel = customFlow ? dict.customProductName : product;
+      var subject = encodeURIComponent(dict.mailSubject + ": " + subjectLabel);
       var body = encodeURIComponent(
         dict.mailGreeting + "\n\n" +
         dict.mailIntro + "\n\n" +
         dict.mailProduct + ": " + product + "\n" +
-        dict.mailQty + ": " + qty + "\n\n" +
+        dict.mailQty + ": " + qty + "\n" +
+        (shipping && !customFlow ? "Shipping: " + shipping + "\n" : "") +
+        "\n" +
         dict.mailName + ": " + name + "\n" +
         dict.mailEmail + ": " + email + "\n" +
         dict.mailPhone + ": " + (phone || dict.mailPhoneEmpty) + "\n\n" +
@@ -566,6 +689,22 @@
       });
   }
 
+  function loadShipping() {
+    var url = SHOP.shippingUrl || "/shop/shipping.json";
+    return fetch(url)
+      .then(function (r) {
+        if (!r.ok) throw new Error("Failed to load shipping");
+        return r.json();
+      })
+      .then(function (data) {
+        SHOP.shippingOptions = data;
+      })
+      .catch(function (err) {
+        console.error("Could not load shipping options:", err);
+        SHOP.shippingOptions = [];
+      });
+  }
+
   /* ── Init ── */
 
   function init() {
@@ -575,8 +714,8 @@
     initOrderModal();
     initFilters();
 
-    // Load products, then render everything translated
-    loadProducts().then(function () {
+    // Load products + shipping in parallel, then render everything translated
+    Promise.all([loadProducts(), loadShipping()]).then(function () {
       applyLanguage(); // renders products, steps, custom card, filter pills
       initReveals();
     });

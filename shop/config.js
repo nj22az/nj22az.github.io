@@ -37,6 +37,22 @@ var SHOP = {
   productsUrl: "/shop/products.json",
 
   /**
+   * Stripe publishable key — safe to expose in the browser.
+   * Leave empty until Cloudflare Pages + Stripe is set up. When empty,
+   * the order form falls back to opening the customer's mail client
+   * via the runtime-assembled address below (_a@_b._c).
+   * Test keys start with pk_test_, live keys with pk_live_.
+   */
+  stripePublishableKey: "",
+
+  /**
+   * Shipping options live in shop/shipping.json so the Cloudflare
+   * Pages Function can parse the same list cleanly (no regex over JS).
+   * Fetched at runtime like productsUrl.
+   */
+  shippingUrl: "/shop/shipping.json",
+
+  /**
    * Product categories — used by the filter pills.
    * "All" is added automatically at the start of the list.
    */
@@ -125,11 +141,12 @@ var SHOP = {
       mailSubject: "Best\u00e4llning",
 
       // Footer
-      footerPayment: "Betalning via Swish",
+      footerPayment: "Betalning med kort via Stripe",
       footerShopCol: "Hitta oss p\u00e5",
       footerMoreCol: "Mer",
       footerBackToMain: "\u2190 Tillbaka till",
       footerComingSoon: "Kommer snart",
+      footerPrivacy: "Integritetspolicy",
       footerTagline: "Produkter fr\u00e5n Stora Mell\u00f6sa, Sverige.",
 
       // Filters & search
@@ -143,6 +160,37 @@ var SHOP = {
       customBtn: "Best\u00e4ll anpassat",
       customProductName: "Anpassad best\u00e4llning",
       customPriceLabel: "Pris p\u00e5 beg\u00e4ran",
+
+      // Checkout flow
+      shippingLabel: "Frakt *",
+      shippingHelper: "V\u00e4lj leveranss\u00e4tt. Priserna \u00e4r Postnords porto.",
+      shippingFree: "Gratis",
+      orderTotal: "Summa",
+      checkoutErrorGeneric: "N\u00e5got gick fel. F\u00f6rs\u00f6k igen eller kontakta oss.",
+      checkoutPoweredBy: "S\u00e4ker kortbetalning via Stripe. Ditt kortnummer l\u00e4mnar aldrig Stripe.",
+      formSubmitPay: "Fortsätt till betalning",
+
+      // Success page
+      successTitle: "Tack f\u00f6r din best\u00e4llning!",
+      successBody: "Vi har tagit emot din best\u00e4llning och din betalning. Du f\u00e5r snart en bekr\u00e4ftelse via e-post \u2014 kolla gärna skräpposten om den dr\u00f6jer.",
+      successBackHome: "Tillbaka till butiken",
+
+      // Cancel page
+      cancelTitle: "Best\u00e4llningen avbr\u00f6ts",
+      cancelBody: "Ingen betalning har dragits. Du kan alltid g\u00e5 tillbaka och f\u00f6rs\u00f6ka igen.",
+      cancelBackHome: "Tillbaka till butiken",
+
+      // Privacy page
+      privacyTitle: "Integritetspolicy",
+      privacyIntro: "Vi samlar bara in de uppgifter vi beh\u00f6ver f\u00f6r att hantera din best\u00e4llning.",
+      privacyWhatH: "Vad vi samlar in",
+      privacyWhatBody: "Namn, e-post, telefonnummer och leveransadress som du anger i best\u00e4llningsformul\u00e4ret. Betalningsuppgifter hanteras av Stripe \u2014 vi ser dem aldrig.",
+      privacyWhyH: "Varf\u00f6r",
+      privacyWhyBody: "F\u00f6r att packa och skicka din best\u00e4llning, skicka kvitto och svara p\u00e5 fr\u00e5gor om ordern.",
+      privacyKeepH: "Hur l\u00e4nge",
+      privacyKeepBody: "Orderuppgifter sparas i enlighet med bokf\u00f6ringslagen (7 \u00e5r). Marknadsf\u00f6ringsutskick eller liknande g\u00f6r vi inte.",
+      privacyContactH: "Kontakt",
+      privacyContactBody: "Vill du veta vilka uppgifter vi har om dig, eller att vi raderar dem? H\u00f6r av dig.",
     },
 
     en: {
@@ -213,11 +261,12 @@ var SHOP = {
       mailClose: "Looking forward to hearing from you!",
       mailSubject: "Order",
 
-      footerPayment: "Payment via Swish",
+      footerPayment: "Card payment via Stripe",
       footerShopCol: "Find us on",
       footerMoreCol: "More",
       footerBackToMain: "\u2190 Back to",
       footerComingSoon: "Coming soon",
+      footerPrivacy: "Privacy policy",
       footerTagline: "Products from Stora Mell\u00f6sa, Sweden.",
 
       // Filters & search
@@ -231,6 +280,37 @@ var SHOP = {
       customBtn: "Request custom order",
       customProductName: "Custom Order",
       customPriceLabel: "Price on request",
+
+      // Checkout flow
+      shippingLabel: "Shipping *",
+      shippingHelper: "Choose how you\u2019d like it delivered. Prices are Postnord\u2019s current rates.",
+      shippingFree: "Free",
+      orderTotal: "Total",
+      checkoutErrorGeneric: "Something went wrong. Please try again or contact us.",
+      checkoutPoweredBy: "Secure card payment via Stripe. Your card number never leaves Stripe.",
+      formSubmitPay: "Continue to payment",
+
+      // Success page
+      successTitle: "Thank you for your order!",
+      successBody: "We\u2019ve received your order and payment. You\u2019ll get a confirmation by email shortly \u2014 check your spam folder if it doesn\u2019t arrive.",
+      successBackHome: "Back to the shop",
+
+      // Cancel page
+      cancelTitle: "Order cancelled",
+      cancelBody: "No payment was taken. You can go back and try again any time.",
+      cancelBackHome: "Back to the shop",
+
+      // Privacy page
+      privacyTitle: "Privacy policy",
+      privacyIntro: "We only collect what\u2019s needed to handle your order.",
+      privacyWhatH: "What we collect",
+      privacyWhatBody: "Name, email, phone number and delivery address from the order form. Payment details are handled by Stripe \u2014 we never see them.",
+      privacyWhyH: "Why",
+      privacyWhyBody: "To pack and ship your order, send receipts, and answer questions about it.",
+      privacyKeepH: "For how long",
+      privacyKeepBody: "Order records are kept as required by Swedish accounting law (7 years). We don\u2019t send marketing emails.",
+      privacyContactH: "Contact",
+      privacyContactBody: "Want to know what we have on file, or have it deleted? Get in touch.",
     },
   },
 

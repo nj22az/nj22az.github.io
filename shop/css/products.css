@@ -617,6 +617,104 @@
 }
 .shop-about-location svg { width: 16px; height: 16px; }
 
+/* ── Status pages (success / cancel / privacy) ── */
+.shop-status { padding-top: 6rem; text-align: center; }
+.shop-status .container { max-width: 36rem; }
+.shop-status-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.shop-status-icon-cancel {
+  background: rgba(196, 114, 78, 0.12);
+  color: #c4724e;
+}
+.shop-status-icon svg { width: 36px; height: 36px; stroke-width: 1.5; }
+.shop-status-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.shop-status-body {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.8;
+  color: var(--ink-light);
+  margin-bottom: 2rem;
+}
+.shop-privacy .container { max-width: 40rem; text-align: left; }
+.shop-privacy-intro { text-align: left; margin-bottom: 2.5rem; }
+.shop-privacy-block {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px dashed var(--border);
+}
+.shop-privacy-block:last-child { border-bottom: none; }
+.shop-privacy-block h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.shop-privacy-block p {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: var(--ink-light);
+}
+
+/* ── Checkout flow (shipping + total) ── */
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  margin: 0.375rem 0 0;
+  line-height: 1.5;
+}
+
+.order-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.875rem 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.order-total-label {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.order-total-value {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.form-submit { margin-top: 1rem; }
+.form-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.form-note-stripe {
+  color: var(--ink-faint);
+  font-size: 0.6875rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 /* ── Shop footer — richer, with columns ── */
 .site-footer { padding: 3rem 1.5rem 2rem; }
 .footer-inner {

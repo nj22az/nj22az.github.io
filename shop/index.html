@@ -160,14 +160,24 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="order-shipping" data-i18n="shippingLabel"></label>
+        <select id="order-shipping" name="shipping" required></select>
+        <p class="form-hint" data-i18n="shippingHelper"></p>
+      </div>
+      <div class="form-group">
         <label for="order-message" data-i18n="formMessage"></label>
         <textarea id="order-message" name="message" data-i18n-ph="formMessagePh"></textarea>
       </div>
-      <button type="submit" class="btn-primary form-submit">
-        <span data-i18n="formSubmit"></span>
+      <div class="order-total-row">
+        <span class="order-total-label" data-i18n="orderTotal"></span>
+        <span class="order-total-value" id="order-total-value">—</span>
+      </div>
+      <button type="submit" class="btn-primary form-submit" id="order-submit">
+        <span class="form-submit-label" data-i18n="formSubmit"></span>
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
       <p class="form-note" data-i18n="formNote" data-i18n-html></p>
+      <p class="form-note form-note-stripe" id="order-stripe-note" hidden data-i18n="checkoutPoweredBy"></p>
     </form>
   </div>
 
