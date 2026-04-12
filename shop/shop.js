@@ -233,13 +233,6 @@
 
   /* ── Product rendering ── */
 
-  function formatPrice(amount) {
-    // Swedish: "149 kr"  /  English: "149 SEK"
-    var currency = currentLang === "sv" ? "kr" : "SEK";
-    var grouped = String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F"); // thin space
-    return grouped + ' <span class="currency">' + currency + '</span>';
-  }
-
   function renderProducts() {
     var grid = $("#product-grid");
     if (!grid) return;
@@ -247,16 +240,25 @@
     grid.innerHTML = SHOP.products.map(function (p) {
       var imgHtml = p.image
         ? '<img src="' + p.image + '" alt="' + p.title[currentLang] + '" loading="lazy">'
-        : '<div class="product-image-placeholder">' + icon("cube") + '</div>';
+        : icon("cube");
 
       var badge = p.featured ? '<span class="product-badge" data-i18n="popularBadge">' + t("popularBadge") + '</span>' : '';
 
-      return '<div class="product-card reveal" data-product="' + p.id + '" role="button" tabindex="0">' +
+      var tags = (p.tags[currentLang] || []).map(function (tg) {
+        return '<span class="tag">' + tg + '</span>';
+      }).join("");
+
+      return '<div class="product-card reveal">' +
         '<div class="product-image">' + imgHtml + badge + '</div>' +
         '<div class="product-body">' +
           '<h3 class="product-title">' + p.title[currentLang] + '</h3>' +
+          '<p class="product-desc">' + p.description[currentLang] + '</p>' +
+          '<div class="product-tags">' + tags + '</div>' +
           '<div class="product-footer">' +
-            '<span class="product-price">' + formatPrice(p.price) + '</span>' +
+            '<span class="product-price">' + p.price + ' <span class="currency">' + SHOP.currency + '</span></span>' +
+            '<button class="product-order-btn" data-product="' + p.id + '">' +
+              icon("mail") + ' <span>' + t("orderBtn") + '</span>' +
+            '</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -344,8 +346,7 @@
       var product = SHOP.products.find(function (p) { return p.id === productId; });
       if (!product) return;
       var title = product.title[currentLang];
-      var curr = currentLang === "sv" ? "kr" : "SEK";
-      productNameEl.textContent = title + " \u2014 " + product.price + " " + curr;
+      productNameEl.textContent = title + " \u2014 " + product.price + " " + SHOP.currency;
       productInput.value = title;
       modal.classList.add("open");
       modalBackdrop.classList.add("open");
@@ -359,19 +360,10 @@
     }
 
     document.addEventListener("click", function (e) {
-      var card = e.target.closest(".product-card[data-product]");
-      if (card) {
+      var btn = e.target.closest(".product-order-btn");
+      if (btn) {
         e.preventDefault();
-        openModal(card.dataset.product);
-      }
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var card = e.target.closest && e.target.closest(".product-card[data-product]");
-      if (card) {
-        e.preventDefault();
-        openModal(card.dataset.product);
+        openModal(btn.dataset.product);
       }
     });
 
