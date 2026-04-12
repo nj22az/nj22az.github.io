@@ -30,7 +30,7 @@ const CONFIG = {
         name: "Stora Mell\u00f6sa",
         label: "Sweden",
         countryCode: "SE",
-        embed: "https://maps.google.com/maps?q=Stora+Mell%C3%B6sa,+Sweden&z=12&output=embed",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15821.0!2d15.5617911!3d59.2278498!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465c191ed93ae7bd%3A0x1ab0e7ef419301aa!2sM%C3%B6rby%20509%2C%20715%2092%20Stora%20Mell%C3%B6sa!5e0!3m2!1sen!2s!4v1",
       },
       {
         name: "Nam Phuoc",
