@@ -54,10 +54,10 @@ var SHOP = {
       htmlLang: "sv",
       siteTitle: "Jonsson's Anslagstavla",
       siteSubtitle: "Produkter fr\u00e5n verkstaden",
-      metaDescription: "Kvalitetsprodukter tillverkade i \u00d6rebro, Sverige. Best\u00e4ll online och betala med Swish.",
+      metaDescription: "Kvalitetsprodukter tillverkade i Stora Mell\u00f6sa, Sverige. Best\u00e4ll online och betala med Swish.",
       tagline: "Produkter fr\u00e5n verkstaden",
-      description: "Praktiska och snygga produkter, skapade med omsorg i \u00d6rebro. Fr\u00e5n vardagsprylar till personliga best\u00e4llningar.",
-      location: "\u00d6rebro, Sverige",
+      description: "Praktiska och snygga produkter, skapade med omsorg i Stora Mell\u00f6sa. Fr\u00e5n vardagsprylar till personliga best\u00e4llningar.",
+      location: "Stora Mell\u00f6sa, Sverige",
 
       // Nav
       navHome: "Hem",
@@ -89,7 +89,7 @@ var SHOP = {
       step3Title: "Betala med Swish",
       step3Desc: "Snabbt, enkelt och s\u00e4kert. Vi skickar v\u00e5rt Swish-nummer med din bekr\u00e4ftelse.",
       step4Title: "F\u00e5 din vara",
-      step4Desc: "Vi f\u00e4rdigst\u00e4ller och skickar din produkt. Lokalh\u00e4mtning i \u00d6rebro g\u00e5r ocks\u00e5 bra.",
+      step4Desc: "Vi f\u00e4rdigst\u00e4ller och skickar din produkt. Lokalh\u00e4mtning i Stora Mell\u00f6sa g\u00e5r ocks\u00e5 bra.",
 
       // Swish banner
       swishTitle: "Vi tar Swish",
@@ -97,7 +97,7 @@ var SHOP = {
 
       // About
       aboutLabel: "Om oss",
-      aboutBio: "Vi \u00e4r grannar som delar en passion f\u00f6r att g\u00f6ra saker. Fr\u00e5n v\u00e5r verkstad i \u00d6rebro designar och tillverkar vi praktiska, snygga produkter f\u00f6r vardagen. Varje artikel g\u00f6rs p\u00e5 best\u00e4llning med omsorg och noggrannhet. Har du en egen id\u00e9? Vi lyssnar g\u00e4rna.",
+      aboutBio: "Vi \u00e4r grannar som delar en passion f\u00f6r att g\u00f6ra saker. Fr\u00e5n v\u00e5r verkstad i Stora Mell\u00f6sa designar och tillverkar vi praktiska, snygga produkter f\u00f6r vardagen. Varje artikel g\u00f6rs p\u00e5 best\u00e4llning med omsorg och noggrannhet. Har du en egen id\u00e9? Vi lyssnar g\u00e4rna.",
 
       // Modal
       modalTitle: "L\u00e4gg best\u00e4llning",
@@ -130,7 +130,7 @@ var SHOP = {
       footerMoreCol: "Mer",
       footerBackToMain: "\u2190 Tillbaka till",
       footerComingSoon: "Kommer snart",
-      footerTagline: "Produkter fr\u00e5n \u00d6rebro, Sverige.",
+      footerTagline: "Produkter fr\u00e5n Stora Mell\u00f6sa, Sverige.",
 
       // Filters & search
       filterAll: "Alla",
@@ -150,10 +150,10 @@ var SHOP = {
       htmlLang: "en",
       siteTitle: "Jonsson's Board",
       siteSubtitle: "Products from the workshop",
-      metaDescription: "Quality products made in \u00d6rebro, Sweden. Order online and pay with Swish.",
+      metaDescription: "Quality products made in Stora Mell\u00f6sa, Sweden. Order online and pay with Swish.",
       tagline: "Products from the workshop",
-      description: "Practical and beautiful products, made with care in \u00d6rebro, Sweden. From everyday essentials to personal commissions.",
-      location: "\u00d6rebro, Sweden",
+      description: "Practical and beautiful products, made with care in Stora Mell\u00f6sa, Sweden. From everyday essentials to personal commissions.",
+      location: "Stora Mell\u00f6sa, Sweden",
 
       navHome: "Home",
       navProducts: "Products",
@@ -181,13 +181,13 @@ var SHOP = {
       step3Title: "Pay with Swish",
       step3Desc: "Fast, easy, and secure. We\u2019ll send you our Swish number with your confirmation.",
       step4Title: "Receive Your Item",
-      step4Desc: "We prepare and ship your product. Local pickup in \u00d6rebro also available.",
+      step4Desc: "We prepare and ship your product. Local pickup in Stora Mell\u00f6sa also available.",
 
       swishTitle: "We accept Swish",
       swishText: "Fast and secure mobile payment. You\u2019ll receive Swish details after placing your order.",
 
       aboutLabel: "About Us",
-      aboutBio: "We are neighbours who share a love of making things. From our workshop in \u00d6rebro, Sweden, we design and produce practical, beautiful products for everyday life. Every item is made to order with care and attention to detail. Got a custom idea? We\u2019d love to hear it.",
+      aboutBio: "We are neighbours who share a love of making things. From our workshop in Stora Mell\u00f6sa, Sweden, we design and produce practical, beautiful products for everyday life. Every item is made to order with care and attention to detail. Got a custom idea? We\u2019d love to hear it.",
 
       modalTitle: "Place Order",
       formName: "Your Name *",
@@ -218,7 +218,7 @@ var SHOP = {
       footerMoreCol: "More",
       footerBackToMain: "\u2190 Back to",
       footerComingSoon: "Coming soon",
-      footerTagline: "Products from \u00d6rebro, Sweden.",
+      footerTagline: "Products from Stora Mell\u00f6sa, Sweden.",
 
       // Filters & search
       filterAll: "All",

@@ -27,10 +27,10 @@ const CONFIG = {
     },
     locations: [
       {
-        name: "\u00d6rebro",
+        name: "Stora Mell\u00f6sa",
         label: "Sweden",
         countryCode: "SE",
-        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63295.76!2d15.18!3d59.27!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465c14e0b5e1b8a1%3A0x4020b28f4020b20!2s%C3%96rebro%2C%20Sweden!5e0!3m2!1sen!2s!4v1",
+        embed: "https://maps.google.com/maps?q=Stora+Mell%C3%B6sa,+Sweden&z=12&output=embed",
       },
       {
         name: "Nam Phuoc",
@@ -107,7 +107,7 @@ const CONFIG = {
     {
       title: "Jonsson's Anslagstavla",
       description:
-        "A small shop of practical products made in \u00d6rebro, Sweden. Browse the catalog, order online, and pay with Swish. Available in Swedish and English.",
+        "A small shop of practical products made in Stora Mell\u00f6sa, Sweden. Browse the catalog, order online, and pay with Swish. Available in Swedish and English.",
       url: "/shop/",
       icon: "package",
       tags: ["Shop", "Products", "Sweden"],
