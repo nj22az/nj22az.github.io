@@ -23,15 +23,17 @@
   .hero-actions { flex-wrap: wrap; }
 }
 
-/* ── Circular logo frame (hero) ── */
+/* ── Circular logo frame (hero) ──
+   The stamp seal inside the PNG is smaller than the image itself,
+   so we zoom in (~1.3x) to fill the circle and hide the paper
+   texture and decorative ink splatters that live around it. */
 .shop-hero-logo {
   width: 200px;
   height: 200px;
   margin: 0;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
+  background: #f5f0e8;
   box-shadow: var(--shadow-card);
   flex-shrink: 0;
   animation: fadeIn 0.6s ease-out both;
@@ -43,9 +45,8 @@
   object-position: center;
   display: block;
   border-radius: 0;
-}
-[data-theme="dark"] .shop-hero-logo {
-  background: #f5f0e8;
+  transform: scale(1.3);
+  transform-origin: center center;
 }
 
 @media (max-width: 640px) {
@@ -60,8 +61,7 @@
   max-width: none;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--surface-card);
-  border: 1px solid var(--border);
+  background: #f5f0e8;
   box-shadow: var(--shadow-card);
 }
 .about-logo-img img {
@@ -71,9 +71,8 @@
   object-position: center;
   display: block;
   border-radius: 0;
-}
-[data-theme="dark"] .about-logo-img {
-  background: #f5f0e8;
+  transform: scale(1.3);
+  transform-origin: center center;
 }
 
 /* ── Language toggle button ── */
