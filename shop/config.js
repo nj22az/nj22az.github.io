@@ -33,6 +33,20 @@ var SHOP = {
     label: "nj22az.github.io",
   },
 
+  /** Path to the products JSON (fetched at runtime) */
+  productsUrl: "/shop/products.json",
+
+  /**
+   * Product categories — used by the filter pills.
+   * "All" is added automatically at the start of the list.
+   */
+  categories: [
+    { id: "desk",   sv: "Skrivbord", en: "Desk" },
+    { id: "home",   sv: "Hem",       en: "Home" },
+    { id: "plants", sv: "V\u00e4xter", en: "Plants" },
+    { id: "gifts",  sv: "Presenter", en: "Gifts" },
+  ],
+
   /** Translations — all visible text lives here */
   i18n: {
     sv: {
@@ -117,6 +131,18 @@ var SHOP = {
       footerBackToMain: "\u2190 Tillbaka till",
       footerComingSoon: "Kommer snart",
       footerTagline: "3D-printade produkter fr\u00e5n \u00d6rebro, Sverige.",
+
+      // Filters & search
+      filterAll: "Alla",
+      searchPlaceholder: "S\u00f6k produkter...",
+      noResults: "Inga produkter matchade s\u00f6kningen.",
+
+      // Custom order card
+      customTitle: "Har du en egen id\u00e9?",
+      customDesc: "Beh\u00f6ver du n\u00e5got som inte finns i katalogen? Ber\u00e4tta vad du vill ha s\u00e5 hj\u00e4lper vi dig ta fram det.",
+      customBtn: "Best\u00e4ll anpassat",
+      customProductName: "Anpassad best\u00e4llning",
+      customPriceLabel: "Pris p\u00e5 beg\u00e4ran",
     },
 
     en: {
@@ -193,156 +219,21 @@ var SHOP = {
       footerBackToMain: "\u2190 Back to",
       footerComingSoon: "Coming soon",
       footerTagline: "3D printed products from \u00d6rebro, Sweden.",
+
+      // Filters & search
+      filterAll: "All",
+      searchPlaceholder: "Search products...",
+      noResults: "No products matched your search.",
+
+      // Custom order card
+      customTitle: "Got a custom idea?",
+      customDesc: "Need something not in the catalog? Tell us what you have in mind and we\u2019ll help bring it to life.",
+      customBtn: "Request custom order",
+      customProductName: "Custom Order",
+      customPriceLabel: "Price on request",
     },
   },
 
-  /** Products — each has SV + EN title/description/tags */
-  products: [
-    {
-      id: "phone-stand",
-      price: 149,
-      image: null,
-      featured: true,
-      title: { sv: "Telefonst\u00e4ll", en: "Phone Stand" },
-      description: {
-        sv: "Elegant vinklad st\u00e4llning f\u00f6r alla smartphones. Perfekt p\u00e5 skrivbordet, i k\u00f6ket eller p\u00e5 nattduksbordet.",
-        en: "Elegant angled stand for any smartphone. Perfect for your desk, kitchen counter, or bedside table.",
-      },
-      tags: { sv: ["Skrivbord", "Praktisk"], en: ["Desk", "Practical"] },
-    },
-    {
-      id: "desk-organizer",
-      price: 249,
-      image: null,
-      featured: true,
-      title: { sv: "Skrivbordsf\u00f6rvaring", en: "Desk Organizer" },
-      description: {
-        sv: "F\u00f6rvaring med flera fack f\u00f6r pennor, kablar och sm\u00e5saker. H\u00e5ll ordning p\u00e5 skrivbordet.",
-        en: "Multi-compartment organizer for pens, cables, and small items. Keep your workspace tidy.",
-      },
-      tags: { sv: ["Skrivbord", "F\u00f6rvaring"], en: ["Desk", "Storage"] },
-    },
-    {
-      id: "cable-clips",
-      price: 89,
-      image: null,
-      featured: false,
-      title: { sv: "Kabelclips", en: "Cable Management Clips" },
-      description: {
-        sv: "Set om 6 kabelclips med tejp. Dra och organisera dina laddkablar snyggt.",
-        en: "Set of 6 adhesive cable clips. Route and organize your charging cables neatly.",
-      },
-      tags: { sv: ["Praktisk", "Set om 6"], en: ["Practical", "Set of 6"] },
-    },
-    {
-      id: "headphone-stand",
-      price: 179,
-      image: null,
-      featured: true,
-      title: { sv: "H\u00f6rlursst\u00e4ll", en: "Headphone Stand" },
-      description: {
-        sv: "Minimalistisk h\u00f6rlurshållare som ser bra ut p\u00e5 alla skrivbord. Stabil och st\u00f6rningsfri design.",
-        en: "Minimalist headphone holder that looks great on any desk. Sturdy and stable design.",
-      },
-      tags: { sv: ["Skrivbord", "Ljud"], en: ["Desk", "Audio"] },
-    },
-    {
-      id: "geometric-planter",
-      price: 169,
-      image: null,
-      featured: true,
-      title: { sv: "Geometrisk blomkruka", en: "Geometric Planter" },
-      description: {
-        sv: "Modern geometrisk kruka med integrerat dropp-fat. Perfekt f\u00f6r suckulenter och sm\u00e5 v\u00e4xter.",
-        en: "Modern geometric planter with integrated drip tray. Perfect for succulents and small plants.",
-      },
-      tags: { sv: ["Hem", "V\u00e4xter"], en: ["Home", "Plants"] },
-    },
-    {
-      id: "wall-hooks",
-      price: 99,
-      image: null,
-      featured: false,
-      title: { sv: "V\u00e4ggkrokar (set om 3)", en: "Wall Hook Set" },
-      description: {
-        sv: "Set om 3 dekorativa v\u00e4ggkrokar. Starka, l\u00e4tta och enkla att montera. Bra f\u00f6r nycklar, v\u00e4skor eller jackor.",
-        en: "Set of 3 decorative wall hooks. Strong, lightweight, and easy to mount. Great for keys, bags, or coats.",
-      },
-      tags: { sv: ["Hem", "Set om 3"], en: ["Home", "Set of 3"] },
-    },
-    {
-      id: "custom-keychain",
-      price: 59,
-      image: null,
-      featured: false,
-      title: { sv: "Personlig nyckelring", en: "Custom Keychain" },
-      description: {
-        sv: "Personlig nyckelring med ditt namn eller kort text. En unik g\u00e5va eller vardagstillbeh\u00f6r.",
-        en: "Personalized keychain with your name or short text. A unique gift or everyday carry item.",
-      },
-      tags: { sv: ["Present", "Personlig"], en: ["Gift", "Custom"] },
-    },
-    {
-      id: "business-card-holder",
-      price: 79,
-      image: null,
-      featured: false,
-      title: { sv: "Visitkortsh\u00e5llare", en: "Business Card Holder" },
-      description: {
-        sv: "Ren, professionell korth\u00e5llare till skrivbordet. Rymmer en hel bunt standardvisitkort.",
-        en: "Clean, professional card holder for your desk. Holds a full stack of standard business cards.",
-      },
-      tags: { sv: ["Skrivbord", "Professionell"], en: ["Desk", "Professional"] },
-    },
-    {
-      id: "plant-pot",
-      price: 129,
-      image: null,
-      featured: true,
-      title: { sv: "R\u00e4fflad blomkruka", en: "Ribbed Plant Pot" },
-      description: {
-        sv: "R\u00e4fflad cylindrisk kruka med dr\u00e4neringshål och matchande fat. Finns i flera storlekar.",
-        en: "Ribbed cylindrical pot with drainage hole and matching saucer. Available in multiple sizes.",
-      },
-      tags: { sv: ["Hem", "V\u00e4xter"], en: ["Home", "Plants"] },
-    },
-    {
-      id: "custom-nameplate",
-      price: 119,
-      image: null,
-      featured: true,
-      title: { sv: "Personlig namnskylt", en: "Custom Name Plate" },
-      description: {
-        sv: "Namnskylt f\u00f6r skrivbord eller d\u00f6rr med din text. Perfekt f\u00f6r hemmakontoret eller som present.",
-        en: "Desktop or door name plate with your text. Perfect for home offices or as a personalized gift.",
-      },
-      tags: { sv: ["Personlig", "Present"], en: ["Custom", "Gift"] },
-    },
-    {
-      id: "soap-dish",
-      price: 69,
-      image: null,
-      featured: false,
-      title: { sv: "Tv\u00e5lkopp", en: "Soap Dish" },
-      description: {
-        sv: "Dr\u00e4nerande tv\u00e5lkopp med upph\u00f6jda ribbor. H\u00e5ller tv\u00e5len torr och badrummet rent.",
-        en: "Draining soap dish with raised ridges. Keeps your soap dry and your bathroom tidy.",
-      },
-      tags: { sv: ["Hem", "Badrum"], en: ["Home", "Bathroom"] },
-    },
-    {
-      id: "bookend-set",
-      price: 199,
-      image: null,
-      featured: false,
-      title: { sv: "Bokst\u00f6d (par)", en: "Bookend Set" },
-      description: {
-        sv: "Par med moderna bokst\u00f6d i geometrisk design. Tunga nog att h\u00e5lla en full hylla.",
-        en: "Pair of modern bookends with a geometric design. Heavy enough to support a full shelf.",
-      },
-      tags: { sv: ["Hem", "Set om 2"], en: ["Home", "Set of 2"] },
-    },
-  ],
 
   /** SVG icons */
   icons: {

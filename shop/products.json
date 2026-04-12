@@ -1,0 +1,158 @@
+[
+  {
+    "id": "phone-stand",
+    "category": "desk",
+    "price": 149,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Telefonställ", "en": "Phone Stand" },
+    "description": {
+      "sv": "Elegant vinklad ställning för alla smartphones. Perfekt på skrivbordet, i köket eller på nattduksbordet.",
+      "en": "Elegant angled stand for any smartphone. Perfect for your desk, kitchen counter, or bedside table."
+    },
+    "tags": { "sv": ["Skrivbord", "Praktisk"], "en": ["Desk", "Practical"] }
+  },
+  {
+    "id": "desk-organizer",
+    "category": "desk",
+    "price": 249,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Skrivbordsförvaring", "en": "Desk Organizer" },
+    "description": {
+      "sv": "Förvaring med flera fack för pennor, kablar och småsaker. Håll ordning på skrivbordet.",
+      "en": "Multi-compartment organizer for pens, cables, and small items. Keep your workspace tidy."
+    },
+    "tags": { "sv": ["Skrivbord", "Förvaring"], "en": ["Desk", "Storage"] }
+  },
+  {
+    "id": "cable-clips",
+    "category": "desk",
+    "price": 89,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Kabelclips", "en": "Cable Management Clips" },
+    "description": {
+      "sv": "Set om 6 kabelclips med tejp. Dra och organisera dina laddkablar snyggt.",
+      "en": "Set of 6 adhesive cable clips. Route and organize your charging cables neatly."
+    },
+    "tags": { "sv": ["Praktisk", "Set om 6"], "en": ["Practical", "Set of 6"] }
+  },
+  {
+    "id": "headphone-stand",
+    "category": "desk",
+    "price": 179,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Hörlursställ", "en": "Headphone Stand" },
+    "description": {
+      "sv": "Minimalistisk hörlurshållare som ser bra ut på alla skrivbord. Stabil och störningsfri design.",
+      "en": "Minimalist headphone holder that looks great on any desk. Sturdy and stable design."
+    },
+    "tags": { "sv": ["Skrivbord", "Ljud"], "en": ["Desk", "Audio"] }
+  },
+  {
+    "id": "geometric-planter",
+    "category": "plants",
+    "price": 169,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Geometrisk blomkruka", "en": "Geometric Planter" },
+    "description": {
+      "sv": "Modern geometrisk kruka med integrerat dropp-fat. Perfekt för suckulenter och små växter.",
+      "en": "Modern geometric planter with integrated drip tray. Perfect for succulents and small plants."
+    },
+    "tags": { "sv": ["Hem", "Växter"], "en": ["Home", "Plants"] }
+  },
+  {
+    "id": "wall-hooks",
+    "category": "home",
+    "price": 99,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Väggkrokar (set om 3)", "en": "Wall Hook Set" },
+    "description": {
+      "sv": "Set om 3 dekorativa väggkrokar. Starka, lätta och enkla att montera. Bra för nycklar, väskor eller jackor.",
+      "en": "Set of 3 decorative wall hooks. Strong, lightweight, and easy to mount. Great for keys, bags, or coats."
+    },
+    "tags": { "sv": ["Hem", "Set om 3"], "en": ["Home", "Set of 3"] }
+  },
+  {
+    "id": "custom-keychain",
+    "category": "gifts",
+    "price": 59,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Personlig nyckelring", "en": "Custom Keychain" },
+    "description": {
+      "sv": "Personlig nyckelring med ditt namn eller kort text. En unik gåva eller vardagstillbehör.",
+      "en": "Personalized keychain with your name or short text. A unique gift or everyday carry item."
+    },
+    "tags": { "sv": ["Present", "Personlig"], "en": ["Gift", "Custom"] }
+  },
+  {
+    "id": "business-card-holder",
+    "category": "desk",
+    "price": 79,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Visitkortshållare", "en": "Business Card Holder" },
+    "description": {
+      "sv": "Ren, professionell korthållare till skrivbordet. Rymmer en hel bunt standardvisitkort.",
+      "en": "Clean, professional card holder for your desk. Holds a full stack of standard business cards."
+    },
+    "tags": { "sv": ["Skrivbord", "Professionell"], "en": ["Desk", "Professional"] }
+  },
+  {
+    "id": "plant-pot",
+    "category": "plants",
+    "price": 129,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Räfflad blomkruka", "en": "Ribbed Plant Pot" },
+    "description": {
+      "sv": "Räfflad cylindrisk kruka med dräneringshål och matchande fat. Finns i flera storlekar.",
+      "en": "Ribbed cylindrical pot with drainage hole and matching saucer. Available in multiple sizes."
+    },
+    "tags": { "sv": ["Hem", "Växter"], "en": ["Home", "Plants"] }
+  },
+  {
+    "id": "custom-nameplate",
+    "category": "gifts",
+    "price": 119,
+    "image": null,
+    "featured": true,
+    "title": { "sv": "Personlig namnskylt", "en": "Custom Name Plate" },
+    "description": {
+      "sv": "Namnskylt för skrivbord eller dörr med din text. Perfekt för hemmakontoret eller som present.",
+      "en": "Desktop or door name plate with your text. Perfect for home offices or as a personalized gift."
+    },
+    "tags": { "sv": ["Personlig", "Present"], "en": ["Custom", "Gift"] }
+  },
+  {
+    "id": "soap-dish",
+    "category": "home",
+    "price": 69,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Tvålkopp", "en": "Soap Dish" },
+    "description": {
+      "sv": "Dränerande tvålkopp med upphöjda ribbor. Håller tvålen torr och badrummet rent.",
+      "en": "Draining soap dish with raised ridges. Keeps your soap dry and your bathroom tidy."
+    },
+    "tags": { "sv": ["Hem", "Badrum"], "en": ["Home", "Bathroom"] }
+  },
+  {
+    "id": "bookend-set",
+    "category": "home",
+    "price": 199,
+    "image": null,
+    "featured": false,
+    "title": { "sv": "Bokstöd (par)", "en": "Bookend Set" },
+    "description": {
+      "sv": "Par med moderna bokstöd i geometrisk design. Tunga nog att hålla en full hylla.",
+      "en": "Pair of modern bookends with a geometric design. Heavy enough to support a full shelf."
+    },
+    "tags": { "sv": ["Hem", "Set om 2"], "en": ["Home", "Set of 2"] }
+  }
+]

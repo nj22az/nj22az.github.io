@@ -259,38 +259,97 @@
     return SHOP._a + String.fromCharCode(64) + SHOP._b + String.fromCharCode(46) + SHOP._c;
   }
 
+  /* ── Filter / search state ── */
+
+  var activeCategory = "all";
+  var searchQuery = "";
+
+  function getFilteredProducts() {
+    var products = SHOP.products || [];
+    return products.filter(function (p) {
+      if (activeCategory !== "all" && p.category !== activeCategory) return false;
+      if (searchQuery) {
+        var q = searchQuery.toLowerCase();
+        var title = (p.title[currentLang] || "").toLowerCase();
+        var desc = (p.description[currentLang] || "").toLowerCase();
+        if (title.indexOf(q) === -1 && desc.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderCategoryPills() {
+    var bar = $("#filter-pills");
+    if (!bar) return;
+    var cats = [{ id: "all", sv: t("filterAll"), en: t("filterAll") }].concat(SHOP.categories || []);
+    bar.innerHTML = cats.map(function (c) {
+      var label = c[currentLang] || c.en || c.id;
+      var active = c.id === activeCategory ? " active" : "";
+      return '<button class="filter-pill' + active + '" data-cat="' + c.id + '" type="button">' + label + '</button>';
+    }).join("");
+  }
+
   /* ── Product rendering ── */
 
   function renderProducts() {
     var grid = $("#product-grid");
     if (!grid) return;
 
-    grid.innerHTML = SHOP.products.map(function (p) {
-      var imgHtml = p.image
-        ? '<img src="' + p.image + '" alt="' + p.title[currentLang] + '" loading="lazy">'
-        : icon("cube");
+    var products = getFilteredProducts();
+    var empty = $("#product-empty");
 
-      var badge = p.featured ? '<span class="product-badge" data-i18n="popularBadge">' + t("popularBadge") + '</span>' : '';
+    if (!products.length) {
+      grid.innerHTML = "";
+      if (empty) { empty.textContent = t("noResults"); empty.hidden = false; }
+    } else {
+      if (empty) empty.hidden = true;
 
-      var tags = (p.tags[currentLang] || []).map(function (tg) {
-        return '<span class="tag">' + tg + '</span>';
-      }).join("");
+      grid.innerHTML = products.map(function (p) {
+        var imgHtml = p.image
+          ? '<img src="' + p.image + '" alt="' + p.title[currentLang] + '" loading="lazy">'
+          : icon("cube");
 
-      return '<div class="product-card reveal">' +
-        '<div class="product-image">' + imgHtml + badge + '</div>' +
-        '<div class="product-body">' +
-          '<h3 class="product-title">' + p.title[currentLang] + '</h3>' +
-          '<p class="product-desc">' + p.description[currentLang] + '</p>' +
-          '<div class="product-tags">' + tags + '</div>' +
-          '<div class="product-footer">' +
-            '<span class="product-price">' + p.price + ' <span class="currency">' + SHOP.currency + '</span></span>' +
-            '<button class="product-order-btn" data-product="' + p.id + '">' +
-              icon("mail") + ' <span>' + t("orderBtn") + '</span>' +
-            '</button>' +
+        var badge = p.featured ? '<span class="product-badge">' + t("popularBadge") + '</span>' : '';
+
+        var tags = (p.tags[currentLang] || []).map(function (tg) {
+          return '<span class="tag">' + tg + '</span>';
+        }).join("");
+
+        return '<div class="product-card reveal">' +
+          '<div class="product-image">' + imgHtml + badge + '</div>' +
+          '<div class="product-body">' +
+            '<h3 class="product-title">' + p.title[currentLang] + '</h3>' +
+            '<p class="product-desc">' + p.description[currentLang] + '</p>' +
+            '<div class="product-tags">' + tags + '</div>' +
+            '<div class="product-footer">' +
+              '<span class="product-price">' + p.price + ' <span class="currency">' + SHOP.currency + '</span></span>' +
+              '<button class="product-order-btn" data-product="' + p.id + '">' +
+                icon("mail") + ' <span>' + t("orderBtn") + '</span>' +
+              '</button>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    renderCustomCard();
+  }
+
+  /* ── Custom order card — always present below the grid ── */
+
+  function renderCustomCard() {
+    var slot = $("#custom-order-slot");
+    if (!slot) return;
+    slot.innerHTML =
+      '<div class="custom-card">' +
+        '<div class="custom-card-icon">' + icon("package") + '</div>' +
+        '<h3 class="custom-card-title">' + t("customTitle") + '</h3>' +
+        '<p class="custom-card-desc">' + t("customDesc") + '</p>' +
+        '<button class="btn-primary custom-order-btn" type="button">' +
+          '<span>' + t("customBtn") + '</span>' +
+          '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
+        '</button>' +
       '</div>';
-    }).join("");
   }
 
   /* ── Steps (How to Order) ── */
@@ -351,9 +410,14 @@
     });
 
     // Re-render dynamic grids
+    renderCategoryPills();
     renderProducts();
     renderSteps();
     buildFooter();
+
+    // Update search placeholder
+    var searchInput = document.getElementById("product-search");
+    if (searchInput) searchInput.setAttribute("placeholder", dict.searchPlaceholder || "");
 
     // Re-bind reveal observers on new nodes
     initReveals();
@@ -371,10 +435,17 @@
     var form = modal.querySelector("#order-form");
 
     function openModal(productId) {
-      var product = SHOP.products.find(function (p) { return p.id === productId; });
-      if (!product) return;
-      var title = product.title[currentLang];
-      productNameEl.textContent = title + " \u2014 " + product.price + " " + SHOP.currency;
+      var title, summary;
+      if (productId === "__custom__") {
+        title = t("customProductName");
+        summary = title + " \u2014 " + t("customPriceLabel");
+      } else {
+        var product = (SHOP.products || []).find(function (p) { return p.id === productId; });
+        if (!product) return;
+        title = product.title[currentLang];
+        summary = title + " \u2014 " + product.price + " " + SHOP.currency;
+      }
+      productNameEl.textContent = summary;
       productInput.value = title;
       modal.classList.add("open");
       modalBackdrop.classList.add("open");
@@ -392,6 +463,12 @@
       if (btn) {
         e.preventDefault();
         openModal(btn.dataset.product);
+        return;
+      }
+      var customBtn = e.target.closest(".custom-order-btn");
+      if (customBtn) {
+        e.preventDefault();
+        openModal("__custom__");
       }
     });
 
@@ -432,6 +509,28 @@
     });
   }
 
+  /* ── Filter pills & search wiring ── */
+
+  function initFilters() {
+    document.addEventListener("click", function (e) {
+      var pill = e.target.closest(".filter-pill");
+      if (!pill) return;
+      activeCategory = pill.dataset.cat || "all";
+      renderCategoryPills();
+      renderProducts();
+      initReveals();
+    });
+
+    var search = $("#product-search");
+    if (search) {
+      search.addEventListener("input", function () {
+        searchQuery = search.value.trim();
+        renderProducts();
+        initReveals();
+      });
+    }
+  }
+
   /* ── Reveals ── */
 
   var revealObserver;
@@ -443,10 +542,28 @@
         });
       }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
     }
-    $$(".product-card, .step-card, .section-header, .shop-about-layout, .hero-photo").forEach(function (el) {
+    $$(".product-card, .step-card, .section-header, .shop-about-layout, .hero-photo, .custom-card").forEach(function (el) {
       if (!el.classList.contains("reveal")) el.classList.add("reveal");
       if (!el.classList.contains("visible")) revealObserver.observe(el);
     });
+  }
+
+  /* ── Load products ── */
+
+  function loadProducts() {
+    var url = SHOP.productsUrl || "/shop/products.json";
+    return fetch(url)
+      .then(function (r) {
+        if (!r.ok) throw new Error("Failed to load products");
+        return r.json();
+      })
+      .then(function (data) {
+        SHOP.products = data;
+      })
+      .catch(function (err) {
+        console.error("Could not load products:", err);
+        SHOP.products = [];
+      });
   }
 
   /* ── Init ── */
@@ -456,8 +573,16 @@
     buildFooter();
     initSmoothScroll();
     initOrderModal();
-    applyLanguage(); // renders products, steps, translates everything
-    initReveals();
+    initFilters();
+
+    // Load products, then render everything translated
+    loadProducts().then(function () {
+      applyLanguage(); // renders products, steps, custom card, filter pills
+      initReveals();
+    });
+
+    // Also apply initial static translations before products arrive
+    applyLanguage();
   }
 
   if (document.readyState === "loading") {
