@@ -81,10 +81,12 @@
   height: 130px;
   margin: 0;
 }
-/* Match the Johansson seal's tone to the slightly dusty/faded Jonsson seal.
-   Reduces saturation and contrast so both read as the same muted navy. */
+/* Match the Johansson seal's tone to the dusty/faded Jonsson seal.
+   - sepia warms the whites toward the same cream paper tone
+   - saturate tames the brighter navy to Jonsson's muted blue
+   - contrast/brightness soften the crispness so both read as vintage */
 .about-logo-johansson img {
-  filter: saturate(0.7) contrast(0.9) brightness(1.04);
+  filter: sepia(0.3) saturate(0.55) contrast(0.9) brightness(1.02);
 }
 @media (max-width: 480px) {
   .about-logos-row .about-logo-img { width: 110px; height: 110px; }
