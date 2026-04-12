@@ -611,12 +611,28 @@
       // Fallback: mailto (used for custom orders and until Stripe is live)
       var subjectLabel = customFlow ? dict.customProductName : product;
       var subject = encodeURIComponent(dict.mailSubject + ": " + subjectLabel);
+
+      // Build a readable shipping + total summary for the email body
+      var shippingLine = "";
+      var totalLine = "";
+      if (!customFlow && currentOrderContext && currentOrderContext.product) {
+        var ship = (SHOP.shippingOptions || []).find(function (o) { return o.id === shipping; });
+        if (ship) {
+          var shipLabel = (ship.label && ship.label[currentLang]) || ship.id;
+          var shipPriceStr = ship.price > 0 ? formatAmount(ship.price) : t("shippingFree");
+          shippingLine = dict.mailShipping + ": " + shipLabel + " (" + shipPriceStr + ")\n";
+          var total = currentOrderContext.product.price * (parseInt(qty, 10) || 1) + ship.price;
+          totalLine = dict.mailTotal + ": " + formatAmount(total) + "\n";
+        }
+      }
+
       var body = encodeURIComponent(
         dict.mailGreeting + "\n\n" +
         dict.mailIntro + "\n\n" +
         dict.mailProduct + ": " + product + "\n" +
         dict.mailQty + ": " + qty + "\n" +
-        (shipping && !customFlow ? "Shipping: " + shipping + "\n" : "") +
+        shippingLine +
+        totalLine +
         "\n" +
         dict.mailName + ": " + name + "\n" +
         dict.mailEmail + ": " + email + "\n" +

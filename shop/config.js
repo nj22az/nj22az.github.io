@@ -132,6 +132,8 @@ var SHOP = {
       mailIntro: "Jag skulle vilja best\u00e4lla:",
       mailProduct: "Produkt",
       mailQty: "Antal",
+      mailShipping: "Frakt",
+      mailTotal: "Summa",
       mailName: "Namn",
       mailEmail: "E-post",
       mailPhone: "Telefon",
@@ -141,7 +143,7 @@ var SHOP = {
       mailSubject: "Best\u00e4llning",
 
       // Footer
-      footerPayment: "Betalning med kort via Stripe",
+      footerPayment: "Betalning via Swish (efter bekr\u00e4ftelse)",
       footerShopCol: "Hitta oss p\u00e5",
       footerMoreCol: "Mer",
       footerBackToMain: "\u2190 Tillbaka till",
@@ -253,6 +255,8 @@ var SHOP = {
       mailIntro: "I would like to order:",
       mailProduct: "Product",
       mailQty: "Quantity",
+      mailShipping: "Shipping",
+      mailTotal: "Total",
       mailName: "Name",
       mailEmail: "Email",
       mailPhone: "Phone",
@@ -261,7 +265,7 @@ var SHOP = {
       mailClose: "Looking forward to hearing from you!",
       mailSubject: "Order",
 
-      footerPayment: "Card payment via Stripe",
+      footerPayment: "Payment via Swish (after confirmation)",
       footerShopCol: "Find us on",
       footerMoreCol: "More",
       footerBackToMain: "\u2190 Back to",
