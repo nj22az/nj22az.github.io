@@ -10,55 +10,39 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Johansson Engineering home">
-      <img src="https://nj22az.github.io/shop/assets/logo-johansson.png" alt="" class="brand-mark">
-      <span class="brand-text">Johansson Engineering</span>
-    </a>
+    <div class="site-brand">
+      <img src="https://raw.githubusercontent.com/nj22az/JDS_Documentation/main/jds/assets/logo.svg" alt="" class="site-logo">
+      <a href="index.html" class="site-title">Johansson Engineering</a>
+    </div>
+    <div class="site-subtitle">Engineering notes from the field, workshop, and documentation system.</div>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="index.html" class="nav-link">Home</a><a href="index.html#posts" class="nav-link">Posts</a><a href="about/index.html" class="nav-link">About</a>
     </nav>
   </header>
-  <main>
+  <main class="content">
 
-    <section class="hero">
-      <div class="hero-inner">
-        <p class="eyebrow">Johansson Engineering Blog</p>
-        <h1>Engineering notes from the workshop.</h1>
-        <p class="hero-copy">Engineering notes, product work, tools, and experiments from Johansson Engineering.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#posts">Read posts</a>
-          <a class="button secondary" href="about/index.html">About</a>
-        </div>
-      </div>
+    <section class="intro">
+      <h1>Johansson Engineering Blog</h1>
+      <p>Engineering notes, product work, tools, and experiments from Johansson Engineering.</p>
+      <p class="system-note">Markdown-first, GitHub Pages hosted, and designed for agent-assisted publishing through GitHub MCP.</p>
     </section>
 
-    <section class="section" id="posts">
-      <div class="section-header">
-        <p class="eyebrow">Latest</p>
-        <h2>Posts</h2>
-      </div>
-      <div class="post-grid">
+    <section id="posts">
+      <h2>Posts</h2>
+      <ul class="post-list">
         
-      <article class="post-card">
-        <div class="post-meta">2026-06-25<span>notes</span></div>
-        <h3><a href="posts/start-here/index.html">Start Here</a></h3>
-        <p>Initial placeholder post for the blog foundation.</p>
-      </article>
+      <li>
+        <div class="post-date">2026-06-25</div>
+        <h2 class="post-title"><a href="posts/start-here/index.html">Start Here</a></h2>
+        <p class="post-excerpt">Initial placeholder post for the blog foundation.</p>
+      </li>
 
-      </div>
-    </section>
-
-    <section class="band">
-      <div>
-        <p class="eyebrow">Publishing Setup</p>
-        <h2>Markdown first, GitHub Pages ready.</h2>
-      </div>
-      <p>Posts stay portable in the repository. An agent can draft and revise content through git, while publishing remains reviewable before anything goes live.</p>
+      </ul>
     </section>
 
   </main>
   <footer class="site-footer">
-    <p>Johansson Engineering. Built as a static, agent-friendly blog.</p>
+    &copy; 2026 Nils Johansson
   </footer>
 </body>
 </html>

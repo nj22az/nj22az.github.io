@@ -10,24 +10,24 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="../../index.html" aria-label="Johansson Engineering home">
-      <img src="https://nj22az.github.io/shop/assets/logo-johansson.png" alt="" class="brand-mark">
-      <span class="brand-text">Johansson Engineering</span>
-    </a>
+    <div class="site-brand">
+      <img src="https://raw.githubusercontent.com/nj22az/JDS_Documentation/main/jds/assets/logo.svg" alt="" class="site-logo">
+      <a href="../../index.html" class="site-title">Johansson Engineering</a>
+    </div>
+    <div class="site-subtitle">Engineering notes from the field, workshop, and documentation system.</div>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="../../index.html" class="nav-link">Home</a><a href="../../index.html#posts" class="nav-link">Posts</a><a href="../../about/index.html" class="nav-link">About</a>
     </nav>
   </header>
-  <main>
+  <main class="content">
 
-    <article class="article post">
-      <header class="post-heading">
-        <a class="back-link" href="../../index.html#posts">Back to posts</a>
-        <p class="post-meta">2026-06-25<span>notes</span></p>
+    <article>
+      <header class="post-header">
+        <div class="post-meta">2026-06-25</div>
         <h1>Start Here</h1>
-        <p>Initial placeholder post for the blog foundation.</p>
       </header>
-      <p>This is the first post on the Johansson Engineering blog.</p>
+      <div class="post-body">
+        <p>This is the first post on the Johansson Engineering blog.</p>
 <p>The initial version is deliberately lightweight: Markdown content, static HTML, and no paid platform dependency. That keeps the writing portable and lets an agent help draft, edit, and publish through git.</p>
 <h2>What This Blog Is For</h2>
 <ul>
@@ -38,11 +38,14 @@
 </ul>
 <h2>Publishing Model</h2>
 <p>Posts live as Markdown files. The generated site can be hosted on GitHub Pages for free, and future agentic publishing can happen through GitHub MCP.</p>
+      </div>
+      <hr>
+      <p><a href="../../index.html#posts">Back to all posts</a></p>
     </article>
 
   </main>
   <footer class="site-footer">
-    <p>Johansson Engineering. Built as a static, agent-friendly blog.</p>
+    &copy; 2026 Nils Johansson
   </footer>
 </body>
 </html>
