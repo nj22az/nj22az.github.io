@@ -9,22 +9,91 @@
   <link rel="stylesheet" href="../../assets/css/site.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-brand">
+  <header class="site-header kakoi">
+    <div class="brand-row">
       <img src="https://raw.githubusercontent.com/nj22az/JDS_Documentation/main/jds/assets/logo.svg" alt="" class="site-logo">
-      <a href="../../index.html" class="site-title">Johansson Engineering</a>
+      <div>
+        <a href="../../index.html" class="site-title">Johansson Engineering</a>
+        <div class="site-subtitle">Field notes, workshop records, and agent-assisted documentation.</div>
+      </div>
     </div>
-    <div class="site-subtitle">Engineering notes from the field, workshop, and documentation system.</div>
+    <div class="header-signposts" aria-label="Site status">
+      <span class="badge badge-blue">【ENGINEERING】</span>
+      <span class="badge badge-orange">【MCP READY】</span>
+      <span class="badge badge-magenta">【JDS STYLE】</span>
+    </div>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="../../index.html" class="nav-link">Home</a><a href="../../index.html#posts" class="nav-link">Posts</a><a href="../../about/index.html" class="nav-link">About</a>
     </nav>
   </header>
-  <main class="content">
+  <div class="site-shell">
 
-    <article>
+    <aside class="sidebar" aria-label="Site index">
+      <section class="kakoi sidebar-box author-card">
+        <div class="box-head box-head-blue">Author</div>
+        <h2>Nils Johansson</h2>
+        <p>Johansson Engineering publishes practical field notes, product logs, workshop decisions, and software tooling records.</p>
+      </section>
+
+      <section class="kakoi sidebar-box mascot-card">
+        <div class="box-head box-head-mint">Kogu-chan</div>
+        <img src="https://nj22az.github.io/shop/assets/logo-johansson.png" alt="Kogu-chan, Johansson Engineering toolbox mascot" class="mascot-image">
+        <p class="speech-bubble">「Check source, status, and publishing path before changing a workflow.」</p>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-yellow">Categories</div>
+        <ul class="compact-list">
+          <li>Field service</li>
+          <li>Product development</li>
+          <li>MCP publishing</li>
+          <li>Documentation systems</li>
+          <li>CAD and fabrication</li>
+        </ul>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-lavender">Recent Updates</div>
+        <ul class="zebra-list recent-list">
+          
+          <li>
+            <a href="../../posts/start-here/index.html">Start Here</a>
+            <time>2026-06-25</time>
+          </li>
+        </ul>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-peach">Popular Tags</div>
+        <div class="tag-cloud"><span class="tag-pill">notes</span></div>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-cyan">Quick Index</div>
+        <nav class="index-nav" aria-label="Secondary navigation">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#posts">Posts</a>
+          <a href="../../about/index.html">About</a>
+          <a href="../../feed.xml">RSS</a>
+          <a href="../../sitemap.xml">Sitemap</a>
+        </nav>
+      </section>
+    </aside>
+
+    <main class="content-grid" id="content">
+
+    <article class="kakoi article-box">
       <header class="post-header">
-        <div class="post-meta">2026-06-25</div>
+        <div class="box-head box-head-blue">
+          <span>Published Field Note</span>
+          <span class="badge badge-orange">UPDATED</span>
+        </div>
+        <div class="post-meta-row">
+          <time>2026-06-25</time>
+          <span>Nils Johansson</span>
+        </div>
         <h1>Start Here</h1>
+        <div class="tag-line"><span class="tag-pill">notes</span></div>
       </header>
       <div class="post-body">
         <p>This is the first post on the Johansson Engineering blog.</p>
@@ -39,13 +108,16 @@
 <h2>Publishing Model</h2>
 <p>Posts live as Markdown files. The generated site can be hosted on GitHub Pages for free, and future agentic publishing can happen through GitHub MCP.</p>
       </div>
-      <hr>
-      <p><a href="../../index.html#posts">Back to all posts</a></p>
+      <footer class="article-footer">
+        <a class="read-more" href="../../index.html#posts">Back to all posts</a>
+      </footer>
     </article>
 
-  </main>
-  <footer class="site-footer">
-    &copy; 2026 Nils Johansson
+    </main>
+  </div>
+  <footer class="site-footer kakoi">
+    <span>&copy; 2026 Nils Johansson</span>
+    <span>Static Markdown, GitHub Pages, and MCP-oriented publishing.</span>
   </footer>
 </body>
 </html>

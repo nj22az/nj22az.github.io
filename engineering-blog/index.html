@@ -9,40 +9,155 @@
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-brand">
+  <header class="site-header kakoi">
+    <div class="brand-row">
       <img src="https://raw.githubusercontent.com/nj22az/JDS_Documentation/main/jds/assets/logo.svg" alt="" class="site-logo">
-      <a href="index.html" class="site-title">Johansson Engineering</a>
+      <div>
+        <a href="index.html" class="site-title">Johansson Engineering</a>
+        <div class="site-subtitle">Field notes, workshop records, and agent-assisted documentation.</div>
+      </div>
     </div>
-    <div class="site-subtitle">Engineering notes from the field, workshop, and documentation system.</div>
+    <div class="header-signposts" aria-label="Site status">
+      <span class="badge badge-blue">【ENGINEERING】</span>
+      <span class="badge badge-orange">【MCP READY】</span>
+      <span class="badge badge-magenta">【JDS STYLE】</span>
+    </div>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="index.html" class="nav-link">Home</a><a href="index.html#posts" class="nav-link">Posts</a><a href="about/index.html" class="nav-link">About</a>
     </nav>
   </header>
-  <main class="content">
+  <div class="site-shell">
 
-    <section class="intro">
+    <aside class="sidebar" aria-label="Site index">
+      <section class="kakoi sidebar-box author-card">
+        <div class="box-head box-head-blue">Author</div>
+        <h2>Nils Johansson</h2>
+        <p>Johansson Engineering publishes practical field notes, product logs, workshop decisions, and software tooling records.</p>
+      </section>
+
+      <section class="kakoi sidebar-box mascot-card">
+        <div class="box-head box-head-mint">Kogu-chan</div>
+        <img src="https://nj22az.github.io/shop/assets/logo-johansson.png" alt="Kogu-chan, Johansson Engineering toolbox mascot" class="mascot-image">
+        <p class="speech-bubble">「Check source, status, and publishing path before changing a workflow.」</p>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-yellow">Categories</div>
+        <ul class="compact-list">
+          <li>Field service</li>
+          <li>Product development</li>
+          <li>MCP publishing</li>
+          <li>Documentation systems</li>
+          <li>CAD and fabrication</li>
+        </ul>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-lavender">Recent Updates</div>
+        <ul class="zebra-list recent-list">
+          
+          <li>
+            <a href="posts/start-here/index.html">Start Here</a>
+            <time>2026-06-25</time>
+          </li>
+        </ul>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-peach">Popular Tags</div>
+        <div class="tag-cloud"><span class="tag-pill">notes</span></div>
+      </section>
+
+      <section class="kakoi sidebar-box">
+        <div class="box-head box-head-cyan">Quick Index</div>
+        <nav class="index-nav" aria-label="Secondary navigation">
+          <a href="index.html">Home</a>
+          <a href="index.html#posts">Posts</a>
+          <a href="about/index.html">About</a>
+          <a href="feed.xml">RSS</a>
+          <a href="sitemap.xml">Sitemap</a>
+        </nav>
+      </section>
+    </aside>
+
+    <main class="content-grid" id="content">
+
+    <section class="kakoi page-lede">
+      <div class="box-head box-head-mint">Site Overview</div>
       <h1>Johansson Engineering Blog</h1>
       <p>Engineering notes, product work, tools, and experiments from Johansson Engineering.</p>
-      <p class="system-note">Markdown-first, GitHub Pages hosted, and designed for agent-assisted publishing through GitHub MCP.</p>
+      <div class="badge-row">
+        <span class="badge badge-blue">【FIELD LOG】</span>
+        <span class="badge badge-orange">【UPDATED】</span>
+        <span class="badge badge-magenta">【AGENTIC】</span>
+      </div>
     </section>
 
-    <section id="posts">
-      <h2>Posts</h2>
-      <ul class="post-list">
+    <section class="bento-grid" aria-label="Blog overview">
+      
+        <article class="kakoi bento-card bento-large">
+          <div class="box-head box-head-yellow">
+            <span>Latest Post</span>
+            <span class="badge badge-blue">NEW</span>
+          </div>
+          <h2><a href="posts/start-here/index.html">Start Here</a></h2>
+          <p>Initial placeholder post for the blog foundation.</p>
+          <div class="tag-line"><span class="tag-pill">notes</span></div>
+        </article>
         
-      <li>
-        <div class="post-date">2026-06-25</div>
+      <article class="kakoi bento-card">
+        <div class="box-head box-head-blue">Publishing Flow</div>
+        <h2>Markdown to GitHub Pages</h2>
+        <p>Posts stay portable as source files, then the generator publishes static pages for free hosting.</p>
+      </article>
+      <article class="kakoi bento-card">
+        <div class="box-head box-head-lavender">MCP Control</div>
+        <h2>Agentic Drafting</h2>
+        <p>New writing can be drafted, reviewed, rebuilt, and deployed through GitHub MCP without a paid CMS.</p>
+      </article>
+      <article class="kakoi bento-card">
+        <div class="box-head box-head-peach">Design Mode</div>
+        <h2>Kakoi Information Grid</h2>
+        <p>Dense compartments, signposts, and zebra lists make the site transparent instead of hidden.</p>
+      </article>
+    </section>
+
+    <section id="posts" class="kakoi archive-box">
+      <div class="box-head box-head-cyan">Archive</div>
+      <h2>Posts</h2>
+      <div class="post-list">
+        
+      <article class="kakoi post-card">
+        <div class="box-head box-head-blue">
+          <span class="badge badge-orange">UPDATED</span>
+          <time>2026-06-25</time>
+        </div>
         <h2 class="post-title"><a href="posts/start-here/index.html">Start Here</a></h2>
         <p class="post-excerpt">Initial placeholder post for the blog foundation.</p>
-      </li>
+        <div class="tag-line"><span class="tag-pill">notes</span></div>
+        <a class="read-more" href="posts/start-here/index.html">Read More</a>
+      </article>
 
-      </ul>
+      </div>
     </section>
 
-  </main>
-  <footer class="site-footer">
-    &copy; 2026 Nils Johansson
+    <section class="kakoi archive-table">
+      <div class="box-head box-head-yellow">Chronological Index</div>
+      <div class="archive-list">
+        
+        <a class="archive-row" href="posts/start-here/index.html">
+          <time>2026-06-25</time>
+          <strong>Start Here</strong>
+          <span class="badge badge-magenta">PUBLISHED</span>
+        </a>
+      </div>
+    </section>
+
+    </main>
+  </div>
+  <footer class="site-footer kakoi">
+    <span>&copy; 2026 Nils Johansson</span>
+    <span>Static Markdown, GitHub Pages, and MCP-oriented publishing.</span>
   </footer>
 </body>
 </html>
