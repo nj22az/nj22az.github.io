@@ -55,6 +55,16 @@ const CONFIG = {
 
   projects: [
     {
+      title: "The Front-Row Seat",
+      description:
+        "An illustrated web edition of my historical novel — five centuries of the East India Company, told from one riverside tavern on the Thames.",
+      url: "/the-front-row-seat/",
+      icon: "notebook",
+      tags: ["Book", "History", "Illustrated"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "GitHub",
       description:
         "Open-source projects, tools, and code experiments. Browse repositories, contributions, and engineering side projects.",
