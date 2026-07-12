@@ -57,10 +57,10 @@ const CONFIG = {
     {
       title: "The Front-Row Seat",
       description:
-        "Read my historical novel online — an illustrated reading edition with adjustable type and dark mode. Five centuries of the East India Company, told from one riverside tavern on the Thames.",
+        "Read a six-book historical omnibus online — an illustrated compact edition with adjustable type and dark mode. Each book stands alone; together they follow five centuries of the East India Company from one Thames-side tavern.",
       url: "/the-front-row-seat/",
       icon: "notebook",
-      tags: ["Book", "History", "Read Online"],
+      tags: ["Six Books", "Historical Fiction", "Read Online"],
       bento: "wide",
       featured: true,
     },
