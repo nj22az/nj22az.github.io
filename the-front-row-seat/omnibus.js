@@ -354,6 +354,18 @@
     var book = document.createElement("div");
     book.className = "book-spreads";
     pages.forEach(function (currentPage, index) {
+      var isLeftPage = index % 2 === 0;
+      var footer = document.createElement("span");
+      footer.className = "book-page-footer";
+      footer.setAttribute("aria-hidden", "true");
+      footer.textContent = "Book One · The Venture · 1603";
+
+      currentPage.setAttribute(
+        "data-running-head",
+        isLeftPage ? "The Front-Row Seat" : "Chapter One · The Boy Who Signed"
+      );
+      currentPage.appendChild(footer);
+
       if (index % 2 === 0) {
         var spread = document.createElement("section");
         spread.className = "book-spread";
@@ -361,7 +373,7 @@
         book.appendChild(spread);
       }
 
-      currentPage.classList.add(index % 2 === 0 ? "book-page--left" : "book-page--right");
+      currentPage.classList.add(isLeftPage ? "book-page--left" : "book-page--right");
       book.lastElementChild.appendChild(currentPage);
     });
 
