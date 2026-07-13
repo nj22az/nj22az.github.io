@@ -246,24 +246,18 @@
   var chapterOneIllustrations = [
     {
       after: "He has a paper in his pocket",
-      paragraphs: 3,
-      side: "right",
       file: "../tom-maggie-paper.png",
       alt: "Tom studies the Company's paper at the bar while Maggie reads him more closely than he reads it.",
       caption: "The paper looks like a door to Tom. Maggie has buried enough sailors to see its lock."
     },
     {
       after: "Any man who still calls himself a sailor",
-      paragraphs: 2,
-      side: "left",
       file: "02-the-room-stands.jpg",
       alt: "Silas stands isolated as the dockworkers rise together; Maggie, Mara and Tom watch from the bar.",
       caption: "The room makes its choice—not for Tom, but for the kind of river it drinks beside."
     },
     {
       after: "Maggie comes round the counter then",
-      paragraphs: 2,
-      side: "right",
       file: "03-the-debt-is-mine.jpg",
       alt: "Maggie returns one coin to the table while the old docker gathers the rest and Mara reaches the back stairs.",
       caption: "A coin, a paper and a witnessed debt: Maggie gives the room's violence a different ending."
@@ -272,7 +266,7 @@
 
   function chapterOneFigure(item) {
     var figure = document.createElement("figure");
-    figure.className = "fig story-spread-figure";
+    figure.className = "fig chapter-one-figure";
     figure.setAttribute("data-chapter-one-plate", item.file);
 
     var image = document.createElement("img");
@@ -291,31 +285,94 @@
     return figure;
   }
 
-  function chapterOneSpread(prose, item) {
+  function insertChapterOneFigure(prose, item) {
     if (prose.querySelector('[data-chapter-one-plate="' + item.file + '"]')) return;
 
     var paragraph = Array.prototype.find.call(prose.children, function (candidate) {
       return candidate.tagName === "P" && candidate.textContent.indexOf(item.after) !== -1;
     });
     if (!paragraph) return;
+    paragraph.insertAdjacentElement("afterend", chapterOneFigure(item));
+  }
 
-    var spread = document.createElement("section");
-    spread.className = "story-spread story-spread--" + item.side;
-    spread.setAttribute("aria-label", item.caption);
+  function chapterOnePageScore(node) {
+    if (node.tagName === "H2") return 70;
+    if (node.tagName === "FIGURE") return 275;
+    if (node.tagName === "BLOCKQUOTE") return 110;
+    if (node.tagName === "HR") return 45;
+    var words = (node.textContent.trim().match(/\S+/g) || []).length;
+    return words + 28;
+  }
 
-    var copy = document.createElement("div");
-    copy.className = "story-spread-copy";
-    paragraph.parentNode.insertBefore(spread, paragraph);
+  function buildChapterOnePages(prose) {
+    if (prose.querySelector(".book-spreads")) return;
 
-    var current = paragraph;
-    for (var index = 0; index < item.paragraphs && current && current.tagName === "P"; index += 1) {
-      var next = current.nextElementSibling;
-      copy.appendChild(current);
-      current = next;
+    var nodes = Array.prototype.slice.call(prose.children);
+    var pages = [];
+    var page;
+    var pageScore = 0;
+    var pageLimit = 430;
+
+    function startPage() {
+      page = document.createElement("div");
+      page.className = "book-page";
+      pages.push(page);
+      pageScore = 0;
     }
 
-    spread.appendChild(copy);
-    spread.appendChild(chapterOneFigure(item));
+    startPage();
+    nodes.forEach(function (node, index) {
+      var score = chapterOnePageScore(node);
+      var nextScore = nodes[index + 1] ? chapterOnePageScore(nodes[index + 1]) : 0;
+      var wouldOverflow = pageScore > 0 && pageScore + score > pageLimit;
+      var wouldOrphanHeading = node.tagName === "H2" && pageScore > 0 && pageScore + score + nextScore > pageLimit;
+
+      if (wouldOverflow || wouldOrphanHeading) startPage();
+      page.appendChild(node);
+      pageScore += score;
+    });
+
+    for (var pair = 0; pair + 1 < pages.length; pair += 2) {
+      var leftPage = pages[pair];
+      var rightPage = pages[pair + 1];
+      var leftScore = Array.prototype.reduce.call(leftPage.children, function (total, child) {
+        return total + chapterOnePageScore(child);
+      }, 0);
+      var rightScore = Array.prototype.reduce.call(rightPage.children, function (total, child) {
+        return total + chapterOnePageScore(child);
+      }, 0);
+
+      while (rightScore < leftScore * .65 && leftPage.children.length > 1) {
+        var moved = leftPage.lastElementChild;
+        var movedScore = chapterOnePageScore(moved);
+        rightPage.insertBefore(moved, rightPage.firstChild);
+        leftScore -= movedScore;
+        rightScore += movedScore;
+      }
+    }
+
+    var book = document.createElement("div");
+    book.className = "book-spreads";
+    pages.forEach(function (currentPage, index) {
+      if (index % 2 === 0) {
+        var spread = document.createElement("section");
+        spread.className = "book-spread";
+        spread.setAttribute("aria-label", "Reading spread " + (Math.floor(index / 2) + 1));
+        book.appendChild(spread);
+      }
+
+      currentPage.classList.add(index % 2 === 0 ? "book-page--left" : "book-page--right");
+      book.lastElementChild.appendChild(currentPage);
+    });
+
+    if (pages.length % 2 !== 0) {
+      var blank = document.createElement("div");
+      blank.className = "book-page book-page--right book-page--blank";
+      blank.setAttribute("aria-hidden", "true");
+      book.lastElementChild.appendChild(blank);
+    }
+
+    prose.appendChild(book);
   }
 
   function applyChapterOneLayout(reader) {
@@ -331,8 +388,10 @@
     var prose = reader.querySelector(".prose");
     if (!prose) return;
     chapterOneIllustrations.forEach(function (item) {
-      chapterOneSpread(prose, item);
+      insertChapterOneFigure(prose, item);
     });
+    reader.classList.add("reader--book-layout");
+    buildChapterOnePages(prose);
   }
 
   function updateReader(reader, id) {
