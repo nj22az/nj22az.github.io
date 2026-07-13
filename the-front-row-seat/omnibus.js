@@ -41,7 +41,7 @@
     {
       numeral: "VI",
       word: "Six",
-      title: "A Warden’s Watch",
+      title: "The Engine Room",
       years: "1940–2019",
       id: "part-five-the-engine-room"
     }
@@ -63,22 +63,7 @@
     return match ? match[1] : "";
   }
 
-  function bookCard(book) {
-    var status = book.status
-      ? '<span class="omnibus-book-status">' + book.status + "</span>"
-      : "";
-
-    return (
-      '<a class="omnibus-book" data-book="' + book.numeral + '" href="#/read/' + book.id + '">' +
-        '<span class="omnibus-book-number">Book ' + book.word + "</span>" +
-        '<span class="omnibus-book-years">' + book.years + "</span>" +
-        "<strong>" + book.title + "</strong>" +
-        status +
-      "</a>"
-    );
-  }
-
-  function addOmnibusIntro(contents) {
+  function updateCover(contents) {
     var cover = contents.querySelector(".cover");
     if (!cover) return;
 
@@ -86,23 +71,9 @@
     var subtitle = cover.querySelector(".cover-sub");
     var startButton = cover.querySelector(".btn-primary");
 
-    if (kicker) kicker.textContent = "A Six-Book Historical Omnibus";
-    if (subtitle) subtitle.textContent = "Six self-contained books. Five centuries. One riverside witness.";
-    if (startButton) startButton.textContent = "Begin Book One";
-
-    if (contents.querySelector(".omnibus-intro")) return;
-
-    var section = document.createElement("section");
-    section.className = "omnibus-intro";
-    section.setAttribute("aria-labelledby", "omnibus-heading");
-    section.innerHTML =
-      '<p class="omnibus-eyebrow">The omnibus</p>' +
-      '<h2 id="omnibus-heading">Six complete books. One connected history.</h2>' +
-      '<p class="omnibus-summary">This live reading edition is the compact canon for a cycle of six historical novels. Each book is designed to stand on its own; read together, they form <em>The Front-Row Seat</em> omnibus.</p>' +
-      '<div class="omnibus-grid" aria-label="The six books">' + books.map(bookCard).join("") + "</div>" +
-      '<p class="omnibus-development">The standalone editions are being expanded one book at a time. Titles may evolve during development; <em>The Watchman’s Daughter</em> is the current novel in progress.</p>';
-
-    cover.insertAdjacentElement("afterend", section);
+    if (kicker) kicker.textContent = "Six books · 1603–2019";
+    if (subtitle) subtitle.textContent = "Five centuries of the East India Company, observed from one Thames-side tavern.";
+    if (startButton) startButton.textContent = "Begin with Book One";
   }
 
   function labelBookRow(link, book) {
@@ -111,8 +82,13 @@
     var year = link.querySelector(".toc-year");
 
     link.classList.add("toc-book-row");
+    link.classList.remove("toc-chapter-row");
     link.setAttribute("data-book", book.numeral);
-    if (kicker) kicker.textContent = "Book " + book.word;
+    if (kicker) {
+      kicker.textContent = book.numeral === "V"
+        ? "Book " + book.word + " · Compact edition"
+        : "Book " + book.word;
+    }
     if (title) title.textContent = book.title;
 
     if (!year) {
@@ -126,12 +102,30 @@
 
   function labelEpilogueRow(link) {
     var kicker = link.querySelector(".toc-kicker");
-    link.classList.add("toc-epilogue-row");
+    link.classList.add("toc-chapter-row", "toc-epilogue-row");
     if (kicker) kicker.textContent = "Epilogue";
   }
 
+  function labelChapterRow(link) {
+    link.classList.add("toc-chapter-row");
+  }
+
+  function labelMetaRow(link) {
+    link.classList.add("toc-meta-row");
+  }
+
+  function addReferenceLabel(link) {
+    var item = link.closest("li");
+    if (!item || item.parentNode.querySelector(".toc-section-label")) return;
+
+    var label = document.createElement("li");
+    label.className = "toc-section-label";
+    label.textContent = "Reference";
+    item.parentNode.insertBefore(label, item);
+  }
+
   function updateContents(contents) {
-    addOmnibusIntro(contents);
+    updateCover(contents);
 
     var toc = contents.querySelector(".toc");
     if (!toc) return;
@@ -141,16 +135,27 @@
       var heading = document.createElement("header");
       heading.className = "toc-heading";
       heading.innerHTML =
-        '<p class="omnibus-eyebrow">Compact reading edition</p>' +
-        "<h2>The six books</h2>" +
-        "<p>Choose a book, or read straight through from Book One.</p>";
+        "<h2>Reading order</h2>" +
+        "<p>Choose a book, or continue chapter by chapter.</p>";
       toc.insertBefore(heading, toc.firstChild);
     }
 
     toc.querySelectorAll("a.toc-row").forEach(function (link) {
       var id = linkId(link);
-      if (bookById[id]) labelBookRow(link, bookById[id]);
-      if (id === "part-six-afterlives") labelEpilogueRow(link);
+      if (id === "00-frontmatter") {
+        link.closest("li").hidden = true;
+      } else if (bookById[id]) {
+        labelBookRow(link, bookById[id]);
+      } else if (id === "part-six-afterlives") {
+        labelEpilogueRow(link);
+      } else if (id === "00a-foreword") {
+        labelMetaRow(link);
+      } else if (id.indexOf("appendix-") === 0) {
+        addReferenceLabel(link);
+        labelMetaRow(link);
+      } else {
+        labelChapterRow(link);
+      }
     });
   }
 
@@ -253,15 +258,6 @@
           : "Book " + book.word;
       }
       if (title) title.textContent = book.title;
-
-      if (!head.querySelector(".reader-book-note")) {
-        var note = document.createElement("p");
-        note.className = "reader-book-note";
-        note.textContent = id === "12-1888-the-watchmans-daughter"
-          ? "This is the compact canonical version. The self-contained Su Zhang novel is now being expanded from it."
-          : "This book stands on its own and also forms part of The Front-Row Seat omnibus.";
-        head.appendChild(note);
-      }
 
       document.title = book.title + " — The Front-Row Seat";
     }

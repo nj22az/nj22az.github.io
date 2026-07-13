@@ -1,148 +1,135 @@
-.omnibus-intro {
-  margin: 0 0 2.75rem;
-  padding: clamp(1.25rem, 4vw, 2rem);
-  border: 1px solid var(--hairline);
-  border-radius: 20px;
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 54%),
-    var(--surface);
-  box-shadow: var(--shadow-sm);
+/*
+  A restrained editorial layer for the six-book reader.
+  The grid, small labels and fine rules borrow from Japanese information design;
+  the oxblood ink and book typography keep the Victorian character.
+*/
+
+.contents,
+.reader {
+  --accent: #8b3128;
 }
 
-.omnibus-eyebrow {
-  margin: 0 0 .45rem;
-  color: var(--accent);
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+[data-theme="dark"] .contents,
+[data-theme="dark"] .reader {
+  --accent: #d47c6f;
 }
 
-.omnibus-intro h2,
-.toc-heading h2 {
+/* Cover: one compact statement, not a second landing page. */
+.contents .cover {
+  display: grid;
+  grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
+  grid-template-areas:
+    "art kicker"
+    "art title"
+    "art subtitle"
+    "art action";
+  column-gap: clamp(1.5rem, 6vw, 3.5rem);
+  align-items: end;
+  padding: clamp(2rem, 7vw, 4.5rem) 0 clamp(2.5rem, 7vw, 4rem);
+  text-align: left;
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.contents .cover-art {
+  grid-area: art;
+  width: 100%;
+  max-width: none;
   margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -.02em;
+  aspect-ratio: 2 / 3;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
+  box-shadow: none;
 }
 
-.omnibus-intro h2 {
-  font-size: clamp(1.65rem, 5vw, 2.15rem);
-  line-height: 1.08;
-}
-
-.omnibus-summary {
-  max-width: 37rem;
-  margin: .85rem 0 1.35rem;
-  color: var(--text-2);
-  font-family: var(--font-serif);
-  font-size: 1.02rem;
-  line-height: 1.62;
-}
-
-.omnibus-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: .65rem;
-}
-
-.omnibus-book {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: .22rem .75rem;
-  min-height: 94px;
-  padding: .9rem 1rem;
-  overflow: hidden;
-  border: 1px solid var(--hairline);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--surface) 82%, var(--surface-2));
-  color: var(--text);
-  transition: border-color .16s ease, transform .16s ease, box-shadow .16s ease;
-}
-
-.omnibus-book:hover {
-  border-color: color-mix(in srgb, var(--accent) 48%, var(--hairline));
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
-}
-
-.omnibus-book:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 34%, transparent);
-  outline-offset: 2px;
-}
-
-.omnibus-book-number {
+.contents .cover-kicker {
+  grid-area: kicker;
+  margin: 0 0 .65rem;
   color: var(--accent);
   font-size: .68rem;
   font-weight: 700;
-  letter-spacing: .11em;
-  text-transform: uppercase;
+  letter-spacing: .16em;
 }
 
-.omnibus-book strong {
-  grid-column: 1 / -1;
-  align-self: end;
+.contents .cover-title {
+  grid-area: title;
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 4.2rem);
+  line-height: .96;
+}
+
+.contents .cover-sub {
+  grid-area: subtitle;
+  max-width: 29rem;
+  margin: 1rem 0 1.4rem;
   font-family: var(--font-serif);
-  font-size: 1.08rem;
-  font-weight: 600;
-  line-height: 1.18;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
-.omnibus-book-years {
-  grid-row: 1;
-  grid-column: 2;
-  color: var(--text-3);
-  font-size: .72rem;
-  font-variant-numeric: tabular-nums;
+.contents .btn-primary {
+  grid-area: action;
+  justify-self: start;
+  padding: .62rem 1.05rem;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--accent);
+  font-size: .84rem;
+  letter-spacing: .02em;
 }
 
-.omnibus-book[data-book="V"] {
-  border-color: color-mix(in srgb, var(--accent) 38%, var(--hairline));
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
-    var(--surface);
-}
-
-.omnibus-book-status {
-  grid-column: 1 / -1;
-  margin-top: .28rem;
-  color: var(--text-3);
-  font-size: .69rem;
-}
-
-.omnibus-development {
-  margin: 1rem 0 0;
-  color: var(--text-3);
-  font-size: .78rem;
-  line-height: 1.5;
-}
-
+/* Contents: one reading order, treated as a printed ledger. */
 .toc-heading {
-  margin: 0 0 .9rem;
-  padding: 0 .35rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .5rem 1rem;
+  align-items: end;
+  margin: 2.75rem 0 1rem;
+  padding: 0 0 .8rem;
+  border-bottom: 2px solid var(--text);
 }
 
 .toc-heading h2 {
-  font-size: 1.55rem;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -.015em;
 }
 
-.toc-heading p:last-child {
-  margin: .38rem 0 0;
+.toc-heading p {
+  margin: 0;
   color: var(--text-3);
-  font-size: .84rem;
-  line-height: 1.45;
+  font-size: .75rem;
+  line-height: 1.4;
+  text-align: right;
 }
 
-.toc-book-row {
+.toc .toc-row {
+  border-radius: 0;
+}
+
+.toc .toc-thumb {
+  display: none;
+}
+
+.toc .toc-chevron {
+  color: var(--text-3);
+  font-size: 1rem;
+}
+
+.toc .toc-book-row {
   position: relative;
-  min-height: 78px;
-  margin: 1.4rem 0 .28rem;
-  padding: 1rem .95rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--hairline));
-  background:
-    linear-gradient(115deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 64%),
-    var(--surface);
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto auto;
+  gap: .9rem;
+  min-height: 88px;
+  margin: 2rem 0 0;
+  padding: 1.15rem .25rem;
+  border-top: 1px solid var(--text);
+  border-bottom: 1px solid var(--hairline);
+  background: transparent;
 }
 
 .toc li:first-child .toc-book-row {
@@ -152,24 +139,23 @@
 .toc-book-row::before {
   content: attr(data-book);
   display: grid;
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
+  align-self: stretch;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--hairline));
-  border-radius: 50%;
+  border-right: 1px solid var(--accent);
   color: var(--accent);
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
-.toc-book-row .toc-thumb {
-  display: none;
+.toc-book-row .toc-copy {
+  justify-content: center;
 }
 
 .toc-book-row .toc-kicker {
   color: var(--accent);
+  font-size: .64rem;
   font-weight: 700;
+  letter-spacing: .13em;
 }
 
 .toc-book-row .toc-title {
@@ -179,74 +165,147 @@
 
 .toc-book-row .toc-year {
   align-self: center;
+  color: var(--text-3);
+  font-size: .78rem;
   white-space: nowrap;
+}
+
+.toc .toc-chapter-row {
+  min-height: 62px;
+  padding: .7rem .25rem .7rem 3.9rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.toc-chapter-row .toc-kicker {
+  font-size: .61rem;
+  letter-spacing: .11em;
+}
+
+.toc-chapter-row .toc-title {
+  font-size: 1.02rem;
+}
+
+.toc-chapter-row .toc-year {
+  font-size: .75rem;
 }
 
 .toc-epilogue-row {
   margin-top: .8rem;
-  border-top: 1px dashed var(--hairline-strong);
+  border-top: 1px solid var(--hairline-strong);
 }
 
 .toc-epilogue-row .toc-kicker {
   color: var(--text-3);
 }
 
-.reader-book-note {
-  max-width: 31rem;
-  margin: 1.25rem auto 0;
-  padding: .8rem 1rem;
-  border: 1px solid var(--hairline);
-  border-radius: 12px;
-  background: var(--surface-2);
-  color: var(--text-2);
-  font-family: var(--font-ui);
-  font-size: .82rem;
-  line-height: 1.5;
+.toc .toc-meta-row {
+  min-height: 54px;
+  padding: .62rem .25rem;
+  border-top: 1px solid var(--hairline);
 }
 
+.toc-meta-row .toc-kicker {
+  font-size: .6rem;
+  letter-spacing: .11em;
+}
+
+.toc-meta-row .toc-title {
+  font-size: .94rem;
+}
+
+.toc-meta-row .toc-year {
+  display: none;
+}
+
+.toc-section-label {
+  margin-top: 2.5rem;
+  padding: .7rem .25rem;
+  border-bottom: 2px solid var(--text);
+  color: var(--accent);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* Reader metadata stays terse; illustrations retain a book-plate scale. */
 .prose .watchmans-plate {
-  margin: 2.6em auto;
+  margin: 2.8em auto;
 }
 
 .prose .watchmans-plate img {
-  width: min(100%, 32rem);
+  width: min(100%, 30rem);
   margin: 0 auto;
+  border-radius: 2px;
   background: var(--surface-2);
 }
 
 .prose .watchmans-plate figcaption {
-  width: min(100%, 32rem);
+  width: min(100%, 30rem);
   margin-right: auto;
   margin-left: auto;
 }
 
-@media (max-width: 560px) {
-  .omnibus-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 620px) {
+  .contents .cover {
+    grid-template-columns: minmax(105px, 34vw) minmax(0, 1fr);
+    grid-template-areas:
+      "art kicker"
+      "art title"
+      "art subtitle"
+      "action action";
+    column-gap: 1.15rem;
+    align-items: center;
+    padding-top: 1.75rem;
   }
 
-  .omnibus-book {
-    min-height: 82px;
+  .contents .cover-title {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .contents .cover-sub {
+    margin: .75rem 0 0;
+    font-size: .88rem;
+    line-height: 1.45;
+  }
+
+  .contents .btn-primary {
+    width: 100%;
+    margin-top: 1.25rem;
+    text-align: center;
+  }
+
+  .toc-heading {
+    display: block;
+  }
+
+  .toc-heading p {
+    margin-top: .3rem;
+    text-align: left;
   }
 
   .toc-book-row {
-    gap: .7rem;
-    padding: .9rem .7rem;
-  }
-
-  .toc-book-row::before {
-    flex-basis: 38px;
-    width: 38px;
-    height: 38px;
+    grid-template-columns: 2.35rem minmax(0, 1fr) auto;
+    gap: .65rem;
+    min-height: 78px;
   }
 
   .toc-book-row .toc-year {
     display: none;
   }
+
+  .toc-chapter-row {
+    padding-left: 3rem;
+  }
+
+  .toc-chapter-row .toc-year {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .omnibus-book {
+  .contents .btn-primary,
+  .toc .toc-row {
     transition: none;
   }
 }
