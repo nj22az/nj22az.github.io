@@ -261,13 +261,13 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>She came south on a timber ship, certain that a harbour city on a great river must need something a strong back and a level head could supply. It needed barmaids. In time it gave her an English waterman to marry, and then took him off Africa when the river work failed and he signed deep-water. Two husbands buried; one son somewhere on a Swedish deck. She has learned to pour the drinks and not wait at the window.</p>
 <p>To the river she is Maggie — an English scrap of Margareta, the only piece of the old name light enough to carry. Margareta stayed on the northern water. Maggie runs the bar.</p>
 <p>Tonight she is busy. Word has gone round that a ship is in, and where a ship comes in, men follow, and where men follow they want a drink. She moves behind the bar the way a woman moves who has done this ten thousand times — pouring, wiping, taking coin, watching the whole room without seeming to look at any part of it.</p>
-<p>He comes in around dusk, shaking rain off a cloak that has seen better years. Young. Twenty, perhaps twenty-two — near enough the age of her own boy, on whatever cold deck the Swedish Crown keeps him. Ink on his fingers. He orders ale, and she pours it without asking, which means he has been in before.</p>
+<p>He comes in around dusk, shaking rain off a cloak that has seen better years. Young. Twenty, perhaps twenty-two — near enough the age of her own boy, on whatever cold deck the Swedish Crown keeps him. Tar beside his nails, a pale seam across one palm where a wet line once ran faster than his grip. Not a deep-water man, not yet, but no stranger to a deck. He orders ale, and she pours it without asking, which means he has been in before.</p>
 <p>He has a paper in his pocket. He takes it out and smooths it flat on the bar and reads it the way a man reads a letter from someone he loves, or a sentence handed down by a judge.</p>
 <p>Maggie comes over. Stands in front of him with the rag over her shoulder and her arms folded, and looks at him the way a mother looks at a boy who has just told her he means to run off and join a circus.</p>
 <p>You are going to sign it, then.</p>
 <hr class="scene">
 <h2 id="iii-the-boy-with-the-paper">III. The Boy with the Paper</h2>
-<p>Tom folds the paper and tucks it away. Tomorrow. Governor Smythe himself will be there. A governor and twenty-four committees. Joint stock — means the risk is shared. So is the reward, if there is any.</p>
+<p>Tom folds the paper and tucks it away. Tomorrow. Governor Smythe himself will be there. A governor and twenty-four committees. The berth is before the mast, common seaman, second voyage. Joint stock — means the risk is shared. So is the reward, if there is any.</p>
 <p>If there is any, she says. Not a question.</p>
 <p>The first fleet went out two years ago. Four ships. Came back with pepper. Real pepper, from Java.</p>
 <p>She snorts. She has heard every version of this from every young man who has sat at this bar with a piece of paper and a fire in his belly. How many men sailed?</p>
@@ -279,16 +279,26 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>The pepper is lovely, I'm sure. She leans in close enough that the grey in her hair catches the candlelight. How old are you?</p>
 <p>Twenty-two.</p>
 <p>Been to sea before?</p>
-<p>No.</p>
-<p>Right. She straightens up. So you're going to sign a paper that sends you round the Cape in a wooden box full of scurvy, to a place where the Portuguese and the weather and the food will all take turns trying to kill you, and you've never so much as been to sea.</p>
+<p>Coasters. Newcastle twice. Calais, once. I can hand, reef and steer.</p>
+<p>Your father taught you.</p>
+<p>Tom looks at the paper instead of her. He did.</p>
+<p>Right. She straightens up. So you know enough water to be useful and not enough ocean to know what is waiting. You are going to sign a paper that sends you round the Cape in a wooden box full of scurvy, to a place where the Portuguese and the weather and the food will all take turns trying to kill you.</p>
 <p>Tom says nothing. The fire cracks, sends sparks up the flue.</p>
 <p>What are they paying you?</p>
-<p>Twenty pounds a year. A writer's wage. Keeping the accounts.</p>
-<p>Twenty pounds to keep books on a voyage where men start dying before the Cape. Your mother know?</p>
+<p>Eighteen shillings a month.</p>
+<p>You will see nine.</p>
+<p>Tom's head comes up.</p>
+<p>I know paper, she says. Nine to you. Nine to Master Harcourt until your father's account is clean. Food and clothes charged besides, I'll wager, so the number can learn to walk away while you sleep.</p>
+<p>It is eleven pounds, six shillings and fourpence.</p>
+<p>She gives him a long look. A debt exact to the penny is a debt someone means to keep alive. Your mother know?</p>
 <p>My mother is dead.</p>
 <p>Your father?</p>
-<p>Found me the position himself. Thinks it's a good opportunity.</p>
-<p>Your father thinks it's a good opportunity for his son to write numbers in a book while men die around him. She wipes the bar in front of him. Not the pepper. What else is on the manifest?</p>
+<p>Was boatswain for Harcourt's Levant ships. Smyrna, Scanderoon, sometimes Venice. Twenty-three years. The last passage took his knee. Harcourt says stores were missing when they paid the ship off — cable, two coils of running rigging, a kedge anchor. Things lost in the storm that broke him. Things in his charge.</p>
+<p>And now Harcourt has put money into the East India voyage.</p>
+<p>Tom nods.</p>
+<p>Same man, Maggie says. New seal.</p>
+<p>He found me the berth. If I take my father's place, half-pay goes against the account.</p>
+<p>Found you the chain and called it work. She wipes the bar in front of him. Not the pepper, then. What else is on the manifest?</p>
 <p>Silk. Indigo. Cotton. Cloves from the Moluccas. Nutmeg from the Banda Islands. Worth a hundred times what they cost in London.</p>
 <p>Cloves. She almost laughs. You're going to die for a clove, Tom.</p>
 <p>Something flickers under his brightness. He knows he is about to do something foolish and is working hard not to know it. He drinks half his tankard in one pull. When he sets it down, he has stopped thinking and started doing.</p>
@@ -304,7 +314,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>She pours and does not spill any. She has stopped counting on the room; that much shows in how she carries the jug. She is counting the doors instead. And when she fills Tom's cup her sleeve draws back off her wrist, and Tom sees the bruising stacked under the torn lace, old under new, the ledger of a thing that has been happening a long while.</p>
 <p>Tom stands and crosses to the table. Not fast. The room is quiet enough for him to hear his own steps.</p>
 <p>She has heard enough, he says. It comes out smaller than he wants it to.</p>
-<p>Rook looks at him the way you'd look at a stool that had spoken. Then he smiles, because this is better sport than the auction. Then buy her, he says. Settle the debt like an honest man, writer.</p>
+<p>Rook looks at him the way you'd look at a stool that had spoken. Then he smiles, because this is better sport than the auction. Then buy her, he says. Settle the debt like an honest man, sailor.</p>
 <p>Tom empties his pockets onto the table: the coins meant to feed him until the ship sails, everything he owns that is not a paper or a keepsake. It is not much. It is everything. Every man in the room can count it from where he sits.</p>
 <p>Rook studies the little pile, then brushes it off the table. Coins ring and roll among the stools, the rushes and the boots that do not move.</p>
 <p>Not enough, he says.</p>
@@ -340,8 +350,15 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>Two of them are already arguing — loudly, and with real conviction — about whether the cloves from Ternate beat the cloves from Tidore, a question neither is remotely qualified to settle.</p>
 <p>The one with the missing fingers notices Tom. The paper. The hunger in his face. He's seen that look before — probably worn it himself.</p>
 <p>You're signing on. Not a question.</p>
-<p>Tomorrow. Second fleet. Writer.</p>
-<p>Good. We need men who can count. He holds up the ruined hand. Exhibit A. Knife fight in Bantam. Over a woman, if you can believe it — a woman and a sack of pepper. Don't get into knife fights out there, lad. The climate doesn't agree with bandages.</p>
+<p>Tomorrow. Second fleet. Before the mast.</p>
+<p>Able?</p>
+<p>Able enough. Coasters since I was fourteen. My father was a boatswain.</p>
+<p>The sailor throws him the heel of a bread loaf. Tom catches it one-handed despite the closing eye.</p>
+<p>Can you splice?</p>
+<p>Eye, short and long.</p>
+<p>Can you take the wheel?</p>
+<p>If the master tells me where he wants the ship.</p>
+<p>Then you are a seaman, whatever figure the clerk writes beside you. He holds up the ruined hand. Knife fight in Bantam. Over a woman, if you can believe it — a woman and a sack of pepper. Don't get into knife fights out there, lad. The climate doesn't agree with bandages.</p>
 <p>Was it worth it? Tom asks. The voyage. Was it worth it?</p>
 <p>The sailor considers a question he has not let himself ask. The pepper was good. Very good. The rest of it — ask me again in ten years. If I'm still here.</p>
 <p>Maggie brings bread and cheese to the Dragon's men. They fall on it like wolves. She watches them eat, counting the cost of pepper in men.</p>
@@ -370,7 +387,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>The Dutch?</p>
 <p>The Dutch. Last year, while your first fleet was still at sea, they chartered their own company. The VOC. Heard of it?</p>
 <p>A little.</p>
-<p>Not enough, then. More capital than you. Better ships. Better guns. And they are not gentlemen arguing over pepper in a London room. They mean to take the trade while you sit here with your twenty pounds a year and your good ale.</p>
+<p>Not enough, then. More capital than you. Better ships. Better guns. And they are not gentlemen arguing over pepper in a London room. They mean to take the trade while you sit here with your eighteen shillings a month, half of it promised away, and your good ale.</p>
 <p>Lancaster was there, Tom says. He made deals.</p>
 <p>Lancaster made deals. The Dutch made others. Hendricks picks up his pint. My brother Pieter sailed east with one of their fleets, rich in his head. He came home with a fever and died in a lodging house off the Ratcliff road, raving about the Company's islands and a thing he had watched but could not put into words. I never had the whole of it out of him. Enough, though. Do not mistake my accent for their flag, boy. A man may know his countrymen and know them for wolves.</p>
 <p>What do they do?</p>
@@ -389,9 +406,9 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>Tom eats. Outside, the ships at anchor are dark shapes on darker water, masts swaying, rigging making small sounds like men who cannot sleep.</p>
 <p>Hendricks has gone silent at his end of the bar. The boy will go. The boy will sign. He is twenty-two, and the Dutch are still only a story.</p>
 <p>Maggie comes over one last time, refills his ale.</p>
-<p>The charter was signed on New Year's Eve, she says. Three years back. Old Queen Bess is dead, and the Company she signed into being is still here, hiring. The queen is gone. The paper is not. She signs one. You sign another. Somewhere between the two, men die. The pepper comes back. The money comes back. The men do not.</p>
+<p>The charter was signed on New Year's Eve, she says. Three years back. Old Queen Bess is dead, and the Company she signed into being is still here, hiring. The queen is gone. The paper is not. Harcourt traded under the Levant seal when your father could still climb. Now he puts his money under the East India seal and your father's debt walks across with him. The companies do not even have to be the same. The man is the same. The ink is the same. She signs one. Harcourt signs one. You sign another. Somewhere between them, men work and die. The people at the top sign. The people at the bottom pay. The pepper comes back. The money comes back. The men do not.</p>
 <p>He opens his mouth. Nothing comes out.</p>
-<p>What he cannot say is that it was never the pepper. The brown millpond behind the Essex granary was, for ten summers, both a stretch of water a strong man could throw a stone across and the whole ocean. It had serpents beyond the map, a pirate cave under the willow roots and wreckers' fires on the far bank. He has always wanted to come through a door like this with salt on his coat and stories nobody else could tell. It is a child's answer to more than a hundred dead before the Cape. It is also the truth.</p>
+<p>What he cannot say is that the debt is not the whole of it. He could run from Harcourt. His father would lose the rented rooms, perhaps his liberty, and Tom knows he will not do that; but buried inside the duty is an older willingness. The brown millpond behind the Essex granary was, for ten summers, both a stretch of water a strong man could throw a stone across and the whole ocean. Later his father took him on coasters and taught his hands the names of things: sheet, brace, halyard, splice; how a deck moves under a sleeping body; how land dwindles without asking permission. Tom has always wanted to come through a door like this with salt on his coat and stories nobody else could tell. Harcourt's paper has found the place where duty and desire are knotted together and pulled tight. It is a child's answer to more than a hundred dead before the Cape. It is also the truth.</p>
 <p>Then, instead of anything he might have said, he does something instead. Reaches into his coat and comes out with the one thing in it worth more than the coat — a plain brass thimble, his mother's, the only piece of her he kept when there was nothing else worth the keeping. He sets it on the bar between them, not quite meeting her eye.</p>
 <p>Keep this, he says. Till I'm back.</p>
 <p>Maggie looks at the thimble, then at him. She has held out her hand for enough keepsakes to know what it costs a man to leave one. She closes her fist around it as she would a coin meant to be kept apart from the till.</p>
@@ -403,7 +420,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>Goodnight, Maggie, Tom says on his way past the bar. She does not look up from wiping the counter.</p>
 <p>At the door he pauses, hand on the latch, and does not look back. The cold takes him. The dark and mud swallow him.</p>
 <p>The door closes. Maggie stands still behind the counter. Hendricks finishes his pint and leaves. The Dragon's men are asleep, or close to it. The fire is down to embers.</p>
-<p>Tom will sign in the morning and get on the ship. He has heard the cost and goes anyway.</p>
+<p>Tom will sign in the morning and get on the ship. Half his wages will begin travelling home before the ship has cleared the Downs, each month of his life entered against cable and anchor lost before the Company existed. He has heard the cost and goes anyway.</p>
 <h2 id="iv-what-comes-after">IV. What Comes After</h2>
 <p>Morning comes grey and wet. Somewhere behind the tavern a cockerel crows — a farmer's bird, or an optimist's; in Wapping the distinction is not always clear.</p>
 <p>The stool by the window is empty. A tankard ring fades into the table.</p>
@@ -417,7 +434,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>A ship comes up the river on a grey afternoon, riding low, sails slack, in no hurry at all. Word comes off it before the crew do. One name, passed hand to hand along the waterfront, faster than good news ever travels.</p>
 <p><em>Amboyna.</em></p>
 <p>Nobody on the dock has the whole of it yet. Just the name.</p>
-<p>By the time it reaches the tavern by the stairs, the place has changed without anyone quite watching it happen. Longer bar. Flagstones where the rushes used to be. A new sign nobody remembers the old one well enough to miss. The boy who signed his contract here years back, for twenty pounds and a share of the pepper, sailed south and never came back to see any of it. The bar didn't keep count of him. It only kept standing.</p>
+<p>By the time it reaches the tavern by the stairs, the place has changed without anyone quite watching it happen. Longer bar. Flagstones where the rushes used to be. A new sign nobody remembers the old one well enough to miss. The seaman who signed his contract here years back, with half his wages promised against his father's debt, sailed south and never came back to see any of it. The bar didn't keep count of him. It only kept standing.</p>
 <p>The ships on the river have multiplied. The Company has factories now — Surat, Masulipatam, Agra — small English footholds on coastlines and river towns that never asked for them, each one a bet that the local ruler stays friendly and the weather stays kind.</p>
 <p>Amboyna was one of those bets.</p>
 <p>Word on the dock says it didn't pay off.</p>
@@ -1990,7 +2007,7 @@ right to photograph it. The plant has not been informed.</p>`},{id:"appendix-0-a
 <hr class="scene">
 <h2 id="the-timeline-peopled">The Timeline, Peopled</h2>
 <p><strong>PART ONE — THE VENTURE</strong></p>
-<p><strong>1603 · The Boy Who Signed.</strong> <strong>Tom</strong>, a boy with twenty pounds' bounty and a paper in his pocket, deciding at the bar whether to sign. <strong>Maggie</strong>, keeper — Margareta of the Stockholm coast, twice widowed, who gives him the odds straight: more than a hundred of the first fleet's four hundred and eighty dead before the Cape. <strong>Rook</strong>, a gambler who puts a woman's debt on the table like a stake, and <strong>Mara</strong>, who refuses to be property with thrown ale, a kicked stool, and a mug across a wrist — fighting for herself, not for Tom. Maggie's one sentence raises the room. <em>Threads: the Keepers begin; the Cache begins as notches; the Johansson line waits, unstated, in the son on a Swedish deck.</em></p>
+<p><strong>1603 · The Boy Who Signed.</strong> <strong>Tom</strong>, a coastwise seaman taught by his boatswain father, signing before the mast for the second voyage with half his wages assigned to an inherited Levant-trade debt. <strong>Master Harcourt</strong>, the unseen creditor, has merely moved his capital beneath the East India Company's new seal. <strong>Maggie</strong>, keeper — Margareta of the Stockholm coast, twice widowed, who gives him the odds straight: more than a hundred of the first fleet's four hundred and eighty dead before the Cape. <strong>Rook</strong>, a gambler who puts a woman's debt on the table like a stake, and <strong>Mara</strong>, who refuses to be property with thrown ale, a kicked stool, and a mug across a wrist — fighting for herself, not for Tom. Maggie's one sentence raises the room. <em>Threads: the Keepers begin; the Cache begins as notches; the Johansson line waits, unstated, in the son on a Swedish deck.</em></p>
 <p><strong>1603 · Dutch Courage.</strong> <strong>Hendricks</strong>, the Dutch waterman who has seen the VOC's arithmetic up close and gives Tom the truer warning — that you can win a fight but not a Company — and who alone remembers Maggie arriving. Tom signs anyway, and leaves his mother's thimble with Maggie "till I'm back." He never is. <em>Cache: the thimble, first object in.</em></p>
 <p><strong>1626 · The Man Who Came Back Wrong.</strong> <strong>Daniel Vale</strong>, factor, the one man shipped to Batavia while ten Englishmen were beheaded at Amboyna, home with the water still behind his eyes. <strong>Nell</strong>, his wife, who walked three years to find him and lets him be new. <strong>Carter</strong>, the ships' chandler whose grief and appetite share a table — the first of the Wapping trade families. <strong>Pryce</strong>, the Company's polite man with the polite offer. Maggie, older, still keeper, shows Daniel the gap under the counter. <em>Cache: Daniel's true copy, second object in. The gin thread opens with genever poured on the flagstones.</em></p>
 <p><strong>PART TWO — THE GALLOWS YEARS</strong></p>
