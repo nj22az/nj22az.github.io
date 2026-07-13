@@ -52,6 +52,22 @@
     bookById[book.id] = book;
   });
 
+  var readerBookIds = [
+    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "02-1626-the-man-who-came-back-wrong"],
+    ["part-two-the-gallows-years", "03-1696-the-price-of-a-man", "04-1701-good-for-business"],
+    ["part-three-kings-of-bengal", "05-1757-a-soldiers-arithmetic", "06-1770-what-mulvey-saw", "07-1774-too-big-to-sink", "08-1790-forty-seven-days"],
+    ["part-four-the-poppy", "09-1839-what-pemberton-called-trade", "10-1858-what-harding-would-not-say", "11-1880-the-hell-ship"],
+    ["12-1888-the-watchmans-daughter"],
+    ["part-five-the-engine-room", "13-1940-a-wardens-watch", "14-2019-what-the-suit-didnt-see", "part-six-afterlives"]
+  ];
+
+  var readerBookById = {};
+  readerBookIds.forEach(function (ids, index) {
+    ids.forEach(function (id) {
+      readerBookById[id] = books[index];
+    });
+  });
+
   function routeId() {
     var match = window.location.hash.match(/#\/read\/([^/?]+)/);
     return match ? match[1] : "";
@@ -295,16 +311,19 @@
     paragraph.insertAdjacentElement("afterend", chapterOneFigure(item));
   }
 
-  function chapterOnePageScore(node) {
+  function bookPageScore(node) {
     if (node.tagName === "H2") return 70;
     if (node.tagName === "FIGURE") return 275;
     if (node.tagName === "BLOCKQUOTE") return 110;
     if (node.tagName === "HR") return 45;
+    if (node.tagName === "TABLE") return 260;
+    if (node.tagName === "PRE") return 180;
     var words = (node.textContent.trim().match(/\S+/g) || []).length;
+    if (node.tagName === "UL" || node.tagName === "OL") return words + 90;
     return words + 28;
   }
 
-  function buildChapterOnePages(prose) {
+  function buildBookPages(prose, pageMeta) {
     if (prose.querySelector(".book-spreads")) return;
 
     var nodes = Array.prototype.slice.call(prose.children);
@@ -322,8 +341,8 @@
 
     startPage();
     nodes.forEach(function (node, index) {
-      var score = chapterOnePageScore(node);
-      var nextScore = nodes[index + 1] ? chapterOnePageScore(nodes[index + 1]) : 0;
+      var score = bookPageScore(node);
+      var nextScore = nodes[index + 1] ? bookPageScore(nodes[index + 1]) : 0;
       var wouldOverflow = pageScore > 0 && pageScore + score > pageLimit;
       var wouldOrphanHeading = node.tagName === "H2" && pageScore > 0 && pageScore + score + nextScore > pageLimit;
 
@@ -336,15 +355,15 @@
       var leftPage = pages[pair];
       var rightPage = pages[pair + 1];
       var leftScore = Array.prototype.reduce.call(leftPage.children, function (total, child) {
-        return total + chapterOnePageScore(child);
+        return total + bookPageScore(child);
       }, 0);
       var rightScore = Array.prototype.reduce.call(rightPage.children, function (total, child) {
-        return total + chapterOnePageScore(child);
+        return total + bookPageScore(child);
       }, 0);
 
       while (rightScore < leftScore * .65 && leftPage.children.length > 1) {
         var moved = leftPage.lastElementChild;
-        var movedScore = chapterOnePageScore(moved);
+        var movedScore = bookPageScore(moved);
         rightPage.insertBefore(moved, rightPage.firstChild);
         leftScore -= movedScore;
         rightScore += movedScore;
@@ -358,11 +377,11 @@
       var footer = document.createElement("span");
       footer.className = "book-page-footer";
       footer.setAttribute("aria-hidden", "true");
-      footer.textContent = "Book One · The Venture · 1603";
+      footer.textContent = pageMeta.footer;
 
       currentPage.setAttribute(
         "data-running-head",
-        isLeftPage ? "The Front-Row Seat" : "Chapter One · The Boy Who Signed"
+        isLeftPage ? pageMeta.collectionTitle : pageMeta.chapterHead
       );
       currentPage.appendChild(footer);
 
@@ -387,7 +406,7 @@
     prose.appendChild(book);
   }
 
-  function applyChapterOneLayout(reader) {
+  function applyChapterOneArtwork(reader) {
     var heroPath = "assets/img/chapter-one/01-rain-at-wapping.jpg";
     var hero = reader.querySelector(".hero");
     var heroImage = hero && hero.querySelector("img");
@@ -402,8 +421,30 @@
     chapterOneIllustrations.forEach(function (item) {
       insertChapterOneFigure(prose, item);
     });
+  }
+
+  function applyBookLayout(reader, id) {
+    var book = readerBookById[id];
+    if (!book) return;
+
+    var head = reader.querySelector(".chapter-head");
+    var kicker = head && head.querySelector(".chapter-kicker");
+    var title = head && head.querySelector(".chapter-title");
+    var year = head && head.querySelector(".chapter-year");
+    var kickerText = kicker ? kicker.textContent.trim() : "";
+    var titleText = title ? title.textContent.trim() : book.title;
+    var yearText = year ? year.textContent.trim() : "";
+    var chapterHead = [kickerText, titleText].filter(Boolean).join(" · ");
+    var footerPeriod = yearText || book.years;
+
+    var prose = reader.querySelector(".prose");
+    if (!prose) return;
     reader.classList.add("reader--book-layout");
-    buildChapterOnePages(prose);
+    buildBookPages(prose, {
+      collectionTitle: "The Front-Row Seat",
+      chapterHead: chapterHead,
+      footer: "Book " + book.word + " · " + book.title + " · " + footerPeriod
+    });
   }
 
   function updateReader(reader, id) {
@@ -435,8 +476,10 @@
     }
 
     if (id === "01-1603-the-boy-who-signed") {
-      applyChapterOneLayout(reader);
+      applyChapterOneArtwork(reader);
     }
+
+    applyBookLayout(reader, id);
   }
 
   var pending = false;
