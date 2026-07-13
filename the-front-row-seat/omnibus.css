@@ -246,6 +246,77 @@
   margin-left: auto;
 }
 
+.story-spread {
+  margin: 2.8em 0;
+}
+
+.prose .story-spread-figure {
+  margin: 1.4em 0 0;
+}
+
+.prose .story-spread-figure img {
+  border-radius: 2px;
+}
+
+.story-spread-copy p:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1000px) {
+  .reader {
+    max-width: 78rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+
+  .reader .chapter-head,
+  .reader .chapter-nav,
+  .reader .prose > p,
+  .reader .prose > h2,
+  .reader .prose > blockquote,
+  .reader .prose > hr {
+    max-width: 42rem;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .reader .prose > .fig:not(.story-spread-figure) {
+    width: min(100%, 64rem);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .story-spread {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: center;
+    max-width: 74rem;
+    margin: 4.5em auto;
+  }
+
+  .story-spread--right {
+    grid-template-areas: "copy figure";
+  }
+
+  .story-spread--left {
+    grid-template-areas: "figure copy";
+  }
+
+  .story-spread-copy {
+    grid-area: copy;
+  }
+
+  .prose .story-spread-figure {
+    grid-area: figure;
+    margin: 0;
+  }
+
+  .prose .story-spread-figure figcaption {
+    max-width: 31rem;
+  }
+}
+
 @media (max-width: 620px) {
   .contents .cover {
     grid-template-columns: minmax(105px, 34vw) minmax(0, 1fr);

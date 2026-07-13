@@ -243,6 +243,98 @@
     });
   }
 
+  var chapterOneIllustrations = [
+    {
+      after: "He has a paper in his pocket",
+      paragraphs: 3,
+      side: "right",
+      file: "../tom-maggie-paper.png",
+      alt: "Tom studies the Company's paper at the bar while Maggie reads him more closely than he reads it.",
+      caption: "The paper looks like a door to Tom. Maggie has buried enough sailors to see its lock."
+    },
+    {
+      after: "Any man who still calls himself a sailor",
+      paragraphs: 2,
+      side: "left",
+      file: "02-the-room-stands.jpg",
+      alt: "Silas stands isolated as the dockworkers rise together; Maggie, Mara and Tom watch from the bar.",
+      caption: "The room makes its choice—not for Tom, but for the kind of river it drinks beside."
+    },
+    {
+      after: "Maggie comes round the counter then",
+      paragraphs: 2,
+      side: "right",
+      file: "03-the-debt-is-mine.jpg",
+      alt: "Maggie returns one coin to the table while the old docker gathers the rest and Mara reaches the back stairs.",
+      caption: "A coin, a paper and a witnessed debt: Maggie gives the room's violence a different ending."
+    }
+  ];
+
+  function chapterOneFigure(item) {
+    var figure = document.createElement("figure");
+    figure.className = "fig story-spread-figure";
+    figure.setAttribute("data-chapter-one-plate", item.file);
+
+    var image = document.createElement("img");
+    image.src = item.file.indexOf("../") === 0
+      ? "assets/img/" + item.file.slice(3)
+      : "assets/img/chapter-one/" + item.file;
+    image.alt = item.alt;
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    var caption = document.createElement("figcaption");
+    caption.textContent = item.caption;
+
+    figure.appendChild(image);
+    figure.appendChild(caption);
+    return figure;
+  }
+
+  function chapterOneSpread(prose, item) {
+    if (prose.querySelector('[data-chapter-one-plate="' + item.file + '"]')) return;
+
+    var paragraph = Array.prototype.find.call(prose.children, function (candidate) {
+      return candidate.tagName === "P" && candidate.textContent.indexOf(item.after) !== -1;
+    });
+    if (!paragraph) return;
+
+    var spread = document.createElement("section");
+    spread.className = "story-spread story-spread--" + item.side;
+    spread.setAttribute("aria-label", item.caption);
+
+    var copy = document.createElement("div");
+    copy.className = "story-spread-copy";
+    paragraph.parentNode.insertBefore(spread, paragraph);
+
+    var current = paragraph;
+    for (var index = 0; index < item.paragraphs && current && current.tagName === "P"; index += 1) {
+      var next = current.nextElementSibling;
+      copy.appendChild(current);
+      current = next;
+    }
+
+    spread.appendChild(copy);
+    spread.appendChild(chapterOneFigure(item));
+  }
+
+  function applyChapterOneLayout(reader) {
+    var heroPath = "assets/img/chapter-one/01-rain-at-wapping.jpg";
+    var hero = reader.querySelector(".hero");
+    var heroImage = hero && hero.querySelector("img");
+
+    if (heroImage && heroImage.getAttribute("src") !== heroPath) {
+      heroImage.src = heroPath;
+      heroImage.alt = "Wapping Wall in three days of rain, with warm tavern windows beside the dark Thames in 1603.";
+    }
+
+    var prose = reader.querySelector(".prose");
+    if (!prose) return;
+    chapterOneIllustrations.forEach(function (item) {
+      chapterOneSpread(prose, item);
+    });
+  }
+
   function updateReader(reader, id) {
     var head = reader.querySelector(".chapter-head");
     if (!head) return;
@@ -269,6 +361,10 @@
 
     if (id === "12-1888-the-watchmans-daughter") {
       applyWatchmansIllustrations(reader);
+    }
+
+    if (id === "01-1603-the-boy-who-signed") {
+      applyChapterOneLayout(reader);
     }
   }
 
