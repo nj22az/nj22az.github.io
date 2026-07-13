@@ -204,6 +204,22 @@
   line-height: 1.5;
 }
 
+.prose .watchmans-plate {
+  margin: 2.6em auto;
+}
+
+.prose .watchmans-plate img {
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  background: var(--surface-2);
+}
+
+.prose .watchmans-plate figcaption {
+  width: min(100%, 32rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
 @media (max-width: 560px) {
   .omnibus-grid {
     grid-template-columns: 1fr;

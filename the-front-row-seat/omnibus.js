@@ -154,6 +154,90 @@
     });
   }
 
+  var watchmansIllustrations = [
+    {
+      after: "The laundry Su Zhang's mother takes in",
+      file: "01-the-copper.jpg",
+      alt: "Su, Sau-Ling and Wei containing the leaking wash-copper before dawn.",
+      caption: "Before the autumn: Su, Sau-Ling and Wei at work around the family wash-copper."
+    },
+    {
+      after: "The practice is not what the sailors' stories make of it",
+      file: "02-two-languages.jpg",
+      alt: "Wei correcting Su's raised arm with the folded fan in the blue light before the laundry opens.",
+      caption: "Wei teaches the practice in both languages before the laundry opens."
+    },
+    {
+      after: "Kate comes whenever there's mending",
+      file: "03-monday-customers.jpg",
+      alt: "Long Liz, Su and Kate laughing around the torn bodice at the crowded laundry counter.",
+      caption: "Long Liz and Kate were customers before they became names in the newspapers."
+    },
+    {
+      after: "Su's brother Lee, born when she was four",
+      file: "05-lees-winter.jpg",
+      alt: "Eleven-year-old Su catching Lee hiding a sweet while Wei watches their winter practice.",
+      caption: "Lee's winter, before the fever: Su catches her brother hiding a sweet during morning practice."
+    },
+    {
+      after: "He is good with his hands in the way old surgeons are",
+      file: "06-a-doctors-hands.jpg",
+      alt: "Dr Cray resetting Ned Pike's shoulder at the Prospect while Su watches his hands.",
+      caption: "Dr Cray resets a dockworker's shoulder while Su watches the economy of his hands."
+    },
+    {
+      after: "Mind yourself down there, duchess",
+      file: "10-kate-goes-hopping.jpg",
+      alt: "Kate testing the hidden penny pocket as John, Wei and Su prepare the bundle and forgotten loaf for Kent.",
+      caption: "Kate prepares for the Kent hop fields with John, Wei and Su."
+    }
+  ];
+
+  function watchmansFigure(item) {
+    var figure = document.createElement("figure");
+    figure.className = "fig watchmans-plate";
+    figure.setAttribute("data-watchmans-plate", item.file);
+
+    var image = document.createElement("img");
+    image.src = "assets/img/watchmans-daughter/" + item.file;
+    image.alt = item.alt;
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    var caption = document.createElement("figcaption");
+    caption.textContent = item.caption;
+
+    figure.appendChild(image);
+    figure.appendChild(caption);
+    return figure;
+  }
+
+  function applyWatchmansIllustrations(reader) {
+    var coverPath = "assets/img/watchmans-daughter/00-cover.jpg";
+    var hero = reader.querySelector(".hero");
+    var heroImage = hero && hero.querySelector("img");
+    var heroBackdrop = hero && hero.querySelector(".hero-backdrop");
+
+    if (heroImage && heroImage.getAttribute("src") !== coverPath) {
+      heroImage.src = coverPath;
+      heroImage.alt = "Su Zhang standing at the threshold of the family laundry between warm lamplight and the cold Limehouse morning.";
+    }
+    if (heroBackdrop) heroBackdrop.style.backgroundImage = "url(" + coverPath + ")";
+
+    var prose = reader.querySelector(".prose");
+    if (!prose) return;
+
+    watchmansIllustrations.forEach(function (item) {
+      if (prose.querySelector('[data-watchmans-plate="' + item.file + '"]')) return;
+
+      var paragraph = Array.prototype.find.call(prose.querySelectorAll("p"), function (candidate) {
+        return candidate.textContent.indexOf(item.after) !== -1;
+      });
+
+      if (paragraph) paragraph.insertAdjacentElement("afterend", watchmansFigure(item));
+    });
+  }
+
   function updateReader(reader, id) {
     var head = reader.querySelector(".chapter-head");
     if (!head) return;
@@ -185,6 +269,10 @@
     if (id === "part-six-afterlives") {
       if (kicker) kicker.textContent = "Book Six · Epilogue";
       document.title = "Afterlives — The Front-Row Seat";
+    }
+
+    if (id === "12-1888-the-watchmans-daughter") {
+      applyWatchmansIllustrations(reader);
     }
   }
 
