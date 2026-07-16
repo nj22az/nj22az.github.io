@@ -505,3 +505,17 @@
     transition: none;
   }
 }
+
+.toc-row .toc-desc {
+  display: block;
+  margin-top: .3rem;
+  color: var(--text-3);
+  font-size: .8rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+.toc-book-row .toc-desc {
+  font-size: .84rem;
+}

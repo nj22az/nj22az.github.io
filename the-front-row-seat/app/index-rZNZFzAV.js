@@ -246,7 +246,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>I could not send you back in time to feel it for yourself. So I sent these people instead. They stand where I could not, and feel what I have felt, and come back to tell you it was so.</p>
 <p>Read them as real. That is the closest thing to true I have to offer.</p>
 <p><em>— Nils Johansson</em></p>`},{id:"part-one-the-venture",kicker:"Part One",year:"",title:"The Venture",epigraph:"",hero:null,body:`<p><em>1603–1626</em></p>
-<p>A queen signs a paper on the last day of a dying century, and a company is born with a monopoly, a fleet, and no idea what it will become. In one tavern on the north bank of the Thames, the first boys sign on, the first survivors come home and edit their stories, and the first man comes back wrong. The price of the venture starts arriving before the profit does.</p>`},{id:"01-1603-the-boy-who-signed",kicker:"Chapter One",year:"1603",title:"The Boy Who Signed",epigraph:`<blockquote>
+<p>A queen signs a paper on the last day of a dying century, and a company is born with a monopoly, a fleet, and no idea what it will become. In one tavern on the north bank of the Thames, the first boys sign on, the first survivors come home and edit their stories, and the first man comes back wrong. It opens with a trial: twelve souls in one room, a woman's debt on the table, and a keeper who lets the room set the price. The price of the venture starts arriving before the profit does.</p>`},{id:"01-1603-the-boy-who-signed",kicker:"Chapter One",year:"1603",title:"The Boy Who Signed",epigraph:`<blockquote>
 <p><strong>1603</strong></p>
 <p><em>“You’re going to die for a clove, Tom.”</em></p>
 <p>— Maggie, keeper of a Wapping tavern, 1603</p>

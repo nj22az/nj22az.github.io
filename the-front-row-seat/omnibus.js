@@ -68,6 +68,35 @@
     });
   });
 
+  var chapterTaglines = {
+    "01-1603-the-boy-who-signed": "Twelve souls, one debt, one coin — the night the room first sat as a court.",
+    "02-1603-dutch-courage": "A survivor's catechism, a Dutchman's warning, and a thimble left on the bar.",
+    "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, and the wife who lets him be new.",
+    "03-1696-the-price-of-a-man": "The month six substitutes hang, a widow declines to sell her quiet lodger.",
+    "04-1701-good-for-business": "Kidd hangs twice at low tide; a young writer learns which ledger is never shown.",
+    "05-1757-a-soldiers-arithmetic": "Plassey was bought before it was fought. Sergeant Coates goes on record anyway.",
+    "06-1770-what-mulvey-saw": "The drought was God's. The famine was the Company's. Mulvey saw the difference.",
+    "07-1774-too-big-to-sink": "A tallyman counts the bailout tea out to Boston, and writes one honest warning.",
+    "08-1790-forty-seven-days": "Davy Munro is on the list of the loyal, but not on the list of the saved.",
+    "09-1839-what-pemberton-called-trade": "Mei hears the word Lintin and understands what Pemberton's trade cost her.",
+    "10-1858-what-harding-would-not-say": "A medal is offered if the Cawnpore story holds. Harding repeats the true number.",
+    "11-1880-the-hell-ship": "A mate kills a seaman, a captain helps him run, and a witness weighs the telling.",
+    "12-1888-the-watchmans-daughter": "Su Zhang, four rules, and the autumn all of Whitechapel walks home counting footsteps.",
+    "13-1940-a-wardens-watch": "Twenty-nine thousand bombs in one ledger, and a son inside the fires it counts.",
+    "14-2019-what-the-suit-didnt-see": "Albion Reach buys the debt. Hannah decides who owns the meaning."
+  };
+
+  function addTagline(link, id) {
+    var text = chapterTaglines[id];
+    if (!text) return;
+    var copy = link.querySelector(".toc-copy") || link;
+    if (copy.querySelector(".toc-desc")) return;
+    var desc = document.createElement("span");
+    desc.className = "toc-desc";
+    desc.textContent = text;
+    copy.appendChild(desc);
+  }
+
   function routeId() {
     var match = window.location.hash.match(/#\/read\/([^/?]+)/);
     return match ? match[1] : "";
@@ -172,6 +201,7 @@
       } else {
         labelChapterRow(link);
       }
+      addTagline(link, id);
     });
   }
 
