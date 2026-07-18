@@ -187,7 +187,7 @@
 
     toc.querySelectorAll("a.toc-row").forEach(function (link) {
       var id = linkId(link);
-      if (id === "00-frontmatter") {
+      if (id === "00-frontmatter" || id === "book-one-character-bible") {
         link.closest("li").hidden = true;
       } else if (bookById[id]) {
         labelBookRow(link, bookById[id]);
@@ -478,6 +478,12 @@
   }
 
   function updateReader(reader, id) {
+    // The Wapping Twelve ledger is reachable only from Book One's own pages:
+    // drop any prev/next card that would surface it in the linear reading flow.
+    reader.querySelectorAll(".chapter-nav a").forEach(function (card) {
+      if (linkId(card) === "book-one-character-bible") card.remove();
+    });
+
     var head = reader.querySelector(".chapter-head");
     if (!head) return;
 
