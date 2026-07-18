@@ -69,8 +69,8 @@
   });
 
   var chapterTaglines = {
-    "01-1603-the-boy-who-signed": "Twelve souls, one debt, one coin — the night the room first sat as a court.",
-    "02-1603-dutch-courage": "A survivor's catechism, a Dutchman's warning, and a thimble left on the bar.",
+    "01-1603-the-boy-who-signed": "A murderer asks the room for a rope — and twelve souls sit as a court instead.",
+    "02-1603-dutch-courage": "The paper is signed, and a Dutchman prices it: you can win a fight, never a Company.",
     "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, and the wife who lets him be new.",
     "03-1696-the-price-of-a-man": "The month six substitutes hang, a widow declines to sell her quiet lodger.",
     "04-1701-good-for-business": "Kidd hangs twice at low tide; a young writer learns which ledger is never shown.",
@@ -291,22 +291,22 @@
 
   var chapterOneIllustrations = [
     {
-      after: "He has a paper in his pocket",
+      after: "dreading the paper tucked inside his coat",
       file: "../tom-maggie-paper.png",
       alt: "Tom studies the Company's paper at the bar while Maggie reads him more closely than he reads it.",
       caption: "The paper looks like a door to Tom. Maggie has buried enough sailors to see its lock."
     },
     {
-      after: "Any man who still calls himself a sailor",
+      after: "But Tom does not stand alone",
       file: "02-the-room-stands.jpg",
       alt: "Silas stands isolated as the dockworkers rise together; Maggie, Mara and Tom watch from the bar.",
-      caption: "The room makes its choice—not for Tom, but for the kind of river it drinks beside."
+      caption: "The room makes its choice — a wall of river-men between the blade and the boy."
     },
     {
-      after: "Maggie comes round the counter then",
+      after: "Elias gathers his coins from the table",
       file: "03-the-debt-is-mine.jpg",
-      alt: "Maggie returns one coin to the table while the old docker gathers the rest and Mara reaches the back stairs.",
-      caption: "A coin, a paper and a witnessed debt: Maggie gives the room's violence a different ending."
+      alt: "The room given back to itself: coins gathered from the table while Mara reaches the back stairs.",
+      caption: "Afterwards: a candle for the back stairs, coins off the table, and no rope."
     }
   ];
 
