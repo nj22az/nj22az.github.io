@@ -59,16 +59,12 @@
   });
 
   var readingSpeed = 250;
-  var omnibusWords = books.reduce(function (total, book) {
-    return total + book.words;
-  }, 0);
-
   function formatNumber(value) {
     return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
   function displayWords(value) {
-    return formatNumber(Math.round(value / 100) * 100);
+    return formatNumber(value < 100 ? value : Math.round(value / 100) * 100);
   }
 
   function readingMinutes(words) {
@@ -90,6 +86,28 @@
     ["12-1888-the-watchmans-daughter"],
     ["part-five-the-engine-room", "13-1940-a-wardens-watch", "14-2019-what-the-suit-didnt-see", "part-six-afterlives"]
   ];
+
+  var chapterWords = {
+    "01-1603-the-boy-who-signed": 4997,
+    "02-1603-dutch-courage": 5274,
+    "03-1612-the-return": 4202,
+    "02-1626-the-man-who-came-back-wrong": 6814,
+    "04-1629-the-south-land": 5330,
+    "05-1635-last-orders": 2731,
+    "03-1696-the-price-of-a-man": 3124,
+    "04-1701-good-for-business": 2615,
+    "05-1757-a-soldiers-arithmetic": 3592,
+    "06-1770-what-mulvey-saw": 2703,
+    "07-1774-too-big-to-sink": 4221,
+    "08-1790-forty-seven-days": 2991,
+    "09-1839-what-pemberton-called-trade": 3215,
+    "10-1858-what-harding-would-not-say": 3223,
+    "11-1880-the-hell-ship": 2097,
+    "12-1888-the-watchmans-daughter": 13137,
+    "13-1940-a-wardens-watch": 5516,
+    "part-six-afterlives": 53,
+    "14-2019-what-the-suit-didnt-see": 3299
+  };
 
   var readerBookById = {};
   readerBookIds.forEach(function (ids, index) {
@@ -152,25 +170,6 @@
     if (kicker) kicker.textContent = "Six books · 1603–2019";
     if (subtitle) subtitle.textContent = "Five centuries of the East India Company, observed from one Thames-side tavern.";
     if (startButton) startButton.textContent = "Begin with Book One";
-
-    if (!cover.querySelector(".cover-reading-stats")) {
-      var stats = document.createElement("div");
-      stats.className = "cover-reading-stats";
-      stats.setAttribute("aria-label", "Current reading edition size and estimated reading time");
-
-      var words = document.createElement("span");
-      words.className = "cover-reading-metric";
-      words.innerHTML = "<small>Current edition</small><strong>" + displayWords(omnibusWords) + " words</strong>";
-
-      var time = document.createElement("span");
-      time.className = "cover-reading-metric";
-      time.title = "Estimated at " + readingSpeed + " words per minute";
-      time.innerHTML = "<small>Reading time</small><strong>≈ " + displayReadingTime(readingMinutes(omnibusWords)) + "</strong>";
-
-      stats.appendChild(words);
-      stats.appendChild(time);
-      cover.insertBefore(stats, startButton || null);
-    }
   }
 
   function addBookStats(link, book) {
@@ -184,6 +183,28 @@
       "<span>" + displayWords(book.words) + " words</span>" +
       "<span aria-hidden=\"true\">·</span>" +
       "<span>≈ " + displayReadingTime(readingMinutes(book.words)) + "</span>";
+    copy.appendChild(stats);
+  }
+
+  function addChapterStats(link, id) {
+    var words = chapterWords[id];
+    if (!words) return;
+
+    var copy = link.querySelector(".toc-copy") || link;
+    if (copy.querySelector(".toc-chapter-stats")) return;
+
+    var minutes = readingMinutes(words);
+    var stats = document.createElement("span");
+    stats.className = "toc-chapter-stats";
+    stats.title = "Estimated at " + readingSpeed + " words per minute";
+    stats.setAttribute(
+      "aria-label",
+      displayWords(words) + " words. Estimated reading time " + displayReadingTime(minutes) + "."
+    );
+    stats.innerHTML =
+      "<span>" + displayWords(words) + " words</span>" +
+      "<span aria-hidden=\"true\">·</span>" +
+      "<span>≈ " + displayReadingTime(minutes) + "</span>";
     copy.appendChild(stats);
   }
 
@@ -212,14 +233,16 @@
     addBookStats(link, book);
   }
 
-  function labelEpilogueRow(link) {
+  function labelEpilogueRow(link, id) {
     var kicker = link.querySelector(".toc-kicker");
     link.classList.add("toc-chapter-row", "toc-epilogue-row");
     if (kicker) kicker.textContent = "Epilogue";
+    addChapterStats(link, id);
   }
 
-  function labelChapterRow(link) {
+  function labelChapterRow(link, id) {
     link.classList.add("toc-chapter-row");
+    addChapterStats(link, id);
   }
 
   function labelMetaRow(link) {
@@ -259,14 +282,14 @@
       } else if (bookById[id]) {
         labelBookRow(link, bookById[id]);
       } else if (id === "part-six-afterlives") {
-        labelEpilogueRow(link);
+        labelEpilogueRow(link, id);
       } else if (id === "00a-foreword") {
         labelMetaRow(link);
       } else if (id.indexOf("appendix-") === 0) {
         addReferenceLabel(link);
         labelMetaRow(link);
       } else {
-        labelChapterRow(link);
+        labelChapterRow(link, id);
       }
       addTagline(link, id);
     });
