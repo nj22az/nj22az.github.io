@@ -435,13 +435,13 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>Maggie stares at him. At the whistle. At the scar. At the cold, pragmatic deadness where the moral fire used to be. To survive the Company, Tom has become part of its machinery, and he is not saving this boy; he is feeding another desperate child into the same grinder that took Pell and a hundred others, and calling it a favour, exactly the way Harcourt called it work.</p>
 <p>Maggie does not pour the ale.</p>
 <p>She reaches under the bar, into the dark gap beside the pale notches, and brings out a plain brass thimble. She walks around the counter, and drops it on the flagstones at his feet.</p>
-<p>You're not a sailor anymore, Tom Fletcher, she says, and her voice shakes with a sudden, profound disgust. You're Master Harcourt. You're Silas Rook. You're just another big man using paper to send boys to their deaths.</p>
+<p>You're not a sailor anymore, Tom, she says, and her voice shakes with a sudden, profound disgust. You're Master Harcourt. You're Silas Rook. You're just another big man using paper to send boys to their deaths.</p>
 <p>Tom looks down at his mother's thimble shining in the firelight. He does not pick it up.</p>
 <p>The door is behind you, Maggie says, turning her back on him. Don't come back until you remember what a human life is worth.</p>
 <p>The door opens. The door closes. The cold moves through the room and settles.</p>
 <p>Jack is still standing near the threshold, dripping, too frightened to sit. Maggie looks at him for a long moment. Then she goes to the oven and brings out the meat pie she has been telling herself all day is for the house, and sets it on the bar with a pint beside it, and nods the boy toward both. Eat, she says. Not a suggestion. The boy will sign in the morning whatever anyone in this room does tonight; the paper has him, the way papers do. But tonight he will eat like a guest in this house, not like cargo.</p>
 <p>When the boy has gone she stoops, picks the thimble off the flagstones, and puts it back in the gap behind the old wood, in among the notches, where she keeps what the sea owes her.</p>
-<p>Fourteen years will pass before Tom Fletcher comes through that door again.</p>`},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Four",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
+<p>Fourteen years will pass before Tom comes through that door again.</p>`},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Four",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
 <p><strong>1626</strong></p>
 <p><em>“The charges were a formality. The questioning was procedure. The killing was the actual point.”</em></p>
 <p>— Daniel, factor, Amboyna, 1626</p>
@@ -457,7 +457,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <h2 id="ii-the-man-who-came-back-wrong">II. The Man Who Came Back Wrong</h2>
 <p>The light has gone flat and grey, and the river is low enough to show the mud: dark, streaked, the low-tide smell of brine and rot coming in through the window.</p>
 <p>The heavy oak door opens, bringing in the sharp chill of the Thames, and two men come through it.</p>
-<p>The first moves with the heavy, rolling balance of a deep-water sailor: forty-five, weathered to old leather, a jagged white scar through one eyebrow, and no boatswain's whistle anywhere about him. Maggie stops wiping the counter. The silence of 1612 stands in the room between them, fourteen years wide, and neither of them puts a word into it. Whatever Tom Fletcher has come back for, it is not absolution, and he does not ask for any. He is holding the second man up.</p>
+<p>The first moves with the heavy, rolling balance of a deep-water sailor: forty-five, weathered to old leather, a jagged white scar through one eyebrow, and no boatswain's whistle anywhere about him. Maggie stops wiping the counter. The silence of 1612 stands in the room between them, fourteen years wide, and neither of them puts a word into it. Whatever Tom has come back for, it is not absolution, and he does not ask for any. He is holding the second man up.</p>
 <p>The second man walks like a man not sure the ground will hold. Slow. Careful. Thin, and not hunger-thin, or not only that: he has stopped eating, because food has become a problem instead of a comfort. His clothes are English but old, and they hang wrong, cut for a bigger man than the one left inside them.</p>
 <p>Tom sets him on the stool nearest the fire — the one that was Barnaby's, then briefly his own, and nobody's for fourteen years — and takes the wall beside it, standing, like a man on watch. Daniel sits. Doesn't order. His hands lie flat on the counter, trembling. His eyes are on the wood but not looking at it. They are looking at a room with no windows, somewhere behind them.</p>
 <p>This bar has seen the look before. Men who come back changed in ways you can't quite point to. The tremor. The stillness. An attention that is really its opposite: total withdrawal, into a place nobody else can follow. The sea does this to some men. The tropics do it worse. Amboyna did it worst of all.</p>
@@ -578,7 +578,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>She sets the brass thimble on the bar between them, exactly where a boy set it twenty-three years ago, not quite meeting her eye.</p>
 <p>Tom looks at it a long time. He does not pick it up. Some wagers are not for taking back.</p>
 <p>Till you're back, Maggie says. As if no time has passed. As if all of it has.</p>
-<p>She returns the thimble to the gap, in among the notches and the folded truth, where the house keeps what the sea owes it. Then she picks up a rag, wipes a counter that does not need wiping, and pours Tom Fletcher a fresh pint of dark ale.</p>
+<p>She returns the thimble to the gap, in among the notches and the folded truth, where the house keeps what the sea owes it. Then she picks up a rag, wipes a counter that does not need wiping, and pours Tom a fresh pint of dark ale.</p>
 <p>Nobody in the room notices anything. That is how the room knows it matters.</p>
 <hr class="scene">
 <h2 id="xii-the-walls-get-higher">XII. The Walls Get Higher</h2>
@@ -624,7 +624,7 @@ You might need to use a local HTTP server (instead of file://): https://reactjs.
 <p>Inside, the hearth is built high. A crew of Dutch sailors sits at the centre table — the house serves them again, though nobody has asked for genever by name since the night it went onto the flagstones — and their voices are low, because the story they are carrying deserves low voices. The Batavia. The reef. The mutiny. Pelsaert's tribunal on the coral sand.</p>
 <p>They hanged them all, one of the sailors says in broken English, staring into his dark ale. Except two, put ashore on the mainland. One was a giant. An English ship-breaker. No water. No shade. Just the sun and the dust. He drinks. And here is the strangest part of it. It was not the commander's idea. There was a woman at his elbow — his translator, rich as a governor, Portuguese or something east of it. She looked the giant in the eye and told the commander a rope was a mercy.</p>
 <p>Behind the heavy oak bar, Maggie stops wiping the wood. She is sixty-seven now, her hair gone fully silver, her hands as steady as ever.</p>
-<p>On the stool nearest the fire sits Tom Fletcher, forty-nine, a fresh pint at his elbow, listening.</p>
+<p>On the stool nearest the fire sits Tom, forty-nine, a fresh pint at his elbow, listening.</p>
 <p>He looks up. He meets Maggie's eyes down the length of the tavern.</p>
 <p>Neither of them speaks. Neither of them needs to. The look that passes between them carries twenty-seven years: a kicked-open door, a blood-soaked blade on a table, a rope dropped wet on the floorboards, a terrified girl going up the back stairs with a candle. The girl survived. The girl won. The commander's translator needs no translating in this room.</p>
 <p>Maggie reaches under the bar. Her fingers pass over the crowd of deep, pale notches — the ghosts of the boys the sea kept — and past the folded paper lodged where no Company pen can reach it, and come to rest on the cool, familiar metal of a plain brass thimble.</p>
