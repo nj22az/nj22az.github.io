@@ -8,7 +8,7 @@
       title: "The Venture",
       years: "1603–1635",
       id: "part-one-the-venture",
-      words: 31523
+      words: 34077
     },
     {
       numeral: "II",
@@ -79,7 +79,7 @@
   }
 
   var readerBookIds = [
-    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "06-1603-the-soot-and-the-roof", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong", "04-1629-the-south-land", "05-1635-last-orders"],
+    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "06-1603-the-soot-and-the-roof", "07-1603-cargo-once-more", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong", "04-1629-the-south-land", "05-1635-last-orders"],
     ["part-two-the-gallows-years", "03-1696-the-price-of-a-man", "04-1701-good-for-business"],
     ["part-three-kings-of-bengal", "05-1757-a-soldiers-arithmetic", "06-1770-what-mulvey-saw", "07-1774-too-big-to-sink", "08-1790-forty-seven-days"],
     ["part-four-the-poppy", "09-1839-what-pemberton-called-trade", "10-1858-what-harding-would-not-say", "11-1880-the-hell-ship"],
@@ -120,6 +120,7 @@
     "01-1603-the-boy-who-signed": "A murderer asks the room for a rope; the room saves Mara, names Bell — and lets the killer leave.",
     "02-1603-dutch-courage": "The Dragon's lads come home loud, a Dutchman prices the paper, and a thimble is left on the bar.",
     "06-1603-the-soot-and-the-roof": "The escape the tavern never saw: bare feet on wet tiles, and a Dutchman who leaves the choice to her.",
+    "07-1603-cargo-once-more": "A dead man's coat, an unread fever-book, and a manifest entry written on her own instruction.",
     "03-1612-the-return": "Nine years of the Company come home in a boatswain's coat, and Maggie prices what Tom has become.",
     "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years.",
     "04-1629-the-south-land": "Mara finds Rook in a ledger, and makes the Company read the warning it ignored.",
