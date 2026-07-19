@@ -6,7 +6,7 @@
       numeral: "I",
       word: "One",
       title: "The Venture",
-      years: "1603–1626",
+      years: "1603–1630",
       id: "part-one-the-venture"
     },
     {
@@ -53,7 +53,7 @@
   });
 
   var readerBookIds = [
-    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong"],
+    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong", "04-1629-the-south-land"],
     ["part-two-the-gallows-years", "03-1696-the-price-of-a-man", "04-1701-good-for-business"],
     ["part-three-kings-of-bengal", "05-1757-a-soldiers-arithmetic", "06-1770-what-mulvey-saw", "07-1774-too-big-to-sink", "08-1790-forty-seven-days"],
     ["part-four-the-poppy", "09-1839-what-pemberton-called-trade", "10-1858-what-harding-would-not-say", "11-1880-the-hell-ship"],
@@ -72,7 +72,8 @@
     "01-1603-the-boy-who-signed": "A murderer asks the room for a rope — and twelve souls sit as a court instead.",
     "02-1603-dutch-courage": "The Dragon's lads come home loud, a Dutchman prices the paper, and a thimble is left on the bar.",
     "03-1612-the-return": "Nine years of the Company come home in a boatswain's coat, and Maggie prices what Tom has become.",
-    "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, and the wife who lets him be new.",
+    "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years.",
+    "04-1629-the-south-land": "Mara finds a name in a ledger, and the room's justice crosses the world.",
     "03-1696-the-price-of-a-man": "The month six substitutes hang, a widow declines to sell her quiet lodger.",
     "04-1701-good-for-business": "Kidd hangs twice at low tide; a young writer learns which ledger is never shown.",
     "05-1757-a-soldiers-arithmetic": "Plassey was bought before it was fought. Sergeant Coates goes on record anyway.",
