@@ -7,28 +7,32 @@
       word: "One",
       title: "The Venture",
       years: "1603–1635",
-      id: "part-one-the-venture"
+      id: "part-one-the-venture",
+      words: 29295
     },
     {
       numeral: "II",
       word: "Two",
       title: "The Gallows Years",
       years: "1696–1701",
-      id: "part-two-the-gallows-years"
+      id: "part-two-the-gallows-years",
+      words: 5767
     },
     {
       numeral: "III",
       word: "Three",
       title: "Kings of Bengal",
       years: "1757–1790",
-      id: "part-three-kings-of-bengal"
+      id: "part-three-kings-of-bengal",
+      words: 13579
     },
     {
       numeral: "IV",
       word: "Four",
       title: "The Poppy",
       years: "1839–1880",
-      id: "part-four-the-poppy"
+      id: "part-four-the-poppy",
+      words: 8589
     },
     {
       numeral: "V",
@@ -36,6 +40,7 @@
       title: "The Watchman’s Daughter",
       years: "1888–1892",
       id: "12-1888-the-watchmans-daughter",
+      words: 13194,
       status: "Standalone expansion in progress"
     },
     {
@@ -43,7 +48,8 @@
       word: "Six",
       title: "The Engine Room",
       years: "1940–2019",
-      id: "part-five-the-engine-room"
+      id: "part-five-the-engine-room",
+      words: 8903
     }
   ];
 
@@ -51,6 +57,30 @@
   books.forEach(function (book) {
     bookById[book.id] = book;
   });
+
+  var readingSpeed = 250;
+  var omnibusWords = books.reduce(function (total, book) {
+    return total + book.words;
+  }, 0);
+
+  function formatNumber(value) {
+    return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function displayWords(value) {
+    return formatNumber(Math.round(value / 100) * 100);
+  }
+
+  function readingMinutes(words) {
+    return Math.max(1, Math.round(words / readingSpeed));
+  }
+
+  function displayReadingTime(minutes) {
+    if (minutes < 60) return minutes + " min";
+    var hours = Math.floor(minutes / 60);
+    var remainder = minutes % 60;
+    return hours + " hr" + (remainder ? " " + remainder + " min" : "");
+  }
 
   var readerBookIds = [
     ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong", "04-1629-the-south-land", "05-1635-last-orders"],
@@ -122,6 +152,39 @@
     if (kicker) kicker.textContent = "Six books · 1603–2019";
     if (subtitle) subtitle.textContent = "Five centuries of the East India Company, observed from one Thames-side tavern.";
     if (startButton) startButton.textContent = "Begin with Book One";
+
+    if (!cover.querySelector(".cover-reading-stats")) {
+      var stats = document.createElement("div");
+      stats.className = "cover-reading-stats";
+      stats.setAttribute("aria-label", "Current reading edition size and estimated reading time");
+
+      var words = document.createElement("span");
+      words.className = "cover-reading-metric";
+      words.innerHTML = "<small>Current edition</small><strong>" + displayWords(omnibusWords) + " words</strong>";
+
+      var time = document.createElement("span");
+      time.className = "cover-reading-metric";
+      time.title = "Estimated at " + readingSpeed + " words per minute";
+      time.innerHTML = "<small>Reading time</small><strong>≈ " + displayReadingTime(readingMinutes(omnibusWords)) + "</strong>";
+
+      stats.appendChild(words);
+      stats.appendChild(time);
+      cover.insertBefore(stats, startButton || null);
+    }
+  }
+
+  function addBookStats(link, book) {
+    var copy = link.querySelector(".toc-copy") || link;
+    if (copy.querySelector(".toc-book-stats")) return;
+
+    var stats = document.createElement("span");
+    stats.className = "toc-book-stats";
+    stats.title = "Estimated at " + readingSpeed + " words per minute";
+    stats.innerHTML =
+      "<span>" + displayWords(book.words) + " words</span>" +
+      "<span aria-hidden=\"true\">·</span>" +
+      "<span>≈ " + displayReadingTime(readingMinutes(book.words)) + "</span>";
+    copy.appendChild(stats);
   }
 
   function labelBookRow(link, book) {
@@ -146,6 +209,7 @@
       link.insertBefore(year, chevron || null);
     }
     year.textContent = book.years;
+    addBookStats(link, book);
   }
 
   function labelEpilogueRow(link) {
