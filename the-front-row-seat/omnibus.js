@@ -1,64 +1,24 @@
 (function () {
   "use strict";
 
-  var books = [
-    {
-      numeral: "I",
-      word: "One",
-      title: "The Venture",
-      years: "1603–1635",
-      id: "part-one-the-venture",
-      words: 34077
-    },
-    {
-      numeral: "II",
-      word: "Two",
-      title: "The Gallows Years",
-      years: "1696–1701",
-      id: "part-two-the-gallows-years",
-      words: 5767
-    },
-    {
-      numeral: "III",
-      word: "Three",
-      title: "Kings of Bengal",
-      years: "1757–1790",
-      id: "part-three-kings-of-bengal",
-      words: 13579
-    },
-    {
-      numeral: "IV",
-      word: "Four",
-      title: "The Poppy",
-      years: "1839–1880",
-      id: "part-four-the-poppy",
-      words: 8589
-    },
-    {
-      numeral: "V",
-      word: "Five",
-      title: "The Watchman’s Daughter",
-      years: "1888–1892",
-      id: "12-1888-the-watchmans-daughter",
-      words: 13194,
-      status: "Standalone expansion in progress"
-    },
-    {
-      numeral: "VI",
-      word: "Six",
-      title: "The Engine Room",
-      years: "1940–2019",
-      id: "part-five-the-engine-room",
-      words: 8903
-    }
-  ];
+  var config = window.FRONT_ROW_OMNIBUS;
+  if (!config) {
+    throw new Error("omnibus-config.js must load before omnibus.js");
+  }
+
+  var illustrationData = window.FRONT_ROW_OMNIBUS_ILLUSTRATIONS;
+  if (!illustrationData) {
+    throw new Error("omnibus-illustrations.js must load before omnibus.js");
+  }
+
+  var books = config.books;
 
   var bookById = {};
   books.forEach(function (book) {
     bookById[book.id] = book;
   });
 
-  var readingSpeed = 250;
+  var readingSpeed = config.readingSpeed;
   function formatNumber(value) {
     return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
@@ -78,36 +38,8 @@
     return hours + " hr" + (remainder ? " " + remainder + " min" : "");
   }
 
-  var readerBookIds = [
-    ["part-one-the-venture", "01-1603-the-boy-who-signed", "02-1603-dutch-courage", "06-1603-the-soot-and-the-roof", "07-1603-cargo-once-more", "03-1612-the-return", "02-1626-the-man-who-came-back-wrong", "04-1629-the-south-land", "05-1635-last-orders"],
-    ["part-two-the-gallows-years", "03-1696-the-price-of-a-man", "04-1701-good-for-business"],
-    ["part-three-kings-of-bengal", "05-1757-a-soldiers-arithmetic", "06-1770-what-mulvey-saw", "07-1774-too-big-to-sink", "08-1790-forty-seven-days"],
-    ["part-four-the-poppy", "09-1839-what-pemberton-called-trade", "10-1858-what-harding-would-not-say", "11-1880-the-hell-ship"],
-    ["12-1888-the-watchmans-daughter"],
-    ["part-five-the-engine-room", "13-1940-a-wardens-watch", "14-2019-what-the-suit-didnt-see", "part-six-afterlives"]
-  ];
-
-  var chapterWords = {
-    "01-1603-the-boy-who-signed": 4997,
-    "02-1603-dutch-courage": 5274,
-    "03-1612-the-return": 4202,
-    "02-1626-the-man-who-came-back-wrong": 6814,
-    "04-1629-the-south-land": 5330,
-    "05-1635-last-orders": 2731,
-    "03-1696-the-price-of-a-man": 3124,
-    "04-1701-good-for-business": 2615,
-    "05-1757-a-soldiers-arithmetic": 3592,
-    "06-1770-what-mulvey-saw": 2703,
-    "07-1774-too-big-to-sink": 4221,
-    "08-1790-forty-seven-days": 2991,
-    "09-1839-what-pemberton-called-trade": 3215,
-    "10-1858-what-harding-would-not-say": 3223,
-    "11-1880-the-hell-ship": 2097,
-    "12-1888-the-watchmans-daughter": 13137,
-    "13-1940-a-wardens-watch": 5516,
-    "part-six-afterlives": 53,
-    "14-2019-what-the-suit-didnt-see": 3299
-  };
+  var readerBookIds = config.readerBookIds;
+  var chapterWords = config.chapterWords;
 
   var readerBookById = {};
   readerBookIds.forEach(function (ids, index) {
@@ -116,28 +48,7 @@
     });
   });
 
-  var chapterTaglines = {
-    "01-1603-the-boy-who-signed": "A murderer asks the room for a rope; the room saves Mara, names Bell — and lets the killer leave.",
-    "02-1603-dutch-courage": "The Dragon's lads come home loud, a Dutchman prices the paper, and a thimble is left on the bar.",
-    "06-1603-the-soot-and-the-roof": "The escape the tavern never saw: bare feet on wet tiles, and a Dutchman who leaves the choice to her.",
-    "07-1603-cargo-once-more": "A dead man's coat, an unread fever-book, and a manifest entry written on her own instruction.",
-    "03-1612-the-return": "Nine years of the Company come home in a boatswain's coat, and Maggie prices what Tom has become.",
-    "02-1626-the-man-who-came-back-wrong": "The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years.",
-    "04-1629-the-south-land": "Mara finds Rook in a ledger, and makes the Company read the warning it ignored.",
-    "05-1635-last-orders": "Tom pays off a last ship, and the pie arrives before the news.",
-    "03-1696-the-price-of-a-man": "The month six substitutes hang, a widow declines to sell her quiet lodger.",
-    "04-1701-good-for-business": "Kidd hangs twice at low tide; a young writer learns which ledger is never shown.",
-    "05-1757-a-soldiers-arithmetic": "Plassey was bought before it was fought. Sergeant Coates goes on record anyway.",
-    "06-1770-what-mulvey-saw": "The drought was God's. The famine was the Company's. Mulvey saw the difference.",
-    "07-1774-too-big-to-sink": "A tallyman counts the bailout tea out to Boston, and writes one honest warning.",
-    "08-1790-forty-seven-days": "Davy Munro is on the list of the loyal, but not on the list of the saved.",
-    "09-1839-what-pemberton-called-trade": "Mei hears the word Lintin and understands what Pemberton's trade cost her.",
-    "10-1858-what-harding-would-not-say": "A medal is offered if the Cawnpore story holds. Harding repeats the true number.",
-    "11-1880-the-hell-ship": "A mate kills a seaman, a captain helps him run, and a witness weighs the telling.",
-    "12-1888-the-watchmans-daughter": "Su Zhang, four rules, and the autumn all of Whitechapel walks home counting footsteps.",
-    "13-1940-a-wardens-watch": "Twenty-nine thousand bombs in one ledger, and a son inside the fires it counts.",
-    "14-2019-what-the-suit-didnt-see": "Albion Reach buys the debt. Hannah decides who owns the meaning."
-  };
+  var chapterTaglines = config.chapterTaglines;
 
   function addTagline(link, id) {
     var text = chapterTaglines[id];
@@ -297,44 +208,7 @@
     });
   }
 
-  var watchmansIllustrations = [
-    {
-      after: "The laundry Su Zhang's mother takes in",
-      file: "01-the-copper.jpg",
-      alt: "Su, Sau-Ling and Wei containing the leaking wash-copper before dawn.",
-      caption: "Before the autumn: Su, Sau-Ling and Wei at work around the family wash-copper."
-    },
-    {
-      after: "The practice is not what the sailors' stories make of it",
-      file: "02-two-languages.jpg",
-      alt: "Wei correcting Su's raised arm with the folded fan in the blue light before the laundry opens.",
-      caption: "Wei teaches the practice in both languages before the laundry opens."
-    },
-    {
-      after: "Kate comes whenever there's mending",
-      file: "03-monday-customers.jpg",
-      alt: "Long Liz, Su and Kate laughing around the torn bodice at the crowded laundry counter.",
-      caption: "Long Liz and Kate were customers before they became names in the newspapers."
-    },
-    {
-      after: "Su's brother Lee, born when she was four",
-      file: "05-lees-winter.jpg",
-      alt: "Eleven-year-old Su catching Lee hiding a sweet while Wei watches their winter practice.",
-      caption: "Lee's winter, before the fever: Su catches her brother hiding a sweet during morning practice."
-    },
-    {
-      after: "He is good with his hands in the way old surgeons are",
-      file: "06-a-doctors-hands.jpg",
-      alt: "Dr Cray resetting Ned Pike's shoulder at the Prospect while Su watches his hands.",
-      caption: "Dr Cray resets a dockworker's shoulder while Su watches the economy of his hands."
-    },
-    {
-      after: "Mind yourself down there, duchess",
-      file: "10-kate-goes-hopping.jpg",
-      alt: "Kate testing the hidden penny pocket as John, Wei and Su prepare the bundle and forgotten loaf for Kent.",
-      caption: "Kate prepares for the Kent hop fields with John, Wei and Su."
-    }
-  ];
+  var watchmansIllustrations = illustrationData.watchmans;
 
   function watchmansFigure(item) {
     var figure = document.createElement("figure");
@@ -381,26 +255,7 @@
     });
   }
 
-  var chapterOneIllustrations = [
-    {
-      after: "dreading the paper tucked inside his coat",
-      file: "../tom-maggie-paper.png",
-      alt: "Tom studies the Company's paper at the bar while Maggie reads him more closely than he reads it.",
-      caption: "The paper looks like a door to Tom. Maggie has buried enough sailors to see its lock."
-    },
-    {
-      after: "But Tom does not stand alone",
-      file: "02-the-room-stands.jpg",
-      alt: "Silas stands isolated as the dockworkers rise together; Maggie, Mara and Tom watch from the bar.",
-      caption: "The room makes its choice — a wall of river-men between the blade and the boy."
-    },
-    {
-      after: "Elias gathers his coins from the table",
-      file: "03-the-debt-is-mine.jpg",
-      alt: "The room given back to itself: coins gathered from the table while Mara reaches the back stairs.",
-      caption: "Afterwards: a candle for the back stairs, coins off the table, and no rope."
-    }
-  ];
+  var chapterOneIllustrations = illustrationData.chapterOne;
 
   function chapterOneFigure(item) {
     var figure = document.createElement("figure");
