@@ -241,11 +241,9 @@ Error generating stack: `+s.message+`
 <p>Tom looks down at his boots. It is true. His father was boatswain on Harcourt's Levant ships for twenty-three years — Smyrna, Scanderoon, sometimes Venice — until the last passage took his knee. Then Harcourt charged the ruined man for what was lost in the storm that broke him: cable, two coils of running rigging, a kedge anchor. The debt is exact — eleven pounds, six shillings and fourpence — and a debt exact to the penny is a debt someone means to keep alive. Now Harcourt has put his money into the East India voyage, and the debt simply walks across to the new ledger.</p>
 <p>You are going to sign a paper that sends you round the Cape in a wooden box full of scurvy, Maggie says, her voice dropping to the cold terms of a transaction, to a place where the Portuguese and the weather and the food will all take turns trying to kill you. She shakes her head. You're going to die for a clove, Tom.</p>
 <p>Tom says nothing. He has just watched this room take a big man's story apart plank by plank, and he knows the difference in his bones: a tavern can fight a bully. The thing waiting in his coat pocket is not a bully, and he does not yet have a word for what it is.</p>
-<p>For a full hour after that, the Pelican is a silent sanctuary.</p>`,hidden:!1,role:"chapter",book:"I",words:5401,tagline:"A murderer asks the room for a rope; the room saves Maria, names Bell — and lets the killer leave."},{id:"02-1603-dutch-courage",kicker:"Chapter Two",year:"1603",title:"Dutch Courage",epigraph:`<blockquote>
-<p><strong>1603</strong></p>
-<p><em>“That is the whole difference between a fight and a Company. One of the two you can win.”</em></p>
-<p>— Hendricks, waterman, Wapping, 1603</p>
-</blockquote>`,hero:{id:"hendricks",file:"assets/img/hendricks.png",alt:"Painted portrait of a weathered, balding older man in a dark coat with a squat stone genever bottle beside him in a riverside tavern.",caption:"Hendricks, who worked the river before the Company existed and knows what the VOC does east of the Cape.",orientation:"portrait"},body:`<h2 id="i-the-dragons-lads">I. The Dragon's Lads</h2>
+<p>For a full hour after that, the Pelican is a silent sanctuary.</p>
+<hr class="scene">
+<h2 id="vii-the-dragons-lads">VII. The Dragon's Lads</h2>
 <p>The pounding comes an hour into the quiet — heavy, rhythmic, a fist used to being answered.</p>
 <p>The room tenses, every face toward the entrance. Maggie picks up the mallet, walks to the door, and calls out over the wind. Who's knocking at this hour?</p>
 <p>The Dragon's lads! a hoarse, salt-stiff voice shouts back through the wood. Just up from Blackwall! Open the door, Maggie, we're freezing to the bone!</p>
@@ -260,7 +258,7 @@ Error generating stack: `+s.message+`
 <p>Tom looks at the maimed hand, then at the loud, celebrating sailors by the fire. Was it worth it? The voyage.</p>
 <p>Pell considers the question. Four hundred and eighty men sailed with us, he says, his voice dropping flat, like a man reading a manifest. More than a hundred were dead of scurvy, flux and fever before we had even reached India. He shakes his head. The Company cares about pepper. And money. And money does not bring back the dead.</p>
 <hr class="scene">
-<h2 id="ii-the-dutchman">II. The Dutchman</h2>
+<h2 id="viii-the-dutchman">VIII. The Dutchman</h2>
 <p>He tells you the truth, boy, says a voice from the shadows at the end of the bar.</p>
 <p>Nobody saw him come in behind the Dragon's men; Hendricks arrives the way the tide does, without asking anyone. A broad, short man with callused hands and the permanent squint of someone who has spent more years looking at horizons than at people. The Dutchman. Everyone in Wapping knows him: he has worked the Thames on a flat-bottomed timber barge since before the Company existed, and knows every channel, sandbar and tide. While the English drink ale, a squat stone bottle lives inside his coat — genever, juniper spirit from home — and at the end of each pint he takes one measured pull. The English at the bar call it Dutch physic and want nothing to do with it.</p>
 <p>He is not popular here. He says things people don't want to hear, at the worst possible moment, and he is usually right.</p>
@@ -282,7 +280,7 @@ Error generating stack: `+s.message+`
 <p>The bar has gone properly quiet. Even the Dragon's men are listening now, pretending not to.</p>
 <p>Hendricks looks at the blackened eye and the split lip. A big man in a tavern is honest danger, boy. You can see him come. Tonight this room read one by his boots, named what he was and still watched him leave. He takes one measured pull from the stone bottle and corks it with his thumb. The thing you sign in the morning has no jaw to swell and no boots to read. No room has ever stood up to a paper. That is the whole difference between a fight and a Company. One of the two you can win.</p>
 <hr class="scene">
-<h2 id="iii-the-night-before">III. The Night Before</h2>
+<h2 id="ix-the-night-before">IX. The Night Before</h2>
 <p>Outside, the storm finally breaks, leaving a cold grey drizzle behind it. The ships at anchor are dark shapes on darker water, masts swaying, rigging making small sounds like men who cannot sleep.</p>
 <p>Maggie comes over one last time and refills his ale.</p>
 <p>The charter was signed on New Year's Eve, she says. Three years back. Old Queen Bess is dead, and the Company she signed into being is still here, hiring. The queen is gone. The paper is not. Harcourt traded under the Levant seal when your father could still climb; now he puts his money under the East India seal, and your father's debt walks across with him. The companies do not even have to be the same. The man is the same. The ink is the same. She signs one. Harcourt signs one. You sign another. Somewhere between them, men work and die. The people at the top sign. The people at the bottom pay. The pepper comes back. The money comes back. The men do not.</p>
@@ -302,7 +300,7 @@ Error generating stack: `+s.message+`
 <p>In the quiet tavern, Maggie takes a sharp knife from her apron and bends down. Bell's folded account already rests in the narrow fault beneath the heavy oak bar. Arthur has written the dead man's full name across the outside before leaving for Shadwell, where somebody must tell Anne Bell that four facts in a ledger have become the rest of her life.</p>
 <p>Beside the paper Maggie cuts a deep notch into the wood — a fresh, pale mark joining a crowd of others in the dark, one for every young man who has sat at her bar with a paper in his pocket and walked out to give his life to the sea. She stopped counting them long ago. She keeps cutting them.</p>
 <p>It gives her hands something to do besides wait.</p>
-<h2 id="iv-the-widow">IV. The Widow</h2>
+<h2 id="x-the-widow">X. The Widow</h2>
 <p>Morning does not come cleanly. The black outside the shutters thins by degrees until the room can see what the candles have been keeping from it: blood dried between two floorboards, a boot-print in it, three chairs broken in the rush around Bell, and every face made older than it was when the rain began.</p>
 <p>Maria is gone before the light. The borrowed bed upstairs has not been slept in. Its blanket is folded once, precisely, and on it lies the candle Maggie gave her, burned down to the last inch. Ned finds one bare footprint on the sill over the lean-to roof and another in the soot by the chimney. After that, nothing. A woman passed from Harcourt's account into Wapping before dawn and the city failed to enter where she went.</p>
 <p>Maggie does not send anyone after her.</p>
@@ -356,7 +354,7 @@ Error generating stack: `+s.message+`
 <p>No.</p>
 <p>Then do not make a grand act for my benefit. Sign if you mean to sign. Only remember there was a man at the other end of the ink.</p>
 <p>She manages the door herself.</p>
-<h2 id="v-bells-chair">V. Bell's Chair</h2>
+<h2 id="xi-bells-chair">XI. Bell's Chair</h2>
 <p>The rain has stopped by the time Tom reaches Harcourt's counting room. London has the washed, exhausted look of a city that believes weather can absolve it. Water runs from the warehouse eaves. Carts stand axle-deep in the lane. The Company's pepper scent reaches half a street beyond the doors, sharp enough to make a poor man imagine money has a smell.</p>
 <p>Arthur walks with him. He says he is going to report Bell's death and recover the dead man's personal things. This is true. It is not the whole of why he goes.</p>
 <p>The small coal fire upstairs has been built higher. Bell's chair stands empty beneath the window. His sand shaker, penknife and pumice stone are laid in a row exactly as he left them. Somebody has taken the inkwell. Of all the things on the desk it was the only one the other clerks could use before noon.</p>
@@ -406,7 +404,7 @@ Error generating stack: `+s.message+`
 <p>No, Tom says. But he knew from inside the chair.</p>
 <p>Arthur goes back upstairs.</p>
 <p>Tom walks east toward the ship.</p>
-<h2 id="vi-the-finding">VI. The Finding</h2>
+<h2 id="xii-the-finding">XII. The Finding</h2>
 <p>Five days later, the rain returns and so does the law.</p>
 <p>The coroner's clerk arrives at the Pelican with two parish men and a sheet already half written. He is young for his black coat and old in the face, with a white crust of sealing wax beneath one thumbnail. The business of violent death has given him the impatience of a man whose dead are waiting in a queue.</p>
 <p>The queue is real. He has come to the Pelican from a lighterman fished out at the Shadwell stairs, swollen past his wife's certainty, and he goes from the Pelican to a carter's child crushed under a wheel in the Ratcliff road, and tomorrow holds a fever house in Limehouse where nobody will swear to anything for fear of the parish shutting the door on the living. Each of the dead is entitled to its finding, and each finding to its allotted sentences, and the clerk has learned to spend them the way a purser spends water in a long calm — exactly, and without being moved by thirst.</p>
@@ -476,12 +474,12 @@ Error generating stack: `+s.message+`
 <p>Maggie waits until the parish men are gone, then bends beneath the counter and touches the folded page she denied keeping.</p>
 <p>Official paper has found Silas Rook guilty.</p>
 <p>The house has begun keeping what guilt leaves out.</p>
-<h2 id="vii-what-comes-after">VII. What Comes After</h2>
+<h2 id="xiii-what-comes-after">XIII. What Comes After</h2>
 <p>The days come grey and wet. Somewhere behind the tavern a cockerel crows — a farmer's bird, or an optimist's; in Wapping the distinction is not always clear.</p>
 <p>The stool by the window is empty. A tankard ring fades into the table. Tom signs his name this morning in a hall in the City, under the eyes of Governor Smythe's clerks, and half of every month he serves begins travelling to Master Harcourt's ledger before the ship has cleared the Downs. He has heard the cost priced to the shilling, and he goes anyway.</p>
 <p>Tom's thimble goes into the gap behind the old wood, beside Matthew Bell's account, where a notch cannot be mistaken for a promise and a dead man's name cannot be reduced again to <em>Company clerk</em>. Few of the keepsakes there have been collected.</p>
 <p>In the City, Bell's chair does not remain empty. Arthur sits in it before noon. Tom's contract was prepared in Bell's small neat hand; Arthur witnesses the signature and enters the wage assignment knowing exactly why the old clerk has failed to attend. Knowledge alters nothing on the page. Paper does not observe a death unless someone pays to have the entry made.</p>
-<p>The charter is a piece of paper in a locked room in the City. The Company is two hundred and eighteen names and a warehouse of pepper the market has not yet agreed what to pay for. Whether the next fleet comes back, nobody in the bar can say. Matthew Bell is dead. His desk is occupied. The ships go out. The boys sign.</p>`,hidden:!1,role:"chapter",book:"I",words:5408,tagline:"The Dragon's lads come home loud, a Dutchman prices the paper, and a thimble is left on the bar."},{id:"06-1603-the-soot-and-the-roof",kicker:"Chapter Three",year:"1603",title:"The Soot and the Roof",epigraph:`<blockquote>
+<p>The charter is a piece of paper in a locked room in the City. The Company is two hundred and eighteen names and a warehouse of pepper the market has not yet agreed what to pay for. Whether the next fleet comes back, nobody in the bar can say. Matthew Bell is dead. His desk is occupied. The ships go out. The boys sign.</p>`,hidden:!1,role:"chapter",book:"I",words:10809,tagline:"A murderer asks the room for a rope; the room saves Maria, names Bell — and lets the killer leave."},{id:"06-1603-the-soot-and-the-roof",kicker:"Chapter Two",year:"1603",title:"What the Women Did",epigraph:`<blockquote>
 <p><strong>1603</strong></p>
 <p><em>“A door someone else holds open is still someone else's door.”</em></p>
 <p>— Maria, Wapping, 1603</p>
@@ -587,11 +585,9 @@ Error generating stack: `+s.message+`
 <p>Go up, Hendricks says. Cargo stows itself aboard, in my experience, when it is the self-loading kind.</p>
 <p>Maria climbs. From the fluyt's rail she watches the barge fall away astern, the broad short figure at the sweep already turned to his own business, taking the river's next sentence without looking back — and she understands that this, too, was given and not lent: he has made the parting weigh nothing so that she does not have to carry it.</p>
 <p>The manifest goes to the customs men at Gravesend with the fees attended to. Somewhere in its columns, between deals and battens, an entry rides in a clerk's small Dutch hand: <em>household goods, one lot, consigned</em>. Entered by her own instruction, which is a thing no ledger has a column for, and the beginning — though no clerk alive could read it there — of the language of paper.</p>
-<p>All down the river to the sea, wrapped in a dead man's coat with a dead man's book against her ribs, Maria sits among the timber and collects Dutch off the wind the way gulls collect the wake. <em>Hout.</em> <em>Touw.</em> <em>Water.</em> <em>Thuis</em>, which the youngest sailor says to the horizon, twice, softly — a word for home, by the sound of it, though she cannot yet be sure — and she takes it anyway, on account, against the day she has somewhere to spend it.</p>`,hidden:!1,role:"chapter",book:"I",words:4639,tagline:"The escape the tavern never saw: bare feet on wet tiles, and a Dutchman who leaves the choice to her."},{id:"20-1603-the-stewards-search",kicker:"Chapter Four",year:"1603",title:"The Steward's Search",epigraph:`<blockquote>
-<p><strong>1603</strong></p>
-<p><em>“Legal eats less bread than theft.”</em></p>
-<p>— Anne Bell, Shadwell, 1603</p>
-</blockquote>`,hero:null,body:`<h2 id="i-before-the-knock">I. Before the Knock</h2>
+<p>All down the river to the sea, wrapped in a dead man's coat with a dead man's book against her ribs, Maria sits among the timber and collects Dutch off the wind the way gulls collect the wake. <em>Hout.</em> <em>Touw.</em> <em>Water.</em> <em>Thuis</em>, which the youngest sailor says to the horizon, twice, softly — a word for home, by the sound of it, though she cannot yet be sure — and she takes it anyway, on account, against the day she has somewhere to spend it.</p>
+<hr class="scene">
+<h2 id="vii-before-the-knock">VII. Before the Knock</h2>
 <p>By the time Harcourt's steward reaches Bell's rooms, there is nothing in them that can hang a widow.</p>
 <p>This is not luck. Luck is what men call a woman's work when they arrive after it.</p>
 <p>Anne has had four hours.</p>
@@ -637,7 +633,7 @@ Error generating stack: `+s.message+`
 <p>The fourth hour takes her to the Pelican, where she sees the table, hears Matthew's name spoken as a name, refuses Arthur's copy and burns it herself. When she walks back into Shadwell, the steward is waiting at her door with two warehouse men.</p>
 <p>The knock has not yet fallen.</p>
 <hr class="scene">
-<h2 id="ii-authority">II. Authority</h2>
+<h2 id="viii-authority">VIII. Authority</h2>
 <p>The steward turns when he hears her on the stair. He is a dry, well-kept man who has stood in these rooms twice before while Matthew fetched a debtor's file. Both times he accepted the cup Anne put before him and left it untouched, as though poverty might pass through pewter.</p>
 <p>Mistress Bell. A grievous circumstance.</p>
 <p>Yes.</p>
@@ -662,7 +658,7 @@ Error generating stack: `+s.message+`
 <p>The warehouse men wipe their boots.</p>
 <p>The steward does not.</p>
 <hr class="scene">
-<h2 id="iii-the-rooms">III. The Rooms</h2>
+<h2 id="ix-the-rooms">IX. The Rooms</h2>
 <p>Matthew lies behind the inner curtain with a clean cloth over his face. The steward pauses when he understands what occupies the bed. Anne watches him decide whether death makes the room private. Harcourt's instruction wins.</p>
 <p>They begin with the table.</p>
 <p>One horn inkwell, the steward says.</p>
@@ -711,7 +707,7 @@ Error generating stack: `+s.message+`
 <p>The child eats, watching the steward over the crust.</p>
 <p>He understands the lesson is not meant for her.</p>
 <hr class="scene">
-<h2 id="iv-what-he-takes">IV. What He Takes</h2>
+<h2 id="x-what-he-takes">X. What He Takes</h2>
 <p>The search produces Matthew's old work satchel, empty except for a thread, a flake of sealing wax and the dust that gathers in corners of useful things.</p>
 <p>Company property, the steward says.</p>
 <p>Matthew bought it before Harcourt hired him.</p>
@@ -744,7 +740,7 @@ Error generating stack: `+s.message+`
 <p>Legal eats less bread than theft.</p>
 <p>Until this morning it was something she said at supper to a husband who wanted the word <em>legal</em> to end an argument. Now it is a procedure.</p>
 <hr class="scene">
-<h2 id="v-the-door-after">V. The Door After</h2>
+<h2 id="xi-the-door-after">XI. The Door After</h2>
 <p>The girls help put the pallet back together.</p>
 <p>Anne makes the elder say what the men searched. Table. Cupboard. Crock. Chest. Bed. Pallet. Hearth. She makes her say what they took. One satchel. She makes her find the three signatures on the receipt, though the child can read only the first letters.</p>
 <p>Why remember it if we have the paper? the girl asks.</p>
@@ -778,7 +774,7 @@ Error generating stack: `+s.message+`
 <p>The girl says them again.</p>
 <p>The younger joins her without understanding. By the third repetition both children know the order.</p>
 <p>Outside, carts begin the day's passage toward the river. Harcourt's warehouse opens. Arthur sits down in Bell's chair. Tom walks east with a signed paper in his coat. Maria is already beyond the rooms any English steward knows to search.</p>
-<p>In Shadwell, a widow bolts her own door and teaches two girls how to make a lawful man account for himself.</p>`,hidden:!1,role:"chapter",book:"I",words:2601,tagline:"Harcourt's steward searches the room, and Maggie learns what can be hidden in plain sight."},{id:"08-1604-the-language-of-paper",kicker:"Chapter Five",year:"1603–1604",title:"The Language of Paper",epigraph:`<blockquote>
+<p>In Shadwell, a widow bolts her own door and teaches two girls how to make a lawful man account for himself.</p>`,hidden:!1,role:"chapter",book:"I",words:7240,tagline:"The escape the tavern never saw: bare feet on wet tiles, and a Dutchman who leaves the choice to her."},{id:"08-1604-the-language-of-paper",kicker:"Chapter Three",year:"1603–1612",title:"Maria's Passage East",epigraph:`<blockquote>
 <p><strong>1603–1604</strong></p>
 <p><em>“A true copy is a second witness, and the second is harder to kill.”</em></p>
 <p>— Maria, Bantam, 1604</p>
@@ -1062,7 +1058,171 @@ Error generating stack: `+s.message+`
 <p>Maria closes the book. She does not burn it.</p>
 <p>In the yard below, pepper is being moved before the rain. A clerk calls a number. A broker disputes it. Somewhere in the dark, a second copy waits against a man's skin.</p>
 <p>The Company has brought Maria east as a servant because its book has nowhere else to put her.</p>
-<p>Before her first day is over, she has begun another book.</p>`,hidden:!1,role:"chapter",book:"I",words:5418,tagline:"Maria crosses into Dutch paper and learns that a copied page can buy a lock on the inside."},{id:"21-1611-the-counter-ledger",kicker:"Chapter Six",year:"1603–1611",title:"The Counter-Ledger",epigraph:`<blockquote>
+<p>Before her first day is over, she has begun another book.</p>
+<hr class="scene">
+<h2 id="v-thirty-one-days">V. Thirty-One Days</h2>
+<p>On the thirty-first morning, the factor discovers that a month has ended.</p>
+<p>Maria has known since midnight.</p>
+<p>Her mat is rolled. Pieter's coat lies across it, the book inside the coat, the slate and waste-paper booklet tied together with the pencil Joos gave her. On the floor beside them is her own account of the month: twenty-seven receipts translated, nine letters, four disputes in the yard, three sets of weights made to mean the same thing in two languages. Beneath each entry is the name the factor agreed would stand below the work.</p>
+<p>Maria de Sousa.</p>
+<p>The factor reads the total and asks why her room is packed.</p>
+<p>The month is finished, she says.</p>
+<p>We made no arrangement for a second.</p>
+<p>Exactly.</p>
+<p>He offers the same terms. Meals. The upper storeroom. The bolt. Protection inside the gate.</p>
+<p>Those were the terms for proving useful.</p>
+<p>You have proved it.</p>
+<p>Then usefulness has a price.</p>
+<p>The factor tells her there is no place for a female clerk on the wage book. Maria asks whether Dutch changes its meaning in a woman's mouth. He says that is not the point. She asks whether Portuguese does. He says she is being difficult.</p>
+<p>She has learned this word already. In a Company house, <em>difficult</em> means the price has begun to move in the wrong direction.</p>
+<p>Half a junior clerk's wage, she says. Paid weekly. Paper at cost. My name remains on every translation.</p>
+<p>Impossible.</p>
+<p>Then your Portuguese ends today.</p>
+<p>She lifts the mat.</p>
+<p>The factor watches her carry the room out in one load. That is the danger of giving a person nothing: nothing is quick to pack.</p>
+<p>Outside the gate, Iskandar — the pepper broker from the wet-yard dispute — waits beneath the warehouse eaves with the first duplicate Maria made in Bantam folded inside his shirt. The settlement held. The Dutch clerk tried two days later to call both wet sacks spoiled; Iskandar unfolded the second receipt, found another Dutch reader and collected the missing credit.</p>
+<p>Now he has a Portuguese debt note from Malacca, a Javanese pepper grower who will accept neither his figures nor the Dutch ones, and a Chinese buyer who speaks Cantonese badly enough to be dangerous and Malay well enough to deny it.</p>
+<p>What is your rate? he asks.</p>
+<p>Maria looks back at the gate. The factor has not followed her. He still believes the gate is the valuable thing.</p>
+<p>She names a price.</p>
+<p>Iskandar argues it down by one-tenth. Maria lets him, because a broker who accepts the first number is either desperate or lying, and she needs to know which kind he is. He pays half before she opens the debt note.</p>
+<p>The coin buys seven nights in a room above a maker of scales, from a landlady who demonstrates the bolt and waits while Maria tests it herself. Maria pays in advance and asks for a receipt. The room is narrow, hot and entirely accounted for.</p>
+<p>A rented door is still somebody else's door. But the key is in Maria's hand, the term is written, and no gratitude is owing on either side.</p>
+<p>It will do for seven nights.</p>
+<hr class="scene">
+<h2 id="vi-what-the-translation-buys">VI. What the Translation Buys</h2>
+<p>Seven nights become a month because the work returns before the rent is due.</p>
+<p>Iskandar's pepper growers bring contracts in market Malay and arguments in three dialects of impatience. Portuguese merchants bring letters whose courtesies occupy half the page and whose demand sits in six words at the bottom. The English factory sends a boy with shipping notes whenever its factors suspect the Dutch version has improved Dutch interests. The Dutch send for Maria whenever the English version has done the same.</p>
+<p>She does not learn every language in Bantam. Nobody does. She learns where each one stops.</p>
+<p>Her Malay becomes good enough for weights, weather and refusal. Hokkien remains a fast current she can cross only by another person's bridge. Cantonese lets her deal directly with some southern merchants and tells her exactly when a Dutch clerk is calling two Chinese tongues one language for his own convenience. English comes first in scraps from the factory: headings, dates, the words <em>received</em>, <em>damaged</em>, <em>owing</em>. She acquires it in the old order — numbers before mercy.</p>
+<p>Within the year, the factor who could find no wage-book place for her crosses the market and stands in the scale-maker's doorway.</p>
+<p>He carries a folded Portuguese dispatch taken from a coastal boat. The seal has been opened and pressed closed badly. Maria reads the first lines without touching it.</p>
+<p>It is a victualling account. Rice, fresh water, powder and shot. A Portuguese supply vessel is to leave Malacca on the next fair wind, pass south of Sumatra and make for the islands to the east. The name of the vessel is given. So are the master, the tonnage and the day on which a patrol waiting in the strait will know where to find her.</p>
+<p>The factor watches Maria reach the date.</p>
+<p>Well?</p>
+<p>What will you do with it?</p>
+<p>That is not translation.</p>
+<p>No. It is the rate.</p>
+<p>He understands. Military information costs more than pepper because pepper does not remember the translator's face.</p>
+<p>Maria names the fee. He pays it from a purse kept for expenses nobody wants itemised in Amsterdam.</p>
+<p>She translates the dispatch exactly. She makes two copies and has the factor mark both as received from her hand. One goes through the Dutch gate. One goes beneath Pieter's coat.</p>
+<p>Three weeks later, a Portuguese vessel enters Bantam roadstead under Dutch guard with her mainyard damaged and dark scoring along one side. The captured casks come ashore first: rice, water, powder, shot, each one answering the line Maria copied. The crew follow in irons. One man is carried.</p>
+<p>The factor finds her watching.</p>
+<p>Your paper, he says, with the satisfaction of a man returning a tool to its maker. We had her before she saw us.</p>
+<p>On the quay, one of the prisoners hears the Portuguese and turns. He looks at Maria, at the Dutch factor beside her, at the casks between them. He does not know what she translated. He knows enough.</p>
+<p>Traitor, he says.</p>
+<p>Maria owes Portugal nothing. Portuguese hands carried her from one sale to the next, Portuguese words recorded the prices, and no flag in that roadstead has ever claimed her except as cargo. None of this makes the man wrong.</p>
+<p>The factor offers a second fee for examining the captured papers.</p>
+<p>Maria takes it.</p>
+<p>That evening Lysbeth finds her counting the payment.</p>
+<p>You knew what the dispatch would do, she says.</p>
+<p>Yes.</p>
+<p>You knew they would take the ship.</p>
+<p>Yes.</p>
+<p>And the men aboard her.</p>
+<p>Maria squares the coins with one finger.</p>
+<p>Yes.</p>
+<p>Why translate it?</p>
+<p>Because I wanted what the money would buy.</p>
+<p>Lysbeth waits. Maria lets her wait. There is no cleaner answer behind the first one.</p>
+<p>That money buys the desk.</p>
+<p>A joiner near the pepper market makes it from teak without carving: four square legs, a broad top, one shallow drawer for instruments and one deep drawer in which a page may lie flat. Maria rejects the first top because it rocks. The joiner planes one corner, sets it down again and waits while she tests it with both palms.</p>
+<p>Iskandar watches four men carry it up the scale-maker's stairs.</p>
+<p>That will be troublesome when you have to run, he says.</p>
+<p>Yes.</p>
+<p>Why buy it?</p>
+<p>Because it will be troublesome when someone tries to take it.</p>
+<p>The first paper Maria lays on the teak is her copy of the Portuguese dispatch. Independence bought with another man's irons is still independence. It is also still bought with the irons.</p>
+<p>She keeps both entries.</p>
+<hr class="scene">
+<h2 id="vii-the-westbound-account">VII. The Westbound Account</h2>
+<p>Lysbeth builds a smaller trade with the skills nobody entered on her passenger line. Sailors come to her for fever, merchants for the complaints they do not want in a Company's surgeon's book, women from the market for everything European men have trained themselves not to see. She charges those who can pay and does not discuss the others with Maria. Willem carries water and cleans instruments.</p>
+<p>By September, two Dutch ships are preparing to sail west.</p>
+<p>Lysbeth's brother offers what he believes is generosity. If she stays, Willem may remain under his account and, when he is older, be found a place in the loge. A clerk's stool. A Company's training. A future already reduced to a line the boy has not asked to read.</p>
+<p>Lysbeth books passage on the first ship.</p>
+<p>I meant to bring one man east and buried him before we sailed, she tells Maria. I brought one boy east to keep him alive. I will not let another man call his future a place found for him.</p>
+<p>The return entry names Lysbeth as a paying passenger and Willem as her son. It contains no advance, no service owed on landing and no claim on the boy's future wages. Maria reads it twice. Lysbeth reads it once and then reads it aloud to Willem, because a child who has crossed the world inside other people's paper is old enough to hear what the return journey says.</p>
+<p>He signs his own name.</p>
+<p>The letters no longer lean against one another. Maria looks for the boy's old uncertain hand and cannot find it.</p>
+<p>I practised, Willem says.</p>
+<p>I can see that.</p>
+<p>It is the closest she comes to praise. He understands and stands taller.</p>
+<p>On the morning they sail, Maria sets two oilskin packets on the teak and gives Lysbeth one. Each contains the fever pages from Pieter's book in Maria's exact copy, a letter for Hendricks and a witnessed account showing the day Maria's bonded service ended. Joos can place that account in front of the Amsterdam Chamber and recover what remains of his guarantee.</p>
+<p>Two packets? Lysbeth asks.</p>
+<p>One goes with you. One leaves on the next English ship.</p>
+<p>You do not trust me.</p>
+<p>I do not trust water.</p>
+<p>Lysbeth smiles. She has known Maria long enough not to ask for a softer answer.</p>
+<p>You could come west, she says. There would be room.</p>
+<p>In whose house?</p>
+<p>Mine.</p>
+<p>Maria looks at Willem holding his own articles, at the roadstead beyond him, at the ships turning on their anchors toward every place she has survived.</p>
+<p>No, she says. But I know what the offer is worth.</p>
+<p>Lysbeth accepts this too.</p>
+<p>Willem stops in front of Maria with his arms half-raised.</p>
+<p>May I?</p>
+<p>Maria considers the question as seriously as he asks it.</p>
+<p>Once, she says.</p>
+<p>He hugs her. Maria stands rigid. Then one hand comes up and rests between his shoulder blades, once, like a seal applied to something already agreed.</p>
+<p>When the ship is under way, Lysbeth remains at the rail. Willem holds up the packet. Maria does not wave. She stands beside Iskandar until the hull becomes one more dark mark among dark marks and the water takes it west.</p>
+<p>Pieter's original does not travel. It goes to a place neither Company gate nor teak drawer knows.</p>
+<p>His truth travels twice.</p>
+<hr class="scene">
+<h2 id="viii-the-rate">VIII. The Rate</h2>
+<p>The years after Lysbeth leaves begin to arrive as cargo.</p>
+<p>Cotton and steel from the Coromandel coast. Lists of cloth wanted in Pattani, entrusted to Chinese merchants whose own books are older than the Company employing them. Diamonds sent through Bantam in packets small enough to vanish into a cuff and valuable enough to make six men watch the cuff. Pepper always: dry, wet, short, adulterated, promised, stolen, taxed twice and described as honest in every language available.</p>
+<p>Each cargo brings paper. Each paper brings Maria another hand.</p>
+<p>The city supplies the harder education. In 1608 men from the court kill a governor and seize the young ruler and his mother; offices change hands, seals change owners and agreements written the week before discover that accuracy does not make them sovereign. In 1609 the new regent orders Chinese debtors released from English custody despite the bills the English chief waves in answer. Maria reads the English debts and the Malay order. Both are true. Only one commands the gate that morning.</p>
+<p>The English chief comes to the teak desk with three signed bills and asks Maria to find the error in them. She finds none. Names, amounts, dates, marks: the debts are properly recorded.</p>
+<p>Then the release is unlawful, he says.</p>
+<p>Under whose law?</p>
+<p>The bills are valid.</p>
+<p>Yes.</p>
+<p>The order contradicts them.</p>
+<p>No. The bills say money is owed. The order says the men are released. You want the first paper to prevent the second from existing.</p>
+<p>What use is a true debt if the debtor walks out of the gate?</p>
+<p>Maria thinks of a room in Wapping that found a murderer truly and let him walk out of its door.</p>
+<p>It remains a true debt, she says. Paper records power. It does not replace it.</p>
+<p>The Englishman pays for the reading and leaves with all three bills still true and none of the debtors still behind his gate. He never thanks Maria for the distinction. He brings her work again the following month.</p>
+<p>Paper can prove what was promised. It cannot decide who must care.</p>
+<p>By 1612, nobody in Bantam agrees what Maria is.</p>
+<p>The Dutch call her an interpreter when entering her fee and an outside person when objecting to her copies. The English call her a broker when they need Dutch correspondence read and a Dutch agent when her reading does not favour them. Portuguese merchants call her Portuguese until she charges them, then discover objections in her history. Iskandar calls her Maria and sends the difficult work first.</p>
+<p>The harbour's officials know her more accurately: she is the woman at the teak desk whose two versions agree.</p>
+<p>The desk has moved out of the room above the scale-maker and into a ground-floor counting room of its own, midway between the Dutch loge and the English factory and belonging to neither. The shallow drawer holds pens, knives, sand and seal impressions that prove only what warm wax looked like on the day it was pressed. The deep drawer holds copies. The originals do not stay together and do not sleep where Maria does.</p>
+<p>She buys the silk from a merchant newly in from Macao. Dark, almost black until the sun finds blue in it, plain enough not to advertise the price. The merchant offers it in gratitude after Maria finds a missing zero in a Dutch order. Maria pays him anyway. Gifts between friends may be given. Gifts between merchants are unfinished accounts.</p>
+<p>The coat is cut loose enough for the heat and close enough at the sleeves not to drag through ink. Dark silk does not show the day's small stains. This is the practical reason. By the third time a client waits rather than interrupt while she writes, it has become something else.</p>
+<p>A new Dutch senior merchant arrives in the wet season and sends a boy to summon the translator.</p>
+<p>Maria sends back her rate.</p>
+<p>The boy returns with the message that Company business takes precedence.</p>
+<p>Maria sends back the rate again.</p>
+<p>At noon the senior merchant crosses the market himself. He finds an English factor already waiting, Iskandar in the second chair and a clerk from the harbour master's office watching Maria compare two measures of pepper without improving either one.</p>
+<p>I sent for you, the Dutchman says.</p>
+<p>I received it.</p>
+<p>You were employed by our loge.</p>
+<p>For one month.</p>
+<p>The Company brought you east.</p>
+<p>The Company entered me east. The distinction has made you money for seven years.</p>
+<p>He looks at the desk, the silk, the three men whose work is ahead of his.</p>
+<p>Whom do you work for now?</p>
+<p>The parties named on the page.</p>
+<p>He puts a Portuguese letter on the teak. Maria does not reach for it.</p>
+<p>Your rate is excessive.</p>
+<p>Then the letter is inexpensive.</p>
+<p>He sits.</p>
+<p>Two copies, Maria says. My name beneath both. Changes after my hand are marked by the person who makes them.</p>
+<p>Why two?</p>
+<p>One for you. One for what you later say I wrote.</p>
+<p>The Dutchman looks at Iskandar, who makes a sympathetic face and offers no help.</p>
+<p>You have become very useful, the Dutchman says.</p>
+<p>Useful is your word.</p>
+<p>What is yours?</p>
+<p>Broker.</p>
+<p>What is the difference?</p>
+<p>Maria draws the Portuguese letter toward her.</p>
+<p>I write the rate.</p>
+<p>Outside, the wet market carries on in several languages she can work in and a dozen she cannot. A ship out in the roads fires a salute. Nobody in the room looks up.</p>
+<p>Maria is not safe. Safety is still a door and every door still has a keeper. But the teak desk is too heavy to run with and too heavy for one man to take.</p>
+<p>She sits behind it in dark silk while the next man waits.</p>`,hidden:!1,role:"chapter",book:"I",words:8223,tagline:"Maria crosses into Dutch paper and learns that a copied page can buy a lock on the inside."},{id:"21-1611-the-counter-ledger",kicker:"Chapter Four",year:"1603–1612",title:"The Return",epigraph:`<blockquote>
 <p><strong>1603–1611</strong></p>
 <p><em>“The ships keep the wage. I keep the leaving.”</em></p>
 <p>— Maggie, keeper of the Pelican</p>
@@ -1179,177 +1339,9 @@ Error generating stack: `+s.message+`
 <p>When he leaves, he puts a wooden toggle on the counter. Maggie places it in the fault. Her hand finds the knife, then leaves it in her apron. No news yet.</p>
 <p>Her fingers pass close to one older groove, deep and pale once, dark now with eight years of ale and air. Tom's mark. The thimble waits behind it. No reliable word has reached the house from the man who left it.</p>
 <p>It is the first mark she ever cut before the sea answered. She has not cut early since.</p>
-<p>The room grows. The Company grows. Beneath the old length of bar, where neither enlargement reaches, the first account remains disputed.</p>`,hidden:!1,role:"chapter",book:"I",words:2446,tagline:"Maggie keeps Bell's truth beneath the bar while the years carve an account of their own."},{id:"09-1612-the-teak-desk",kicker:"Chapter Seven",year:"1605–1612",title:"The Teak Desk",epigraph:`<blockquote>
-<p><strong>1605–1612</strong></p>
-<p><em>“The difference between a servant and a broker is who writes the rate.”</em></p>
-<p>— Maria, Bantam, 1612</p>
-</blockquote>`,hero:null,body:`<h2 id="i-thirty-one-days">I. Thirty-One Days</h2>
-<p>On the thirty-first morning, the factor discovers that a month has ended.</p>
-<p>Maria has known since midnight.</p>
-<p>Her mat is rolled. Pieter's coat lies across it, the book inside the coat, the slate and waste-paper booklet tied together with the pencil Joos gave her. On the floor beside them is her own account of the month: twenty-seven receipts translated, nine letters, four disputes in the yard, three sets of weights made to mean the same thing in two languages. Beneath each entry is the name the factor agreed would stand below the work.</p>
-<p>Maria de Sousa.</p>
-<p>The factor reads the total and asks why her room is packed.</p>
-<p>The month is finished, she says.</p>
-<p>We made no arrangement for a second.</p>
-<p>Exactly.</p>
-<p>He offers the same terms. Meals. The upper storeroom. The bolt. Protection inside the gate.</p>
-<p>Those were the terms for proving useful.</p>
-<p>You have proved it.</p>
-<p>Then usefulness has a price.</p>
-<p>The factor tells her there is no place for a female clerk on the wage book. Maria asks whether Dutch changes its meaning in a woman's mouth. He says that is not the point. She asks whether Portuguese does. He says she is being difficult.</p>
-<p>She has learned this word already. In a Company house, <em>difficult</em> means the price has begun to move in the wrong direction.</p>
-<p>Half a junior clerk's wage, she says. Paid weekly. Paper at cost. My name remains on every translation.</p>
-<p>Impossible.</p>
-<p>Then your Portuguese ends today.</p>
-<p>She lifts the mat.</p>
-<p>The factor watches her carry the room out in one load. That is the danger of giving a person nothing: nothing is quick to pack.</p>
-<p>Outside the gate, Iskandar — the pepper broker from the wet-yard dispute — waits beneath the warehouse eaves with the first duplicate Maria made in Bantam folded inside his shirt. The settlement held. The Dutch clerk tried two days later to call both wet sacks spoiled; Iskandar unfolded the second receipt, found another Dutch reader and collected the missing credit.</p>
-<p>Now he has a Portuguese debt note from Malacca, a Javanese pepper grower who will accept neither his figures nor the Dutch ones, and a Chinese buyer who speaks Cantonese badly enough to be dangerous and Malay well enough to deny it.</p>
-<p>What is your rate? he asks.</p>
-<p>Maria looks back at the gate. The factor has not followed her. He still believes the gate is the valuable thing.</p>
-<p>She names a price.</p>
-<p>Iskandar argues it down by one-tenth. Maria lets him, because a broker who accepts the first number is either desperate or lying, and she needs to know which kind he is. He pays half before she opens the debt note.</p>
-<p>The coin buys seven nights in a room above a maker of scales, from a landlady who demonstrates the bolt and waits while Maria tests it herself. Maria pays in advance and asks for a receipt. The room is narrow, hot and entirely accounted for.</p>
-<p>A rented door is still somebody else's door. But the key is in Maria's hand, the term is written, and no gratitude is owing on either side.</p>
-<p>It will do for seven nights.</p>
+<p>The room grows. The Company grows. Beneath the old length of bar, where neither enlargement reaches, the first account remains disputed.</p>
 <hr class="scene">
-<h2 id="ii-what-the-translation-buys">II. What the Translation Buys</h2>
-<p>Seven nights become a month because the work returns before the rent is due.</p>
-<p>Iskandar's pepper growers bring contracts in market Malay and arguments in three dialects of impatience. Portuguese merchants bring letters whose courtesies occupy half the page and whose demand sits in six words at the bottom. The English factory sends a boy with shipping notes whenever its factors suspect the Dutch version has improved Dutch interests. The Dutch send for Maria whenever the English version has done the same.</p>
-<p>She does not learn every language in Bantam. Nobody does. She learns where each one stops.</p>
-<p>Her Malay becomes good enough for weights, weather and refusal. Hokkien remains a fast current she can cross only by another person's bridge. Cantonese lets her deal directly with some southern merchants and tells her exactly when a Dutch clerk is calling two Chinese tongues one language for his own convenience. English comes first in scraps from the factory: headings, dates, the words <em>received</em>, <em>damaged</em>, <em>owing</em>. She acquires it in the old order — numbers before mercy.</p>
-<p>Within the year, the factor who could find no wage-book place for her crosses the market and stands in the scale-maker's doorway.</p>
-<p>He carries a folded Portuguese dispatch taken from a coastal boat. The seal has been opened and pressed closed badly. Maria reads the first lines without touching it.</p>
-<p>It is a victualling account. Rice, fresh water, powder and shot. A Portuguese supply vessel is to leave Malacca on the next fair wind, pass south of Sumatra and make for the islands to the east. The name of the vessel is given. So are the master, the tonnage and the day on which a patrol waiting in the strait will know where to find her.</p>
-<p>The factor watches Maria reach the date.</p>
-<p>Well?</p>
-<p>What will you do with it?</p>
-<p>That is not translation.</p>
-<p>No. It is the rate.</p>
-<p>He understands. Military information costs more than pepper because pepper does not remember the translator's face.</p>
-<p>Maria names the fee. He pays it from a purse kept for expenses nobody wants itemised in Amsterdam.</p>
-<p>She translates the dispatch exactly. She makes two copies and has the factor mark both as received from her hand. One goes through the Dutch gate. One goes beneath Pieter's coat.</p>
-<p>Three weeks later, a Portuguese vessel enters Bantam roadstead under Dutch guard with her mainyard damaged and dark scoring along one side. The captured casks come ashore first: rice, water, powder, shot, each one answering the line Maria copied. The crew follow in irons. One man is carried.</p>
-<p>The factor finds her watching.</p>
-<p>Your paper, he says, with the satisfaction of a man returning a tool to its maker. We had her before she saw us.</p>
-<p>On the quay, one of the prisoners hears the Portuguese and turns. He looks at Maria, at the Dutch factor beside her, at the casks between them. He does not know what she translated. He knows enough.</p>
-<p>Traitor, he says.</p>
-<p>Maria owes Portugal nothing. Portuguese hands carried her from one sale to the next, Portuguese words recorded the prices, and no flag in that roadstead has ever claimed her except as cargo. None of this makes the man wrong.</p>
-<p>The factor offers a second fee for examining the captured papers.</p>
-<p>Maria takes it.</p>
-<p>That evening Lysbeth finds her counting the payment.</p>
-<p>You knew what the dispatch would do, she says.</p>
-<p>Yes.</p>
-<p>You knew they would take the ship.</p>
-<p>Yes.</p>
-<p>And the men aboard her.</p>
-<p>Maria squares the coins with one finger.</p>
-<p>Yes.</p>
-<p>Why translate it?</p>
-<p>Because I wanted what the money would buy.</p>
-<p>Lysbeth waits. Maria lets her wait. There is no cleaner answer behind the first one.</p>
-<p>That money buys the desk.</p>
-<p>A joiner near the pepper market makes it from teak without carving: four square legs, a broad top, one shallow drawer for instruments and one deep drawer in which a page may lie flat. Maria rejects the first top because it rocks. The joiner planes one corner, sets it down again and waits while she tests it with both palms.</p>
-<p>Iskandar watches four men carry it up the scale-maker's stairs.</p>
-<p>That will be troublesome when you have to run, he says.</p>
-<p>Yes.</p>
-<p>Why buy it?</p>
-<p>Because it will be troublesome when someone tries to take it.</p>
-<p>The first paper Maria lays on the teak is her copy of the Portuguese dispatch. Independence bought with another man's irons is still independence. It is also still bought with the irons.</p>
-<p>She keeps both entries.</p>
-<hr class="scene">
-<h2 id="iii-the-westbound-account">III. The Westbound Account</h2>
-<p>Lysbeth builds a smaller trade with the skills nobody entered on her passenger line. Sailors come to her for fever, merchants for the complaints they do not want in a Company's surgeon's book, women from the market for everything European men have trained themselves not to see. She charges those who can pay and does not discuss the others with Maria. Willem carries water and cleans instruments.</p>
-<p>By September, two Dutch ships are preparing to sail west.</p>
-<p>Lysbeth's brother offers what he believes is generosity. If she stays, Willem may remain under his account and, when he is older, be found a place in the loge. A clerk's stool. A Company's training. A future already reduced to a line the boy has not asked to read.</p>
-<p>Lysbeth books passage on the first ship.</p>
-<p>I meant to bring one man east and buried him before we sailed, she tells Maria. I brought one boy east to keep him alive. I will not let another man call his future a place found for him.</p>
-<p>The return entry names Lysbeth as a paying passenger and Willem as her son. It contains no advance, no service owed on landing and no claim on the boy's future wages. Maria reads it twice. Lysbeth reads it once and then reads it aloud to Willem, because a child who has crossed the world inside other people's paper is old enough to hear what the return journey says.</p>
-<p>He signs his own name.</p>
-<p>The letters no longer lean against one another. Maria looks for the boy's old uncertain hand and cannot find it.</p>
-<p>I practised, Willem says.</p>
-<p>I can see that.</p>
-<p>It is the closest she comes to praise. He understands and stands taller.</p>
-<p>On the morning they sail, Maria sets two oilskin packets on the teak and gives Lysbeth one. Each contains the fever pages from Pieter's book in Maria's exact copy, a letter for Hendricks and a witnessed account showing the day Maria's bonded service ended. Joos can place that account in front of the Amsterdam Chamber and recover what remains of his guarantee.</p>
-<p>Two packets? Lysbeth asks.</p>
-<p>One goes with you. One leaves on the next English ship.</p>
-<p>You do not trust me.</p>
-<p>I do not trust water.</p>
-<p>Lysbeth smiles. She has known Maria long enough not to ask for a softer answer.</p>
-<p>You could come west, she says. There would be room.</p>
-<p>In whose house?</p>
-<p>Mine.</p>
-<p>Maria looks at Willem holding his own articles, at the roadstead beyond him, at the ships turning on their anchors toward every place she has survived.</p>
-<p>No, she says. But I know what the offer is worth.</p>
-<p>Lysbeth accepts this too.</p>
-<p>Willem stops in front of Maria with his arms half-raised.</p>
-<p>May I?</p>
-<p>Maria considers the question as seriously as he asks it.</p>
-<p>Once, she says.</p>
-<p>He hugs her. Maria stands rigid. Then one hand comes up and rests between his shoulder blades, once, like a seal applied to something already agreed.</p>
-<p>When the ship is under way, Lysbeth remains at the rail. Willem holds up the packet. Maria does not wave. She stands beside Iskandar until the hull becomes one more dark mark among dark marks and the water takes it west.</p>
-<p>Pieter's original does not travel. It goes to a place neither Company gate nor teak drawer knows.</p>
-<p>His truth travels twice.</p>
-<hr class="scene">
-<h2 id="iv-the-rate">IV. The Rate</h2>
-<p>The years after Lysbeth leaves begin to arrive as cargo.</p>
-<p>Cotton and steel from the Coromandel coast. Lists of cloth wanted in Pattani, entrusted to Chinese merchants whose own books are older than the Company employing them. Diamonds sent through Bantam in packets small enough to vanish into a cuff and valuable enough to make six men watch the cuff. Pepper always: dry, wet, short, adulterated, promised, stolen, taxed twice and described as honest in every language available.</p>
-<p>Each cargo brings paper. Each paper brings Maria another hand.</p>
-<p>The city supplies the harder education. In 1608 men from the court kill a governor and seize the young ruler and his mother; offices change hands, seals change owners and agreements written the week before discover that accuracy does not make them sovereign. In 1609 the new regent orders Chinese debtors released from English custody despite the bills the English chief waves in answer. Maria reads the English debts and the Malay order. Both are true. Only one commands the gate that morning.</p>
-<p>The English chief comes to the teak desk with three signed bills and asks Maria to find the error in them. She finds none. Names, amounts, dates, marks: the debts are properly recorded.</p>
-<p>Then the release is unlawful, he says.</p>
-<p>Under whose law?</p>
-<p>The bills are valid.</p>
-<p>Yes.</p>
-<p>The order contradicts them.</p>
-<p>No. The bills say money is owed. The order says the men are released. You want the first paper to prevent the second from existing.</p>
-<p>What use is a true debt if the debtor walks out of the gate?</p>
-<p>Maria thinks of a room in Wapping that found a murderer truly and let him walk out of its door.</p>
-<p>It remains a true debt, she says. Paper records power. It does not replace it.</p>
-<p>The Englishman pays for the reading and leaves with all three bills still true and none of the debtors still behind his gate. He never thanks Maria for the distinction. He brings her work again the following month.</p>
-<p>Paper can prove what was promised. It cannot decide who must care.</p>
-<p>By 1612, nobody in Bantam agrees what Maria is.</p>
-<p>The Dutch call her an interpreter when entering her fee and an outside person when objecting to her copies. The English call her a broker when they need Dutch correspondence read and a Dutch agent when her reading does not favour them. Portuguese merchants call her Portuguese until she charges them, then discover objections in her history. Iskandar calls her Maria and sends the difficult work first.</p>
-<p>The harbour's officials know her more accurately: she is the woman at the teak desk whose two versions agree.</p>
-<p>The desk has moved out of the room above the scale-maker and into a ground-floor counting room of its own, midway between the Dutch loge and the English factory and belonging to neither. The shallow drawer holds pens, knives, sand and seal impressions that prove only what warm wax looked like on the day it was pressed. The deep drawer holds copies. The originals do not stay together and do not sleep where Maria does.</p>
-<p>She buys the silk from a merchant newly in from Macao. Dark, almost black until the sun finds blue in it, plain enough not to advertise the price. The merchant offers it in gratitude after Maria finds a missing zero in a Dutch order. Maria pays him anyway. Gifts between friends may be given. Gifts between merchants are unfinished accounts.</p>
-<p>The coat is cut loose enough for the heat and close enough at the sleeves not to drag through ink. Dark silk does not show the day's small stains. This is the practical reason. By the third time a client waits rather than interrupt while she writes, it has become something else.</p>
-<p>A new Dutch senior merchant arrives in the wet season and sends a boy to summon the translator.</p>
-<p>Maria sends back her rate.</p>
-<p>The boy returns with the message that Company business takes precedence.</p>
-<p>Maria sends back the rate again.</p>
-<p>At noon the senior merchant crosses the market himself. He finds an English factor already waiting, Iskandar in the second chair and a clerk from the harbour master's office watching Maria compare two measures of pepper without improving either one.</p>
-<p>I sent for you, the Dutchman says.</p>
-<p>I received it.</p>
-<p>You were employed by our loge.</p>
-<p>For one month.</p>
-<p>The Company brought you east.</p>
-<p>The Company entered me east. The distinction has made you money for seven years.</p>
-<p>He looks at the desk, the silk, the three men whose work is ahead of his.</p>
-<p>Whom do you work for now?</p>
-<p>The parties named on the page.</p>
-<p>He puts a Portuguese letter on the teak. Maria does not reach for it.</p>
-<p>Your rate is excessive.</p>
-<p>Then the letter is inexpensive.</p>
-<p>He sits.</p>
-<p>Two copies, Maria says. My name beneath both. Changes after my hand are marked by the person who makes them.</p>
-<p>Why two?</p>
-<p>One for you. One for what you later say I wrote.</p>
-<p>The Dutchman looks at Iskandar, who makes a sympathetic face and offers no help.</p>
-<p>You have become very useful, the Dutchman says.</p>
-<p>Useful is your word.</p>
-<p>What is yours?</p>
-<p>Broker.</p>
-<p>What is the difference?</p>
-<p>Maria draws the Portuguese letter toward her.</p>
-<p>I write the rate.</p>
-<p>Outside, the wet market carries on in several languages she can work in and a dozen she cannot. A ship out in the roads fires a salute. Nobody in the room looks up.</p>
-<p>Maria is not safe. Safety is still a door and every door still has a keeper. But the teak desk is too heavy to run with and too heavy for one man to take.</p>
-<p>She sits behind it in dark silk while the next man waits.</p>`,hidden:!1,role:"chapter",book:"I",words:2805,tagline:"Maria takes her work beyond the Company gate and makes power cross the market at her rate."},{id:"03-1612-the-return",kicker:"Chapter Eight",year:"1611–1612",title:"The Return",epigraph:`<blockquote>
-<p><strong>1611–1612</strong></p>
-<p><em>“Don’t come back until you remember what a human life is worth.”</em></p>
-<p>— Maggie, keeper of the Pelican, 1612</p>
-</blockquote>`,hero:null,body:`<h2 id="i-outside-surat">I. Outside Surat</h2>
+<h2 id="vii-outside-surat">VII. Outside Surat</h2>
 <p>Tom buys the blue cotton because it is the wrong size for everything.</p>
 <p>Too small for a dress. Too fine for a working cloth. Too large for a kerchief and too bright for any table in Wapping that has men cutting tar on it. It lies folded on a Gujarati broker's mat outside Surat, blue beneath red climbing flowers, one edge printed unevenly where the block took more dye than the next.</p>
 <p>The imperfection makes him stop.</p>
@@ -1382,7 +1374,7 @@ Error generating stack: `+s.message+`
 <p>Tom pays before the broker can improve the observation.</p>
 <p>He puts the packet inside his sea chest beneath a spare shirt. That night he moves it above the shirt in case water comes through the lid.</p>
 <hr class="scene">
-<h2 id="ii-the-climbing-flower">II. The Climbing Flower</h2>
+<h2 id="viii-the-climbing-flower">VIII. The Climbing Flower</h2>
 <p>Tom returns to Ratan two days later because the Company has rejected three bales.</p>
 <p>The factor says the blue is inconsistent and the red borders have wandered. He wants a reduction large enough to make the whole order profitable twice. Tom is sent with the rejected samples because the factor has discovered that a boatswain's coat looks more threatening than a clerk's and costs nothing extra to deploy.</p>
 <p>Ratan examines the cloth.</p>
@@ -1411,7 +1403,7 @@ Error generating stack: `+s.message+`
 <p>The uneven flower is no longer merely the reason he stopped.</p>
 <p>It is a hand he cannot name.</p>
 <hr class="scene">
-<h2 id="iii-one-monsoon">III. One Monsoon</h2>
+<h2 id="ix-one-monsoon">IX. One Monsoon</h2>
 <p>The water comes through everything.</p>
 <p>Rain begins as weather and becomes architecture. It closes the road, fills the compound drains and lays a second roof upon the warehouse roof, louder than work and more persistent. Cloth swells inside bales. Leather turns white at the edges. Powder must be moved twice. Men sleep in wet shirts and wake to find the walls wet too.</p>
 <p>Tom's sea chest stands on two bricks.</p>
@@ -1447,7 +1439,7 @@ Error generating stack: `+s.message+`
 <p>The monsoon spends weeks trying to enter. The packet moves from coat to hammock, hammock to provision chest, provision chest to a hook beneath the driest beam. Tom tells himself he protects it because he paid too much.</p>
 <p>This explanation survives exactly as long as the oiled paper.</p>
 <hr class="scene">
-<h2 id="iv-the-roadstead">IV. The Roadstead</h2>
+<h2 id="x-the-roadstead">X. The Roadstead</h2>
 <p>By the time the Portuguese ships come off Swally, the cotton has crossed from private object into habit.</p>
 <p>Tom checks it when he checks his knife. Moves it when stores move. Feels for the flat packet inside his coat before climbing. He has stopped deciding what it is for. Decision would make it possible to fail.</p>
 <p>The English ships lie off the coast with the river behind them and Portuguese sails appearing where sea glare ends. The factors call the fight trade by other means. Sailors call it what comes after the guns begin.</p>
@@ -1482,7 +1474,7 @@ Error generating stack: `+s.message+`
 <p>Blood marks the outside.</p>
 <p>The blue cotton remains dry.</p>
 <hr class="scene">
-<h2 id="v-four-months">V. Four Months</h2>
+<h2 id="xi-four-months">XI. Four Months</h2>
 <p>The voyage home takes four months around the Cape.</p>
 <p>Tom measures it in watches and inspections. The scar closes badly, a jagged white line through the eyebrow. Salt finds it whenever spray reaches his face. Men begin reading the mark as proof of the victory before the wound has stopped waking him.</p>
 <p>The Company measures the passage in cargo retained.</p>
@@ -1505,7 +1497,7 @@ Error generating stack: `+s.message+`
 <p>When England rises grey ahead, the packet is dry.</p>
 <p>Tom is not.</p>
 <hr class="scene">
-<h2 id="vi-the-changed-room">VI. The Changed Room</h2>
+<h2 id="xii-the-changed-room">XII. The Changed Room</h2>
 <p>Nine years is a long time on the river. In the ledgers of the East India Company it is an eternity.</p>
 <p>By the winter of 1612 the Pelican has changed without anyone quite watching it happen. New flagstones near the hearth. The rushes swept away for good. A longer oak bar, to hold the swelling tide of seamen and dockers. The Company that hired boys out of this room for a desperate venture is a power now, trading in silk, indigo and blood. News of Swally has come upriver ahead of the fleet, and the Portuguese grip east of the Cape has begun, audibly, to crack.</p>
 <p>While the Company grows, Wapping pays the toll.</p>
@@ -1513,7 +1505,7 @@ Error generating stack: `+s.message+`
 <p>Maggie stands behind the counter, slower on her feet than she was a decade back, wiping the wood with a rag. Beneath the bar the hidden crowd of pale notches has multiplied — dozens of cuts now, one for every boy who signed a paper and never came home. Matthew Bell's folded account remains behind them, his full name on the outside, Tom's inherited debt buried inside.</p>
 <p>There is a meat pie in the oven behind the bar — mutton and mace, the way one particular boy liked it. Word came up the river this morning that the Company fleet is in and paying off. Maggie has told herself the pie is for the house. The house knows better than to touch it.</p>
 <hr class="scene">
-<h2 id="vii-the-boatswain">VII. The Boatswain</h2>
+<h2 id="xiii-the-boatswain">XIII. The Boatswain</h2>
 <p>The heavy oak door opens, bringing in the sharp chill of the Thames.</p>
 <p>The man who walks in moves with the heavy, rolling balance of a deep-water sailor. Thirty-one, his face weathered to old leather by the Indian sun, a jagged white scar through one eyebrow. He wears a heavy boatswain's coat.</p>
 <p>Maggie stops wiping the bar. She looks at the scarred man, searching the hardened face for a naive twenty-two-year-old who once stood between a lynch mob and a terrified girl.</p>
@@ -1553,7 +1545,7 @@ Error generating stack: `+s.message+`
 <p>Better, she says.</p>
 <p>It is the nearest she comes to telling him what she thinks of the boatswain's coat.</p>
 <hr class="scene">
-<h2 id="viii-the-boy-in-the-thin-coat">VIII. The Boy in the Thin Coat</h2>
+<h2 id="xiv-the-boy-in-the-thin-coat">XIV. The Boy in the Thin Coat</h2>
 <p>An hour later the repaired door opens again. A boy steps inside, shaking freezing rain from a thin coat. Sixteen at the most, shivering, looking around the Pelican with wide, terrified eyes. He looks exactly the way Tom looked nine years ago, except that Tom at twenty-two had a coastwise sailor's hands and the stubborn confidence of a man who had already met weather. This boy has a cooper's cuts across his knuckles and the soft balance of somebody who has never stood on a moving deck.</p>
 <p>Tom stands up from the fire and gestures to the empty stool beside him. Come sit by the hearth, Jack. Warm your bones.</p>
 <p>Maggie frowns, looking from the scarred boatswain to the shivering boy. Who is this, Tom?</p>
@@ -1591,7 +1583,7 @@ Error generating stack: `+s.message+`
 <p>No.</p>
 <p>Most sailors can't, Tom says. It only makes the dying take longer.</p>
 <p>Jack laughs because Tom does. Maggie does not.</p>
-<h2 id="ix-with-or-without-me">IX. With or Without Me</h2>
+<h2 id="xv-with-or-without-me">XV. With or Without Me</h2>
 <p>Carter comes in while Jack is practising a rolling hitch on the leg of the table. The chandler has grown prosperous without growing quiet. His coat is good broadcloth now. Tar no longer lives beneath his nails; three other men carry it for him. He sees Jack, then Tom, then Maggie's face, and wishes with visible force that he had chosen another door.</p>
 <p>The boy is not mine, Carter says before anybody accuses him.</p>
 <p>No, Maggie says. Only the debt.</p>
@@ -1663,7 +1655,7 @@ Error generating stack: `+s.message+`
 <p>Carter's answer takes too long.</p>
 <p>The steward will proceed against the rooms.</p>
 <p>Maggie nods. Not approval. Entry.</p>
-<h2 id="x-the-meat-pie">X. The Meat Pie</h2>
+<h2 id="xvi-the-meat-pie">XVI. The Meat Pie</h2>
 <p>Jack is still standing near the threshold, dripping, too frightened to sit. Maggie looks at him for a long moment. Then she goes to the oven and brings out the meat pie she has been telling herself all day is for the house, and sets it on the bar with a pint beside it, and nods the boy toward both. Eat, she says. Not a suggestion. The boy will sign in the morning whatever anyone in this room does tonight; the paper has him, the way papers do. But tonight he will eat like a guest in this house, not like cargo.</p>
 <p>The pie has a quarter missing where Tom ate. Jack notices and understands who it was baked for. He sits anyway.</p>
 <p>Maggie cuts him a piece large enough for a working man and watches until he takes the first mouthful.</p>
@@ -1689,7 +1681,7 @@ Error generating stack: `+s.message+`
 <p>I never do.</p>
 <p>After he has gone, she stoops, picks the thimble off the flagstones, and puts it back in the gap behind the old wood, in among the notches, where she keeps what the sea owes her.</p>
 <p>Outside, Tom is standing beneath the eaves across the lane. He sees Jack emerge and does not call to him. Jack sees Tom and, after a moment, crosses the mud of his own accord. They walk toward Ratcliff together, the boy half a step behind until Tom slows enough to put them side by side.</p>
-<h2 id="xi-the-articles">XI. The Articles</h2>
+<h2 id="xvii-the-articles">XVII. The Articles</h2>
 <p>The Company's hiring room is full before daylight. Boys, men, wives, creditors, two surgeons and a row of clerks behind a rail. Wet coats steam in the press. Every person in the room has come carrying a different necessity, and the clerks mean to turn all of them into the same form before dinner.</p>
 <p>Jack stands in line with Maggie's questions inside his coat. Tom waits beside him in the boatswain's coat and discovers that rank is a kind of door: the men at the rail call him sir, though nobody aboard will, and boys in the line look at Jack as if he has arrived with the answer.</p>
 <p>At the third desk sits Arthur.</p>
@@ -1747,7 +1739,7 @@ Error generating stack: `+s.message+`
 <p>No.</p>
 <p>Why?</p>
 <p>Because changing one paper is easier than admitting why it needed changing.</p>
-<p>Jack understands none of this. He is sixteen and has a ship to see. They turn east together.</p>`,hidden:!1,role:"chapter",book:"I",words:6463,tagline:"A square of blue cotton crosses an ocean before Tom brings the Company home in his coat."},{id:"11-1613-the-boy-in-the-rigging",kicker:"Chapter Nine",year:"1613",title:"The Boy in the Rigging",epigraph:`<blockquote>
+<p>Jack understands none of this. He is sixteen and has a ship to see. They turn east together.</p>`,hidden:!1,role:"chapter",book:"I",words:8909,tagline:"Maggie keeps Bell's truth beneath the bar while the years carve an account of their own."},{id:"11-1613-the-boy-in-the-rigging",kicker:"Chapter Five",year:"1603–1614",title:"The Pay Table",epigraph:`<blockquote>
 <p><strong>1613</strong></p>
 <p><em>“He kept me alive once with his hand and every day with his voice.”</em></p>
 <p>— Jack Mercer, Deptford, 1626</p>
@@ -2294,11 +2286,9 @@ Error generating stack: `+s.message+`
 <p>Weeks later the water changes colour.</p>
 <p>It is not yet the impossible green Tom promised in Wapping. But birds begin appearing at dawn, flying with purpose instead of resting lost on the yards. Weed passes the hull. One evening the air carries smoke from land nobody can see.</p>
 <p>Jack stands at the foremast with one hand against the wood. The new rig speaks in a higher voice than the old one. He can feel his own splice carrying its share.</p>
-<p>Behind him, somewhere off Madagascar, a foretopmast lies descending through dark water with ten seconds still inside it.</p>`,hidden:!1,role:"chapter",book:"I",words:7669,tagline:"Jack learns the rigging, survives the flux, and sees ten seconds of weather before the mast falls."},{id:"14-1614-the-pay-table",kicker:"Chapter Ten",year:"1613–1614",title:"The Pay Table",epigraph:`<blockquote>
-<p><strong>1613–1614</strong></p>
-<p><em>“The money went nowhere with a name.”</em></p>
-<p>— Jack Mercer, Deptford, 1626</p>
-</blockquote>`,hero:null,body:`<h2 id="i-green-water">I. Green Water</h2>
+<p>Behind him, somewhere off Madagascar, a foretopmast lies descending through dark water with ten seconds still inside it.</p>
+<hr class="scene">
+<h2 id="xi-green-water">XI. Green Water</h2>
 <p>The water turns green before dawn.</p>
 <p>Not the grey-green of the Channel or the black-green beneath a storm. This is light held inside water, clear enough that when the lead goes down Jack watches the pale line descend farther than any line should remain visible. Small fish turn around it like filings around a magnet.</p>
 <p>Anchor ready, Tom calls.</p>
@@ -2321,7 +2311,7 @@ Error generating stack: `+s.message+`
 <p>The water remains beautiful.</p>
 <p>Both facts stand.</p>
 <hr class="scene">
-<h2 id="ii-the-factory-gate">II. The Factory Gate</h2>
+<h2 id="xii-the-factory-gate">XII. The Factory Gate</h2>
 <p>The English factory is no workshop.</p>
 <p>No saws. No seasoning sheds. No rows of men shaping the same object. It is a compound of warehouses, rooms, walls and clerks, a place where goods are made into English property by being weighed and written down.</p>
 <p>The first lighter comes alongside before the ship has finished securing. Bantam men bring rice, water, fruit, baskets of small fish, chickens tied at the feet and jars whose contents nobody aboard can name. They work in Malay, Javanese, Portuguese and the quick gestures of men who know a buyer will pretend not to understand a price he dislikes.</p>
@@ -2376,7 +2366,7 @@ Error generating stack: `+s.message+`
 <p>Sacks.</p>
 <p>The Company measures success by how deep the ship sits when it leaves.</p>
 <hr class="scene">
-<h2 id="iii-the-rope-market">III. The Rope Market</h2>
+<h2 id="xiii-the-rope-market">XIII. The Rope Market</h2>
 <p>Jack's first afternoon ashore belongs to the ship.</p>
 <p>Tom takes him through the market looking for hemp, coir and timber fit to strengthen the shortened rig before the return passage. Jack expects Tom to choose. Instead Tom makes him handle every coil.</p>
 <p>What do you feel?</p>
@@ -2430,7 +2420,7 @@ Error generating stack: `+s.message+`
 <p>This time Jack laughs. The woman has already turned to the next length.</p>
 <p>Tom does not call Jack back until the factory bell rings for the boat. Jack leaves the practice splice on the bench because it is not sound yet and follows with the shape of the hidden ends still present in his fingers.</p>
 <hr class="scene">
-<h2 id="iv-the-capstan">IV. The Capstan</h2>
+<h2 id="xiv-the-capstan">XIV. The Capstan</h2>
 <p>The accident happens because the pepper must be aboard before rain.</p>
 <p>Clouds gather over Bantam in the afternoon, high and white at first, then dark beneath. The factor sees weather and calculates spoiled cargo. He orders two lighters unloaded together.</p>
 <p>The ship is still short nineteen men.</p>
@@ -2489,7 +2479,7 @@ Error generating stack: `+s.message+`
 <p>The rain reaches the ship. Pepper comes aboard beneath tarpaulins. Jack's hand swells inside the splint until each heartbeat feels trapped there.</p>
 <p>The factor's cargo stays dry.</p>
 <hr class="scene">
-<h2 id="v-enough">V. Enough</h2>
+<h2 id="xv-enough">XV. Enough</h2>
 <p>Jack spends six weeks learning what work remains when one hand is bound.</p>
 <p>He can carry messages. Count coils. Hold a marline spike beneath his arm. He can sit beside Pritchard, whose broken jaw has healed crooked, and insult the cook's broth while Pritchard insults it back in a voice permanently changed.</p>
 <p>He cannot go aloft.</p>
@@ -2529,7 +2519,7 @@ Error generating stack: `+s.message+`
 <p>He has crossed the world to discover that seeing a thing clearly does not make it yours, and surviving a choice does not oblige you to choose it twice.</p>
 <p>One voyage is enough.</p>
 <hr class="scene">
-<h2 id="vi-homeward">VI. Homeward</h2>
+<h2 id="xvi-homeward">XVI. Homeward</h2>
 <p>The return voyage teaches Jack that going home is also ship's work.</p>
 <p>There is no road beneath them becoming shorter. No steeple on the horizon for months. Only the same watches, the same shortened foretopmast and the same ocean now resisting in the opposite direction. The vessel rides deep and answers the helm slowly, as though profit has weight beyond its sacks.</p>
 <p>Tom teaches Jack rigging until they reach the Cape.</p>
@@ -2573,7 +2563,7 @@ Error generating stack: `+s.message+`
 <p>Pay table, he says to Jack.</p>
 <p>The words are a promise and a postponement. Jack has lived long enough under both to know they are not the same.</p>
 <hr class="scene">
-<h2 id="vii-the-river-returns">VII. The River Returns</h2>
+<h2 id="xvii-the-river-returns">XVII. The River Returns</h2>
 <p>England arrives as smell.</p>
 <p>Coal smoke. Cold mud. Wet wool brought aboard by the pilot. After Bantam's fruit and drains, after the open ocean, the Thames smells narrow and used. Jack stands at the rail breathing it as though dirt can be a kind of welcome.</p>
 <p>The river has not waited for him.</p>
@@ -2591,7 +2581,7 @@ Error generating stack: `+s.message+`
 <p>Men look toward the warehouse where the pay table waits.</p>
 <p>They know exactly how the Company remembers.</p>
 <hr class="scene">
-<h2 id="viii-the-table">VIII. The Table</h2>
+<h2 id="xviii-the-table">XVIII. The Table</h2>
 <p>The pay room is long, low and built to make waiting men feel numerous rather than important.</p>
 <p>A rail divides the sailors from three clerks and a table covered in ledgers. One man reads the account. One counts coin. One witnesses the mark. Behind them stands the paymaster, clean at the cuffs, available for irregularities and therefore absent from ordinary conversation.</p>
 <p>The line moves slowly.</p>
@@ -2665,7 +2655,7 @@ Error generating stack: `+s.message+`
 <p>The paymaster looks past him for help. The sailors at the rail look back with the disciplined attention of men obeying no order at all.</p>
 <p>Find the account, Tom says.</p>
 <hr class="scene">
-<h2 id="ix-nowhere">IX. Nowhere</h2>
+<h2 id="xix-nowhere">XIX. Nowhere</h2>
 <p>The account is found in seven minutes.</p>
 <p>It is not one account. It is a temporary balance, an unallocated receipt, a carried remainder and a discrepancy awaiting advice. Each name describes the same money at a different desk. None says Jack.</p>
 <p>The paymaster straightens his collar while two clerks calculate.</p>
@@ -2701,7 +2691,7 @@ Error generating stack: `+s.message+`
 <p>Jack pockets his wage.</p>
 <p>Outside, cold rain begins.</p>
 <hr class="scene">
-<h2 id="x-deptford">X. Deptford</h2>
+<h2 id="xx-deptford">XX. Deptford</h2>
 <p>Carter's steward waits under the warehouse eaves.</p>
 <p>He carries a receipt stating the four-pound account is satisfied. The page is dated months after the money reached Carter's book, because closure becomes real only when a clerk finds time to acknowledge it.</p>
 <p>Jack reads the number himself.</p>
@@ -2747,7 +2737,7 @@ Error generating stack: `+s.message+`
 <p>Tom remains at the turning until Jack is out of sight.</p>
 <p>Then the boatswain goes back toward the Company.</p>
 <hr class="scene">
-<h2 id="xi-both-ends">XI. Both Ends</h2>
+<h2 id="xxi-both-ends">XXI. Both Ends</h2>
 <p>Jack goes home first.</p>
 <p>The two rooms are still there. Carter's steward did not take the bed. Rain has found a new path through the window frame, and his youngest brother has grown enough to occupy Jack's old place at the table, but the room has not been dismantled to satisfy four pounds.</p>
 <p>His mother opens the door.</p>
@@ -2790,11 +2780,10 @@ Error generating stack: `+s.message+`
 <p>Put that on the page.</p>
 <p>The quartermaster looks at him, then writes it.</p>
 <p>Jack signs with the mark he used at the Company rail and asks for his whole name beside it. This time he reads enough of the terms to know where every number ends.</p>
-<p>Outside, the tide moves past Deptford toward Wapping and the sea. Inside the shed, Jack takes down a coil and finds both ends before beginning.</p>`,hidden:!1,role:"chapter",book:"I",words:6318,tagline:"A crushed hand, a closed debt, and two correct ledgers that still cannot tell the truth."},{id:"22-1614-arthur-in-the-chair",kicker:"Chapter Eleven",year:"1603–1614",title:"Arthur in the Chair",epigraph:`<blockquote>
-<p><strong>1603–1614</strong></p>
-<p><em>“Somebody needs to know where those entries go.”</em></p>
-<p>— Arthur, Harcourt's counting room, 1603</p>
-</blockquote>`,hero:null,body:`<h2 id="i-the-first-morning">I. The First Morning</h2>
+<p>Outside, the tide moves past Deptford toward Wapping and the sea. Inside the shed, Jack takes down a coil and finds both ends before beginning.</p>
+<hr class="scene">
+<p>Behind the pay table stands another account, older than either voyage. It began the same week Bell died, eleven years before Jack ever signed anything, and it has been running underneath this room the whole time.</p>
+<h2 id="xxii-the-first-morning">XXII. The First Morning</h2>
 <p>Bell's chair is too low.</p>
 <p>Arthur discovers this before he discovers anything hidden in the books. His knees press the underside of the desk. The left rung has been worn smooth by Bell's heel. When Arthur shifts his weight, the seat answers with a small dry complaint that makes both other copyists look up.</p>
 <p>Neither says Bell's name.</p>
@@ -2822,7 +2811,7 @@ Error generating stack: `+s.message+`
 <p>Bell's finger had looked bruised because Bell had stopped trying.</p>
 <p>Arthur tells himself he never will.</p>
 <hr class="scene">
-<h2 id="ii-both-books">II. Both Books</h2>
+<h2 id="xxiii-both-books">XXIII. Both Books</h2>
 <p>The private book grows by lines. The public books grow by shelves.</p>
 <p>At first Arthur copies only matters he believes he may one day correct. A sailmaker's advance retained after the man's death. Three months of a widow's assignment resting between Harcourt's receipt and the pay office's acknowledgement. A surgeon's charge entered twice, once as care and once as stores. The facts are small enough to fit beneath weather.</p>
 <p>He gives each one a number. He copies the number into no official index.</p>
@@ -2846,7 +2835,7 @@ Error generating stack: `+s.message+`
 <p>That night Arthur enters her husband's name in the private book. He records the missing month, the sleeping child and the distance to the pay office. He does not know whether she ever receives the coin.</p>
 <p>This last fact troubles him, so he leaves a space.</p>
 <hr class="scene">
-<h2 id="iii-the-useful-hand">III. The Useful Hand</h2>
+<h2 id="xxiv-the-useful-hand">XXIV. The Useful Hand</h2>
 <p>Harcourt's affairs move into the Company without ever quite being sold to it. Money passes under a new seal. Pepper replaces currants in the warehouse air. Men who once traded to Smyrna begin speaking of Bantam as though saying the name gives them a key to it.</p>
 <p>Arthur goes with the books.</p>
 <p>At first he attends in Leadenhall Street two days each week to explain Harcourt's assignments. Then four. Then his desk remains there overnight and Bell's old chair stays in the counting room without him. Harcourt offers to send it. Arthur says the Company has chairs.</p>
@@ -2869,7 +2858,7 @@ Error generating stack: `+s.message+`
 <p>By Candlemas the stain resembles a bruise.</p>
 <p>He wears it to work.</p>
 <hr class="scene">
-<h2 id="iv-additions">IV. Additions</h2>
+<h2 id="xxv-additions">XXV. Additions</h2>
 <p>In 1608 a parish notice reaches Arthur concerning Fletcher, lately boatswain in Harcourt's Levant service.</p>
 <p>For one instant he expects Tom's name. Then he reads the Christian name and understands it is the father.</p>
 <p>The ruined knee has gone black. A physician attended. The man is dead. Burial was advanced by Harcourt's steward. Rent remains unpaid for the final month.</p>
@@ -2898,7 +2887,7 @@ Error generating stack: `+s.message+`
 <p>Mine.</p>
 <p>It is true, and therefore useful.</p>
 <hr class="scene">
-<h2 id="v-the-boy-who-asked-twice">V. The Boy Who Asked Twice</h2>
+<h2 id="xxvi-the-boy-who-asked-twice">XXVI. The Boy Who Asked Twice</h2>
 <p>Nine years after Bell dies, Tom stands on the other side of Arthur's rail.</p>
 <p>Arthur knows him first by the way he occupies the space between the boy and the room. Then he sees the pike scar, the boatswain's whistle and what nine years of surviving have removed from the face beneath them.</p>
 <p>The boy is called Jack. Sixteen. A cooper's hands not yet hardened into a cooper's trade. Four pounds assigned to Carter's yard because his injured father lived long enough to owe for the timber that fell on him.</p>
@@ -2918,7 +2907,7 @@ Error generating stack: `+s.message+`
 <p>When he rises, the right leg of the chair has pressed a numb line into his thigh. The mark fades on the walk home.</p>
 <p>The mark on his finger does not.</p>
 <hr class="scene">
-<h2 id="vi-the-clearer-form">VI. The Clearer Form</h2>
+<h2 id="xxvii-the-clearer-form">XXVII. The Clearer Form</h2>
 <p>Jack comes home in 1614 without returning to Arthur's rail.</p>
 <p>News reaches Leadenhall as an irregularity report from the pay office. A boatswain laid hands on a paymaster. Sailors delayed the table with questions. An assignment continued eleven months after four pounds had been received, along with two of the boatswain's instruction payments. The surplus acquired four correct names in four correct books and no person the desks agreed was entitled to spend it.</p>
 <p>Arthur recognizes Jack from the capped kit and Tom from the two shillings.</p>
@@ -2945,7 +2934,7 @@ Error generating stack: `+s.message+`
 <p>He closes the private account, locks it away and turns to the stack waiting for morning. The top page requires a witness line. Arthur signs where the rule tells him.</p>
 <p>When he sands the name, ink gathers in the first crease of his right finger. He rubs it once with his thumb. The colour does not move.</p>
 <p>By then it is no longer a stain he carries home from the work.</p>
-<p>It is the part of the work that stays.</p>`,hidden:!1,role:"chapter",book:"I",words:2879,tagline:"Arthur inherits Bell's chair and begins keeping two books in the same exact hand."},{id:"15-1620-the-lone-machine",kicker:"Chapter Twelve",year:"1614–1620",title:"The Lone Machine",epigraph:`<blockquote>
+<p>It is the part of the work that stays.</p>`,hidden:!1,role:"chapter",book:"I",words:16902,tagline:"Jack learns the rigging, survives the flux, and sees ten seconds of weather before the mast falls."},{id:"15-1620-the-lone-machine",kicker:"Chapter Six",year:"1614–1622",title:"Tom at Surat",epigraph:`<blockquote>
 <p><strong>1614–1620</strong></p>
 <p><em>“A machine does not need to hate a man. It only needs him to fit.”</em></p>
 <p>— Tom Fletcher, Surat, 1620</p>
@@ -3160,11 +3149,9 @@ Error generating stack: `+s.message+`
 <p>Tom gives it.</p>
 <p>The Company does not love him. It does not forgive him. It does not remember his parents or know the shape of the thimble under Maggie's bar.</p>
 <p>It fits him exactly.</p>
-<p>For now, he fits it back.</p>`,hidden:!1,role:"chapter",book:"I",words:3692,tagline:"Orphaned at sea, Tom corrects one false tally and makes the machine stronger."},{id:"17-1622-the-echo",kicker:"Chapter Thirteen",year:"1620–1622",title:"The Echo",epigraph:`<blockquote>
-<p><strong>1620–1622</strong></p>
-<p><em>“The sea came home in him. Home went back to sea.”</em></p>
-<p>— Jack Mercer, Deptford, 1626</p>
-</blockquote>`,hero:null,body:`<h2 id="i-the-door">I. The Door</h2>
+<p>For now, he fits it back.</p>
+<hr class="scene">
+<h2 id="vii-the-door">VII. The Door</h2>
 <p>Tom never sits with his back to a door.</p>
 <p>He does not know this until a clerk in Surat points it out.</p>
 <p>They are in the factory dining room after the evening tally. Eight men, one long table, shutters open to release the heat. Tom arrives last and moves a junior merchant's cup so he can take the chair at the end nearest the entrance.</p>
@@ -3201,7 +3188,7 @@ Error generating stack: `+s.message+`
 <p>The child runs.</p>
 <p>Tom remains in the doorway long after there is nobody left to hold.</p>
 <hr class="scene">
-<h2 id="ii-the-signature">II. The Signature</h2>
+<h2 id="viii-the-signature">VIII. The Signature</h2>
 <p>The Company sends a new form in 1621.</p>
 <p>It is called a declaration of ordinary loss. Masters, pursers and boatswains are to sign at the end of every passage, confirming that shortages in water, stores, rope and sail arose from weather, necessary consumption or the natural dishonesty of sailors rather than negligence by Company officers.</p>
 <p>Tom reads it twice.</p>
@@ -3237,7 +3224,7 @@ Error generating stack: `+s.message+`
 <p>The next form arrives six months later with a new clause permitting estimated quantities before landing.</p>
 <p>The machine has learned from his refusal.</p>
 <hr class="scene">
-<h2 id="iii-shore-leave">III. Shore Leave</h2>
+<h2 id="ix-shore-leave">IX. Shore Leave</h2>
 <p>Tom takes shore leave once in six years.</p>
 <p>Not market leave, when the ship remains inside every decision. Not the walk between factory and landing. A full day with no watch, no tally and no man expected to answer his whistle.</p>
 <p>He wakes before the watch changes anyway.</p>
@@ -3310,7 +3297,7 @@ Error generating stack: `+s.message+`
 <p>Home carried back to sea: his habit of repair, his place at the threshold, the rule that a hungry boy eats before he answers.</p>
 <p>Neither place releases the other.</p>
 <hr class="scene">
-<h2 id="iv-the-letter-not-sent">IV. The Letter Not Sent</h2>
+<h2 id="x-the-letter-not-sent">X. The Letter Not Sent</h2>
 <p>Tom writes to Maggie seven times.</p>
 <p>The first attempt begins in the Surat factory after his mother's parish letter arrives. He writes Maggie's name, then nothing beneath it. News of the death feels like a claim: feed me, forgive me, tell me I still belong somewhere. He folds the blank page around the name and puts it in his chest.</p>
 <p>The second begins with Jack.</p>
@@ -3345,7 +3332,7 @@ Error generating stack: `+s.message+`
 <p>Silence is not the absence of an entry.</p>
 <p>It is an entry renewed every time the ship sails west without the page.</p>
 <hr class="scene">
-<h2 id="v-the-thimble">V. The Thimble</h2>
+<h2 id="xi-the-thimble">XI. The Thimble</h2>
 <p>The thimble appears when Tom is most tired.</p>
 <p>Not as a vision. As an error of the hand.</p>
 <p>He reaches into a pocket for his knife and expects brass beneath his fingers. Opens his sea chest and looks toward the corner where his mother kept thread. Sees a glint beside a deck bolt and bends before recognising a washer.</p>
@@ -3366,7 +3353,7 @@ Error generating stack: `+s.message+`
 <p>It does not.</p>
 <p>Men think the palm belonged to his father. Tom never corrects them. A false explanation can become privacy if nobody profits from it.</p>
 <hr class="scene">
-<h2 id="vi-the-echo">VI. The Echo</h2>
+<h2 id="xii-the-echo">XII. The Echo</h2>
 <p>In 1622 a young sailor freezes in a doorway.</p>
 <p>The ship is taking water at anchor after a cargo boat strikes the quarter. Not enough to sink her. Enough to make every order urgent. Men run pumps, shift stores and rig a fothering sail over the damage.</p>
 <p>The boy stands at the companionway holding a coil, unable to decide whether the order sends him below or aft.</p>
@@ -3397,7 +3384,7 @@ Error generating stack: `+s.message+`
 <p>The boy goes to the galley.</p>
 <p>Tom takes the doorway and watches the ship settle around the repair. He is forty-one. The scar aches before weather. His name stands beneath more Company orders than he can remember. Somewhere west, a woman he loves may still hate what he became. Somewhere east, other ledgers are closing around names he has not yet heard.</p>
 <p>The sea repeats nothing exactly.</p>
-<p>It carries the sound forward changed.</p>`,hidden:!1,role:"chapter",book:"I",words:3404,tagline:"Seven letters remain unsent while Tom teaches a frightened sailor without striking him."},{id:"23-1622-news-from-the-sea",kicker:"Chapter Fourteen",year:"1614–1623",title:"News from the Sea",epigraph:`<blockquote>
+<p>It carries the sound forward changed.</p>`,hidden:!1,role:"chapter",book:"I",words:7096,tagline:"Orphaned at sea, Tom corrects one false tally and makes the machine stronger."},{id:"23-1622-news-from-the-sea",kicker:"Chapter Seven",year:"1614–1623",title:"The Years Between",epigraph:`<blockquote>
 <p><strong>1614–1623</strong></p>
 <p><em>“I ask whether he is alive. I do not ask whether he remembers me.”</em></p>
 <p>— Maggie, keeper of the Pelican</p>
@@ -3579,11 +3566,10 @@ Error generating stack: `+s.message+`
 <p>Jack nods. It is not a message. He does not carry it.</p>
 <p>By year's end the sea has sent Maggie a hundred sentences about Tom. Not one is from Tom. She lodges none beside Bell's page. Hearsay is not a true copy, however badly the heart wants to keep it.</p>
 <p>The blue cotton remains folded beneath the counter. The thimble remains inside the fault. His old notch darkens with the bar.</p>
-<p>The silence is intact.</p>`,hidden:!1,role:"chapter",book:"I",words:2757,tagline:"Amboyna reaches Wapping in fragments, and one missing name becomes the next handhold."},{id:"10-1623-the-intersecting-web",kicker:"Chapter Fifteen",year:"1614–1623",title:"The Intersecting Web",epigraph:`<blockquote>
-<p><strong>1614–1623</strong></p>
-<p><em>“A net catches what enters it. A ledger tells you who tied the knots.”</em></p>
-<p>— Maria, Bantam, 1623</p>
-</blockquote>`,hero:null,body:`<h2 id="i-the-second-desk">I. The Second Desk</h2>
+<p>The silence is intact.</p>
+<hr class="scene">
+<p>The same nine years run a second account, on the other side of the ocean, in a hand Maggie has never seen.</p>
+<h2 id="vii-the-second-desk">VII. The Second Desk</h2>
 <p>The second teak desk is smaller than the first.</p>
 <p>Maria orders it in 1614 from the same joiner who built the heavy one in her counting room. He remembers the woman who rejected a rocking corner and tests this top before she arrives. Four square legs. One drawer. No carving.</p>
 <p>Where will it stand? he asks.</p>
@@ -3614,7 +3600,7 @@ Error generating stack: `+s.message+`
 <p>And who holds that end?</p>
 <p>For now, Maria says, Aminah.</p>
 <hr class="scene">
-<h2 id="ii-the-price-of-one-tree">II. The Price of One Tree</h2>
+<h2 id="viii-the-price-of-one-tree">VIII. The Price of One Tree</h2>
 <p>The Dutch do not want cloves. They want the sentence <em>all the cloves</em> to become true.</p>
 <p>The difference arrives gradually in Maria's papers and all at once in the villages. Contracts become quotas. Quotas become inspections. Trees outside the approved ground become unlawful trees, as though a root can trespass against a charter signed on another continent. Where growers sell elsewhere, soldiers come with axes. Where island leaders object, the next agreement contains fewer island names.</p>
 <p>Aminah records what the official reports call pacification.</p>
@@ -3642,7 +3628,7 @@ Error generating stack: `+s.message+`
 <p>The page has no buyer.</p>
 <p>She pays for it herself.</p>
 <hr class="scene">
-<h2 id="iii-what-distance-costs">III. What Distance Costs</h2>
+<h2 id="ix-what-distance-costs">IX. What Distance Costs</h2>
 <p>The network acquires a reputation before it acquires a name.</p>
 <p>Men come asking for Maria's correspondents as though they are ships she may charter out. A Dutch factor wants a hand inside an English warehouse. An English chief wants the price paid to a harbour clerk at Makassar. A Portuguese captain wants to know which Javanese master carries Dutch letters without entering them on his freight list.</p>
 <p>Maria offers information. They ask for people.</p>
@@ -3685,7 +3671,7 @@ Error generating stack: `+s.message+`
 <p>She has a new seal cut. Not more elaborate. More inconvenient. The mark now includes one tiny broken line no copyist would preserve unless told it matters. The Makassar bookkeeper knows the break. Aminah knows it. Four other hands know it. Nobody is told all the places where it must appear.</p>
 <p>Trust, Maria understands, is not one rope drawn tight across the sea. One cut would finish it. Trust is an intersecting web: each strand proves where another has held, and no single hand owns the whole.</p>
 <hr class="scene">
-<h2 id="iv-the-english-hand">IV. The English Hand</h2>
+<h2 id="x-the-english-hand">X. The English Hand</h2>
 <p>Daniel Vale first crosses Maria's desk as a correction.</p>
 <p>The year is 1622. An English account from Amboyna charges a parcel of rice twice, once to the factory and once to a private mess. Aminah's clerk has marked the duplication in Malay. The English copy carries a cramped note along the margin:</p>
 <p><em>Not received into our store. Ask Mr Vale, who witnessed the unloading.</em></p>
@@ -3711,7 +3697,7 @@ Error generating stack: `+s.message+`
 <p><em>Both. Ownership is the dispute. Do not edit it out.</em></p>
 <p>She makes a duplicate before the answer goes east.</p>
 <hr class="scene">
-<h2 id="v-closed-water">V. Closed Water</h2>
+<h2 id="xi-closed-water">XI. Closed Water</h2>
 <p>Early in 1623, the Amboyna packets change.</p>
 <p>Ships are searched twice. Letters arrive with seals that have been warmed and pressed back crooked. Aminah begins writing market figures across harmless family messages, then sends the key by another vessel. Dutch orders speak of vigilance. English letters speak of insult. Japanese mercenaries at the fort appear in both sets of paper: wages in one, suspicion in the other.</p>
 <p>Maria stretches new string across the counting room.</p>
@@ -3741,7 +3727,7 @@ Error generating stack: `+s.message+`
 <p>Around them, the counting room holds eleven years of crossings. Amboyna to Makassar. Makassar to Bantam. English store to Dutch fort. Rice to sickhouse. A witness into a ledger. Every strand is ordinary until somebody needs to know where it leads.</p>
 <p>Maria removes the string pinned beside Amboyna and fixes its loose end beneath one word on the wall.</p>
 <p>Batavia.</p>
-<p>Then she begins another page.</p>`,hidden:!1,role:"chapter",book:"I",words:2760,tagline:"Maria's web finds an English hand missing from the lists and a trail ending in Batavia."},{id:"20-1621-the-factor",kicker:"Chapter Sixteen",year:"1621–1623",title:"The Factor",epigraph:`<blockquote>
+<p>Then she begins another page.</p>`,hidden:!1,role:"chapter",book:"I",words:5539,tagline:"Amboyna reaches Wapping in fragments, and one missing name becomes the next handhold."},{id:"20-1621-the-factor",kicker:"Chapter Eight",year:"1621–1623",title:"Amboyna",epigraph:`<blockquote>
 <p><strong>1621–1623</strong></p>
 <p><em>“Not received into our store. Ask Mr Vale, who witnessed the unloading.”</em></p>
 <p>— a margin note in an English account, Amboyna, 1622</p>
@@ -3894,11 +3880,9 @@ Error generating stack: `+s.message+`
 <p>On the third day the castle sends down an invitation, courteous as ever, for the English chief to come up: a matter touching the garrison account, best settled in person. Towerson puts on his good coat. At the door he pauses and looks back at the house — the low room, the cards abandoned, the clerks watching him with their unfinished faces — and Daniel, who witnessed the unloading, who names the porters, who cannot initial a false number, records his chief in the doorway with the terrible completeness that is his whole gift, and says nothing, and lets him go.</p>
 <p>That night the soldiers come down for the rest of them.</p>
 <p>They come with lanterns and with the courtesy that is worse than blows, and the arrests arrive dressed as procedure: a matter of questions, gentlemen; a formality; the governor regrets the hour. Daniel is taken between two Japanese soldiers whose wages he has entered with his own pen, through streets he has walked for two years, up the causeway he has audited stone by stone in the garrison account he was too exact to leave alone.</p>
-<p>He counts the steps to the gate. There are one hundred and eleven.</p>`,hidden:!1,role:"chapter",book:"I",words:5216,tagline:"Daniel watches ordinary facts become a useful report as Amboyna's water closes around him."},{id:"22-1623-the-coral-room",kicker:"Chapter Seventeen",year:"1623",title:"The Coral Room",epigraph:`<blockquote>
-<p><strong>1623</strong></p>
-<p><em>“The paper was finished before I was brought in. My answers were a formality the ink was waiting to receive.”</em></p>
-<p>— Daniel Vale, factor, Amboyna, 1623</p>
-</blockquote>`,hero:null,body:`<h2 id="i-the-table">I. The Table</h2>
+<p>He counts the steps to the gate. There are one hundred and eleven.</p>
+<hr class="scene">
+<h2 id="x-the-table">X. The Table</h2>
 <p>The room is coral stone and has no window.</p>
 <p>Daniel notices the absence the way he notices everything, at once and exactly, and understands what it is for before anyone has spoken. A window is a clock. Light moves, and a man in trouble can hold on to its moving. This room has been chosen by somebody who thinks about what men hold on to.</p>
 <p>There is a table. There is a man behind the table, neither young nor old, with the settled face of a conscientious schoolmaster, and there is a clerk beside him with paper, ink and sand. The paper is not blank. Daniel sees that in the first minute: sheets already close-written, laid in a squared stack, wanting only entries in the spaces left for them. He has prepared enough documents to know a prepared document across a room.</p>
@@ -3918,7 +3902,7 @@ Error generating stack: `+s.message+`
 <p>He does not tell them what is in the room. They will each learn it, and know he knew, and there is nothing in the knowing that helps a man. He sits against the coral, which is sharp and holds the day's heat, and does the only work left in his profession.</p>
 <p>He begins to count.</p>
 <hr class="scene">
-<h2 id="ii-the-wall">II. The Wall</h2>
+<h2 id="xi-the-wall">XI. The Wall</h2>
 <p>He counts because counting is what he has instead of prayer, and because a man who counts still owns the numbers.</p>
 <p>Breaths. The guard change, which comes at intervals of about six hundred breaths in the day and eight hundred at night, when the watches grow careless. The drips of the wet season working down through the coral. The sessions — his own, and the other men's, which can be told by the order the cells empty and refill, by which assistant comes back able to walk and which must be carried, by who eats and who only sits.</p>
 <p>On the second day they take Towerson.</p>
@@ -3932,7 +3916,7 @@ Error generating stack: `+s.message+`
 <p>That evening the guards' voices in the passage are loose and ordinary again. One of them laughs. The syllabus has moved past its hardest lesson.</p>
 <p>The next morning they resume the session.</p>
 <hr class="scene">
-<h2 id="iii-the-signature">III. The Signature</h2>
+<h2 id="xii-the-signature">XII. The Signature</h2>
 <p>The room has changed. It takes Daniel a moment to find the change, and then he finds it.</p>
 <p>The stack of paper is thinner. Most of it has gone wherever finished things go. What remains lies before the clerk in a fair hand, and the schoolmaster turns it toward Daniel across the table, and Daniel reads — upside down first, out of habit, then righted by the clerk's careful fingers — his own answers.</p>
 <p>They are not his answers. They are in his mouth's grammar, sprinkled with his true words — the landings, the stores, the hours he did keep — and threaded on a spine of confession he never spoke. Meetings he did not attend, arranged on evenings when he was standing landings he can date. An oath he never swore, sworn in a room he has never entered. His exactness has been harvested and rebound. Every date is possible. Every detail is his. The sum is a lie, and it is the best-made lie he has ever read, because he supplied the materials himself, one session at a time, answering the only questions his body left him able to answer.</p>
@@ -3947,7 +3931,7 @@ Error generating stack: `+s.message+`
 <p>They have his hand.</p>
 <p>They do not have where he keeps her.</p>
 <hr class="scene">
-<h2 id="iv-batavia">IV. Batavia</h2>
+<h2 id="xiii-batavia">XIII. Batavia</h2>
 <p>Some days later — he has lost the count; the days are a smear of grate-light and guard-noise — they come in and look at him.</p>
 <p>It is a particular look and he knows it at once, because he has used it. It is the look a factor gives cargo when deciding between columns: sound or spoiled, keep or condemn, this manifest or that one. Two of them stand in the cell door and look at him that way, and confer, low, in Dutch he has learned enough of to follow and wishes he had not.</p>
 <p>One of them says a word to the other, and the word is Batavia.</p>
@@ -3959,10 +3943,202 @@ Error generating stack: `+s.message+`
 <p>He is the only Englishman leaving Amboyna by water that week.</p>
 <p>He does not know what that sentence costs — what he said, or didn't; what he was worth, or wasn't; why the boat for him. There is no answer, because there was never a reason. There was an entry, made by a clerk with a patient pen, in a ledger closed to him.</p>
 <p>The island drops below the sea's edge. The sweetness goes last.</p>
-<p>Daniel Vale sits in his chains and begins, without meaning to, to count the ship's bells, and finds that the numbers still will not hold, and closes his eyes, and holds instead the one uncounted thing he saved out of the coral room, and sails west toward the word that was said over him.</p>`,hidden:!1,role:"chapter",book:"I",words:2091,tagline:"A table, a wall, and a signature turn questioning into a room built to erase truth."},{id:"18-1623-amboyna",kicker:"Chapter Eighteen",year:"1623",title:"Amboyna",epigraph:`<blockquote>
-<p><strong>1623</strong></p>
-<p><em>“The word arrived before the dead did. The dead never arrived.”</em></p>
-<p>— Tom Fletcher, Surat, 1623</p>
+<p>Daniel Vale sits in his chains and begins, without meaning to, to count the ship's bells, and finds that the numbers still will not hold, and closes his eyes, and holds instead the one uncounted thing he saved out of the coral room, and sails west toward the word that was said over him.</p>`,hidden:!1,role:"chapter",book:"I",words:7307,tagline:"Daniel watches ordinary facts become a useful report as Amboyna's water closes around him."},{id:"24-1623-the-widows-years",kicker:"Chapter Nine",year:"1603–1623",title:"The Widow's Years",epigraph:`<blockquote>
+<p><strong>1603–1623</strong></p>
+<p><em>“Some accounts are kept because payment is coming. Some are kept so nobody can say nothing was owed.”</em></p>
+<p>— Anne Bell, Shadwell, 1623</p>
+</blockquote>`,hero:null,body:`<h2 id="i-longer-than-a-wife">I. Longer Than a Wife</h2>
+<p>By 1623 Anne has been Matthew Bell's widow for twenty years, which is longer than she was his wife and nearly long enough for people to think widow is a trade.</p>
+<p>Perhaps it is.</p>
+<p>It has tools. A key worn flat at one tooth. A rent book with the first landlord's name struck through and his son's written above it. A good black dress that was black before Matthew died and has now been turned once at the cuffs. A way of standing inside an open door that makes a collector understand he has been admitted and may therefore be put out.</p>
+<p>Both girls are women. The elder reads faster than Anne and keeps figures in a hand that begins like her father's before slanting stubbornly into its own. The younger remembers every face that has asked for money and none of the reasons offered. They earn. They contribute. Anne still counts the household as three because survival has taught her that independence is often several people refusing to let one another fall.</p>
+<p>On Thursday afternoons she walks from Shadwell to the Pelican.</p>
+<p>Maggie puts broth at the end of the bar without asking whether Anne has eaten. Anne brings whatever the house has sent home with her since the week before: an apron with a new tie, a shirt cuff turned, a rent demand read twice, a name remembered from a paid-off crew. They do not call these visits. A visit is what a woman makes when she has time to sit.</p>
+<p>Today Anne carries three papers tied in thread and a child's shoe with the sole opening at the toe.</p>
+<p>Maggie looks at the shoe.</p>
+<p>Yours are grown.</p>
+<p>Not every child is mine.</p>
+<p>Maggie puts the bowl down first.</p>
+<hr class="scene">
+<h2 id="ii-the-first-winter">II. The First Winter</h2>
+<p>Their friendship begins with food neither woman agrees to owe.</p>
+<p>In the first winter after Matthew's death, Maggie brings barley broth to Shadwell every third day. Anne returns each pot clean with something repaired inside it. A split apron. A scorched cloth. Once, the tavern's best sheet, torn by a sailor who mistakes an upstairs room for a ship in weather and attempts to reef the bed.</p>
+<p>Maggie sends a loaf with the next pot.</p>
+<p>Anne sends back two pewter buttons and a note in the elder girl's large hand: <em>Sheet mended. Buttons supplied. One loaf too much.</em></p>
+<p>Maggie tears off the last sentence and uses it to light the taproom candles. Then she sends dripping and two onions.</p>
+<p>Neither wins. That is why it lasts.</p>
+<p>The girls eat before the women discuss Matthew. At first Anne permits no other order. A child who has watched adults lower their voices around her learns to hear death in an empty stomach. Maggie understands this without being taught. She arrives, fills bowls, waits for spoons to scrape, and only then reports what the parish has done with Rook's name or what somebody at the stairs claims to know.</p>
+<p>Most reports are useless. Silas seen at Deptford. Silas on a collier north. Silas drowned off Gravesend. One week he is three places and dead in two. Anne asks who saw him. The answer is always a man who heard another man.</p>
+<p>Do you want me to keep bringing the stories? Maggie asks.</p>
+<p>No.</p>
+<p>The next week Anne says, If a story has a name inside it, bring the name.</p>
+<p>That becomes another procedure.</p>
+<p>Maggie hears the river. Anne tests what it says. A name, a ship, a date, a person who will repeat it sober. If one part is missing, the story does not enter the house.</p>
+<p>Years later, when nobody has brought anything true, Anne understands that waiting for news of a murderer has been eating time the girls can use. She stops asking.</p>
+<p>Maggie stops bringing it.</p>
+<p>Their friendship survives the loss of its first subject.</p>
+<hr class="scene">
+<h2 id="iii-what-women-charge">III. What Women Charge</h2>
+<p>The account between them grows complicated because neither will put a price on the work that matters.</p>
+<p>Anne will price six inches of hemming, a morning spent reading a lease and the ink needed to copy a demand. She will not price sitting beside Maggie when the anniversary of a Swedish son's impressment comes round and Maggie wipes the same clean place on the counter until the grain rises.</p>
+<p>Maggie will price ale, pie, a room upstairs and broth carried out in a covered pot. She will not price the night the younger Bell girl burns with fever and Maggie sits at the pallet changing cloths while Anne sleeps for the first two hours in three days.</p>
+<p>The fever comes in the ninth winter.</p>
+<p>Coal costs more that week because the wind has pinned barges below the bridge. The physician wants payment before he enters. Anne pays him and knows at once there will be no meat until Sunday. Maggie arrives with beef bones, leeks and half a sack of coal contributed, she says, by a customer who lost a wager.</p>
+<p>What wager?</p>
+<p>That I would ask permission.</p>
+<p>Anne is too tired to refuse properly.</p>
+<p>The child lives. Afterwards Anne enters every farthing in the household book: physician, coal, linen spoiled, two days' work lost by Joan, candle ends, vinegar. Beside Maggie's name she leaves a blank.</p>
+<p>Joan finds it.</p>
+<p>What goes there?</p>
+<p>Nothing she would accept.</p>
+<p>Then why write her name?</p>
+<p>So I remember the blank belongs to somebody.</p>
+<p>The same blank appears in Maggie's reckoning. Anne never sees that book because it is not a book. It is a crowd of cuts beneath the bar, keepsakes in a fault in the wood, Bell's page folded beyond spilled ale. Yet Maggie knows which winter Anne misses Thursday because the rent rises, which girl needs shoes, which neighbour has taken ill and therefore which household Anne is quietly feeding in addition to her own.</p>
+<p>Along the Wall, the same work passes hand to hand without ever entering a wage book. Hours at a sickbed. Children minded while a mother works. Washing laid out for a man who returns without wages. A loaf divided one place farther than the baker intended.</p>
+<hr class="scene">
+<h2 id="iv-the-name-maggie-spends">IV. The Name Maggie Spends</h2>
+<p>In 1612 Maggie comes to Shadwell after closing, anger still making her hands exact.</p>
+<p>Anne opens the door. Maggie has brought the last quarter of a pie under a cloth.</p>
+<p>Who ate?</p>
+<p>Tom ate first. The boy ate most of what remained.</p>
+<p>Which boy?</p>
+<p>Maggie tells her about Jack, the injured father, Carter's debt and Tom's berth. She tells her what she called Tom before putting him out.</p>
+<p>Anne waits until the pie is warm again. The girls are nearly grown now and need no instruction to lay plates. Anne and both girls eat. Maggie does not. Anne cuts the remaining crust in half and leaves one piece before her until she does.</p>
+<p>Only then does Anne say, He is not Matthew.</p>
+<p>I called him Harcourt.</p>
+<p>You used Matthew's death to sharpen the name.</p>
+<p>He used the same words. The boy would sign with or without him.</p>
+<p>That was Matthew's lie too.</p>
+<p>Then I was right.</p>
+<p>Anne folds her hands around the cup.</p>
+<p>Right is not the same as exact. Harcourt made the paper hungry. Matthew fed it six years and called himself a hand. Tom found a boy already inside it and called the taking protection. I hear the likeness. I also hear where it ends.</p>
+<p>Maggie's face closes.</p>
+<p>You want me to fetch him back.</p>
+<p>I do not want a grand act made for my benefit. You taught him the difference and put him out. Let the difference work if it can. But do not turn my dead husband into a cudgel because you are frightened of losing a living man.</p>
+<p>Maggie looks down at her empty hands.</p>
+<p>Too late.</p>
+<p>For the words, yes.</p>
+<p>And the rest?</p>
+<p>Anne takes another bite of pie.</p>
+<p>The rest usually takes longer.</p>
+<p>Maggie does not ask forgiveness. Anne does not offer it. When she leaves, the empty pie dish is clean.</p>
+<hr class="scene">
+<h2 id="v-claims">V. Claims</h2>
+<p>By 1623 women come to Anne with papers because she is slow enough to distrust every line and quick enough to know which line will eat.</p>
+<p>She is not a scrivener. A scrivener charges for words whether they help or not. Anne charges for the hour when the woman can pay and enters the hour when she cannot.</p>
+<p>The child's shoe belongs to a sailor's wife from Ratcliff whose husband died homeward of fever. The Company has accepted the death and retained the wages pending proof that the claimant is his lawful widow. The two facts have occupied adjacent desks for five months without meeting.</p>
+<p>The wife cannot leave three children alone to wait at the pay office. She cannot take them because the youngest cries indoors and clerks use noise as a reason to move poor people outside. She has asked Anne to read the demand. The refusal sends her toward another desk. Anne will not send her alone.</p>
+<p>At the Pelican, Anne eats her broth. Then she unties the three papers.</p>
+<p>One is a marriage line from the parish. One is a pay note carrying the dead man's mark. One is the Company's refusal, which does not refuse. It requests further satisfaction as to identity and leaves the kind of satisfaction blank.</p>
+<p>Maggie reads over Anne's shoulder.</p>
+<p>What do they want?</p>
+<p>For her to tire.</p>
+<p>Can she prove he drank here?</p>
+<p>Drinking is not marriage.</p>
+<p>It is to some men.</p>
+<p>Maggie remembers two sailors paid off the dead man's ship. One lodges near Limehouse. The other works a lighter with Ned. Both saw the wife at the ship before sailing. One carried a letter from the husband to her on the outward leg and can identify the direction.</p>
+<p>Anne turns over the Company's paper and writes five headings in the clean spaces: name, ship, date, knowledge, address.</p>
+<p>Joan will make a fair copy tonight. Maggie will send word to the two men. Anne will take the wife to the pay office at opening, before a clerk has accumulated enough unfinished work to make another woman's claim feel like an offence.</p>
+<p>And the shoe? Maggie asks.</p>
+<p>The child must wear something while we wait.</p>
+<p>Maggie measures the split sole against her palm and calls upstairs for Joan, who knows a cobbler willing to mend children's shoes in exchange for dinners he pretends not to need.</p>
+<p>The chain forms without a committee. Tavern, widow, daughter, lighterman, witnesses, cobbler, dinner. None of it appears in any Company account.</p>
+<hr class="scene">
+<h2 id="vi-nobody-pays">VI. Nobody Pays</h2>
+<p>They finish near dusk.</p>
+<p>The two sailors have come, eaten and put their marks beneath statements Joan Bell reads aloud. The shoe has gone to the cobbler. The children and their mother are in Anne's rooms with stew enough for the evening. At first light Anne opens her own door, leaves the two older children with her daughters and takes the youngest and his mother to the pay office.</p>
+<p>They arrive before the office door is unbarred and find twelve women ahead of them.</p>
+<p>Nobody has been given an order. The order exists anyway, marked by shoulders against the wall, baskets at heels, children on a folded cloak and a baby asleep inside a shawl. A woman darning a stocking tells Anne to stand after her and before the blue basket. The basket guards a place no clerk recognises and every woman present will defend.</p>
+<p>When the door opens, the line becomes a room.</p>
+<p>It is narrower than the number of claims requiring it. Plaster has fallen from one corner in thin shells, exposing the lath beneath. The wall behind the benches is polished dark at shoulder height by coats that have waited there. A cold hearth holds yesterday's ash. One high window admits light without warmth, and beneath it a clerk's rail divides the people who have brought papers from the people permitted to delay them.</p>
+<p>There are two benches. The women fit twenty bodies onto space intended for twelve, children counted as laps until they refuse. The Ratcliff widow sits with the youngest on her knees. Anne stands behind her and keeps one hand on the packet inside her coat.</p>
+<p>The clerk does not appear with the door. A boy enters, puts an inkstand on the desk and goes away. Another man crosses the rear room carrying a book, sees the waiting women and closes the inner door. The room hears a bolt settle. Nobody complains. Complaint this early spends strength before it can purchase anything.</p>
+<p>The woman with the sailor's cap resumes her stocking. Beside her, another turns the frayed edge of a cuff under with a thumbnail and holds it there until the first woman passes the needle. Thread travels down the bench. A woman near the cold hearth has brought a square of sailcloth and cuts patches from it for three different knees. She takes no coin. One of the mothers keeps the offcuts for soles.</p>
+<p>Anne has brought work too: a child's shirt with one sleeve opening at the seam. She lays it across her forearm and begins. The Ratcliff widow looks at her.</p>
+<p>You expected this long?</p>
+<p>I expected them to hope for longer.</p>
+<p>The woman with the stocking glances over.</p>
+<p>Keep the marriage line in your own hand until he finds the death, she says. Once both are behind the rail, they can lose them together.</p>
+<p>Anne nods. She had planned the same. She had not known the sentence belonged to others.</p>
+<p>The women teach without announcing a lesson. The clerk nearest the window reads marks but dislikes seals broken at the edge. The clerk at the inner door will say a ship's book has not arrived when he means it is on the shelf behind him and he does not want to climb. If a claim is refused, ask him to write what remains wanting. If he will not write it, repeat the missing thing loudly enough for the next woman to hear. Never surrender the parish original when a fair copy will answer. Never say a husband had debts until the wage is acknowledged, because a debt waits more patiently than a widow and will be admitted first if invited.</p>
+<p>Anne listens. She has spent twenty years learning how one man's paper eats. The room has learned how a hundred papers chew.</p>
+<p>By midmorning the youngest child has cried himself hot. His mother apologises. Anne takes him, and the woman cutting sailcloth gives him her wooden bobbin. When he drops it for the third time, a girl offers a crust in exchange. He accepts with a merchant's gravity.</p>
+<p>Food changes the mother before it changes the child. Anne sees her watching the crust.</p>
+<p>She takes bread and a cold onion from her bag. Maggie packed both without asking who would eat them. Anne breaks the bread, gives the larger part to the widow and keeps the onion between them.</p>
+<p>I am not hungry, the widow says.</p>
+<p>That is useful. Eat before it passes.</p>
+<p>The woman obeys. Around them other packets open without ceremony: an apple divided four ways, cheese pared thin, a heel softened in a cup for the baby. No meal is offered to the room. Every person merely discovers that what she has brought reaches one place farther than intended.</p>
+<p>At last the Ratcliff widow is called.</p>
+<p>Anne goes to the rail with her. The clerk looks first at Anne, who is older and holding the packet, and directs the question to her.</p>
+<p>Your husband's ship?</p>
+<p>Her husband, Anne says, and moves half a step aside.</p>
+<p>The widow names the ship herself.</p>
+<p>The clerk finds the death in a pay book. The entry is one line: name, rating, wages accrued, fever, dead homeward. A man's last months have been made short enough to fit beneath a ruler. The clerk touches it, then asks for proof of marriage.</p>
+<p>The widow holds out the fair copy Joan made. Anne retains the parish line.</p>
+<p>Original, the clerk says.</p>
+<p>Upon acceptance of the copy.</p>
+<p>I cannot accept what I cannot compare.</p>
+<p>Anne shows him the original without releasing it. He compares the hands, annoyed by the distance of one arm. Then he asks who knows the claimant to be the same woman.</p>
+<p>Anne places the two sailors' statements on the rail. Their marks stand beneath words read aloud before they touched ink; their addresses and shipboard knowledge are entered beside them. One saw the widow at the sailing. One carried her husband's letter outward.</p>
+<p>They are not present, the clerk says.</p>
+<p>Your request did not require their bodies.</p>
+<p>It required satisfaction.</p>
+<p>What part remains unsatisfied?</p>
+<p>The clerk turns the refusal over as though its blank back may contain the answer his office omitted five months ago. Behind Anne, the room continues its work. Cloth draws through fingers. A child whispers a counting game. The woman with the blue basket has returned and the place kept for her has closed neatly around her skirts.</p>
+<p>The muster must be compared with the pay ledger, the clerk says.</p>
+<p>Compare it.</p>
+<p>The ledger is not in this room.</p>
+<p>Where is it?</p>
+<p>In examination.</p>
+<p>Anne looks past him. A broad book rests on the shelf beside the inner door, its leather back lettered with the dead ship's name.</p>
+<p>Is examination the shelf behind you?</p>
+<p>He turns before he can stop himself. The room sees. A small sound moves along the bench, not quite laughter and more expensive to the clerk.</p>
+<p>He takes down the book.</p>
+<p>The two entries agree. That should finish it. Instead he says the officer authorised to release the wage has gone to dinner.</p>
+<p>When will he return?</p>
+<p>When his dinner is finished.</p>
+<p>The clerk closes the pay book with the widow's proof still beneath his hand.</p>
+<p>Anne does not move from the rail.</p>
+<p>Enter that the proofs have been received.</p>
+<p>The claim is not concluded.</p>
+<p>Then enter what has happened, not what has not.</p>
+<p>He tells her to sit. She tells him she will sit when the papers are back in the widow's hand. The room does not look up. That is its assistance: twenty witnesses refusing the appearance of a disturbance while making it impossible for him to pocket the pages unnoticed.</p>
+<p>He returns the originals and writes a receipt for the copies. Anne reads it to the last word before yielding the space at the rail.</p>
+<p>The authorised officer's dinner lasts through the next bell and part of the one after. The benches exchange occupants but not knowledge. A mother carries another woman's baby to the yard. Anne closes the shirt sleeve. The Ratcliff widow learns which pay day begins before sunrise and which entrance opens first, then repeats both facts to a younger woman.</p>
+<p>When the inner door finally opens, no heralding occurs. A fed man sits. The clerk places three accepted claims before him and seven to one side. Anne watches the Ratcliff papers enter the smaller pile.</p>
+<p>The officer reads the witness marks, checks the matching lines and signs. Payment will not be made today. The wages must be drawn against the next appointed issue, less the dead man's recorded advances and any lawful claim already lodged. The widow's face empties at the first sentence and begins returning at the second. Delay has changed shape. It now has a date.</p>
+<p>Anne asks for the date on the receipt.</p>
+<p>The officer looks at the clerk. The clerk looks at the room. He adds it.</p>
+<p>They leave with no coin. The youngest sleeps against his mother's shoulder. When the widow begins to thank Anne and cannot finish without crying, Anne gives her the packet to carry. Work steadies the hands better than consolation.</p>
+<p>I know the entrance now, the widow says. And the hour. And not to give them the parish line.</p>
+<p>She has learned the room's account. It is hers to bring back when another woman asks.</p>
+<p>By the time Anne returns to the Pelican, the light is going. Maggie wipes the end of the bar.</p>
+<p>What do I owe you? Anne asks.</p>
+<p>For what?</p>
+<p>The witnesses ate.</p>
+<p>They were hungry.</p>
+<p>Joan's time.</p>
+<p>Joan's time is Joan's to price.</p>
+<p>The broth.</p>
+<p>You mended the cellar apron.</p>
+<p>That was last Thursday.</p>
+<p>Then we are behind.</p>
+<p>They have been behind for twenty years.</p>
+<p>Anne takes out her household book. Matthew's name appears on its earliest pages in the small entries of a living man: coal carried, candles bought, twelve shillings received, sixpence missing and found in the other coat. After his death the entries continue without him. Rent. Bread. Shoes. Fever. Work. Two daughters becoming women one paid hour at a time.</p>
+<p>Maggie looks at the narrow columns.</p>
+<p>Do you still reckon what his death cost?</p>
+<p>No.</p>
+<p>Why keep it, then?</p>
+<p>Anne closes the book.</p>
+<p>Some accounts are kept because payment is coming. Some are kept so nobody can say nothing was owed.</p>
+<p>Beneath Maggie's hand, behind the oak, Matthew's other account remains folded in the dark. It does not absolve him. Anne's household book does not condemn him. The two pages perform different work and neither is asked to finish the dead.</p>
+<p>Outside, a woman knocks and waits because she has not yet learned that the Pelican permits women with urgent papers to use the latch.</p>
+<p>Maggie reaches for it.</p>
+<p>Anne is closer.</p>
+<p>I can manage a door, she says, and opens it herself.</p>`,hidden:!1,role:"chapter",book:"I",words:3559,tagline:"Anne Bell measures the years after Matthew in bread, claims, and the truths nobody pays for."},{id:"19-1625-batavia",kicker:"Chapter Ten",year:"1623–1626",title:"Batavia",epigraph:`<blockquote>
+<p><strong>1623–1626</strong></p>
+<p><em>“The man is the message.”</em></p>
+<p>— Maria de Sousa, Batavia, 1625</p>
 </blockquote>`,hero:null,body:`<h2 id="i-the-word">I. The Word</h2>
 <p>Amboyna reaches Surat inside a sealed packet.</p>
 <p>The ship carrying it has been expected for pepper prices, sailing orders and private letters. Men wait at the landing asking after brothers, debts and promotions. The packet clerk brings the official bundle ashore first, protected beneath waxed cloth while sailors' bags remain in the boat under rain.</p>
@@ -4197,203 +4373,9 @@ another.</p>
 <p>On his private list, beneath Towerson and the nine English dead, beneath the ten blank Japanese lines, he adds one more:</p>
 <p><em>English factor. Name unknown. Batavia.</em></p>
 <p>The word has travelled from Amboyna to Surat.</p>
-<p>Now Tom begins travelling toward the word.</p>`,hidden:!1,role:"chapter",book:"I",words:2500,tagline:"Three accounts reach Surat; Tom restores the names and follows the man still retained."},{id:"24-1623-the-widows-years",kicker:"Chapter Nineteen",year:"1603–1623",title:"The Widow's Years",epigraph:`<blockquote>
-<p><strong>1603–1623</strong></p>
-<p><em>“Some accounts are kept because payment is coming. Some are kept so nobody can say nothing was owed.”</em></p>
-<p>— Anne Bell, Shadwell, 1623</p>
-</blockquote>`,hero:null,body:`<h2 id="i-longer-than-a-wife">I. Longer Than a Wife</h2>
-<p>By 1623 Anne has been Matthew Bell's widow for twenty years, which is longer than she was his wife and nearly long enough for people to think widow is a trade.</p>
-<p>Perhaps it is.</p>
-<p>It has tools. A key worn flat at one tooth. A rent book with the first landlord's name struck through and his son's written above it. A good black dress that was black before Matthew died and has now been turned once at the cuffs. A way of standing inside an open door that makes a collector understand he has been admitted and may therefore be put out.</p>
-<p>Both girls are women. The elder reads faster than Anne and keeps figures in a hand that begins like her father's before slanting stubbornly into its own. The younger remembers every face that has asked for money and none of the reasons offered. They earn. They contribute. Anne still counts the household as three because survival has taught her that independence is often several people refusing to let one another fall.</p>
-<p>On Thursday afternoons she walks from Shadwell to the Pelican.</p>
-<p>Maggie puts broth at the end of the bar without asking whether Anne has eaten. Anne brings whatever the house has sent home with her since the week before: an apron with a new tie, a shirt cuff turned, a rent demand read twice, a name remembered from a paid-off crew. They do not call these visits. A visit is what a woman makes when she has time to sit.</p>
-<p>Today Anne carries three papers tied in thread and a child's shoe with the sole opening at the toe.</p>
-<p>Maggie looks at the shoe.</p>
-<p>Yours are grown.</p>
-<p>Not every child is mine.</p>
-<p>Maggie puts the bowl down first.</p>
+<p>Now Tom begins travelling toward the word.</p>
 <hr class="scene">
-<h2 id="ii-the-first-winter">II. The First Winter</h2>
-<p>Their friendship begins with food neither woman agrees to owe.</p>
-<p>In the first winter after Matthew's death, Maggie brings barley broth to Shadwell every third day. Anne returns each pot clean with something repaired inside it. A split apron. A scorched cloth. Once, the tavern's best sheet, torn by a sailor who mistakes an upstairs room for a ship in weather and attempts to reef the bed.</p>
-<p>Maggie sends a loaf with the next pot.</p>
-<p>Anne sends back two pewter buttons and a note in the elder girl's large hand: <em>Sheet mended. Buttons supplied. One loaf too much.</em></p>
-<p>Maggie tears off the last sentence and uses it to light the taproom candles. Then she sends dripping and two onions.</p>
-<p>Neither wins. That is why it lasts.</p>
-<p>The girls eat before the women discuss Matthew. At first Anne permits no other order. A child who has watched adults lower their voices around her learns to hear death in an empty stomach. Maggie understands this without being taught. She arrives, fills bowls, waits for spoons to scrape, and only then reports what the parish has done with Rook's name or what somebody at the stairs claims to know.</p>
-<p>Most reports are useless. Silas seen at Deptford. Silas on a collier north. Silas drowned off Gravesend. One week he is three places and dead in two. Anne asks who saw him. The answer is always a man who heard another man.</p>
-<p>Do you want me to keep bringing the stories? Maggie asks.</p>
-<p>No.</p>
-<p>The next week Anne says, If a story has a name inside it, bring the name.</p>
-<p>That becomes another procedure.</p>
-<p>Maggie hears the river. Anne tests what it says. A name, a ship, a date, a person who will repeat it sober. If one part is missing, the story does not enter the house.</p>
-<p>Years later, when nobody has brought anything true, Anne understands that waiting for news of a murderer has been eating time the girls can use. She stops asking.</p>
-<p>Maggie stops bringing it.</p>
-<p>Their friendship survives the loss of its first subject.</p>
-<hr class="scene">
-<h2 id="iii-what-women-charge">III. What Women Charge</h2>
-<p>The account between them grows complicated because neither will put a price on the work that matters.</p>
-<p>Anne will price six inches of hemming, a morning spent reading a lease and the ink needed to copy a demand. She will not price sitting beside Maggie when the anniversary of a Swedish son's impressment comes round and Maggie wipes the same clean place on the counter until the grain rises.</p>
-<p>Maggie will price ale, pie, a room upstairs and broth carried out in a covered pot. She will not price the night the younger Bell girl burns with fever and Maggie sits at the pallet changing cloths while Anne sleeps for the first two hours in three days.</p>
-<p>The fever comes in the ninth winter.</p>
-<p>Coal costs more that week because the wind has pinned barges below the bridge. The physician wants payment before he enters. Anne pays him and knows at once there will be no meat until Sunday. Maggie arrives with beef bones, leeks and half a sack of coal contributed, she says, by a customer who lost a wager.</p>
-<p>What wager?</p>
-<p>That I would ask permission.</p>
-<p>Anne is too tired to refuse properly.</p>
-<p>The child lives. Afterwards Anne enters every farthing in the household book: physician, coal, linen spoiled, two days' work lost by Joan, candle ends, vinegar. Beside Maggie's name she leaves a blank.</p>
-<p>Joan finds it.</p>
-<p>What goes there?</p>
-<p>Nothing she would accept.</p>
-<p>Then why write her name?</p>
-<p>So I remember the blank belongs to somebody.</p>
-<p>The same blank appears in Maggie's reckoning. Anne never sees that book because it is not a book. It is a crowd of cuts beneath the bar, keepsakes in a fault in the wood, Bell's page folded beyond spilled ale. Yet Maggie knows which winter Anne misses Thursday because the rent rises, which girl needs shoes, which neighbour has taken ill and therefore which household Anne is quietly feeding in addition to her own.</p>
-<p>Along the Wall, the same work passes hand to hand without ever entering a wage book. Hours at a sickbed. Children minded while a mother works. Washing laid out for a man who returns without wages. A loaf divided one place farther than the baker intended.</p>
-<hr class="scene">
-<h2 id="iv-the-name-maggie-spends">IV. The Name Maggie Spends</h2>
-<p>In 1612 Maggie comes to Shadwell after closing, anger still making her hands exact.</p>
-<p>Anne opens the door. Maggie has brought the last quarter of a pie under a cloth.</p>
-<p>Who ate?</p>
-<p>Tom ate first. The boy ate most of what remained.</p>
-<p>Which boy?</p>
-<p>Maggie tells her about Jack, the injured father, Carter's debt and Tom's berth. She tells her what she called Tom before putting him out.</p>
-<p>Anne waits until the pie is warm again. The girls are nearly grown now and need no instruction to lay plates. Anne and both girls eat. Maggie does not. Anne cuts the remaining crust in half and leaves one piece before her until she does.</p>
-<p>Only then does Anne say, He is not Matthew.</p>
-<p>I called him Harcourt.</p>
-<p>You used Matthew's death to sharpen the name.</p>
-<p>He used the same words. The boy would sign with or without him.</p>
-<p>That was Matthew's lie too.</p>
-<p>Then I was right.</p>
-<p>Anne folds her hands around the cup.</p>
-<p>Right is not the same as exact. Harcourt made the paper hungry. Matthew fed it six years and called himself a hand. Tom found a boy already inside it and called the taking protection. I hear the likeness. I also hear where it ends.</p>
-<p>Maggie's face closes.</p>
-<p>You want me to fetch him back.</p>
-<p>I do not want a grand act made for my benefit. You taught him the difference and put him out. Let the difference work if it can. But do not turn my dead husband into a cudgel because you are frightened of losing a living man.</p>
-<p>Maggie looks down at her empty hands.</p>
-<p>Too late.</p>
-<p>For the words, yes.</p>
-<p>And the rest?</p>
-<p>Anne takes another bite of pie.</p>
-<p>The rest usually takes longer.</p>
-<p>Maggie does not ask forgiveness. Anne does not offer it. When she leaves, the empty pie dish is clean.</p>
-<hr class="scene">
-<h2 id="v-claims">V. Claims</h2>
-<p>By 1623 women come to Anne with papers because she is slow enough to distrust every line and quick enough to know which line will eat.</p>
-<p>She is not a scrivener. A scrivener charges for words whether they help or not. Anne charges for the hour when the woman can pay and enters the hour when she cannot.</p>
-<p>The child's shoe belongs to a sailor's wife from Ratcliff whose husband died homeward of fever. The Company has accepted the death and retained the wages pending proof that the claimant is his lawful widow. The two facts have occupied adjacent desks for five months without meeting.</p>
-<p>The wife cannot leave three children alone to wait at the pay office. She cannot take them because the youngest cries indoors and clerks use noise as a reason to move poor people outside. She has asked Anne to read the demand. The refusal sends her toward another desk. Anne will not send her alone.</p>
-<p>At the Pelican, Anne eats her broth. Then she unties the three papers.</p>
-<p>One is a marriage line from the parish. One is a pay note carrying the dead man's mark. One is the Company's refusal, which does not refuse. It requests further satisfaction as to identity and leaves the kind of satisfaction blank.</p>
-<p>Maggie reads over Anne's shoulder.</p>
-<p>What do they want?</p>
-<p>For her to tire.</p>
-<p>Can she prove he drank here?</p>
-<p>Drinking is not marriage.</p>
-<p>It is to some men.</p>
-<p>Maggie remembers two sailors paid off the dead man's ship. One lodges near Limehouse. The other works a lighter with Ned. Both saw the wife at the ship before sailing. One carried a letter from the husband to her on the outward leg and can identify the direction.</p>
-<p>Anne turns over the Company's paper and writes five headings in the clean spaces: name, ship, date, knowledge, address.</p>
-<p>Joan will make a fair copy tonight. Maggie will send word to the two men. Anne will take the wife to the pay office at opening, before a clerk has accumulated enough unfinished work to make another woman's claim feel like an offence.</p>
-<p>And the shoe? Maggie asks.</p>
-<p>The child must wear something while we wait.</p>
-<p>Maggie measures the split sole against her palm and calls upstairs for Joan, who knows a cobbler willing to mend children's shoes in exchange for dinners he pretends not to need.</p>
-<p>The chain forms without a committee. Tavern, widow, daughter, lighterman, witnesses, cobbler, dinner. None of it appears in any Company account.</p>
-<hr class="scene">
-<h2 id="vi-nobody-pays">VI. Nobody Pays</h2>
-<p>They finish near dusk.</p>
-<p>The two sailors have come, eaten and put their marks beneath statements Joan Bell reads aloud. The shoe has gone to the cobbler. The children and their mother are in Anne's rooms with stew enough for the evening. At first light Anne opens her own door, leaves the two older children with her daughters and takes the youngest and his mother to the pay office.</p>
-<p>They arrive before the office door is unbarred and find twelve women ahead of them.</p>
-<p>Nobody has been given an order. The order exists anyway, marked by shoulders against the wall, baskets at heels, children on a folded cloak and a baby asleep inside a shawl. A woman darning a stocking tells Anne to stand after her and before the blue basket. The basket guards a place no clerk recognises and every woman present will defend.</p>
-<p>When the door opens, the line becomes a room.</p>
-<p>It is narrower than the number of claims requiring it. Plaster has fallen from one corner in thin shells, exposing the lath beneath. The wall behind the benches is polished dark at shoulder height by coats that have waited there. A cold hearth holds yesterday's ash. One high window admits light without warmth, and beneath it a clerk's rail divides the people who have brought papers from the people permitted to delay them.</p>
-<p>There are two benches. The women fit twenty bodies onto space intended for twelve, children counted as laps until they refuse. The Ratcliff widow sits with the youngest on her knees. Anne stands behind her and keeps one hand on the packet inside her coat.</p>
-<p>The clerk does not appear with the door. A boy enters, puts an inkstand on the desk and goes away. Another man crosses the rear room carrying a book, sees the waiting women and closes the inner door. The room hears a bolt settle. Nobody complains. Complaint this early spends strength before it can purchase anything.</p>
-<p>The woman with the sailor's cap resumes her stocking. Beside her, another turns the frayed edge of a cuff under with a thumbnail and holds it there until the first woman passes the needle. Thread travels down the bench. A woman near the cold hearth has brought a square of sailcloth and cuts patches from it for three different knees. She takes no coin. One of the mothers keeps the offcuts for soles.</p>
-<p>Anne has brought work too: a child's shirt with one sleeve opening at the seam. She lays it across her forearm and begins. The Ratcliff widow looks at her.</p>
-<p>You expected this long?</p>
-<p>I expected them to hope for longer.</p>
-<p>The woman with the stocking glances over.</p>
-<p>Keep the marriage line in your own hand until he finds the death, she says. Once both are behind the rail, they can lose them together.</p>
-<p>Anne nods. She had planned the same. She had not known the sentence belonged to others.</p>
-<p>The women teach without announcing a lesson. The clerk nearest the window reads marks but dislikes seals broken at the edge. The clerk at the inner door will say a ship's book has not arrived when he means it is on the shelf behind him and he does not want to climb. If a claim is refused, ask him to write what remains wanting. If he will not write it, repeat the missing thing loudly enough for the next woman to hear. Never surrender the parish original when a fair copy will answer. Never say a husband had debts until the wage is acknowledged, because a debt waits more patiently than a widow and will be admitted first if invited.</p>
-<p>Anne listens. She has spent twenty years learning how one man's paper eats. The room has learned how a hundred papers chew.</p>
-<p>By midmorning the youngest child has cried himself hot. His mother apologises. Anne takes him, and the woman cutting sailcloth gives him her wooden bobbin. When he drops it for the third time, a girl offers a crust in exchange. He accepts with a merchant's gravity.</p>
-<p>Food changes the mother before it changes the child. Anne sees her watching the crust.</p>
-<p>She takes bread and a cold onion from her bag. Maggie packed both without asking who would eat them. Anne breaks the bread, gives the larger part to the widow and keeps the onion between them.</p>
-<p>I am not hungry, the widow says.</p>
-<p>That is useful. Eat before it passes.</p>
-<p>The woman obeys. Around them other packets open without ceremony: an apple divided four ways, cheese pared thin, a heel softened in a cup for the baby. No meal is offered to the room. Every person merely discovers that what she has brought reaches one place farther than intended.</p>
-<p>At last the Ratcliff widow is called.</p>
-<p>Anne goes to the rail with her. The clerk looks first at Anne, who is older and holding the packet, and directs the question to her.</p>
-<p>Your husband's ship?</p>
-<p>Her husband, Anne says, and moves half a step aside.</p>
-<p>The widow names the ship herself.</p>
-<p>The clerk finds the death in a pay book. The entry is one line: name, rating, wages accrued, fever, dead homeward. A man's last months have been made short enough to fit beneath a ruler. The clerk touches it, then asks for proof of marriage.</p>
-<p>The widow holds out the fair copy Joan made. Anne retains the parish line.</p>
-<p>Original, the clerk says.</p>
-<p>Upon acceptance of the copy.</p>
-<p>I cannot accept what I cannot compare.</p>
-<p>Anne shows him the original without releasing it. He compares the hands, annoyed by the distance of one arm. Then he asks who knows the claimant to be the same woman.</p>
-<p>Anne places the two sailors' statements on the rail. Their marks stand beneath words read aloud before they touched ink; their addresses and shipboard knowledge are entered beside them. One saw the widow at the sailing. One carried her husband's letter outward.</p>
-<p>They are not present, the clerk says.</p>
-<p>Your request did not require their bodies.</p>
-<p>It required satisfaction.</p>
-<p>What part remains unsatisfied?</p>
-<p>The clerk turns the refusal over as though its blank back may contain the answer his office omitted five months ago. Behind Anne, the room continues its work. Cloth draws through fingers. A child whispers a counting game. The woman with the blue basket has returned and the place kept for her has closed neatly around her skirts.</p>
-<p>The muster must be compared with the pay ledger, the clerk says.</p>
-<p>Compare it.</p>
-<p>The ledger is not in this room.</p>
-<p>Where is it?</p>
-<p>In examination.</p>
-<p>Anne looks past him. A broad book rests on the shelf beside the inner door, its leather back lettered with the dead ship's name.</p>
-<p>Is examination the shelf behind you?</p>
-<p>He turns before he can stop himself. The room sees. A small sound moves along the bench, not quite laughter and more expensive to the clerk.</p>
-<p>He takes down the book.</p>
-<p>The two entries agree. That should finish it. Instead he says the officer authorised to release the wage has gone to dinner.</p>
-<p>When will he return?</p>
-<p>When his dinner is finished.</p>
-<p>The clerk closes the pay book with the widow's proof still beneath his hand.</p>
-<p>Anne does not move from the rail.</p>
-<p>Enter that the proofs have been received.</p>
-<p>The claim is not concluded.</p>
-<p>Then enter what has happened, not what has not.</p>
-<p>He tells her to sit. She tells him she will sit when the papers are back in the widow's hand. The room does not look up. That is its assistance: twenty witnesses refusing the appearance of a disturbance while making it impossible for him to pocket the pages unnoticed.</p>
-<p>He returns the originals and writes a receipt for the copies. Anne reads it to the last word before yielding the space at the rail.</p>
-<p>The authorised officer's dinner lasts through the next bell and part of the one after. The benches exchange occupants but not knowledge. A mother carries another woman's baby to the yard. Anne closes the shirt sleeve. The Ratcliff widow learns which pay day begins before sunrise and which entrance opens first, then repeats both facts to a younger woman.</p>
-<p>When the inner door finally opens, no heralding occurs. A fed man sits. The clerk places three accepted claims before him and seven to one side. Anne watches the Ratcliff papers enter the smaller pile.</p>
-<p>The officer reads the witness marks, checks the matching lines and signs. Payment will not be made today. The wages must be drawn against the next appointed issue, less the dead man's recorded advances and any lawful claim already lodged. The widow's face empties at the first sentence and begins returning at the second. Delay has changed shape. It now has a date.</p>
-<p>Anne asks for the date on the receipt.</p>
-<p>The officer looks at the clerk. The clerk looks at the room. He adds it.</p>
-<p>They leave with no coin. The youngest sleeps against his mother's shoulder. When the widow begins to thank Anne and cannot finish without crying, Anne gives her the packet to carry. Work steadies the hands better than consolation.</p>
-<p>I know the entrance now, the widow says. And the hour. And not to give them the parish line.</p>
-<p>She has learned the room's account. It is hers to bring back when another woman asks.</p>
-<p>By the time Anne returns to the Pelican, the light is going. Maggie wipes the end of the bar.</p>
-<p>What do I owe you? Anne asks.</p>
-<p>For what?</p>
-<p>The witnesses ate.</p>
-<p>They were hungry.</p>
-<p>Joan's time.</p>
-<p>Joan's time is Joan's to price.</p>
-<p>The broth.</p>
-<p>You mended the cellar apron.</p>
-<p>That was last Thursday.</p>
-<p>Then we are behind.</p>
-<p>They have been behind for twenty years.</p>
-<p>Anne takes out her household book. Matthew's name appears on its earliest pages in the small entries of a living man: coal carried, candles bought, twelve shillings received, sixpence missing and found in the other coat. After his death the entries continue without him. Rent. Bread. Shoes. Fever. Work. Two daughters becoming women one paid hour at a time.</p>
-<p>Maggie looks at the narrow columns.</p>
-<p>Do you still reckon what his death cost?</p>
-<p>No.</p>
-<p>Why keep it, then?</p>
-<p>Anne closes the book.</p>
-<p>Some accounts are kept because payment is coming. Some are kept so nobody can say nothing was owed.</p>
-<p>Beneath Maggie's hand, behind the oak, Matthew's other account remains folded in the dark. It does not absolve him. Anne's household book does not condemn him. The two pages perform different work and neither is asked to finish the dead.</p>
-<p>Outside, a woman knocks and waits because she has not yet learned that the Pelican permits women with urgent papers to use the latch.</p>
-<p>Maggie reaches for it.</p>
-<p>Anne is closer.</p>
-<p>I can manage a door, she says, and opens it herself.</p>`,hidden:!1,role:"chapter",book:"I",words:3559,tagline:"Anne Bell measures the years after Matthew in bread, claims, and the truths nobody pays for."},{id:"19-1625-batavia",kicker:"Chapter Twenty",year:"1623–1626",title:"Batavia",epigraph:`<blockquote>
-<p><strong>1623–1626</strong></p>
-<p><em>“The man is the message.”</em></p>
-<p>— Maria de Sousa, Batavia, 1625</p>
-</blockquote>`,hero:null,body:`<h2 id="i-the-unclosed-entry">I. The Unclosed Entry</h2>
+<h2 id="vii-the-unclosed-entry">VII. The Unclosed Entry</h2>
 <p>The desk that was too heavy for one man to take crosses the water in a Company hull, freight paid at Maria's own rate.</p>
 <p>Six men carry it up from the Batavia quay. The joiner who built it is twenty years and a sea away; the top still does not rock. She sets it in a ground-floor room within sight of the castle, near enough that the castle's clerks can reach her without deciding the walk means anything, and stretches the old string across the new walls. One cord she pins exactly as it travelled: its far end beneath a copy of a harbour list, its near end beneath a clerk's transfer line.</p>
 <p><em>One English factor retained for examination and onward account. D. Vale.</em></p>
@@ -4414,7 +4396,7 @@ another.</p>
 <p>She reads the roads. English hulls are rare at Batavia now; the English council keeps its house and its protests and sends its ships to Bantam. But one has come in at last, carrying letters too angry to trust to a Dutch bottom, and when Maria asks the harbour clerk who keeps her deck, the clerk shrugs and gives her the only name a deck requires.</p>
 <p>The boatswain.</p>
 <hr class="scene">
-<h2 id="ii-the-claim">II. The Claim</h2>
+<h2 id="viii-the-claim">VIII. The Claim</h2>
 <p>It has taken Tom fourteen months to travel toward one line of harbour ink.</p>
 <p>He volunteers for the runs other men avoid, Surat to Bantam through a sea gone official with other people's guns, and at Bantam he volunteers again, and by the time the council's letters want carrying to Batavia there is no cheaper way to move them than the boatswain who keeps asking. Nobody wonders at it. The Company has learned that Tom goes where the work is worst, and has long since stopped looking for the reason, which suits the reason.</p>
 <p>The English house at Batavia is a claim with rooms attached.</p>
@@ -4432,7 +4414,7 @@ another.</p>
 <p>Tom reads the paper twice, the habit of a man who signs late.</p>
 <p>Then he goes.</p>
 <hr class="scene">
-<h2 id="iii-the-counting-room">III. The Counting Room</h2>
+<h2 id="ix-the-counting-room">IX. The Counting Room</h2>
 <p>The room is long and low, strung with cords like rigging scaled for a chart table, and smells of ink, sandalwood and the harbour. Tom checks it from the threshold the way he checks every room, takes the doorway out of twenty-two years' habit — and stops, because behind a heavy teak desk, in dark silk that holds blue where the lamp finds it, sits a woman he has seen once in a dream he never told anyone, standing behind a bar she never stood behind, bolting a door from within.</p>
 <p>She looks at him. He looks at her.</p>
 <p>The scar through his eyebrow is new to her. The way he has put himself in the door is not. She has seen a man stand exactly so, half a head shorter than what was coming, bleeding and staying — and he has seen this stillness before, this way of watching a room decide, from behind a counter, beside a mallet, a lifetime ago, in the breath before one word.</p>
@@ -4460,7 +4442,7 @@ another.</p>
 <p>At the door Tom pauses, hand on the latch, and does not look back, and goes. Maria stands a while at the desk. Then she writes the evening's last entry in the book no clerk will ever audit, where the room in Wapping has stood as an asset for twenty-two years, and marks it, for the first time, partly drawn against.</p>
 <p>One more thing crosses the water before the pens. Tom's list has kept ten blank lines above the entry he corrected — <em>names not yet recovered</em>, a boatswain's hand — and Maria read them for what they were, and said nothing. When the release comes down to the gate, a folded slip rides among the papers: ten names in a clerk's exact Dutch, no note attached, no fee entered. Tom writes them one by one into the spaces that were kept for them. He does not ask. She does not offer. The lines the account left open are people now, and neither of them will ever say why she could do it.</p>
 <hr class="scene">
-<h2 id="iv-the-man-who-reads">IV. The Man Who Reads</h2>
+<h2 id="x-the-man-who-reads">X. The Man Who Reads</h2>
 <p>The release is an afternoon of pens.</p>
 <p>A clerk reads the entry aloud, all eleven words, twice — once for the castle's book and once for the receiving signature — and Daniel stands between two guards in clothes somebody has found for him, cut for a bigger man, and watches the pen the way he watches all pens now, and waits to learn which column he is being moved to.</p>
 <p>The receiving signature belongs to an English boatswain: a scarred, weathered man of middle years who fills the doorway of the office without seeming to notice he is doing it. The clerk pushes the paper at him, sand ready, in the manner of clerks everywhere — sign here, receive the person — and the boatswain does a thing Daniel has not seen done in three years, in two Companies, in any language.</p>
@@ -4502,7 +4484,7 @@ another.</p>
 <p>That night, in a ground-floor room within sight of the castle, Maria unpins one cord from her wall and rolls the string small. The wall keeps the pinhole. The account it belonged to is not closed — she has stopped believing accounts close — but it has moved, at last, out of the columns that were killing it, onto water, going west.</p>
 <p>The man is the message. She has sent the room back one of its debts.</p>
 <hr class="scene">
-<h2 id="v-the-desk">V. The Desk</h2>
+<h2 id="xi-the-desk">XI. The Desk</h2>
 <p>The Company receives him at Surat the way it receives everything. It finds him a column.</p>
 <p>Before the column, the ship must give him back.</p>
 <p>At the outer roadstead the room beneath the quarterdeck is dismantled around him. The borrowed chest returns to its owner. The chair is pulled free of the batten and carried aft. A sailor lifts the screen from its hooks so cargo can pass, and in one movement Daniel's fourth wall becomes two boards in a man's arms. The covered cup goes to the galley. The strip of leather stays beneath the lantern catch, indistinguishable from every repair aboard.</p>
@@ -4539,13 +4521,13 @@ another.</p>
 <p>I cannot.</p>
 <p>And the scarred boatswain, who is there, who is always somehow there, stands up without a question in him, and goes out, and comes back before evening having done something at the shipping lists, and that is how Daniel learns — not being asked, being told, the only kindness left that his body can accept — that he is going home.</p>
 <hr class="scene">
-<h2 id="vi-the-eighth-letter">VI. The Eighth Letter</h2>
+<h2 id="xii-the-eighth-letter">XII. The Eighth Letter</h2>
 <p>Tom has written to Maggie seven times and sent nothing. The seventh letter lies unsigned in his sea chest, under a parish notice, and on the passage west he does not take it out. He understands at last what the eighth letter is. It is not paper. It walks the deck at his side in a bigger man's coat, flinching at the water the ship is made to cross.</p>
 <p>The passage west takes five months, and Daniel stands at the rail for most of them.</p>
 <p>The sea he crosses is the sea that was crossed to kill his friends: the same water, folded and refolded eleven thousand miles, indifferent as ink. He learns, slowly, in fair weather, to stand the sight of it. The boatswain's deck carries him the way it carried him from Batavia — a place kept clear, meals left without comment, no questions, work happening around his stillness with the tact of men who have all, in their different tonnages, been broken somewhere and shipped home once themselves.</p>
 <p>England comes up out of the north Atlantic grey as the day he left it, as though the five years were weather that happened to other people. The Channel. The estuary. The river, narrowing, crowding, bristling with masts — more than he remembers, riding deeper than he remembers, the trade he once wanted to be a story in, going on at full flood without him.</p>
 <p>On the last morning, coming up with the tide, the boatswain stands beside him at the rail and looks west up the water toward whatever it is that scarred men look toward, and says the only sentence of the whole passage that is not about work.</p>
-<p>There is a house on the Wall. We will go there first.</p>`,hidden:!1,role:"chapter",book:"I",words:5119,tagline:"Maria, Tom, and Daniel meet at one ledger, and an eighth letter finally opens the road west."},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Twenty-One",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
+<p>There is a house on the Wall. We will go there first.</p>`,hidden:!1,role:"chapter",book:"I",words:7619,tagline:"Maria, Tom, and Daniel meet at one ledger, and an eighth letter finally opens the road west."},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Eleven",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
 <p><strong>1626</strong></p>
 <p><em>“The charges were a formality. The questioning was procedure. The killing was the actual point.”</em></p>
 <p>— Daniel, factor, Amboyna, 1626</p>
@@ -4777,7 +4759,7 @@ another.</p>
 <p>Years pass. The bar fills and empties and fills again; same cycle, same ale, slowly improving. Daniel and Nell come in less often now, and when they do, it's a different quiet than the one he walked in with. Companionable. The quiet of two people who've said the worst of it out loud and are still sitting next to each other.</p>
 <p>The Company keeps growing. Bigger ships, bigger warehouses, busier docks. Sir Thomas Roe's embassy secured wider trading privileges years back, and the Company's people now write from Surat as if permanence were a natural consequence of arrival. The factories have started requiring guards, storehouses and guns. Nobody in this bar has said it out loud yet, but a factory stores goods, and a fort controls territory, and the difference is starting to show in the letters home.</p>
 <p>Just a wall, the letters say. Bricks and mortar. Nothing to worry about.</p>
-<p><em>Who else was in the room in 1603, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"chapter",book:"I",words:6566,tagline:"The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years."},{id:"04-1629-the-south-land",kicker:"Chapter Twenty-Two",year:"1629–1630",title:"The South Land",epigraph:`<blockquote>
+<p><em>Who else was in the room in 1603, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"chapter",book:"I",words:6566,tagline:"The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years."},{id:"04-1629-the-south-land",kicker:"Chapter Twelve",year:"1629–1630",title:"The South Land",epigraph:`<blockquote>
 <p><strong>1629</strong></p>
 <p><em>“A rope is an English mercy, Commander.”</em></p>
 <p>— Maria de Sousa, the Abrolhos, 1629</p>
