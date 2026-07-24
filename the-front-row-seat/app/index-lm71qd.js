@@ -3284,40 +3284,25 @@ Error generating stack: `+s.message+`
 <p>Home carried back to sea: his habit of repair, his place at the threshold, the rule that a hungry boy eats before he answers.</p>
 <p>Neither place releases the other.</p>
 <hr class="scene">
-<h2 id="x-the-letter-not-sent">X. The Letter Not Sent</h2>
-<p>Tom writes to Maggie seven times.</p>
-<p>The first attempt begins in the Surat factory after his mother's parish letter arrives. He writes Maggie's name, then nothing beneath it. News of the death feels like a claim: feed me, forgive me, tell me I still belong somewhere. He folds the blank page around the name and puts it in his chest.</p>
-<p>The second begins with Jack.</p>
-<p><em>The boy came home alive.</em></p>
-<p>This is true. It also arranges Jack's survival as evidence for Tom's defence. He hears himself entering the nineteen dead in smaller writing below it. He tears the page.</p>
-<p>The third says the debt was corrected.</p>
-<p>The fourth explains the paymaster's collar.</p>
-<p>The fifth contains only the words <em>You were right</em>, which appear humble until Tom reads the demand hidden inside them: now tell me I am no longer wrong.</p>
-<p>He burns that one.</p>
-<p>The sixth is a proper letter. Weather. Surat. Cotton. His mother's death. Jack's work in Deptford, learned from a sailor newly arrived from England who saw the boy outside a rigging shed. Tom writes two pages without once saying why he has written them.</p>
-<p>He signs late.</p>
-<p>The signature makes the letter into something that may travel. Until then it was only thought arranged on paper.</p>
-<p>Tom carries it to the packet clerk.</p>
-<p>Which ship? the clerk asks.</p>
-<p>Tom names the westbound vessel.</p>
-<p>Fee?</p>
-<p>The clerk names it.</p>
-<p>Tom pays, then takes the letter back before the clerk can enter it.</p>
+<h2 id="x-the-letters">X. The Letters</h2>
+<p>Tom writes to Maggie the first winter out of Wapping, and goes on writing for fourteen years, and this time he sends them.</p>
+<p>He does not decide to. It happens the way weather happens. One night off Bantam he writes her the passage — the green water, the flying fish that come aboard in the dark and are found stiff in the scuppers at dawn, a Portuguese carrack they lose in a fog thick enough to hide a cathedral. He makes it funny. He makes himself smaller in it than he was and the sea larger, because a man writes the sea the way he wishes he had met it.</p>
+<p>Then he cannot stop the pen, and it goes where it goes, which is home. He asks after the house. Whether the tap roof still takes water at the north corner in a south-westerly. Whether she had the sweep to the flue before the cold came in. Whether Hendricks still holds down the short end of the bar or the river has had him. Whether the sign wants repainting yet, and whether she kept the old one when it came down. Whether the stool by the fire — Barnaby's, then his, then nobody's — stands empty still or she has let some other man have it. Whether her chest is easier this winter than last. He does not ask her to write back. He asks the way a man puts his hand on a wall in the dark to learn which room he is standing in — not for an answer, for the shape of the place. He is homesick for a house he is not allowed into, and the homesickness has her name on it, and he writes around the name the way you step around a door someone has just painted.</p>
+<p>Then he reads it back, and sees that he has written two pages of a life and one of a home, and that the second page is the only true one on the desk.</p>
+<p>He sends it anyway.</p>
+<p>No answer comes. He did not expect one — a letter sent to a house that put you out is not a question, it is a flag run up to see whether anyone is still on the wall — but he learns that expecting nothing and receiving it are not the same weight. When the next westbound ship comes back east and there is no hand of hers in the bag, he writes again. He writes the month after that. He is a man posting letters down a well and listening, every time, for a splash that does not come, and going back to the desk.</p>
+<p>The letters grow taller as the years go. He knows what she will read past and what she will not — she is not there to tell him, but he knows her the way you know a room you grew up in — and he writes for the woman behind the bar who liked a story told well and caught a lazy lie by its collar. So the storms take a foot more water in every telling; the sharks off Sofala acquire teeth and opinions; a Malabar pilot who was merely good becomes a one-eyed prophet who steered by the smell of the shore. Tom knows he is embroidering. He suspects she knows it too, wherever she is reading, and he cannot stop, because the embroidery is the one place the fourteen years are bearable — the version where the sea is an adventure and not a sentence, where the man holding the pen is a rascal with a yarn and not a man doing his time a watch at a time.</p>
+<p>Under every tall tale is the short true one he does not write. The night the flying fish came aboard he had stood the middle watch three hours certain he could feel the flags of the Pelican under his boots and not the deck of the ship. The carrack in the fog — they lost her, yes, and he had spent the hour it took praying, which he had not done since he was a boy, and not to God. He sends her the rascal. He keeps the man.</p>
+<p>There is one subject the letters never touch, and he holds the line so exactly a reader could chart it. He never writes what he has done. Not the boys he has fed before they are weighed; not the porter he cleared of a theft that was only a clerk's slipped pen; not the coin he lays each month against a Deptford boy's account under a false heading so the machine will pass it. He fills pages with weather and ports and nonsense and never once sets down <em>I did a good thing</em>, because he can hear precisely how it would sound in her hands — a boy holding up a copybook, wanting the mark. She told him at the door that a man who uses paper to plead his own case has lost it already. He heard her. So he sends her a rascal's life and keeps the whole ledger of his penance to himself, and if the letters are a lie by leaving-out, it is the one lie he will tell her: that he is only a sailor with a story, and not a man trying, page by unanswered page, to become someone a door might open to again.</p>
+<p>There is one letter he writes and does not send.</p>
+<p>He writes it in the tenth year, on a night the work has gone well and the success tastes of ash. It carries no weather and no port and no tall tale. It carries three words. <em>You were right.</em> He looks at them a long while. Then he reads them the way she would, and sees, standing under the humblest thing a man ever set down, the demand they are carrying: <em>a man does not say you were right to the one who put him out unless he means, underneath it, so let me come back.</em> It is the neatest sum he ever built, and he built it against her, to turn his being right about his being wrong into a key for her door. She taught him that trick. She would see it in a heartbeat.</p>
+<p>He carries it to the packet clerk anyway, and pays the fee, and then takes it back before the clerk can enter it in the book.</p>
 <p>Not ready?</p>
 <p>No.</p>
-<p>The clerk has handled merchants' promises, dying men's instructions and confessions addressed to wives who will receive them after the sender has found courage elsewhere. He does not ask.</p>
-<p>The seventh letter begins in 1622 after the boy at the companionway reties the coil and goes to eat.</p>
-<p>Tom writes:</p>
-<p><em>I remembered before I knew what remembering required.</em></p>
-<p>He sits with the sentence until dawn.</p>
-<p>Then he adds:</p>
-<p><em>I do not know whether that matters to you. It matters to the orders I give.</em></p>
-<p>For once the page does not offer survival as acquittal. It asks for nothing. That should make it sendable.</p>
-<p>Tom folds it.</p>
-<p>Does not sign.</p>
-<p>The unsigned letter remains beneath his mother's parish notice. Two messages in the same chest: one that travelled too late and one kept from travelling at all.</p>
-<p>Silence is not the absence of an entry.</p>
-<p>It is an entry renewed every time the ship sails west without the page.</p>
+<p>The clerk has handled dying men's instructions and confessions meant for wives who will read them after the sender has found his courage somewhere else. He does not ask.</p>
+<p>Tom folds the three words into his chest, beneath his mother's parish notice — one letter that came too late, and one that will not go at all — and the next month he writes Maggie two foolish pages about a waterspout off the Laccadives that stood on the sea, he swears, like a pillar holding up the sky, and asks, at the foot, whether the roof has been seen to, and sends it.</p>
+<p>The waterspout is invented. The roof is not. He has been asking after that roof for six years, into a silence that has never once answered him, and he asks again, because asking is the one thing the silence cannot stop him doing.</p>
+<p>Silence is not the absence of an entry. It is an entry renewed every time a ship comes back east with no hand of hers in the bag — and answered, every time, by the man who sits down and writes into it regardless.</p>
 <hr class="scene">
 <h2 id="xi-the-thimble">XI. The Thimble</h2>
 <p>The thimble appears when Tom is most tired.</p>
@@ -3371,7 +3356,7 @@ Error generating stack: `+s.message+`
 <p>The boy goes to the galley.</p>
 <p>Tom takes the doorway and watches the ship settle around the repair. He is forty-one. The scar aches before weather. His name stands beneath more Company orders than he can remember. Somewhere west, a woman he loves may still hate what he became. Somewhere east, other ledgers are closing around names he has not yet heard.</p>
 <p>The sea repeats nothing exactly.</p>
-<p>It carries the sound forward changed.</p>`,hidden:!1,role:"chapter",book:"I",words:7096,tagline:"Orphaned at sea, Tom corrects one false tally and makes the machine stronger."},{id:"23-1622-news-from-the-sea",kicker:"Chapter Seven",year:"1614–1623",title:"The Years Between",epigraph:`<blockquote>
+<p>It carries the sound forward changed.</p>`,hidden:!1,role:"chapter",book:"I",words:7963,tagline:"Orphaned at sea, Tom corrects one false tally and makes the machine stronger."},{id:"23-1622-news-from-the-sea",kicker:"Chapter Seven",year:"1614–1623",title:"The Years Between",epigraph:`<blockquote>
 <p><em>“I ask whether he is alive. I do not ask whether he remembers me.”</em></p>
 <p>— Maggie, keeper of the Pelican</p>
 </blockquote>`,hero:null,body:`<h2 id="i-paid-off">I. Paid Off</h2>
@@ -3507,25 +3492,23 @@ Error generating stack: `+s.message+`
 <p>He does.</p>
 <p>She feeds him anyway.</p>
 <hr class="scene">
-<h2 id="v-no-letter">V. No Letter</h2>
+<h2 id="v-his-word-and-the-truth-of-him">V. His Word, and the Truth of Him</h2>
 <p>By 1620 Tom is easier to locate and harder to know.</p>
 <p>His procedures travel on ships that do not carry him. Double tallies. Raised cotton platforms. Water allowances copied in a boatswain's hard hand. Men who have never served under him complain about his rules in the Pelican. Men who owe their full wage to one of those rules defend him with equal ignorance.</p>
-<p>Maggie asks whether he is alive.</p>
-<p>The answer keeps being yes.</p>
-<p>She does not ask when he is coming home.</p>
-<p>The Company packet office is less than an hour's walk. For a fee and the right ship she could send a page to Surat. Jack offers once to find a clerk who will write it plainly. Maggie refuses before he finishes.</p>
-<p>What would it say? he asks.</p>
-<p>The door remains where it was.</p>
-<p>That sounds like asking him back.</p>
-<p>It is not.</p>
-<p>What, then?</p>
-<p>The truth.</p>
-<p>Jack waits.</p>
-<p>Maggie wipes the counter. A truth sent for the purpose of producing an answer is already becoming a bargain. She put Tom out because he had learned to call the taking of a boy inevitable and his own place in it kindness. If he returns because loneliness has made the sentence cheaper, neither of them will know what has been repaired.</p>
-<p>So she sends nothing.</p>
-<p>No page comes from him.</p>
-<p>Absence therefore remains equal on both sides, which is not the same as equal cost.</p>
-<p>Packet days announce themselves in the room. Sailors carry folded pages for wives, mothers, creditors and women whose names they will not say aloud. Maggie keeps letters behind the bottles until their owners come. She never asks whether one arrived without a name for her. A clerk who had such a page would know the house. Every packet that empties without it is answer enough, and not an answer at all.</p>
+<p>And his letters travel too.</p>
+<p>They begin coming the second year, on the packet ships, in the same hard hand as the water allowances — a page for the keeper of the Pelican, no other direction needed, because a clerk who has one knows the house. Maggie takes each one from behind the bottles when the room has gone, and reads it once by the fire, and once more slowly, and cannot say what it is — a living man's account of himself is not a true copy of anything, and she will not call it one — and keeps it anyway, in the fault under the bar, in among the notches and the folded accounts and the thimble, where the house keeps what it will not give back. She would not lodge a living man's letters where she lodges the dead. She does it all the same.</p>
+<p>She is glad of them. She would not say the word, and does not, but the room learns to read her on packet days — a little quicker behind the bar, a little shorter with a slow drinker, her eye going to the door an hour before the mail man is due. The mail man himself learns it. He is a Wapping man, and knows the house, and every packet day he sets her page on the counter and asks the same question, because it has become a kind of courtesy between them, the way you ask after a man's knee.</p>
+<p>Owt going back, Maggie?</p>
+<p>Nothing today, she says. Every time. For fourteen years.</p>
+<p>He nods and goes, and never once believes the <em>today</em>, and never once stops asking, because everyone on the Wall knows by now why the letters come and knows she has never sent one back — knows the whole of it, in the wordless way a river parish knows everything: that the scarred boatswain out east is soft on the keeper of the Pelican and always was, and that she knows it better than any of them, and that she will pour a man out the door before she will say so.</p>
+<p>She reads a rascal. Storms with a foot too much water in them. Sharks with opinions. A one-eyed pilot who steers by smell. A waterspout holding up the sky. She is glad of every line and fooled by none of it. A letter is a man's own account of himself, and she has spent thirty years learning that a man's account of himself is the one ledger she trusts least. So she reads his weather with something warm moving in her that she gives no name to, and then she feeds the sailors, and makes them tell her the same seas from the outside — and the two accounts do not match, and the gap between them is where she finds him.</p>
+<p>Because the letters have a hole in them exactly the shape of his goodness.</p>
+<p>He writes her the ports and never the boys he fed in them. The sailors write him the boys and never the ports. He writes her the storm and not the porter he cleared under it; a warehouse guard writes her the porter — a red headcloth, four seasons at the landing, a bale that was never stolen — and never knows he has filled in a line the letter left blank on purpose. Tom's own pages say, in effect, <em>I am only a sailor with a story.</em> The sea's pages say <em>he went aloft twice for a man shaking with fever and denied it after.</em> She lays the two together the way she lays every story against the room, and a whole man stands up in the space between what he will say of himself and what he will not, and he does not know she is doing it, and it is the nearest thing to a conversation the two of them will have for fourteen years.</p>
+<p>He asks, every letter, after the roof.</p>
+<p>Whether the north corner still takes water. Whether the flue was swept. He has been asking for years, into a silence that has never once written back.</p>
+<p>The autumn the letters have been coming four years, Maggie has the roof mended.</p>
+<p>She tells the tiler it is because the tap ceiling has begun to stain and a stain becomes a beam and a beam becomes the house, which is true, and is the whole of what she says about it to anyone. She does not write and tell Tom the corner is sound now. She would sooner close the Pelican than send that page, because the page would be an answer, and an answer is a door, and she put him out for reasons that a leaking roof does not repair. So she has the roof seen to and sends him nothing, and the next letter from Surat asks after the corner again, not knowing it is dry, and she reads the question she has already answered in the one language that leaves no page, and pours herself no drink, and wipes a counter that does not need it.</p>
+<p>Whether that is love or only a keeper mending her own house, she does not say, and the room does not ask, and this account does not close it either.</p>
 <hr class="scene">
 <h2 id="vi-the-next-handhold">VI. The Next Handhold</h2>
 <p>Early in 1623 a paid-off sailor freezes just inside the Pelican door.</p>
@@ -3550,9 +3533,9 @@ Error generating stack: `+s.message+`
 <p>Maggie looks toward the door. Tom stood against it once, repaired its hinge once and last passed through it with his mother's thimble on the stones behind him. The wood has held every version.</p>
 <p>Food first, she says.</p>
 <p>Jack nods. It is not a message. He does not carry it.</p>
-<p>By year's end the sea has sent Maggie a hundred sentences about Tom. Not one is from Tom. She lodges none beside Bell's page. Hearsay is not a true copy, however badly the heart wants to keep it.</p>
-<p>The blue cotton remains folded beneath the counter. The thimble remains inside the fault. His old notch darkens with the bar.</p>
-<p>The silence is intact.</p>
+<p>By year's end the sea has sent Maggie a hundred sentences about Tom, and Tom has sent her a year of Tuesdays — weather and nonsense and the roof — and between the two she knows him better than any soul alive, and he does not know it, because she has never once sent a word back. She lodges none of it beside Bell's page. Hearsay is not a true copy, and neither is a man's account of himself, however badly the heart wants to keep them both.</p>
+<p>The blue cotton remains folded beneath the counter. The thimble remains inside the fault. His old notch darkens with the bar. The roof does not leak.</p>
+<p>The silence is intact. It is only that everyone has stopped noticing which side of it is keeping it.</p>
 <hr class="scene">
 <p>The same nine years run a second account, on the other side of the ocean, in a hand Maggie has never seen.</p>
 <h2 id="vii-the-second-desk">VII. The Second Desk</h2>
@@ -3713,7 +3696,7 @@ Error generating stack: `+s.message+`
 <p>Around them, the counting room holds eleven years of crossings. Amboyna to Makassar. Makassar to Bantam. English store to Dutch fort. Rice to sickhouse. A witness into a ledger. Every strand is ordinary until somebody needs to know where it leads.</p>
 <p>Maria removes the string pinned beside Amboyna and fixes its loose end beneath one word on the wall.</p>
 <p>Batavia.</p>
-<p>Then she begins another page.</p>`,hidden:!1,role:"chapter",book:"I",words:5539,tagline:"Amboyna reaches Wapping in fragments, and one missing name becomes the next handhold."},{id:"20-1621-the-factor",kicker:"Chapter Eight",year:"1621–1623",title:"Amboyna",epigraph:`<blockquote>
+<p>Then she begins another page.</p>`,hidden:!1,role:"chapter",book:"I",words:6255,tagline:"Amboyna reaches Wapping in fragments, and one missing name becomes the next handhold."},{id:"20-1621-the-factor",kicker:"Chapter Eight",year:"1621–1623",title:"Amboyna",epigraph:`<blockquote>
 <p><em>“Not received into our store. Ask Mr Vale, who witnessed the unloading.”</em></p>
 <p>— a margin note in an English account, Amboyna, 1622</p>
 </blockquote>`,hero:null,body:`<h2 id="i-the-story-worth-telling">I. The Story Worth Telling</h2>
@@ -4319,11 +4302,7 @@ paid a little more plainly because of them.</p>
 <p>I know what you mean.</p>
 <p>The factor retreats into talk of tonnage. Tom lets him. Striking him would cleanse one sentence and
 leave the appetite that produced it untouched.</p>
-<p>That night Tom writes no letter to Maggie. He places a clean sheet beside the Amboyna copies and
-imagines telling her that ten men have died, ten others have died without names, and the warehouse
-is busier. He cannot find an order for those truths that does not turn one into an explanation of
-another.</p>
-<p>He folds the blank sheet once and keeps it.</p>
+<p>That night Tom does write to Maggie, because he writes to Maggie most nights now, and the writing has become the one hour the day cannot reach. But he cannot make this letter go the way the others go. Ten men dead, ten more dead without names, and the warehouse busier for it — he sets the three truths down and cannot find an order for them that does not turn one into an excuse for another, and a letter to Maggie is the one place he will not let the machine's arithmetic stand. So he writes her, instead, the small true thing that will carry: that a man he never met kept his own name to the last and would not sign the lie they built for him, and failed, and that Tom has kept ten blank lines for ten men the account did not trouble to name. He does not write what he means to do about the one who lived. That is not yet a story; it is only a direction. He asks after the roof, and sends it.</p>
 <hr class="scene">
 <h2 id="vi-one-retained">VI. One Retained</h2>
 <p>The fourth account comes from Bantam in a packet without Company seal.</p>
@@ -4343,7 +4322,7 @@ another.</p>
 <p>Private ships still go.</p>
 <p>Private ships carry private risk.</p>
 <p>Tom looks at the page. Somewhere east, one man may be alive because a clerk chose <em>retained</em> instead of <em>condemned</em>. Or dead because the next page has not reached them. The difference is an entry moving between offices.</p>
-<p>He thinks of the unsigned letter beneath his mother's death notice. Paper kept from travelling can imprison the living as completely as paper sent.</p>
+<p>He thinks of the one letter he never sent — three words in his chest, ten years old now, beneath his mother's parish notice — and of how paper kept from travelling can hold a man as surely as paper sent.</p>
 <p>The chief tells him London will inquire.</p>
 <p>How long?</p>
 <p>Months.</p>
@@ -4504,13 +4483,13 @@ another.</p>
 <p>I cannot.</p>
 <p>And the scarred boatswain, who is there, who is always somehow there, stands up without a question in him, and goes out, and comes back before evening having done something at the shipping lists, and that is how Daniel learns — not being asked, being told, the only kindness left that his body can accept — that he is going home.</p>
 <hr class="scene">
-<h2 id="xii-the-eighth-letter">XII. The Eighth Letter</h2>
-<p>Tom has written to Maggie seven times and sent nothing. The seventh letter lies unsigned in his sea chest, under a parish notice, and on the passage west he does not take it out. He understands at last what the eighth letter is. It is not paper. It walks the deck at his side in a bigger man's coat, flinching at the water the ship is made to cross.</p>
+<h2 id="xii-the-last-letter">XII. The Last Letter</h2>
+<p>Tom has written to Maggie for fourteen years and sent almost all of it. The one letter he never sent — three words, <em>You were right</em> — lies in his sea chest under a parish notice, and on the passage west he does not take it out. He understands at last what the last letter is. It is not paper. It walks the deck at his side in a bigger man's coat, flinching at the water the ship is made to cross.</p>
 <p>The passage west takes five months, and Daniel stands at the rail for most of them.</p>
 <p>The sea he crosses is the sea that was crossed to kill his friends: the same water, folded and refolded eleven thousand miles, indifferent as ink. He learns, slowly, in fair weather, to stand the sight of it. The boatswain's deck carries him the way it carried him from Batavia — a place kept clear, meals left without comment, no questions, work happening around his stillness with the tact of men who have all, in their different tonnages, been broken somewhere and shipped home once themselves.</p>
 <p>England comes up out of the north Atlantic grey as the day he left it, as though the five years were weather that happened to other people. The Channel. The estuary. The river, narrowing, crowding, bristling with masts — more than he remembers, riding deeper than he remembers, the trade he once wanted to be a story in, going on at full flood without him.</p>
 <p>On the last morning, coming up with the tide, the boatswain stands beside him at the rail and looks west up the water toward whatever it is that scarred men look toward, and says the only sentence of the whole passage that is not about work.</p>
-<p>There is a house on the Wall. We will go there first.</p>`,hidden:!1,role:"chapter",book:"I",words:7619,tagline:"Maria, Tom, and Daniel meet at one ledger, and an eighth letter finally opens the road west."},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Eleven",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
+<p>There is a house on the Wall. We will go there first.</p>`,hidden:!1,role:"chapter",book:"I",words:7767,tagline:"Maria, Tom, and Daniel meet at one ledger, and an eighth letter finally opens the road west."},{id:"02-1626-the-man-who-came-back-wrong",kicker:"Chapter Eleven",year:"1626",title:"The Man Who Came Back Wrong",epigraph:`<blockquote>
 <p><em>“The charges were a formality. The questioning was procedure. The killing was the actual point.”</em></p>
 <p>— Daniel, factor, Amboyna, 1626</p>
 </blockquote>`,hero:{id:"amboyna-massacre",file:"assets/img/amboyna-massacre.jpg",alt:"Historic image connected to the Amboyna massacre.",caption:"Amboyna enters the book as trauma, paperwork, and a pivot away from the Spice Islands.",orientation:"portrait"},body:`<h2 id="i-the-word-from-amboyna">I. The Word from Amboyna</h2>
@@ -4733,6 +4712,10 @@ another.</p>
 <p>On a quiet evening at the turn of the year, when the bar is down to its last patrons and the fire to its last hour, Maggie reaches under the counter.</p>
 <p>She sets the brass thimble on the bar between them, exactly where a boy set it twenty-three years ago, not quite meeting her eye.</p>
 <p>Tom looks at it a long time. He does not pick it up. Some wagers are not for taking back.</p>
+<p>And then, for the length of one breath, she does not do the keeper's thing at all. She looks at him — the scar, the grey, the fourteen years of weather, the man who walked another man's whole life in through her door and asked her for nothing — and the thing she has held since 1612, held through every sailor's report and every letter she read and answered only by mending a roof, gives way just far enough to let four words out.</p>
+<p>Tom, you fucking idiot.</p>
+<p>It is not the Swedish and it is not forgiveness and it is not the account. It is the thing that lives under all three: what a woman says to a man she mourned alive, who then had the gall to come back and prove her wrong about the one thing she had most wanted, and least let herself, to be wrong about. She says it, and she says nothing after it, and he says nothing at all, and the silence that comes down then is not the silence of 1612 — it is shorter by one side, and both of them feel the length go out of it.</p>
+<p>Then the keeper comes back into her hands.</p>
 <p>Till you're back, Maggie says. As if no time has passed. As if all of it has.</p>
 <p>She returns the thimble to the gap, in among the notches and the folded truth, where the house keeps what the sea owes it. Then she picks up a rag, wipes a counter that does not need wiping, and pours Tom a fresh pint of dark ale.</p>
 <p>Nobody in the room notices anything. That is how the room knows it matters.</p>
@@ -4741,7 +4724,7 @@ another.</p>
 <p>Years pass. The bar fills and empties and fills again; same cycle, same ale, slowly improving. Daniel and Nell come in less often now, and when they do, it's a different quiet than the one he walked in with. Companionable. The quiet of two people who've said the worst of it out loud and are still sitting next to each other.</p>
 <p>The Company keeps growing. Bigger ships, bigger warehouses, busier docks. Sir Thomas Roe's embassy secured wider trading privileges years back, and the Company's people now write from Surat as if permanence were a natural consequence of arrival. The factories have started requiring guards, storehouses and guns. Nobody in this bar has said it out loud yet, but a factory stores goods, and a fort controls territory, and the difference is starting to show in the letters home.</p>
 <p>Just a wall, the letters say. Bricks and mortar. Nothing to worry about.</p>
-<p><em>Who else was in the room in 1603, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"chapter",book:"I",words:6566,tagline:"The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years."},{id:"04-1629-the-south-land",kicker:"Chapter Twelve",year:"1629–1630",title:"The South Land",epigraph:`<blockquote>
+<p><em>Who else was in the room in 1603, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"chapter",book:"I",words:6771,tagline:"The one man Amboyna sent home, the wife who lets him be new — and a wager kept for twenty-three years."},{id:"04-1629-the-south-land",kicker:"Chapter Twelve",year:"1629–1630",title:"The South Land",epigraph:`<blockquote>
 <p><em>“A rope is an English mercy, Commander.”</em></p>
 <p>— Maria de Sousa, the Abrolhos, 1629</p>
 </blockquote>`,hero:null,body:`<h2 id="i-the-packet">I. The Packet</h2>
@@ -5072,6 +5055,9 @@ another.</p>
 <p>She said if you tried to take the thimble before you had eaten, I was to hit your hand with the cask mallet.</p>
 <p>Tom looks toward the counter. The mallet is there, darker from thirty years of use.</p>
 <p>That sounds more like her.</p>
+<p>He asks whether she left him anything else.</p>
+<p>She left you your dinner, Joan says. Fourteen years you wrote her — the whole Wall knew it — and she never sent you so much as a line back, and then she made me swear I would have a mutton-and-mace pie hot against the day you came through that door, and learn the crust before she would sign me the house. If that is not a letter, I do not know what you would call one.</p>
+<p>Tom looks at the plate he has cleaned to the last crumb. It is the only letter Maggie ever sent him, and she saw to it that it would reach him after she was safely past being asked what it meant.</p>
 <p>Men die, she used to say. Joan says it the way you hand a man a tool that belonged to his father. That is why the living must keep their names. Then you pour the ale, sweep the floor and get on with it.</p>
 <p>Tom takes the packet of mace from his sea-bag and sets it on the table.</p>
 <p>She complained yours was stale, Joan says.</p>
@@ -5135,6 +5121,9 @@ another.</p>
 <p>Three folded accounts lie behind the cuts. The first bears <em>Matthew Bell</em> in Arthur's careful hand: the account of a copyist who helped build Harcourt's machinery and died trying, too late, to take one woman and several debts back out of it. Tom's father's name remains inside. The second bears Daniel Vale's full signature and the account of Amboyna that a Company deposition turned into a lie. The dead clerk and the surviving clerk, side by side. One wrote before the machine killed him. One wrote after it failed.</p>
 <p>The third is wrapped in oilskin. Maria's warning against Silas Rook, the factor's translation of danger into usefulness and the letter that carried the account back from Batavia after Rook's death. The woman Bell entered as property has become the clerk whose true copy corrects the Company. She did not clear the old page. She put another beside it.</p>
 <p>Joan has added nothing of her own to the cache. Not yet. She is not Maggie's continuation in the simple way a new clerk occupies an old chair. She knows where the gap is, which papers must remain dry and which names must be spoken. What she chooses to put there is hers to decide.</p>
+<p>And there is one more thing kept in the fault, and it is his own.</p>
+<p>A bundle of letters tied with sail-twine — fourteen years of them, the flying fish and the sharks with opinions and the waterspout that held up the sky, every foolish page he ever posted west into a silence that never once wrote back. They are gone soft at the folds from handling. She kept them here, in among the notches and the true copies and the thimble, where the house keeps only what it will not give back.</p>
+<p>Tom does not lift them out. He looks at them a long time in the dark under the counter, and understands the thing she never wrote and never said: that every letter he sent down the well was caught. That the silence he had been writing into for fourteen years was a woman reading by a fire with a rag over her shoulder, saying nothing and keeping everything. She told the mail man there was nothing going back. She had been lying to the mail man. The letters were the answer — his own, read soft, lodged with the dead men's true accounts by a woman who would have denied to his face that a living man's letters belonged there, and put them there just the same.</p>
 <p>Pushed back where the draught keeps all of it dry is a plain brass thimble.</p>
 <p>He reaches in and touches it once, the way you touch a thing to be sure of it, and leaves it exactly where it lies.</p>
 <p>Till I'm back, the wager ran. He is back, and she is not, and the thimble stays — because taking it would close the account, and some accounts are better kept open; this house taught him that. His mother kept it to mend with. Maggie kept it to wait with. Let it keep waiting. A thing a house holds long enough stops being kept for anybody and starts being kept for everybody, and this house has only begun.</p>
@@ -5150,7 +5139,7 @@ another.</p>
 <p>Goodnight, Maggie, he says.</p>
 <p>Nobody answers. Behind him the keeper wipes the counter that does not need wiping, because the woman who taught her wiped it, and the rain comes in soft off the river, and the house stands where it has always stood, keeping what it keeps.</p>
 <p>Last orders are called in every house on the river, every night of the world. Every night, somebody's are final. The ships go out. The boys sign. The Pelican pours.</p>
-<p><em>Who was in the room when all of this began, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"epilogue",book:"I",words:2722,tagline:"Tom pays off a last ship, and the pie arrives before the news."},{id:"book-one-character-bible",kicker:"Book One · Reference",year:"1603–1635",title:"The Wapping Twelve",epigraph:"",hero:null,body:`<p># The Wapping Twelve (1603–1635)</p>
+<p><em>Who was in the room when all of this began, and what the years did to each of them: <a href="#/read/book-one-character-bible">The Wapping Twelve — a ledger for Book One</a>.</em></p>`,hidden:!1,role:"epilogue",book:"I",words:3068,tagline:"Tom pays off a last ship, and the pie arrives before the news."},{id:"book-one-character-bible",kicker:"Book One · Reference",year:"1603–1635",title:"The Wapping Twelve",epigraph:"",hero:null,body:`<p># The Wapping Twelve (1603–1635)</p>
 <p>This ledger tells Book One out of school. It keeps the names the Pelican
 remembered from its one great night, and the trades where the house kept only
 a trade, then follows the people out of the room and down the years. Most of
