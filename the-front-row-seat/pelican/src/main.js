@@ -4,13 +4,16 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
-import { PLAYER, ROOM } from './config.js';
+import { PLACES } from './config.js';
 import { buildRoom } from './room.js';
 import { buildFittings } from './fittings.js';
+import { buildExterior } from './exterior.js';
 import { buildLighting, createLightingAnimator } from './lighting.js';
+import { buildRain, createRainAnimator } from './weather.js';
 import { createControls } from './controls.js';
 import { createHotspots } from './hotspots.js';
 import { createStormAudio } from './audio.js';
+import { detectTier, createPerformanceGovernor } from './quality.js';
 import { STORM } from './config.js';
 
 const canvas = document.getElementById('scene');
@@ -25,27 +28,35 @@ const reticleLabel = document.getElementById('reticle-label');
 const progress = document.getElementById('progress');
 const soundToggle = document.getElementById('sound-toggle');
 const loading = document.getElementById('loading');
+const placesNav = document.getElementById('places');
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
+const tier = detectTier();
+
+const renderer = new THREE.WebGLRenderer({
+  canvas, antialias: tier.antialias, powerPreference: 'high-performance',
+});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, tier.maxPixelRatio));
+renderer.shadowMap.enabled = tier.shadows;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.7;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(68, 1, 0.05, 60);
+const camera = new THREE.PerspectiveCamera(68, 1, 0.05, 190);
 
-const roomParts = buildRoom(scene);
+buildRoom(scene);
 buildFittings(scene);
-const lighting = buildLighting(scene);
+buildExterior(scene);
+const lighting = buildLighting(scene, tier);
+const rainAnimator = createRainAnimator(buildRain(scene, tier.rainCount));
 const controls = createControls(camera, canvas);
+const recordFrame = createPerformanceGovernor(renderer, tier);
 
 let audio = null;
 let soundOn = true;
 
-const lightingAnimator = createLightingAnimator(lighting, {
+const lightingAnimator = createLightingAnimator(lighting, scene, {
   onFlash: () => {
     if (audio && soundOn && Math.random() < STORM.shutterRattleChance) audio.shutterRattle();
   },
@@ -62,6 +73,19 @@ const hotspots = createHotspots(scene, camera, {
     if (document.pointerLockElement) document.exitPointerLock();
     updateProgress();
   },
+});
+
+PLACES.forEach((place) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = place.label;
+  button.addEventListener('click', () => {
+    controls.moveTo(place);
+    card.hidden = true;
+    placesNav.querySelectorAll('button').forEach((other) => other.removeAttribute('aria-current'));
+    button.setAttribute('aria-current', 'true');
+  });
+  placesNav.append(button);
 });
 
 function updateProgress() {
@@ -129,7 +153,9 @@ function frame() {
   const elapsed = clock.getElapsedTime();
 
   if (card.hidden) controls.update(delta);
-  lightingAnimator(elapsed, delta);
+  lightingAnimator(elapsed, delta, camera.position.x);
+  rainAnimator(delta, camera.position.x);
+  recordFrame(delta * 1000);
 
   const focused = hotspots.update(elapsed);
   // The reticle has no business showing through an open card.

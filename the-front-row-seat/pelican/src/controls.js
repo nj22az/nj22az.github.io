@@ -5,14 +5,12 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
-import { PLAYER, ROOM, BAR, CENTRE_TABLE, HEARTH } from './config.js';
+import { PLAYER, BAR, CENTRE_TABLE, HEARTH } from './config.js';
+import { groundHeightAt, clampToZones } from './terrain.js';
 
-/** Axis-aligned blockers in world space: {minX, maxX, minZ, maxZ}. */
+/** Solid furniture the visitor cannot walk through. */
 function buildBlockers() {
-  const halfWidth = ROOM.width / 2 - 0.12;
-  const halfDepth = ROOM.depth / 2 - 0.12;
   return {
-    bounds: { minX: -halfWidth, maxX: halfWidth, minZ: -halfDepth, maxZ: halfDepth },
     boxes: [
       // The bar.
       {
@@ -33,11 +31,10 @@ function buildBlockers() {
   };
 }
 
-/** Push a circle of `radius` out of any box it has entered. */
+/** Push a circle of `radius` out of any box it has entered, then onto the ground. */
 function resolveCollisions(position, radius, blockers) {
-  const { bounds, boxes } = blockers;
-  position.x = THREE.MathUtils.clamp(position.x, bounds.minX + radius, bounds.maxX - radius);
-  position.z = THREE.MathUtils.clamp(position.z, bounds.minZ + radius, bounds.maxZ - radius);
+  const { boxes } = blockers;
+  clampToZones(position);
 
   boxes.forEach((box) => {
     const nearestX = THREE.MathUtils.clamp(position.x, box.minX, box.maxX);
@@ -70,8 +67,9 @@ export function createControls(camera, domElement) {
   const blockers = buildBlockers();
   const position = new THREE.Vector3(PLAYER.startPosition.x, PLAYER.eyeHeight, PLAYER.startPosition.z);
   let yaw = PLAYER.startYaw;
-  let pitch = 0;
+  let pitch = PLAYER.startPitch;
   let bobPhase = 0;
+  let groundY = 0;
   let pointerLocked = false;
 
   const keys = new Set();
@@ -193,7 +191,12 @@ export function createControls(camera, domElement) {
     bobPhase += delta * PLAYER.bobFrequency * (running ? PLAYER.runMultiplier : 1) * (moving ? 1 : 0);
     const bob = moving ? Math.sin(bobPhase) * PLAYER.bobAmplitude : 0;
 
-    camera.position.set(position.x, PLAYER.eyeHeight + bob, position.z);
+    // Follow the ground down the stairs and out onto the mud, easing so the
+    // steps register as steps without jolting the view.
+    const targetGround = groundHeightAt(position.x);
+    groundY += (targetGround - groundY) * Math.min(1, delta * 12);
+
+    camera.position.set(position.x, groundY + PLAYER.eyeHeight + bob, position.z);
     camera.rotation.set(pitch, yaw, 0, 'YXZ');
   }
 
@@ -202,10 +205,18 @@ export function createControls(camera, domElement) {
     requestPointerLock,
     get isPointerLocked() { return pointerLocked; },
     get position() { return position; },
+    /** Put the visitor somewhere, facing a given way. */
+    moveTo({ x, z, yaw: targetYaw, pitch: targetPitch }) {
+      position.set(x, PLAYER.eyeHeight, z);
+      groundY = groundHeightAt(x);
+      if (typeof targetYaw === 'number') yaw = targetYaw;
+      pitch = typeof targetPitch === 'number' ? targetPitch : 0;
+    },
     reset() {
       position.set(PLAYER.startPosition.x, PLAYER.eyeHeight, PLAYER.startPosition.z);
+      groundY = 0;
       yaw = PLAYER.startYaw;
-      pitch = 0;
+      pitch = PLAYER.startPitch;
     },
   };
 }

@@ -225,14 +225,17 @@ export function buildRoom(scene) {
   const doorMaterial = new THREE.MeshStandardMaterial({
     map: oakMap, color: PALETTE.oakDark, roughness: 0.85,
   });
+  // Standing open, because Rook has already been through it and because the
+  // alley beyond is where the visitor is meant to be able to go.
   const door = addBox(room, {
     width: 0.055,
     height: DOOR.height - 0.04,
     depth: DOOR.width - 0.03,
-    x: DOOR.x + 0.1,
+    x: DOOR.x + 0.06,
     y: (DOOR.height - 0.04) / 2,
-    z: DOOR.z,
+    z: DOOR.z + DOOR.width / 2 + 0.16,
     material: doorMaterial,
+    rotationY: -1.15,
   });
   // Iron strap hinges.
   const ironMaterial = new THREE.MeshStandardMaterial({

@@ -9,8 +9,10 @@ import { createGlowTexture } from './textures.js';
 
 const EMBER_COUNT = 26;
 
-export function buildLighting(scene) {
-  scene.fog = new THREE.Fog(LIGHTING.fogColour, LIGHTING.fogNear, LIGHTING.fogFar);
+export function buildLighting(scene, tier) {
+  // The fog is warm and close indoors and cold and far outside; the animator
+  // crossfades between the two as the visitor steps through the door.
+  scene.fog = new THREE.Fog(LIGHTING.fogColour, LIGHTING.fogNear, tier.fogFar);
   scene.background = new THREE.Color(LIGHTING.fogColour);
 
   const ambient = new THREE.AmbientLight(LIGHTING.ambientColour, LIGHTING.ambientIntensity);
@@ -21,12 +23,32 @@ export function buildLighting(scene) {
   const bounce = new THREE.HemisphereLight(0x4a3320, 0x161418, 0.5);
   scene.add(bounce);
 
+  // The night outside: a cold, almost directionless wash off a storm sky, so
+  // the foreshore and the river read without ever competing with the hearth.
+  const nightSky = new THREE.HemisphereLight(0x3d4a5a, 0x0a0c0e, 0.55);
+  nightSky.position.set(-20, 20, 0);
+  scene.add(nightSky);
+
+  /**
+   * Sky-glow on the mud and the water. A distance-limited point light rather
+   * than a directional one, so it lights the foreshore and has fallen away to
+   * nothing by the time it reaches the taproom — which must stay a firelit
+   * room, not a moonlit one.
+   */
+  const riverGlow = new THREE.PointLight(0x7f9ec4, 34, 44, 1.05);
+  riverGlow.position.set(-21, 9, -3);
+  scene.add(riverGlow);
+
+  const moon = new THREE.PointLight(0x9fb6d4, 16, 30, 1.1);
+  moon.position.set(-12.5, 6, -6);
+  scene.add(moon);
+
   const fireLight = new THREE.PointLight(
     LIGHTING.fireColour, LIGHTING.fireIntensity, LIGHTING.fireDistance, 1.25,
   );
   fireLight.position.set(HEARTH.x - 0.35, LIGHTING.fireHeight, HEARTH.z);
   fireLight.castShadow = true;
-  fireLight.shadow.mapSize.set(1024, 1024);
+  fireLight.shadow.mapSize.set(tier.shadowMapSize, tier.shadowMapSize);
   fireLight.shadow.bias = -0.004;
   fireLight.shadow.camera.far = 12;
   scene.add(fireLight);
@@ -79,7 +101,7 @@ export function buildLighting(scene) {
   scene.add(embers);
 
   return {
-    ambient, bounce, fireLight, lampLight, lightning, shutterGaps, embers, emberSeeds,
+    ambient, bounce, nightSky, riverGlow, moon, fireLight, lampLight, lightning, shutterGaps, embers, emberSeeds,
   };
 }
 
@@ -87,7 +109,11 @@ export function buildLighting(scene) {
  * Drives the flicker, the embers and the storm. `onThunder` is called with a
  * loudness in 0..1 when a flash's thunder should sound.
  */
-export function createLightingAnimator(lighting, { onThunder, onFlash } = {}) {
+const INDOOR_FOG = new THREE.Color(LIGHTING.fogColour);
+const OUTDOOR_FOG = new THREE.Color(LIGHTING.skyColour);
+
+export function createLightingAnimator(lighting, scene, { onThunder, onFlash } = {}) {
+  let outdoorMix = 0;
   let nextFlashAt = STORM.flashIntervalMin;
   let flashUntil = -1;
   let flashPeak = 0;
@@ -97,7 +123,15 @@ export function createLightingAnimator(lighting, { onThunder, onFlash } = {}) {
     nextFlashAt = elapsed + STORM.flashIntervalMin + Math.random() * span;
   }
 
-  return function update(elapsed, delta) {
+  return function update(elapsed, delta, cameraX) {
+    // Step through the door and the air changes: warm and close becomes cold
+    // and open. Eased rather than switched, so the threshold is felt.
+    const wantOutdoor = cameraX < -ROOM.width / 2 ? 1 : 0;
+    outdoorMix += (wantOutdoor - outdoorMix) * Math.min(1, delta * 2.4);
+    scene.fog.color.copy(INDOOR_FOG).lerp(OUTDOOR_FOG, outdoorMix);
+    scene.background.copy(scene.fog.color);
+    scene.fog.near = LIGHTING.fogNear + outdoorMix * 6;
+
     // Firelight: two out-of-phase sines plus a little noise reads as flame.
     const flickerA = Math.sin(elapsed * LIGHTING.flickerSpeed);
     const flickerB = Math.sin(elapsed * LIGHTING.flickerSpeed * 0.41 + 1.7);

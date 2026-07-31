@@ -7,6 +7,11 @@ import * as THREE from '../vendor/three.module.min.js';
 import { HOTSPOTS, INTERACTION } from './config.js';
 import { createGlowTexture } from './textures.js';
 
+/** How close a visitor must be. Distant things like the gibbet set their own. */
+function reachOf(hotspot) {
+  return hotspot.reach || INTERACTION.maxDistance;
+}
+
 export function createHotspots(scene, camera, { onOpen } = {}) {
   const glow = createGlowTexture();
   const markers = [];
@@ -43,11 +48,12 @@ export function createHotspots(scene, camera, { onOpen } = {}) {
 
     markers.forEach((marker) => {
       const distance = marker.position.distanceTo(cameraPosition);
-      const inRange = distance < INTERACTION.maxDistance;
+      const inRange = distance < reachOf(marker.userData.hotspot);
       const pulse = 0.5 + Math.sin(elapsed * INTERACTION.pulseSpeed + marker.id) * 0.25;
       const seen = visited.has(marker.userData.hotspot.id);
       marker.material.opacity = (inRange ? 0.85 : 0.4) * pulse * (seen ? 0.45 : 1);
-      marker.scale.setScalar(INTERACTION.markerRadius * 2 * (inRange ? 1.25 : 1));
+      const distanceScale = 1 + Math.min(distance / 6, 3.2);
+      marker.scale.setScalar(INTERACTION.markerRadius * 2 * distanceScale * (inRange ? 1.25 : 1));
     });
 
     // Whichever marker sits closest to the middle of the view, inside the aim
@@ -58,7 +64,7 @@ export function createHotspots(scene, camera, { onOpen } = {}) {
     markers.forEach((marker) => {
       toMarker.subVectors(marker.position, cameraPosition);
       const distance = toMarker.length();
-      if (distance > INTERACTION.maxDistance || distance < 1e-4) return;
+      if (distance > reachOf(marker.userData.hotspot) || distance < 1e-4) return;
       toMarker.divideScalar(distance);
       const alignment = toMarker.dot(viewDirection);
       if (alignment <= bestScore) return;
@@ -87,7 +93,7 @@ export function createHotspots(scene, camera, { onOpen } = {}) {
     pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
     const hits = raycaster.intersectObjects(markers, false);
-    const hit = hits.find((entry) => entry.distance < INTERACTION.maxDistance);
+    const hit = hits.find((entry) => entry.distance < reachOf(entry.object.userData.hotspot));
     if (!hit) return null;
     const hotspot = hit.object.userData.hotspot;
     visited.add(hotspot.id);

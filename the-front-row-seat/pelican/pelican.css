@@ -220,3 +220,40 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   #reticle { transition: none; }
 }
+
+
+/* --- place picker --------------------------------------------------------- */
+#places {
+  position: fixed;
+  top: calc(0.9rem + env(safe-area-inset-top));
+  right: calc(0.9rem + env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  z-index: 7;
+}
+#places button {
+  padding: 0.46rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+  background: rgba(10, 9, 8, 0.62);
+  border: 1px solid var(--edge);
+  border-radius: 2px;
+  cursor: pointer;
+  text-align: right;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+#places button:hover,
+#places button[aria-current="true"] {
+  color: var(--ink);
+  border-color: rgba(232, 223, 208, 0.42);
+  background: rgba(10, 9, 8, 0.86);
+}
+#places button:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  #places { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; max-width: 62vw; }
+  #places button { padding: 0.42rem 0.6rem; font-size: 0.68rem; }
+}
