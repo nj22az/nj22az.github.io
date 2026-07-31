@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Pelican, 1603 — The Front-Row Seat</title>
+  <meta name="description" content="Walk the Pelican's taproom on the night of the storm, 1603. A three-dimensional reconstruction from The Front-Row Seat." />
+  <meta name="theme-color" content="#0a0908" />
+  <link rel="stylesheet" href="./pelican.css?v=20260731" />
+</head>
+<body>
+  <canvas id="scene" aria-label="The Pelican taproom, 1603"></canvas>
+
+  <div id="loading" class="veil">
+    <p>Lighting the fire…</p>
+  </div>
+
+  <div id="overlay" class="veil">
+    <div class="veil__inner">
+      <p class="veil__kicker">The Front-Row Seat · Book One</p>
+      <h1>The Pelican</h1>
+      <p class="veil__year">Wapping Wall, the night of the storm, 1603</p>
+      <p class="veil__blurb">
+        A low room, a hearth, twelve stools and a bar with a fault in the old
+        oak. In a few hours a man will be carried in from the breaking shed and
+        die on the centre table, and this room will decide something the
+        century will spend thirty years arguing with.
+      </p>
+      <button id="enter" type="button">Step inside</button>
+      <ul class="veil__keys">
+        <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · arrow keys look · <kbd>Shift</kbd> hurry</li>
+        <li>Mouse to look · click a light to read it, or <kbd>E</kbd> · <kbd>Esc</kbd> closes</li>
+        <li>On a phone: left thumb walks, right thumb looks</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="reticle" aria-hidden="true"><span id="reticle-label"></span></div>
+
+  <div id="hud">
+    <a class="hud__link" href="../">← the book</a>
+    <span id="progress" class="hud__progress">0 of 7 found</span>
+    <button id="sound-toggle" type="button" aria-pressed="true">Sound on</button>
+  </div>
+
+  <div id="card" class="card" role="dialog" aria-labelledby="card-title" hidden>
+    <button id="card-close" type="button" aria-label="Close">×</button>
+    <h2 id="card-title"></h2>
+    <div id="card-body"></div>
+  </div>
+
+  <noscript>
+    <div class="veil"><div class="veil__inner">
+      <h1>The Pelican</h1>
+      <p>This reconstruction needs JavaScript and WebGL. The book itself does not — <a href="../">read it here</a>.</p>
+    </div></div>
+  </noscript>
+
+  <script type="module" src="./src/main.js?v=20260731"></script>
+</body>
+</html>

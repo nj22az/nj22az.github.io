@@ -1,0 +1,146 @@
+/**
+ * Wires the Pelican together: build the room, light it, put a body in it,
+ * and run the loop.
+ */
+
+import * as THREE from '../vendor/three.module.min.js';
+import { PLAYER, ROOM } from './config.js';
+import { buildRoom } from './room.js';
+import { buildFittings } from './fittings.js';
+import { buildLighting, createLightingAnimator } from './lighting.js';
+import { createControls } from './controls.js';
+import { createHotspots } from './hotspots.js';
+import { createStormAudio } from './audio.js';
+import { STORM } from './config.js';
+
+const canvas = document.getElementById('scene');
+const overlay = document.getElementById('overlay');
+const enterButton = document.getElementById('enter');
+const card = document.getElementById('card');
+const cardTitle = document.getElementById('card-title');
+const cardBody = document.getElementById('card-body');
+const cardClose = document.getElementById('card-close');
+const reticle = document.getElementById('reticle');
+const reticleLabel = document.getElementById('reticle-label');
+const progress = document.getElementById('progress');
+const soundToggle = document.getElementById('sound-toggle');
+const loading = document.getElementById('loading');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.7;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(68, 1, 0.05, 60);
+
+const roomParts = buildRoom(scene);
+buildFittings(scene);
+const lighting = buildLighting(scene);
+const controls = createControls(camera, canvas);
+
+let audio = null;
+let soundOn = true;
+
+const lightingAnimator = createLightingAnimator(lighting, {
+  onFlash: () => {
+    if (audio && soundOn && Math.random() < STORM.shutterRattleChance) audio.shutterRattle();
+  },
+  onThunder: (loudness) => {
+    if (audio && soundOn) audio.thunder(loudness);
+  },
+});
+
+const hotspots = createHotspots(scene, camera, {
+  onOpen: (hotspot) => {
+    cardTitle.textContent = hotspot.label;
+    cardBody.innerHTML = hotspot.body.map((line) => `<p>${line}</p>`).join('');
+    card.hidden = false;
+    if (document.pointerLockElement) document.exitPointerLock();
+    updateProgress();
+  },
+});
+
+function updateProgress() {
+  progress.textContent = `${hotspots.visitedCount} of ${hotspots.total} found`;
+}
+
+function resize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+// --- interaction ------------------------------------------------------------
+canvas.addEventListener('click', (event) => {
+  if (!card.hidden) return;
+  if (hotspots.focused) {
+    hotspots.activate();
+    return;
+  }
+  // Not aiming with the reticle? Take the click where it actually landed.
+  if (!controls.isPointerLocked && hotspots.activateAt(event.clientX, event.clientY, canvas)) return;
+  if (!controls.isPointerLocked) controls.requestPointerLock();
+});
+
+function closeCard() {
+  card.hidden = true;
+}
+cardClose.addEventListener('click', closeCard);
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'Escape' && !card.hidden) closeCard();
+  if (event.code === 'KeyE' && card.hidden && hotspots.focused) hotspots.activate();
+  if (event.code === 'KeyR') controls.reset();
+});
+
+soundToggle.addEventListener('click', () => {
+  soundOn = !soundOn;
+  soundToggle.textContent = soundOn ? 'Sound on' : 'Sound off';
+  soundToggle.setAttribute('aria-pressed', String(soundOn));
+  if (audio) audio.setEnabled(soundOn);
+});
+
+enterButton.addEventListener('click', async () => {
+  overlay.hidden = true;
+  if (!audio) {
+    audio = createStormAudio();
+    if (audio) {
+      await audio.resume();
+      audio.setEnabled(soundOn);
+    } else {
+      soundToggle.hidden = true;
+    }
+  }
+  controls.requestPointerLock();
+});
+
+// --- loop -------------------------------------------------------------------
+const clock = new THREE.Clock();
+
+function frame() {
+  const delta = Math.min(clock.getDelta(), 0.05);
+  const elapsed = clock.getElapsedTime();
+
+  if (card.hidden) controls.update(delta);
+  lightingAnimator(elapsed, delta);
+
+  const focused = hotspots.update(elapsed);
+  // The reticle has no business showing through an open card.
+  reticle.hidden = !card.hidden;
+  reticle.classList.toggle('is-active', Boolean(focused));
+  reticleLabel.textContent = focused && card.hidden ? focused.label : '';
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+updateProgress();
+loading.hidden = true;
+frame();
