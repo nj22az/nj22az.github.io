@@ -432,6 +432,23 @@ export const INTERACTION = {
  * fault beneath the bar is the counter-ledger itself and opens to its 1603
  * contents, with a note on what it goes on to hold.
  */
+/**
+ * How the frame is put together. Bloom thresholds are set so only the actual
+ * light sources bloom — flames, embers, the lantern, lit ale — and lit oak
+ * never does, because a tavern full of glowing furniture reads as fog.
+ */
+export const RENDER = {
+  toneMappingExposure: 2.05,
+  /**
+   * The composer works on linear values before tone mapping, so the threshold
+   * has to sit above the exposure or ordinary lit oak blooms and the room
+   * goes milky. Only flames, embers, the lantern and lit ale get past 3.4.
+   */
+  bloomStrength: 0.2,
+  bloomRadius: 0.24,
+  bloomThreshold: 3.4,
+};
+
 export const HOTSPOTS = [
   {
     id: 'thimble',
@@ -442,6 +459,9 @@ export const HOTSPOTS = [
       'Till I’m back.',
       'Maggie cuts his notch before dawn — the only notch she ever cuts early, and she never cuts one early again.',
     ],
+    chapter: {
+      id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
+    },
   },
   {
     id: 'fault',
@@ -452,6 +472,9 @@ export const HOTSPOTS = [
       'Tonight it holds the notches — one for every boy the sea did not give back — and, from this night, Matthew Bell’s confession, blood-marked, his full name on the outside in Arthur’s hand.',
       'In time it takes Daniel Vale’s true copy of Amboyna, laid beside Bell’s page and not behind it; then Maria’s packet; then fourteen years of letters tied with sail-twine, from a man who thought nobody was catching them.',
     ],
+    chapter: {
+      id: '21-1611-the-counter-ledger', title: 'The Return', kicker: 'Chapter Four', year: '1603–1612',
+    },
   },
   {
     id: 'centre-table',
@@ -462,6 +485,9 @@ export const HOTSPOTS = [
       'Matthew Bell is carried in from the breaking shed and dies on it, having said one name and one word.',
       'Anne. And no.',
     ],
+    chapter: {
+      id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
+    },
   },
   {
     id: 'barnaby-stool',
@@ -472,6 +498,9 @@ export const HOTSPOTS = [
       'He is dead by Whitsun 1604, exactly as he said he would be. The stool stays empty eight years by unspoken treaty.',
       'In 1612 Tom comes home hardened and sits on it unasked, and the room lets him, and both of those things mean something.',
     ],
+    chapter: {
+      id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
+    },
   },
   {
     id: 'door',
@@ -482,6 +511,9 @@ export const HOTSPOTS = [
       'Tom Fletcher, twenty-two years old and four hours into owning a Company contract, puts himself between the room and the door. He takes a backhand across the face for it. He stays.',
       'Ned Hawkins states the water-law that decides the night: she came here over water, so she is owed a landing.',
     ],
+    chapter: {
+      id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
+    },
   },
   {
     id: 'mallet',
@@ -491,6 +523,9 @@ export const HOTSPOTS = [
       'Maggie’s, kept under the counter, never once in thirty years called a weapon.',
       'It is a cooper’s tool in the hand of a woman who knows to an ounce what it can crack.',
     ],
+    chapter: {
+      id: '05-1635-last-orders', title: 'Last Orders', kicker: 'Epilogue', year: '1635',
+    },
   },
   {
     id: 'gibbet',
@@ -513,6 +548,9 @@ export const HOTSPOTS = [
       'This is where Matthew Bell is caught. Silas Rook does it under this roof, out of the rain and out of the wind, in a quiet nobody on the Wall hears over a three-day gale — which is the whole of Arthur’s wind arithmetic, and the reason the room believes there was no scream to hear.',
       'And it is how they have him. Carter finds pale pine dust in the welt of Rook’s boot, and there is nowhere else on this reach it could have come from. A man may lie. Sawdust does not.',
     ],
+    chapter: {
+      id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
+    },
   },
   {
     id: 'stairs',
@@ -523,6 +561,9 @@ export const HOTSPOTS = [
       'Watermen work them at every state of the tide. Maria de Sousa goes down them in the dark on the night of the storm, over the lean-to roof and barefoot, to a timber boat and a Dutchman who asks her nothing.',
       'At low water the mud below is walkable. At high water none of it is there at all.',
     ],
+    chapter: {
+      id: '06-1603-the-soot-and-the-roof', title: 'What the Women Did', kicker: 'Chapter Two', year: '1603',
+    },
   },
   {
     id: 'genever',
@@ -533,5 +574,8 @@ export const HOTSPOTS = [
       'He gives the room its thesis while he pours: a room can beat a bully, and no room has ever stood up to a paper.',
       'In 1626 Carter pours the last of it onto these flagstones for the dead at Amboyna, and nobody in the house asks for it by name again for a generation.',
     ],
+    chapter: {
+      id: '02-1626-the-man-who-came-back-wrong', title: 'The Man Who Came Back Wrong', kicker: 'Chapter Twelve', year: '1626',
+    },
   },
 ];

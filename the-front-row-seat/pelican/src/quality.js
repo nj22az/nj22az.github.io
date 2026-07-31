@@ -2,8 +2,8 @@
  * One place that decides how hard to push the device.
  *
  * Phones get the same room, not a cut-down one: what changes is pixel count,
- * shadow resolution, rain density and whether the soft-shadow filter runs at
- * all. The tier is chosen once, then held, so the scene never flickers between
+ * shadow resolution, rain density, and whether the soft-shadow filter and the
+ * bloom composer run at all. The tier is chosen once, then held, so the scene never flickers between
  * settings mid-walk.
  */
 
@@ -19,6 +19,7 @@ export const TIERS = {
     riverSegments: 18,
     farBank: false,
     antialias: false,
+    bloom: false,
     fogFar: 42,
   },
   medium: {
@@ -30,6 +31,7 @@ export const TIERS = {
     riverSegments: 32,
     farBank: true,
     antialias: true,
+    bloom: true,
     fogFar: 58,
   },
   high: {
@@ -41,6 +43,7 @@ export const TIERS = {
     riverSegments: 60,
     farBank: true,
     antialias: true,
+    bloom: true,
     fogFar: 74,
   },
 };
@@ -66,7 +69,7 @@ export function detectTier() {
  * a reasonable rate. Only ever steps down — a visitor who has settled into a
  * smooth walk should not be interrupted by the scene getting prettier.
  */
-export function createPerformanceGovernor(renderer, tier, { onDowngrade } = {}) {
+export function createPerformanceGovernor(renderer, tier, { onDowngrade, view } = {}) {
   const SAMPLE_SIZE = 90;
   const SLOW_FRAME_MS = 34; // roughly below 30fps
   let samples = 0;
@@ -90,6 +93,12 @@ export function createPerformanceGovernor(renderer, tier, { onDowngrade } = {}) 
       currentRatio = Math.max(0.75, currentRatio - 0.25);
       renderer.setPixelRatio(currentRatio);
       if (onDowngrade) onDowngrade({ reason: 'pixelRatio', value: currentRatio });
+      return;
+    }
+    // Bloom before shadows: it is the most expensive pass and the least
+    // structural — losing it dims the flames, losing shadows unmoors the room.
+    if (view && view.dropEffects()) {
+      if (onDowngrade) onDowngrade({ reason: 'bloom', value: false });
       return;
     }
     if (renderer.shadowMap.enabled) {

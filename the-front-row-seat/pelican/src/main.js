@@ -17,7 +17,8 @@ import { createControls } from './controls.js';
 import { createHotspots } from './hotspots.js';
 import { createStormAudio } from './audio.js';
 import { detectTier, createPerformanceGovernor } from './quality.js';
-import { STORM } from './config.js';
+import { createRenderer } from './render.js';
+import { STORM, RENDER } from './config.js';
 
 const canvas = document.getElementById('scene');
 const overlay = document.getElementById('overlay');
@@ -33,6 +34,9 @@ const soundToggle = document.getElementById('sound-toggle');
 const loading = document.getElementById('loading');
 const placesNav = document.getElementById('places');
 const pints = document.getElementById('pints');
+const cardChapter = document.getElementById('card-chapter');
+const finish = document.getElementById('finish');
+const finishClose = document.getElementById('finish-close');
 
 const tier = detectTier();
 
@@ -43,7 +47,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, tier.maxPixelRatio));
 renderer.shadowMap.enabled = tier.shadows;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 2.05;
+renderer.toneMappingExposure = RENDER.toneMappingExposure;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -57,8 +61,9 @@ buildExterior(scene);
 const lighting = buildLighting(scene, tier);
 const rainAnimator = createRainAnimator(buildRain(scene, tier.rainCount));
 const controls = createControls(camera, canvas);
+const view = createRenderer(renderer, scene, camera, tier);
 const servingParts = buildServing(scene);
-const recordFrame = createPerformanceGovernor(renderer, tier);
+const recordFrame = createPerformanceGovernor(renderer, tier, { view });
 
 let audio = null;
 let soundOn = true;
@@ -89,6 +94,15 @@ const hotspots = createHotspots(scene, camera, {
   onOpen: (hotspot) => {
     cardTitle.textContent = hotspot.label;
     cardBody.innerHTML = hotspot.body.map((line) => `<p>${line}</p>`).join('');
+    // The way back into the book, at the scene this object belongs to.
+    if (hotspot.chapter) {
+      const { id, title, kicker, year } = hotspot.chapter;
+      cardChapter.href = `../#/read/${id}`;
+      cardChapter.textContent = `Read \u201c${title}\u201d \u00b7 ${kicker} \u00b7 ${year} \u2192`;
+      cardChapter.hidden = false;
+    } else {
+      cardChapter.hidden = true;
+    }
     card.hidden = false;
     if (document.pointerLockElement) document.exitPointerLock();
     updateProgress();
@@ -110,12 +124,21 @@ PLACES.forEach((place) => {
 
 function updateProgress() {
   progress.textContent = `${hotspots.visitedCount} of ${hotspots.total} found`;
+  // Found everything? Offer the chapter you have been standing inside.
+  if (hotspots.visitedCount >= hotspots.total && finish.dataset.shown !== 'true') {
+    finish.dataset.shown = 'true';
+    // Let the tenth card be read first, then replace it — never stack the two.
+    window.setTimeout(() => {
+      card.hidden = true;
+      finish.hidden = false;
+    }, 2600);
+  }
 }
 
 function resize() {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  renderer.setSize(width, height, false);
+  view.resize(width, height);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
 }
@@ -145,12 +168,14 @@ function closeCard() {
   card.hidden = true;
 }
 cardClose.addEventListener('click', closeCard);
+finishClose.addEventListener('click', () => { finish.hidden = true; });
 window.addEventListener('keyup', (event) => {
   if (event.code === 'KeyE') serving.stopPour();
 });
 
 window.addEventListener('keydown', (event) => {
-  if (event.code === 'Escape' && !card.hidden) closeCard();
+  if (event.code === 'Escape' && !finish.hidden) finish.hidden = true;
+  else if (event.code === 'Escape' && !card.hidden) closeCard();
   if (event.code === 'KeyE' && card.hidden) {
     if (serving.isAimed) serving.startPour();
     else if (hotspots.focused) hotspots.activate();
@@ -186,7 +211,7 @@ function frame() {
   const delta = Math.min(clock.getDelta(), 0.05);
   const elapsed = clock.getElapsedTime();
 
-  if (card.hidden) controls.update(delta);
+  if (card.hidden && finish.hidden) controls.update(delta);
   lightingAnimator(elapsed, delta, camera.position.x);
   rainAnimator(delta, camera.position.x);
   recordFrame(delta * 1000);
@@ -194,7 +219,7 @@ function frame() {
   const atTap = serving.update(delta);
   const focused = atTap ? null : hotspots.update(elapsed);
   // The reticle has no business showing through an open card.
-  reticle.hidden = !card.hidden;
+  reticle.hidden = !card.hidden || !finish.hidden;
   reticle.classList.toggle('is-active', Boolean(focused));
   if (atTap && card.hidden) {
     reticle.classList.add('is-active');
@@ -205,7 +230,7 @@ function frame() {
     reticleLabel.textContent = focused && card.hidden ? focused.label : '';
   }
 
-  renderer.render(scene, camera);
+  view.render();
   requestAnimationFrame(frame);
 }
 

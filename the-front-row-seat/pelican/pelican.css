@@ -3,6 +3,13 @@
 :root {
   --ink: #e8dfd0;
   --ink-dim: #a2988a;
+  /*
+   * The reader's own serif stack, copied verbatim from the omnibus stylesheet.
+   * The room and the book are the same publication and should set type the
+   * same way; a second font here would read as a second website.
+   */
+  --font-serif: ui-serif, "New York", "Iowan Old Style", "Palatino Linotype",
+    Palatino, Charter, Georgia, "Times New Roman", serif;
   --ground: #0a0908;
   --edge: rgba(232, 223, 208, 0.16);
   --flame: #ffb457;
@@ -16,7 +23,7 @@ html, body {
   overflow: hidden;
   background: var(--ground);
   color: var(--ink);
-  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
@@ -69,7 +76,8 @@ html, body {
   font-size: 1.02rem;
 }
 
-#enter, #sound-toggle, #card-close {
+#enter, #sound-toggle, #card-close,
+#finish-close {
   font-family: inherit;
   color: var(--ink);
   background: transparent;
@@ -199,7 +207,8 @@ kbd {
   color: var(--ink);
 }
 .card p:last-child { margin-bottom: 0; }
-#card-close {
+#card-close,
+#finish-close {
   position: absolute;
   top: 0.7rem;
   right: 0.8rem;
@@ -287,3 +296,46 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   #grade::after { animation: none; }
 }
+
+/* --- the way back into the book ------------------------------------------ */
+
+/*
+ * Every object card ends with the scene it belongs to. The room is not a
+ * separate attraction from the novel; it is the novel's first chapter with
+ * walls, and the link is how a visitor crosses back.
+ */
+.card__chapter {
+  display: block;
+  margin-top: 1.3rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid var(--edge);
+  color: var(--flame);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.card__chapter[hidden] { display: none; }
+.card__chapter:hover,
+.card__chapter:focus-visible { text-decoration: underline; }
+.card__chapter--muted {
+  margin-top: 0.55rem;
+  padding-top: 0;
+  border-top: 0;
+  color: var(--ink-dim);
+  font-size: 0.88rem;
+}
+
+.card--finish { text-align: left; }
+.card--finish h2 { color: var(--flame); }
+
+.veil__read {
+  display: inline-block;
+  margin-top: 1.1rem;
+  color: var(--ink-dim);
+  font-size: 0.94rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--edge);
+  padding-bottom: 0.15rem;
+}
+.veil__read:hover,
+.veil__read:focus-visible { color: var(--ink); }
