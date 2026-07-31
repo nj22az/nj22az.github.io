@@ -125,6 +125,56 @@ export function createStormAudio() {
     }
   }
 
+  /**
+   * Pouring: filtered noise whose band climbs as the vessel fills, which is
+   * the whole reason a pour sounds like a pour and not like a tap running.
+   */
+  let pourSource = null;
+  let pourFilter = null;
+  let pourGain = null;
+
+  function pourStart() {
+    if (pourSource) return;
+    const now = context.currentTime;
+    pourSource = context.createBufferSource();
+    pourSource.buffer = noiseBuffer;
+    pourSource.loop = true;
+    pourFilter = context.createBiquadFilter();
+    pourFilter.type = 'bandpass';
+    pourFilter.frequency.setValueAtTime(520, now);
+    pourFilter.frequency.linearRampToValueAtTime(1500, now + 2.4);
+    pourFilter.Q.value = 2.2;
+    pourGain = context.createGain();
+    pourGain.gain.setValueAtTime(0.0001, now);
+    pourGain.gain.exponentialRampToValueAtTime(0.16, now + 0.06);
+    pourSource.connect(pourFilter).connect(pourGain).connect(master);
+    pourSource.start(now);
+  }
+
+  /** Stopping gives a short knock as the tankard is set down. */
+  function pourStop(quality = 100) {
+    if (!pourSource) return;
+    const now = context.currentTime;
+    pourGain.gain.cancelScheduledValues(now);
+    pourGain.gain.setValueAtTime(pourGain.gain.value, now);
+    pourGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+    const ending = pourSource;
+    window.setTimeout(() => { try { ending.stop(); } catch (error) { /* already stopped */ } }, 200);
+    pourSource = null;
+
+    const knock = context.createBufferSource();
+    knock.buffer = noiseBuffer;
+    const knockFilter = context.createBiquadFilter();
+    knockFilter.type = 'lowpass';
+    knockFilter.frequency.value = quality > 70 ? 340 : 240;
+    const knockGain = context.createGain();
+    knockGain.gain.setValueAtTime(0.0001, now + 0.1);
+    knockGain.gain.exponentialRampToValueAtTime(0.14, now + 0.115);
+    knockGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+    knock.connect(knockFilter).connect(knockGain).connect(master);
+    knock.start(now + 0.1, Math.random(), 0.3);
+  }
+
   function setEnabled(enabled) {
     const now = context.currentTime;
     master.gain.cancelScheduledValues(now);
@@ -135,5 +185,5 @@ export function createStormAudio() {
     if (context.state === 'suspended') await context.resume();
   }
 
-  return { thunder, shutterRattle, setEnabled, resume };
+  return { thunder, shutterRattle, pourStart, pourStop, setEnabled, resume };
 }

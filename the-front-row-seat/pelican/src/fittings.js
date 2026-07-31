@@ -9,7 +9,7 @@ import * as THREE from '../vendor/three.module.min.js';
 /** How strongly the derived normal maps bite. */
 const NORMAL_SCALE = new THREE.Vector2(0.85, 0.85);
 import {
-  BAR, HEARTH, CENTRE_TABLE, STOOL, STOOL_PLACEMENTS, ROOM, PALETTE,
+  BAR, HEARTH, CENTRE_TABLE, STOOL, STOOL_PLACEMENTS, ROOM, PALETTE, BARREL_PLACEMENTS,
 } from './config.js';
 import { createOakTexture, createSootTexture, createPageTexture } from './textures.js';
 
@@ -193,12 +193,7 @@ function buildStools(parent, oakMaterial) {
 }
 
 function buildBarrels(parent, oakMaterial, ironMaterial) {
-  const positions = [
-    { x: -ROOM.width / 2 + 0.55, z: -2.35, rotation: 0.2 },
-    { x: -ROOM.width / 2 + 0.55, z: 2.55, rotation: -0.3 },
-    { x: 2.4, z: -2.5, rotation: 0.9 },
-  ];
-  positions.forEach((spot) => {
+  BARREL_PLACEMENTS.forEach((spot) => {
     const barrel = new THREE.Group();
     const body = cylinder(0.24, 0.28, 0.78, oakMaterial, 18);
     body.position.y = 0.39;

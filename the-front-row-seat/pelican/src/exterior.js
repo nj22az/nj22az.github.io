@@ -13,7 +13,7 @@ import * as THREE from '../vendor/three.module.min.js';
 
 /** How strongly the derived normal maps bite. */
 const NORMAL_SCALE = new THREE.Vector2(0.85, 0.85);
-import { ROOM, DOOR, EXTERIOR, PALETTE } from './config.js';
+import { ROOM, DOOR, EXTERIOR, PALETTE, LIGHTING } from './config.js';
 import { createOakTexture, createFlagstoneTexture, createSootTexture } from './textures.js';
 import { groundHeightAt } from './terrain.js';
 
@@ -184,6 +184,8 @@ function buildRiver(parent) {
   geometry.rotateX(-Math.PI / 2);
   const material = new THREE.MeshStandardMaterial({
     color: PALETTE.river,
+    emissive: LIGHTING.riverEmissive,
+    emissiveIntensity: LIGHTING.riverEmissiveIntensity,
     roughness: 0.16,
     metalness: 0.55,
     transparent: true,
@@ -299,7 +301,8 @@ export function buildExterior(scene) {
 
   const mudMaterial = new THREE.MeshStandardMaterial({
     map: mudMap, normalMap: mudMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: mudMap.roughnessMap,
-    color: PALETTE.mud, roughness: 0.52, metalness: 0.12,
+    color: PALETTE.mud, emissive: LIGHTING.mudEmissive,
+    emissiveIntensity: LIGHTING.mudEmissiveIntensity, roughness: 0.52, metalness: 0.12,
   });
   const stoneMaterial = new THREE.MeshStandardMaterial({
     map: stoneMap, normalMap: stoneMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: stoneMap.roughnessMap,

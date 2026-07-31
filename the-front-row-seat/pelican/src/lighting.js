@@ -18,15 +18,18 @@ export function buildLighting(scene, tier) {
   const ambient = new THREE.AmbientLight(LIGHTING.ambientColour, LIGHTING.ambientIntensity);
   scene.add(ambient);
 
-  // Standing in for bounce off the plaster: warm from the hearth side, cold
-  // from the shuttered windows. Keeps the far corners from going to pitch.
-  const bounce = new THREE.HemisphereLight(0x4a3320, 0x161418, 0.5);
+  // Standing in for bounce off the plaster: warm from above, near-nothing from
+  // the wet flagstones. Keeps the far corners from going to pitch.
+  const bounce = new THREE.HemisphereLight(
+    LIGHTING.indoorBounceSky, LIGHTING.indoorBounceGround, LIGHTING.indoorBounceIntensity,
+  );
   scene.add(bounce);
 
-  // The night outside: a cold, almost directionless wash off a storm sky, so
-  // the foreshore and the river read without ever competing with the hearth.
-  const nightSky = new THREE.HemisphereLight(0x3d4a5a, 0x0a0c0e, 0.55);
-  nightSky.position.set(-20, 20, 0);
+  // The night outside: a cold, almost directionless wash off a storm sky, kept
+  // faint because a hemisphere light cannot be kept out of the taproom.
+  const nightSky = new THREE.HemisphereLight(
+    LIGHTING.nightSkyColour, LIGHTING.nightSkyGround, LIGHTING.nightSkyIntensity,
+  );
   scene.add(nightSky);
 
   /**
@@ -35,13 +38,30 @@ export function buildLighting(scene, tier) {
    * nothing by the time it reaches the taproom — which must stay a firelit
    * room, not a moonlit one.
    */
-  const riverGlow = new THREE.PointLight(0x7f9ec4, 34, 44, 1.05);
-  riverGlow.position.set(-21, 9, -3);
+  const riverGlow = new THREE.PointLight(
+    LIGHTING.riverGlowColour, LIGHTING.riverGlowIntensity, LIGHTING.riverGlowDistance, 1.05,
+  );
+  riverGlow.position.set(
+    LIGHTING.riverGlowPosition.x, LIGHTING.riverGlowPosition.y, LIGHTING.riverGlowPosition.z,
+  );
   scene.add(riverGlow);
 
-  const moon = new THREE.PointLight(0x9fb6d4, 16, 30, 1.1);
-  moon.position.set(-12.5, 6, -6);
+  const moon = new THREE.PointLight(
+    LIGHTING.moonColour, LIGHTING.moonIntensity, LIGHTING.moonDistance, 1.1,
+  );
+  moon.position.set(LIGHTING.moonPosition.x, LIGHTING.moonPosition.y, LIGHTING.moonPosition.z);
   scene.add(moon);
+
+  const foreshoreGlow = new THREE.PointLight(
+    LIGHTING.foreshoreGlowColour, LIGHTING.foreshoreGlowIntensity,
+    LIGHTING.foreshoreGlowDistance, 1.1,
+  );
+  foreshoreGlow.position.set(
+    LIGHTING.foreshoreGlowPosition.x,
+    LIGHTING.foreshoreGlowPosition.y,
+    LIGHTING.foreshoreGlowPosition.z,
+  );
+  scene.add(foreshoreGlow);
 
   const fireLight = new THREE.PointLight(
     LIGHTING.fireColour, LIGHTING.fireIntensity, LIGHTING.fireDistance, 1.25,

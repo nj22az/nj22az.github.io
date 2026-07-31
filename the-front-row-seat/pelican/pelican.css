@@ -164,7 +164,8 @@ kbd {
 }
 .hud__link { color: var(--ink-dim); text-decoration: none; }
 .hud__link:hover { color: var(--ink); }
-.hud__progress { font-variant-numeric: tabular-nums; }
+.hud__progress, .hud__pints { font-variant-numeric: tabular-nums; }
+.hud__pints { color: var(--flame); opacity: 0.85; }
 #sound-toggle { padding: 0.4rem 0.9rem; border-radius: 2px; font-size: 0.76rem; }
 
 /* --- object card --------------------------------------------------------- */

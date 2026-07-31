@@ -79,6 +79,17 @@ export const STOOL_PLACEMENTS = [
   { x: 3.15, z: 0.9, rotation: 2.1, barnaby: true },
 ];
 
+/**
+ * Standing barrels. The first one used to sit at x -3.95, z -2.35 — squarely
+ * in the doorway, so the view out of the door was a barrel lid. They stand
+ * against the walls now, clear of the threshold.
+ */
+export const BARREL_PLACEMENTS = [
+  { x: -2.6, z: -2.66, rotation: 0.2 },
+  { x: -ROOM.width / 2 + 0.55, z: 2.55, rotation: -0.3 },
+  { x: 2.4, z: -2.5, rotation: 0.9 },
+];
+
 export const WINDOWS = [
   { x: -1.8, z: ROOM.depth / 2, width: 0.92, height: 0.78, sillHeight: 1.14 },
   { x: 1.9, z: ROOM.depth / 2, width: 0.92, height: 0.78, sillHeight: 1.14 },
@@ -173,6 +184,60 @@ export const PALETTE = {
   lampFlame: 0xffb457,
   lightning: 0xbcd2ff,
   paper: 0xd9cdb2,
+  panelOak: 0x5b4127,
+  pewter: 0x9497a0,
+  pottery: 0x8a6a48,
+  greenGlass: 0x3f5344,
+  driedHerb: 0x5d5a34,
+  smokedHam: 0x6b3a2c,
+  rush: 0x7a683f,
+  caskOak: 0x3a2a1a,
+  ale: 0x9c5514,
+  aleGlow: 0x6d2f05,
+  foam: 0xf0e3c8,
+  aleStream: 0xc87d24,
+  spilledAle: 0x4a2a10,
+};
+
+/**
+ * The fitting-out of the taproom — the things that make it a taproom rather
+ * than a room with a table in it. Wainscot to chair height, a back-bar the
+ * drinker reads across the counter, settles, posts, goods hung at head height.
+ */
+export const TAVERN = {
+  wainscotHeight: 1.16,
+  panelWidth: 0.52,
+  /** Shelf heights on the back-bar dresser, bottom to top. */
+  backBarShelfHeights: [0.66, 1.06, 1.46, 1.82],
+  backBarItemsPerShelf: 10,
+  /** The pot-board rail over the counter and the tankards hung from it. */
+  potRailHeight: 1.86,
+  hangingTankards: 11,
+  settles: [
+    { x: HEARTH.x - 1.22, z: HEARTH.z + 1.72, rotation: -Math.PI / 2, length: 2.0 },
+    { x: 0.2, z: -ROOM.depth / 2 + 0.5, rotation: 0, length: 2.6 },
+    { x: 3.2, z: ROOM.depth / 2 - 0.52, rotation: Math.PI, length: 1.9 },
+  ],
+  sideTables: [
+    { x: 2.7, z: -1.85, rotation: 0.3, width: 1.02, depth: 0.72 },
+    { x: -1.05, z: -2.25, rotation: -0.18, width: 0.9, depth: 0.66 },
+  ],
+  posts: [{ x: -0.5, z: -1.15 }, { x: 1.95, z: 1.75 }],
+  herbBunches: [
+    { x: 0.9, z: -2.55 }, { x: 1.55, z: -2.5 }, { x: 2.2, z: -2.58 },
+    { x: -2.1, z: 2.6 }, { x: -1.5, z: 2.55 },
+  ],
+  ham: { x: 3.5, z: -1.5 },
+  /**
+   * Rushes strewn on the flagstones. Instanced, because a floor only reads as
+   * strewn at a few hundred pieces and a few hundred draw calls would cost the
+   * scene its frame rate on a phone.
+   */
+  rushCount: 420,
+  rushLengthMin: 0.06,
+  rushLengthMax: 0.17,
+  rushWidth: 0.007,
+  rushHeight: 0.005,
 };
 
 export const LIGHTING = {
@@ -186,13 +251,59 @@ export const LIGHTING = {
   flickerSpeed: 7.5,
   flickerDepth: 0.32,
   lampColour: 0xffbe6b,
-  lampIntensity: 3.4,
-  lampDistance: 6.5,
+  lampIntensity: 5.6,
+  lampDistance: 7.6,
   fogColour: 0x0a0908,
   /** Outside, the horizon is storm-lit rather than black. */
   skyColour: 0x1b242c,
   fogNear: 5.2,
   fogFar: 26.0,
+  /**
+   * Bounce off the plaster and the boards. Warm from above because everything
+   * above head height in this room has firelight on it, dark below because the
+   * floor is wet flagstone and gives almost nothing back.
+   */
+  indoorBounceSky: 0x63401f,
+  indoorBounceGround: 0x18120e,
+  indoorBounceIntensity: 0.92,
+  /**
+   * The storm sky. Deliberately faint: a hemisphere light reaches everywhere,
+   * and any real amount of it turns the beams and the counter-top the colour of
+   * daylight. The taproom must stay firelit, so the night gets its strength
+   * from the two distance-limited lamps below instead.
+   */
+  nightSkyColour: 0x3d4a5a,
+  nightSkyGround: 0x0a0c0e,
+  nightSkyIntensity: 0.15,
+  /**
+   * Sky-glow on the mud and the water. Walls do not stop light in a renderer,
+   * so these two are placed and range-limited such that their reach ends short
+   * of the taproom's outer wall — otherwise cold river light lands on the
+   * counter-top and the room stops reading as a firelit bar.
+   */
+  riverGlowColour: 0x8aa8cd,
+  riverGlowIntensity: 200,
+  riverGlowDistance: 40,
+  riverGlowPosition: { x: -46, y: 13, z: -4 },
+  moonColour: 0x9fb6d4,
+  moonIntensity: 30,
+  moonDistance: 15,
+  moonPosition: { x: -19.5, y: 7, z: -9 },
+  /**
+   * The river and the mud carry a little emissive of their own. A hemisphere
+   * or directional light strong enough to read across 150 m of water would
+   * also land on the counter-top, and emissive belongs to the material, so it
+   * cannot leak through a wall the way a light does.
+   */
+  riverEmissive: 0x1c2c3a,
+  riverEmissiveIntensity: 0.62,
+  mudEmissive: 0x1b1a19,
+  mudEmissiveIntensity: 0.4,
+  /** The near foreshore, between the stairs and the mud. Same range rule. */
+  foreshoreGlowColour: 0x7d97b8,
+  foreshoreGlowIntensity: 16,
+  foreshoreGlowDistance: 8,
+  foreshoreGlowPosition: { x: -12.5, y: 4.6, z: -2.5 },
 };
 
 /**
@@ -255,13 +366,51 @@ export const PLAYER = {
  * outside. These are the four places worth standing.
  */
 export const PLACES = [
-  { id: 'taproom', label: 'The taproom', x: -2.85, z: 1.75, yaw: -1.13, pitch: -0.22 },
+  { id: 'taproom', label: 'The taproom', x: -2.4, z: -1.95, yaw: 2.86, pitch: -0.07 },
+  { id: 'bar', label: 'The bar', x: -2.05, z: -0.3, yaw: 1.5708, pitch: -0.26 },
   { id: 'door', label: 'The door', x: -2.9, z: -2.25, yaw: 1.57, pitch: -0.19 },
   { id: 'stairs', label: 'Pelican Stairs', x: -8.6, z: -2.25, yaw: 1.57, pitch: -0.2 },
   { id: 'foreshore', label: 'The foreshore', x: -16.5, z: -3.0, yaw: 2.25, pitch: -0.05 },
   { id: 'downriver', label: 'Downriver', x: -19.5, z: -12.5, yaw: 0.51, pitch: 0.06 },
   { id: 'shed', label: 'The breaking shed', x: -19.5, z: 5.2, yaw: -1.37, pitch: 0.01 },
 ];
+
+/**
+ * The tap. A cask on a stillage behind the counter with its spout over the
+ * boards, so a pint can be drawn from the customer's side without anybody
+ * having to get behind the bar.
+ */
+export const SERVING = {
+  tapX: BAR.x + 0.1,
+  tapY: BAR.height + 0.28,
+  tapZ: BAR.z - 1.25,
+  /** How fast the tankard fills, in tankards per second. */
+  pourRate: 0.44,
+  reach: 2.6,
+  /** A pint pot: about 0.57 litres to the brim, which fixes these two. */
+  tankardRadius: 0.047,
+  tankardHeight: 0.125,
+  tankardWall: 0.006,
+  /** How much head a full-tilt pour throws, in metres. */
+  headMax: 0.02,
+  headBuildRate: 1.6,
+  headSettleRate: 0.28,
+  /** Drawn pints stand along the counter; the oldest goes to the scullery. */
+  maxOnCounter: 6,
+  counterSlotSpacing: 0.17,
+  counterFirstSlot: 0.24,
+  /**
+   * The ale is lit from inside. In a room this dark a tankard filling at the
+   * far end of a counter is a few dozen pixels of brown against brown, and the
+   * one thing the visitor must be able to see is whether it is filling — so
+   * the ale glows, and a small light over the tap comes up with the level.
+   */
+  aleEmissiveIntensity: 0.62,
+  foamEmissiveIntensity: 0.5,
+  tapLightColour: 0xffa63c,
+  tapLightMax: 1.5,
+  tapLightDistance: 1.6,
+};
 
 export const INTERACTION = {
   /** Default reach. Individual hotspots may set their own `reach`. */

@@ -8,6 +8,8 @@ import { PLACES } from './config.js';
 import { buildRoom } from './room.js';
 import { buildFittings } from './fittings.js';
 import { buildProps } from './props.js';
+import { buildTavern } from './tavern.js';
+import { buildServing, createServing } from './serving.js';
 import { buildExterior } from './exterior.js';
 import { buildLighting, createLightingAnimator } from './lighting.js';
 import { buildRain, createRainAnimator } from './weather.js';
@@ -30,6 +32,7 @@ const progress = document.getElementById('progress');
 const soundToggle = document.getElementById('sound-toggle');
 const loading = document.getElementById('loading');
 const placesNav = document.getElementById('places');
+const pints = document.getElementById('pints');
 
 const tier = detectTier();
 
@@ -49,10 +52,12 @@ const camera = new THREE.PerspectiveCamera(68, 1, 0.05, 190);
 buildRoom(scene);
 buildFittings(scene);
 buildProps(scene);
+buildTavern(scene);
 buildExterior(scene);
 const lighting = buildLighting(scene, tier);
 const rainAnimator = createRainAnimator(buildRain(scene, tier.rainCount));
 const controls = createControls(camera, canvas);
+const servingParts = buildServing(scene);
 const recordFrame = createPerformanceGovernor(renderer, tier);
 
 let audio = null;
@@ -64,6 +69,19 @@ const lightingAnimator = createLightingAnimator(lighting, scene, {
   },
   onThunder: (loudness) => {
     if (audio && soundOn) audio.thunder(loudness);
+  },
+});
+
+const serving = createServing(servingParts, camera, {
+  onServed: ({ quality, served: count, best }) => {
+    pints.textContent = count === 1
+      ? `1 pint drawn · ${quality}%`
+      : `${count} pints drawn · best ${best}%`;
+    if (audio && soundOn) audio.pourStop(quality);
+  },
+  onPourChange: (isPouring) => {
+    if (!audio || !soundOn) return;
+    if (isPouring) audio.pourStart();
   },
 });
 
@@ -105,8 +123,15 @@ window.addEventListener('resize', resize);
 resize();
 
 // --- interaction ------------------------------------------------------------
+canvas.addEventListener('pointerdown', () => {
+  if (!card.hidden) return;
+  serving.startPour();
+});
+window.addEventListener('pointerup', () => serving.stopPour());
+
 canvas.addEventListener('click', (event) => {
   if (!card.hidden) return;
+  if (serving.isAimed) return;
   if (hotspots.focused) {
     hotspots.activate();
     return;
@@ -120,9 +145,16 @@ function closeCard() {
   card.hidden = true;
 }
 cardClose.addEventListener('click', closeCard);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'KeyE') serving.stopPour();
+});
+
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Escape' && !card.hidden) closeCard();
-  if (event.code === 'KeyE' && card.hidden && hotspots.focused) hotspots.activate();
+  if (event.code === 'KeyE' && card.hidden) {
+    if (serving.isAimed) serving.startPour();
+    else if (hotspots.focused) hotspots.activate();
+  }
   if (event.code === 'KeyR') controls.reset();
 });
 
@@ -159,11 +191,19 @@ function frame() {
   rainAnimator(delta, camera.position.x);
   recordFrame(delta * 1000);
 
-  const focused = hotspots.update(elapsed);
+  const atTap = serving.update(delta);
+  const focused = atTap ? null : hotspots.update(elapsed);
   // The reticle has no business showing through an open card.
   reticle.hidden = !card.hidden;
   reticle.classList.toggle('is-active', Boolean(focused));
-  reticleLabel.textContent = focused && card.hidden ? focused.label : '';
+  if (atTap && card.hidden) {
+    reticle.classList.add('is-active');
+    reticleLabel.textContent = serving.isPouring
+      ? `${Math.round(serving.level * 100)}%`
+      : 'Hold to draw a pint';
+  } else {
+    reticleLabel.textContent = focused && card.hidden ? focused.label : '';
+  }
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
