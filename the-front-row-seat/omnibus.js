@@ -172,6 +172,51 @@
     item.parentNode.insertBefore(label, item);
   }
 
+  /**
+   * The Pelican, in three dimensions. It is not a page in the book, so the
+   * reader's own table of contents never lists it — but it is Chapter One
+   * with walls, and the contents page is where a reader decides what to do
+   * next. The row is built here rather than in the reader bundle because
+   * it links out of the app instead of routing inside it.
+   */
+  function addPelicanRow(toc) {
+    var list = toc.querySelector("ol");
+    if (!list || list.querySelector(".toc-pelican-row")) return;
+
+    var label = document.createElement("li");
+    label.className = "toc-section-label";
+    label.textContent = "Walk it";
+
+    var item = document.createElement("li");
+    var link = document.createElement("a");
+    link.className = "toc-row toc-meta-row toc-pelican-row";
+    link.href = "./pelican/";
+    // No thumbnail: the reader hides every .toc-thumb on the contents page,
+    // and this row does not get to be the exception.
+    link.innerHTML =
+      "<span class=\"toc-copy\">" +
+        "<span class=\"toc-kicker\">Three dimensions · 1603</span>" +
+        "<span class=\"toc-title\">Walk into the Pelican</span>" +
+        "<span class=\"toc-desc\">The taproom on the night of the storm, rebuilt to " +
+        "walk through: the hearth, the fault in the counter, the door Rook kicks " +
+        "in, and the stairs down to the foreshore. Ten objects to find, each one " +
+        "opening the chapter it belongs to. There is a cask behind the bar, and " +
+        "it works.</span>" +
+      "</span>" +
+      "<span class=\"toc-chevron\" aria-hidden=\"true\">›</span>";
+    item.appendChild(link);
+
+    // Above the appendices: it belongs with the book, not with the reference.
+    var reference = list.querySelector(".toc-section-label");
+    if (reference) {
+      list.insertBefore(label, reference);
+      list.insertBefore(item, reference);
+    } else {
+      list.appendChild(label);
+      list.appendChild(item);
+    }
+  }
+
   function updateContents(contents) {
     updateCover(contents);
 
@@ -206,6 +251,8 @@
       }
       addTagline(link, id);
     });
+
+    addPelicanRow(toc);
   }
 
   var watchmansIllustrations = illustrationData.watchmans;

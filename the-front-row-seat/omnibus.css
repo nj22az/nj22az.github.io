@@ -447,3 +447,20 @@
     box-shadow: 0 18px 45px rgba(0, 0, 0, .35);
   }
 }
+
+/*
+ * The Pelican row. It sits among the meta rows because it is not a chapter,
+ * but it is not an appendix either, so it gets a chapter-sized title.
+ */
+.toc .toc-pelican-row {
+  min-height: 64px;
+}
+
+.toc-pelican-row .toc-title {
+  font-size: 1.1rem;
+}
+
+.toc-pelican-row .toc-kicker {
+  color: var(--accent);
+  font-weight: 600;
+}
