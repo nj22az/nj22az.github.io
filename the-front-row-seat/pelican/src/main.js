@@ -7,6 +7,7 @@ import * as THREE from '../vendor/three.module.min.js';
 import { PLACES } from './config.js';
 import { buildRoom } from './room.js';
 import { buildFittings } from './fittings.js';
+import { buildProps } from './props.js';
 import { buildExterior } from './exterior.js';
 import { buildLighting, createLightingAnimator } from './lighting.js';
 import { buildRain, createRainAnimator } from './weather.js';
@@ -39,7 +40,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, tier.maxPixelRatio));
 renderer.shadowMap.enabled = tier.shadows;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.7;
+renderer.toneMappingExposure = 2.05;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -47,6 +48,7 @@ const camera = new THREE.PerspectiveCamera(68, 1, 0.05, 190);
 
 buildRoom(scene);
 buildFittings(scene);
+buildProps(scene);
 buildExterior(scene);
 const lighting = buildLighting(scene, tier);
 const rainAnimator = createRainAnimator(buildRain(scene, tier.rainCount));

@@ -4,8 +4,8 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
-import { LIGHTING, STORM, HEARTH, BAR, ROOM, WINDOWS, PALETTE } from './config.js';
-import { createGlowTexture } from './textures.js';
+import { LIGHTING, STORM, HEARTH, BAR, ROOM, WINDOWS, PALETTE, CANDLES, ALLEY_LANTERN, SHED_LANTERN } from './config.js';
+import { createGlowTexture, createFlameTexture } from './textures.js';
 
 const EMBER_COUNT = 26;
 
@@ -59,6 +59,61 @@ export function buildLighting(scene, tier) {
   lampLight.position.set(BAR.x + 0.05, BAR.height + 0.1, BAR.z - 0.4);
   scene.add(lampLight);
 
+  // Candles: each is a small warm point plus the flame you can see burning.
+  const candleFlames = [];
+  const candleLights = [];
+  const flameMaterial = new THREE.MeshStandardMaterial({
+    color: PALETTE.lampFlame, emissive: PALETTE.lampFlame, emissiveIntensity: 4.5, roughness: 1,
+  });
+  CANDLES.forEach((candle) => {
+    const light = new THREE.PointLight(LIGHTING.lampColour, candle.intensity, candle.distance, 1.6);
+    light.position.set(candle.x, candle.y + 0.16, candle.z);
+    scene.add(light);
+    candleLights.push(light);
+
+    const stick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.014, 0.019, 0.13, 8),
+      new THREE.MeshStandardMaterial({ color: 0xd8cba8, roughness: 0.85 }),
+    );
+    stick.position.set(candle.x, candle.y + 0.065, candle.z);
+    scene.add(stick);
+
+    const flame = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 6), flameMaterial);
+    flame.scale.set(0.7, 1.9, 0.7);
+    flame.position.set(candle.x, candle.y + 0.16, candle.z);
+    scene.add(flame);
+    candleFlames.push(flame);
+  });
+
+  // The alley lantern.
+  const lanternLight = new THREE.PointLight(0xffc27a, ALLEY_LANTERN.intensity, ALLEY_LANTERN.distance, 1.4);
+  lanternLight.position.set(ALLEY_LANTERN.x, ALLEY_LANTERN.y, ALLEY_LANTERN.z);
+  scene.add(lanternLight);
+  const lanternBody = new THREE.Mesh(
+    new THREE.BoxGeometry(0.17, 0.24, 0.17),
+    new THREE.MeshStandardMaterial({
+      color: 0xd8b070, emissive: 0xffa94a, emissiveIntensity: 1.5,
+      transparent: true, opacity: 0.72, roughness: 0.6,
+    }),
+  );
+  lanternBody.position.copy(lanternLight.position);
+  scene.add(lanternBody);
+
+  // A lantern left burning in the breaking shed, which is the only reason the
+  // shed reads at all from the stairs.
+  const shedLight = new THREE.PointLight(0xffbb72, SHED_LANTERN.intensity, SHED_LANTERN.distance, 1.5);
+  shedLight.position.set(SHED_LANTERN.x, SHED_LANTERN.y, SHED_LANTERN.z);
+  scene.add(shedLight);
+  const shedLantern = new THREE.Mesh(
+    new THREE.BoxGeometry(0.16, 0.22, 0.16),
+    new THREE.MeshStandardMaterial({
+      color: 0xd8b070, emissive: 0xffa94a, emissiveIntensity: 1.4,
+      transparent: true, opacity: 0.7, roughness: 0.6,
+    }),
+  );
+  shedLantern.position.copy(shedLight.position);
+  scene.add(shedLantern);
+
   // Lightning arrives as a broad cool wash from beyond the window wall.
   const lightning = new THREE.DirectionalLight(PALETTE.lightning, 0);
   lightning.position.set(-2, 3.4, ROOM.depth / 2 + 6);
@@ -77,8 +132,56 @@ export function buildLighting(scene, tier) {
     return gap;
   });
 
-  // Embers riding the draught above the fire.
+  /**
+   * A soft additive halo on every flame. This is a stand-in for a bloom pass:
+   * it costs one transparent sprite per light instead of a full-screen
+   * post-process, which matters on a phone, and reads almost the same.
+   */
   const glow = createGlowTexture();
+  const flameTexture = createFlameTexture();
+  const haloMaterial = new THREE.SpriteMaterial({
+    map: flameTexture, transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, opacity: 0.85,
+  });
+  const halos = [];
+  function addHalo(position, size, tint) {
+    const halo = new THREE.Sprite(haloMaterial.clone());
+    halo.material.color.setHex(tint);
+    halo.position.copy(position);
+    halo.scale.setScalar(size);
+    halo.userData.baseScale = size;
+    scene.add(halo);
+    halos.push(halo);
+    return halo;
+  }
+  addHalo(fireLight.position, 1.55, 0xff8a3c);
+  addHalo(lampLight.position, 0.42, 0xffc070);
+  candleLights.forEach((light) => addHalo(light.position, 0.3, 0xffc878));
+  addHalo(lanternLight.position, 0.75, 0xffb060);
+  addHalo(shedLight.position, 0.95, 0xffb060);
+
+  /**
+   * Dust in the air of the taproom. Only visible where the firelight catches
+   * it, which is exactly what makes a lit interior feel like it has air in it.
+   */
+  const DUST_COUNT = 140;
+  const dustPositions = new Float32Array(DUST_COUNT * 3);
+  const dustSeeds = new Float32Array(DUST_COUNT);
+  for (let i = 0; i < DUST_COUNT; i += 1) {
+    dustPositions[i * 3] = (Math.random() - 0.5) * ROOM.width * 0.92;
+    dustPositions[i * 3 + 1] = 0.2 + Math.random() * (ROOM.ceilingHeight - 0.4);
+    dustPositions[i * 3 + 2] = (Math.random() - 0.5) * ROOM.depth * 0.92;
+    dustSeeds[i] = Math.random();
+  }
+  const dustGeometry = new THREE.BufferGeometry();
+  dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+  const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({
+    map: glow, color: 0xffd9a8, size: 0.017, transparent: true, opacity: 0.34,
+    depthWrite: false, blending: THREE.AdditiveBlending,
+  }));
+  scene.add(dust);
+
+  // Embers riding the draught above the fire.
   const emberGeometry = new THREE.BufferGeometry();
   const emberPositions = new Float32Array(EMBER_COUNT * 3);
   const emberSeeds = new Float32Array(EMBER_COUNT);
@@ -102,6 +205,7 @@ export function buildLighting(scene, tier) {
 
   return {
     ambient, bounce, nightSky, riverGlow, moon, fireLight, lampLight, lightning, shutterGaps, embers, emberSeeds,
+    candleFlames, candleLights, lanternLight, shedLight, halos, dust, dustSeeds,
   };
 }
 
@@ -141,6 +245,40 @@ export function createLightingAnimator(lighting, scene, { onThunder, onFlash } =
     lighting.fireLight.position.x = HEARTH.x - 0.35 + flickerB * 0.03;
 
     lighting.lampLight.intensity = LIGHTING.lampIntensity * (1 + Math.sin(elapsed * 3.1) * 0.06);
+
+    // Every candle guts on its own rhythm, and the flames lean with it.
+    lighting.candleLights.forEach((light, index) => {
+      const wobble = Math.sin(elapsed * (4.3 + index * 1.7) + index * 2.1);
+      const gust = Math.sin(elapsed * 0.7 + index) * 0.5 + 0.5;
+      light.intensity = CANDLES[index].intensity * (0.82 + wobble * 0.12 + gust * 0.1);
+      const flame = lighting.candleFlames[index];
+      flame.scale.set(0.7 + wobble * 0.06, 1.9 + wobble * 0.35, 0.7);
+      flame.rotation.z = wobble * 0.14;
+    });
+
+    lighting.lanternLight.intensity = ALLEY_LANTERN.intensity
+      * (0.85 + Math.sin(elapsed * 2.3) * 0.09 + Math.sin(elapsed * 5.9) * 0.05);
+    lighting.shedLight.intensity = SHED_LANTERN.intensity
+      * (0.86 + Math.sin(elapsed * 1.9 + 1.4) * 0.1 + Math.sin(elapsed * 6.7) * 0.04);
+
+    // Halos breathe with their own flame rather than all together.
+    lighting.halos.forEach((halo, index) => {
+      const breathe = 1 + Math.sin(elapsed * (3.1 + index * 0.9) + index) * 0.11
+        + (Math.random() - 0.5) * 0.03;
+      halo.scale.setScalar(halo.userData.baseScale * breathe);
+    });
+
+    // Dust drifts on the room's slow convection and wraps at the ceiling.
+    const dustPoints = lighting.dust.geometry.attributes.position;
+    for (let i = 0; i < dustPoints.count; i += 1) {
+      const seed = lighting.dustSeeds[i];
+      let y = dustPoints.getY(i) + delta * (0.014 + seed * 0.03);
+      const x = dustPoints.getX(i) + Math.sin(elapsed * (0.3 + seed) + seed * 9) * delta * 0.05;
+      if (y > ROOM.ceilingHeight - 0.12) y = 0.18;
+      dustPoints.setY(i, y);
+      dustPoints.setX(i, x);
+    }
+    dustPoints.needsUpdate = true;
 
     // Embers drift up and reset into the fire.
     const positions = lighting.embers.geometry.attributes.position;

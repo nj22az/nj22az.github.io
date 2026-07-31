@@ -122,6 +122,16 @@ export const EXTERIOR = {
   foreshoreFar: -34.0,
   foreshoreSlope: 0.045,
   waterLevel: -3.5,
+  /**
+   * The ship-breaking shed up the foreshore. Roofed, open-sided, stacked with
+   * sawn pine — which is where the pale dust in Silas Rook's boot welt comes
+   * from, and how the room proves he was in it.
+   */
+  shedX: -15.4,
+  shedZ: 5.2,
+  shedWidth: 6.4,
+  shedDepth: 5.0,
+  shedHeight: 3.2,
   /** The gibbet, downriver and deliberately distant. */
   gibbetX: -24.0,
   gibbetZ: -21.0,
@@ -167,22 +177,44 @@ export const PALETTE = {
 
 export const LIGHTING = {
   ambientColour: 0x2a2320,
-  ambientIntensity: 0.5,
+  ambientIntensity: 0.82,
   fireColour: 0xff8f45,
-  fireIntensity: 9.5,
-  fireDistance: 13.0,
+  fireIntensity: 13.5,
+  fireDistance: 15.5,
   fireHeight: 0.52,
   /** Firelight never sits still; these drive the flicker. */
   flickerSpeed: 7.5,
   flickerDepth: 0.32,
   lampColour: 0xffbe6b,
-  lampIntensity: 2.6,
+  lampIntensity: 3.4,
   lampDistance: 6.5,
   fogColour: 0x0a0908,
   /** Outside, the horizon is storm-lit rather than black. */
   skyColour: 0x1b242c,
   fogNear: 5.2,
   fogFar: 26.0,
+};
+
+/**
+ * Candles and a lantern. A single hearth cannot light a room nine metres
+ * across, and a taproom with twelve men in it would have had tallow burning on
+ * every table. Each is a real object with a real small light on it.
+ */
+export const CANDLES = [
+  { x: CENTRE_TABLE.x - 0.72, y: CENTRE_TABLE.height, z: CENTRE_TABLE.z - 0.26, intensity: 2.4, distance: 4.6 },
+  { x: CENTRE_TABLE.x + 0.78, y: CENTRE_TABLE.height, z: CENTRE_TABLE.z + 0.2, intensity: 2.0, distance: 4.2 },
+  { x: -3.2, y: 1.02, z: -2.6, intensity: 1.6, distance: 3.4 },
+  { x: 3.05, y: 1.06, z: 2.35, intensity: 1.8, distance: 3.8 },
+];
+
+/** Two lanterns outside: one in the alley, one left burning in the shed. */
+export const ALLEY_LANTERN = {
+  x: -6.2, y: 2.05, z: -3.35, intensity: 4.2, distance: 7.5,
+};
+
+export const SHED_LANTERN = {
+  x: EXTERIOR.shedX - 1.4, y: EXTERIOR.stairBottom + 0.7, z: EXTERIOR.shedZ - 0.2,
+  intensity: 9.5, distance: 13.0,
 };
 
 export const STORM = {
@@ -228,6 +260,7 @@ export const PLACES = [
   { id: 'stairs', label: 'Pelican Stairs', x: -8.6, z: -2.25, yaw: 1.57, pitch: -0.2 },
   { id: 'foreshore', label: 'The foreshore', x: -16.5, z: -3.0, yaw: 2.25, pitch: -0.05 },
   { id: 'downriver', label: 'Downriver', x: -19.5, z: -12.5, yaw: 0.51, pitch: 0.06 },
+  { id: 'shed', label: 'The breaking shed', x: -19.5, z: 5.2, yaw: -1.37, pitch: 0.01 },
 ];
 
 export const INTERACTION = {
@@ -319,6 +352,17 @@ export const HOTSPOTS = [
       'Admiralty ground. Pirates and mutineers were hanged at the low-water mark and left through three tides, so that everyone coming up the river on the flood had to pass them.',
       'It is real and it was in use in 1603 — but not here. The site of Execution Dock is disputed between three riverside houses, and Rocque’s map of 1746 puts Execution Dock Stairs several hundred yards west, down toward King Henry’s Stairs. So it stands where you see it: downriver, at the edge of sight.',
       'The cage is empty. The house has never needed a body on the page to make its point about what the river is for.',
+    ],
+  },
+  {
+    id: 'shed',
+    label: 'The breaking shed',
+    reach: 9,
+    position: { x: EXTERIOR.shedX + 1.4, y: -0.95, z: EXTERIOR.shedZ - 1.1 },
+    body: [
+      'A ship-breaking shed: hulls come up the mud and are taken to pieces here, and the pine comes out pale and dusty and goes off to be something else.',
+      'This is where Matthew Bell is caught. Silas Rook does it under this roof, out of the rain and out of the wind, in a quiet nobody on the Wall hears over a three-day gale — which is the whole of Arthur’s wind arithmetic, and the reason the room believes there was no scream to hear.',
+      'And it is how they have him. Carter finds pale pine dust in the welt of Rook’s boot, and there is nowhere else on this reach it could have come from. A man may lie. Sawdust does not.',
     ],
   },
   {

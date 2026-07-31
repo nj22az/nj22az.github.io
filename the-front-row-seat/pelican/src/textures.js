@@ -24,6 +24,52 @@ function createCanvas(size = TEXTURE_SIZE) {
   return canvas;
 }
 
+/**
+ * Derive a normal map from a drawn canvas by running a Sobel filter over its
+ * luminance. Every surface in the room is flat geometry, so this is what makes
+ * oak look like oak under a moving flame rather than like brown paper.
+ */
+export function deriveNormalMap(sourceCanvas, { strength = 2.6, repeat = 1 } = {}) {
+  const size = sourceCanvas.width;
+  const source = sourceCanvas.getContext('2d').getImageData(0, 0, size, size).data;
+
+  const height = new Float32Array(size * size);
+  for (let i = 0; i < size * size; i += 1) {
+    const o = i * 4;
+    height[i] = (source[o] * 0.299 + source[o + 1] * 0.587 + source[o + 2] * 0.114) / 255;
+  }
+
+  const target = createCanvas(size);
+  const context = target.getContext('2d');
+  const image = context.createImageData(size, size);
+  const at = (x, y) => height[((y + size) % size) * size + ((x + size) % size)];
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const dx = (at(x - 1, y - 1) + 2 * at(x - 1, y) + at(x - 1, y + 1))
+               - (at(x + 1, y - 1) + 2 * at(x + 1, y) + at(x + 1, y + 1));
+      const dy = (at(x - 1, y - 1) + 2 * at(x, y - 1) + at(x + 1, y - 1))
+               - (at(x - 1, y + 1) + 2 * at(x, y + 1) + at(x + 1, y + 1));
+
+      const nx = dx * strength;
+      const ny = dy * strength;
+      const length = Math.hypot(nx, ny, 1);
+      const o = (y * size + x) * 4;
+      image.data[o] = ((nx / length) * 0.5 + 0.5) * 255;
+      image.data[o + 1] = ((ny / length) * 0.5 + 0.5) * 255;
+      image.data[o + 2] = ((1 / length) * 0.5 + 0.5) * 255;
+      image.data[o + 3] = 255;
+    }
+  }
+  context.putImageData(image, 0, 0);
+
+  const texture = new THREE.CanvasTexture(target);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeat, repeat);
+  return texture;
+}
+
 function finalise(canvas, { repeat = 1, anisotropy = 4 } = {}) {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
@@ -43,6 +89,14 @@ function speckle(context, size, random, { count, alpha, maxRadius }) {
     context.arc(random() * size, random() * size, random() * maxRadius, 0, Math.PI * 2);
     context.fill();
   }
+}
+
+/** A colour map and the normal map derived from the same drawing. */
+function withNormal(canvas, repeat, strength) {
+  const map = finalise(canvas, { repeat });
+  map.normalMap = deriveNormalMap(canvas, { strength, repeat });
+  map.roughnessMap = deriveRoughnessMap(canvas, { repeat });
+  return map;
 }
 
 export function createOakTexture({ seed = 7, base = '#4a3423', repeat = 1 } = {}) {
@@ -87,7 +141,7 @@ export function createOakTexture({ seed = 7, base = '#4a3423', repeat = 1 } = {}
   }
 
   speckle(context, size, random, { count: 2600, alpha: 0.05, maxRadius: 1.5 });
-  return finalise(canvas, { repeat });
+  return withNormal(canvas, repeat, 2.2);
 }
 
 export function createFlagstoneTexture({ seed = 21, repeat = 1 } = {}) {
@@ -125,7 +179,7 @@ export function createFlagstoneTexture({ seed = 21, repeat = 1 } = {}) {
   }
 
   speckle(context, size, random, { count: 5200, alpha: 0.055, maxRadius: 1.9 });
-  return finalise(canvas, { repeat });
+  return withNormal(canvas, repeat, 3.4);
 }
 
 export function createPlasterTexture({ seed = 33, repeat = 1 } = {}) {
@@ -158,7 +212,7 @@ export function createPlasterTexture({ seed = 33, repeat = 1 } = {}) {
   context.fillRect(0, 0, size, size);
 
   speckle(context, size, random, { count: 3400, alpha: 0.045, maxRadius: 1.6 });
-  return finalise(canvas, { repeat });
+  return withNormal(canvas, repeat, 1.8);
 }
 
 export function createSootTexture({ seed = 44, repeat = 1 } = {}) {
@@ -176,7 +230,61 @@ export function createSootTexture({ seed = 44, repeat = 1 } = {}) {
     context.fill();
   }
   speckle(context, size, random, { count: 1800, alpha: 0.06, maxRadius: 1.3 });
-  return finalise(canvas, { repeat });
+  return withNormal(canvas, repeat, 1.4);
+}
+
+/**
+ * A roughness map from the same drawing: darker pixels read as worn and
+ * polished, lighter as raw. What it actually buys is that a flame moving in
+ * the room no longer slides across every surface at one uniform gloss.
+ */
+export function deriveRoughnessMap(sourceCanvas, { low = 0.42, high = 0.98, repeat = 1 } = {}) {
+  const size = sourceCanvas.width;
+  const source = sourceCanvas.getContext('2d').getImageData(0, 0, size, size).data;
+  const target = createCanvas(size);
+  const context = target.getContext('2d');
+  const image = context.createImageData(size, size);
+
+  for (let i = 0; i < size * size; i += 1) {
+    const o = i * 4;
+    const luminance = (source[o] * 0.299 + source[o + 1] * 0.587 + source[o + 2] * 0.114) / 255;
+    const value = (low + (high - low) * luminance) * 255;
+    image.data[o] = value;
+    image.data[o + 1] = value;
+    image.data[o + 2] = value;
+    image.data[o + 3] = 255;
+  }
+  context.putImageData(image, 0, 0);
+
+  const texture = new THREE.CanvasTexture(target);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeat, repeat);
+  return texture;
+}
+
+/**
+ * A flame: a soft teardrop, brightest at the base, used as an additive sprite.
+ * Cheaper than a bloom pass and it works on every device.
+ */
+export function createFlameTexture() {
+  const canvas = createCanvas(128);
+  const context = canvas.getContext('2d');
+  const { width: size } = canvas;
+
+  const gradient = context.createRadialGradient(size / 2, size * 0.66, 0, size / 2, size * 0.66, size * 0.5);
+  gradient.addColorStop(0, 'rgba(255,244,214,1)');
+  gradient.addColorStop(0.22, 'rgba(255,196,104,0.92)');
+  gradient.addColorStop(0.55, 'rgba(255,132,40,0.4)');
+  gradient.addColorStop(1, 'rgba(255,96,20,0)');
+  context.fillStyle = gradient;
+  context.beginPath();
+  context.ellipse(size / 2, size * 0.6, size * 0.3, size * 0.44, 0, 0, Math.PI * 2);
+  context.fill();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }
 
 /** A soft radial falloff, used as the sprite for embers and hotspot markers. */

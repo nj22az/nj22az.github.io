@@ -5,6 +5,9 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
+
+/** How strongly the derived normal maps bite. */
+const NORMAL_SCALE = new THREE.Vector2(0.85, 0.85);
 import {
   BAR, HEARTH, CENTRE_TABLE, STOOL, STOOL_PLACEMENTS, ROOM, PALETTE,
 } from './config.js';
@@ -300,13 +303,13 @@ export function buildFittings(scene) {
   const sootMap = createSootTexture({ repeat: 1 });
 
   const oakMaterial = new THREE.MeshStandardMaterial({
-    map: wornOakMap, color: PALETTE.oakWorn, roughness: 0.78,
+    map: wornOakMap, normalMap: wornOakMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: wornOakMap.roughnessMap, color: PALETTE.oakWorn, roughness: 0.78,
   });
   const darkOakMaterial = new THREE.MeshStandardMaterial({
-    map: oakMap, color: PALETTE.oakDark, roughness: 0.88,
+    map: oakMap, normalMap: oakMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: oakMap.roughnessMap, color: PALETTE.oakDark, roughness: 0.88,
   });
   const sootMaterial = new THREE.MeshStandardMaterial({
-    map: sootMap, color: PALETTE.soot, roughness: 1.0,
+    map: sootMap, normalMap: sootMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: sootMap.roughnessMap, color: PALETTE.soot, roughness: 1.0,
   });
   const stoneMaterial = new THREE.MeshStandardMaterial({
     color: 0x4a443d, roughness: 0.95,

@@ -7,6 +7,9 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
+
+/** How strongly the derived normal maps bite. */
+const NORMAL_SCALE = new THREE.Vector2(0.85, 0.85);
 import { ROOM, WINDOWS, DOOR, PALETTE } from './config.js';
 import {
   createOakTexture,
@@ -97,16 +100,16 @@ export function buildRoom(scene) {
   const sootMap = createSootTexture({ repeat: 2 });
 
   const flagstoneMaterial = new THREE.MeshStandardMaterial({
-    map: flagstoneMap, color: PALETTE.flagstone, roughness: 0.94, metalness: 0.0,
+    map: flagstoneMap, normalMap: flagstoneMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: flagstoneMap.roughnessMap, color: PALETTE.flagstone, roughness: 0.94, metalness: 0.0,
   });
   const plasterMaterial = new THREE.MeshStandardMaterial({
-    map: plasterMap, color: PALETTE.plaster, roughness: 0.97, metalness: 0.0,
+    map: plasterMap, normalMap: plasterMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: plasterMap.roughnessMap, color: PALETTE.plaster, roughness: 0.97, metalness: 0.0,
   });
   const oakMaterial = new THREE.MeshStandardMaterial({
-    map: oakMap, color: PALETTE.oakMid, roughness: 0.82, metalness: 0.0,
+    map: oakMap, normalMap: oakMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: oakMap.roughnessMap, color: PALETTE.oakMid, roughness: 0.82, metalness: 0.0,
   });
   const ceilingMaterial = new THREE.MeshStandardMaterial({
-    map: sootMap, color: PALETTE.soot, roughness: 0.99, metalness: 0.0,
+    map: sootMap, normalMap: sootMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: sootMap.roughnessMap, color: PALETTE.soot, roughness: 0.99, metalness: 0.0,
   });
 
   // --- floor and ceiling ---------------------------------------------------
@@ -195,7 +198,7 @@ export function buildRoom(scene) {
 
   // --- shutters, barred against the gale ----------------------------------
   const shutterMaterial = new THREE.MeshStandardMaterial({
-    map: oakMap, color: PALETTE.oakDark, roughness: 0.88,
+    map: oakMap, normalMap: oakMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: oakMap.roughnessMap, color: PALETTE.oakDark, roughness: 0.88,
   });
   const shutters = [];
   WINDOWS.forEach((window) => {
@@ -223,7 +226,7 @@ export function buildRoom(scene) {
 
   // --- the door ------------------------------------------------------------
   const doorMaterial = new THREE.MeshStandardMaterial({
-    map: oakMap, color: PALETTE.oakDark, roughness: 0.85,
+    map: oakMap, normalMap: oakMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: oakMap.roughnessMap, color: PALETTE.oakDark, roughness: 0.85,
   });
   // Standing open, because Rook has already been through it and because the
   // alley beyond is where the visitor is meant to be able to go.

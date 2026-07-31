@@ -10,6 +10,9 @@
  */
 
 import * as THREE from '../vendor/three.module.min.js';
+
+/** How strongly the derived normal maps bite. */
+const NORMAL_SCALE = new THREE.Vector2(0.85, 0.85);
 import { ROOM, DOOR, EXTERIOR, PALETTE } from './config.js';
 import { createOakTexture, createFlagstoneTexture, createSootTexture } from './textures.js';
 import { groundHeightAt } from './terrain.js';
@@ -212,23 +215,103 @@ function buildFarBank(parent) {
   return bank;
 }
 
+/**
+ * The breaking shed: four posts, a pitched roof, stacked baulks and a trestle,
+ * and a floor of pale sawdust. Open on the river side, because that is how a
+ * hull is brought in.
+ */
+function buildShed(parent, timberMaterial, pineMaterial, sawdustMaterial) {
+  const shed = new THREE.Group();
+  const { shedWidth: width, shedDepth: depth, shedHeight: height } = EXTERIOR;
+
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+    const post = box(0.22, height, 0.22, timberMaterial);
+    post.position.set(sx * (width / 2 - 0.2), height / 2, sz * (depth / 2 - 0.2));
+    shed.add(post);
+  });
+
+  [-1, 1].forEach((sz) => {
+    const plate = box(width, 0.2, 0.2, timberMaterial);
+    plate.position.set(0, height - 0.1, sz * (depth / 2 - 0.2));
+    shed.add(plate);
+  });
+
+  // A shallow pitched roof in two slopes.
+  [-1, 1].forEach((sz) => {
+    const slope = box(width + 0.5, 0.12, depth / 2 + 0.45, timberMaterial);
+    slope.position.set(0, height + 0.34, sz * depth / 4);
+    slope.rotation.x = sz * 0.24;
+    shed.add(slope);
+  });
+  const ridge = box(width + 0.6, 0.16, 0.16, timberMaterial);
+  ridge.position.set(0, height + 0.66, 0);
+  shed.add(ridge);
+
+  // The back wall; the river side stays open.
+  const back = box(width, height - 0.3, 0.1, timberMaterial);
+  back.position.set(0, (height - 0.3) / 2, -depth / 2 + 0.16);
+  shed.add(back);
+
+  // Stacked pine, pale and freshly sawn.
+  for (let row = 0; row < 3; row += 1) {
+    for (let i = 0; i < 4 - row; i += 1) {
+      const baulk = box(0.3, 0.28, depth - 1.2, pineMaterial);
+      baulk.position.set(
+        -width / 2 + 0.8 + i * 0.34 + row * 0.17,
+        0.16 + row * 0.29,
+        0.3,
+      );
+      baulk.rotation.y = (Math.random() - 0.5) * 0.05;
+      shed.add(baulk);
+    }
+  }
+
+  // A trestle and a saw's worth of mess.
+  const trestle = box(1.9, 0.16, 0.42, timberMaterial);
+  trestle.position.set(1.5, 0.72, -1.1);
+  shed.add(trestle);
+  [-0.75, 0.75].forEach((offset) => {
+    const leg = box(0.12, 0.72, 0.12, timberMaterial);
+    leg.position.set(1.5 + offset, 0.36, -1.1);
+    shed.add(leg);
+  });
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(width - 0.6, depth - 0.6), sawdustMaterial);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = 0.012;
+  floor.receiveShadow = true;
+  shed.add(floor);
+
+  shed.position.set(EXTERIOR.shedX, groundHeightAt(EXTERIOR.shedX), EXTERIOR.shedZ);
+  shed.rotation.y = -Math.PI / 2 - 0.15;
+  parent.add(shed);
+  return shed;
+}
+
 export function buildExterior(scene) {
   const exterior = new THREE.Group();
   exterior.name = 'exterior';
 
+  const mudMap = createFlagstoneTexture({ seed: 88, repeat: 9 });
+  const stoneMap = createFlagstoneTexture({ seed: 5, repeat: 2 });
+  const timberMap = createOakTexture({ seed: 202, repeat: 2, base: '#241c15' });
+  const brickMap = createSootTexture({ seed: 17, repeat: 4 });
+
   const mudMaterial = new THREE.MeshStandardMaterial({
-    map: createFlagstoneTexture({ seed: 88, repeat: 9 }),
-    color: PALETTE.mud, roughness: 0.98,
+    map: mudMap, normalMap: mudMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: mudMap.roughnessMap,
+    color: PALETTE.mud, roughness: 0.52, metalness: 0.12,
   });
   const stoneMaterial = new THREE.MeshStandardMaterial({
-    map: createFlagstoneTexture({ seed: 5, repeat: 2 }), color: 0x4d463e, roughness: 0.95,
+    map: stoneMap, normalMap: stoneMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: stoneMap.roughnessMap,
+    color: 0x4d463e, roughness: 0.38, metalness: 0.14,
   });
   const timberMaterial = new THREE.MeshStandardMaterial({
-    map: createOakTexture({ seed: 202, repeat: 2, base: '#241c15' }),
-    color: PALETTE.wetTimber, roughness: 0.7,
+    map: timberMap, normalMap: timberMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: timberMap.roughnessMap,
+    color: PALETTE.wetTimber, roughness: 0.46, metalness: 0.08,
   });
   const brickMaterial = new THREE.MeshStandardMaterial({
-    map: createSootTexture({ seed: 17, repeat: 4 }), color: 0x2a2420, roughness: 0.96,
+    map: brickMap, normalMap: brickMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: brickMap.roughnessMap,
+    color: 0x2a2420, roughness: 0.96,
   });
   const ironMaterial = new THREE.MeshStandardMaterial({
     color: PALETTE.iron, roughness: 0.55, metalness: 0.6,
@@ -237,7 +320,14 @@ export function buildExterior(scene) {
   buildForeshore(exterior, mudMaterial);
   buildAlley(exterior, brickMaterial, timberMaterial);
   buildStairs(exterior, stoneMaterial, timberMaterial);
+  const pineMaterial = new THREE.MeshStandardMaterial({
+    map: timberMap, normalMap: timberMap.normalMap, normalScale: NORMAL_SCALE, roughnessMap: timberMap.roughnessMap,
+    color: 0xb9a279, roughness: 0.92,
+  });
+  const sawdustMaterial = new THREE.MeshStandardMaterial({ color: 0x6f6248, roughness: 1.0 });
+
   buildMoorings(exterior, timberMaterial);
+  buildShed(exterior, timberMaterial, pineMaterial, sawdustMaterial);
   buildGibbet(exterior, timberMaterial, ironMaterial);
   const river = buildRiver(exterior);
   buildFarBank(exterior);
