@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var REVISION = "20260808";
+  var REVISION = "20260808-south-land";
   var NATURAL_COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
   var NATURAL_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + NATURAL_COMMIT + "/projects/literary/EIC/manuscript-editorial/";
   var PART_INTRO = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/aac1c3198e601cd680243c3944357e9cb46a7482/projects/literary/EIC/manuscript-live-canon/part-one-the-venture.md";
@@ -9,6 +9,7 @@
     "part-one-the-venture": PART_INTRO,
     "01-1603-the-boy-who-signed": NATURAL_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
     "02-1626-the-man-who-came-back-wrong": NATURAL_ROOT + "02-1626-the-man-who-came-back-wrong-natural-revision.md",
+    "04-1629-the-south-land": NATURAL_ROOT + "04-1629-the-south-land-natural-revision.md",
     "05-1635-last-orders": NATURAL_ROOT + "05-1635-last-orders-natural-revision.md"
   };
   var cache = {};
@@ -55,6 +56,19 @@
     return (text || "").replace(/\s+/g, " ").trim();
   }
 
+  function patchSouthLandHeader(reader, id) {
+    if (!reader || id !== "04-1629-the-south-land") return;
+
+    var walker = document.createTreeWalker(reader, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      node.nodeValue = node.nodeValue
+        .replace("A rope is an English mercy, Commander.", "They hired him after I warned them.")
+        .replace("Maria de Sousa, the Abrolhos, 1629", "Maria Mori")
+        .replace(/\bMaria de Sousa\b/g, "Maria Mori");
+    }
+  }
+
   function scrubLegacyProse(id) {
     if (!isBookOneRoute(id)) return;
 
@@ -62,10 +76,11 @@
     var prose = reader && reader.querySelector(".prose");
     if (!reader || !prose) return;
 
+    patchSouthLandHeader(reader, id);
+
     var scrubKey = id + ":" + REVISION;
     if (reader.dataset.naturalScrub === scrubKey) return;
 
-    // Canonical name cleanup without rebuilding elements or losing event handlers.
     var walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT);
     var node;
     while ((node = walker.nextNode())) {
@@ -138,7 +153,6 @@
     source = source.replace(/^---\n[^]*?\n---\n+/, "");
     source = source.replace(/^#\s+.*\n+/, "");
 
-    // The compiled reader already owns the page header and, where present, epigraph.
     if (source.trimStart().charAt(0) === ">") {
       source = source.trimStart().replace(/^(?:>.*(?:\n|$))+\s*/, "");
     }
@@ -203,13 +217,11 @@
     var prose = reader && reader.querySelector(".prose");
     if (!prose || prose.dataset.naturalRevision === REVISION) return;
 
-    // omnibus.js may already have paginated the compiled prose. Clearing the
-    // prose removes those stale pages; its own observer then repaginates these
-    // revised nodes using the existing responsive book layout.
     prose.innerHTML = markup;
     prose.dataset.naturalRevision = REVISION;
     reader.dataset.bookOneRevision = "natural-" + REVISION;
     delete reader.dataset.naturalScrub;
+    patchSouthLandHeader(reader, id);
     scrubLegacyProse(id);
   }
 
