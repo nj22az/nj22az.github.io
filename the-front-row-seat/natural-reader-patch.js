@@ -1,15 +1,16 @@
 (function () {
   "use strict";
 
-  var REVISION = "20260808-last-orders-bittersweet";
+  var REVISION = "20260808-chapter12";
   var NATURAL_COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
   var NATURAL_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + NATURAL_COMMIT + "/projects/literary/EIC/manuscript-editorial/";
   var PART_INTRO = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/aac1c3198e601cd680243c3944357e9cb46a7482/projects/literary/EIC/manuscript-live-canon/part-one-the-venture.md";
+  var CHAPTER_TWELVE = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/e886d791771df38b49a4a5b9fc16a8e4d6463737/projects/literary/EIC/manuscript-editorial/02-1626-the-man-who-came-back-wrong-natural-revision.md";
   var LAST_ORDERS = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/caadfd82ce5559a2a11c70ce67de84fd3b371257/projects/literary/EIC/manuscript-editorial/05-1635-last-orders-natural-revision.md";
   var PAGES = {
     "part-one-the-venture": PART_INTRO,
     "01-1603-the-boy-who-signed": NATURAL_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
-    "02-1626-the-man-who-came-back-wrong": NATURAL_ROOT + "02-1626-the-man-who-came-back-wrong-natural-revision.md",
+    "02-1626-the-man-who-came-back-wrong": CHAPTER_TWELVE,
     "04-1629-the-south-land": NATURAL_ROOT + "04-1629-the-south-land-natural-revision.md",
     "05-1635-last-orders": LAST_ORDERS
   };
@@ -70,6 +71,18 @@
     }
   }
 
+  function patchChapterTwelveHeader(reader, id) {
+    if (!reader || id !== "02-1626-the-man-who-came-back-wrong") return;
+
+    var walker = document.createTreeWalker(reader, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      node.nodeValue = node.nodeValue
+        .replace("The charges were a formality. The questioning was procedure. The killing was the actual point.", "They wanted what happened. They did not want it in my order.")
+        .replace("Daniel, factor, Amboyna, 1626", "Daniel Vale");
+    }
+  }
+
   function patchLastOrdersHeader(reader, id) {
     if (!reader || id !== "05-1635-last-orders") return;
 
@@ -90,6 +103,7 @@
     if (!reader || !prose) return;
 
     patchSouthLandHeader(reader, id);
+    patchChapterTwelveHeader(reader, id);
     patchLastOrdersHeader(reader, id);
 
     var scrubKey = id + ":" + REVISION;
@@ -236,6 +250,7 @@
     reader.dataset.bookOneRevision = "natural-" + REVISION;
     delete reader.dataset.naturalScrub;
     patchSouthLandHeader(reader, id);
+    patchChapterTwelveHeader(reader, id);
     patchLastOrdersHeader(reader, id);
     scrubLegacyProse(id);
   }
