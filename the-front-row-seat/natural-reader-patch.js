@@ -16,9 +16,92 @@
   var scheduled = false;
   var observer;
 
+  var DROP_PARAGRAPHS = [
+    "The counter-ledger does not pretend to the Company's exactness. The Company's book can give the month, wage and deduction while losing the person entire. Maggie's wood keeps the opposite truth: somebody sat here, ate, feared and did not come back. When memory can supply the name, the room says it. When memory fails, the cut does not acquire a convenient one.",
+    "An honest blank is still an entry.",
+    "The room begins keeping things that are not inside the fault. A stool can be an entry. So can a name said properly. So can the dark shape in the grain of the centre table, scrubbed so often that only the person doing the scrubbing knows where to look.",
+    "Paper is not the only material that can hold an account.",
+    "That is fortunate. Paper belongs too easily to the man with the locked room.",
+    "The Company would call this enlargement. More room, more custom, better return from the same house.",
+    "Tom hears his own voice and his father's inside it. Beneath both, Maggie: do not call the taking a rescue. Beneath Maggie, Bell asking one quiet question across an unsigned page. Beneath Bell, a woman behind a door who has no English word available and a room deciding what her silence means.",
+    "Paper order is not justice. It is the only correction available in the room.",
+    "A deck, it turns out, has better manners than a court.",
+    "The man is the message. She has sent the room back one of its debts.",
+    "One long look. Not love. Recognition."
+  ];
+
+  var REPLACE_PARAGRAPHS = [
+    {
+      from: "Maggie is not collecting evidence for Tom's acquittal. That is what paid-off men think at first.",
+      to: "Paid-off men sometimes mistake her questions for a request to defend him."
+    },
+    {
+      from: "There is a room in London that reads accounts truly, she says. I have carried that fact twenty-two years. It is the most valuable thing I own, and I am spending it once. A tavern on Wapping Wall. The Pelican. When England lets him ashore, take him through that door and give him to the keeper.",
+      to: "There is a keeper in Wapping who kept Bell's page when carrying it would have killed me, she says. A tavern on Wapping Wall. The Pelican. If she is still there, take him to her."
+    }
+  ];
+
   function routeId() {
     var match = window.location.hash.match(/#\/read\/([^/?]+)/);
     return match ? match[1] : "";
+  }
+
+  function isBookOneRoute(id) {
+    var ids = window.FRONT_ROW_OMNIBUS && window.FRONT_ROW_OMNIBUS.readerBookIds && window.FRONT_ROW_OMNIBUS.readerBookIds[0];
+    return id === "part-one-the-venture" || !!(ids && ids.indexOf(id) !== -1);
+  }
+
+  function compactText(text) {
+    return (text || "").replace(/\s+/g, " ").trim();
+  }
+
+  function scrubLegacyProse(id) {
+    if (!isBookOneRoute(id)) return;
+
+    var reader = document.querySelector("article.reader");
+    var prose = reader && reader.querySelector(".prose");
+    if (!reader || !prose) return;
+
+    var scrubKey = id + ":" + REVISION;
+    if (reader.dataset.naturalScrub === scrubKey) return;
+
+    // Canonical name cleanup without rebuilding elements or losing event handlers.
+    var walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      node.nodeValue = node.nodeValue
+        .replace(/\bMaria de Sousa\b/g, "Maria Mori")
+        .replace(/\bMara\b/g, "Maria");
+    }
+
+    prose.querySelectorAll("p").forEach(function (paragraph) {
+      var text = compactText(paragraph.textContent);
+
+      if (DROP_PARAGRAPHS.indexOf(text) !== -1) {
+        paragraph.remove();
+        return;
+      }
+
+      if (text.indexOf("A cut would have been the verdict.") !== -1) {
+        paragraph.innerHTML = paragraph.innerHTML.replace(
+          "A cut would have been the verdict.",
+          "A cut would have meant Maggie had stopped honestly expecting him back."
+        );
+      }
+
+      if (text.indexOf("Maggie calls it six more men she can feed before somebody asks them to sign.") !== -1) {
+        paragraph.innerHTML = paragraph.innerHTML.replace(
+          "Maggie calls it six more men she can feed before somebody asks them to sign.",
+          "The new length gives Maggie room to feed six more men when the house is full."
+        );
+      }
+
+      REPLACE_PARAGRAPHS.forEach(function (change) {
+        if (compactText(paragraph.textContent) === change.from) paragraph.textContent = change.to;
+      });
+    });
+
+    reader.dataset.naturalScrub = scrubKey;
   }
 
   function escapeHtml(text) {
@@ -51,6 +134,7 @@
     source = source.replace(/\r\n/g, "\n");
     source = source.replace(/<!--[^]*?-->\s*/g, "");
     source = source.replace(/\bMaria de Sousa\b/g, "Maria Mori");
+    source = source.replace(/\bMara\b/g, "Maria");
     source = source.replace(/^---\n[^]*?\n---\n+/, "");
     source = source.replace(/^#\s+.*\n+/, "");
 
@@ -125,11 +209,14 @@
     prose.innerHTML = markup;
     prose.dataset.naturalRevision = REVISION;
     reader.dataset.bookOneRevision = "natural-" + REVISION;
+    delete reader.dataset.naturalScrub;
+    scrubLegacyProse(id);
   }
 
   function apply() {
     scheduled = false;
     var id = routeId();
+    scrubLegacyProse(id);
     if (!PAGES[id]) return;
     loadMarkup(id).then(function (markup) { install(id, markup); });
   }
