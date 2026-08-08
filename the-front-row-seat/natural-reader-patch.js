@@ -8,6 +8,7 @@
   var PAGES = {
     "part-one-the-venture": PART_INTRO,
     "01-1603-the-boy-who-signed": NATURAL_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
+    "02-1626-the-man-who-came-back-wrong": NATURAL_ROOT + "02-1626-the-man-who-came-back-wrong-natural-revision.md",
     "05-1635-last-orders": NATURAL_ROOT + "05-1635-last-orders-natural-revision.md"
   };
   var cache = {};
@@ -65,7 +66,7 @@
       var block = raw.trim();
       if (!block) return;
 
-      if (block === "***" || block === "---") {
+      if (block === "***" || block === "---" || block === "* * *") {
         html.push('<hr class="scene">');
         return;
       }
