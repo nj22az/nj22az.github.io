@@ -1,16 +1,17 @@
 (function () {
   "use strict";
 
-  var REVISION = "20260808-south-land";
+  var REVISION = "20260808-last-orders";
   var NATURAL_COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
   var NATURAL_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + NATURAL_COMMIT + "/projects/literary/EIC/manuscript-editorial/";
   var PART_INTRO = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/aac1c3198e601cd680243c3944357e9cb46a7482/projects/literary/EIC/manuscript-live-canon/part-one-the-venture.md";
+  var LAST_ORDERS = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/8d8f740d66ff42812848ac179251a12a2db54a07/projects/literary/EIC/manuscript-editorial/05-1635-last-orders-natural-revision.md";
   var PAGES = {
     "part-one-the-venture": PART_INTRO,
     "01-1603-the-boy-who-signed": NATURAL_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
     "02-1626-the-man-who-came-back-wrong": NATURAL_ROOT + "02-1626-the-man-who-came-back-wrong-natural-revision.md",
     "04-1629-the-south-land": NATURAL_ROOT + "04-1629-the-south-land-natural-revision.md",
-    "05-1635-last-orders": NATURAL_ROOT + "05-1635-last-orders-natural-revision.md"
+    "05-1635-last-orders": LAST_ORDERS
   };
   var cache = {};
   var loading = {};
