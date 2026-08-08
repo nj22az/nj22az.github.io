@@ -2,7 +2,7 @@
  * Every constant for the Pelican scene. Nothing numeric or textual that
  * describes the room belongs anywhere else in this directory.
  *
- * The room is the Pelican's taproom on the night of the storm, 1603:
+ * The room is the Pelican's working taproom on the night of the storm, 1603:
  * low, dark, firelit, shutters barred against a three-day north-easter.
  * Units are metres.
  */
@@ -51,7 +51,7 @@ export const CENTRE_TABLE = {
   z: 0.15,
 };
 
-/** Twelve stools, one per soul in the room, plus the one by the fire. */
+/** Loose stools placed around the working taproom; no symbolic seating plan. */
 export const STOOL = {
   seatRadius: 0.155,
   seatThickness: 0.05,
@@ -62,7 +62,7 @@ export const STOOL = {
 
 /**
  * Stool placements. `barnaby` marks the stool nearest the fire — empty by
- * unspoken treaty from 1604 until Tom sits on it in 1612.
+ * unspoken habit from 1604 until Tom sits on it in 1612.
  */
 export const STOOL_PLACEMENTS = [
   { x: -0.7, z: -0.85, rotation: 0.3 },
@@ -135,8 +135,9 @@ export const EXTERIOR = {
   waterLevel: -3.5,
   /**
    * The ship-breaking shed up the foreshore. Roofed, open-sided, stacked with
-   * sawn pine — which is where the pale dust in Silas Rook's boot welt comes
-   * from, and how the room proves he was in it.
+   * sawn pine. Pale dust from this work later becomes one ordinary material
+   * detail that makes Rook's account harder to believe; it is not a courtroom
+   * exhibit or a single proof of guilt.
    */
   shedX: -15.4,
   shedZ: 5.2,
@@ -308,8 +309,8 @@ export const LIGHTING = {
 
 /**
  * Candles and a lantern. A single hearth cannot light a room nine metres
- * across, and a taproom with twelve men in it would have had tallow burning on
- * every table. Each is a real object with a real small light on it.
+ * across, and a busy storm-night taproom needs tallow burning on the tables.
+ * Each is a real object with a real small light on it.
  */
 export const CANDLES = [
   { x: CENTRE_TABLE.x - 0.72, y: CENTRE_TABLE.height, z: CENTRE_TABLE.z - 0.26, intensity: 2.4, distance: 4.6 },
@@ -363,7 +364,7 @@ export const PLAYER = {
 /**
  * Somewhere to jump to. A 1.3-metre doorway is a hard thing to steer a phone
  * through, and a visitor who cannot find the way out never learns there is an
- * outside. These are the four places worth standing.
+ * outside. These are the places worth standing.
  */
 export const PLACES = [
   { id: 'taproom', label: 'The taproom', x: -2.4, z: -1.95, yaw: 2.86, pitch: -0.07 },
@@ -428,9 +429,9 @@ export const INTERACTION = {
 };
 
 /**
- * The findable objects. Every line of `body` is canon from Book One; the
- * fault beneath the bar is the counter-ledger itself and opens to its 1603
- * contents, with a note on what it goes on to hold.
+ * The findable objects are physical details from Book One. Their cards describe
+ * what the characters encounter; they do not turn the taproom into a tribunal
+ * or assign any object the role of decisive evidence.
  */
 /**
  * How the frame is put together. Bloom thresholds are set so only the actual
@@ -457,7 +458,7 @@ export const HOTSPOTS = [
     body: [
       'Tom Fletcher’s mother’s. He leaves it on the counter the night he signs, and the wager it stands against is three words long.',
       'Till I’m back.',
-      'Maggie cuts his notch before dawn — the only notch she ever cuts early, and she never cuts one early again.',
+      'Before dawn Maggie cuts his notch early — a private act of fear she never repeats, not a judgement on whether he will return.',
     ],
     chapter: {
       id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
@@ -468,9 +469,9 @@ export const HOTSPOTS = [
     label: 'The fault beneath the bar',
     position: { x: BAR.x + 0.1, y: BAR.height - 0.28, z: BAR.z + BAR.faultOffsetZ },
     body: [
-      'A narrow fault in the old oak where spilled ale never reaches. Merchants do not think to search a tavern, because merchants do not believe taverns remember.',
-      'Tonight it holds the notches — one for every boy the sea did not give back — and, from this night, Matthew Bell’s confession, blood-marked, his full name on the outside in Arthur’s hand.',
-      'In time it takes Daniel Vale’s true copy of Amboyna, laid beside Bell’s page and not behind it; then Maria’s packet; then fourteen years of letters tied with sail-twine, from a man who thought nobody was catching them.',
+      'A narrow dry fault in the old oak. Maggie uses it because papers hidden there survive spilled ale, damp hands and casual searches.',
+      'After this night it holds Matthew Bell’s page. Over the years other papers and small objects join it because somebody needs a safe place to keep them.',
+      'It is storage before it becomes history: the ordinary gap where Maggie keeps what the official account has no reason to preserve.',
     ],
     chapter: {
       id: '21-1611-the-counter-ledger', title: 'The Return', kicker: 'Chapter Four', year: '1603–1612',
@@ -481,9 +482,9 @@ export const HOTSPOTS = [
     label: 'The centre table',
     position: { x: CENTRE_TABLE.x, y: CENTRE_TABLE.height + 0.03, z: CENTRE_TABLE.z },
     body: [
-      'The room reasons its way to the truth across this table: the wind arithmetic, the practised underhand grip, the pale pine dust in a boot welt.',
-      'Matthew Bell is carried in from the breaking shed and dies on it, having said one name and one word.',
-      'Anne. And no.',
+      'Most nights it carries cups, elbows and whatever Maggie needs out of the way. On this night she has it cleared because somebody is bleeding.',
+      'Rook’s story begins to fail around it in scraps: timing, wet clothing, a knife held from habit, pale yard dust where it should not be. No single detail settles anything.',
+      'Matthew Bell is carried in from the breaking shed and dies here after saying one name and one word: Anne. And no.',
     ],
     chapter: {
       id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
@@ -494,9 +495,9 @@ export const HOTSPOTS = [
     label: 'The stool nearest the fire',
     position: { x: 3.15, y: STOOL.height + 0.02, z: 0.9 },
     body: [
-      'Barnaby Gale’s, and he has a graveyard cough and knows exactly what it is. Money cannot buy a dying witness; his observation about the boots is what breaks Silas Rook.',
-      'He is dead by Whitsun 1604, exactly as he said he would be. The stool stays empty eight years by unspoken treaty.',
-      'In 1612 Tom comes home hardened and sits on it unasked, and the room lets him, and both of those things mean something.',
+      'Barnaby Gale sits here because the fire helps his cough. From the hearth he notices one small physical detail the healthier men have ignored.',
+      'He is dead by Whitsun 1604. The stool stays empty for years because regulars fall into habits around the places dead men used to occupy.',
+      'In 1612 Tom comes home hardened and sits there unasked. Nobody moves him.',
     ],
     chapter: {
       id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
@@ -507,9 +508,9 @@ export const HOTSPOTS = [
     label: 'The door',
     position: { x: DOOR.x + 0.24, y: 1.15, z: DOOR.z },
     body: [
-      'Silas Rook kicks it in out of a three-day gale, dragging a blood-soaked woman by the arm and calling her a murderer.',
-      'Tom Fletcher, twenty-two years old and four hours into owning a Company contract, puts himself between the room and the door. He takes a backhand across the face for it. He stays.',
-      'Ned Hawkins states the water-law that decides the night: she came here over water, so she is owed a landing.',
+      'Silas Rook comes through it out of a three-day gale with a blood-soaked woman in his grip and a story several people initially believe.',
+      'Tom Fletcher, twenty-two and carrying the Company contract he collected that afternoon, steps between Rook and Maria when Rook hurts her again. Tom does not yet know whether she is innocent.',
+      'Ned Hawkins is thinking about the river stairs, the weather and what happens if anybody tries to drag a frightened person back into the dark. His instinct is practical, not legal.',
     ],
     chapter: {
       id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
@@ -520,8 +521,8 @@ export const HOTSPOTS = [
     label: 'A bung mallet',
     position: { x: BAR.x + 0.14, y: BAR.height + 0.04, z: BAR.z + 0.75 },
     body: [
-      'Maggie’s, kept under the counter, never once in thirty years called a weapon.',
-      'It is a cooper’s tool in the hand of a woman who knows to an ounce what it can crack.',
+      'Maggie’s, kept under the counter and used for casks.',
+      'When violence enters her house she does what a keeper does first: protects the room, the furniture and the people who cannot protect themselves.',
     ],
     chapter: {
       id: '05-1635-last-orders', title: 'Last Orders', kicker: 'Epilogue', year: '1635',
@@ -533,9 +534,9 @@ export const HOTSPOTS = [
     reach: 26,
     position: { x: EXTERIOR.gibbetX + 0.6, y: 0.1, z: EXTERIOR.gibbetZ },
     body: [
-      'Admiralty ground. Pirates and mutineers were hanged at the low-water mark and left through three tides, so that everyone coming up the river on the flood had to pass them.',
-      'It is real and it was in use in 1603 — but not here. The site of Execution Dock is disputed between three riverside houses, and Rocque’s map of 1746 puts Execution Dock Stairs several hundred yards west, down toward King Henry’s Stairs. So it stands where you see it: downriver, at the edge of sight.',
-      'The cage is empty. The house has never needed a body on the page to make its point about what the river is for.',
+      'Admiralty ground. Pirates and mutineers were hanged at the low-water mark and left through three tides, so vessels coming upriver passed the bodies.',
+      'It was real and in use in 1603 — but not at this door. The site of Execution Dock is disputed, and Rocque’s 1746 map puts Execution Dock Stairs several hundred yards west, down toward King Henry’s Stairs.',
+      'The reconstruction therefore keeps the gibbet distant and empty rather than pretending the Pelican owned a spectacle that belonged to the wider reach.',
     ],
   },
   {
@@ -544,9 +545,9 @@ export const HOTSPOTS = [
     reach: 9,
     position: { x: EXTERIOR.shedX + 1.4, y: -0.95, z: EXTERIOR.shedZ - 1.1 },
     body: [
-      'A ship-breaking shed: hulls come up the mud and are taken to pieces here, and the pine comes out pale and dusty and goes off to be something else.',
-      'This is where Matthew Bell is caught. Silas Rook does it under this roof, out of the rain and out of the wind, in a quiet nobody on the Wall hears over a three-day gale — which is the whole of Arthur’s wind arithmetic, and the reason the room believes there was no scream to hear.',
-      'And it is how they have him. Carter finds pale pine dust in the welt of Rook’s boot, and there is nowhere else on this reach it could have come from. A man may lie. Sawdust does not.',
+      'A working ship-breaking shed: hulls come up the mud and are taken apart under cover. The sawn pine leaves a pale dust on boots and clothing.',
+      'Matthew Bell is attacked here, out of the worst of the wind. Maria later struggles to make the people in the Pelican understand that another injured person is still nearby.',
+      'Dust from the shed is one of several ordinary details that makes Rook’s neat account harder to inhabit. By the time people stop helping him, they still do not have a formal verdict — and he gets away.',
     ],
     chapter: {
       id: '01-1603-the-boy-who-signed', title: 'The Boy Who Signed', kicker: 'Chapter One', year: '1603',
@@ -557,8 +558,8 @@ export const HOTSPOTS = [
     label: 'Pelican Stairs',
     position: { x: EXTERIOR.stairRunStart - 0.35, y: 1.02, z: DOOR.z },
     body: [
-      'The tavern’s own stairs, and named for it. This house was the Pelican for its first centuries before it was the Devil’s Tavern and then the Prospect of Whitby, and the stairs beside it took the old name and kept it after the sign changed.',
-      'Watermen work them at every state of the tide. Maria de Sousa goes down them in the dark on the night of the storm, over the lean-to roof and barefoot, to a timber boat and a Dutchman who asks her nothing.',
+      'The tavern’s own stairs, named for the Pelican and still carrying the old name after the house later changes its sign.',
+      'Watermen work them at every state of the tide. Maria Mori goes down them in the dark after the storm night, barefoot from the roof, toward a timber boat and a Dutchman who leaves the choice to her.',
       'At low water the mud below is walkable. At high water none of it is there at all.',
     ],
     chapter: {
@@ -570,9 +571,9 @@ export const HOTSPOTS = [
     label: 'A stone bottle',
     position: { x: BAR.x + 0.2, y: BAR.height + 0.09, z: BAR.z + 1.5 },
     body: [
-      'Hendricks the waterman calls it Dutch physic and hands it round like medicine, which tonight it is.',
-      'He gives the room its thesis while he pours: a room can beat a bully, and no room has ever stood up to a paper.',
-      'In 1626 Carter pours the last of it onto these flagstones for the dead at Amboyna, and nobody in the house asks for it by name again for a generation.',
+      'Hendricks the waterman calls it Dutch physic and passes it like medicine, which on this night is near enough.',
+      'He helps with fragments of language and later gives Tom a practical warning about the kind of employer Rook can find after Wapping. He does not explain the meaning of the whole book to the room.',
+      'In 1626 Carter pours genever onto these flagstones for the dead at Amboyna. By then the bottle carries memories nobody in 1603 could have predicted.',
     ],
     chapter: {
       id: '02-1626-the-man-who-came-back-wrong', title: 'The Man Who Came Back Wrong', kicker: 'Chapter Twelve', year: '1626',
