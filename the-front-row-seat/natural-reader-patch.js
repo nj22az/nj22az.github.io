@@ -1,10 +1,15 @@
 (function () {
   "use strict";
 
-  var CHAPTER_ONE_ID = "01-1603-the-boy-who-signed";
-  var SOURCE = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/3d0acefd09c2e270928c52a844e5ed2345c8c74c/projects/literary/EIC/manuscript-editorial/01-1603-the-boy-who-signed-natural-opening.md";
-  var cachedMarkup = null;
-  var loading = null;
+  var REVISION = "20260808";
+  var COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
+  var RAW_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + COMMIT + "/projects/literary/EIC/manuscript-editorial/";
+  var PAGES = {
+    "01-1603-the-boy-who-signed": RAW_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
+    "05-1635-last-orders": RAW_ROOT + "05-1635-last-orders-natural-revision.md"
+  };
+  var cache = {};
+  var loading = {};
   var scheduled = false;
   var observer;
 
@@ -43,9 +48,10 @@
     source = source.replace(/\r\n/g, "\n");
     source = source.replace(/<!--[^]*?-->\s*/g, "");
     source = source.replace(/\bMaria de Sousa\b/g, "Maria Mori");
+    source = source.replace(/^---\n[^]*?\n---\n+/, "");
     source = source.replace(/^#\s+.*\n+/, "");
 
-    // The reader already renders the chapter epigraph in its header.
+    // The compiled reader already owns the chapter header and epigraph.
     if (source.trimStart().charAt(0) === ">") {
       source = source.trimStart().replace(/^(?:>.*(?:\n|$))+\s*/, "");
     }
@@ -82,46 +88,47 @@
     return html.join("\n");
   }
 
-  function loadMarkup() {
-    if (cachedMarkup) return Promise.resolve(cachedMarkup);
-    if (loading) return loading;
+  function loadMarkup(id) {
+    if (cache[id]) return Promise.resolve(cache[id]);
+    if (loading[id]) return loading[id];
 
-    loading = fetch(SOURCE, { cache: "no-store", mode: "cors" })
+    loading[id] = fetch(PAGES[id], { cache: "no-store", mode: "cors" })
       .then(function (response) {
-        if (!response.ok) throw new Error("Natural Chapter One source returned " + response.status);
+        if (!response.ok) throw new Error("Natural Book One source returned " + response.status + " for " + id);
         return response.text();
       })
       .then(function (text) {
-        cachedMarkup = markdownToReaderBody(text);
-        return cachedMarkup;
+        cache[id] = markdownToReaderBody(text);
+        return cache[id];
       })
       .catch(function (error) {
-        console.error("Natural Chapter One patch could not load:", error);
+        console.error("Natural Book One patch could not load:", error);
         return null;
       });
 
-    return loading;
+    return loading[id];
   }
 
-  function install(markup) {
-    if (!markup || routeId() !== CHAPTER_ONE_ID) return;
+  function install(id, markup) {
+    if (!markup || routeId() !== id) return;
 
     var reader = document.querySelector("article.reader");
     var prose = reader && reader.querySelector(".prose");
-    if (!prose || prose.dataset.naturalRevision === "20260808") return;
+    if (!prose || prose.dataset.naturalRevision === REVISION) return;
 
-    // Existing book layout moves prose nodes into .book-spreads. Replacing the
-    // prose body here deliberately removes those old pages. omnibus.js observes
-    // the mutation and builds fresh pages from the natural-revision nodes.
+    // omnibus.js may already have paginated the compiled prose. Clearing the
+    // prose removes those stale pages; its own observer then repaginates these
+    // revised nodes using the existing responsive book layout.
     prose.innerHTML = markup;
-    prose.dataset.naturalRevision = "20260808";
-    reader.dataset.bookOneRevision = "natural-20260808";
+    prose.dataset.naturalRevision = REVISION;
+    reader.dataset.bookOneRevision = "natural-" + REVISION;
   }
 
   function apply() {
     scheduled = false;
-    if (routeId() !== CHAPTER_ONE_ID) return;
-    loadMarkup().then(install);
+    var id = routeId();
+    if (!PAGES[id]) return;
+    loadMarkup(id).then(function (markup) { install(id, markup); });
   }
 
   function schedule() {
