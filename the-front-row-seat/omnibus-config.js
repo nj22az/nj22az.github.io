@@ -45,7 +45,7 @@ window.FRONT_ROW_OMNIBUS = {"books":[{"numeral":"I","word":"One","title":"The Ve
 (function () {
   "use strict";
   var script = document.createElement("script");
-  script.src = "./natural-reader-patch.js?v=20260808-natural";
+  script.src = "./natural-reader-patch.js?v=20260808-south-land";
   script.async = true;
   document.head.appendChild(script);
 })();
