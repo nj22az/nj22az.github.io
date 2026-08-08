@@ -2,11 +2,13 @@
   "use strict";
 
   var REVISION = "20260808";
-  var COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
-  var RAW_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + COMMIT + "/projects/literary/EIC/manuscript-editorial/";
+  var NATURAL_COMMIT = "3d0acefd09c2e270928c52a844e5ed2345c8c74c";
+  var NATURAL_ROOT = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/" + NATURAL_COMMIT + "/projects/literary/EIC/manuscript-editorial/";
+  var PART_INTRO = "https://raw.githubusercontent.com/nj22az/JDS_Documentation/aac1c3198e601cd680243c3944357e9cb46a7482/projects/literary/EIC/manuscript-live-canon/part-one-the-venture.md";
   var PAGES = {
-    "01-1603-the-boy-who-signed": RAW_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
-    "05-1635-last-orders": RAW_ROOT + "05-1635-last-orders-natural-revision.md"
+    "part-one-the-venture": PART_INTRO,
+    "01-1603-the-boy-who-signed": NATURAL_ROOT + "01-1603-the-boy-who-signed-natural-opening.md",
+    "05-1635-last-orders": NATURAL_ROOT + "05-1635-last-orders-natural-revision.md"
   };
   var cache = {};
   var loading = {};
@@ -51,7 +53,7 @@
     source = source.replace(/^---\n[^]*?\n---\n+/, "");
     source = source.replace(/^#\s+.*\n+/, "");
 
-    // The compiled reader already owns the chapter header and epigraph.
+    // The compiled reader already owns the page header and, where present, epigraph.
     if (source.trimStart().charAt(0) === ">") {
       source = source.trimStart().replace(/^(?:>.*(?:\n|$))+\s*/, "");
     }
