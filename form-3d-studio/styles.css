@@ -272,7 +272,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .viewer-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 19px 21px 15px; border-bottom: 1px solid var(--line); }
 .viewer-actions { display: flex; gap: 7px; }
 .canvas-wrap { min-height: 460px; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--panel-solid) 90%, transparent), color-mix(in srgb, var(--bg) 70%, transparent)); cursor: grab; touch-action: none; }
-.canvas-wrap.webgl-renderer {
+.canvas-wrap.webgl-renderer,
+.canvas-wrap.depth-renderer {
   background-color: color-mix(in srgb, var(--bg) 70%, var(--panel-solid));
   background-image:
     radial-gradient(ellipse 32% 10% at 50% 73%, rgba(20, 27, 38, 0.14), rgba(20, 27, 38, 0) 72%),

@@ -45,7 +45,7 @@
   var gl = canvas.getContext("webgl", { antialias: true, alpha: true, depth: true });
   var ctx = gl ? null : canvas.getContext("2d");
   var webglRenderer = null;
-  if (gl) canvasWrap.classList.add("webgl-renderer");
+  canvasWrap.classList.add(gl ? "webgl-renderer" : "depth-renderer");
 
   function loadState() {
     try {
@@ -569,6 +569,7 @@
   function render() {
     if (!model || !canvasWrap.clientWidth || !canvasWrap.clientHeight) return;
     var pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    if (!gl) pixelRatio = Math.max(1.35, pixelRatio);
     var width = canvasWrap.clientWidth;
     var height = canvasWrap.clientHeight;
     var targetWidth = Math.round(width * pixelRatio);
@@ -581,6 +582,8 @@
       renderWebGL(width, height, pixelRatio);
       return;
     }
+    renderSoftware3D(width, height, pixelRatio);
+    return;
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     ctx.clearRect(0, 0, width, height);
     drawGrid(width, height);
@@ -639,6 +642,96 @@
         ctx.stroke();
       }
     });
+  }
+
+  function renderSoftware3D(width, height, pixelRatio) {
+    var targetWidth = canvas.width;
+    var targetHeight = canvas.height;
+    var image = ctx.createImageData(targetWidth, targetHeight);
+    var pixels = image.data;
+    var depthBuffer = new Float32Array(targetWidth * targetHeight);
+    depthBuffer.fill(-Infinity);
+    var bounds = model.bounds;
+    var centre = [
+      (bounds.min[0] + bounds.max[0]) / 2,
+      (bounds.min[1] + bounds.max[1]) / 2,
+      (bounds.min[2] + bounds.max[2]) / 2
+    ];
+    var span = Math.max(bounds.size[0], bounds.size[1], bounds.size[2] * 1.8, 1);
+    var scale = Math.min(width * 0.72, height * 0.70) / span * view.zoom;
+    var offsetX = width / 2;
+    var offsetY = height / 2 + bounds.size[2] * scale * 0.1;
+    var light = normalise([-0.38, -0.46, 0.84]);
+    var halfLight = normalise([light[0], light[1], light[2] + 1]);
+    var visibleLines = [];
+
+    function screenPoint(vertex) {
+      return [
+        (offsetX + vertex[0] * scale) * pixelRatio,
+        (offsetY - vertex[1] * scale) * pixelRatio,
+        vertex[2]
+      ];
+    }
+
+    function rasterise(a, b, c, rgb) {
+      var minX = Math.max(0, Math.floor(Math.min(a[0], b[0], c[0])));
+      var maxX = Math.min(targetWidth - 1, Math.ceil(Math.max(a[0], b[0], c[0])));
+      var minY = Math.max(0, Math.floor(Math.min(a[1], b[1], c[1])));
+      var maxY = Math.min(targetHeight - 1, Math.ceil(Math.max(a[1], b[1], c[1])));
+      var denominator = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+      if (Math.abs(denominator) < 0.00001) return;
+      var inverse = 1 / denominator;
+      for (var y = minY; y <= maxY; y += 1) {
+        var py = y + 0.5;
+        for (var x = minX; x <= maxX; x += 1) {
+          var px = x + 0.5;
+          var weightA = ((b[1] - c[1]) * (px - c[0]) + (c[0] - b[0]) * (py - c[1])) * inverse;
+          var weightB = ((c[1] - a[1]) * (px - c[0]) + (a[0] - c[0]) * (py - c[1])) * inverse;
+          var weightC = 1 - weightA - weightB;
+          if (weightA < -0.0001 || weightB < -0.0001 || weightC < -0.0001) continue;
+          var depth = weightA * a[2] + weightB * b[2] + weightC * c[2];
+          var index = y * targetWidth + x;
+          if (depth <= depthBuffer[index]) continue;
+          depthBuffer[index] = depth;
+          var pixel = index * 4;
+          pixels[pixel] = rgb[0];
+          pixels[pixel + 1] = rgb[1];
+          pixels[pixel + 2] = rgb[2];
+          pixels[pixel + 3] = 255;
+        }
+      }
+    }
+
+    model.solids.forEach(function (solid) {
+      var rotated = solid.vertices.map(function (vertex) { return rotateVertex(vertex, centre); });
+      solid.faces.forEach(function (face) {
+        var a = rotated[face[0]], b = rotated[face[1]], c = rotated[face[2]];
+        var normal = faceNormal(a, b, c);
+        var diffuse = Math.max(0, dot(normal, light));
+        var specular = Math.pow(Math.max(0, dot(normal, halfLight)), 20) * 0.16;
+        var brightness = clamp(0.48 + diffuse * 0.38 + Math.max(0, normal[2]) * 0.08 + specular, 0.34, 1.03);
+        var rgb = parseColour(shadeColour(solid.color, brightness));
+        var projected = [screenPoint(a), screenPoint(b), screenPoint(c)];
+        rasterise(projected[0], projected[1], projected[2], rgb);
+        if (view.wireframe && normal[2] >= -0.01) visibleLines.push(projected);
+      });
+    });
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.putImageData(image, 0, 0);
+    if (view.wireframe) {
+      ctx.strokeStyle = "rgba(16, 18, 22, 0.48)";
+      ctx.lineWidth = Math.max(0.75, pixelRatio * 0.62);
+      ctx.lineJoin = "round";
+      visibleLines.forEach(function (triangle) {
+        ctx.beginPath();
+        ctx.moveTo(triangle[0][0], triangle[0][1]);
+        ctx.lineTo(triangle[1][0], triangle[1][1]);
+        ctx.lineTo(triangle[2][0], triangle[2][1]);
+        ctx.closePath();
+        ctx.stroke();
+      });
+    }
   }
 
   function initialiseWebGLRenderer() {
