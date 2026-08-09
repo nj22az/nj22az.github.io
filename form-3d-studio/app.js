@@ -187,6 +187,32 @@
     return solid;
   }
 
+  function tubeAlongX(name, color, cx, cy, cz, length, outerRadius, innerRadius, segments) {
+    var solid = new Solid(name, color);
+    var x0 = cx - length / 2;
+    var x1 = cx + length / 2;
+    var leftOuter = [], leftInner = [], rightOuter = [], rightInner = [];
+    for (var i = 0; i < segments; i += 1) {
+      var angle = Math.PI * 2 * i / segments;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      leftOuter.push(solid.vertex(x0, cy + cosine * outerRadius, cz + sine * outerRadius));
+      leftInner.push(solid.vertex(x0, cy + cosine * innerRadius, cz + sine * innerRadius));
+      rightOuter.push(solid.vertex(x1, cy + cosine * outerRadius, cz + sine * outerRadius));
+      rightInner.push(solid.vertex(x1, cy + cosine * innerRadius, cz + sine * innerRadius));
+    }
+    for (var j = 0; j < segments; j += 1) {
+      var next = (j + 1) % segments;
+      solid.quad(leftOuter[j], leftOuter[next], rightOuter[next], rightOuter[j]);
+      solid.quad(leftInner[j], rightInner[j], rightInner[next], leftInner[next]);
+      solid.triangle(leftOuter[j], leftInner[next], leftOuter[next]);
+      solid.triangle(leftOuter[j], leftInner[j], leftInner[next]);
+      solid.triangle(rightOuter[j], rightOuter[next], rightInner[next]);
+      solid.triangle(rightOuter[j], rightInner[next], rightInner[j]);
+    }
+    return solid;
+  }
+
   function transformSolid(solid, transform) {
     solid.vertices = solid.vertices.map(transform);
     return solid;
@@ -446,11 +472,13 @@
       var knuckleGap = Math.max(0.65, clearance * 2.2);
       var sideLength = Math.max(7, (hingeSpan - centreLength - knuckleGap * 2) / 2);
       var sideOffset = centreLength / 2 + knuckleGap + sideLength / 2;
+      var pinRadius = hingeRadius * 0.34;
+      var boreRadius = Math.min(hingeRadius - 0.65, pinRadius + clearance);
 
-      solids.push(cylinderAlongX("Left body hinge", hardwareColor, -sideOffset, pivotY, pivotZ, sideLength, hingeRadius, 28));
-      solids.push(cylinderAlongX("Right body hinge", hardwareColor, sideOffset, pivotY, pivotZ, sideLength, hingeRadius, 28));
-      solids.push(cylinderAlongX("Cover hinge", lidColor, 0, pivotY, pivotZ, centreLength, hingeRadius, 28));
-      solids.push(cylinderAlongX("Hinge pin", pinColor, 0, pivotY, pivotZ, hingeSpan + 1.4, hingeRadius * 0.34, 24));
+      solids.push(tubeAlongX("Left body hinge", hardwareColor, -sideOffset, pivotY, pivotZ, sideLength, hingeRadius, boreRadius, 28));
+      solids.push(tubeAlongX("Right body hinge", hardwareColor, sideOffset, pivotY, pivotZ, sideLength, hingeRadius, boreRadius, 28));
+      solids.push(tubeAlongX("Cover hinge", lidColor, 0, pivotY, pivotZ, centreLength, hingeRadius, boreRadius, 28));
+      solids.push(cylinderAlongX("Hinge pin", pinColor, 0, pivotY, pivotZ, hingeSpan + 1.4, pinRadius, 24));
 
       var bridgeDepth = Math.max(hingeRadius * 0.9, pivotY - depth / 2 + hingeRadius * 0.55);
       lidParts.push(makeBoxSolid(
@@ -466,37 +494,76 @@
     }
 
     if (state.boxLatch) {
-      var latchWidth = clamp(width * 0.18, 11, 19);
-      var catchDepth = Math.max(2.5, wall * 1.15);
+      var latchWidth = clamp(width * 0.19, 14, 22);
+      var latchRail = Math.max(1.45, wall * 0.62);
+      var latchHeight = 10;
+      var latchTop = pivotZ - lidThickness / 2 + 0.2;
+      var latchBottom = latchTop - latchHeight;
+      var latchY = -depth / 2 - 1.25;
+      var latchDepth = 2.5;
+      var catchWidth = Math.max(7, latchWidth - latchRail * 2 - clearance * 2);
+      var catchHeight = 1.8;
+      var catchZ = latchBottom + latchRail + clearance;
+      var catchDepth = Math.max(2.7, wall * 1.2);
       solids.push(makeBoxSolid(
-        "Latch catch",
+        "Latch catch tongue",
         hardwareColor,
         0,
         -depth / 2 - catchDepth * 0.24,
-        height - 7.5,
-        latchWidth,
+        catchZ,
+        catchWidth,
         catchDepth,
-        6.3
+        catchHeight
       ));
       lidParts.push(makeBoxSolid(
-        "Cover latch arm",
+        "Left latch rail",
+        lidColor,
+        -latchWidth / 2 + latchRail / 2,
+        latchY,
+        latchBottom,
+        latchRail,
+        latchDepth,
+        latchHeight
+      ));
+      lidParts.push(makeBoxSolid(
+        "Right latch rail",
+        lidColor,
+        latchWidth / 2 - latchRail / 2,
+        latchY,
+        latchBottom,
+        latchRail,
+        latchDepth,
+        latchHeight
+      ));
+      lidParts.push(makeBoxSolid(
+        "Latch top bridge",
         lidColor,
         0,
-        -depth / 2 - 0.9,
-        pivotZ - lidThickness / 2 - 4.8,
-        latchWidth * 0.72,
-        2.5,
-        lidThickness + 4.8
+        latchY,
+        latchTop - latchRail,
+        latchWidth,
+        latchDepth,
+        latchRail
+      ));
+      lidParts.push(makeBoxSolid(
+        "Latch hook bar",
+        hardwareColor,
+        0,
+        latchY,
+        latchBottom,
+        latchWidth,
+        latchDepth,
+        latchRail
       ));
       lidParts.push(makeBoxSolid(
         "Latch thumb tab",
         trimColor,
         0,
-        -depth / 2 - 2.2,
-        pivotZ - lidThickness / 2 - 2.1,
-        latchWidth * 0.48,
+        latchY - latchDepth / 2 - 0.55,
+        latchBottom,
+        latchWidth * 0.52,
         1.1,
-        2.8
+        latchRail
       ));
     }
 
