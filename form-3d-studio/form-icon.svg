@@ -1,19 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Form 3D Studio">
   <defs>
-    <linearGradient id="bg" x1="72" y1="56" x2="440" y2="456" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#42A5FF"/>
-      <stop offset="0.55" stop-color="#087BE8"/>
-      <stop offset="1" stop-color="#0053A7"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5ac8fa"/>
+      <stop offset="0.48" stop-color="#0a84ff"/>
+      <stop offset="1" stop-color="#0055d4"/>
     </linearGradient>
-    <linearGradient id="top" x1="144" y1="128" x2="364" y2="320" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" stop-opacity="0.98"/>
-      <stop offset="1" stop-color="#DDEEFF" stop-opacity="0.88"/>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#d7ebff"/>
     </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#003d8f" flood-opacity=".34"/>
+    </filter>
   </defs>
   <rect width="512" height="512" rx="116" fill="url(#bg)"/>
-  <path d="M256 108 386 181v150L256 404 126 331V181l130-73Z" fill="#FFFFFF" fill-opacity="0.22" stroke="#FFFFFF" stroke-opacity="0.72" stroke-width="15" stroke-linejoin="round"/>
-  <path d="m126 181 130 75 130-75-130-73-130 73Z" fill="url(#top)"/>
-  <path d="M256 256v148M126 181l130 75 130-75" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="round"/>
-  <circle cx="344" cy="134" r="37" fill="#FFFFFF"/>
-  <circle cx="344" cy="134" r="15" fill="#087BE8"/>
+  <g filter="url(#shadow)" stroke-linejoin="round">
+    <path d="m256 103 137 78-137 78-137-78Z" fill="url(#face)"/>
+    <path d="m119 181 137 78v150l-137-78Z" fill="#b8ddff"/>
+    <path d="m393 181-137 78v150l137-78Z" fill="#eaf6ff"/>
+    <path d="m256 103 137 78-137 78-137-78Z" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="8"/>
+  </g>
+  <path d="M224 184h45c34 0 57 17 57 43 0 16-9 28-24 35 20 6 31 20 31 39 0 31-25 49-64 49h-45Zm43 64c17 0 27-7 27-19s-10-18-27-18h-11v37Zm4 75c19 0 30-8 30-23 0-14-11-22-30-22h-15v45Z" fill="#0769c9" opacity=".94"/>
 </svg>

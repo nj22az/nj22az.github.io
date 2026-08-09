@@ -65,6 +65,16 @@ const CONFIG = {
       featured: true,
     },
     {
+      title: "Form 3D Studio",
+      description:
+        "Create image keychains and simple 3D forms privately in your browser, then export STL or STEP files for Shapr3D, slicers, and other CAD tools.",
+      url: "/form-3d-studio/",
+      icon: "printer3d",
+      tags: ["3D Modelling", "Offline", "STL & STEP"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "GitHub",
       description:
         "Open-source projects, tools, and code experiments. Browse repositories, contributions, and engineering side projects.",

@@ -1,31 +1,27 @@
 {
   "name": "Form 3D Studio",
   "short_name": "Form 3D",
-  "description": "Private, offline 3D modelling for keychains and simple printable forms.",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Offline 3D modelling for image keychains and simple printable forms.",
+  "id": "/form-3d-studio/",
+  "start_url": "/form-3d-studio/",
+  "scope": "/form-3d-studio/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f5f5f7",
-  "theme_color": "#f5f5f7",
-  "categories": ["design", "productivity", "utilities"],
+  "background_color": "#f2f2f7",
+  "theme_color": "#f2f2f7",
   "icons": [
     {
-      "src": "form-icon.svg",
+      "src": "./form-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
-  "file_handlers": [
+  "shortcuts": [
     {
-      "action": "./",
-      "accept": {
-        "image/png": [".png"],
-        "image/jpeg": [".jpg", ".jpeg"],
-        "image/webp": [".webp"],
-        "image/svg+xml": [".svg"]
-      }
+      "name": "Create a keychain",
+      "short_name": "Keychain",
+      "url": "/form-3d-studio/?mode=keychain"
     }
   ]
 }

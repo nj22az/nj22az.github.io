@@ -2,23 +2,217 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#111215" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="Private, offline 3D modelling for image keychains and simple printable forms." />
+    <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="An offline 3D modeller for image keychains and simple printable forms, with STL and STEP export." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Form 3D" />
-    <link rel="manifest" href="/form-3d-studio/manifest.webmanifest" />
-    <link rel="icon" href="/form-3d-studio/form-icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/form-3d-studio/form-icon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./form-icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
     <title>Form 3D Studio</title>
-    <script type="module" crossorigin src="/form-3d-studio/assets/index-pREUYDta.js"></script>
-    <link rel="stylesheet" crossorigin href="/form-3d-studio/assets/index-e9MUb0X2.css">
   </head>
   <body>
-    <div id="root"></div>
-    <noscript>Form 3D Studio requires JavaScript to create and export models.</noscript>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="https://nj22az.github.io/" aria-label="Back to The Office of Nils Johansson">
+          <img src="./form-icon.svg" alt="" width="36" height="36" />
+          <span><strong>Form 3D</strong><small>Studio</small></span>
+        </a>
+        <div class="top-actions">
+          <span class="offline-badge" id="connection-badge"><i></i><span>Works offline</span></span>
+          <button class="quiet-button hidden" id="install-button" type="button">Install app</button>
+          <a class="quiet-button" href="https://nj22az.github.io/">Home</a>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="control-panel glass-panel" aria-label="Model controls">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">New model</p>
+              <h1>Create</h1>
+            </div>
+            <button class="icon-button" id="reset-button" type="button" title="Reset model" aria-label="Reset model">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5" /></svg>
+            </button>
+          </div>
+
+          <div class="segmented" role="tablist" aria-label="Model type">
+            <button class="active" data-mode="keychain" type="button" role="tab" aria-selected="true">Keychain</button>
+            <button data-mode="box" type="button" role="tab" aria-selected="false">Box</button>
+            <button data-mode="cylinder" type="button" role="tab" aria-selected="false">Cylinder</button>
+          </div>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Artwork</span><span class="privacy-label">On-device only</span></div>
+            <label class="drop-zone" id="drop-zone" for="image-input">
+              <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+              <span class="drop-preview" id="drop-preview">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>
+              </span>
+              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small>PNG, JPG, WebP or SVG</small></span>
+              <span class="drop-action">Browse</span>
+            </label>
+            <div class="inline-actions">
+              <button class="text-button" id="demo-art-button" type="button">Use sample art</button>
+              <button class="text-button hidden" id="clear-art-button" type="button">Remove image</button>
+            </div>
+          </section>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Keychain dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="key-width">Width</label><output data-output="keyWidth">52</output>
+              <input id="key-width" data-param="keyWidth" type="range" min="32" max="85" step="1" value="52" />
+            </div>
+            <div class="range-row">
+              <label for="key-height">Height</label><output data-output="keyHeight">30</output>
+              <input id="key-height" data-param="keyHeight" type="range" min="18" max="55" step="1" value="30" />
+            </div>
+            <div class="range-row">
+              <label for="key-thickness">Base thickness</label><output data-output="keyThickness">3.0</output>
+              <input id="key-thickness" data-param="keyThickness" type="range" min="1.6" max="7" step="0.2" value="3" />
+            </div>
+            <div class="range-row">
+              <label for="hole-size">Ring hole</label><output data-output="holeSize">5.0</output>
+              <input id="hole-size" data-param="holeSize" type="range" min="3" max="9" step="0.2" value="5" />
+            </div>
+          </section>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Image relief</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="relief-height">Raised height</label><output data-output="reliefHeight">1.2</output>
+              <input id="relief-height" data-param="reliefHeight" type="range" min="0.4" max="3" step="0.1" value="1.2" />
+            </div>
+            <div class="range-row">
+              <label for="threshold">Image threshold</label><output data-output="threshold">48%</output>
+              <input id="threshold" data-param="threshold" type="range" min="5" max="95" step="1" value="48" />
+            </div>
+            <div class="range-row">
+              <label for="detail">Image detail</label><output data-output="detail">28</output>
+              <input id="detail" data-param="detail" type="range" min="12" max="44" step="2" value="28" />
+            </div>
+            <label class="switch-row"><span>Invert image</span><input id="invert" data-param="invert" type="checkbox" /><i></i></label>
+          </section>
+
+          <section class="control-section box-controls hidden">
+            <div class="section-title"><span>Box dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="box-width">Width</label><output data-output="boxWidth">40</output>
+              <input id="box-width" data-param="boxWidth" type="range" min="10" max="100" step="1" value="40" />
+            </div>
+            <div class="range-row">
+              <label for="box-depth">Depth</label><output data-output="boxDepth">30</output>
+              <input id="box-depth" data-param="boxDepth" type="range" min="10" max="100" step="1" value="30" />
+            </div>
+            <div class="range-row">
+              <label for="box-height">Height</label><output data-output="boxHeight">16</output>
+              <input id="box-height" data-param="boxHeight" type="range" min="2" max="60" step="1" value="16" />
+            </div>
+          </section>
+
+          <section class="control-section cylinder-controls hidden">
+            <div class="section-title"><span>Cylinder dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="cylinder-diameter">Diameter</label><output data-output="cylinderDiameter">36</output>
+              <input id="cylinder-diameter" data-param="cylinderDiameter" type="range" min="8" max="100" step="1" value="36" />
+            </div>
+            <div class="range-row">
+              <label for="cylinder-height">Height</label><output data-output="cylinderHeight">18</output>
+              <input id="cylinder-height" data-param="cylinderHeight" type="range" min="2" max="80" step="1" value="18" />
+            </div>
+            <div class="range-row">
+              <label for="cylinder-sides">Smoothness</label><output data-output="cylinderSides">48</output>
+              <input id="cylinder-sides" data-param="cylinderSides" type="range" min="16" max="96" step="8" value="48" />
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title"><span>Material colour</span></div>
+            <div class="swatches" role="group" aria-label="Preview colour">
+              <button class="swatch active" data-color="#0a84ff" style="--swatch:#0a84ff" type="button" aria-label="Blue"></button>
+              <button class="swatch" data-color="#30d158" style="--swatch:#30d158" type="button" aria-label="Green"></button>
+              <button class="swatch" data-color="#ff9f0a" style="--swatch:#ff9f0a" type="button" aria-label="Orange"></button>
+              <button class="swatch" data-color="#ff375f" style="--swatch:#ff375f" type="button" aria-label="Pink"></button>
+              <button class="swatch" data-color="#bf5af2" style="--swatch:#bf5af2" type="button" aria-label="Purple"></button>
+              <button class="swatch" data-color="#8e8e93" style="--swatch:#8e8e93" type="button" aria-label="Graphite"></button>
+            </div>
+          </section>
+        </aside>
+
+        <section class="viewer-panel glass-panel" aria-label="3D preview">
+          <div class="viewer-toolbar">
+            <div>
+              <p class="eyebrow">Live preview</p>
+              <h2 id="model-title">Image keychain</h2>
+            </div>
+            <div class="viewer-actions">
+              <button class="tool-button" id="view-reset" type="button" title="Reset view" aria-label="Reset view">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 5-3 5 3v6l-5 3-5-3Zm5 3 5-3m-5 3L7 7m5 3v6M5 17l-2 1 2 1m14-2 2 1-2 1" /></svg>
+              </button>
+              <button class="tool-button" id="wireframe-button" type="button" title="Toggle edges" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Zm0 0v9m8-4.5-8 4.5-8-4.5m8 4.5v9" /></svg>
+              </button>
+            </div>
+          </div>
+          <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="viewport" aria-label="Interactive 3D model preview"></canvas>
+            <div class="view-hint"><span>Drag to rotate</span><span>Scroll to zoom</span></div>
+            <div class="axis-gizmo" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+          </div>
+          <div class="model-stats">
+            <div><span>Size</span><strong id="size-stat">—</strong></div>
+            <div><span>Triangles</span><strong id="triangle-stat">—</strong></div>
+            <div><span>Bodies</span><strong id="body-stat">—</strong></div>
+            <div><span>Units</span><strong>Millimetres</strong></div>
+          </div>
+        </section>
+
+        <aside class="export-panel glass-panel" aria-label="Export controls">
+          <div class="panel-heading compact">
+            <div><p class="eyebrow">Ready to make</p><h2>Export</h2></div>
+            <span class="check-badge" title="Watertight bodies">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>
+            </span>
+          </div>
+          <p class="panel-copy">Your model is generated privately in this browser. Nothing is uploaded.</p>
+
+          <div class="export-card">
+            <div class="file-icon">STL</div>
+            <div><strong>STL mesh</strong><small>3D printing &amp; slicers</small></div>
+            <button data-export="stl" type="button">Export</button>
+          </div>
+          <div class="export-card">
+            <div class="file-icon step">STEP</div>
+            <div><strong>STEP solid</strong><small>Shapr3D &amp; CAD tools</small></div>
+            <button data-export="step" type="button">Export</button>
+          </div>
+
+          <div class="compatibility">
+            <span>Compatible with</span>
+            <div><b>Shapr3D</b><b>PrusaSlicer</b><b>Cura</b><b>Fusion</b></div>
+          </div>
+
+          <details>
+            <summary>Export notes</summary>
+            <p>STL is a printable triangle mesh. STEP uses faceted closed solids, so CAD apps can import each keychain component as an editable body.</p>
+          </details>
+
+          <div class="offline-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 18H6a4 4 0 0 1-.7-7.94A7 7 0 0 1 18.7 9a4.5 4.5 0 0 1-.7 9h-2.5M12 12v9m-3-3 3 3 3-3" /></svg>
+            <div><strong>Offline by design</strong><small>Open once, then use without internet.</small></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js" defer></script>
   </body>
 </html>
