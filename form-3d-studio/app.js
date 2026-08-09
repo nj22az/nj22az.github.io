@@ -42,7 +42,10 @@
 
   var canvas = document.getElementById("viewport");
   var canvasWrap = document.getElementById("canvas-wrap");
-  var ctx = canvas.getContext("2d");
+  var gl = canvas.getContext("webgl", { antialias: true, alpha: true, depth: true });
+  var ctx = gl ? null : canvas.getContext("2d");
+  var webglRenderer = null;
+  if (gl) canvasWrap.classList.add("webgl-renderer");
 
   function loadState() {
     try {
@@ -574,6 +577,10 @@
       canvas.width = targetWidth;
       canvas.height = targetHeight;
     }
+    if (gl) {
+      renderWebGL(width, height, pixelRatio);
+      return;
+    }
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     ctx.clearRect(0, 0, width, height);
     drawGrid(width, height);
@@ -632,6 +639,140 @@
         ctx.stroke();
       }
     });
+  }
+
+  function initialiseWebGLRenderer() {
+    if (webglRenderer) return webglRenderer;
+    var vertexSource = [
+      "attribute vec3 a_position;",
+      "attribute vec3 a_colour;",
+      "varying lowp vec3 v_colour;",
+      "void main(void) {",
+      "  gl_Position = vec4(a_position, 1.0);",
+      "  v_colour = a_colour;",
+      "}"
+    ].join("\n");
+    var fragmentSource = [
+      "precision mediump float;",
+      "varying lowp vec3 v_colour;",
+      "void main(void) {",
+      "  gl_FragColor = vec4(v_colour, 1.0);",
+      "}"
+    ].join("\n");
+
+    function shader(type, source) {
+      var compiled = gl.createShader(type);
+      gl.shaderSource(compiled, source);
+      gl.compileShader(compiled);
+      if (!gl.getShaderParameter(compiled, gl.COMPILE_STATUS)) {
+        throw new Error("3D preview shader error: " + gl.getShaderInfoLog(compiled));
+      }
+      return compiled;
+    }
+
+    var program = gl.createProgram();
+    gl.attachShader(program, shader(gl.VERTEX_SHADER, vertexSource));
+    gl.attachShader(program, shader(gl.FRAGMENT_SHADER, fragmentSource));
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      throw new Error("3D preview link error: " + gl.getProgramInfoLog(program));
+    }
+    webglRenderer = {
+      program: program,
+      position: gl.getAttribLocation(program, "a_position"),
+      colour: gl.getAttribLocation(program, "a_colour"),
+      positionBuffer: gl.createBuffer(),
+      colourBuffer: gl.createBuffer()
+    };
+    return webglRenderer;
+  }
+
+  function renderWebGL(width, height, pixelRatio) {
+    var renderer = initialiseWebGLRenderer();
+    var bounds = model.bounds;
+    var centre = [
+      (bounds.min[0] + bounds.max[0]) / 2,
+      (bounds.min[1] + bounds.max[1]) / 2,
+      (bounds.min[2] + bounds.max[2]) / 2
+    ];
+    var span = Math.max(bounds.size[0], bounds.size[1], bounds.size[2] * 1.8, 1);
+    var scale = Math.min(width * 0.72, height * 0.70) / span * view.zoom;
+    var offsetX = width / 2;
+    var offsetY = height / 2 + bounds.size[2] * scale * 0.1;
+    var depthScale = span * 1.35;
+    var positions = [];
+    var colours = [];
+    var linePositions = [];
+    var lineColours = [];
+    var light = normalise([-0.38, -0.46, 0.84]);
+    var halfLight = normalise([light[0], light[1], light[2] + 1]);
+
+    function projected(vertex) {
+      return [
+        (offsetX + vertex[0] * scale) / width * 2 - 1,
+        1 - (offsetY - vertex[1] * scale) / height * 2,
+        clamp(-vertex[2] / depthScale, -0.94, 0.94)
+      ];
+    }
+
+    model.solids.forEach(function (solid) {
+      var rotated = solid.vertices.map(function (vertex) { return rotateVertex(vertex, centre); });
+      solid.faces.forEach(function (face) {
+        var a = rotated[face[0]], b = rotated[face[1]], c = rotated[face[2]];
+        var normal = faceNormal(a, b, c);
+        var diffuse = Math.max(0, dot(normal, light));
+        var specular = Math.pow(Math.max(0, dot(normal, halfLight)), 20) * 0.16;
+        var brightness = clamp(0.48 + diffuse * 0.38 + Math.max(0, normal[2]) * 0.08 + specular, 0.34, 1.03);
+        var rgb = parseColour(shadeColour(solid.color, brightness)).map(function (channel) { return channel / 255; });
+        var projectedFace = [projected(a), projected(b), projected(c)];
+        projectedFace.forEach(function (point) {
+          positions.push(point[0], point[1], point[2]);
+          colours.push(rgb[0], rgb[1], rgb[2]);
+        });
+        if (view.wireframe) {
+          [[0, 1], [1, 2], [2, 0]].forEach(function (edge) {
+            var start = projectedFace[edge[0]];
+            var end = projectedFace[edge[1]];
+            linePositions.push(start[0], start[1], start[2] - 0.0015, end[0], end[1], end[2] - 0.0015);
+            lineColours.push(0.08, 0.09, 0.11, 0.08, 0.09, 0.11);
+          });
+        }
+      });
+    });
+
+    gl.viewport(0, 0, Math.round(width * pixelRatio), Math.round(height * pixelRatio));
+    gl.clearColor(0, 0, 0, 0);
+    gl.clearDepth(1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.disable(gl.CULL_FACE);
+    gl.useProgram(renderer.program);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, renderer.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(renderer.position);
+    gl.vertexAttribPointer(renderer.position, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, renderer.colourBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(renderer.colour);
+    gl.vertexAttribPointer(renderer.colour, 3, gl.FLOAT, false, 0, 0);
+    if (view.wireframe) {
+      gl.enable(gl.POLYGON_OFFSET_FILL);
+      gl.polygonOffset(1, 1);
+    }
+    gl.drawArrays(gl.TRIANGLES, 0, positions.length / 3);
+    gl.disable(gl.POLYGON_OFFSET_FILL);
+
+    if (view.wireframe && linePositions.length) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, renderer.positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.DYNAMIC_DRAW);
+      gl.vertexAttribPointer(renderer.position, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, renderer.colourBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineColours), gl.DYNAMIC_DRAW);
+      gl.vertexAttribPointer(renderer.colour, 3, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.LINES, 0, linePositions.length / 3);
+    }
   }
 
   function drawModelShadow(width, height, offsetX, offsetY, bounds, scale) {
