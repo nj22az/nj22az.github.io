@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v2";
+  var STORAGE_KEY = "form-3d-studio-settings-v3";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -12,9 +12,19 @@
     threshold: 48,
     detail: 28,
     invert: false,
-    boxWidth: 40,
-    boxDepth: 30,
-    boxHeight: 16,
+    boxWidth: 76,
+    boxDepth: 54,
+    boxHeight: 34,
+    boxCornerRadius: 7,
+    boxWall: 2.4,
+    boxBottom: 2.4,
+    boxClearance: 0.35,
+    boxLid: true,
+    boxHinges: true,
+    boxLatch: true,
+    boxLidThickness: 2.6,
+    boxLidAngle: 68,
+    boxHingeDiameter: 6,
     cylinderDiameter: 36,
     cylinderHeight: 18,
     cylinderSides: 48,
@@ -88,6 +98,110 @@
     solid.quad(v[1], v[2], v[6], v[5]);
     solid.quad(v[2], v[3], v[7], v[6]);
     solid.quad(v[3], v[0], v[4], v[7]);
+  }
+
+  function makeBoxSolid(name, color, cx, cy, z0, width, depth, height) {
+    var solid = new Solid(name, color);
+    addBox(solid, cx, cy, z0, width, depth, height);
+    return solid;
+  }
+
+  function hollowRoundedBox(name, color, width, depth, height, wall, floor, radius, cornerSteps) {
+    var solid = new Solid(name, color);
+    var outer = roundedRectangle(width, depth, radius, cornerSteps);
+    var inner = roundedRectangle(
+      Math.max(4, width - wall * 2),
+      Math.max(4, depth - wall * 2),
+      Math.max(0.8, radius - wall),
+      cornerSteps
+    );
+    var outerBottom = outer.map(function (point) { return solid.vertex(point[0], point[1], 0); });
+    var outerTop = outer.map(function (point) { return solid.vertex(point[0], point[1], height); });
+    var innerFloor = inner.map(function (point) { return solid.vertex(point[0], point[1], floor); });
+    var innerTop = inner.map(function (point) { return solid.vertex(point[0], point[1], height); });
+    var bottomCentre = solid.vertex(0, 0, 0);
+    var floorCentre = solid.vertex(0, 0, floor);
+
+    for (var i = 0; i < outer.length; i += 1) {
+      var next = (i + 1) % outer.length;
+      solid.triangle(bottomCentre, outerBottom[next], outerBottom[i]);
+      solid.triangle(floorCentre, innerFloor[i], innerFloor[next]);
+      solid.quad(outerBottom[i], outerBottom[next], outerTop[next], outerTop[i]);
+      solid.triangle(outerTop[i], outerTop[next], innerTop[next]);
+      solid.triangle(outerTop[i], innerTop[next], innerTop[i]);
+      solid.quad(innerFloor[i], innerTop[i], innerTop[next], innerFloor[next]);
+    }
+    return solid;
+  }
+
+  function roundedFrame(name, color, width, depth, wall, z0, z1, radius, cornerSteps) {
+    var solid = new Solid(name, color);
+    var outer = roundedRectangle(width, depth, radius, cornerSteps);
+    var inner = roundedRectangle(
+      Math.max(4, width - wall * 2),
+      Math.max(4, depth - wall * 2),
+      Math.max(0.7, radius - wall),
+      cornerSteps
+    );
+    var outerBottom = outer.map(function (point) { return solid.vertex(point[0], point[1], z0); });
+    var outerTop = outer.map(function (point) { return solid.vertex(point[0], point[1], z1); });
+    var innerBottom = inner.map(function (point) { return solid.vertex(point[0], point[1], z0); });
+    var innerTop = inner.map(function (point) { return solid.vertex(point[0], point[1], z1); });
+
+    for (var i = 0; i < outer.length; i += 1) {
+      var next = (i + 1) % outer.length;
+      solid.quad(outerBottom[i], outerBottom[next], outerTop[next], outerTop[i]);
+      solid.quad(innerBottom[i], innerTop[i], innerTop[next], innerBottom[next]);
+      solid.triangle(outerTop[i], outerTop[next], innerTop[next]);
+      solid.triangle(outerTop[i], innerTop[next], innerTop[i]);
+      solid.triangle(outerBottom[i], innerBottom[next], outerBottom[next]);
+      solid.triangle(outerBottom[i], innerBottom[i], innerBottom[next]);
+    }
+    return solid;
+  }
+
+  function cylinderAlongX(name, color, cx, cy, cz, length, radius, segments) {
+    var solid = new Solid(name, color);
+    var x0 = cx - length / 2;
+    var x1 = cx + length / 2;
+    var left = [];
+    var right = [];
+    for (var i = 0; i < segments; i += 1) {
+      var angle = Math.PI * 2 * i / segments;
+      var y = cy + Math.cos(angle) * radius;
+      var z = cz + Math.sin(angle) * radius;
+      left.push(solid.vertex(x0, y, z));
+      right.push(solid.vertex(x1, y, z));
+    }
+    var leftCentre = solid.vertex(x0, cy, cz);
+    var rightCentre = solid.vertex(x1, cy, cz);
+    for (var j = 0; j < segments; j += 1) {
+      var next = (j + 1) % segments;
+      solid.triangle(leftCentre, left[next], left[j]);
+      solid.triangle(rightCentre, right[j], right[next]);
+      solid.quad(left[j], left[next], right[next], right[j]);
+    }
+    return solid;
+  }
+
+  function transformSolid(solid, transform) {
+    solid.vertices = solid.vertices.map(transform);
+    return solid;
+  }
+
+  function rotateSolidAboutX(solid, pivotY, pivotZ, angleDegrees) {
+    var angle = angleDegrees * Math.PI / 180;
+    var cosine = Math.cos(angle);
+    var sine = Math.sin(angle);
+    return transformSolid(solid, function (vertex) {
+      var y = vertex[1] - pivotY;
+      var z = vertex[2] - pivotZ;
+      return [
+        vertex[0],
+        pivotY + cosine * y - sine * z,
+        pivotZ + sine * y + cosine * z
+      ];
+    });
   }
 
   function extrudeConvex(name, color, contour, z0, z1) {
@@ -268,9 +382,130 @@
   }
 
   function buildBox() {
-    var solid = new Solid("Box", state.color);
-    addBox(solid, 0, 0, 0, state.boxWidth, state.boxDepth, state.boxHeight);
-    return { name: "Simple box", solids: [solid] };
+    var width = state.boxWidth;
+    var depth = state.boxDepth;
+    var height = state.boxHeight;
+    var wall = Math.min(state.boxWall, width / 7, depth / 7);
+    var floor = Math.min(state.boxBottom, height / 3);
+    var radius = Math.min(state.boxCornerRadius, width / 4, depth / 4);
+    var solids = [hollowRoundedBox("Rounded box body", state.color, width, depth, height, wall, floor, radius, 8)];
+
+    if (!state.boxLid) return { name: "Open rounded box", solids: solids };
+
+    var clearance = state.boxClearance;
+    var lidThickness = state.boxLidThickness;
+    var hingeRadius = state.boxHingeDiameter / 2;
+    var pivotY = depth / 2 + (state.boxHinges ? hingeRadius * 0.46 : 0);
+    var pivotZ = height + clearance + lidThickness / 2;
+    var lidColor = mixColour(state.color, "#ffffff", 0.11);
+    var trimColor = mixColour(state.color, "#ffffff", 0.24);
+    var hardwareColor = mixColour(state.color, "#202126", 0.48);
+    var pinColor = "#9da1aa";
+    var lidParts = [];
+
+    lidParts.push(extrudeConvex(
+      "Fitted cover",
+      lidColor,
+      roundedRectangle(width + 0.8, depth + 0.8, radius + 0.35, 8),
+      pivotZ - lidThickness / 2,
+      pivotZ + lidThickness / 2
+    ));
+
+    var lipWidth = Math.max(8, width - wall * 2 - clearance * 2);
+    var lipDepth = Math.max(8, depth - wall * 2 - clearance * 2);
+    var lipWall = Math.min(1.6, Math.max(1.05, wall * 0.58));
+    var lipHeight = Math.min(3.2, Math.max(2, height * 0.1));
+    lidParts.push(roundedFrame(
+      "Cover locating lip",
+      mixColour(state.color, "#000000", 0.08),
+      lipWidth,
+      lipDepth,
+      lipWall,
+      pivotZ - lidThickness / 2 - lipHeight,
+      pivotZ - lidThickness / 2 + 0.04,
+      Math.max(1.3, radius - wall - clearance),
+      8
+    ));
+
+    if (width > 56 && depth > 42) {
+      lidParts.push(extrudeConvex(
+        "Cover detail panel",
+        trimColor,
+        roundedRectangle(width - 10, depth - 10, Math.max(2.5, radius - 2.5), 7),
+        pivotZ + lidThickness / 2 - 0.04,
+        pivotZ + lidThickness / 2 + 0.52
+      ));
+    }
+
+    if (state.boxHinges) {
+      var hingeSpan = width * 0.64;
+      var centreLength = Math.max(12, width * 0.22);
+      var knuckleGap = Math.max(0.65, clearance * 2.2);
+      var sideLength = Math.max(7, (hingeSpan - centreLength - knuckleGap * 2) / 2);
+      var sideOffset = centreLength / 2 + knuckleGap + sideLength / 2;
+
+      solids.push(cylinderAlongX("Left body hinge", hardwareColor, -sideOffset, pivotY, pivotZ, sideLength, hingeRadius, 28));
+      solids.push(cylinderAlongX("Right body hinge", hardwareColor, sideOffset, pivotY, pivotZ, sideLength, hingeRadius, 28));
+      solids.push(cylinderAlongX("Cover hinge", lidColor, 0, pivotY, pivotZ, centreLength, hingeRadius, 28));
+      solids.push(cylinderAlongX("Hinge pin", pinColor, 0, pivotY, pivotZ, hingeSpan + 1.4, hingeRadius * 0.34, 24));
+
+      var bridgeDepth = Math.max(hingeRadius * 0.9, pivotY - depth / 2 + hingeRadius * 0.55);
+      lidParts.push(makeBoxSolid(
+        "Cover hinge bridge",
+        lidColor,
+        0,
+        depth / 2 + bridgeDepth / 2 - 0.2,
+        pivotZ - lidThickness * 0.36,
+        centreLength * 0.82,
+        bridgeDepth,
+        lidThickness * 0.72
+      ));
+    }
+
+    if (state.boxLatch) {
+      var latchWidth = clamp(width * 0.18, 11, 19);
+      var catchDepth = Math.max(2.5, wall * 1.15);
+      solids.push(makeBoxSolid(
+        "Latch catch",
+        hardwareColor,
+        0,
+        -depth / 2 - catchDepth * 0.24,
+        height - 7.5,
+        latchWidth,
+        catchDepth,
+        6.3
+      ));
+      lidParts.push(makeBoxSolid(
+        "Cover latch arm",
+        lidColor,
+        0,
+        -depth / 2 - 0.9,
+        pivotZ - lidThickness / 2 - 4.8,
+        latchWidth * 0.72,
+        2.5,
+        lidThickness + 4.8
+      ));
+      lidParts.push(makeBoxSolid(
+        "Latch thumb tab",
+        trimColor,
+        0,
+        -depth / 2 - 2.2,
+        pivotZ - lidThickness / 2 - 2.1,
+        latchWidth * 0.48,
+        1.1,
+        2.8
+      ));
+    }
+
+    var openingAngle = -state.boxLidAngle;
+    lidParts.forEach(function (part) {
+      rotateSolidAboutX(part, pivotY, pivotZ, openingAngle);
+      solids.push(part);
+    });
+
+    var name = state.boxHinges ? "Hinged storage box" : "Fitted storage box";
+    if (state.boxLatch) name = state.boxHinges ? "Hinged latch box" : "Latching storage box";
+    return { name: name, solids: solids };
   }
 
   function buildCylinder() {
@@ -354,14 +589,20 @@
     var offsetX = width / 2;
     var offsetY = height / 2 + bounds.size[2] * scale * 0.1;
     var triangles = [];
-    var light = normalise([0.35, -0.45, 0.82]);
+    var light = normalise([-0.38, -0.46, 0.84]);
+    var halfLight = normalise([light[0], light[1], light[2] + 1]);
+
+    drawModelShadow(width, height, offsetX, offsetY, bounds, scale);
 
     model.solids.forEach(function (solid) {
       var rotated = solid.vertices.map(function (vertex) { return rotateVertex(vertex, centre); });
       solid.faces.forEach(function (face) {
         var a = rotated[face[0]], b = rotated[face[1]], c = rotated[face[2]];
         var normal = faceNormal(a, b, c);
-        var brightness = clamp(0.56 + dot(normal, light) * 0.32, 0.30, 0.94);
+        if (normal[2] < -0.002) return;
+        var diffuse = Math.max(0, dot(normal, light));
+        var specular = Math.pow(Math.max(0, dot(normal, halfLight)), 18) * 0.18;
+        var brightness = clamp(0.48 + diffuse * 0.38 + Math.max(0, normal[2]) * 0.08 + specular, 0.34, 1.03);
         triangles.push({
           points: [a, b, c],
           depth: (a[2] + b[2] + c[2]) / 3,
@@ -382,12 +623,33 @@
       ctx.closePath();
       ctx.fillStyle = triangle.colour;
       ctx.fill();
+      ctx.strokeStyle = triangle.colour;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
       if (view.wireframe) {
-        ctx.strokeStyle = "rgba(20, 20, 24, 0.33)";
-        ctx.lineWidth = 0.65;
+        ctx.strokeStyle = "rgba(20, 20, 24, 0.38)";
+        ctx.lineWidth = 0.72;
         ctx.stroke();
       }
     });
+  }
+
+  function drawModelShadow(width, height, offsetX, offsetY, bounds, scale) {
+    var shadowWidth = Math.min(width * 0.62, Math.max(80, bounds.size[0] * scale * 0.78));
+    var shadowHeight = Math.min(height * 0.12, Math.max(18, bounds.size[1] * scale * 0.13));
+    var centreY = Math.min(height * 0.82, offsetY + bounds.size[1] * scale * 0.2);
+    ctx.save();
+    ctx.translate(offsetX, centreY);
+    ctx.scale(1, shadowHeight / shadowWidth);
+    var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, shadowWidth / 2);
+    gradient.addColorStop(0, "rgba(18, 24, 34, 0.17)");
+    gradient.addColorStop(0.56, "rgba(18, 24, 34, 0.075)");
+    gradient.addColorStop(1, "rgba(18, 24, 34, 0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, shadowWidth / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   function drawGrid(width, height) {
@@ -571,7 +833,9 @@
 
   function displayValue(name, value) {
     if (name === "threshold") return Math.round(value) + "%";
-    if (["keyThickness", "holeSize", "reliefHeight"].includes(name)) return Number(value).toFixed(1);
+    if (name === "boxLidAngle") return Math.round(value) + "°";
+    if (name === "boxClearance") return Number(value).toFixed(2);
+    if (["keyThickness", "holeSize", "reliefHeight", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
     return String(Math.round(value));
   }
 

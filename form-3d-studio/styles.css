@@ -247,11 +247,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .range-row input[type="range"]::-moz-range-thumb { width: 17px; height: 17px; border-radius: 50%; background: white; border: 0; box-shadow: 0 1px 5px rgba(0,0,0,.25); cursor: pointer; }
 
 .switch-row { display: flex; justify-content: space-between; align-items: center; margin: 14px 3px 2px; font-size: 13px; cursor: pointer; }
+.switch-row + .switch-row { margin-top: 11px; }
 .switch-row input { position: absolute; opacity: 0; }
 .switch-row i { width: 42px; height: 25px; border-radius: 99px; background: var(--soft-hover); position: relative; transition: background 150ms ease; }
 .switch-row i::after { content: ""; width: 21px; height: 21px; position: absolute; left: 2px; top: 2px; border-radius: 50%; background: white; box-shadow: 0 1px 4px rgba(0,0,0,.22); transition: transform 150ms ease; }
 .switch-row input:checked + i { background: var(--green); }
 .switch-row input:checked + i::after { transform: translateX(17px); }
+
+.control-note {
+  margin: 14px 3px 0;
+  padding: 10px 11px;
+  border-radius: 11px;
+  color: var(--secondary);
+  background: var(--soft);
+  font-size: 10px;
+  line-height: 1.45;
+}
 
 .swatches { display: flex; gap: 10px; padding: 1px 3px 3px; }
 .swatch { width: 28px; height: 28px; border: 0; border-radius: 50%; background: var(--swatch); cursor: pointer; box-shadow: 0 0 0 2px var(--panel-solid), 0 0 0 3px transparent; }

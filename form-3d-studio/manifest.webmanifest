@@ -1,7 +1,7 @@
 {
   "name": "Form 3D Studio",
   "short_name": "Form 3D",
-  "description": "Offline 3D modelling for image keychains and simple printable forms.",
+  "description": "Offline 3D modelling for image keychains, hinged boxes, and printable forms.",
   "id": "/form-3d-studio/",
   "start_url": "/form-3d-studio/",
   "scope": "/form-3d-studio/",
