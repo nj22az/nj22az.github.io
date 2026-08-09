@@ -213,6 +213,40 @@
     return solid;
   }
 
+  function frameAlongY(name, color, cx, cy, cz, outerWidth, outerHeight, frameWidth, depth) {
+    var solid = new Solid(name, color);
+    var innerWidth = Math.max(2, outerWidth - frameWidth * 2);
+    var innerHeight = Math.max(2, outerHeight - frameWidth * 2);
+    var y0 = cy - depth / 2;
+    var y1 = cy + depth / 2;
+    var outer = [
+      [cx - outerWidth / 2, cz - outerHeight / 2],
+      [cx + outerWidth / 2, cz - outerHeight / 2],
+      [cx + outerWidth / 2, cz + outerHeight / 2],
+      [cx - outerWidth / 2, cz + outerHeight / 2]
+    ];
+    var inner = [
+      [cx - innerWidth / 2, cz - innerHeight / 2],
+      [cx + innerWidth / 2, cz - innerHeight / 2],
+      [cx + innerWidth / 2, cz + innerHeight / 2],
+      [cx - innerWidth / 2, cz + innerHeight / 2]
+    ];
+    var frontOuter = outer.map(function (point) { return solid.vertex(point[0], y0, point[1]); });
+    var backOuter = outer.map(function (point) { return solid.vertex(point[0], y1, point[1]); });
+    var frontInner = inner.map(function (point) { return solid.vertex(point[0], y0, point[1]); });
+    var backInner = inner.map(function (point) { return solid.vertex(point[0], y1, point[1]); });
+    for (var i = 0; i < 4; i += 1) {
+      var next = (i + 1) % 4;
+      solid.triangle(frontOuter[i], frontOuter[next], frontInner[next]);
+      solid.triangle(frontOuter[i], frontInner[next], frontInner[i]);
+      solid.triangle(backOuter[i], backInner[next], backOuter[next]);
+      solid.triangle(backOuter[i], backInner[i], backInner[next]);
+      solid.quad(frontOuter[i], backOuter[i], backOuter[next], frontOuter[next]);
+      solid.quad(frontInner[i], frontInner[next], backInner[next], backInner[i]);
+    }
+    return solid;
+  }
+
   function transformSolid(solid, transform) {
     solid.vertices = solid.vertices.map(transform);
     return solid;
@@ -515,45 +549,16 @@
         catchDepth,
         catchHeight
       ));
-      lidParts.push(makeBoxSolid(
-        "Left latch rail",
-        lidColor,
-        -latchWidth / 2 + latchRail / 2,
-        latchY,
-        latchBottom,
-        latchRail,
-        latchDepth,
-        latchHeight
-      ));
-      lidParts.push(makeBoxSolid(
-        "Right latch rail",
-        lidColor,
-        latchWidth / 2 - latchRail / 2,
-        latchY,
-        latchBottom,
-        latchRail,
-        latchDepth,
-        latchHeight
-      ));
-      lidParts.push(makeBoxSolid(
-        "Latch top bridge",
+      lidParts.push(frameAlongY(
+        "Cover clasp frame",
         lidColor,
         0,
         latchY,
-        latchTop - latchRail,
+        (latchTop + latchBottom) / 2,
         latchWidth,
-        latchDepth,
-        latchRail
-      ));
-      lidParts.push(makeBoxSolid(
-        "Latch hook bar",
-        hardwareColor,
-        0,
-        latchY,
-        latchBottom,
-        latchWidth,
-        latchDepth,
-        latchRail
+        latchHeight,
+        latchRail,
+        latchDepth
       ));
       lidParts.push(makeBoxSolid(
         "Latch thumb tab",
