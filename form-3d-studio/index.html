@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=7" />
+    <link rel="stylesheet" href="./styles.css?v=8" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -141,7 +141,7 @@
             <div class="section-title"><span>Lid &amp; hardware</span><span>Assembly</span></div>
             <label class="switch-row"><span>Add fitted cover</span><input id="box-lid" data-param="boxLid" type="checkbox" checked /><i></i></label>
             <label class="switch-row"><span>Add print-in-place hinges</span><input id="box-hinges" data-param="boxHinges" type="checkbox" checked /><i></i></label>
-            <label class="switch-row"><span>Add clasp latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Add geared cam latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
             <div class="range-row">
               <label for="box-lid-thickness">Cover thickness</label><output data-output="boxLidThickness">2.6</output>
               <input id="box-lid-thickness" data-param="boxLidThickness" type="range" min="1.8" max="5" step="0.1" value="2.6" />
@@ -154,7 +154,19 @@
               <label for="box-hinge-size">Hinge diameter</label><output data-output="boxHingeDiameter">6.0</output>
               <input id="box-hinge-size" data-param="boxHingeDiameter" type="range" min="4" max="9" step="0.2" value="6" />
             </div>
-            <p class="control-note">The preview opens the lid around its real hinge axis. Set the angle to 0° for a closed export.</p>
+            <div class="range-row gear-controls">
+              <label for="box-gear-module">Gear module</label><output data-output="boxGearModule">0.80</output>
+              <input id="box-gear-module" data-param="boxGearModule" type="range" min="0.65" max="1.05" step="0.05" value="0.8" />
+            </div>
+            <div class="range-row gear-controls">
+              <label for="box-gear-turn">Drive rotation</label><output data-output="boxGearTurn">0° · locked</output>
+              <input id="box-gear-turn" data-param="boxGearTurn" type="range" min="0" max="110" step="2" value="0" />
+            </div>
+            <div class="mechanism-actions gear-controls" role="group" aria-label="Latch position">
+              <button class="active" data-gear-state="0" type="button" aria-pressed="true">Lock</button>
+              <button data-gear-state="96" type="button" aria-pressed="false">Release</button>
+            </div>
+            <p class="control-note">The 12:16 spur pair gives a 4:3 reduction and drives a dead-centre cam hook around a reinforced striker. Set the lid to 0° and the drive to Locked for a closed print-in-place export.</p>
           </section>
 
           <section class="control-section cylinder-controls hidden">
@@ -253,6 +265,6 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=7" defer></script>
+    <script src="./app.js?v=8" defer></script>
   </body>
 </html>

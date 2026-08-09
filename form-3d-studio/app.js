@@ -25,6 +25,8 @@
     boxLidThickness: 2.6,
     boxLidAngle: 68,
     boxHingeDiameter: 6,
+    boxGearModule: 0.8,
+    boxGearTurn: 0,
     cylinderDiameter: 36,
     cylinderHeight: 18,
     cylinderSides: 48,
@@ -38,6 +40,7 @@
   var rebuildTimer = 0;
   var toastTimer = 0;
   var installPrompt = null;
+  var mechanismAnimation = 0;
   var view = { yaw: -0.62, pitch: -0.9, zoom: 1, wireframe: false };
 
   var canvas = document.getElementById("viewport");
@@ -213,6 +216,152 @@
     return solid;
   }
 
+  function cylinderAlongY(name, color, cx, cy, cz, length, radius, segments) {
+    var solid = new Solid(name, color);
+    var y0 = cy - length / 2;
+    var y1 = cy + length / 2;
+    var front = [];
+    var back = [];
+    for (var i = 0; i < segments; i += 1) {
+      var angle = Math.PI * 2 * i / segments;
+      var x = cx + Math.cos(angle) * radius;
+      var z = cz + Math.sin(angle) * radius;
+      front.push(solid.vertex(x, y0, z));
+      back.push(solid.vertex(x, y1, z));
+    }
+    var frontCentre = solid.vertex(cx, y0, cz);
+    var backCentre = solid.vertex(cx, y1, cz);
+    for (var j = 0; j < segments; j += 1) {
+      var next = (j + 1) % segments;
+      solid.triangle(frontCentre, front[j], front[next]);
+      solid.triangle(backCentre, back[next], back[j]);
+      solid.quad(front[j], back[j], back[next], front[next]);
+    }
+    return solid;
+  }
+
+  function tubeAlongY(name, color, cx, cy, cz, length, outerRadius, innerRadius, segments) {
+    var solid = new Solid(name, color);
+    var y0 = cy - length / 2;
+    var y1 = cy + length / 2;
+    var frontOuter = [], frontInner = [], backOuter = [], backInner = [];
+    for (var i = 0; i < segments; i += 1) {
+      var angle = Math.PI * 2 * i / segments;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      frontOuter.push(solid.vertex(cx + cosine * outerRadius, y0, cz + sine * outerRadius));
+      frontInner.push(solid.vertex(cx + cosine * innerRadius, y0, cz + sine * innerRadius));
+      backOuter.push(solid.vertex(cx + cosine * outerRadius, y1, cz + sine * outerRadius));
+      backInner.push(solid.vertex(cx + cosine * innerRadius, y1, cz + sine * innerRadius));
+    }
+    for (var j = 0; j < segments; j += 1) {
+      var next = (j + 1) % segments;
+      solid.quad(frontOuter[j], backOuter[j], backOuter[next], frontOuter[next]);
+      solid.quad(frontInner[j], frontInner[next], backInner[next], backInner[j]);
+      solid.triangle(frontOuter[j], frontInner[next], frontInner[j]);
+      solid.triangle(frontOuter[j], frontOuter[next], frontInner[next]);
+      solid.triangle(backOuter[j], backInner[j], backInner[next]);
+      solid.triangle(backOuter[j], backInner[next], backOuter[next]);
+    }
+    return solid;
+  }
+
+  function extrudeXZConvexAlongY(name, color, contour, y0, y1) {
+    var solid = new Solid(name, color);
+    var front = contour.map(function (point) { return solid.vertex(point[0], y0, point[1]); });
+    var back = contour.map(function (point) { return solid.vertex(point[0], y1, point[1]); });
+    var centre = contour.reduce(function (sum, point) {
+      return [sum[0] + point[0], sum[1] + point[1]];
+    }, [0, 0]);
+    centre[0] /= contour.length;
+    centre[1] /= contour.length;
+    var frontCentre = solid.vertex(centre[0], y0, centre[1]);
+    var backCentre = solid.vertex(centre[0], y1, centre[1]);
+    for (var i = 0; i < contour.length; i += 1) {
+      var next = (i + 1) % contour.length;
+      solid.triangle(frontCentre, front[i], front[next]);
+      solid.triangle(backCentre, back[next], back[i]);
+      solid.quad(front[i], back[i], back[next], front[next]);
+    }
+    return solid;
+  }
+
+  function spurGearAlongY(name, color, cx, cy, cz, teeth, moduleSize, thickness, boreRadius, angleDegrees) {
+    var solid = new Solid(name, color);
+    var pointCount = teeth * 4;
+    var pitchRadius = teeth * moduleSize / 2;
+    var outerRadius = pitchRadius + moduleSize;
+    var rootRadius = Math.max(boreRadius + moduleSize, pitchRadius - moduleSize * 1.25);
+    var rotation = angleDegrees * Math.PI / 180;
+    var y0 = cy - thickness / 2;
+    var y1 = cy + thickness / 2;
+    var frontOuter = [], frontInner = [], backOuter = [], backInner = [];
+    for (var i = 0; i < pointCount; i += 1) {
+      var angle = rotation + Math.PI * 2 * i / pointCount;
+      var toothPoint = i % 4;
+      var radius = toothPoint === 1 || toothPoint === 2 ? outerRadius : rootRadius;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      frontOuter.push(solid.vertex(cx + cosine * radius, y0, cz + sine * radius));
+      frontInner.push(solid.vertex(cx + cosine * boreRadius, y0, cz + sine * boreRadius));
+      backOuter.push(solid.vertex(cx + cosine * radius, y1, cz + sine * radius));
+      backInner.push(solid.vertex(cx + cosine * boreRadius, y1, cz + sine * boreRadius));
+    }
+    for (var j = 0; j < pointCount; j += 1) {
+      var next = (j + 1) % pointCount;
+      solid.quad(frontOuter[j], backOuter[j], backOuter[next], frontOuter[next]);
+      solid.quad(frontInner[j], frontInner[next], backInner[next], backInner[j]);
+      solid.triangle(frontOuter[j], frontInner[next], frontInner[j]);
+      solid.triangle(frontOuter[j], frontOuter[next], frontInner[next]);
+      solid.triangle(backOuter[j], backInner[j], backInner[next]);
+      solid.triangle(backOuter[j], backInner[next], backOuter[next]);
+    }
+    return solid;
+  }
+
+  function barBetweenXZAlongY(name, color, x0, z0, x1, z1, width, y0, y1) {
+    var dx = x1 - x0;
+    var dz = z1 - z0;
+    var length = Math.max(0.001, Math.hypot(dx, dz));
+    var nx = -dz / length * width / 2;
+    var nz = dx / length * width / 2;
+    return extrudeXZConvexAlongY(name, color, [
+      [x0 + nx, z0 + nz],
+      [x0 - nx, z0 - nz],
+      [x1 - nx, z1 - nz],
+      [x1 + nx, z1 + nz]
+    ], y0, y1);
+  }
+
+  function arcHookAlongY(name, color, cx, cy, cz, innerRadius, outerRadius, startDegrees, endDegrees, thickness, steps) {
+    var solid = new Solid(name, color);
+    var y0 = cy - thickness / 2;
+    var y1 = cy + thickness / 2;
+    var frontOuter = [], frontInner = [], backOuter = [], backInner = [];
+    for (var i = 0; i <= steps; i += 1) {
+      var degrees = startDegrees + (endDegrees - startDegrees) * i / steps;
+      var angle = degrees * Math.PI / 180;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      frontOuter.push(solid.vertex(cx + cosine * outerRadius, y0, cz + sine * outerRadius));
+      frontInner.push(solid.vertex(cx + cosine * innerRadius, y0, cz + sine * innerRadius));
+      backOuter.push(solid.vertex(cx + cosine * outerRadius, y1, cz + sine * outerRadius));
+      backInner.push(solid.vertex(cx + cosine * innerRadius, y1, cz + sine * innerRadius));
+    }
+    for (var j = 0; j < steps; j += 1) {
+      var next = j + 1;
+      solid.quad(frontOuter[j], backOuter[j], backOuter[next], frontOuter[next]);
+      solid.quad(frontInner[j], frontInner[next], backInner[next], backInner[j]);
+      solid.triangle(frontOuter[j], frontInner[next], frontInner[j]);
+      solid.triangle(frontOuter[j], frontOuter[next], frontInner[next]);
+      solid.triangle(backOuter[j], backInner[j], backInner[next]);
+      solid.triangle(backOuter[j], backInner[next], backOuter[next]);
+    }
+    solid.quad(frontOuter[0], frontInner[0], backInner[0], backOuter[0]);
+    solid.quad(frontOuter[steps], backOuter[steps], backInner[steps], frontInner[steps]);
+    return solid;
+  }
+
   function frameAlongY(name, color, cx, cy, cz, outerWidth, outerHeight, frameWidth, depth) {
     var solid = new Solid(name, color);
     var innerWidth = Math.max(2, outerWidth - frameWidth * 2);
@@ -263,6 +412,21 @@
         vertex[0],
         pivotY + cosine * y - sine * z,
         pivotZ + sine * y + cosine * z
+      ];
+    });
+  }
+
+  function rotateSolidAboutY(solid, pivotX, pivotZ, angleDegrees) {
+    var angle = angleDegrees * Math.PI / 180;
+    var cosine = Math.cos(angle);
+    var sine = Math.sin(angle);
+    return transformSolid(solid, function (vertex) {
+      var x = vertex[0] - pivotX;
+      var z = vertex[2] - pivotZ;
+      return [
+        pivotX + cosine * x - sine * z,
+        vertex[1],
+        pivotZ + sine * x + cosine * z
       ];
     });
   }
@@ -528,47 +692,317 @@
     }
 
     if (state.boxLatch) {
-      var latchWidth = clamp(width * 0.19, 14, 22);
-      var latchRail = Math.max(1.45, wall * 0.62);
-      var latchHeight = 10;
-      var latchTop = pivotZ - lidThickness / 2 + 0.2;
-      var latchBottom = latchTop - latchHeight;
-      var latchY = -depth / 2 - 1.25;
-      var latchDepth = 2.5;
-      var catchWidth = Math.max(7, latchWidth - latchRail * 2 - clearance * 2);
-      var catchHeight = 1.8;
-      var catchZ = latchBottom + latchRail + clearance;
-      var catchDepth = Math.max(2.7, wall * 1.2);
-      solids.push(makeBoxSolid(
-        "Latch catch tongue",
-        hardwareColor,
-        0,
-        -depth / 2 - catchDepth * 0.24,
-        catchZ,
-        catchWidth,
-        catchDepth,
-        catchHeight
-      ));
-      lidParts.push(frameAlongY(
-        "Cover clasp frame",
+      var inputTeeth = 12;
+      var outputTeeth = 16;
+      var maximumModule = Math.max(0.58, Math.min((width - 14) / 30, (height - 5) / 20));
+      var gearModule = Math.min(state.boxGearModule, maximumModule);
+      var inputPitchRadius = inputTeeth * gearModule / 2;
+      var outputPitchRadius = outputTeeth * gearModule / 2;
+      var inputOuterRadius = inputPitchRadius + gearModule;
+      var outputOuterRadius = outputPitchRadius + gearModule;
+      var gearCentreDistance = inputPitchRadius + outputPitchRadius + Math.max(0.16, clearance * 0.55);
+      var inputX = -gearCentreDistance / 2;
+      var outputX = gearCentreDistance / 2;
+      var gearCentreZ = height - outputOuterRadius - 1.65;
+      var axialClearance = Math.max(0.28, clearance);
+      var axleRadius = clamp(gearModule * 1.35, 1, 1.45);
+      var boreRadius = axleRadius + clearance;
+      var gearThickness = clamp(gearModule * 3.25, 2.35, 3.2);
+      var coverFrontY = -depth / 2 - 0.4;
+      var plateBackY = coverFrontY + 0.28;
+      var plateFrontY = plateBackY - 1.6;
+      var gearBackY = plateFrontY - axialClearance;
+      var gearFrontY = gearBackY - gearThickness;
+      var gearY = (gearBackY + gearFrontY) / 2;
+      var housingPadding = 1.45 + axialClearance;
+      var housingLeft = inputX - inputOuterRadius - housingPadding;
+      var housingRight = outputX + outputOuterRadius + housingPadding;
+      var housingBottom = gearCentreZ - outputOuterRadius - 1.2;
+      var housingTop = pivotZ + lidThickness / 2 - 0.2;
+      var housingChamfer = Math.min(2.2, (housingRight - housingLeft) * 0.08);
+      var housingContour = [
+        [housingLeft + housingChamfer, housingBottom],
+        [housingRight - housingChamfer, housingBottom],
+        [housingRight, housingBottom + housingChamfer],
+        [housingRight, housingTop - housingChamfer],
+        [housingRight - housingChamfer, housingTop],
+        [housingLeft + housingChamfer, housingTop],
+        [housingLeft, housingTop - housingChamfer],
+        [housingLeft, housingBottom + housingChamfer]
+      ];
+      lidParts.push(extrudeXZConvexAlongY(
+        "Gearbox reinforced backplate",
         lidColor,
-        0,
-        latchY,
-        (latchTop + latchBottom) / 2,
-        latchWidth,
-        latchHeight,
-        latchRail,
-        latchDepth
+        housingContour,
+        plateFrontY,
+        plateBackY
+      ));
+
+      var guardFrontY = gearFrontY - 0.72;
+      var cageDepth = plateBackY - guardFrontY;
+      var cageY = (plateBackY + guardFrontY) / 2;
+      var cageRail = Math.max(1.25, gearModule * 1.65);
+      lidParts.push(makeBoxSolid(
+        "Gearbox top guard",
+        hardwareColor,
+        (housingLeft + housingRight) / 2,
+        cageY,
+        housingTop - cageRail,
+        housingRight - housingLeft,
+        cageDepth,
+        cageRail
       ));
       lidParts.push(makeBoxSolid(
-        "Latch thumb tab",
+        "Gearbox left guard",
+        hardwareColor,
+        housingLeft + cageRail / 2,
+        cageY,
+        housingBottom + cageRail - 0.12,
+        cageRail,
+        cageDepth,
+        housingTop - housingBottom - cageRail * 2 + 0.24
+      ));
+      lidParts.push(makeBoxSolid(
+        "Gearbox right guard",
+        hardwareColor,
+        housingRight - cageRail / 2,
+        cageY,
+        housingBottom + cageRail - 0.12,
+        cageRail,
+        cageDepth,
+        housingTop - housingBottom - cageRail * 2 + 0.24
+      ));
+      var lowerBraceRight = inputX + inputOuterRadius + housingPadding * 0.45;
+      lidParts.push(makeBoxSolid(
+        "Gearbox lower brace",
+        hardwareColor,
+        (housingLeft + lowerBraceRight) / 2,
+        cageY,
+        housingBottom,
+        lowerBraceRight - housingLeft,
+        cageDepth,
+        cageRail
+      ));
+
+      var inputAngle = -state.boxGearTurn;
+      var outputAngle = state.boxGearTurn * inputTeeth / outputTeeth;
+      var inputPhase = -0.375 * 360 / inputTeeth;
+      var outputPhase = 0.125 * 360 / outputTeeth;
+      lidParts.push(spurGearAlongY(
+        "12 tooth drive gear",
         trimColor,
-        0,
-        latchY - latchDepth / 2 - 0.55,
-        latchBottom,
-        latchWidth * 0.52,
-        1.1,
-        latchRail
+        inputX,
+        gearY,
+        gearCentreZ,
+        inputTeeth,
+        gearModule,
+        gearThickness,
+        boreRadius,
+        inputPhase + inputAngle
+      ));
+      lidParts.push(spurGearAlongY(
+        "16 tooth cam gear",
+        pinColor,
+        outputX,
+        gearY,
+        gearCentreZ,
+        outputTeeth,
+        gearModule,
+        gearThickness,
+        boreRadius,
+        outputPhase + outputAngle
+      ));
+
+      var hookOuterRadius = clamp(gearModule * 5.1, 3.5, 5.2);
+      var strikerRadius = clamp(gearModule * 2, 1.45, 2.1);
+      var hookInnerRadius = strikerRadius + clearance + 0.3;
+      var desiredReach = clamp(height * 0.29, 7, 11.2);
+      var hookReach = Math.max(5.5, Math.min(desiredReach, gearCentreZ - hookOuterRadius - 0.9));
+      var hookZ = gearCentreZ - hookReach;
+      var movingY0 = gearFrontY + 0.12;
+      var movingY1 = gearBackY - 0.12;
+      var movingThickness = movingY1 - movingY0;
+      var armWidth = clamp(gearModule * 3.9, 2.8, 4.1);
+      var armEndZ = hookZ + hookOuterRadius * 0.8;
+      var outputArm = barBetweenXZAlongY(
+        "Dead-centre output arm",
+        hardwareColor,
+        outputX,
+        gearCentreZ - axleRadius * 0.25,
+        outputX,
+        armEndZ,
+        armWidth,
+        movingY0,
+        movingY1
+      );
+      var camHook = arcHookAlongY(
+        "Geared rotary cam hook",
+        hardwareColor,
+        outputX,
+        gearY,
+        hookZ,
+        hookInnerRadius,
+        hookOuterRadius,
+        265,
+        450,
+        movingThickness,
+        38
+      );
+      rotateSolidAboutY(outputArm, outputX, gearCentreZ, outputAngle);
+      rotateSolidAboutY(camHook, outputX, gearCentreZ, outputAngle);
+      lidParts.push(outputArm);
+      lidParts.push(camHook);
+      lidParts.push(tubeAlongY(
+        "Output gear hub",
+        hardwareColor,
+        outputX,
+        gearY,
+        gearCentreZ,
+        gearThickness + 0.12,
+        boreRadius + Math.max(0.62, gearModule * 0.8),
+        boreRadius,
+        28
+      ));
+
+      var dialBackY = gearFrontY + 0.12;
+      var dialFrontY = gearFrontY - 1.25;
+      var dialThickness = dialBackY - dialFrontY;
+      var dialModule = gearModule * 0.85;
+      lidParts.push(spurGearAlongY(
+        "Knurled drive wheel",
+        trimColor,
+        inputX,
+        (dialBackY + dialFrontY) / 2,
+        gearCentreZ,
+        10,
+        dialModule,
+        dialThickness,
+        boreRadius,
+        inputAngle
+      ));
+      lidParts.push(tubeAlongY(
+        "Drive wheel hub",
+        trimColor,
+        inputX,
+        (gearBackY + dialFrontY) / 2,
+        gearCentreZ,
+        gearBackY - dialFrontY,
+        boreRadius + Math.max(0.65, gearModule * 0.86),
+        boreRadius,
+        28
+      ));
+
+      var capThickness = Math.max(0.72, gearModule * 0.92);
+      var capRadius = boreRadius + Math.max(0.62, gearModule * 0.78);
+      var inputCapBackY = dialFrontY - axialClearance;
+      var inputCapFrontY = inputCapBackY - capThickness;
+      var outputCapBackY = gearFrontY - axialClearance;
+      var outputCapFrontY = outputCapBackY - capThickness;
+      var axleBackY = plateBackY - 0.14;
+      var inputAxleFrontY = inputCapFrontY + 0.08;
+      var outputAxleFrontY = outputCapFrontY + 0.08;
+      lidParts.push(cylinderAlongY(
+        "Input fixed axle",
+        pinColor,
+        inputX,
+        (inputAxleFrontY + axleBackY) / 2,
+        gearCentreZ,
+        axleBackY - inputAxleFrontY,
+        axleRadius,
+        28
+      ));
+      lidParts.push(cylinderAlongY(
+        "Output fixed axle",
+        pinColor,
+        outputX,
+        (outputAxleFrontY + axleBackY) / 2,
+        gearCentreZ,
+        axleBackY - outputAxleFrontY,
+        axleRadius,
+        28
+      ));
+      lidParts.push(cylinderAlongY(
+        "Input axle retainer",
+        pinColor,
+        inputX,
+        (inputCapBackY + inputCapFrontY) / 2,
+        gearCentreZ,
+        capThickness,
+        capRadius,
+        28
+      ));
+      lidParts.push(cylinderAlongY(
+        "Output axle retainer",
+        pinColor,
+        outputX,
+        (outputCapBackY + outputCapFrontY) / 2,
+        gearCentreZ,
+        capThickness,
+        capRadius,
+        28
+      ));
+
+      var lockStopRadius = Math.max(0.78, gearModule);
+      var lockStopX = outputX - armWidth / 2 - axialClearance - lockStopRadius;
+      var lockStopZ = gearCentreZ - outputOuterRadius - 1.48;
+      lidParts.push(cylinderAlongY(
+        "Dead-centre lock stop",
+        pinColor,
+        lockStopX,
+        (guardFrontY + plateFrontY + 0.28) / 2,
+        lockStopZ,
+        plateFrontY + 0.28 - guardFrontY,
+        lockStopRadius,
+        24
+      ));
+
+      var bossHalfWidth = hookOuterRadius + 1.25;
+      var bossHalfHeight = hookOuterRadius + 0.9;
+      var bossChamfer = Math.min(1.5, bossHalfWidth * 0.24);
+      var bossContour = [
+        [outputX - bossHalfWidth + bossChamfer, hookZ - bossHalfHeight],
+        [outputX + bossHalfWidth - bossChamfer, hookZ - bossHalfHeight],
+        [outputX + bossHalfWidth, hookZ - bossHalfHeight + bossChamfer],
+        [outputX + bossHalfWidth, hookZ + bossHalfHeight - bossChamfer],
+        [outputX + bossHalfWidth - bossChamfer, hookZ + bossHalfHeight],
+        [outputX - bossHalfWidth + bossChamfer, hookZ + bossHalfHeight],
+        [outputX - bossHalfWidth, hookZ + bossHalfHeight - bossChamfer],
+        [outputX - bossHalfWidth, hookZ - bossHalfHeight + bossChamfer]
+      ];
+      var bossFrontY = gearBackY + axialClearance;
+      var bossBackY = -depth / 2 + wall * 0.62;
+      solids.push(extrudeXZConvexAlongY(
+        "Reinforced striker pedestal",
+        hardwareColor,
+        bossContour,
+        bossFrontY,
+        bossBackY
+      ));
+      var strikerCapRadius = hookInnerRadius + Math.max(0.68, gearModule * 0.88);
+      var strikerCapThickness = Math.max(0.82, gearModule * 1.08);
+      var strikerCapBackY = gearFrontY - axialClearance;
+      var strikerCapFrontY = strikerCapBackY - strikerCapThickness;
+      var strikerShaftBackY = -depth / 2 + wall * 0.36;
+      var strikerShaftFrontY = strikerCapFrontY + 0.08;
+      solids.push(cylinderAlongY(
+        "Hardened latch striker",
+        pinColor,
+        outputX,
+        (strikerShaftFrontY + strikerShaftBackY) / 2,
+        hookZ,
+        strikerShaftBackY - strikerShaftFrontY,
+        strikerRadius,
+        30
+      ));
+      solids.push(cylinderAlongY(
+        "Mushroom striker retainer",
+        pinColor,
+        outputX,
+        (strikerCapBackY + strikerCapFrontY) / 2,
+        hookZ,
+        strikerCapThickness,
+        strikerCapRadius,
+        30
       ));
     }
 
@@ -579,7 +1013,7 @@
     });
 
     var name = state.boxHinges ? "Hinged storage box" : "Fitted storage box";
-    if (state.boxLatch) name = state.boxHinges ? "Hinged latch box" : "Latching storage box";
+    if (state.boxLatch) name = state.boxHinges ? "Geared cam-latch box" : "Geared latching box";
     return { name: name, solids: solids };
   }
 
@@ -1141,6 +1575,15 @@
     if (name === "threshold") return Math.round(value) + "%";
     if (name === "boxLidAngle") return Math.round(value) + "°";
     if (name === "boxClearance") return Number(value).toFixed(2);
+    if (name === "boxGearModule") {
+      var fittedModule = Math.min(Number(value), Math.max(0.58, Math.min((state.boxWidth - 14) / 30, (state.boxHeight - 5) / 20)));
+      return fittedModule.toFixed(2) + (fittedModule + 0.001 < Number(value) ? " · fitted" : "");
+    }
+    if (name === "boxGearTurn") {
+      if (Number(value) <= 2) return Math.round(value) + "° · locked";
+      if (Number(value) >= 92) return Math.round(value) + "° · released";
+      return Math.round(value) + "° · moving";
+    }
     if (["keyThickness", "holeSize", "reliefHeight", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
     return String(Math.round(value));
   }
@@ -1169,7 +1612,38 @@
     document.querySelectorAll(".keychain-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "keychain"); });
     document.querySelectorAll(".box-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "box"); });
     document.querySelectorAll(".cylinder-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "cylinder"); });
+    document.querySelectorAll(".gear-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "box" || !state.boxLid || !state.boxLatch);
+    });
+    document.querySelectorAll("[data-gear-state]").forEach(function (button) {
+      var target = Number(button.dataset.gearState);
+      var active = Math.abs(state.boxGearTurn - target) < 2;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     document.querySelectorAll("[data-color]").forEach(function (button) { button.classList.toggle("active", button.dataset.color === state.color); });
+  }
+
+  function animateGearPosition(target) {
+    cancelAnimationFrame(mechanismAnimation);
+    var start = state.boxGearTurn;
+    var startedAt = performance.now();
+    var duration = 460 + Math.abs(target - start) * 2.2;
+    function frame(now) {
+      var progress = clamp((now - startedAt) / duration, 0, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      state.boxGearTurn = start + (target - start) * eased;
+      syncControls();
+      buildModel();
+      if (progress < 1) mechanismAnimation = requestAnimationFrame(frame);
+      else {
+        state.boxGearTurn = target;
+        syncControls();
+        saveState();
+        buildModel();
+      }
+    }
+    mechanismAnimation = requestAnimationFrame(frame);
   }
 
   function handleImageFile(file) {
@@ -1256,8 +1730,15 @@
         if (input.type === "range") updateRangeFill(input);
         var output = document.querySelector('[data-output="' + name + '"]');
         if (output) output.textContent = displayValue(name, state[name]);
+        if (name === "boxLid" || name === "boxLatch") syncControls();
         saveState();
         scheduleBuild();
+      });
+    });
+
+    document.querySelectorAll("[data-gear-state]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        animateGearPosition(Number(button.dataset.gearState));
       });
     });
 
