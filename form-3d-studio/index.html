@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="An offline 3D modeller for multi-colour AMS keychains, mechanical boxes, and printable forms, with 3MF, STL and STEP export." />
+    <meta name="description" content="An offline parametric 3D modeller with open JSCAD models, multi-colour AMS keychains, sealed mechanical boxes, and 3MF, STL and STEP export." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=9" />
+    <link rel="stylesheet" href="./styles.css?v=11" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -45,6 +45,7 @@
           <div class="segmented" role="tablist" aria-label="Model type">
             <button class="active" data-mode="keychain" type="button" role="tab" aria-selected="true">Keychain</button>
             <button data-mode="box" type="button" role="tab" aria-selected="false">Box</button>
+            <button data-mode="library" type="button" role="tab" aria-selected="false">Models</button>
             <button data-mode="cylinder" type="button" role="tab" aria-selected="false">Cylinder</button>
           </div>
 
@@ -111,6 +112,76 @@
             <p class="control-note">Slot 1 is the keychain body. The image is smoothed and reduced to the remaining AMS slots; colours remain separate editable bodies in the 3MF export.</p>
           </section>
 
+          <section class="control-section library-controls hidden">
+            <div class="section-title"><span>Open models</span><span class="privacy-label">MIT</span></div>
+            <label class="select-row" for="open-model-select">
+              <span>Parametric model</span>
+              <select id="open-model-select" data-param="openModel">
+                <option value="spurGear">Involute spur gear</option>
+                <option value="hexBolt">Threaded hex bolt</option>
+                <option value="lBracket">Reinforced L-bracket</option>
+              </select>
+            </label>
+            <p class="control-note">Built locally with the <a href="https://github.com/jscad/OpenJSCAD.org">MIT-licensed JSCAD engine</a>. The <a href="https://github.com/nj22az/nj22az.github.io/tree/main/form-3d-studio/src">MIT model recipes</a> and notices are public and inspectable; the modeller itself is cached for offline use.</p>
+          </section>
+
+          <section class="control-section library-gear-controls hidden">
+            <div class="section-title"><span>Spur gear</span><span>20° pressure angle</span></div>
+            <div class="range-row">
+              <label for="gear-teeth">Teeth</label><output data-output="gearTeeth">20</output>
+              <input id="gear-teeth" data-param="gearTeeth" type="range" min="8" max="40" step="1" value="20" />
+            </div>
+            <div class="range-row">
+              <label for="gear-module">Module</label><output data-output="gearModule">1.0</output>
+              <input id="gear-module" data-param="gearModule" type="range" min="0.6" max="2" step="0.1" value="1" />
+            </div>
+            <div class="range-row">
+              <label for="gear-thickness">Thickness</label><output data-output="gearThickness">5.0</output>
+              <input id="gear-thickness" data-param="gearThickness" type="range" min="2" max="10" step="0.5" value="5" />
+            </div>
+            <div class="range-row">
+              <label for="gear-bore">Bore</label><output data-output="gearBore">5.0</output>
+              <input id="gear-bore" data-param="gearBore" type="range" min="1.5" max="12" step="0.5" value="5" />
+            </div>
+          </section>
+
+          <section class="control-section library-bolt-controls hidden">
+            <div class="section-title"><span>Threaded bolt</span><span>Coarse pitch</span></div>
+            <div class="range-row">
+              <label for="bolt-diameter">Nominal diameter</label><output data-output="boltDiameter">6.0</output>
+              <input id="bolt-diameter" data-param="boltDiameter" type="range" min="3" max="12" step="0.5" value="6" />
+            </div>
+            <div class="range-row">
+              <label for="bolt-length">Under-head length</label><output data-output="boltLength">24</output>
+              <input id="bolt-length" data-param="boltLength" type="range" min="8" max="50" step="1" value="24" />
+            </div>
+            <p class="control-note">The triangular right-hand thread is generated as one continuous manifold surface rather than a decorative texture.</p>
+          </section>
+
+          <section class="control-section library-bracket-controls hidden">
+            <div class="section-title"><span>Reinforced bracket</span><span>Four holes</span></div>
+            <div class="range-row">
+              <label for="bracket-width">Width</label><output data-output="bracketWidth">42</output>
+              <input id="bracket-width" data-param="bracketWidth" type="range" min="20" max="80" step="1" value="42" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-height">Height</label><output data-output="bracketHeight">38</output>
+              <input id="bracket-height" data-param="bracketHeight" type="range" min="20" max="80" step="1" value="38" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-leg">Base leg</label><output data-output="bracketLeg">34</output>
+              <input id="bracket-leg" data-param="bracketLeg" type="range" min="18" max="65" step="1" value="34" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-thickness">Plate thickness</label><output data-output="bracketThickness">4.0</output>
+              <input id="bracket-thickness" data-param="bracketThickness" type="range" min="2.4" max="8" step="0.2" value="4" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-hole">Hole diameter</label><output data-output="bracketHole">5.0</output>
+              <input id="bracket-hole" data-param="bracketHole" type="range" min="2.5" max="12" step="0.5" value="5" />
+            </div>
+          </section>
+
           <section class="control-section box-controls hidden">
             <div class="section-title"><span>Box dimensions</span><span>mm</span></div>
             <div class="range-row">
@@ -151,7 +222,7 @@
             <div class="section-title"><span>Lid &amp; hardware</span><span>Assembly</span></div>
             <label class="switch-row"><span>Add fitted cover</span><input id="box-lid" data-param="boxLid" type="checkbox" checked /><i></i></label>
             <label class="switch-row"><span>Add print-in-place hinges</span><input id="box-hinges" data-param="boxHinges" type="checkbox" checked /><i></i></label>
-            <label class="switch-row"><span>Add geared cam latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Add sealed gearbox latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
             <div class="range-row">
               <label for="box-lid-thickness">Cover thickness</label><output data-output="boxLidThickness">2.6</output>
               <input id="box-lid-thickness" data-param="boxLidThickness" type="range" min="1.8" max="5" step="0.1" value="2.6" />
@@ -169,6 +240,10 @@
               <input id="box-gear-module" data-param="boxGearModule" type="range" min="0.65" max="1.05" step="0.05" value="0.8" />
             </div>
             <div class="range-row gear-controls">
+              <label for="box-gear-bay-depth">Sealed bay depth</label><output data-output="boxGearBayDepth">9.2 mm</output>
+              <input id="box-gear-bay-depth" data-param="boxGearBayDepth" type="range" min="8" max="12" step="0.2" value="9.2" />
+            </div>
+            <div class="range-row gear-controls">
               <label for="box-gear-turn">Drive rotation</label><output data-output="boxGearTurn">0° · locked</output>
               <input id="box-gear-turn" data-param="boxGearTurn" type="range" min="0" max="110" step="2" value="0" />
             </div>
@@ -176,7 +251,8 @@
               <button class="active" data-gear-state="0" type="button" aria-pressed="true">Lock</button>
               <button data-gear-state="96" type="button" aria-pressed="false">Release</button>
             </div>
-            <p class="control-note">The 12:16 spur pair gives a 4:3 reduction and drives a dead-centre cam hook around a reinforced striker. Set the lid to 0° and the drive to Locked for a closed print-in-place export.</p>
+            <p class="control-note">A sealed 12:18 reduction turns a captured over-centre hook around the lid keeper. Integral axles, opposed bearing seats and a 45° corbel crown keep the 8–12 mm double-wall bay support-free.</p>
+            <p class="control-note"><strong>Print orientation:</strong> export with the lid at 0° and the drive Locked, then place either side wall on the build plate. This keeps the lid and gear plane vertical while the mechanism prints captured in one piece.</p>
           </section>
 
           <section class="control-section cylinder-controls hidden">
@@ -280,6 +356,7 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=9" defer></script>
+    <script src="./open-models.js?v=1" defer></script>
+    <script src="./app.js?v=11" defer></script>
   </body>
 </html>

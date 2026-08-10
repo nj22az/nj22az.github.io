@@ -177,7 +177,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .segmented {
   padding: 3px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 2px;
   background: var(--soft);
   border-radius: 12px;
@@ -204,6 +204,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .control-section { padding: 16px 1px; border-top: 1px solid var(--line); }
 .section-title { display: flex; justify-content: space-between; align-items: center; color: var(--secondary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.055em; margin: 0 3px 13px; }
 .privacy-label { color: var(--green); text-transform: none; letter-spacing: 0; }
+
+.select-row { display: grid; gap: 7px; margin: 0 3px 12px; color: var(--secondary); font-size: 12px; font-weight: 650; }
+.select-row select {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 34px 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--panel-solid);
+  font: inherit;
+  cursor: pointer;
+}
+
+.control-note a { color: var(--blue); text-decoration: none; }
+.control-note a:hover { text-decoration: underline; }
 
 .drop-zone {
   min-height: 72px;

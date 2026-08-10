@@ -1,7 +1,7 @@
 {
   "name": "Form 3D Studio",
   "short_name": "Form 3D",
-  "description": "Offline 3D modelling for image keychains, hinged boxes, and printable forms.",
+  "description": "Offline parametric modelling with open JSCAD models, AMS keychains, sealed mechanical boxes, and 3MF, STL and STEP export.",
   "id": "/form-3d-studio/",
   "start_url": "/form-3d-studio/",
   "scope": "/form-3d-studio/",
@@ -22,6 +22,11 @@
       "name": "Create a keychain",
       "short_name": "Keychain",
       "url": "/form-3d-studio/?mode=keychain"
+    },
+    {
+      "name": "Open model library",
+      "short_name": "Models",
+      "url": "/form-3d-studio/?mode=library"
     }
   ]
 }

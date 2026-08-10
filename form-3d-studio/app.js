@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v4";
+  var STORAGE_KEY = "form-3d-studio-settings-v5";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -28,7 +28,20 @@
     boxLidAngle: 68,
     boxHingeDiameter: 6,
     boxGearModule: 0.8,
+    boxGearBayDepth: 9.2,
     boxGearTurn: 0,
+    openModel: "spurGear",
+    gearTeeth: 20,
+    gearModule: 1,
+    gearThickness: 5,
+    gearBore: 5,
+    boltDiameter: 6,
+    boltLength: 24,
+    bracketWidth: 42,
+    bracketHeight: 38,
+    bracketLeg: 34,
+    bracketThickness: 4,
+    bracketHole: 5,
     cylinderDiameter: 36,
     cylinderHeight: 18,
     cylinderSides: 48,
@@ -36,6 +49,10 @@
   };
 
   var state = loadState();
+  if (window.location && typeof URLSearchParams !== "undefined") {
+    var requestedMode = new URLSearchParams(window.location.search).get("mode");
+    if (["keychain", "box", "cylinder", "library"].includes(requestedMode)) state.mode = requestedMode;
+  }
   var uploadedImage = null;
   var uploadedName = "";
   var model = null;
@@ -54,9 +71,10 @@
 
   function loadState() {
     try {
-      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
-      if (!["keychain", "box", "cylinder"].includes(merged.mode)) merged.mode = "keychain";
+      if (!["keychain", "box", "cylinder", "library"].includes(merged.mode)) merged.mode = "keychain";
+      if (!["spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
       merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);
       merged.amsColours = clamp(Number(merged.amsColours) || defaults.amsColours, 2, 4);
       return merged;
@@ -287,6 +305,26 @@
       solid.triangle(frontCentre, front[i], front[next]);
       solid.triangle(backCentre, back[next], back[i]);
       solid.quad(front[i], back[i], back[next], front[next]);
+    }
+    return solid;
+  }
+
+  function extrudeYZConvexAlongX(name, color, contour, x0, x1) {
+    var solid = new Solid(name, color);
+    var left = contour.map(function (point) { return solid.vertex(x0, point[0], point[1]); });
+    var right = contour.map(function (point) { return solid.vertex(x1, point[0], point[1]); });
+    var centre = contour.reduce(function (sum, point) {
+      return [sum[0] + point[0], sum[1] + point[1]];
+    }, [0, 0]);
+    centre[0] /= contour.length;
+    centre[1] /= contour.length;
+    var leftCentre = solid.vertex(x0, centre[0], centre[1]);
+    var rightCentre = solid.vertex(x1, centre[0], centre[1]);
+    for (var i = 0; i < contour.length; i += 1) {
+      var next = (i + 1) % contour.length;
+      solid.triangle(leftCentre, left[next], left[i]);
+      solid.triangle(rightCentre, right[i], right[next]);
+      solid.quad(left[i], left[next], right[next], right[i]);
     }
     return solid;
   }
@@ -889,33 +927,53 @@
 
     if (state.boxLatch) {
       var inputTeeth = 12;
-      var outputTeeth = 16;
-      var maximumModule = Math.max(0.58, Math.min((width - 14) / 30, (height - 5) / 20));
+      var outputTeeth = 18;
+      var maximumModule = Math.max(0.58, Math.min((width - 16) / 32, (height - 6) / 21));
       var gearModule = Math.min(state.boxGearModule, maximumModule);
+      var radialClearance = Math.max(0.38, clearance);
+      var axialClearance = Math.max(0.38, clearance);
+      var bayDepth = clamp(state.boxGearBayDepth, 8, 12);
+      var baySkin = clamp(wall * 0.66, 1.45, 1.9);
+      var bayInnerY = -depth / 2 - 0.28;
+      var bayOuterY = bayInnerY - bayDepth;
+      var cavityFrontY = bayOuterY + baySkin;
+      var cavityBackY = bayInnerY;
+      var cavityDepth = cavityBackY - cavityFrontY;
+
       var inputPitchRadius = inputTeeth * gearModule / 2;
       var outputPitchRadius = outputTeeth * gearModule / 2;
       var inputOuterRadius = inputPitchRadius + gearModule;
       var outputOuterRadius = outputPitchRadius + gearModule;
-      var gearCentreDistance = inputPitchRadius + outputPitchRadius + Math.max(0.16, clearance * 0.55);
+      var gearCentreDistance = inputPitchRadius + outputPitchRadius + Math.max(0.18, clearance * 0.55);
       var inputX = -gearCentreDistance / 2;
       var outputX = gearCentreDistance / 2;
-      var gearCentreZ = height - outputOuterRadius - 1.65;
-      var axialClearance = Math.max(0.28, clearance);
-      var axleRadius = clamp(gearModule * 1.35, 1, 1.45);
-      var boreRadius = axleRadius + clearance;
-      var gearThickness = clamp(gearModule * 3.25, 2.35, 3.2);
-      var coverFrontY = -depth / 2 - 0.4;
-      var plateBackY = coverFrontY + 0.28;
-      var plateFrontY = plateBackY - 1.6;
-      var gearBackY = plateFrontY - axialClearance;
-      var gearFrontY = gearBackY - gearThickness;
-      var gearY = (gearBackY + gearFrontY) / 2;
-      var housingPadding = 1.45 + axialClearance;
+      var axleRadius = clamp(gearModule * 1.25, 0.95, 1.4);
+      var gearBoreRadius = axleRadius + radialClearance;
+      var gearThickness = Math.min(cavityDepth - axialClearance * 2 - 0.45, clamp(gearModule * 3.3, 2.3, 3.25));
+      var gearFrontY = cavityFrontY + axialClearance;
+      var gearBackY = gearFrontY + gearThickness;
+      var gearY = (gearFrontY + gearBackY) / 2;
+
+      var keeperRadius = clamp(gearModule * 2.05, 1.45, 2.15);
+      var hookInnerRadius = keeperRadius + radialClearance + 0.28;
+      var hookOuterRadius = Math.max(hookInnerRadius + 1.85, clamp(gearModule * 5.65, 4.2, 5.7));
+      var keeperZ = height - Math.max(1.45, lidThickness * 0.55);
+      var housingTop = height + Math.min(0.7, lidThickness * 0.28);
+      var roofBaseFrontY = cavityFrontY - baySkin * 0.22;
+      var roofBaseBackY = cavityBackY + baySkin * 0.22;
+      var roofRise = (roofBaseBackY - roofBaseFrontY) / 2;
+      var roofStartZ = housingTop - roofRise;
+      var preferredGearZ = keeperZ - clamp(height * 0.31, 8.6, 11.6);
+      var gearCentreZ = Math.max(outputOuterRadius + 1.35, Math.min(preferredGearZ, roofStartZ - outputOuterRadius - 0.62));
+      var housingPadding = Math.max(1.45, baySkin * 0.92);
       var housingLeft = inputX - inputOuterRadius - housingPadding;
       var housingRight = outputX + outputOuterRadius + housingPadding;
-      var housingBottom = gearCentreZ - outputOuterRadius - 1.2;
-      var housingTop = pivotZ + lidThickness / 2 - 0.2;
-      var housingChamfer = Math.min(2.2, (housingRight - housingLeft) * 0.08);
+      var housingBottom = Math.max(0.8, gearCentreZ - outputOuterRadius - 1.08);
+      var housingHeight = housingTop - housingBottom;
+      var housingWidth = housingRight - housingLeft;
+      var housingY = (bayOuterY + bayInnerY + baySkin) / 2;
+      var housingDepth = bayInnerY + baySkin - bayOuterY;
+      var housingChamfer = Math.min(1.9, housingWidth * 0.07);
       var housingContour = [
         [housingLeft + housingChamfer, housingBottom],
         [housingRight - housingChamfer, housingBottom],
@@ -926,66 +984,136 @@
         [housingLeft, housingTop - housingChamfer],
         [housingLeft, housingBottom + housingChamfer]
       ];
-      lidParts.push(extrudeXZConvexAlongY(
-        "Gearbox reinforced backplate",
-        lidColor,
+
+      solids.push(extrudeXZConvexAlongY(
+        "Sealed bay inner liner",
+        state.color,
         housingContour,
-        plateFrontY,
-        plateBackY
+        bayInnerY,
+        bayInnerY + baySkin
       ));
 
-      var guardFrontY = gearFrontY - 0.72;
-      var cageDepth = plateBackY - guardFrontY;
-      var cageY = (plateBackY + guardFrontY) / 2;
-      var cageRail = Math.max(1.25, gearModule * 1.65);
-      lidParts.push(makeBoxSolid(
-        "Gearbox top guard",
-        hardwareColor,
-        (housingLeft + housingRight) / 2,
-        cageY,
-        housingTop - cageRail,
-        housingRight - housingLeft,
-        cageDepth,
-        cageRail
-      ));
-      lidParts.push(makeBoxSolid(
-        "Gearbox left guard",
-        hardwareColor,
-        housingLeft + cageRail / 2,
-        cageY,
-        housingBottom + cageRail - 0.12,
-        cageRail,
-        cageDepth,
-        housingTop - housingBottom - cageRail * 2 + 0.24
-      ));
-      lidParts.push(makeBoxSolid(
-        "Gearbox right guard",
-        hardwareColor,
-        housingRight - cageRail / 2,
-        cageY,
-        housingBottom + cageRail - 0.12,
-        cageRail,
-        cageDepth,
-        housingTop - housingBottom - cageRail * 2 + 0.24
-      ));
-      var lowerBraceRight = inputX + inputOuterRadius + housingPadding * 0.45;
-      lidParts.push(makeBoxSolid(
-        "Gearbox lower brace",
-        hardwareColor,
-        (housingLeft + lowerBraceRight) / 2,
-        cageY,
+      var driveSleeveRadius = gearBoreRadius + Math.max(0.72, gearModule * 0.92);
+      var drivePortRadius = driveSleeveRadius + radialClearance + 0.2;
+      var portOuterRadius = drivePortRadius + Math.max(1.15, baySkin * 0.76);
+      var outerPlateY = (bayOuterY + cavityFrontY) / 2;
+      var leftPanelWidth = inputX - portOuterRadius - housingLeft;
+      var rightPanelWidth = housingRight - inputX - portOuterRadius;
+      if (leftPanelWidth > 0.2) solids.push(makeBoxSolid(
+        "Sealed outer skin left",
+        state.color,
+        housingLeft + leftPanelWidth / 2,
+        outerPlateY,
         housingBottom,
-        lowerBraceRight - housingLeft,
-        cageDepth,
-        cageRail
+        leftPanelWidth,
+        baySkin,
+        housingHeight
+      ));
+      if (rightPanelWidth > 0.2) solids.push(makeBoxSolid(
+        "Sealed outer skin right",
+        state.color,
+        inputX + portOuterRadius + rightPanelWidth / 2,
+        outerPlateY,
+        housingBottom,
+        rightPanelWidth,
+        baySkin,
+        housingHeight
+      ));
+      solids.push(makeBoxSolid(
+        "Sealed outer skin upper",
+        state.color,
+        inputX,
+        outerPlateY,
+        gearCentreZ + drivePortRadius,
+        portOuterRadius * 2 + 0.24,
+        baySkin,
+        housingTop - gearCentreZ - drivePortRadius
+      ));
+      solids.push(makeBoxSolid(
+        "Sealed outer skin lower",
+        state.color,
+        inputX,
+        outerPlateY,
+        housingBottom,
+        portOuterRadius * 2 + 0.24,
+        baySkin,
+        gearCentreZ - drivePortRadius - housingBottom
+      ));
+      solids.push(tubeAlongY(
+        "Knob labyrinth collar",
+        trimColor,
+        inputX,
+        outerPlateY,
+        gearCentreZ,
+        baySkin + 0.18,
+        portOuterRadius,
+        drivePortRadius,
+        36
+      ));
+
+      var enclosureRail = Math.max(1.2, baySkin * 0.82);
+      solids.push(makeBoxSolid(
+        "Sealed bay left wall",
+        state.color,
+        housingLeft + enclosureRail / 2,
+        housingY,
+        housingBottom + enclosureRail - 0.12,
+        enclosureRail,
+        housingDepth,
+        housingHeight - enclosureRail * 1.45 + 0.12
+      ));
+      solids.push(makeBoxSolid(
+        "Sealed bay right wall",
+        state.color,
+        housingRight - enclosureRail / 2,
+        housingY,
+        housingBottom + enclosureRail - 0.12,
+        enclosureRail,
+        housingDepth,
+        housingHeight - enclosureRail * 1.45 + 0.12
+      ));
+      solids.push(makeBoxSolid(
+        "Sealed bay floor",
+        state.color,
+        (housingLeft + housingRight) / 2,
+        housingY,
+        housingBottom,
+        housingWidth,
+        housingDepth,
+        enclosureRail
+      ));
+
+      var linkSlotHalfWidth = hookOuterRadius + radialClearance + 0.42;
+      var roofSlotLeft = Math.max(housingLeft + enclosureRail, outputX - linkSlotHalfWidth);
+      var roofSlotRight = Math.min(housingRight - enclosureRail, outputX + linkSlotHalfWidth);
+      var corbelContour = [
+        [roofBaseFrontY, roofStartZ],
+        [roofBaseBackY, roofStartZ],
+        [(roofBaseFrontY + roofBaseBackY) / 2, housingTop]
+      ];
+      var leftRoofStartX = housingLeft + enclosureRail * 0.24;
+      var rightRoofEndX = housingRight - enclosureRail * 0.24;
+      if (roofSlotLeft > leftRoofStartX) solids.push(extrudeYZConvexAlongX(
+        "Left 45 degree corbel roof",
+        state.color,
+        corbelContour,
+        leftRoofStartX,
+        roofSlotLeft
+      ));
+      if (rightRoofEndX > roofSlotRight) solids.push(extrudeYZConvexAlongX(
+        "Right 45 degree corbel roof",
+        state.color,
+        corbelContour,
+        roofSlotRight,
+        rightRoofEndX
       ));
 
       var inputAngle = -state.boxGearTurn;
       var outputAngle = state.boxGearTurn * inputTeeth / outputTeeth;
       var inputPhase = -0.375 * 360 / inputTeeth;
       var outputPhase = 0.125 * 360 / outputTeeth;
-      lidParts.push(spurGearAlongY(
-        "12 tooth drive gear",
+      solids.push(spurGearAlongY(
+        "12 tooth sealed drive gear",
         trimColor,
         inputX,
         gearY,
@@ -993,11 +1121,11 @@
         inputTeeth,
         gearModule,
         gearThickness,
-        boreRadius,
+        gearBoreRadius,
         inputPhase + inputAngle
       ));
-      lidParts.push(spurGearAlongY(
-        "16 tooth cam gear",
+      solids.push(spurGearAlongY(
+        "18 tooth sealed cam gear",
         pinColor,
         outputX,
         gearY,
@@ -1005,26 +1133,20 @@
         outputTeeth,
         gearModule,
         gearThickness,
-        boreRadius,
+        gearBoreRadius,
         outputPhase + outputAngle
       ));
 
-      var hookOuterRadius = clamp(gearModule * 5.1, 3.5, 5.2);
-      var strikerRadius = clamp(gearModule * 2, 1.45, 2.1);
-      var hookInnerRadius = strikerRadius + clearance + 0.3;
-      var desiredReach = clamp(height * 0.29, 7, 11.2);
-      var hookReach = Math.max(5.5, Math.min(desiredReach, gearCentreZ - hookOuterRadius - 0.9));
-      var hookZ = gearCentreZ - hookReach;
-      var movingY0 = gearFrontY + 0.12;
-      var movingY1 = gearBackY - 0.12;
+      var movingY0 = gearFrontY + 0.1;
+      var movingY1 = gearBackY - 0.1;
       var movingThickness = movingY1 - movingY0;
-      var armWidth = clamp(gearModule * 3.9, 2.8, 4.1);
-      var armEndZ = hookZ + hookOuterRadius * 0.8;
+      var armWidth = clamp(gearModule * 4.45, 3.15, 4.6);
+      var armEndZ = keeperZ - hookOuterRadius * 0.7;
       var outputArm = barBetweenXZAlongY(
-        "Dead-centre output arm",
+        "Captured over-centre output arm",
         hardwareColor,
         outputX,
-        gearCentreZ - axleRadius * 0.25,
+        gearCentreZ + axleRadius * 0.1,
         outputX,
         armEndZ,
         armWidth,
@@ -1032,173 +1154,163 @@
         movingY1
       );
       var camHook = arcHookAlongY(
-        "Geared rotary cam hook",
+        "Captured lid locking hook",
         hardwareColor,
         outputX,
         gearY,
-        hookZ,
+        keeperZ,
         hookInnerRadius,
         hookOuterRadius,
-        265,
-        450,
+        85,
+        275,
         movingThickness,
-        38
+        42
       );
       rotateSolidAboutY(outputArm, outputX, gearCentreZ, outputAngle);
       rotateSolidAboutY(camHook, outputX, gearCentreZ, outputAngle);
-      lidParts.push(outputArm);
-      lidParts.push(camHook);
-      lidParts.push(tubeAlongY(
-        "Output gear hub",
+      solids.push(outputArm);
+      solids.push(camHook);
+      solids.push(tubeAlongY(
+        "Output gear torque hub",
         hardwareColor,
         outputX,
         gearY,
         gearCentreZ,
-        gearThickness + 0.12,
-        boreRadius + Math.max(0.62, gearModule * 0.8),
-        boreRadius,
-        28
+        gearThickness + 0.18,
+        gearBoreRadius + Math.max(0.68, gearModule * 0.9),
+        gearBoreRadius,
+        30
       ));
 
-      var dialBackY = gearFrontY + 0.12;
-      var dialFrontY = gearFrontY - 1.25;
-      var dialThickness = dialBackY - dialFrontY;
-      var dialModule = gearModule * 0.85;
-      lidParts.push(spurGearAlongY(
-        "Knurled drive wheel",
+      var rearSpacerFrontY = gearBackY + axialClearance;
+      var rearSpacerLength = cavityBackY - rearSpacerFrontY + 0.14;
+      var spacerOuterRadius = gearBoreRadius + Math.max(0.62, gearModule * 0.82);
+      if (rearSpacerLength > 0.2) {
+        solids.push(tubeAlongY(
+          "Input captured bearing spacer",
+          state.color,
+          inputX,
+          rearSpacerFrontY + rearSpacerLength / 2,
+          gearCentreZ,
+          rearSpacerLength,
+          spacerOuterRadius,
+          axleRadius + 0.08,
+          30
+        ));
+        solids.push(tubeAlongY(
+          "Output captured bearing spacer",
+          state.color,
+          outputX,
+          rearSpacerFrontY + rearSpacerLength / 2,
+          gearCentreZ,
+          rearSpacerLength,
+          spacerOuterRadius,
+          axleRadius + 0.08,
+          30
+        ));
+      }
+
+      var outputSeatBackY = gearFrontY - axialClearance;
+      var outputSeatLength = outputSeatBackY - cavityFrontY + 0.14;
+      if (outputSeatLength > 0.2) solids.push(tubeAlongY(
+        "Output opposing bearing seat",
+        state.color,
+        outputX,
+        cavityFrontY + outputSeatLength / 2,
+        gearCentreZ,
+        outputSeatLength,
+        spacerOuterRadius,
+        axleRadius + 0.08,
+        30
+      ));
+
+      var knobBackY = bayOuterY - 0.18;
+      var knobFrontY = knobBackY - Math.max(1.7, gearModule * 2.2);
+      var knobThickness = knobBackY - knobFrontY;
+      var knobModule = Math.max(0.56, gearModule * 0.78);
+      solids.push(spurGearAlongY(
+        "External knurled control knob",
         trimColor,
         inputX,
-        (dialBackY + dialFrontY) / 2,
+        (knobFrontY + knobBackY) / 2,
         gearCentreZ,
-        10,
-        dialModule,
-        dialThickness,
-        boreRadius,
+        12,
+        knobModule,
+        knobThickness,
+        gearBoreRadius,
         inputAngle
       ));
-      lidParts.push(tubeAlongY(
-        "Drive wheel hub",
+      var sleeveBackY = gearFrontY + 0.58;
+      solids.push(tubeAlongY(
+        "Rotary knob drive sleeve",
         trimColor,
         inputX,
-        (gearBackY + dialFrontY) / 2,
+        (knobFrontY + sleeveBackY) / 2,
         gearCentreZ,
-        gearBackY - dialFrontY,
-        boreRadius + Math.max(0.65, gearModule * 0.86),
-        boreRadius,
-        28
+        sleeveBackY - knobFrontY,
+        driveSleeveRadius,
+        gearBoreRadius,
+        32
       ));
 
-      var capThickness = Math.max(0.72, gearModule * 0.92);
-      var capRadius = boreRadius + Math.max(0.62, gearModule * 0.78);
-      var inputCapBackY = dialFrontY - axialClearance;
-      var inputCapFrontY = inputCapBackY - capThickness;
-      var outputCapBackY = gearFrontY - axialClearance;
-      var outputCapFrontY = outputCapBackY - capThickness;
-      var axleBackY = plateBackY - 0.14;
-      var inputAxleFrontY = inputCapFrontY + 0.08;
-      var outputAxleFrontY = outputCapFrontY + 0.08;
-      lidParts.push(cylinderAlongY(
-        "Input fixed axle",
+      var axleBackY = bayInnerY + baySkin * 0.58;
+      var outputAxleFrontY = bayOuterY + baySkin * 0.42;
+      var inputCapBackY = knobFrontY - axialClearance;
+      var inputCapThickness = Math.max(0.75, gearModule * 0.95);
+      var inputCapFrontY = inputCapBackY - inputCapThickness;
+      solids.push(cylinderAlongY(
+        "Integral input stub axle",
         pinColor,
         inputX,
-        (inputAxleFrontY + axleBackY) / 2,
+        (inputCapFrontY + axleBackY) / 2,
         gearCentreZ,
-        axleBackY - inputAxleFrontY,
+        axleBackY - inputCapFrontY,
         axleRadius,
-        28
+        30
       ));
-      lidParts.push(cylinderAlongY(
-        "Output fixed axle",
+      solids.push(cylinderAlongY(
+        "Integral output stub axle",
         pinColor,
         outputX,
         (outputAxleFrontY + axleBackY) / 2,
         gearCentreZ,
         axleBackY - outputAxleFrontY,
         axleRadius,
-        28
+        30
       ));
-      lidParts.push(cylinderAlongY(
-        "Input axle retainer",
+      solids.push(cylinderAlongY(
+        "Input axle retaining head",
         pinColor,
         inputX,
-        (inputCapBackY + inputCapFrontY) / 2,
+        (inputCapFrontY + inputCapBackY) / 2,
         gearCentreZ,
-        capThickness,
-        capRadius,
-        28
-      ));
-      lidParts.push(cylinderAlongY(
-        "Output axle retainer",
-        pinColor,
-        outputX,
-        (outputCapBackY + outputCapFrontY) / 2,
-        gearCentreZ,
-        capThickness,
-        capRadius,
-        28
-      ));
-
-      var lockStopRadius = Math.max(0.78, gearModule);
-      var lockStopX = outputX - armWidth / 2 - axialClearance - lockStopRadius;
-      var lockStopZ = gearCentreZ - outputOuterRadius - 1.48;
-      lidParts.push(cylinderAlongY(
-        "Dead-centre lock stop",
-        pinColor,
-        lockStopX,
-        (guardFrontY + plateFrontY + 0.28) / 2,
-        lockStopZ,
-        plateFrontY + 0.28 - guardFrontY,
-        lockStopRadius,
-        24
-      ));
-
-      var bossHalfWidth = hookOuterRadius + 1.25;
-      var bossHalfHeight = hookOuterRadius + 0.9;
-      var bossChamfer = Math.min(1.5, bossHalfWidth * 0.24);
-      var bossContour = [
-        [outputX - bossHalfWidth + bossChamfer, hookZ - bossHalfHeight],
-        [outputX + bossHalfWidth - bossChamfer, hookZ - bossHalfHeight],
-        [outputX + bossHalfWidth, hookZ - bossHalfHeight + bossChamfer],
-        [outputX + bossHalfWidth, hookZ + bossHalfHeight - bossChamfer],
-        [outputX + bossHalfWidth - bossChamfer, hookZ + bossHalfHeight],
-        [outputX - bossHalfWidth + bossChamfer, hookZ + bossHalfHeight],
-        [outputX - bossHalfWidth, hookZ + bossHalfHeight - bossChamfer],
-        [outputX - bossHalfWidth, hookZ - bossHalfHeight + bossChamfer]
-      ];
-      var bossFrontY = gearBackY + axialClearance;
-      var bossBackY = -depth / 2 + wall * 0.62;
-      solids.push(extrudeXZConvexAlongY(
-        "Reinforced striker pedestal",
-        hardwareColor,
-        bossContour,
-        bossFrontY,
-        bossBackY
-      ));
-      var strikerCapRadius = hookInnerRadius + Math.max(0.68, gearModule * 0.88);
-      var strikerCapThickness = Math.max(0.82, gearModule * 1.08);
-      var strikerCapBackY = gearFrontY - axialClearance;
-      var strikerCapFrontY = strikerCapBackY - strikerCapThickness;
-      var strikerShaftBackY = -depth / 2 + wall * 0.36;
-      var strikerShaftFrontY = strikerCapFrontY + 0.08;
-      solids.push(cylinderAlongY(
-        "Hardened latch striker",
-        pinColor,
-        outputX,
-        (strikerShaftFrontY + strikerShaftBackY) / 2,
-        hookZ,
-        strikerShaftBackY - strikerShaftFrontY,
-        strikerRadius,
+        inputCapThickness,
+        gearBoreRadius + 0.48,
         30
       ));
-      solids.push(cylinderAlongY(
-        "Mushroom striker retainer",
+
+      var keeperPinFrontY = gearFrontY - 0.55;
+      var keeperSupportFrontY = gearBackY + axialClearance + 0.18;
+      var keeperSupportBackY = -depth / 2 - 0.08;
+      lidParts.push(cylinderAlongY(
+        "Reinforced lid keeper pin",
         pinColor,
         outputX,
-        (strikerCapBackY + strikerCapFrontY) / 2,
-        hookZ,
-        strikerCapThickness,
-        strikerCapRadius,
-        30
+        (keeperPinFrontY + keeperSupportFrontY) / 2,
+        keeperZ,
+        keeperSupportFrontY - keeperPinFrontY,
+        keeperRadius,
+        32
+      ));
+      lidParts.push(makeBoxSolid(
+        "Lid keeper drive link",
+        lidColor,
+        outputX,
+        (keeperSupportFrontY + keeperSupportBackY) / 2,
+        keeperZ - keeperRadius * 0.48,
+        keeperRadius * 2.45,
+        keeperSupportBackY - keeperSupportFrontY,
+        pivotZ - lidThickness / 2 - keeperZ + keeperRadius * 0.7
       ));
     }
 
@@ -1209,8 +1321,31 @@
     });
 
     var name = state.boxHinges ? "Hinged storage box" : "Fitted storage box";
-    if (state.boxLatch) name = state.boxHinges ? "Geared cam-latch box" : "Geared latching box";
+    if (state.boxLatch) name = state.boxHinges ? "Sealed gearbox latch box" : "Sealed geared box";
     return { name: name, solids: solids };
+  }
+
+  function buildOpenModel() {
+    var engine = window.Form3DOpenModels;
+    if (!engine || typeof engine.buildModel !== "function") {
+      return {
+        name: "Open model engine unavailable",
+        solids: [makeBoxSolid("Offline fallback", state.color, 0, 0, 0, 24, 24, 8)]
+      };
+    }
+    var generated = engine.buildModel(state.openModel, state);
+    var solids = generated.solids.map(function (entry) {
+      var solid = new Solid(entry.name, state.color);
+      solid.vertices = entry.mesh.vertices.map(function (vertex) { return vertex.slice(); });
+      solid.faces = entry.mesh.faces.map(function (face) { return face.slice(); });
+      return solid;
+    });
+    return {
+      name: generated.name,
+      solids: solids,
+      engine: generated.engine,
+      license: generated.license
+    };
   }
 
   function buildCylinder() {
@@ -1220,6 +1355,7 @@
 
   function buildModel() {
     if (state.mode === "box") model = buildBox();
+    else if (state.mode === "library") model = buildOpenModel();
     else if (state.mode === "cylinder") model = buildCylinder();
     else model = buildKeychain();
     model.bounds = calculateBounds(model);
@@ -1967,14 +2103,24 @@
     if (name === "boxLidAngle") return Math.round(value) + "°";
     if (name === "boxClearance") return Number(value).toFixed(2);
     if (name === "boxGearModule") {
-      var fittedModule = Math.min(Number(value), Math.max(0.58, Math.min((state.boxWidth - 14) / 30, (state.boxHeight - 5) / 20)));
+      var fittedModule = Math.min(Number(value), Math.max(0.58, Math.min((state.boxWidth - 16) / 32, (state.boxHeight - 6) / 21)));
       return fittedModule.toFixed(2) + (fittedModule + 0.001 < Number(value) ? " · fitted" : "");
     }
+    if (name === "boxGearBayDepth") return Number(value).toFixed(1) + " mm";
     if (name === "boxGearTurn") {
       if (Number(value) <= 2) return Math.round(value) + "° · locked";
       if (Number(value) >= 92) return Math.round(value) + "° · released";
       return Math.round(value) + "° · moving";
     }
+    if (name === "gearBore") {
+      var fittedBore = Math.min(Number(value), Math.max(2, state.gearTeeth * state.gearModule * 0.56));
+      return fittedBore.toFixed(1) + (fittedBore + 0.001 < Number(value) ? " · fitted" : "");
+    }
+    if (name === "bracketHole") {
+      var fittedHole = Math.min(Number(value), 12, state.bracketThickness * 2.2);
+      return fittedHole.toFixed(1) + (fittedHole + 0.001 < Number(value) ? " · fitted" : "");
+    }
+    if (["gearModule", "gearThickness", "boltDiameter", "bracketThickness"].includes(name)) return Number(value).toFixed(1);
     if (["keyThickness", "holeSize", "reliefHeight", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
     return String(Math.round(value));
   }
@@ -2003,6 +2149,16 @@
     document.querySelectorAll(".keychain-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "keychain"); });
     document.querySelectorAll(".box-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "box"); });
     document.querySelectorAll(".cylinder-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "cylinder"); });
+    document.querySelectorAll(".library-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "library"); });
+    document.querySelectorAll(".library-gear-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "spurGear");
+    });
+    document.querySelectorAll(".library-bolt-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "hexBolt");
+    });
+    document.querySelectorAll(".library-bracket-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "lBracket");
+    });
     document.querySelectorAll(".gear-controls").forEach(function (element) {
       element.classList.toggle("hidden", state.mode !== "box" || !state.boxLid || !state.boxLatch);
     });
@@ -2123,11 +2279,11 @@
     document.querySelectorAll("[data-param]").forEach(function (input) {
       input.addEventListener("input", function () {
         var name = input.dataset.param;
-        state[name] = input.type === "checkbox" ? input.checked : Number(input.value);
+        state[name] = input.type === "checkbox" ? input.checked : input.tagName === "SELECT" ? input.value : Number(input.value);
         if (input.type === "range") updateRangeFill(input);
         var output = document.querySelector('[data-output="' + name + '"]');
         if (output) output.textContent = displayValue(name, state[name]);
-        if (name === "boxLid" || name === "boxLatch" || name === "removeBackground") syncControls();
+        if (name === "boxLid" || name === "boxLatch" || name === "removeBackground" || name === "openModel") syncControls();
         saveState();
         scheduleBuild();
       });
