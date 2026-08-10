@@ -39,4 +39,10 @@ const topTriangles = nestedMesh.faces
 assert.ok(topTriangles.some((triangle) => containsPoint(triangle, [6, 6])), "a nested black island must survive a white SVG cut-out");
 assert.ok(!topTriangles.some((triangle) => containsPoint(triangle, [3, 3])), "the surrounding white SVG cut-out must remain empty");
 
+const independentNestedShapes = buildArtworkMesh([
+  { hole: false, points: [[0, 0], [20, 0], [20, 20], [0, 20]] },
+  { hole: false, points: [[5, 5], [15, 5], [15, 15], [5, 15]] }
+], { z0: 0, z1: 0.5 });
+assert.ok(independentNestedShapes.faces.length > 0, "same-fill nested contours should be unioned rather than mistaken for a cut-out");
+
 console.log("vector artwork extrusion tests passed");

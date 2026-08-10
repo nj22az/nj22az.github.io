@@ -1,11 +1,14 @@
-const CACHE_NAME = "form-3d-studio-v13";
+const CACHE_NAME = "form-3d-studio-v14";
 const APP_FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=13",
-  "./open-models.js?v=2",
+  "./styles.css?v=14",
+  "./open-models.js?v=3",
   "./monochrome-svg.js?v=13",
-  "./app.js?v=13",
+  "./image-to-svg/keychain-bridge.js?v=1",
+  "./image-to-svg/vector-worker.js",
+  "./image-to-svg/vtracer_wasm_bg.wasm",
+  "./app.js?v=14",
   "./form-icon.svg",
   "./manifest.webmanifest"
 ];
@@ -38,10 +41,10 @@ self.addEventListener("fetch", function (event) {
   if (event.request.mode === "navigate") {
     event.respondWith(fetch(event.request).then(function (response) {
       var copy = response.clone();
-      caches.open(CACHE_NAME).then(function (cache) { cache.put("./", copy); });
+      caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, copy); });
       return response;
     }).catch(function () {
-      return caches.match("./");
+      return caches.match(event.request).then(function (cached) { return cached || caches.match("./"); });
     }));
     return;
   }

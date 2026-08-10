@@ -57,6 +57,9 @@
   }
   var uploadedImage = null;
   var uploadedName = "";
+  var vectorArtwork = null;
+  var vectorizeTimer = 0;
+  var vectorizationToken = 0;
   var model = null;
   var rebuildTimer = 0;
   var toastTimer = 0;
@@ -551,6 +554,7 @@
   }
 
   function createArtworkMap() {
+    if (uploadedImage && vectorArtwork && vectorArtwork.contours) return vectorArtwork;
     var width = Math.round(state.detail);
     var targetAspect = (state.keyWidth * 0.68) / (state.keyHeight * 0.66);
     var height = Math.max(14, Math.round(width / targetAspect));
@@ -1235,7 +1239,62 @@
     image.alt = "Monochrome SVG artwork preview on a white background";
     image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(artwork.svg);
     document.getElementById("drop-preview").replaceChildren(image);
-    document.getElementById("upload-format").textContent = "Clean vector SVG · white background";
+    var statistics = artwork.statistics || {};
+    document.getElementById("upload-format").textContent = statistics.engine === "vtracer" ?
+      "VTracer SVG · " + (statistics.paths || artwork.contours.length).toLocaleString() + " paths · white background" :
+      "Clean vector SVG · white background";
+  }
+
+  function vectorTraceOptions() {
+    return {
+      engine: "vtracer",
+      targetAspect: (state.keyWidth * 0.68) / (state.keyHeight * 0.66),
+      maxDimension: Math.max(384, Math.round(state.detail) * 8),
+      threshold: Math.round(95 + state.monochromeThreshold),
+      speckle: [3, 10, 18][Math.round(state.imageSmoothing)] || 10,
+      simplify: [1.1, 1.9, 2.5][Math.round(state.imageSmoothing)] || 1.9,
+      removeBackground: state.removeBackground,
+      backgroundTolerance: state.backgroundTolerance
+    };
+  }
+
+  function runArtworkVectorization(token) {
+    if (!uploadedImage) return;
+    if (!window.Form3DVectorizer || typeof window.Form3DVectorizer.vectorizeImage !== "function") {
+      vectorArtwork = null;
+      document.getElementById("upload-format").textContent = "Local fallback trace · white background";
+      scheduleBuild();
+      return;
+    }
+    window.Form3DVectorizer.vectorizeImage(uploadedImage, vectorTraceOptions(), function (progress, stage) {
+      if (token !== vectorizationToken) return;
+      document.getElementById("upload-format").textContent = (stage || "Vectorising") + " · " + Math.round(progress) + "%";
+    }).then(function (artwork) {
+      if (token !== vectorizationToken) return;
+      vectorArtwork = artwork;
+      var statistics = artwork.statistics || {};
+      document.getElementById("upload-format").textContent = "VTracer SVG · " + (statistics.paths || artwork.contours.length).toLocaleString() + " paths · white background";
+      buildModel();
+      showToast("Monochrome SVG ready — rotate and export");
+    }).catch(function (error) {
+      if (token !== vectorizationToken || error && error.name === "AbortError") return;
+      console.warn("VTracer artwork conversion failed", error);
+      vectorArtwork = null;
+      document.getElementById("upload-format").textContent = "VTracer unavailable · using local fallback";
+      scheduleBuild();
+      showToast("VTracer failed; using the simple local fallback");
+    });
+  }
+
+  function scheduleArtworkVectorization(delay) {
+    clearTimeout(vectorizeTimer);
+    vectorizationToken += 1;
+    if (window.Form3DVectorizer && typeof window.Form3DVectorizer.cancel === "function") window.Form3DVectorizer.cancel();
+    if (!uploadedImage) return;
+    vectorArtwork = null;
+    var token = vectorizationToken;
+    document.getElementById("upload-format").textContent = "Preparing monochrome SVG…";
+    vectorizeTimer = setTimeout(function () { runArtworkVectorization(token); }, delay == null ? 260 : delay);
   }
 
   function buildModel() {
@@ -2103,8 +2162,8 @@
       showToast("Please choose an image file");
       return;
     }
-    if (file.size > 12 * 1024 * 1024) {
-      showToast("Choose an image smaller than 12 MB");
+    if (file.size > 20 * 1024 * 1024) {
+      showToast("Choose an image smaller than 20 MB");
       return;
     }
     var reader = new FileReader();
@@ -2115,10 +2174,10 @@
         uploadedName = file.name;
         document.getElementById("drop-preview").innerHTML = '<img alt="Uploaded artwork preview" src="' + reader.result + '">';
         document.getElementById("upload-label").textContent = uploadedName;
-        document.getElementById("upload-format").textContent = "Converting locally to monochrome SVG…";
+        document.getElementById("upload-format").textContent = "Preparing monochrome SVG…";
         document.getElementById("clear-art-button").classList.remove("hidden");
-        scheduleBuild();
-        showToast("Tracing image to monochrome SVG");
+        scheduleArtworkVectorization(0);
+        showToast("Making the SVG locally with VTracer");
       };
       image.onerror = function () { showToast("That image could not be read"); };
       image.src = reader.result;
@@ -2127,11 +2186,15 @@
   }
 
   function clearImage() {
+    clearTimeout(vectorizeTimer);
+    vectorizationToken += 1;
+    if (window.Form3DVectorizer && typeof window.Form3DVectorizer.cancel === "function") window.Form3DVectorizer.cancel();
     uploadedImage = null;
     uploadedName = "";
+    vectorArtwork = null;
     document.getElementById("drop-preview").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>';
     document.getElementById("upload-label").textContent = "Choose an image";
-    document.getElementById("upload-format").textContent = "PNG, JPG, WebP or SVG";
+    document.getElementById("upload-format").textContent = "PNG, JPG, WebP, AVIF or SVG";
     document.getElementById("clear-art-button").classList.add("hidden");
     document.getElementById("image-input").value = "";
     scheduleBuild();
@@ -2145,12 +2208,36 @@
       uploadedName = "sample-star.svg";
       document.getElementById("drop-preview").innerHTML = '<img alt="Sample star artwork" src="' + image.src + '">';
       document.getElementById("upload-label").textContent = uploadedName;
-      document.getElementById("upload-format").textContent = "Converting locally to monochrome SVG…";
+      document.getElementById("upload-format").textContent = "Preparing monochrome SVG…";
       document.getElementById("clear-art-button").classList.remove("hidden");
-      scheduleBuild();
-      showToast("Sample traced to monochrome SVG");
+      scheduleArtworkVectorization(0);
+      showToast("Making the sample SVG locally");
     };
     image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(sample);
+  }
+
+  function restoreStudioArtwork() {
+    if (!window.Form3DVectorizer || typeof window.Form3DVectorizer.takeStudioArtwork !== "function") return false;
+    var artwork = window.Form3DVectorizer.takeStudioArtwork();
+    if (!artwork) return false;
+    vectorArtwork = artwork;
+    uploadedName = artwork.name || "vector-studio-artwork.svg";
+    var url = URL.createObjectURL(new Blob([artwork.svg], { type: "image/svg+xml" }));
+    var image = new Image();
+    image.onload = function () {
+      uploadedImage = image;
+      document.getElementById("upload-label").textContent = uploadedName;
+      document.getElementById("upload-format").textContent = "Monochrome SVG from Image → SVG Studio";
+      document.getElementById("clear-art-button").classList.remove("hidden");
+      updateArtworkPreview(vectorArtwork);
+      buildModel();
+      URL.revokeObjectURL(url);
+      showToast("SVG applied — rotate it and adjust the raised layer");
+    };
+    image.onerror = function () { URL.revokeObjectURL(url); vectorArtwork = null; buildModel(); };
+    image.src = url;
+    state.mode = "keychain";
+    return true;
   }
 
   function showToast(message) {
@@ -2187,7 +2274,9 @@
         if (output) output.textContent = displayValue(name, state[name]);
         if (name === "boxLid" || name === "boxLatch" || name === "removeBackground" || name === "openModel") syncControls();
         saveState();
-        scheduleBuild();
+        var traceParameters = ["keyWidth", "keyHeight", "detail", "monochromeThreshold", "imageSmoothing", "removeBackground", "backgroundTolerance"];
+        if (uploadedImage && traceParameters.includes(name)) scheduleArtworkVectorization();
+        else scheduleBuild();
       });
     });
 
@@ -2305,5 +2394,5 @@
   syncControls();
   bindEvents();
   initPWA();
-  buildModel();
+  if (!restoreStudioArtwork()) buildModel();
 })();

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Private, offline-capable image to SVG conversion with VTracer, Potrace and ImageTracer." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="../form-icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css?v=1" />
+    <title>Image → SVG Studio</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="back-link" href="../" aria-label="Return to Form 3D Studio">← Form 3D</a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">⌁</span>
+        <div><strong>Image → SVG</strong><span>Private vector studio</span></div>
+      </div>
+      <div class="header-actions">
+        <span class="privacy-badge"><i></i> Local only</span>
+        <button class="icon-button" id="theme-button" type="button" aria-label="Change colour theme" title="Change colour theme">◐</button>
+        <button class="icon-button" id="help-button" type="button" aria-label="Open help" title="Help">?</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="upload-card" id="upload-card" aria-labelledby="upload-title">
+        <div class="upload-copy">
+          <p class="eyebrow">No uploads. No account. No tracking.</p>
+          <h1 id="upload-title">Turn an image into a clean, editable SVG.</h1>
+          <p>VTracer handles colour and photographs; Potrace specialises in black-and-white work; ImageTracer provides a lightweight JavaScript fallback.</p>
+        </div>
+        <label class="drop-zone" id="drop-zone" for="file-input" tabindex="0">
+          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif" multiple />
+          <span class="drop-icon" aria-hidden="true">⇧</span>
+          <strong>Drop images here or choose files</strong>
+          <span>PNG, JPG, WebP, GIF, BMP or AVIF · up to 20 MB each</span>
+        </label>
+        <div class="example-row">
+          <span>Try an example:</span>
+          <button type="button" data-example="badge">Retro badge</button>
+          <button type="button" data-example="signature">Signature</button>
+          <button type="button" data-example="poster">Colour poster</button>
+        </div>
+      </section>
+
+      <section class="studio hidden" id="studio" aria-label="Vector conversion workspace">
+        <aside class="controls-panel" aria-label="Vectorisation controls">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Conversion</p><h2>Trace settings</h2></div>
+            <button class="text-button" id="reset-preset-button" type="button">Reset</button>
+          </div>
+
+          <fieldset class="preset-grid">
+            <legend>Preset</legend>
+            <button type="button" data-preset="logo"><b>Logo</b><span>Sharp · 6 colours</span></button>
+            <button type="button" data-preset="lineArt"><b>Line art</b><span>B&amp;W · smooth</span></button>
+            <button type="button" data-preset="illustration" class="selected"><b>Illustration</b><span>Balanced colour</span></button>
+            <button type="button" data-preset="photo"><b>Photo</b><span>More regions</span></button>
+            <button type="button" data-preset="pixelArt"><b>Pixel art</b><span>Square edges</span></button>
+            <button type="button" data-preset="keychain"><b>3D keychain</b><span>Bold · printable</span></button>
+          </fieldset>
+
+          <div class="control-group">
+            <label for="engine">Vector engine <span class="hint" title="VTracer is best for colour and general work. Potrace is specialised B&amp;W tracing. ImageTracer is a pure JavaScript fallback." aria-hidden="true">i</span></label>
+            <select id="engine" data-option="engine">
+              <option value="vtracer">VTracer · recommended</option>
+              <option value="potrace">Potrace · B&amp;W specialist</option>
+              <option value="imagetracer">ImageTracer · JavaScript</option>
+            </select>
+          </div>
+
+          <div class="two-column-controls">
+            <div class="control-group">
+              <label for="color-mode">Colour mode</label>
+              <select id="color-mode" data-option="colorMode"><option value="color">Colour</option><option value="bw">Black &amp; white</option></select>
+            </div>
+            <div class="control-group colour-only">
+              <label for="max-colors">Colours <span data-output="maxColors">12</span></label>
+              <input id="max-colors" data-option="maxColors" type="range" min="2" max="64" step="1" value="12" />
+            </div>
+          </div>
+
+          <div class="control-group bw-only hidden">
+            <label for="threshold">B&amp;W threshold <span data-output="threshold">168</span></label>
+            <input id="threshold" data-option="threshold" type="range" min="0" max="255" step="1" value="168" />
+            <label class="check-row"><input id="adaptive" data-option="adaptive" type="checkbox" /><span>Adaptive threshold for uneven lighting</span></label>
+          </div>
+
+          <div class="control-group">
+            <label for="curve-mode">Curve fitting</label>
+            <select id="curve-mode" data-option="curveMode">
+              <option value="pixel">Pixel</option><option value="polygon">Polygon</option><option value="spline">Spline</option>
+            </select>
+          </div>
+
+          <div class="two-column-controls">
+            <div class="control-group colour-only">
+              <label for="clustering">Colour regions</label>
+              <select id="clustering" data-option="clustering"><option value="color-cluster">Colour cluster</option><option value="watershed">Watershed detail</option></select>
+            </div>
+            <div class="control-group">
+              <label for="corner-threshold">Corners <span data-output="cornerThreshold">60°</span></label>
+              <input id="corner-threshold" data-option="cornerThreshold" type="range" min="0" max="180" step="1" value="60" />
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="speckle">Noise filter <span data-output="speckle">5 px</span></label>
+            <input id="speckle" data-option="speckle" type="range" min="0" max="64" step="1" value="5" />
+          </div>
+
+          <div class="control-group">
+            <label for="simplify">Path simplification <span data-output="simplify">1.10 px</span></label>
+            <input id="simplify" data-option="simplify" type="range" min="0" max="5" step="0.05" value="1.1" />
+          </div>
+
+          <div class="two-column-controls">
+            <div class="control-group">
+              <label for="layering">Layering</label>
+              <select id="layering" data-option="layering"><option value="cutout">Cutout</option><option value="stacked">Stacked</option></select>
+            </div>
+            <div class="control-group">
+              <label for="path-precision">Precision</label>
+              <select id="path-precision" data-option="pathPrecision"><option value="0">0 decimals</option><option value="1">1 decimal</option><option value="2">2 decimals</option><option value="3">3 decimals</option><option value="4">4 decimals</option></select>
+            </div>
+          </div>
+
+          <div class="two-column-controls">
+            <div class="control-group">
+              <label for="output-style">Appearance</label>
+              <select id="output-style" data-option="outputStyle"><option value="fill">Filled paths</option><option value="stroke">Strokes</option></select>
+            </div>
+            <div class="control-group">
+              <label for="max-dimension">Max size</label>
+              <select id="max-dimension" data-option="maxDimension"><option value="512">512 px · keychain</option><option value="1200">1,200 px</option><option value="1800">1,800 px</option><option value="2400" selected>2,400 px</option><option value="3200">3,200 px</option><option value="4096">4,096 px</option></select>
+            </div>
+          </div>
+
+          <label class="check-row"><input id="remove-background" data-option="removeBackground" type="checkbox" /><span>Remove corner-matched background</span></label>
+          <div class="control-group background-only hidden">
+            <label for="background-tolerance">Background tolerance <span data-output="backgroundTolerance">8%</span></label>
+            <input id="background-tolerance" data-option="backgroundTolerance" type="range" min="0" max="40" step="1" value="8" />
+          </div>
+          <label class="check-row"><input id="optimise" data-option="optimize" type="checkbox" checked /><span>Optimise output with SVGO</span></label>
+
+          <div class="custom-preset-row">
+            <button class="secondary-button" id="save-preset-button" type="button">Save custom preset</button>
+            <button class="secondary-button hidden" id="load-preset-button" type="button">Load saved</button>
+          </div>
+        </aside>
+
+        <section class="preview-panel" aria-label="Image and vector preview">
+          <div class="preview-toolbar">
+            <div class="segmented" role="group" aria-label="Preview mode">
+              <button type="button" data-view="original">Original</button>
+              <button type="button" data-view="compare" class="selected">Compare</button>
+              <button type="button" data-view="vector">Vector</button>
+            </div>
+            <div class="zoom-controls" role="group" aria-label="Preview zoom">
+              <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+              <output id="zoom-output">100%</output>
+              <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+              <button id="zoom-reset" type="button">Fit</button>
+            </div>
+          </div>
+
+          <div class="preview-stage" id="preview-stage" tabindex="0" aria-label="Pan and zoom preview">
+            <div class="preview-transform" id="preview-transform">
+              <img id="original-preview" alt="Original raster image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+              <div class="vector-clip" id="vector-clip"><img id="vector-preview" alt="Vectorised SVG preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" /></div>
+            </div>
+            <div class="checkerboard"></div>
+            <label class="compare-control" id="compare-control">Comparison position
+              <input id="compare-slider" type="range" min="0" max="100" value="50" />
+            </label>
+            <span class="preview-label original-label">Original</span><span class="preview-label vector-label">SVG</span>
+          </div>
+
+          <div class="progress-card hidden" id="progress-card" role="status" aria-live="polite">
+            <div><strong id="progress-stage">Preparing image</strong><span id="progress-value">0%</span></div>
+            <progress id="progress-bar" max="100" value="0"></progress>
+            <button id="cancel-button" type="button">Cancel</button>
+          </div>
+
+          <div class="file-summary">
+            <div><span>Source</span><strong id="source-size">—</strong><small id="source-dimensions">—</small></div>
+            <div><span>SVG</span><strong id="svg-size">—</strong><small id="vector-counts">—</small></div>
+            <div><span>Engine</span><strong id="engine-stat">—</strong><small id="duration-stat">—</small></div>
+          </div>
+
+          <div class="action-bar">
+            <button class="primary-button" id="download-button" type="button" disabled>Download SVG</button>
+            <button class="secondary-button" id="copy-button" type="button" disabled>Copy SVG</button>
+            <button class="secondary-button" id="png-button" type="button" disabled>Export PNG</button>
+            <button class="keychain-button" id="keychain-button" type="button" disabled>Use on keychain</button>
+          </div>
+        </section>
+
+        <aside class="batch-panel" aria-label="Batch queue">
+          <div class="panel-heading"><div><p class="eyebrow">Files</p><h2>Batch queue</h2></div><button class="text-button" id="add-files-button" type="button">Add</button></div>
+          <ol class="batch-list" id="batch-list"></ol>
+          <button class="secondary-button full-width" id="download-zip-button" type="button" disabled>Download completed as ZIP</button>
+          <p class="batch-note">Files are processed one at a time to control memory use. Nothing leaves this device.</p>
+        </aside>
+      </section>
+    </main>
+
+    <dialog id="onboarding-dialog" class="modal">
+      <form method="dialog">
+        <button class="modal-close" type="submit" value="close" aria-label="Close">×</button>
+        <p class="eyebrow">First conversion</p><h2>Three steps, entirely on your device.</h2>
+        <ol><li><b>Choose a preset.</b> Start with the intended use, then refine.</li><li><b>Compare the result.</b> Drag the divider and zoom into edges.</li><li><b>Export.</b> Download, copy, batch ZIP, or send a monochrome trace to the keychain modeller.</li></ol>
+        <button class="primary-button" type="submit" value="close">Begin</button>
+      </form>
+    </dialog>
+
+    <dialog id="help-dialog" class="modal wide-modal">
+      <form method="dialog">
+        <button class="modal-close" type="submit" value="close" aria-label="Close">×</button>
+        <p class="eyebrow">Guide</p><h2>Choosing an engine</h2>
+        <dl>
+          <div><dt>VTracer</dt><dd>Best general choice. Produces compact colour or monochrome paths and handles illustrations and photographs.</dd></div>
+          <div><dt>Potrace</dt><dd>Excellent for black-and-white logos, signatures and line art. It is included in the local vector worker under GPL-2.0.</dd></div>
+          <div><dt>ImageTracer</dt><dd>A pure JavaScript fallback. Useful where WebAssembly is restricted.</dd></div>
+        </dl>
+        <p><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>V</kbd> pastes an image. <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>S</kbd> downloads the current SVG.</p>
+        <button class="primary-button" type="submit" value="close">Close</button>
+      </form>
+    </dialog>
+
+    <canvas id="export-canvas" hidden></canvas>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js?v=1" defer></script>
+  </body>
+</html>

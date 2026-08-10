@@ -289,7 +289,7 @@ function contourTree(contours) {
   nodes.forEach((node) => {
     const sample = node.contour.points[0];
     const parent = nodes
-      .filter((candidate) => candidate !== node && candidate.area > node.area && pointInContour(sample, candidate.contour))
+      .filter((candidate) => candidate !== node && candidate.contour.hole !== node.contour.hole && candidate.area > node.area && pointInContour(sample, candidate.contour))
       .sort((first, second) => first.area - second.area)[0];
     if (parent) {
       node.parent = parent;

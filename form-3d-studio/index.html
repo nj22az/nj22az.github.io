@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=13" />
+    <link rel="stylesheet" href="./styles.css?v=14" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -52,15 +52,16 @@
           <section class="control-section keychain-controls">
             <div class="section-title"><span>Artwork</span><span class="privacy-label">On-device only</span></div>
             <label class="drop-zone" id="drop-zone" for="image-input">
-              <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+              <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif,image/svg+xml" />
               <span class="drop-preview" id="drop-preview">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>
               </span>
-              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small id="upload-format">PNG, JPG, WebP or SVG</small></span>
+              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small id="upload-format">PNG, JPG, WebP, AVIF or SVG</small></span>
               <span class="drop-action">Browse</span>
             </label>
             <div class="inline-actions">
               <button class="text-button" id="demo-art-button" type="button">Use sample art</button>
+              <a class="text-button" href="./image-to-svg/">Open Image → SVG Studio</a>
               <button class="text-button hidden" id="clear-art-button" type="button">Remove image</button>
             </div>
           </section>
@@ -113,7 +114,7 @@
               <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
             </div>
             <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
-            <p class="control-note">The image is cropped to the keychain face, traced once into a clean SVG, rotated and fitted, then extruded as one thin black layer attached to one white plate. No pixel blocks are used.</p>
+            <p class="control-note">VTracer first makes a clean monochrome SVG. That SVG is then rotated, fitted and extruded as one thin black layer attached to the white plate. Use the <a href="./image-to-svg/">full converter</a> for before/after comparison and advanced controls.</p>
           </section>
 
           <section class="control-section library-controls hidden">
@@ -365,8 +366,9 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./open-models.js?v=2" defer></script>
+    <script src="./open-models.js?v=3" defer></script>
     <script src="./monochrome-svg.js?v=13" defer></script>
-    <script src="./app.js?v=13" defer></script>
+    <script src="./image-to-svg/keychain-bridge.js?v=1" defer></script>
+    <script src="./app.js?v=14" defer></script>
   </body>
 </html>
