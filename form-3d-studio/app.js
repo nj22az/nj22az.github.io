@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v3";
+  var STORAGE_KEY = "form-3d-studio-settings-v4";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -9,9 +9,11 @@
     keyThickness: 3,
     holeSize: 5,
     reliefHeight: 1.2,
-    threshold: 48,
-    detail: 28,
-    invert: false,
+    detail: 64,
+    amsColours: 4,
+    imageSmoothing: 1,
+    removeBackground: true,
+    backgroundTolerance: 14,
     boxWidth: 76,
     boxDepth: 54,
     boxHeight: 34,
@@ -52,9 +54,11 @@
 
   function loadState() {
     try {
-      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
       if (!["keychain", "box", "cylinder"].includes(merged.mode)) merged.mode = "keychain";
+      merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);
+      merged.amsColours = clamp(Number(merged.amsColours) || defaults.amsColours, 2, 4);
       return merged;
     } catch (error) {
       return Object.assign({}, defaults);
@@ -68,6 +72,7 @@
   function Solid(name, color) {
     this.name = name;
     this.color = color;
+    this.material = 0;
     this.vertices = [];
     this.faces = [];
   }
@@ -500,18 +505,163 @@
     return points;
   }
 
-  function createMask() {
+  function colourDistanceSquared(a, b) {
+    var red = a[0] - b[0];
+    var green = a[1] - b[1];
+    var blue = a[2] - b[2];
+    return red * red + green * green + blue * blue;
+  }
+
+  function sampleImageBackground(pixels, width, height, bounds) {
+    if (!bounds) return null;
+    var inset = Math.max(1, Math.round(Math.min(bounds.width, bounds.height) * 0.035));
+    var points = [
+      [bounds.x + inset, bounds.y + inset],
+      [bounds.x + bounds.width - inset - 1, bounds.y + inset],
+      [bounds.x + inset, bounds.y + bounds.height - inset - 1],
+      [bounds.x + bounds.width - inset - 1, bounds.y + bounds.height - inset - 1]
+    ];
+    var sum = [0, 0, 0];
+    var count = 0;
+    points.forEach(function (point) {
+      var centreX = Math.round(point[0]);
+      var centreY = Math.round(point[1]);
+      for (var offsetY = -1; offsetY <= 1; offsetY += 1) {
+        for (var offsetX = -1; offsetX <= 1; offsetX += 1) {
+          var x = clamp(centreX + offsetX, 0, width - 1);
+          var y = clamp(centreY + offsetY, 0, height - 1);
+          var index = (y * width + x) * 4;
+          if (pixels[index + 3] < 180) continue;
+          sum[0] += pixels[index];
+          sum[1] += pixels[index + 1];
+          sum[2] += pixels[index + 2];
+          count += 1;
+        }
+      }
+    });
+    return count ? sum.map(function (value) { return value / count; }) : null;
+  }
+
+  function quantiseArtwork(samples, colourCount) {
+    if (!samples.length) return { palette: [], assignments: [] };
+    var histogram = new Map();
+    samples.forEach(function (sample) {
+      var key = (sample[0] >> 4) + ":" + (sample[1] >> 4) + ":" + (sample[2] >> 4);
+      var bucket = histogram.get(key) || { sum: [0, 0, 0], count: 0 };
+      bucket.sum[0] += sample[0];
+      bucket.sum[1] += sample[1];
+      bucket.sum[2] += sample[2];
+      bucket.count += 1;
+      histogram.set(key, bucket);
+    });
+    var buckets = Array.from(histogram.values()).map(function (bucket) {
+      return {
+        colour: bucket.sum.map(function (value) { return value / bucket.count; }),
+        count: bucket.count
+      };
+    });
+    buckets.sort(function (a, b) { return b.count - a.count; });
+    var targetCount = Math.min(colourCount, buckets.length);
+    var centroids = [buckets[0].colour.slice()];
+    while (centroids.length < targetCount) {
+      var best = null;
+      var bestScore = -1;
+      buckets.forEach(function (bucket) {
+        var nearest = Math.min.apply(null, centroids.map(function (centroid) {
+          return colourDistanceSquared(bucket.colour, centroid);
+        }));
+        var score = nearest * Math.sqrt(bucket.count);
+        if (score > bestScore) { bestScore = score; best = bucket.colour; }
+      });
+      centroids.push(best.slice());
+    }
+
+    var assignments = new Array(samples.length).fill(0);
+    for (var iteration = 0; iteration < 9; iteration += 1) {
+      var sums = centroids.map(function () { return [0, 0, 0, 0]; });
+      samples.forEach(function (sample, index) {
+        var nearestIndex = 0;
+        var nearestDistance = Infinity;
+        centroids.forEach(function (centroid, centroidIndex) {
+          var distance = colourDistanceSquared(sample, centroid);
+          if (distance < nearestDistance) { nearestDistance = distance; nearestIndex = centroidIndex; }
+        });
+        assignments[index] = nearestIndex;
+        sums[nearestIndex][0] += sample[0];
+        sums[nearestIndex][1] += sample[1];
+        sums[nearestIndex][2] += sample[2];
+        sums[nearestIndex][3] += 1;
+      });
+      sums.forEach(function (sum, index) {
+        if (sum[3]) centroids[index] = [sum[0] / sum[3], sum[1] / sum[3], sum[2] / sum[3]];
+      });
+    }
+    return {
+      palette: centroids.map(function (colour) {
+        return "#" + colour.map(toHex).join("");
+      }),
+      assignments: assignments
+    };
+  }
+
+  function smoothArtworkLabels(labels, iterations) {
+    var height = labels.length;
+    var width = labels[0].length;
+    var current = labels.map(function (row) { return row.slice(); });
+    for (var pass = 0; pass < iterations; pass += 1) {
+      var next = current.map(function (row) { return row.slice(); });
+      for (var row = 0; row < height; row += 1) {
+        for (var col = 0; col < width; col += 1) {
+          var counts = new Map();
+          var activeNeighbours = 0;
+          for (var dy = -1; dy <= 1; dy += 1) {
+            for (var dx = -1; dx <= 1; dx += 1) {
+              if (!dx && !dy) continue;
+              var y = row + dy;
+              var x = col + dx;
+              if (x < 0 || x >= width || y < 0 || y >= height) continue;
+              var label = current[y][x];
+              if (label < 0) continue;
+              activeNeighbours += 1;
+              counts.set(label, (counts.get(label) || 0) + 1);
+            }
+          }
+          if (current[row][col] >= 0 && activeNeighbours <= 1) {
+            next[row][col] = -1;
+            continue;
+          }
+          if (current[row][col] < 0 && activeNeighbours >= 7) {
+            var fill = Array.from(counts.entries()).sort(function (a, b) { return b[1] - a[1]; })[0];
+            if (fill) next[row][col] = fill[0];
+            continue;
+          }
+          if (current[row][col] >= 0) {
+            counts.set(current[row][col], (counts.get(current[row][col]) || 0) + 2);
+            var winner = Array.from(counts.entries()).sort(function (a, b) { return b[1] - a[1]; })[0];
+            if (winner && winner[1] >= 4) next[row][col] = winner[0];
+          }
+        }
+      }
+      current = next;
+    }
+    return current;
+  }
+
+  function createArtworkMap() {
     var width = Math.round(state.detail);
-    var height = Math.max(8, Math.round(width * 0.52));
+    var targetAspect = (state.keyWidth * 0.68) / (state.keyHeight * 0.66);
+    var height = Math.max(14, Math.round(width / targetAspect));
     var offscreen = document.createElement("canvas");
     offscreen.width = width;
     offscreen.height = height;
-    var maskContext = offscreen.getContext("2d", { willReadFrequently: true });
-    maskContext.clearRect(0, 0, width, height);
+    var imageContext = offscreen.getContext("2d", { willReadFrequently: true });
+    imageContext.clearRect(0, 0, width, height);
+    imageContext.imageSmoothingEnabled = true;
+    imageContext.imageSmoothingQuality = "high";
+    var bounds = null;
 
     if (uploadedImage) {
       var sourceAspect = uploadedImage.naturalWidth / uploadedImage.naturalHeight;
-      var targetAspect = width / height;
       var drawWidth, drawHeight, x, y;
       if (sourceAspect > targetAspect) {
         drawWidth = width;
@@ -524,88 +674,134 @@
         x = (width - drawWidth) / 2;
         y = 0;
       }
-      maskContext.drawImage(uploadedImage, x, y, drawWidth, drawHeight);
+      imageContext.drawImage(uploadedImage, x, y, drawWidth, drawHeight);
+      bounds = { x: x, y: y, width: drawWidth, height: drawHeight };
     } else {
-      maskContext.fillStyle = "#000";
-      maskContext.textAlign = "center";
-      maskContext.textBaseline = "middle";
-      maskContext.font = "900 " + Math.round(height * 0.78) + "px -apple-system, BlinkMacSystemFont, sans-serif";
-      maskContext.fillText("3D", width / 2, height / 2 + 1);
+      imageContext.fillStyle = "#161617";
+      imageContext.textAlign = "center";
+      imageContext.textBaseline = "middle";
+      imageContext.font = "900 " + Math.round(height * 0.76) + "px -apple-system, BlinkMacSystemFont, sans-serif";
+      imageContext.fillText("3D", width / 2, height / 2 + 1);
     }
 
-    var pixels = maskContext.getImageData(0, 0, width, height).data;
-    var rows = [];
-    var cutoff = state.threshold / 100 * 255;
+    var pixels = imageContext.getImageData(0, 0, width, height).data;
+    var background = state.removeBackground ? sampleImageBackground(pixels, width, height, bounds) : null;
+    var tolerance = state.backgroundTolerance / 100 * Math.sqrt(3 * 255 * 255);
+    var toleranceSquared = tolerance * tolerance;
+    var samples = [];
+    var sampleLocations = [];
     for (var row = 0; row < height; row += 1) {
-      var values = [];
       for (var col = 0; col < width; col += 1) {
         var index = (row * width + col) * 4;
         var alpha = pixels[index + 3];
-        var luminance = pixels[index] * 0.2126 + pixels[index + 1] * 0.7152 + pixels[index + 2] * 0.0722;
-        var dark = luminance < cutoff;
-        values.push(alpha > 24 && (state.invert ? !dark : dark));
+        if (alpha < 72) continue;
+        var colour = [pixels[index], pixels[index + 1], pixels[index + 2]];
+        if (background && colourDistanceSquared(colour, background) <= toleranceSquared) continue;
+        samples.push(colour);
+        sampleLocations.push([row, col]);
       }
-      rows.push(values);
     }
-    return { width: width, height: height, rows: rows };
+    var quantised = quantiseArtwork(samples, Math.max(1, state.amsColours - 1));
+    var labels = Array.from({ length: height }, function () { return new Array(width).fill(-1); });
+    sampleLocations.forEach(function (location, index) {
+      labels[location[0]][location[1]] = quantised.assignments[index];
+    });
+    labels = smoothArtworkLabels(labels, Math.round(state.imageSmoothing));
+    return { width: width, height: height, labels: labels, palette: quantised.palette };
   }
 
-  function maskRectangles(mask) {
-    var completed = [];
-    var active = new Map();
-    for (var row = 0; row < mask.height; row += 1) {
-      var runs = [];
-      var start = -1;
-      for (var col = 0; col <= mask.width; col += 1) {
-        var on = col < mask.width && mask.rows[row][col];
-        if (on && start < 0) start = col;
-        if (!on && start >= 0) {
-          runs.push({ start: start, length: col - start });
-          start = -1;
-        }
-      }
-      var nextActive = new Map();
-      runs.forEach(function (run) {
-        var key = run.start + ":" + run.length;
-        var rectangle = active.get(key) || { start: run.start, length: run.length, rowStart: row, rowEnd: row };
-        rectangle.rowEnd = row;
-        nextActive.set(key, rectangle);
-      });
-      active.forEach(function (rectangle, key) {
-        if (!nextActive.has(key)) completed.push(rectangle);
-      });
-      active = nextActive;
+  function voxelMaskSolid(name, color, material, artwork, target, cell, offsetX, offsetY, z0, z1) {
+    var solid = new Solid(name, color);
+    solid.material = material;
+    var vertexCache = new Map();
+    function vertex(col, row, top) {
+      var key = col + ":" + row + ":" + top;
+      if (vertexCache.has(key)) return vertexCache.get(key);
+      var x = offsetX + (col - artwork.width / 2) * cell;
+      var y = offsetY + (artwork.height / 2 - row) * cell;
+      var index = solid.vertex(x, y, top ? z1 : z0);
+      vertexCache.set(key, index);
+      return index;
     }
-    active.forEach(function (rectangle) { completed.push(rectangle); });
-    return completed;
+    function active(row, col) {
+      return row >= 0 && row < artwork.height && col >= 0 && col < artwork.width && artwork.labels[row][col] === target;
+    }
+    for (var row = 0; row < artwork.height; row += 1) {
+      for (var col = 0; col < artwork.width; col += 1) {
+        if (!active(row, col)) continue;
+        var bottomTL = vertex(col, row, false);
+        var bottomTR = vertex(col + 1, row, false);
+        var bottomBR = vertex(col + 1, row + 1, false);
+        var bottomBL = vertex(col, row + 1, false);
+        var topTL = vertex(col, row, true);
+        var topTR = vertex(col + 1, row, true);
+        var topBR = vertex(col + 1, row + 1, true);
+        var topBL = vertex(col, row + 1, true);
+        solid.triangle(topTL, topBL, topBR);
+        solid.triangle(topTL, topBR, topTR);
+        solid.triangle(bottomTL, bottomTR, bottomBR);
+        solid.triangle(bottomTL, bottomBR, bottomBL);
+        if (!active(row - 1, col)) solid.quad(bottomTL, topTL, topTR, bottomTR);
+        if (!active(row + 1, col)) solid.quad(bottomBL, bottomBR, topBR, topBL);
+        if (!active(row, col - 1)) solid.quad(bottomTL, bottomBL, topBL, topTL);
+        if (!active(row, col + 1)) solid.quad(bottomTR, topTR, topBR, bottomBR);
+      }
+    }
+    return solid.faces.length ? solid : null;
   }
 
   function buildKeychain() {
     var solids = [];
     var corner = Math.min(6, state.keyHeight * 0.24);
-    solids.push(extrudeConvex("Keychain base", state.color, roundedRectangle(state.keyWidth, state.keyHeight, corner, 7), 0, state.keyThickness));
+    var base = extrudeConvex("AMS 1 · Keychain base", state.color, roundedRectangle(state.keyWidth, state.keyHeight, corner, 9), 0, state.keyThickness);
+    base.material = 0;
+    solids.push(base);
 
     var innerRadius = state.holeSize / 2;
-    var outerRadius = innerRadius + Math.max(1.8, state.keyThickness * 0.68);
-    var ringX = -state.keyWidth / 2 - outerRadius * 0.54;
-    solids.push(extrudeRing("Keyring eye", state.color, ringX, 0, outerRadius, innerRadius, 0, state.keyThickness, 40));
+    var outerRadius = innerRadius + Math.max(2, state.keyThickness * 0.72);
+    var ringX = -state.keyWidth / 2 - outerRadius * 0.5;
+    var eye = extrudeRing("AMS 1 · Keyring eye", state.color, ringX, 0, outerRadius, innerRadius, 0, state.keyThickness, 48);
+    eye.material = 0;
+    solids.push(eye);
 
-    var mask = createMask();
-    var rectangles = maskRectangles(mask);
-    var cell = Math.min(state.keyWidth * 0.64 / mask.width, state.keyHeight * 0.62 / mask.height);
-    var artWidth = mask.width * cell;
-    var artHeight = mask.height * cell;
-    var offsetX = state.keyWidth * 0.055;
-    rectangles.forEach(function (rectangle, index) {
-      var width = rectangle.length * cell + 0.025;
-      var depth = (rectangle.rowEnd - rectangle.rowStart + 1) * cell + 0.025;
-      var x = offsetX - artWidth / 2 + (rectangle.start + rectangle.length / 2) * cell;
-      var y = artHeight / 2 - (rectangle.rowStart + (rectangle.rowEnd - rectangle.rowStart + 1) / 2) * cell;
-      var relief = new Solid("Artwork " + (index + 1), mixColour(state.color, "#ffffff", 0.16));
-      addBox(relief, x, y, state.keyThickness - 0.025, width, depth, state.reliefHeight + 0.025);
-      solids.push(relief);
+    var bezel = roundedFrame(
+      "AMS 1 · Face bezel",
+      state.color,
+      state.keyWidth - 5.2,
+      state.keyHeight - 4.8,
+      1.05,
+      state.keyThickness - 0.04,
+      state.keyThickness + 0.34,
+      Math.max(1.8, corner - 1.4),
+      9
+    );
+    bezel.material = 0;
+    solids.push(bezel);
+
+    var artwork = createArtworkMap();
+    var cell = Math.min(state.keyWidth * 0.68 / artwork.width, state.keyHeight * 0.66 / artwork.height);
+    var offsetX = state.keyWidth * 0.045;
+    var materials = [{ name: "AMS 1 · Base", color: state.color, slot: 1 }];
+    artwork.palette.forEach(function (color, index) {
+      var material = index + 1;
+      var relief = voxelMaskSolid(
+        "AMS " + (material + 1) + " · Artwork",
+        color,
+        material,
+        artwork,
+        index,
+        cell,
+        offsetX,
+        0,
+        state.keyThickness - 0.045,
+        state.keyThickness + state.reliefHeight
+      );
+      if (relief) {
+        solids.push(relief);
+        materials.push({ name: "AMS " + (material + 1) + " · Artwork", color: color, slot: material + 1 });
+      }
     });
-    return { name: "Image keychain", solids: solids };
+    return { name: "AMS image keychain", solids: solids, materials: materials, artwork: artwork };
   }
 
   function buildBox() {
@@ -1057,6 +1253,27 @@
     document.getElementById("size-stat").textContent = bounds.size.map(function (value) { return formatNumber(value, 1); }).join(" × ") + " mm";
     document.getElementById("triangle-stat").textContent = triangles.toLocaleString();
     document.getElementById("body-stat").textContent = model.solids.length.toLocaleString();
+    updateAMSPalette();
+  }
+
+  function updateAMSPalette() {
+    var palette = document.getElementById("ams-palette");
+    if (!palette) return;
+    palette.innerHTML = "";
+    var materials = model && model.materials ? model.materials : [{ name: "AMS 1 · Base", color: state.color, slot: 1 }];
+    for (var slot = 1; slot <= state.amsColours; slot += 1) {
+      var material = materials.find(function (candidate) { return candidate.slot === slot; });
+      var chip = document.createElement("span");
+      chip.className = "ams-chip" + (material ? "" : " empty");
+      var colour = document.createElement("i");
+      colour.style.setProperty("--chip", material ? material.color : "#d1d1d6");
+      var label = document.createElement("span");
+      label.textContent = material ? "A" + slot : "A" + slot + " empty";
+      chip.title = material ? material.name + " · " + material.color.toUpperCase() : "Unused AMS slot";
+      chip.appendChild(colour);
+      chip.appendChild(label);
+      palette.appendChild(chip);
+    }
   }
 
   function rotateVertex(vertex, centre) {
@@ -1536,6 +1753,175 @@
     ].join("\n");
   }
 
+  function xmlEscape(value) {
+    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;");
+  }
+
+  function signedMeshVolume(solid) {
+    return solid.faces.reduce(function (volume, face) {
+      var a = solid.vertices[face[0]], b = solid.vertices[face[1]], c = solid.vertices[face[2]];
+      return volume + (
+        a[0] * (b[1] * c[2] - b[2] * c[1]) +
+        a[1] * (b[2] * c[0] - b[0] * c[2]) +
+        a[2] * (b[0] * c[1] - b[1] * c[0])
+      ) / 6;
+    }, 0);
+  }
+
+  function groupModelByMaterial(currentModel) {
+    var groups = new Map();
+    currentModel.solids.forEach(function (solid) {
+      if (!solid.faces.length) return;
+      var material = Number.isFinite(solid.material) ? solid.material : 0;
+      var group = groups.get(material) || { material: material, vertices: [], faces: [], color: solid.color, names: [] };
+      var offset = group.vertices.length;
+      var reverseWinding = signedMeshVolume(solid) < 0;
+      solid.vertices.forEach(function (vertex) { group.vertices.push(vertex); });
+      solid.faces.forEach(function (face) {
+        var ordered = reverseWinding ? [face[0], face[2], face[1]] : face;
+        group.faces.push(ordered.map(function (index) { return index + offset; }));
+      });
+      group.names.push(solid.name);
+      groups.set(material, group);
+    });
+    return Array.from(groups.values()).sort(function (a, b) { return a.material - b.material; });
+  }
+
+  function make3MF(currentModel) {
+    var groups = groupModelByMaterial(currentModel);
+    var modelMaterials = currentModel.materials || [];
+    var materialXml = groups.map(function (group, index) {
+      var details = modelMaterials.find(function (material) { return material.slot === group.material + 1; });
+      group.baseIndex = index;
+      group.name = details ? details.name : "Material " + (group.material + 1);
+      group.displayColor = (details ? details.color : group.color || state.color).toUpperCase();
+      return '<base name="' + xmlEscape(group.name) + '" displaycolor="' + group.displayColor + 'FF"/>';
+    }).join("");
+    var objectXml = groups.map(function (group, index) {
+      group.objectId = index + 2;
+      var vertices = group.vertices.map(function (vertex) {
+        return '<vertex x="' + Number(vertex[0]).toFixed(5) + '" y="' + Number(vertex[1]).toFixed(5) + '" z="' + Number(vertex[2]).toFixed(5) + '"/>';
+      }).join("");
+      var triangles = group.faces.map(function (face) {
+        return '<triangle v1="' + face[0] + '" v2="' + face[1] + '" v3="' + face[2] + '"/>';
+      }).join("");
+      return '<object id="' + group.objectId + '" type="model" name="' + xmlEscape(group.name) + '" pid="1" pindex="' + group.baseIndex + '"><mesh><vertices>' + vertices + '</vertices><triangles>' + triangles + '</triangles></mesh></object>';
+    }).join("");
+    var assemblyId = groups.length + 2;
+    var components = groups.map(function (group) { return '<component objectid="' + group.objectId + '"/>'; }).join("");
+    var translateX = Math.max(0, -currentModel.bounds.min[0]);
+    var translateY = Math.max(0, -currentModel.bounds.min[1]);
+    var translateZ = Math.max(0, -currentModel.bounds.min[2]);
+    var buildTransform = [1, 0, 0, 0, 1, 0, 0, 0, 1, translateX, translateY, translateZ].map(function (value) {
+      return Number(value).toFixed(5);
+    }).join(" ");
+    var modelXml = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">' +
+      '<metadata name="Title">' + xmlEscape(currentModel.name) + '</metadata>' +
+      '<metadata name="Designer">Form 3D Studio</metadata>' +
+      '<metadata name="Description">Multi-material AMS model generated locally in Form 3D Studio</metadata>' +
+      '<resources><basematerials id="1">' + materialXml + '</basematerials>' + objectXml +
+      '<object id="' + assemblyId + '" type="model" name="' + xmlEscape(currentModel.name) + '"><components>' + components + '</components></object>' +
+      '</resources><build><item objectid="' + assemblyId + '" transform="' + buildTransform + '"/></build></model>';
+    var contentTypes = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>' +
+      '</Types>';
+    var relationships = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>' +
+      '</Relationships>';
+    return makeStoredZip([
+      { name: "[Content_Types].xml", content: contentTypes },
+      { name: "_rels/.rels", content: relationships },
+      { name: "3D/3dmodel.model", content: modelXml }
+    ]);
+  }
+
+  function crc32(bytes) {
+    var table = [];
+    for (var index = 0; index < 256; index += 1) {
+      var value = index;
+      for (var bit = 0; bit < 8; bit += 1) value = value & 1 ? 0xedb88320 ^ value >>> 1 : value >>> 1;
+      table[index] = value >>> 0;
+    }
+    var crc = 0xffffffff;
+    for (var i = 0; i < bytes.length; i += 1) crc = table[(crc ^ bytes[i]) & 0xff] ^ crc >>> 8;
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
+  function makeStoredZip(entries) {
+    var encoder = new TextEncoder();
+    var localParts = [];
+    var centralParts = [];
+    var offset = 0;
+    entries.forEach(function (entry) {
+      var name = encoder.encode(entry.name);
+      var content = typeof entry.content === "string" ? encoder.encode(entry.content) : entry.content;
+      var checksum = crc32(content);
+      var local = new Uint8Array(30 + name.length + content.length);
+      var localView = new DataView(local.buffer);
+      localView.setUint32(0, 0x04034b50, true);
+      localView.setUint16(4, 20, true);
+      localView.setUint16(6, 0, true);
+      localView.setUint16(8, 0, true);
+      localView.setUint16(10, 0, true);
+      localView.setUint16(12, 0, true);
+      localView.setUint32(14, checksum, true);
+      localView.setUint32(18, content.length, true);
+      localView.setUint32(22, content.length, true);
+      localView.setUint16(26, name.length, true);
+      localView.setUint16(28, 0, true);
+      local.set(name, 30);
+      local.set(content, 30 + name.length);
+      localParts.push(local);
+
+      var central = new Uint8Array(46 + name.length);
+      var centralView = new DataView(central.buffer);
+      centralView.setUint32(0, 0x02014b50, true);
+      centralView.setUint16(4, 20, true);
+      centralView.setUint16(6, 20, true);
+      centralView.setUint16(8, 0, true);
+      centralView.setUint16(10, 0, true);
+      centralView.setUint16(12, 0, true);
+      centralView.setUint16(14, 0, true);
+      centralView.setUint32(16, checksum, true);
+      centralView.setUint32(20, content.length, true);
+      centralView.setUint32(24, content.length, true);
+      centralView.setUint16(28, name.length, true);
+      centralView.setUint16(30, 0, true);
+      centralView.setUint16(32, 0, true);
+      centralView.setUint16(34, 0, true);
+      centralView.setUint16(36, 0, true);
+      centralView.setUint32(38, 0, true);
+      centralView.setUint32(42, offset, true);
+      central.set(name, 46);
+      centralParts.push(central);
+      offset += local.length;
+    });
+    var centralOffset = offset;
+    var centralSize = centralParts.reduce(function (total, part) { return total + part.length; }, 0);
+    var end = new Uint8Array(22);
+    var endView = new DataView(end.buffer);
+    endView.setUint32(0, 0x06054b50, true);
+    endView.setUint16(4, 0, true);
+    endView.setUint16(6, 0, true);
+    endView.setUint16(8, entries.length, true);
+    endView.setUint16(10, entries.length, true);
+    endView.setUint32(12, centralSize, true);
+    endView.setUint32(16, centralOffset, true);
+    endView.setUint16(20, 0, true);
+    var totalSize = centralOffset + centralSize + end.length;
+    var zip = new Uint8Array(totalSize);
+    var cursor = 0;
+    localParts.concat(centralParts).concat([end]).forEach(function (part) {
+      zip.set(part, cursor);
+      cursor += part.length;
+    });
+    return zip;
+  }
+
   function fileStem() {
     return (model.name || "form-3d-model").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   }
@@ -1554,7 +1940,10 @@
   function exportModel(format) {
     if (!model) return;
     try {
-      if (format === "step") {
+      if (format === "3mf") {
+        downloadBlob(new Blob([make3MF(model)], { type: "model/3mf" }), fileStem() + "-ams.3mf");
+        showToast("AMS 3MF project exported");
+      } else if (format === "step") {
         downloadBlob(new Blob([makeSTEP(model)], { type: "application/step" }), fileStem() + ".step");
         showToast("STEP model exported");
       } else {
@@ -1572,7 +1961,9 @@
   }
 
   function displayValue(name, value) {
-    if (name === "threshold") return Math.round(value) + "%";
+    if (name === "amsColours") return Math.round(value) + " slots";
+    if (name === "backgroundTolerance") return Math.round(value) + "%";
+    if (name === "imageSmoothing") return ["Off", "Clean", "Smooth"][Math.round(value)] || "Clean";
     if (name === "boxLidAngle") return Math.round(value) + "°";
     if (name === "boxClearance") return Number(value).toFixed(2);
     if (name === "boxGearModule") {
@@ -1614,6 +2005,12 @@
     document.querySelectorAll(".cylinder-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "cylinder"); });
     document.querySelectorAll(".gear-controls").forEach(function (element) {
       element.classList.toggle("hidden", state.mode !== "box" || !state.boxLid || !state.boxLatch);
+    });
+    document.querySelectorAll(".background-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "keychain" || !state.removeBackground);
+    });
+    document.querySelectorAll(".ams-export").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "keychain");
     });
     document.querySelectorAll("[data-gear-state]").forEach(function (button) {
       var target = Number(button.dataset.gearState);
@@ -1730,7 +2127,7 @@
         if (input.type === "range") updateRangeFill(input);
         var output = document.querySelector('[data-output="' + name + '"]');
         if (output) output.textContent = displayValue(name, state[name]);
-        if (name === "boxLid" || name === "boxLatch") syncControls();
+        if (name === "boxLid" || name === "boxLatch" || name === "removeBackground") syncControls();
         saveState();
         scheduleBuild();
       });

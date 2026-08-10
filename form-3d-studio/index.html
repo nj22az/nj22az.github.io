@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="An offline 3D modeller for image keychains, hinged boxes, and printable forms, with STL and STEP export." />
+    <meta name="description" content="An offline 3D modeller for multi-colour AMS keychains, mechanical boxes, and printable forms, with 3MF, STL and STEP export." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=8" />
+    <link rel="stylesheet" href="./styles.css?v=9" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -85,20 +85,30 @@
           </section>
 
           <section class="control-section keychain-controls">
-            <div class="section-title"><span>Image relief</span><span>mm</span></div>
+            <div class="section-title"><span>Image &amp; AMS</span><span>Up to 4 slots</span></div>
             <div class="range-row">
               <label for="relief-height">Raised height</label><output data-output="reliefHeight">1.2</output>
               <input id="relief-height" data-param="reliefHeight" type="range" min="0.4" max="3" step="0.1" value="1.2" />
             </div>
             <div class="range-row">
-              <label for="threshold">Image threshold</label><output data-output="threshold">48%</output>
-              <input id="threshold" data-param="threshold" type="range" min="5" max="95" step="1" value="48" />
+              <label for="ams-colours">AMS material slots</label><output data-output="amsColours">4 slots</output>
+              <input id="ams-colours" data-param="amsColours" type="range" min="2" max="4" step="1" value="4" />
             </div>
             <div class="range-row">
-              <label for="detail">Image detail</label><output data-output="detail">28</output>
-              <input id="detail" data-param="detail" type="range" min="12" max="44" step="2" value="28" />
+              <label for="detail">Image detail</label><output data-output="detail">64</output>
+              <input id="detail" data-param="detail" type="range" min="32" max="96" step="8" value="64" />
             </div>
-            <label class="switch-row"><span>Invert image</span><input id="invert" data-param="invert" type="checkbox" /><i></i></label>
+            <div class="range-row">
+              <label for="image-smoothing">Edge smoothing</label><output data-output="imageSmoothing">Clean</output>
+              <input id="image-smoothing" data-param="imageSmoothing" type="range" min="0" max="2" step="1" value="1" />
+            </div>
+            <label class="switch-row"><span>Remove image background</span><input id="remove-background" data-param="removeBackground" type="checkbox" checked /><i></i></label>
+            <div class="range-row background-controls">
+              <label for="background-tolerance">Background tolerance</label><output data-output="backgroundTolerance">14%</output>
+              <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
+            </div>
+            <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
+            <p class="control-note">Slot 1 is the keychain body. The image is smoothed and reduced to the remaining AMS slots; colours remain separate editable bodies in the 3MF export.</p>
           </section>
 
           <section class="control-section box-controls hidden">
@@ -245,15 +255,20 @@
             <div><strong>STEP solid</strong><small>Shapr3D &amp; CAD tools</small></div>
             <button data-export="step" type="button">Export</button>
           </div>
+          <div class="export-card ams-export">
+            <div class="file-icon ams">3MF</div>
+            <div><strong>AMS colour project</strong><small>Bambu Studio · up to 4 slots</small></div>
+            <button data-export="3mf" type="button">Export</button>
+          </div>
 
           <div class="compatibility">
             <span>Compatible with</span>
-            <div><b>Shapr3D</b><b>PrusaSlicer</b><b>Cura</b><b>Fusion</b></div>
+            <div><b>Bambu Studio</b><b>Shapr3D</b><b>PrusaSlicer</b><b>Cura</b><b>Fusion</b></div>
           </div>
 
           <details>
             <summary>Export notes</summary>
-            <p>STL is a printable triangle mesh. STEP uses faceted closed solids, so CAD apps can import the cover, box body, hinges, latch, and artwork as separate bodies.</p>
+            <p>3MF preserves AMS material bodies and display colours. STL is a printable triangle mesh. STEP uses faceted closed solids so CAD apps can import components as separate bodies.</p>
           </details>
 
           <div class="offline-card">
@@ -265,6 +280,6 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=8" defer></script>
+    <script src="./app.js?v=9" defer></script>
   </body>
 </html>

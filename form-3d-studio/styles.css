@@ -292,6 +292,38 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.09);
 }
 
+.ams-palette {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 15px 3px 2px;
+}
+
+.ams-chip {
+  min-width: 0;
+  padding: 7px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--secondary);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ams-chip i {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--chip);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.12);
+}
+.ams-chip.empty { opacity: 0.48; }
+.ams-chip.empty i { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(255,255,255,.55) 4px 7px); }
+
 .swatches { display: flex; gap: 10px; padding: 1px 3px 3px; }
 .swatch { width: 28px; height: 28px; border: 0; border-radius: 50%; background: var(--swatch); cursor: pointer; box-shadow: 0 0 0 2px var(--panel-solid), 0 0 0 3px transparent; }
 .swatch.active { box-shadow: 0 0 0 2px var(--panel-solid), 0 0 0 4px var(--swatch); }
@@ -332,6 +364,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .export-card { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
 .file-icon { width: 40px; height: 44px; border-radius: 9px; display: grid; place-items: center; background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .02em; }
 .file-icon.step { background: color-mix(in srgb, #bf5af2 12%, transparent); color: #bf5af2; font-size: 9px; }
+.file-icon.ams { background: color-mix(in srgb, #ff9f0a 14%, transparent); color: #d97706; font-size: 9px; }
 .export-card > div:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .export-card strong { font-size: 13px; }
 .export-card small { color: var(--secondary); font-size: 10px; }
@@ -358,11 +391,9 @@ details p { color: var(--secondary); font-size: 11px; line-height: 1.5; margin: 
 
 @media (max-width: 1120px) {
   .workspace { grid-template-columns: minmax(280px, 330px) minmax(430px, 1fr); }
-  .export-panel { grid-column: 1 / -1; width: 100%; max-height: none; display: grid; grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(230px, 1fr)); gap: 0 20px; align-items: start; }
-  .export-panel .panel-heading, .export-panel .panel-copy { grid-column: 1; }
-  .export-card { grid-row: 1 / span 2; border-top: 0; }
-  .export-card:nth-of-type(1) { grid-column: 2; }
-  .export-card:nth-of-type(2) { grid-column: 3; }
+  .export-panel { grid-column: 1 / -1; width: 100%; max-height: none; display: grid; grid-template-columns: repeat(3, minmax(190px, 1fr)); gap: 0 20px; align-items: start; }
+  .export-panel .panel-heading, .export-panel .panel-copy { grid-column: 1 / -1; }
+  .export-card { border-top: 1px solid var(--line); }
   .compatibility, details, .offline-card { grid-column: 1 / -1; }
 }
 
