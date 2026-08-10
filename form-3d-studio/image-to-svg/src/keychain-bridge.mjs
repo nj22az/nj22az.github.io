@@ -1,4 +1,4 @@
-import { PRESETS, normaliseOptions } from "./vector-core.mjs";
+import { PRESETS, layoutStickerContours, normaliseOptions } from "./vector-core.mjs";
 
 const scriptUrl = document.currentScript?.src || new URL("./keychain-bridge.js", window.location.href).href;
 const workerUrl = new URL("./vector-worker.js", scriptUrl).href;
@@ -97,4 +97,4 @@ function takeStudioArtwork() {
   }
 }
 
-export { PRESETS, cancel, takeStudioArtwork, vectorizeImage, vectorizePixels, workerUrl };
+export { PRESETS, cancel, layoutStickerContours, takeStudioArtwork, vectorizeImage, vectorizePixels, workerUrl };

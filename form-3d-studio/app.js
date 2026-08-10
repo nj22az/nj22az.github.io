@@ -651,16 +651,37 @@
     });
   }
 
-  function makeArtworkSolid(artwork, targetWidth, targetHeight, offsetX, z0, z1) {
+  function createStickerLayout(artwork, targetWidth, targetHeight, offsetX) {
+    if (window.Form3DVectorizer && typeof window.Form3DVectorizer.layoutStickerContours === "function") {
+      var fitted = window.Form3DVectorizer.layoutStickerContours(artwork, {
+        targetWidth: targetWidth,
+        targetHeight: targetHeight,
+        offsetX: offsetX,
+        offsetY: 0,
+        rotationDegrees: state.artworkRotation,
+        padding: Math.max(1.1, Math.min(1.7, targetHeight * 0.05)),
+        cornerRadius: Math.max(1.6, Math.min(3.2, targetHeight * 0.11)),
+        cornerSteps: 10
+      });
+      if (fitted) return fitted;
+    }
+    return {
+      contours: fitArtworkContours(artwork, targetWidth - 3, targetHeight - 3, offsetX, 0, state.artworkRotation),
+      stickerPoints: roundedRectangle(targetWidth, targetHeight, Math.min(3, targetHeight * 0.13), 10).map(function (point) {
+        return [point[0] + offsetX, point[1]];
+      })
+    };
+  }
+
+  function makeArtworkSolid(contours, z0, z1) {
     var engine = window.Form3DOpenModels;
     if (!engine || typeof engine.buildArtworkMesh !== "function") {
       console.warn("SVG artwork extrusion engine unavailable");
       return null;
     }
-    var contours = fitArtworkContours(artwork, targetWidth, targetHeight, offsetX, 0, state.artworkRotation);
     var mesh = engine.buildArtworkMesh(contours, { z0: z0, z1: z1 });
     if (!mesh || !mesh.faces || !mesh.faces.length) return null;
-    var solid = new Solid("AMS 3 · Extruded SVG artwork", "#111111");
+    var solid = new Solid("AMS 3 · Sticker artwork", "#111111");
     solid.material = 2;
     solid.vertices = mesh.vertices.map(function (vertex) { return vertex.slice(); });
     solid.faces = mesh.faces.map(function (face) { return face.slice(); });
@@ -675,51 +696,37 @@
     var ringX = -state.keyWidth / 2 - outerRadius * 0.5;
     var eye = extrudeRing("AMS 1 · Keyring eye", state.color, ringX, 0, outerRadius, innerRadius, 0, state.keyThickness, 48);
     var artwork = createArtworkMap();
-    var offsetX = state.keyWidth * 0.045;
-    var faceWidth = Math.max(12, state.keyWidth - 10);
-    var faceHeight = Math.max(9, state.keyHeight - 8);
-    var faceBottom = state.keyThickness - 0.025;
-    var faceTop = state.keyThickness + 0.55;
-    var artworkTop = faceTop + state.artworkThickness;
-    var whiteFace = extrudeConvex(
-      "AMS 2 · White face plate",
+    var offsetX = state.keyWidth * 0.035;
+    var stickerTargetWidth = Math.max(12, state.keyWidth - 9);
+    var stickerTargetHeight = Math.max(9, state.keyHeight - 6);
+    var stickerLayout = createStickerLayout(artwork, stickerTargetWidth, stickerTargetHeight, offsetX);
+    var stickerBottom = state.keyThickness - 0.025;
+    var stickerTop = state.keyThickness + 0.28;
+    var artworkTop = stickerTop + state.artworkThickness;
+    var whiteSticker = extrudeConvex(
+      "AMS 2 · White sticker backing",
       "#ffffff",
-      roundedRectangle(faceWidth, faceHeight, Math.min(2.4, faceHeight * 0.14), 7),
-      faceBottom,
-      faceTop
+      stickerLayout.stickerPoints,
+      stickerBottom,
+      stickerTop
     );
-    whiteFace.material = 1;
-    transformSolid(whiteFace, function (vertex) { return [vertex[0] + offsetX, vertex[1], vertex[2]]; });
+    whiteSticker.material = 1;
     var blackArtwork = makeArtworkSolid(
-      artwork,
-      Math.max(8, faceWidth - 3),
-      Math.max(6, faceHeight - 3),
-      offsetX,
-      faceTop - 0.025,
+      stickerLayout.contours,
+      stickerTop - 0.025,
       artworkTop
     );
-    var bezel = roundedFrame(
-      "AMS 1 · Face bezel",
-      state.color,
-      state.keyWidth - 5.2,
-      state.keyHeight - 4.8,
-      1.05,
-      faceBottom,
-      artworkTop + 0.12,
-      Math.max(1.8, corner - 1.4),
-      9
-    );
-    var structure = combineSolids("AMS 1 · Keychain structure", state.color, 0, [base, eye, bezel]);
-    var solids = [structure, whiteFace];
+    var structure = combineSolids("AMS 1 · Keychain structure", state.color, 0, [base, eye]);
+    var solids = [structure, whiteSticker];
     var materials = [
       { name: "AMS 1 · Structure", color: state.color, slot: 1 },
-      { name: "AMS 2 · White face plate", color: "#ffffff", slot: 2 }
+      { name: "AMS 2 · White sticker backing", color: "#ffffff", slot: 2 }
     ];
     if (blackArtwork) {
       solids.push(blackArtwork);
-      materials.push({ name: "AMS 3 · SVG artwork", color: "#111111", slot: 3 });
+      materials.push({ name: "AMS 3 · Sticker artwork", color: "#111111", slot: 3 });
     }
-    return { name: "SVG picture keychain", solids: solids, materials: materials, artwork: artwork };
+    return { name: "SVG sticker keychain", solids: solids, materials: materials, artwork: artwork };
   }
 
   function buildBox() {

@@ -87,7 +87,7 @@
           </section>
 
           <section class="control-section keychain-controls">
-            <div class="section-title"><span>SVG artwork</span><span>Trace → rotate → attach</span></div>
+            <div class="section-title"><span>Sticker artwork</span><span>Fit → rotate → attach</span></div>
             <div class="range-row">
               <label for="artwork-thickness">Artwork thickness</label><output data-output="artworkThickness">0.45</output>
               <input id="artwork-thickness" data-param="artworkThickness" type="range" min="0.2" max="1.2" step="0.05" value="0.45" />
@@ -114,7 +114,7 @@
               <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
             </div>
             <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
-            <p class="control-note">VTracer first makes a clean monochrome SVG. That SVG is then rotated, fitted and extruded as one thin black layer attached to the white plate. Use the <a href="./image-to-svg/">full converter</a> for before/after comparison and advanced controls.</p>
+            <p class="control-note">VTracer first makes a clean monochrome SVG. The visible contours—not the empty image margins—are centred on a thin rounded white sticker, then rotated and attached to the keychain as one printable piece. Use the <a href="./image-to-svg/">full converter</a> for before/after comparison and advanced controls.</p>
           </section>
 
           <section class="control-section library-controls hidden">
@@ -293,7 +293,7 @@
           <div class="viewer-toolbar">
             <div>
               <p class="eyebrow">Live preview</p>
-              <h2 id="model-title">SVG picture keychain</h2>
+              <h2 id="model-title">SVG sticker keychain</h2>
             </div>
             <div class="viewer-actions">
               <button class="tool-button" id="view-reset" type="button" title="Reset view" aria-label="Reset view">
@@ -338,12 +338,12 @@
           </div>
           <div class="export-card ams-export">
             <div class="file-icon svg">SVG</div>
-            <div><strong>Monochrome artwork</strong><small>Black vector · white background</small></div>
+            <div><strong>Sticker artwork</strong><small>Black vector · fitted white backing</small></div>
             <button data-export="svg" type="button">Export</button>
           </div>
           <div class="export-card ams-export">
             <div class="file-icon ams">3MF</div>
-            <div><strong>AMS picture project</strong><small>Three bodies · SVG included</small></div>
+            <div><strong>AMS sticker project</strong><small>Three attached bodies · SVG included</small></div>
             <button data-export="3mf" type="button">Export</button>
           </div>
 
@@ -354,7 +354,7 @@
 
           <details>
             <summary>Export notes</summary>
-            <p>SVG is the clean traced picture on a white background. 3MF preserves the structure, white plate and attached black SVG as three AMS bodies. STL is a printable triangle mesh; STEP retains the separate material bodies.</p>
+            <p>SVG is the clean traced picture. The model fits it to a thin rounded sticker backing by its visible contours. 3MF preserves the keychain, backing and attached black SVG as three AMS bodies; STL and STEP retain the printable geometry.</p>
           </details>
 
           <div class="offline-card">
@@ -368,7 +368,7 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./open-models.js?v=3" defer></script>
     <script src="./monochrome-svg.js?v=13" defer></script>
-    <script src="./image-to-svg/keychain-bridge.js?v=1" defer></script>
-    <script src="./app.js?v=14" defer></script>
+    <script src="./image-to-svg/keychain-bridge.js?v=2" defer></script>
+    <script src="./app.js?v=15" defer></script>
   </body>
 </html>

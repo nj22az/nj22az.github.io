@@ -1,14 +1,14 @@
-const CACHE_NAME = "form-3d-studio-v14";
+const CACHE_NAME = "form-3d-studio-v15";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css?v=14",
   "./open-models.js?v=3",
   "./monochrome-svg.js?v=13",
-  "./image-to-svg/keychain-bridge.js?v=1",
+  "./image-to-svg/keychain-bridge.js?v=2",
   "./image-to-svg/vector-worker.js",
   "./image-to-svg/vtracer_wasm_bg.wasm",
-  "./app.js?v=14",
+  "./app.js?v=15",
   "./form-icon.svg",
   "./manifest.webmanifest"
 ];

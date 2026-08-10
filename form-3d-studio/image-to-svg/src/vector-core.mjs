@@ -382,6 +382,90 @@ export function extractContoursFromSvg(svg, tolerance = 0.7) {
   return { width, height, viewBox, contours };
 }
 
+function roundedStickerPoints(width, height, radius, steps = 8) {
+  const safeRadius = Math.min(Math.max(0, radius), width / 2, height / 2);
+  const centres = [
+    [width / 2 - safeRadius, height / 2 - safeRadius, 0],
+    [-width / 2 + safeRadius, height / 2 - safeRadius, Math.PI / 2],
+    [-width / 2 + safeRadius, -height / 2 + safeRadius, Math.PI],
+    [width / 2 - safeRadius, -height / 2 + safeRadius, Math.PI * 1.5]
+  ];
+  const points = [];
+  centres.forEach(([centreX, centreY, startAngle]) => {
+    for (let index = 0; index < steps; index += 1) {
+      const angle = startAngle + Math.PI / 2 * index / steps;
+      points.push([centreX + Math.cos(angle) * safeRadius, centreY + Math.sin(angle) * safeRadius]);
+    }
+  });
+  return points;
+}
+
+export function layoutStickerContours(artwork, input = {}) {
+  const contours = Array.isArray(artwork?.contours) ? artwork.contours.filter((contour) => Array.isArray(contour?.points) && contour.points.length >= 3) : [];
+  if (!contours.length) return null;
+  const foreground = contours.filter((contour) => !contour.hole);
+  if (!foreground.length) return null;
+  const contourArea = (contour) => Number.isFinite(contour.area) ? Math.abs(contour.area) : Math.abs(signedArea(contour.points));
+  const largestArea = Math.max(...foreground.map(contourArea), 1e-6);
+  const boundsContours = foreground.filter((contour) => contourArea(contour) >= largestArea * 0.001);
+  const boundsPoints = (boundsContours.length ? boundsContours : foreground).flatMap((contour) => contour.points);
+  const minimumX = Math.min(...boundsPoints.map((point) => Number(point[0])));
+  const maximumX = Math.max(...boundsPoints.map((point) => Number(point[0])));
+  const minimumY = Math.min(...boundsPoints.map((point) => Number(point[1])));
+  const maximumY = Math.max(...boundsPoints.map((point) => Number(point[1])));
+  const contentWidth = Math.max(0.001, maximumX - minimumX);
+  const contentHeight = Math.max(0.001, maximumY - minimumY);
+  const centreX = (minimumX + maximumX) / 2;
+  const centreY = (minimumY + maximumY) / 2;
+  const targetWidth = Math.max(2, Number(input.targetWidth) || 40);
+  const targetHeight = Math.max(2, Number(input.targetHeight) || 24);
+  const offsetX = Number(input.offsetX) || 0;
+  const offsetY = Number(input.offsetY) || 0;
+  const padding = clamp(input.padding ?? 1.35, 0.4, Math.min(targetWidth, targetHeight) / 4);
+  const angle = (Number(input.rotationDegrees) || 0) * Math.PI / 180;
+  const cosine = Math.cos(angle), sine = Math.sin(angle);
+  const absoluteCosine = Math.abs(cosine), absoluteSine = Math.abs(sine);
+  const rotatedSourceWidth = absoluteCosine * contentWidth + absoluteSine * contentHeight;
+  const rotatedSourceHeight = absoluteSine * contentWidth + absoluteCosine * contentHeight;
+  const paddingEnvelope = 2 * padding * (absoluteCosine + absoluteSine);
+  const scale = Math.max(1e-6, Math.min(
+    Math.max(0.5, targetWidth - paddingEnvelope) / rotatedSourceWidth,
+    Math.max(0.5, targetHeight - paddingEnvelope) / rotatedSourceHeight
+  ));
+  const transform = (point) => {
+    const x = (Number(point[0]) - centreX) * scale;
+    const y = (centreY - Number(point[1])) * scale;
+    return [cosine * x - sine * y + offsetX, sine * x + cosine * y + offsetY];
+  };
+  const fittedContours = contours.map((contour) => ({
+    ...contour,
+    area: contourArea(contour) * scale * scale,
+    points: contour.points.map(transform)
+  }));
+  const stickerWidth = contentWidth * scale + padding * 2;
+  const stickerHeight = contentHeight * scale + padding * 2;
+  const cornerRadius = clamp(input.cornerRadius ?? Math.min(3, Math.min(stickerWidth, stickerHeight) * 0.13), 0.4, Math.min(stickerWidth, stickerHeight) / 2);
+  const stickerPoints = roundedStickerPoints(stickerWidth, stickerHeight, cornerRadius, Math.round(clamp(input.cornerSteps ?? 9, 4, 16))).map((point) => [
+    cosine * point[0] - sine * point[1] + offsetX,
+    sine * point[0] + cosine * point[1] + offsetY
+  ]);
+  const physicalBounds = {
+    minX: Math.min(...stickerPoints.map((point) => point[0])),
+    maxX: Math.max(...stickerPoints.map((point) => point[0])),
+    minY: Math.min(...stickerPoints.map((point) => point[1])),
+    maxY: Math.max(...stickerPoints.map((point) => point[1]))
+  };
+  return {
+    contours: fittedContours,
+    stickerPoints,
+    stickerWidth,
+    stickerHeight,
+    physicalBounds,
+    scale,
+    sourceBounds: { minX: minimumX, maxX: maximumX, minY: minimumY, maxY: maximumY }
+  };
+}
+
 export function formatBytes(bytes) {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];

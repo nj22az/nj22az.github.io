@@ -5,6 +5,7 @@ import {
   extractContoursFromSvg,
   flattenPathData,
   formatBytes,
+  layoutStickerContours,
   normaliseOptions,
   preprocessPixels,
   svgStatistics
@@ -42,6 +43,41 @@ assert.equal(parsed.height, 80);
 assert.equal(parsed.contours.length, 2);
 assert.equal(parsed.contours.filter((contour) => contour.hole).length, 1);
 assert.deepEqual(parsed.contours[0].points[0].map(Math.round), [10, 5]);
+
+const stickerArtwork = {
+  width: 1000,
+  height: 600,
+  contours: [
+    { hole: false, area: 60000, points: [[400, 100], [600, 100], [600, 400], [400, 400]] },
+    { hole: true, area: 6000, points: [[450, 180], [550, 180], [550, 240], [450, 240]] }
+  ]
+};
+const sticker = layoutStickerContours(stickerArtwork, {
+  targetWidth: 60,
+  targetHeight: 30,
+  offsetX: 2,
+  padding: 1.5,
+  cornerRadius: 2.5,
+  cornerSteps: 10
+});
+assert.ok(sticker, "visible SVG contours should produce a sticker layout");
+assert.equal(sticker.stickerPoints.length, 40);
+assert.equal(sticker.contours.filter((contour) => contour.hole).length, 1, "holes should survive sticker fitting");
+assert.ok(sticker.stickerHeight <= 30 + 1e-6);
+assert.ok(sticker.stickerWidth < 25, "blank canvas margins must not enlarge the sticker backing");
+assert.ok(Math.abs((sticker.physicalBounds.minX + sticker.physicalBounds.maxX) / 2 - 2) < 1e-6);
+assert.ok(Math.abs((sticker.physicalBounds.minY + sticker.physicalBounds.maxY) / 2) < 1e-6);
+
+const rotatedSticker = layoutStickerContours(stickerArtwork, {
+  targetWidth: 60,
+  targetHeight: 30,
+  offsetX: 2,
+  padding: 1.5,
+  rotationDegrees: 90
+});
+assert.ok(rotatedSticker.physicalBounds.maxX - rotatedSticker.physicalBounds.minX <= 60 + 1e-6);
+assert.ok(rotatedSticker.physicalBounds.maxY - rotatedSticker.physicalBounds.minY <= 30 + 1e-6);
+assert.ok(Math.abs((rotatedSticker.physicalBounds.minX + rotatedSticker.physicalBounds.maxX) / 2 - 2) < 1e-6);
 
 const statistics = svgStatistics('<svg><path fill="#000" d="M0 0L4 0L4 4Z"/><path fill="#fff" d="M1 1L2 1L2 2Z"/></svg>');
 assert.equal(statistics.paths, 2);
