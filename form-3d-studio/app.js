@@ -1,18 +1,19 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v6";
+  var STORAGE_KEY = "form-3d-studio-settings-v7";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
     keyHeight: 30,
     keyThickness: 3,
     holeSize: 5,
-    reliefHeight: 1.2,
+    artworkThickness: 0.45,
+    artworkRotation: 0,
     detail: 64,
     amsColours: 4,
     imageSmoothing: 1,
-    monochromeThreshold: 50,
+    monochromeThreshold: 35,
     removeBackground: true,
     backgroundTolerance: 14,
     boxWidth: 76,
@@ -72,13 +73,17 @@
 
   function loadState() {
     try {
-      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
+      var current = localStorage.getItem(STORAGE_KEY);
+      var saved = JSON.parse(current || localStorage.getItem("form-3d-studio-settings-v6") || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
+      if (!current) merged.monochromeThreshold = defaults.monochromeThreshold;
       if (!["keychain", "box", "cylinder", "library"].includes(merged.mode)) merged.mode = "keychain";
       if (!["spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
       merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);
       merged.amsColours = clamp(Number(merged.amsColours) || defaults.amsColours, 2, 4);
       merged.monochromeThreshold = clamp(Number(merged.monochromeThreshold) || defaults.monochromeThreshold, 15, 85);
+      merged.artworkThickness = clamp(Number(merged.artworkThickness) || defaults.artworkThickness, 0.2, 1.2);
+      merged.artworkRotation = clamp(Number(merged.artworkRotation) || 0, -180, 180);
       return merged;
     } catch (error) {
       return Object.assign({}, defaults);
@@ -562,18 +567,18 @@
       var sourceAspect = uploadedImage.naturalWidth / uploadedImage.naturalHeight;
       var drawWidth, drawHeight, x, y;
       if (sourceAspect > targetAspect) {
-        drawWidth = width;
-        drawHeight = width / sourceAspect;
-        x = 0;
-        y = (height - drawHeight) / 2;
-      } else {
         drawHeight = height;
         drawWidth = height * sourceAspect;
         x = (width - drawWidth) / 2;
         y = 0;
+      } else {
+        drawWidth = width;
+        drawHeight = width / sourceAspect;
+        x = 0;
+        y = (height - drawHeight) / 2;
       }
       imageContext.drawImage(uploadedImage, x, y, drawWidth, drawHeight);
-      bounds = { x: x, y: y, width: drawWidth, height: drawHeight };
+      bounds = { x: 0, y: 0, width: width, height: height };
     } else {
       imageContext.fillStyle = "#161617";
       imageContext.textAlign = "center";
@@ -596,101 +601,99 @@
     });
   }
 
-  function voxelMaskSolid(name, color, material, artwork, target, cell, offsetX, offsetY, z0, z1) {
-    var solid = new Solid(name, color);
-    solid.material = material;
-    var vertexCache = new Map();
-    function vertex(col, row, top) {
-      var key = col + ":" + row + ":" + top;
-      if (vertexCache.has(key)) return vertexCache.get(key);
-      var x = offsetX + (col - artwork.width / 2) * cell;
-      var y = offsetY + (artwork.height / 2 - row) * cell;
-      var index = solid.vertex(x, y, top ? z1 : z0);
-      vertexCache.set(key, index);
-      return index;
+  function combineSolids(name, color, material, parts) {
+    var combined = new Solid(name, color);
+    combined.material = material;
+    parts.forEach(function (part) {
+      var offset = combined.vertices.length;
+      part.vertices.forEach(function (vertex) { combined.vertices.push(vertex.slice()); });
+      part.faces.forEach(function (face) {
+        combined.faces.push(face.map(function (index) { return index + offset; }));
+      });
+    });
+    return combined;
+  }
+
+  function fitArtworkContours(artwork, targetWidth, targetHeight, offsetX, offsetY, rotationDegrees) {
+    if (!artwork.contours || !artwork.contours.length) return [];
+    var angle = rotationDegrees * Math.PI / 180;
+    var cosine = Math.cos(angle);
+    var sine = Math.sin(angle);
+    function rotate(point) {
+      var x = point[0] - artwork.width / 2;
+      var y = artwork.height / 2 - point[1];
+      return [cosine * x - sine * y, sine * x + cosine * y];
     }
-    function active(row, col) {
-      return row >= 0 && row < artwork.height && col >= 0 && col < artwork.width && artwork.labels[row][col] === target;
+    var corners = [[0, 0], [artwork.width, 0], [artwork.width, artwork.height], [0, artwork.height]].map(rotate);
+    var minX = Math.min.apply(null, corners.map(function (point) { return point[0]; }));
+    var maxX = Math.max.apply(null, corners.map(function (point) { return point[0]; }));
+    var minY = Math.min.apply(null, corners.map(function (point) { return point[1]; }));
+    var maxY = Math.max.apply(null, corners.map(function (point) { return point[1]; }));
+    var scale = Math.min(targetWidth / Math.max(0.001, maxX - minX), targetHeight / Math.max(0.001, maxY - minY));
+    var centreX = (minX + maxX) / 2;
+    var centreY = (minY + maxY) / 2;
+    return artwork.contours.map(function (contour) {
+      return {
+        hole: contour.hole,
+        area: contour.area * scale * scale,
+        points: contour.points.map(function (point) {
+          var rotated = rotate(point);
+          return [
+            (rotated[0] - centreX) * scale + offsetX,
+            (rotated[1] - centreY) * scale + offsetY
+          ];
+        })
+      };
+    });
+  }
+
+  function makeArtworkSolid(artwork, targetWidth, targetHeight, offsetX, z0, z1) {
+    var engine = window.Form3DOpenModels;
+    if (!engine || typeof engine.buildArtworkMesh !== "function") {
+      console.warn("SVG artwork extrusion engine unavailable");
+      return null;
     }
-    for (var row = 0; row < artwork.height; row += 1) {
-      for (var col = 0; col < artwork.width; col += 1) {
-        if (!active(row, col)) continue;
-        var bottomTL = vertex(col, row, false);
-        var bottomTR = vertex(col + 1, row, false);
-        var bottomBR = vertex(col + 1, row + 1, false);
-        var bottomBL = vertex(col, row + 1, false);
-        var topTL = vertex(col, row, true);
-        var topTR = vertex(col + 1, row, true);
-        var topBR = vertex(col + 1, row + 1, true);
-        var topBL = vertex(col, row + 1, true);
-        solid.triangle(topTL, topBL, topBR);
-        solid.triangle(topTL, topBR, topTR);
-        solid.triangle(bottomTL, bottomTR, bottomBR);
-        solid.triangle(bottomTL, bottomBR, bottomBL);
-        if (!active(row - 1, col)) solid.quad(bottomTL, topTL, topTR, bottomTR);
-        if (!active(row + 1, col)) solid.quad(bottomBL, bottomBR, topBR, topBL);
-        if (!active(row, col - 1)) solid.quad(bottomTL, bottomBL, topBL, topTL);
-        if (!active(row, col + 1)) solid.quad(bottomTR, topTR, topBR, bottomBR);
-      }
-    }
-    return solid.faces.length ? solid : null;
+    var contours = fitArtworkContours(artwork, targetWidth, targetHeight, offsetX, 0, state.artworkRotation);
+    var mesh = engine.buildArtworkMesh(contours, { z0: z0, z1: z1 });
+    if (!mesh || !mesh.faces || !mesh.faces.length) return null;
+    var solid = new Solid("AMS 3 · Extruded SVG artwork", "#111111");
+    solid.material = 2;
+    solid.vertices = mesh.vertices.map(function (vertex) { return vertex.slice(); });
+    solid.faces = mesh.faces.map(function (face) { return face.slice(); });
+    return solid;
   }
 
   function buildKeychain() {
-    var solids = [];
     var corner = Math.min(6, state.keyHeight * 0.24);
     var base = extrudeConvex("AMS 1 · Keychain base", state.color, roundedRectangle(state.keyWidth, state.keyHeight, corner, 9), 0, state.keyThickness);
-    base.material = 0;
-    solids.push(base);
-
     var innerRadius = state.holeSize / 2;
     var outerRadius = innerRadius + Math.max(2, state.keyThickness * 0.72);
     var ringX = -state.keyWidth / 2 - outerRadius * 0.5;
     var eye = extrudeRing("AMS 1 · Keyring eye", state.color, ringX, 0, outerRadius, innerRadius, 0, state.keyThickness, 48);
-    eye.material = 0;
-    solids.push(eye);
-
     var artwork = createArtworkMap();
-    var cell = Math.min(state.keyWidth * 0.68 / artwork.width, state.keyHeight * 0.66 / artwork.height);
     var offsetX = state.keyWidth * 0.045;
-    var faceBottom = state.keyThickness - 0.045;
-    var faceTop = state.keyThickness + state.reliefHeight;
-    var materials = [{ name: "AMS 1 · Structure", color: state.color, slot: 1 }];
-
-    var whiteFace = voxelMaskSolid(
-      "AMS 2 · White SVG background",
+    var faceWidth = Math.max(12, state.keyWidth - 10);
+    var faceHeight = Math.max(9, state.keyHeight - 8);
+    var faceBottom = state.keyThickness - 0.025;
+    var faceTop = state.keyThickness + 0.55;
+    var artworkTop = faceTop + state.artworkThickness;
+    var whiteFace = extrudeConvex(
+      "AMS 2 · White face plate",
       "#ffffff",
-      1,
-      artwork,
-      0,
-      cell,
-      offsetX,
-      0,
+      roundedRectangle(faceWidth, faceHeight, Math.min(2.4, faceHeight * 0.14), 7),
       faceBottom,
       faceTop
     );
-    if (whiteFace) {
-      solids.push(whiteFace);
-      materials.push({ name: "AMS 2 · White SVG background", color: "#ffffff", slot: 2 });
-    }
-
-    var blackArtwork = voxelMaskSolid(
-      "AMS 3 · Monochrome SVG artwork",
-      "#111111",
-      2,
+    whiteFace.material = 1;
+    transformSolid(whiteFace, function (vertex) { return [vertex[0] + offsetX, vertex[1], vertex[2]]; });
+    var blackArtwork = makeArtworkSolid(
       artwork,
-      1,
-      cell,
+      Math.max(8, faceWidth - 3),
+      Math.max(6, faceHeight - 3),
       offsetX,
-      0,
-      faceBottom,
-      faceTop
+      faceTop - 0.025,
+      artworkTop
     );
-    if (blackArtwork) {
-      solids.push(blackArtwork);
-      materials.push({ name: "AMS 3 · Monochrome SVG artwork", color: "#111111", slot: 3 });
-    }
-
     var bezel = roundedFrame(
       "AMS 1 · Face bezel",
       state.color,
@@ -698,13 +701,21 @@
       state.keyHeight - 4.8,
       1.05,
       faceBottom,
-      faceTop + 0.18,
+      artworkTop + 0.12,
       Math.max(1.8, corner - 1.4),
       9
     );
-    bezel.material = 0;
-    solids.push(bezel);
-    return { name: "Monochrome SVG inlay keychain", solids: solids, materials: materials, artwork: artwork };
+    var structure = combineSolids("AMS 1 · Keychain structure", state.color, 0, [base, eye, bezel]);
+    var solids = [structure, whiteFace];
+    var materials = [
+      { name: "AMS 1 · Structure", color: state.color, slot: 1 },
+      { name: "AMS 2 · White face plate", color: "#ffffff", slot: 2 }
+    ];
+    if (blackArtwork) {
+      solids.push(blackArtwork);
+      materials.push({ name: "AMS 3 · SVG artwork", color: "#111111", slot: 3 });
+    }
+    return { name: "SVG picture keychain", solids: solids, materials: materials, artwork: artwork };
   }
 
   function buildBox() {
@@ -1224,7 +1235,7 @@
     image.alt = "Monochrome SVG artwork preview on a white background";
     image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(artwork.svg);
     document.getElementById("drop-preview").replaceChildren(image);
-    document.getElementById("upload-format").textContent = "Monochrome SVG · white background";
+    document.getElementById("upload-format").textContent = "Clean vector SVG · white background";
   }
 
   function buildModel() {
@@ -1984,6 +1995,8 @@
   function displayValue(name, value) {
     if (name === "amsColours") return Math.round(value) + " slots";
     if (name === "monochromeThreshold") return Math.round(value) + "%";
+    if (name === "artworkRotation") return Math.round(value) + "°";
+    if (name === "artworkThickness") return Number(value).toFixed(2);
     if (name === "backgroundTolerance") return Math.round(value) + "%";
     if (name === "imageSmoothing") return ["Off", "Clean", "Smooth"][Math.round(value)] || "Clean";
     if (name === "boxLidAngle") return Math.round(value) + "°";
@@ -2007,7 +2020,7 @@
       return fittedHole.toFixed(1) + (fittedHole + 0.001 < Number(value) ? " · fitted" : "");
     }
     if (["gearModule", "gearThickness", "boltDiameter", "bracketThickness"].includes(name)) return Number(value).toFixed(1);
-    if (["keyThickness", "holeSize", "reliefHeight", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
+    if (["keyThickness", "holeSize", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
     return String(Math.round(value));
   }
 

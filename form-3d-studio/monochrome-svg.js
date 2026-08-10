@@ -126,26 +126,177 @@
     return current;
   }
 
-  function pathFromLabels(labels) {
-    var commands = [];
-    for (var row = 0; row < labels.length; row += 1) {
-      var col = 0;
-      while (col < labels[row].length) {
-        if (labels[row][col] !== 1) {
-          col += 1;
-          continue;
-        }
-        var start = col;
-        while (col < labels[row].length && labels[row][col] === 1) col += 1;
-        var run = col - start;
-        commands.push("M" + start + " " + row + "h" + run + "v1h-" + run + "z");
-      }
+  function signedArea(points) {
+    var area = 0;
+    for (var index = 0; index < points.length; index += 1) {
+      var next = (index + 1) % points.length;
+      area += points[index][0] * points[next][1] - points[next][0] * points[index][1];
     }
-    return commands.join("");
+    return area / 2;
   }
 
-  function makeSvg(labels, width, height, radius, physicalWidth, physicalHeight) {
-    var path = pathFromLabels(labels);
+  function removeCollinear(points) {
+    if (points.length <= 3) return points.slice();
+    return points.filter(function (point, index) {
+      var previous = points[(index - 1 + points.length) % points.length];
+      var next = points[(index + 1) % points.length];
+      return (point[0] - previous[0]) * (next[1] - point[1]) !==
+        (point[1] - previous[1]) * (next[0] - point[0]);
+    });
+  }
+
+  function segmentDistanceSquared(point, start, end) {
+    var dx = end[0] - start[0];
+    var dy = end[1] - start[1];
+    if (!dx && !dy) {
+      dx = point[0] - start[0];
+      dy = point[1] - start[1];
+      return dx * dx + dy * dy;
+    }
+    var amount = clamp(((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / (dx * dx + dy * dy), 0, 1);
+    var x = start[0] + amount * dx;
+    var y = start[1] + amount * dy;
+    dx = point[0] - x;
+    dy = point[1] - y;
+    return dx * dx + dy * dy;
+  }
+
+  function simplifyOpen(points, toleranceSquared) {
+    if (points.length <= 2) return points.slice();
+    var maximum = toleranceSquared;
+    var split = -1;
+    for (var index = 1; index < points.length - 1; index += 1) {
+      var distance = segmentDistanceSquared(points[index], points[0], points[points.length - 1]);
+      if (distance > maximum) {
+        maximum = distance;
+        split = index;
+      }
+    }
+    if (split < 0) return [points[0], points[points.length - 1]];
+    var left = simplifyOpen(points.slice(0, split + 1), toleranceSquared);
+    var right = simplifyOpen(points.slice(split), toleranceSquared);
+    return left.slice(0, -1).concat(right);
+  }
+
+  function simplifyClosed(points, tolerance) {
+    var cleaned = removeCollinear(points);
+    if (cleaned.length <= 4 || tolerance <= 0) return cleaned;
+    var farthest = 1;
+    var farthestDistance = -1;
+    for (var index = 1; index < cleaned.length; index += 1) {
+      var dx = cleaned[index][0] - cleaned[0][0];
+      var dy = cleaned[index][1] - cleaned[0][1];
+      var distance = dx * dx + dy * dy;
+      if (distance > farthestDistance) {
+        farthestDistance = distance;
+        farthest = index;
+      }
+    }
+    var first = simplifyOpen(cleaned.slice(0, farthest + 1), tolerance * tolerance);
+    var second = simplifyOpen(cleaned.slice(farthest).concat([cleaned[0]]), tolerance * tolerance);
+    var simplified = removeCollinear(first.concat(second.slice(1, -1)));
+    return simplified.length >= 3 ? simplified : cleaned;
+  }
+
+  function edgeDirection(edge) {
+    if (edge[2] > edge[0]) return 0;
+    if (edge[3] > edge[1]) return 1;
+    if (edge[2] < edge[0]) return 2;
+    return 3;
+  }
+
+  function pointKey(x, y) {
+    return x + ":" + y;
+  }
+
+  function traceContours(labels, options) {
+    options = options || {};
+    var height = labels.length;
+    var width = labels[0].length;
+    var edges = [];
+    var outgoing = new Map();
+    function active(row, col) {
+      return row >= 0 && row < height && col >= 0 && col < width && labels[row][col] === 1;
+    }
+    function addEdge(x0, y0, x1, y1) {
+      var edge = [x0, y0, x1, y1];
+      var index = edges.push(edge) - 1;
+      var key = pointKey(x0, y0);
+      var list = outgoing.get(key) || [];
+      list.push(index);
+      outgoing.set(key, list);
+    }
+    for (var row = 0; row < height; row += 1) {
+      for (var col = 0; col < width; col += 1) {
+        if (!active(row, col)) continue;
+        if (!active(row - 1, col)) addEdge(col, row, col + 1, row);
+        if (!active(row, col + 1)) addEdge(col + 1, row, col + 1, row + 1);
+        if (!active(row + 1, col)) addEdge(col + 1, row + 1, col, row + 1);
+        if (!active(row, col - 1)) addEdge(col, row + 1, col, row);
+      }
+    }
+
+    var visited = new Array(edges.length).fill(false);
+    var contours = [];
+    var tolerance = Number.isFinite(options.simplifyTolerance) ? Math.max(0, options.simplifyTolerance) : 0.62;
+    var minimumArea = Number.isFinite(options.minimumArea) ? Math.max(0, options.minimumArea) : Math.max(1.5, width * height * 0.0006);
+    for (var startIndex = 0; startIndex < edges.length; startIndex += 1) {
+      if (visited[startIndex]) continue;
+      var start = edges[startIndex];
+      var startKey = pointKey(start[0], start[1]);
+      var currentIndex = startIndex;
+      var points = [[start[0], start[1]]];
+      var closed = false;
+      for (var step = 0; step <= edges.length; step += 1) {
+        var current = edges[currentIndex];
+        if (visited[currentIndex]) break;
+        visited[currentIndex] = true;
+        points.push([current[2], current[3]]);
+        var endKey = pointKey(current[2], current[3]);
+        if (endKey === startKey) {
+          closed = true;
+          break;
+        }
+        var candidates = (outgoing.get(endKey) || []).filter(function (index) { return !visited[index]; });
+        if (!candidates.length) break;
+        var direction = edgeDirection(current);
+        candidates.sort(function (first, second) {
+          function rank(index) {
+            var turn = (edgeDirection(edges[index]) - direction + 4) % 4;
+            if (turn === 1) return 0;
+            if (turn === 0) return 1;
+            if (turn === 3) return 2;
+            return 3;
+          }
+          return rank(first) - rank(second);
+        });
+        currentIndex = candidates[0];
+      }
+      if (!closed) continue;
+      points.pop();
+      var simplified = simplifyClosed(points, tolerance);
+      var area = signedArea(simplified);
+      if (simplified.length < 3 || Math.abs(area) < minimumArea) continue;
+      contours.push({ points: simplified, hole: area < 0, area: Math.abs(area) });
+    }
+    contours.sort(function (first, second) { return second.area - first.area; });
+    return contours.slice(0, Math.max(1, Math.round(Number(options.maximumContours) || 64)));
+  }
+
+  function svgNumber(value) {
+    return Number(value.toFixed(2)).toString();
+  }
+
+  function pathFromContours(contours) {
+    return contours.map(function (contour) {
+      return "M" + contour.points.map(function (point) {
+        return svgNumber(point[0]) + " " + svgNumber(point[1]);
+      }).join("L") + "Z";
+    }).join("");
+  }
+
+  function makeSvg(contours, width, height, radius, physicalWidth, physicalHeight) {
+    var path = pathFromContours(contours);
     var dimensions = "";
     if (Number.isFinite(physicalWidth) && Number.isFinite(physicalHeight)) {
       dimensions = ' width="' + Number(physicalWidth).toFixed(2) + 'mm" height="' + Number(physicalHeight).toFixed(2) + 'mm"';
@@ -154,7 +305,7 @@
       '<svg xmlns="http://www.w3.org/2000/svg"' + dimensions + ' viewBox="0 0 ' + width + " " + height + '" shape-rendering="geometricPrecision">' +
       '<title>Monochrome keychain artwork</title>' +
       '<rect width="' + width + '" height="' + height + '" rx="' + radius + '" fill="#ffffff"/>' +
-      (path ? '<path d="' + path + '" fill="#111111"/>' : "") +
+      (path ? '<path d="' + path + '" fill="#111111" fill-rule="evenodd"/>' : "") +
       "</svg>";
   }
 
@@ -190,6 +341,11 @@
     }
 
     labels = smoothLabels(labels, Math.max(0, Math.round(Number(options.smoothing) || 0)));
+    var contours = traceContours(labels, {
+      simplifyTolerance: 0.38 + Math.max(0, Number(options.smoothing) || 0) * 0.18,
+      minimumArea: Math.max(1.5, width * height * 0.0006),
+      maximumContours: 64
+    });
     var blackPixels = labels.reduce(function (total, row) {
       return total + row.reduce(function (count, label) { return count + (label === 1 ? 1 : 0); }, 0);
     }, 0);
@@ -197,8 +353,9 @@
       width: width,
       height: height,
       labels: labels,
+      contours: contours,
       palette: ["#ffffff", "#111111"],
-      svg: makeSvg(labels, width, height, radius, options.physicalWidth, options.physicalHeight),
+      svg: makeSvg(contours, width, height, radius, options.physicalWidth, options.physicalHeight),
       threshold: threshold,
       blackPixels: blackPixels
     };
@@ -207,6 +364,7 @@
   return {
     trace: trace,
     makeSvg: makeSvg,
+    traceContours: traceContours,
     otsuThreshold: otsuThreshold
   };
 });

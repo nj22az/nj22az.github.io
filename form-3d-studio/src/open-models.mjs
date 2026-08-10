@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Form 3D Studio contributors
 
-import {
-  booleans,
-  geometries,
-  modifiers,
-  primitives,
-  transforms
-} from "@jscad/modeling";
+import modeling from "@jscad/modeling";
+
+const { booleans, extrusions, geometries, modifiers, primitives, transforms } = modeling;
 
 const { subtract, union } = booleans;
-const { geom3 } = geometries;
+const { extrudeLinear } = extrusions;
+const { geom2, geom3 } = geometries;
 const { generalize, retessellate } = modifiers;
 const { cuboid, cylinder, polyhedron } = primitives;
 const { rotateX, translate } = transforms;
@@ -250,6 +247,75 @@ function meshFromGeometry(geometry) {
     }
   });
   return { vertices, faces };
+}
+
+function contourArea(points) {
+  let area = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const next = (index + 1) % points.length;
+    area += points[index][0] * points[next][1] - points[next][0] * points[index][1];
+  }
+  return area / 2;
+}
+
+function geometryFromContour(contour) {
+  const points = contour.points.map((point) => [Number(point[0]), Number(point[1])]);
+  if (contourArea(points) < 0) points.reverse();
+  return geom2.fromPoints(points);
+}
+
+function pointInContour(point, contour) {
+  let inside = false;
+  const points = contour.points;
+  for (let index = 0, previous = points.length - 1; index < points.length; previous = index, index += 1) {
+    const currentPoint = points[index];
+    const previousPoint = points[previous];
+    const crosses = (currentPoint[1] > point[1]) !== (previousPoint[1] > point[1]);
+    if (!crosses) continue;
+    const crossingX = (previousPoint[0] - currentPoint[0]) * (point[1] - currentPoint[1]) /
+      (previousPoint[1] - currentPoint[1]) + currentPoint[0];
+    if (point[0] < crossingX) inside = !inside;
+  }
+  return inside;
+}
+
+function contourTree(contours) {
+  const nodes = contours.map((contour) => ({
+    contour,
+    area: Math.abs(contourArea(contour.points)),
+    children: [],
+    parent: null
+  }));
+  nodes.forEach((node) => {
+    const sample = node.contour.points[0];
+    const parent = nodes
+      .filter((candidate) => candidate !== node && candidate.area > node.area && pointInContour(sample, candidate.contour))
+      .sort((first, second) => first.area - second.area)[0];
+    if (parent) {
+      node.parent = parent;
+      parent.children.push(node);
+    }
+  });
+  return nodes.filter((node) => !node.parent && !node.contour.hole);
+}
+
+function geometryFromContourNode(node) {
+  let geometry = geometryFromContour(node.contour);
+  node.children.forEach((child) => {
+    geometry = subtract(geometry, geometryFromContourNode(child));
+  });
+  return geometry;
+}
+
+export function buildArtworkMesh(contours = [], parameters = {}) {
+  const valid = contours.filter((contour) => contour && Array.isArray(contour.points) && contour.points.length >= 3);
+  const roots = contourTree(valid).map(geometryFromContourNode);
+  if (!roots.length) return { vertices: [], faces: [] };
+  const profile = roots.length === 1 ? roots[0] : union(...roots);
+  const z0 = Number(parameters.z0) || 0;
+  const z1 = Math.max(z0 + 0.05, Number(parameters.z1) || z0 + 0.4);
+  const artwork = translate([0, 0, z0], extrudeLinear({ height: z1 - z0 }, profile));
+  return meshFromGeometry(artwork);
 }
 
 export function buildModel(type, parameters = {}) {

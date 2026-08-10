@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="An offline parametric 3D modeller with monochrome SVG-inlay keychains, open JSCAD models, sealed mechanical boxes, and 3MF, SVG, STL and STEP export." />
+    <meta name="description" content="An offline parametric 3D modeller with vector-traced SVG picture keychains, open JSCAD models, sealed mechanical boxes, and 3MF, SVG, STL and STEP export." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=12" />
+    <link rel="stylesheet" href="./styles.css?v=13" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -86,18 +86,22 @@
           </section>
 
           <section class="control-section keychain-controls">
-            <div class="section-title"><span>Monochrome SVG inlay</span><span>3 AMS slots</span></div>
+            <div class="section-title"><span>SVG artwork</span><span>Trace → rotate → attach</span></div>
             <div class="range-row">
-              <label for="relief-height">Inlay depth</label><output data-output="reliefHeight">1.2</output>
-              <input id="relief-height" data-param="reliefHeight" type="range" min="0.4" max="3" step="0.1" value="1.2" />
+              <label for="artwork-thickness">Artwork thickness</label><output data-output="artworkThickness">0.45</output>
+              <input id="artwork-thickness" data-param="artworkThickness" type="range" min="0.2" max="1.2" step="0.05" value="0.45" />
+            </div>
+            <div class="range-row">
+              <label for="artwork-rotation">Rotate artwork</label><output data-output="artworkRotation">0°</output>
+              <input id="artwork-rotation" data-param="artworkRotation" type="range" min="-180" max="180" step="5" value="0" />
             </div>
             <div class="range-row">
               <label for="detail">Image detail</label><output data-output="detail">64</output>
               <input id="detail" data-param="detail" type="range" min="32" max="96" step="8" value="64" />
             </div>
             <div class="range-row">
-              <label for="monochrome-threshold">Black detail</label><output data-output="monochromeThreshold">50%</output>
-              <input id="monochrome-threshold" data-param="monochromeThreshold" type="range" min="15" max="85" step="1" value="50" />
+              <label for="monochrome-threshold">Black detail</label><output data-output="monochromeThreshold">35%</output>
+              <input id="monochrome-threshold" data-param="monochromeThreshold" type="range" min="15" max="85" step="1" value="35" />
             </div>
             <div class="range-row">
               <label for="image-smoothing">Edge smoothing</label><output data-output="imageSmoothing">Clean</output>
@@ -109,7 +113,7 @@
               <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
             </div>
             <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
-            <p class="control-note">Every upload is traced locally into a black-path SVG with a white background. A1 is the structure, A2 the flush white face and A3 the embedded black picture; the SVG is also stored inside the 3MF.</p>
+            <p class="control-note">The image is cropped to the keychain face, traced once into a clean SVG, rotated and fitted, then extruded as one thin black layer attached to one white plate. No pixel blocks are used.</p>
           </section>
 
           <section class="control-section library-controls hidden">
@@ -288,7 +292,7 @@
           <div class="viewer-toolbar">
             <div>
               <p class="eyebrow">Live preview</p>
-              <h2 id="model-title">Image keychain</h2>
+              <h2 id="model-title">SVG picture keychain</h2>
             </div>
             <div class="viewer-actions">
               <button class="tool-button" id="view-reset" type="button" title="Reset view" aria-label="Reset view">
@@ -338,7 +342,7 @@
           </div>
           <div class="export-card ams-export">
             <div class="file-icon ams">3MF</div>
-            <div><strong>AMS inlay project</strong><small>Three bodies · SVG included</small></div>
+            <div><strong>AMS picture project</strong><small>Three bodies · SVG included</small></div>
             <button data-export="3mf" type="button">Export</button>
           </div>
 
@@ -349,7 +353,7 @@
 
           <details>
             <summary>Export notes</summary>
-            <p>SVG is the traced black picture on its white background. 3MF preserves the three AMS bodies and includes that SVG. STL is a printable triangle mesh. STEP keeps the inlay as separate closed bodies.</p>
+            <p>SVG is the clean traced picture on a white background. 3MF preserves the structure, white plate and attached black SVG as three AMS bodies. STL is a printable triangle mesh; STEP retains the separate material bodies.</p>
           </details>
 
           <div class="offline-card">
@@ -361,8 +365,8 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./open-models.js?v=1" defer></script>
-    <script src="./monochrome-svg.js?v=12" defer></script>
-    <script src="./app.js?v=12" defer></script>
+    <script src="./open-models.js?v=2" defer></script>
+    <script src="./monochrome-svg.js?v=13" defer></script>
+    <script src="./app.js?v=13" defer></script>
   </body>
 </html>

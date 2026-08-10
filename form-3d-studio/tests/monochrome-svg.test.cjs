@@ -45,11 +45,25 @@ const options = {
   assert.equal(result.blackPixels, 4, "dark subject should become the black SVG path");
   assert.equal(result.labels[2][3], 1);
   assert.equal(result.labels[0][0], -1, "the inlay should keep rounded corners");
+  assert.equal(result.contours.length, 1, "one connected mark should become one vector contour");
+  assert.ok(result.contours[0].points.length <= 4, "straight pixel runs should simplify to polygon corners");
   assert.deepEqual(result.palette, ["#ffffff", "#111111"]);
   assert.match(result.svg, /<rect[^>]+fill="#ffffff"/);
   assert.match(result.svg, /<path[^>]+fill="#111111"/);
   assert.match(result.svg, /width="40\.00mm" height="24\.00mm"/);
   assert.doesNotMatch(result.svg, /<image\b|data:image/i, "the SVG must contain vectors, not an embedded raster");
+  assert.doesNotMatch(result.svg, /v1h-/, "the SVG must not be assembled from one rectangle per pixel row");
+}
+
+{
+  const pixels = image(10, 10, [255, 255, 255]);
+  paint(pixels, 10, 2, 2, 8, 8, [0, 0, 0]);
+  paint(pixels, 10, 4, 4, 6, 6, [255, 255, 255]);
+  const result = monochrome.trace(pixels, 10, 10, { x: 0, y: 0, width: 10, height: 10 }, { ...options, cornerRadius: 1 });
+
+  assert.equal(result.contours.filter((contour) => !contour.hole).length, 1);
+  assert.equal(result.contours.filter((contour) => contour.hole).length, 1);
+  assert.match(result.svg, /fill-rule="evenodd"/);
 }
 
 {
