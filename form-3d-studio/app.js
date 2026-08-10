@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v5";
+  var STORAGE_KEY = "form-3d-studio-settings-v6";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -12,6 +12,7 @@
     detail: 64,
     amsColours: 4,
     imageSmoothing: 1,
+    monochromeThreshold: 50,
     removeBackground: true,
     backgroundTolerance: 14,
     boxWidth: 76,
@@ -71,12 +72,13 @@
 
   function loadState() {
     try {
-      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
       if (!["keychain", "box", "cylinder", "library"].includes(merged.mode)) merged.mode = "keychain";
       if (!["spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
       merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);
       merged.amsColours = clamp(Number(merged.amsColours) || defaults.amsColours, 2, 4);
+      merged.monochromeThreshold = clamp(Number(merged.monochromeThreshold) || defaults.monochromeThreshold, 15, 85);
       return merged;
     } catch (error) {
       return Object.assign({}, defaults);
@@ -543,148 +545,6 @@
     return points;
   }
 
-  function colourDistanceSquared(a, b) {
-    var red = a[0] - b[0];
-    var green = a[1] - b[1];
-    var blue = a[2] - b[2];
-    return red * red + green * green + blue * blue;
-  }
-
-  function sampleImageBackground(pixels, width, height, bounds) {
-    if (!bounds) return null;
-    var inset = Math.max(1, Math.round(Math.min(bounds.width, bounds.height) * 0.035));
-    var points = [
-      [bounds.x + inset, bounds.y + inset],
-      [bounds.x + bounds.width - inset - 1, bounds.y + inset],
-      [bounds.x + inset, bounds.y + bounds.height - inset - 1],
-      [bounds.x + bounds.width - inset - 1, bounds.y + bounds.height - inset - 1]
-    ];
-    var sum = [0, 0, 0];
-    var count = 0;
-    points.forEach(function (point) {
-      var centreX = Math.round(point[0]);
-      var centreY = Math.round(point[1]);
-      for (var offsetY = -1; offsetY <= 1; offsetY += 1) {
-        for (var offsetX = -1; offsetX <= 1; offsetX += 1) {
-          var x = clamp(centreX + offsetX, 0, width - 1);
-          var y = clamp(centreY + offsetY, 0, height - 1);
-          var index = (y * width + x) * 4;
-          if (pixels[index + 3] < 180) continue;
-          sum[0] += pixels[index];
-          sum[1] += pixels[index + 1];
-          sum[2] += pixels[index + 2];
-          count += 1;
-        }
-      }
-    });
-    return count ? sum.map(function (value) { return value / count; }) : null;
-  }
-
-  function quantiseArtwork(samples, colourCount) {
-    if (!samples.length) return { palette: [], assignments: [] };
-    var histogram = new Map();
-    samples.forEach(function (sample) {
-      var key = (sample[0] >> 4) + ":" + (sample[1] >> 4) + ":" + (sample[2] >> 4);
-      var bucket = histogram.get(key) || { sum: [0, 0, 0], count: 0 };
-      bucket.sum[0] += sample[0];
-      bucket.sum[1] += sample[1];
-      bucket.sum[2] += sample[2];
-      bucket.count += 1;
-      histogram.set(key, bucket);
-    });
-    var buckets = Array.from(histogram.values()).map(function (bucket) {
-      return {
-        colour: bucket.sum.map(function (value) { return value / bucket.count; }),
-        count: bucket.count
-      };
-    });
-    buckets.sort(function (a, b) { return b.count - a.count; });
-    var targetCount = Math.min(colourCount, buckets.length);
-    var centroids = [buckets[0].colour.slice()];
-    while (centroids.length < targetCount) {
-      var best = null;
-      var bestScore = -1;
-      buckets.forEach(function (bucket) {
-        var nearest = Math.min.apply(null, centroids.map(function (centroid) {
-          return colourDistanceSquared(bucket.colour, centroid);
-        }));
-        var score = nearest * Math.sqrt(bucket.count);
-        if (score > bestScore) { bestScore = score; best = bucket.colour; }
-      });
-      centroids.push(best.slice());
-    }
-
-    var assignments = new Array(samples.length).fill(0);
-    for (var iteration = 0; iteration < 9; iteration += 1) {
-      var sums = centroids.map(function () { return [0, 0, 0, 0]; });
-      samples.forEach(function (sample, index) {
-        var nearestIndex = 0;
-        var nearestDistance = Infinity;
-        centroids.forEach(function (centroid, centroidIndex) {
-          var distance = colourDistanceSquared(sample, centroid);
-          if (distance < nearestDistance) { nearestDistance = distance; nearestIndex = centroidIndex; }
-        });
-        assignments[index] = nearestIndex;
-        sums[nearestIndex][0] += sample[0];
-        sums[nearestIndex][1] += sample[1];
-        sums[nearestIndex][2] += sample[2];
-        sums[nearestIndex][3] += 1;
-      });
-      sums.forEach(function (sum, index) {
-        if (sum[3]) centroids[index] = [sum[0] / sum[3], sum[1] / sum[3], sum[2] / sum[3]];
-      });
-    }
-    return {
-      palette: centroids.map(function (colour) {
-        return "#" + colour.map(toHex).join("");
-      }),
-      assignments: assignments
-    };
-  }
-
-  function smoothArtworkLabels(labels, iterations) {
-    var height = labels.length;
-    var width = labels[0].length;
-    var current = labels.map(function (row) { return row.slice(); });
-    for (var pass = 0; pass < iterations; pass += 1) {
-      var next = current.map(function (row) { return row.slice(); });
-      for (var row = 0; row < height; row += 1) {
-        for (var col = 0; col < width; col += 1) {
-          var counts = new Map();
-          var activeNeighbours = 0;
-          for (var dy = -1; dy <= 1; dy += 1) {
-            for (var dx = -1; dx <= 1; dx += 1) {
-              if (!dx && !dy) continue;
-              var y = row + dy;
-              var x = col + dx;
-              if (x < 0 || x >= width || y < 0 || y >= height) continue;
-              var label = current[y][x];
-              if (label < 0) continue;
-              activeNeighbours += 1;
-              counts.set(label, (counts.get(label) || 0) + 1);
-            }
-          }
-          if (current[row][col] >= 0 && activeNeighbours <= 1) {
-            next[row][col] = -1;
-            continue;
-          }
-          if (current[row][col] < 0 && activeNeighbours >= 7) {
-            var fill = Array.from(counts.entries()).sort(function (a, b) { return b[1] - a[1]; })[0];
-            if (fill) next[row][col] = fill[0];
-            continue;
-          }
-          if (current[row][col] >= 0) {
-            counts.set(current[row][col], (counts.get(current[row][col]) || 0) + 2);
-            var winner = Array.from(counts.entries()).sort(function (a, b) { return b[1] - a[1]; })[0];
-            if (winner && winner[1] >= 4) next[row][col] = winner[0];
-          }
-        }
-      }
-      current = next;
-    }
-    return current;
-  }
-
   function createArtworkMap() {
     var width = Math.round(state.detail);
     var targetAspect = (state.keyWidth * 0.68) / (state.keyHeight * 0.66);
@@ -723,29 +583,17 @@
     }
 
     var pixels = imageContext.getImageData(0, 0, width, height).data;
-    var background = state.removeBackground ? sampleImageBackground(pixels, width, height, bounds) : null;
-    var tolerance = state.backgroundTolerance / 100 * Math.sqrt(3 * 255 * 255);
-    var toleranceSquared = tolerance * tolerance;
-    var samples = [];
-    var sampleLocations = [];
-    for (var row = 0; row < height; row += 1) {
-      for (var col = 0; col < width; col += 1) {
-        var index = (row * width + col) * 4;
-        var alpha = pixels[index + 3];
-        if (alpha < 72) continue;
-        var colour = [pixels[index], pixels[index + 1], pixels[index + 2]];
-        if (background && colourDistanceSquared(colour, background) <= toleranceSquared) continue;
-        samples.push(colour);
-        sampleLocations.push([row, col]);
-      }
+    if (!window.Form3DMonochrome || typeof window.Form3DMonochrome.trace !== "function") {
+      throw new Error("Monochrome SVG tracer unavailable");
     }
-    var quantised = quantiseArtwork(samples, Math.max(1, state.amsColours - 1));
-    var labels = Array.from({ length: height }, function () { return new Array(width).fill(-1); });
-    sampleLocations.forEach(function (location, index) {
-      labels[location[0]][location[1]] = quantised.assignments[index];
+    return window.Form3DMonochrome.trace(pixels, width, height, bounds, {
+      thresholdBias: state.monochromeThreshold,
+      removeBackground: state.removeBackground,
+      backgroundTolerance: state.backgroundTolerance,
+      smoothing: state.imageSmoothing,
+      physicalWidth: state.keyWidth * 0.68,
+      physicalHeight: state.keyHeight * 0.66
     });
-    labels = smoothArtworkLabels(labels, Math.round(state.imageSmoothing));
-    return { width: width, height: height, labels: labels, palette: quantised.palette };
   }
 
   function voxelMaskSolid(name, color, material, artwork, target, cell, offsetX, offsetY, z0, z1) {
@@ -802,44 +650,61 @@
     eye.material = 0;
     solids.push(eye);
 
+    var artwork = createArtworkMap();
+    var cell = Math.min(state.keyWidth * 0.68 / artwork.width, state.keyHeight * 0.66 / artwork.height);
+    var offsetX = state.keyWidth * 0.045;
+    var faceBottom = state.keyThickness - 0.045;
+    var faceTop = state.keyThickness + state.reliefHeight;
+    var materials = [{ name: "AMS 1 · Structure", color: state.color, slot: 1 }];
+
+    var whiteFace = voxelMaskSolid(
+      "AMS 2 · White SVG background",
+      "#ffffff",
+      1,
+      artwork,
+      0,
+      cell,
+      offsetX,
+      0,
+      faceBottom,
+      faceTop
+    );
+    if (whiteFace) {
+      solids.push(whiteFace);
+      materials.push({ name: "AMS 2 · White SVG background", color: "#ffffff", slot: 2 });
+    }
+
+    var blackArtwork = voxelMaskSolid(
+      "AMS 3 · Monochrome SVG artwork",
+      "#111111",
+      2,
+      artwork,
+      1,
+      cell,
+      offsetX,
+      0,
+      faceBottom,
+      faceTop
+    );
+    if (blackArtwork) {
+      solids.push(blackArtwork);
+      materials.push({ name: "AMS 3 · Monochrome SVG artwork", color: "#111111", slot: 3 });
+    }
+
     var bezel = roundedFrame(
       "AMS 1 · Face bezel",
       state.color,
       state.keyWidth - 5.2,
       state.keyHeight - 4.8,
       1.05,
-      state.keyThickness - 0.04,
-      state.keyThickness + 0.34,
+      faceBottom,
+      faceTop + 0.18,
       Math.max(1.8, corner - 1.4),
       9
     );
     bezel.material = 0;
     solids.push(bezel);
-
-    var artwork = createArtworkMap();
-    var cell = Math.min(state.keyWidth * 0.68 / artwork.width, state.keyHeight * 0.66 / artwork.height);
-    var offsetX = state.keyWidth * 0.045;
-    var materials = [{ name: "AMS 1 · Base", color: state.color, slot: 1 }];
-    artwork.palette.forEach(function (color, index) {
-      var material = index + 1;
-      var relief = voxelMaskSolid(
-        "AMS " + (material + 1) + " · Artwork",
-        color,
-        material,
-        artwork,
-        index,
-        cell,
-        offsetX,
-        0,
-        state.keyThickness - 0.045,
-        state.keyThickness + state.reliefHeight
-      );
-      if (relief) {
-        solids.push(relief);
-        materials.push({ name: "AMS " + (material + 1) + " · Artwork", color: color, slot: material + 1 });
-      }
-    });
-    return { name: "AMS image keychain", solids: solids, materials: materials, artwork: artwork };
+    return { name: "Monochrome SVG inlay keychain", solids: solids, materials: materials, artwork: artwork };
   }
 
   function buildBox() {
@@ -1353,12 +1218,22 @@
     return { name: "Simple cylinder", solids: [extrudeConvex("Cylinder", state.color, contour, 0, state.cylinderHeight)] };
   }
 
+  function updateArtworkPreview(artwork) {
+    if (!uploadedImage || !artwork || !artwork.svg) return;
+    var image = document.createElement("img");
+    image.alt = "Monochrome SVG artwork preview on a white background";
+    image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(artwork.svg);
+    document.getElementById("drop-preview").replaceChildren(image);
+    document.getElementById("upload-format").textContent = "Monochrome SVG · white background";
+  }
+
   function buildModel() {
     if (state.mode === "box") model = buildBox();
     else if (state.mode === "library") model = buildOpenModel();
     else if (state.mode === "cylinder") model = buildCylinder();
     else model = buildKeychain();
     model.bounds = calculateBounds(model);
+    if (model.artwork) updateArtworkPreview(model.artwork);
     updateStats();
     render();
   }
@@ -1396,8 +1271,9 @@
     var palette = document.getElementById("ams-palette");
     if (!palette) return;
     palette.innerHTML = "";
-    var materials = model && model.materials ? model.materials : [{ name: "AMS 1 · Base", color: state.color, slot: 1 }];
-    for (var slot = 1; slot <= state.amsColours; slot += 1) {
+    var materials = model && model.materials ? model.materials : [{ name: "AMS 1 · Structure", color: state.color, slot: 1 }];
+    var slotCount = Math.min(4, Math.max(3, state.amsColours, materials.length));
+    for (var slot = 1; slot <= slotCount; slot += 1) {
       var material = materials.find(function (candidate) { return candidate.slot === slot; });
       var chip = document.createElement("span");
       chip.className = "ams-chip" + (material ? "" : " empty");
@@ -1926,6 +1802,7 @@
   function make3MF(currentModel) {
     var groups = groupModelByMaterial(currentModel);
     var modelMaterials = currentModel.materials || [];
+    var artworkSvg = currentModel.artwork && currentModel.artwork.svg ? currentModel.artwork.svg : "";
     var materialXml = groups.map(function (group, index) {
       var details = modelMaterials.find(function (material) { return material.slot === group.material + 1; });
       group.baseIndex = index;
@@ -1955,7 +1832,7 @@
       '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">' +
       '<metadata name="Title">' + xmlEscape(currentModel.name) + '</metadata>' +
       '<metadata name="Designer">Form 3D Studio</metadata>' +
-      '<metadata name="Description">Multi-material AMS model generated locally in Form 3D Studio</metadata>' +
+      '<metadata name="Description">' + (artworkSvg ? "Monochrome SVG inlay model" : "Multi-material AMS model") + ' generated locally in Form 3D Studio</metadata>' +
       '<resources><basematerials id="1">' + materialXml + '</basematerials>' + objectXml +
       '<object id="' + assemblyId + '" type="model" name="' + xmlEscape(currentModel.name) + '"><components>' + components + '</components></object>' +
       '</resources><build><item objectid="' + assemblyId + '" transform="' + buildTransform + '"/></build></model>';
@@ -1963,16 +1840,20 @@
       '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
       '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
       '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>' +
+      (artworkSvg ? '<Default Extension="svg" ContentType="image/svg+xml"/>' : "") +
       '</Types>';
     var relationships = '<?xml version="1.0" encoding="UTF-8"?>' +
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
       '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>' +
+      (artworkSvg ? '<Relationship Target="/Metadata/monochrome-artwork.svg" Id="rel1" Type="https://nj22az.github.io/form-3d-studio/relationships/monochrome-artwork"/>' : "") +
       '</Relationships>';
-    return makeStoredZip([
+    var entries = [
       { name: "[Content_Types].xml", content: contentTypes },
       { name: "_rels/.rels", content: relationships },
       { name: "3D/3dmodel.model", content: modelXml }
-    ]);
+    ];
+    if (artworkSvg) entries.push({ name: "Metadata/monochrome-artwork.svg", content: artworkSvg });
+    return makeStoredZip(entries);
   }
 
   function crc32(bytes) {
@@ -2076,9 +1957,13 @@
   function exportModel(format) {
     if (!model) return;
     try {
-      if (format === "3mf") {
+      if (format === "svg") {
+        if (!model.artwork || !model.artwork.svg) throw new Error("No SVG artwork is available");
+        downloadBlob(new Blob([model.artwork.svg], { type: "image/svg+xml" }), fileStem() + "-artwork.svg");
+        showToast("Monochrome SVG artwork exported");
+      } else if (format === "3mf") {
         downloadBlob(new Blob([make3MF(model)], { type: "model/3mf" }), fileStem() + "-ams.3mf");
-        showToast("AMS 3MF project exported");
+        showToast("AMS 3MF with embedded SVG exported");
       } else if (format === "step") {
         downloadBlob(new Blob([makeSTEP(model)], { type: "application/step" }), fileStem() + ".step");
         showToast("STEP model exported");
@@ -2098,6 +1983,7 @@
 
   function displayValue(name, value) {
     if (name === "amsColours") return Math.round(value) + " slots";
+    if (name === "monochromeThreshold") return Math.round(value) + "%";
     if (name === "backgroundTolerance") return Math.round(value) + "%";
     if (name === "imageSmoothing") return ["Off", "Clean", "Smooth"][Math.round(value)] || "Clean";
     if (name === "boxLidAngle") return Math.round(value) + "°";
@@ -2216,9 +2102,10 @@
         uploadedName = file.name;
         document.getElementById("drop-preview").innerHTML = '<img alt="Uploaded artwork preview" src="' + reader.result + '">';
         document.getElementById("upload-label").textContent = uploadedName;
+        document.getElementById("upload-format").textContent = "Converting locally to monochrome SVG…";
         document.getElementById("clear-art-button").classList.remove("hidden");
         scheduleBuild();
-        showToast("Image converted to a raised relief");
+        showToast("Tracing image to monochrome SVG");
       };
       image.onerror = function () { showToast("That image could not be read"); };
       image.src = reader.result;
@@ -2231,6 +2118,7 @@
     uploadedName = "";
     document.getElementById("drop-preview").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>';
     document.getElementById("upload-label").textContent = "Choose an image";
+    document.getElementById("upload-format").textContent = "PNG, JPG, WebP or SVG";
     document.getElementById("clear-art-button").classList.add("hidden");
     document.getElementById("image-input").value = "";
     scheduleBuild();
@@ -2244,9 +2132,10 @@
       uploadedName = "sample-star.svg";
       document.getElementById("drop-preview").innerHTML = '<img alt="Sample star artwork" src="' + image.src + '">';
       document.getElementById("upload-label").textContent = uploadedName;
+      document.getElementById("upload-format").textContent = "Converting locally to monochrome SVG…";
       document.getElementById("clear-art-button").classList.remove("hidden");
       scheduleBuild();
-      showToast("Sample artwork added");
+      showToast("Sample traced to monochrome SVG");
     };
     image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(sample);
   }

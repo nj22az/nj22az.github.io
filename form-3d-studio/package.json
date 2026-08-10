@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build:models": "esbuild src/open-models.mjs --bundle --minify --format=iife --global-name=Form3DOpenModels --legal-comments=eof --banner:js=\"/*! Form 3D Open Models · JSCAD 2.13.0 · MIT */\" --outfile=open-models.js"
+    "build:models": "esbuild src/open-models.mjs --bundle --minify --format=iife --global-name=Form3DOpenModels --legal-comments=eof --banner:js=\"/*! Form 3D Open Models · JSCAD 2.13.0 · MIT */\" --outfile=open-models.js",
+    "test": "node tests/monochrome-svg.test.cjs"
   },
   "dependencies": {
     "@jscad/modeling": "2.13.0"

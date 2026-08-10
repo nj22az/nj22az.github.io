@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="An offline parametric 3D modeller with open JSCAD models, multi-colour AMS keychains, sealed mechanical boxes, and 3MF, STL and STEP export." />
+    <meta name="description" content="An offline parametric 3D modeller with monochrome SVG-inlay keychains, open JSCAD models, sealed mechanical boxes, and 3MF, SVG, STL and STEP export." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,7 +13,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./form-icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
+    <link rel="stylesheet" href="./styles.css?v=12" />
     <title>Form 3D Studio</title>
   </head>
   <body>
@@ -56,7 +56,7 @@
               <span class="drop-preview" id="drop-preview">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>
               </span>
-              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small>PNG, JPG, WebP or SVG</small></span>
+              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small id="upload-format">PNG, JPG, WebP or SVG</small></span>
               <span class="drop-action">Browse</span>
             </label>
             <div class="inline-actions">
@@ -86,18 +86,18 @@
           </section>
 
           <section class="control-section keychain-controls">
-            <div class="section-title"><span>Image &amp; AMS</span><span>Up to 4 slots</span></div>
+            <div class="section-title"><span>Monochrome SVG inlay</span><span>3 AMS slots</span></div>
             <div class="range-row">
-              <label for="relief-height">Raised height</label><output data-output="reliefHeight">1.2</output>
+              <label for="relief-height">Inlay depth</label><output data-output="reliefHeight">1.2</output>
               <input id="relief-height" data-param="reliefHeight" type="range" min="0.4" max="3" step="0.1" value="1.2" />
-            </div>
-            <div class="range-row">
-              <label for="ams-colours">AMS material slots</label><output data-output="amsColours">4 slots</output>
-              <input id="ams-colours" data-param="amsColours" type="range" min="2" max="4" step="1" value="4" />
             </div>
             <div class="range-row">
               <label for="detail">Image detail</label><output data-output="detail">64</output>
               <input id="detail" data-param="detail" type="range" min="32" max="96" step="8" value="64" />
+            </div>
+            <div class="range-row">
+              <label for="monochrome-threshold">Black detail</label><output data-output="monochromeThreshold">50%</output>
+              <input id="monochrome-threshold" data-param="monochromeThreshold" type="range" min="15" max="85" step="1" value="50" />
             </div>
             <div class="range-row">
               <label for="image-smoothing">Edge smoothing</label><output data-output="imageSmoothing">Clean</output>
@@ -109,7 +109,7 @@
               <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
             </div>
             <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
-            <p class="control-note">Slot 1 is the keychain body. The image is smoothed and reduced to the remaining AMS slots; colours remain separate editable bodies in the 3MF export.</p>
+            <p class="control-note">Every upload is traced locally into a black-path SVG with a white background. A1 is the structure, A2 the flush white face and A3 the embedded black picture; the SVG is also stored inside the 3MF.</p>
           </section>
 
           <section class="control-section library-controls hidden">
@@ -332,8 +332,13 @@
             <button data-export="step" type="button">Export</button>
           </div>
           <div class="export-card ams-export">
+            <div class="file-icon svg">SVG</div>
+            <div><strong>Monochrome artwork</strong><small>Black vector · white background</small></div>
+            <button data-export="svg" type="button">Export</button>
+          </div>
+          <div class="export-card ams-export">
             <div class="file-icon ams">3MF</div>
-            <div><strong>AMS colour project</strong><small>Bambu Studio · up to 4 slots</small></div>
+            <div><strong>AMS inlay project</strong><small>Three bodies · SVG included</small></div>
             <button data-export="3mf" type="button">Export</button>
           </div>
 
@@ -344,7 +349,7 @@
 
           <details>
             <summary>Export notes</summary>
-            <p>3MF preserves AMS material bodies and display colours. STL is a printable triangle mesh. STEP uses faceted closed solids so CAD apps can import components as separate bodies.</p>
+            <p>SVG is the traced black picture on its white background. 3MF preserves the three AMS bodies and includes that SVG. STL is a printable triangle mesh. STEP keeps the inlay as separate closed bodies.</p>
           </details>
 
           <div class="offline-card">
@@ -357,6 +362,7 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./open-models.js?v=1" defer></script>
-    <script src="./app.js?v=11" defer></script>
+    <script src="./monochrome-svg.js?v=12" defer></script>
+    <script src="./app.js?v=12" defer></script>
   </body>
 </html>
