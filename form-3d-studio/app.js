@@ -51,13 +51,19 @@
   };
 
   var state = loadState();
+  var activeSuiteWorkspace = "model";
   if (window.location && typeof URLSearchParams !== "undefined") {
-    var requestedMode = new URLSearchParams(window.location.search).get("mode");
+    var pageParameters = new URLSearchParams(window.location.search);
+    var requestedMode = pageParameters.get("mode");
     if (["keychain", "box", "cylinder", "library"].includes(requestedMode)) state.mode = requestedMode;
+    if (pageParameters.get("workspace") === "vector") activeSuiteWorkspace = "vector";
   }
   var uploadedImage = null;
+  var uploadedFile = null;
   var uploadedName = "";
   var vectorArtwork = null;
+  var vectorFrameReady = false;
+  var sentVectorFileKey = "";
   var vectorizeTimer = 0;
   var vectorizationToken = 0;
   var model = null;
@@ -73,6 +79,40 @@
   var ctx = gl ? null : canvas.getContext("2d");
   var webglRenderer = null;
   canvasWrap.classList.add(gl ? "webgl-renderer" : "depth-renderer");
+
+  function vectorFileKey(file) {
+    if (!file) return "";
+    return [file.name || "image", file.size || 0, file.lastModified || 0].join(":");
+  }
+
+  function sendCurrentImageToVectorWorkspace() {
+    var frame = document.getElementById("vector-studio-frame");
+    var key = vectorFileKey(uploadedFile);
+    if (!vectorFrameReady || !frame || !frame.contentWindow || !uploadedFile || key === sentVectorFileKey) return;
+    frame.contentWindow.postMessage({ type: "form3d:open-image", file: uploadedFile }, window.location.origin);
+    sentVectorFileKey = key;
+  }
+
+  function setSuiteWorkspace(workspace, updateAddress) {
+    activeSuiteWorkspace = workspace === "vector" ? "vector" : "model";
+    document.querySelectorAll("[data-suite-workspace]").forEach(function (button) {
+      var active = button.dataset.suiteWorkspace === activeSuiteWorkspace;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
+    });
+    document.getElementById("model-workspace").classList.toggle("hidden", activeSuiteWorkspace !== "model");
+    document.getElementById("vector-workspace").classList.toggle("hidden", activeSuiteWorkspace !== "vector");
+    document.body.classList.toggle("vector-workspace-active", activeSuiteWorkspace === "vector");
+    if (activeSuiteWorkspace === "vector") sendCurrentImageToVectorWorkspace();
+    else requestAnimationFrame(render);
+    if (updateAddress && window.history && typeof URL === "function") {
+      var address = new URL(window.location.href);
+      if (activeSuiteWorkspace === "vector") address.searchParams.set("workspace", "vector");
+      else address.searchParams.delete("workspace");
+      address.searchParams.delete("vector");
+      window.history.replaceState({}, "", address);
+    }
+  }
 
   function loadState() {
     try {
@@ -2178,6 +2218,8 @@
       var image = new Image();
       image.onload = function () {
         uploadedImage = image;
+        uploadedFile = file;
+        sentVectorFileKey = "";
         uploadedName = file.name;
         document.getElementById("drop-preview").innerHTML = '<img alt="Uploaded artwork preview" src="' + reader.result + '">';
         document.getElementById("upload-label").textContent = uploadedName;
@@ -2197,6 +2239,8 @@
     vectorizationToken += 1;
     if (window.Form3DVectorizer && typeof window.Form3DVectorizer.cancel === "function") window.Form3DVectorizer.cancel();
     uploadedImage = null;
+    uploadedFile = null;
+    sentVectorFileKey = "";
     uploadedName = "";
     vectorArtwork = null;
     document.getElementById("drop-preview").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>';
@@ -2212,6 +2256,8 @@
     var image = new Image();
     image.onload = function () {
       uploadedImage = image;
+      uploadedFile = null;
+      sentVectorFileKey = "";
       uploadedName = "sample-star.svg";
       document.getElementById("drop-preview").innerHTML = '<img alt="Sample star artwork" src="' + image.src + '">';
       document.getElementById("upload-label").textContent = uploadedName;
@@ -2223,28 +2269,35 @@
     image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(sample);
   }
 
-  function restoreStudioArtwork() {
-    if (!window.Form3DVectorizer || typeof window.Form3DVectorizer.takeStudioArtwork !== "function") return false;
-    var artwork = window.Form3DVectorizer.takeStudioArtwork();
-    if (!artwork) return false;
+  function applyStudioArtwork(artwork, sourceFile) {
+    if (!artwork || !artwork.svg || !Array.isArray(artwork.contours) || !artwork.contours.length) return false;
     vectorArtwork = artwork;
+    uploadedFile = sourceFile && typeof sourceFile.arrayBuffer === "function" ? sourceFile : null;
+    sentVectorFileKey = vectorFileKey(uploadedFile);
     uploadedName = artwork.name || "vector-studio-artwork.svg";
     var url = URL.createObjectURL(new Blob([artwork.svg], { type: "image/svg+xml" }));
     var image = new Image();
     image.onload = function () {
       uploadedImage = image;
       document.getElementById("upload-label").textContent = uploadedName;
-      document.getElementById("upload-format").textContent = "Monochrome SVG from Image → SVG Studio";
+      document.getElementById("upload-format").textContent = "Monochrome SVG from the vector workspace";
       document.getElementById("clear-art-button").classList.remove("hidden");
       updateArtworkPreview(vectorArtwork);
       buildModel();
       URL.revokeObjectURL(url);
-      showToast("SVG applied — rotate it and adjust the raised layer");
+      showToast("SVG applied to the keychain — rotate or resize it as required");
     };
     image.onerror = function () { URL.revokeObjectURL(url); vectorArtwork = null; buildModel(); };
     image.src = url;
     state.mode = "keychain";
+    syncControls();
+    saveState();
     return true;
+  }
+
+  function restoreStudioArtwork() {
+    if (!window.Form3DVectorizer || typeof window.Form3DVectorizer.takeStudioArtwork !== "function") return false;
+    return applyStudioArtwork(window.Form3DVectorizer.takeStudioArtwork(), null);
   }
 
   function showToast(message) {
@@ -2263,6 +2316,31 @@
   }
 
   function bindEvents() {
+    document.querySelectorAll("[data-suite-workspace]").forEach(function (button) {
+      button.addEventListener("click", function () { setSuiteWorkspace(button.dataset.suiteWorkspace, true); });
+    });
+    document.querySelectorAll("[data-open-vector]").forEach(function (button) {
+      button.addEventListener("click", function () { setSuiteWorkspace("vector", true); });
+    });
+
+    var vectorFrame = document.getElementById("vector-studio-frame");
+    vectorFrame.addEventListener("load", function () {
+      vectorFrameReady = true;
+      sendCurrentImageToVectorWorkspace();
+    });
+    window.addEventListener("message", function (event) {
+      if (event.origin !== window.location.origin || event.source !== vectorFrame.contentWindow || !event.data) return;
+      if (event.data.type === "form3d:vector-ready") {
+        vectorFrameReady = true;
+        sendCurrentImageToVectorWorkspace();
+        return;
+      }
+      if (event.data.type === "form3d:apply-vector" && applyStudioArtwork(event.data.artwork, event.data.sourceFile)) {
+        setSuiteWorkspace("model", true);
+      }
+    });
+    if (vectorFrame.contentWindow) vectorFrame.contentWindow.postMessage({ type: "form3d:host-ready" }, window.location.origin);
+
     document.querySelectorAll("[data-mode]").forEach(function (button) {
       button.addEventListener("click", function () {
         state.mode = button.dataset.mode;
@@ -2400,6 +2478,7 @@
 
   syncControls();
   bindEvents();
+  setSuiteWorkspace(activeSuiteWorkspace, false);
   initPWA();
   if (!restoreStudioArtwork()) buildModel();
 })();

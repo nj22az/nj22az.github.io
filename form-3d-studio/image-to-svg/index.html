@@ -6,17 +6,30 @@
     <meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="Private, offline-capable image to SVG conversion with VTracer, Potrace and ImageTracer." />
-    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="../form-icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=1" />
-    <title>Image → SVG Studio</title>
+    <script>
+      (function () {
+        var parameters = new URLSearchParams(window.location.search);
+        if (parameters.get("embed") === "1" && window.top !== window.self) {
+          document.documentElement.classList.add("embedded");
+          return;
+        }
+        if (window.top === window.self) {
+          var studio = new URL("../", window.location.href);
+          studio.searchParams.set("workspace", "vector");
+          window.location.replace(studio.href);
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="./styles.css?v=2" />
+    <title>Form 3D Studio · Image → SVG</title>
   </head>
   <body>
     <header class="app-header">
       <a class="back-link" href="../" aria-label="Return to Form 3D Studio">← Form 3D</a>
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">⌁</span>
-        <div><strong>Image → SVG</strong><span>Private vector studio</span></div>
+        <div><strong>Form 3D</strong><span>Image → SVG workspace</span></div>
       </div>
       <div class="header-actions">
         <span class="privacy-badge"><i></i> Local only</span>
@@ -195,7 +208,7 @@
             <button class="primary-button" id="download-button" type="button" disabled>Download SVG</button>
             <button class="secondary-button" id="copy-button" type="button" disabled>Copy SVG</button>
             <button class="secondary-button" id="png-button" type="button" disabled>Export PNG</button>
-            <button class="keychain-button" id="keychain-button" type="button" disabled>Use on keychain</button>
+            <button class="keychain-button" id="keychain-button" type="button" disabled>Apply to keychain</button>
           </div>
         </section>
 
@@ -212,7 +225,7 @@
       <form method="dialog">
         <button class="modal-close" type="submit" value="close" aria-label="Close">×</button>
         <p class="eyebrow">First conversion</p><h2>Three steps, entirely on your device.</h2>
-        <ol><li><b>Choose a preset.</b> Start with the intended use, then refine.</li><li><b>Compare the result.</b> Drag the divider and zoom into edges.</li><li><b>Export.</b> Download, copy, batch ZIP, or send a monochrome trace to the keychain modeller.</li></ol>
+        <ol><li><b>Choose a preset.</b> Start with the intended use, then refine.</li><li><b>Compare the result.</b> Drag the divider and zoom into edges.</li><li><b>Apply or export.</b> Send the trace directly to the keychain, or download SVG, PNG or a batch ZIP.</li></ol>
         <button class="primary-button" type="submit" value="close">Begin</button>
       </form>
     </dialog>
@@ -233,6 +246,6 @@
 
     <canvas id="export-canvas" hidden></canvas>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=2" defer></script>
+    <script src="./app.js?v=3" defer></script>
   </body>
 </html>

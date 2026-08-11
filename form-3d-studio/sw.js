@@ -1,14 +1,19 @@
-const CACHE_NAME = "form-3d-studio-v15";
+const CACHE_NAME = "form-3d-studio-v16";
 const APP_FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=14",
+  "./styles.css?v=15",
   "./open-models.js?v=3",
   "./monochrome-svg.js?v=13",
   "./image-to-svg/keychain-bridge.js?v=2",
+  "./image-to-svg/?embed=1",
+  "./image-to-svg/index.html",
+  "./image-to-svg/styles.css?v=2",
+  "./image-to-svg/app.js?v=3",
   "./image-to-svg/vector-worker.js",
   "./image-to-svg/vtracer_wasm_bg.wasm",
-  "./app.js?v=15",
+  "./image-to-svg/POTRACE-GPL-2.0.txt",
+  "./app.js?v=16",
   "./form-icon.svg",
   "./manifest.webmanifest"
 ];

@@ -1,9 +1,9 @@
-const CACHE_NAME = "form-3d-vector-studio-v2";
+const CACHE_NAME = "form-3d-vector-studio-v3";
 const APP_FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=1",
-  "./app.js?v=2",
+  "./styles.css?v=2",
+  "./app.js?v=3",
   "./vector-worker.js",
   "./vtracer_wasm_bg.wasm",
   "./POTRACE-GPL-2.0.txt",

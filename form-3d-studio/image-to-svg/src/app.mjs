@@ -2,6 +2,7 @@ import { strToU8, zipSync } from "fflate";
 import { MAX_FILE_BYTES, PRESETS, formatBytes, normaliseOptions } from "./vector-core.mjs";
 
 const byId = (id) => document.getElementById(id);
+const embedded = document.documentElement.classList.contains("embedded") && window.parent !== window;
 const elements = {
   uploadCard: byId("upload-card"), studio: byId("studio"), dropZone: byId("drop-zone"), fileInput: byId("file-input"),
   batchList: byId("batch-list"), progressCard: byId("progress-card"), progressStage: byId("progress-stage"),
@@ -269,6 +270,22 @@ async function addFiles(files) {
   }
 }
 
+async function openStudioFile(source) {
+  if (!source || typeof source.arrayBuffer !== "function") return;
+  const file = source instanceof File ? source : new File([source], source.name || "studio-image.png", { type: source.type || "image/png" });
+  const key = `${file.name}:${file.size}:${file.lastModified || 0}`;
+  const existing = state.files.find((item) => `${item.file.name}:${item.file.size}:${item.file.lastModified || 0}` === key);
+  if (existing) {
+    state.selectedId = existing.id;
+    state.options = normaliseOptions(existing.options);
+    state.preset = existing.options.preset;
+    elements.uploadCard.classList.add("hidden"); elements.studio.classList.remove("hidden");
+    renderControls(); renderBatch(); renderSelected();
+    return;
+  }
+  await addFiles([file]);
+}
+
 function renderBatch() {
   elements.batchList.replaceChildren(...state.files.map((item) => {
     const row = document.createElement("li");
@@ -373,6 +390,10 @@ async function useOnKeychain() {
     contours: result.vector.contours, svg: result.svg, palette: ["#ffffff", "#111111"],
     statistics: result.statistics, options: result.options
   };
+  if (embedded) {
+    window.parent.postMessage({ type: "form3d:apply-vector", artwork, sourceFile: item.file }, window.location.origin);
+    return;
+  }
   try {
     sessionStorage.setItem("form3d-studio-vector-artwork", JSON.stringify(artwork));
   } catch {
@@ -459,5 +480,16 @@ byId("theme-button").addEventListener("click", () => { theme = themes[(themes.in
 
 if (localStorage.getItem("image-to-svg-preset")) elements.loadPreset.classList.remove("hidden");
 renderControls(); applyView(); applyTransform();
+if (embedded) {
+  window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin || event.source !== window.parent || !event.data) return;
+    if (event.data.type === "form3d:host-ready") {
+      window.parent.postMessage({ type: "form3d:vector-ready" }, window.location.origin);
+    } else if (event.data.type === "form3d:open-image") {
+      openStudioFile(event.data.file).catch((error) => toast(error.message || String(error)));
+    }
+  });
+  window.parent.postMessage({ type: "form3d:vector-ready" }, window.location.origin);
+}
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(() => {});
 window.addEventListener("pagehide", () => { cancelActive(false); state.files.forEach((item) => { URL.revokeObjectURL(item.sourceUrl); if (item.vectorUrl) URL.revokeObjectURL(item.vectorUrl); item.decoded?.close?.(); }); });

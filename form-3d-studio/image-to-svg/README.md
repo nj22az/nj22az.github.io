@@ -1,6 +1,6 @@
-# Image → SVG Studio
+# Form 3D Studio · Image → SVG workspace
 
-A privacy-first raster-to-vector studio that runs entirely in the browser. Images are decoded into a local canvas and sent to a Web Worker on the same device; no upload endpoint, analytics or account system exists.
+A privacy-first raster-to-vector workspace integrated into Form 3D Studio. Images are decoded into a local canvas and sent to a Web Worker on the same device; no upload endpoint, analytics or account system exists. The former standalone route now opens this workspace inside the common Form 3D application shell.
 
 ## Engines and trade-offs
 
@@ -28,7 +28,7 @@ The production files are `index.html`, `styles.css`, `app.js`, `vector-worker.js
 1. Drop one or more PNG, JPEG, WebP, GIF, BMP or AVIF files. Each file is limited to 20 MB. Animated files use the browser-decoded first frame.
 2. Start from a preset. VTracer covers colour and photographs; select Potrace for binary line work if desired.
 3. Compare, pan and zoom, then download or copy the SVG. Batch results can be downloaded as one ZIP.
-4. **Use on keychain** re-traces the selected image with the dedicated monochrome preset, stores the SVG contours only for the current tab, and opens Form 3D Studio. There the visible contours are fitted without cropping to a thin rounded white sticker backing; the backing and black artwork rotate together and attach to the keychain.
+4. **Apply to keychain** re-traces the selected image with the dedicated monochrome preset and passes the SVG contours directly to the 3D workspace without navigation or temporary storage. There the visible contours are fitted without cropping to a thin rounded white sticker backing; the backing and black artwork rotate together and attach to the keychain.
 
 `Ctrl`/`⌘` + `V` pastes an image; `Ctrl`/`⌘` + `S` downloads the current SVG. Settings can be saved as a device-local custom preset.
 
