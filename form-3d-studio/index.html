@@ -231,7 +231,7 @@
             <div class="section-title"><span>Lid &amp; hardware</span><span>Assembly</span></div>
             <label class="switch-row"><span>Add fitted cover</span><input id="box-lid" data-param="boxLid" type="checkbox" checked /><i></i></label>
             <label class="switch-row"><span>Add print-in-place hinges</span><input id="box-hinges" data-param="boxHinges" type="checkbox" checked /><i></i></label>
-            <label class="switch-row"><span>Add sealed gearbox latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Add concealed cover latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
             <div class="range-row">
               <label for="box-lid-thickness">Cover thickness</label><output data-output="boxLidThickness">2.6</output>
               <input id="box-lid-thickness" data-param="boxLidThickness" type="range" min="1.8" max="5" step="0.1" value="2.6" />
@@ -249,19 +249,20 @@
               <input id="box-gear-module" data-param="boxGearModule" type="range" min="0.65" max="1.05" step="0.05" value="0.8" />
             </div>
             <div class="range-row gear-controls">
-              <label for="box-gear-bay-depth">Sealed bay depth</label><output data-output="boxGearBayDepth">9.2 mm</output>
+              <label for="box-gear-bay-depth">Cover mechanism depth</label><output data-output="boxGearBayDepth">9.2 mm</output>
               <input id="box-gear-bay-depth" data-param="boxGearBayDepth" type="range" min="8" max="12" step="0.2" value="9.2" />
             </div>
             <div class="range-row gear-controls">
               <label for="box-gear-turn">Drive rotation</label><output data-output="boxGearTurn">0° · locked</output>
               <input id="box-gear-turn" data-param="boxGearTurn" type="range" min="0" max="110" step="2" value="0" />
             </div>
-            <div class="mechanism-actions gear-controls" role="group" aria-label="Latch position">
+            <div class="mechanism-actions gear-controls" role="group" aria-label="Latch and print position">
               <button class="active" data-gear-state="0" type="button" aria-pressed="true">Lock</button>
               <button data-gear-state="96" type="button" aria-pressed="false">Release</button>
+              <button id="prepare-box-print" type="button">Prepare to print</button>
             </div>
-            <p class="control-note">A sealed 12:18 reduction turns a captured over-centre hook around the lid keeper. Integral axles, opposed bearing seats and a 45° corbel crown keep the 8–12 mm double-wall bay support-free.</p>
-            <p class="control-note"><strong>Print orientation:</strong> export with the lid at 0° and the drive Locked, then place either side wall on the build plate. This keeps the lid and gear plane vertical while the mechanism prints captured in one piece.</p>
+            <p class="control-note">The 12:18 reduction, captive gears and rotary hook sit between the cover's outer skin and inner liner. Only a recessed dial and the small internal keeper window remain visible.</p>
+            <p class="control-note"><strong>Print in place:</strong> export with the cover at 0° and the latch Released, then place either side wall on the build plate. The hinge and gear planes remain vertical, with at least 0.40 mm moving clearance and no enclosed horizontal roof to bridge.</p>
           </section>
 
           <section class="control-section cylinder-controls hidden">
@@ -377,6 +378,7 @@
     <script src="./open-models.js?v=3" defer></script>
     <script src="./monochrome-svg.js?v=13" defer></script>
     <script src="./image-to-svg/keychain-bridge.js?v=2" defer></script>
-    <script src="./app.js?v=16" defer></script>
+    <script src="./cover-latch-geometry.js?v=1" defer></script>
+    <script src="./app.js?v=17" defer></script>
   </body>
 </html>

@@ -339,6 +339,90 @@
     return solid;
   }
 
+  function cylinderAlongZ(name, color, cx, cy, cz, length, radius, segments) {
+    return extrudeConvex(name, color, circle(radius, segments, cx, cy), cz - length / 2, cz + length / 2);
+  }
+
+  function tubeAlongZ(name, color, cx, cy, cz, length, outerRadius, innerRadius, segments) {
+    return extrudeRing(name, color, cx, cy, outerRadius, innerRadius, cz - length / 2, cz + length / 2, segments);
+  }
+
+  function spurGearAlongZ(name, color, cx, cy, cz, teeth, moduleSize, thickness, boreRadius, angleDegrees) {
+    var solid = new Solid(name, color);
+    var pointCount = teeth * 4;
+    var pitchRadius = teeth * moduleSize / 2;
+    var outerRadius = pitchRadius + moduleSize;
+    var rootRadius = Math.max(boreRadius + moduleSize, pitchRadius - moduleSize * 1.25);
+    var rotation = angleDegrees * Math.PI / 180;
+    var z0 = cz - thickness / 2;
+    var z1 = cz + thickness / 2;
+    var bottomOuter = [], bottomInner = [], topOuter = [], topInner = [];
+    for (var i = 0; i < pointCount; i += 1) {
+      var angle = rotation + Math.PI * 2 * i / pointCount;
+      var toothPoint = i % 4;
+      var radius = toothPoint === 1 || toothPoint === 2 ? outerRadius : rootRadius;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      bottomOuter.push(solid.vertex(cx + cosine * radius, cy + sine * radius, z0));
+      bottomInner.push(solid.vertex(cx + cosine * boreRadius, cy + sine * boreRadius, z0));
+      topOuter.push(solid.vertex(cx + cosine * radius, cy + sine * radius, z1));
+      topInner.push(solid.vertex(cx + cosine * boreRadius, cy + sine * boreRadius, z1));
+    }
+    for (var j = 0; j < pointCount; j += 1) {
+      var next = (j + 1) % pointCount;
+      solid.quad(bottomOuter[j], topOuter[j], topOuter[next], bottomOuter[next]);
+      solid.quad(bottomInner[j], bottomInner[next], topInner[next], topInner[j]);
+      solid.triangle(bottomOuter[j], bottomInner[next], bottomInner[j]);
+      solid.triangle(bottomOuter[j], bottomOuter[next], bottomInner[next]);
+      solid.triangle(topOuter[j], topInner[j], topInner[next]);
+      solid.triangle(topOuter[j], topInner[next], topOuter[next]);
+    }
+    return solid;
+  }
+
+  function barBetweenXYAlongZ(name, color, x0, y0, x1, y1, width, z0, z1) {
+    var dx = x1 - x0;
+    var dy = y1 - y0;
+    var length = Math.max(0.001, Math.hypot(dx, dy));
+    var nx = -dy / length * width / 2;
+    var ny = dx / length * width / 2;
+    return extrudeConvex(name, color, [
+      [x0 + nx, y0 + ny],
+      [x0 - nx, y0 - ny],
+      [x1 - nx, y1 - ny],
+      [x1 + nx, y1 + ny]
+    ], z0, z1);
+  }
+
+  function arcHookAlongZ(name, color, cx, cy, cz, innerRadius, outerRadius, startDegrees, endDegrees, thickness, steps) {
+    var solid = new Solid(name, color);
+    var z0 = cz - thickness / 2;
+    var z1 = cz + thickness / 2;
+    var bottomOuter = [], bottomInner = [], topOuter = [], topInner = [];
+    for (var i = 0; i <= steps; i += 1) {
+      var degrees = startDegrees + (endDegrees - startDegrees) * i / steps;
+      var angle = degrees * Math.PI / 180;
+      var cosine = Math.cos(angle);
+      var sine = Math.sin(angle);
+      bottomOuter.push(solid.vertex(cx + cosine * outerRadius, cy + sine * outerRadius, z0));
+      bottomInner.push(solid.vertex(cx + cosine * innerRadius, cy + sine * innerRadius, z0));
+      topOuter.push(solid.vertex(cx + cosine * outerRadius, cy + sine * outerRadius, z1));
+      topInner.push(solid.vertex(cx + cosine * innerRadius, cy + sine * innerRadius, z1));
+    }
+    for (var j = 0; j < steps; j += 1) {
+      var next = j + 1;
+      solid.quad(bottomOuter[j], topOuter[j], topOuter[next], bottomOuter[next]);
+      solid.quad(bottomInner[j], bottomInner[next], topInner[next], topInner[j]);
+      solid.triangle(bottomOuter[j], bottomInner[next], bottomInner[j]);
+      solid.triangle(bottomOuter[j], bottomOuter[next], bottomInner[next]);
+      solid.triangle(topOuter[j], topInner[j], topInner[next]);
+      solid.triangle(topOuter[j], topInner[next], topOuter[next]);
+    }
+    solid.quad(bottomOuter[0], bottomInner[0], topInner[0], topOuter[0]);
+    solid.quad(bottomOuter[steps], topOuter[steps], topInner[steps], bottomInner[steps]);
+    return solid;
+  }
+
   function extrudeXZConvexAlongY(name, color, contour, y0, y1) {
     var solid = new Solid(name, color);
     var front = contour.map(function (point) { return solid.vertex(point[0], y0, point[1]); });
@@ -520,6 +604,21 @@
         pivotX + cosine * x - sine * z,
         vertex[1],
         pivotZ + sine * x + cosine * z
+      ];
+    });
+  }
+
+  function rotateSolidAboutZ(solid, pivotX, pivotY, angleDegrees) {
+    var angle = angleDegrees * Math.PI / 180;
+    var cosine = Math.cos(angle);
+    var sine = Math.sin(angle);
+    return transformSolid(solid, function (vertex) {
+      var x = vertex[0] - pivotX;
+      var y = vertex[1] - pivotY;
+      return [
+        pivotX + cosine * x - sine * y,
+        pivotY + sine * x + cosine * y,
+        vertex[2]
       ];
     });
   }
@@ -790,14 +889,86 @@
     var hardwareColor = mixColour(state.color, "#202126", 0.48);
     var pinColor = "#9da1aa";
     var lidParts = [];
+    var coverMechanism = null;
+    if (state.boxLatch && window.Form3DCoverLatch && typeof window.Form3DCoverLatch.calculate === "function") {
+      coverMechanism = window.Form3DCoverLatch.calculate({
+        width: width,
+        depth: depth,
+        height: height,
+        wall: wall,
+        clearance: clearance,
+        lidThickness: lidThickness,
+        gearModule: state.boxGearModule,
+        bayDepth: state.boxGearBayDepth,
+        gearTurn: state.boxGearTurn
+      });
+    }
 
-    lidParts.push(extrudeConvex(
-      "Fitted cover",
-      lidColor,
-      roundedRectangle(width + 0.8, depth + 0.8, radius + 0.35, 8),
-      pivotZ - lidThickness / 2,
-      pivotZ + lidThickness / 2
-    ));
+    if (coverMechanism) {
+      var coverWidth = width + 0.8;
+      var coverDepth = depth + 0.8;
+      var coverZ0 = pivotZ - lidThickness / 2;
+      var coverZ1 = pivotZ + lidThickness / 2;
+      var coverRim = coverMechanism.coverRim;
+      var panelLeft = coverMechanism.coverInnerLeft;
+      var panelRight = coverMechanism.coverInnerRight;
+      var panelFront = coverMechanism.coverInnerFront;
+      var panelBack = coverMechanism.coverInnerBack;
+      var portLeft = coverMechanism.inputX - coverMechanism.dialPortRadius;
+      var portRight = coverMechanism.inputX + coverMechanism.dialPortRadius;
+      var portFront = coverMechanism.inputY - coverMechanism.dialPortRadius;
+      var portBack = coverMechanism.inputY + coverMechanism.dialPortRadius;
+
+      lidParts.push(roundedFrame(
+        "Concealed mechanism cover perimeter",
+        lidColor,
+        coverWidth,
+        coverDepth,
+        coverRim,
+        coverZ0,
+        coverZ1,
+        radius + 0.35,
+        8
+      ));
+
+      function addCoverPanel(name, left, right, front, back) {
+        if (right - left < 0.18 || back - front < 0.18) return;
+        lidParts.push(makeBoxSolid(
+          name,
+          lidColor,
+          (left + right) / 2,
+          (front + back) / 2,
+          coverZ0,
+          right - left,
+          back - front,
+          coverZ1 - coverZ0
+        ));
+      }
+
+      addCoverPanel("Cover top left field", panelLeft, portLeft, panelFront, panelBack);
+      addCoverPanel("Cover top right field", portRight, panelRight, panelFront, panelBack);
+      addCoverPanel("Cover top front bridge", portLeft, portRight, panelFront, portFront);
+      addCoverPanel("Cover top rear bridge", portLeft, portRight, portBack, panelBack);
+      lidParts.push(extrudeRing(
+        "Recessed dial labyrinth collar",
+        lidColor,
+        coverMechanism.inputX,
+        coverMechanism.inputY,
+        coverMechanism.collarOuterRadius,
+        coverMechanism.dialPortRadius,
+        coverZ0,
+        coverZ1,
+        40
+      ));
+    } else {
+      lidParts.push(extrudeConvex(
+        "Fitted cover",
+        lidColor,
+        roundedRectangle(width + 0.8, depth + 0.8, radius + 0.35, 8),
+        pivotZ - lidThickness / 2,
+        pivotZ + lidThickness / 2
+      ));
+    }
 
     var lipWidth = Math.max(8, width - wall * 2 - clearance * 2);
     var lipDepth = Math.max(8, depth - wall * 2 - clearance * 2);
@@ -815,7 +986,7 @@
       8
     ));
 
-    if (width > 56 && depth > 42) {
+    if (!coverMechanism && width > 56 && depth > 42) {
       lidParts.push(extrudeConvex(
         "Cover detail panel",
         trimColor,
@@ -852,392 +1023,325 @@
       ));
     }
 
-    if (state.boxLatch) {
-      var inputTeeth = 12;
-      var outputTeeth = 18;
-      var maximumModule = Math.max(0.58, Math.min((width - 16) / 32, (height - 6) / 21));
-      var gearModule = Math.min(state.boxGearModule, maximumModule);
-      var radialClearance = Math.max(0.38, clearance);
-      var axialClearance = Math.max(0.38, clearance);
-      var bayDepth = clamp(state.boxGearBayDepth, 8, 12);
-      var baySkin = clamp(wall * 0.66, 1.45, 1.9);
-      var bayInnerY = -depth / 2 - 0.28;
-      var bayOuterY = bayInnerY - bayDepth;
-      var cavityFrontY = bayOuterY + baySkin;
-      var cavityBackY = bayInnerY;
-      var cavityDepth = cavityBackY - cavityFrontY;
+    if (coverMechanism) {
+      var mechanism = coverMechanism;
+      var housingLeft = mechanism.housingLeft;
+      var housingRight = mechanism.housingRight;
+      var housingFront = mechanism.housingFront;
+      var housingBack = mechanism.housingBack;
+      var housingWidth = mechanism.housingWidth;
+      var housingDepth = mechanism.housingDepth;
+      var innerSkin = mechanism.innerSkin;
+      var wallTopZ = mechanism.lidBottomZ + 0.08;
+      var wallHeight = wallTopZ - mechanism.cassetteBottomZ;
+      var wallCentreZ = mechanism.cassetteBottomZ + wallHeight / 2;
+      var keeperWindow = mechanism.keeperWindow;
 
-      var inputPitchRadius = inputTeeth * gearModule / 2;
-      var outputPitchRadius = outputTeeth * gearModule / 2;
-      var inputOuterRadius = inputPitchRadius + gearModule;
-      var outputOuterRadius = outputPitchRadius + gearModule;
-      var gearCentreDistance = inputPitchRadius + outputPitchRadius + Math.max(0.18, clearance * 0.55);
-      var inputX = -gearCentreDistance / 2;
-      var outputX = gearCentreDistance / 2;
-      var axleRadius = clamp(gearModule * 1.25, 0.95, 1.4);
-      var gearBoreRadius = axleRadius + radialClearance;
-      var gearThickness = Math.min(cavityDepth - axialClearance * 2 - 0.45, clamp(gearModule * 3.3, 2.3, 3.25));
-      var gearFrontY = cavityFrontY + axialClearance;
-      var gearBackY = gearFrontY + gearThickness;
-      var gearY = (gearFrontY + gearBackY) / 2;
+      function addLinerPanel(name, left, right, front, back) {
+        if (right - left < 0.18 || back - front < 0.18) return;
+        lidParts.push(makeBoxSolid(
+          name,
+          lidColor,
+          (left + right) / 2,
+          (front + back) / 2,
+          mechanism.cassetteBottomZ,
+          right - left,
+          back - front,
+          innerSkin
+        ));
+      }
 
-      var keeperRadius = clamp(gearModule * 2.05, 1.45, 2.15);
-      var hookInnerRadius = keeperRadius + radialClearance + 0.28;
-      var hookOuterRadius = Math.max(hookInnerRadius + 1.85, clamp(gearModule * 5.65, 4.2, 5.7));
-      var keeperZ = height - Math.max(1.45, lidThickness * 0.55);
-      var housingTop = height + Math.min(0.7, lidThickness * 0.28);
-      var roofBaseFrontY = cavityFrontY - baySkin * 0.22;
-      var roofBaseBackY = cavityBackY + baySkin * 0.22;
-      var roofRise = (roofBaseBackY - roofBaseFrontY) / 2;
-      var roofStartZ = housingTop - roofRise;
-      var preferredGearZ = keeperZ - clamp(height * 0.31, 8.6, 11.6);
-      var gearCentreZ = Math.max(outputOuterRadius + 1.35, Math.min(preferredGearZ, roofStartZ - outputOuterRadius - 0.62));
-      var housingPadding = Math.max(1.45, baySkin * 0.92);
-      var housingLeft = inputX - inputOuterRadius - housingPadding;
-      var housingRight = outputX + outputOuterRadius + housingPadding;
-      var housingBottom = Math.max(0.8, gearCentreZ - outputOuterRadius - 1.08);
-      var housingHeight = housingTop - housingBottom;
-      var housingWidth = housingRight - housingLeft;
-      var housingY = (bayOuterY + bayInnerY + baySkin) / 2;
-      var housingDepth = bayInnerY + baySkin - bayOuterY;
-      var housingChamfer = Math.min(1.9, housingWidth * 0.07);
-      var housingContour = [
-        [housingLeft + housingChamfer, housingBottom],
-        [housingRight - housingChamfer, housingBottom],
-        [housingRight, housingBottom + housingChamfer],
-        [housingRight, housingTop - housingChamfer],
-        [housingRight - housingChamfer, housingTop],
-        [housingLeft + housingChamfer, housingTop],
-        [housingLeft, housingTop - housingChamfer],
-        [housingLeft, housingBottom + housingChamfer]
-      ];
+      addLinerPanel(
+        "Cover mechanism inner liner left",
+        housingLeft,
+        keeperWindow.left,
+        housingFront,
+        housingBack
+      );
+      addLinerPanel(
+        "Cover mechanism inner liner right",
+        keeperWindow.right,
+        housingRight,
+        housingFront,
+        housingBack
+      );
+      addLinerPanel(
+        "Cover mechanism inner liner front",
+        keeperWindow.left,
+        keeperWindow.right,
+        housingFront,
+        keeperWindow.front
+      );
+      addLinerPanel(
+        "Cover mechanism inner liner rear",
+        keeperWindow.left,
+        keeperWindow.right,
+        keeperWindow.back,
+        housingBack
+      );
 
-      solids.push(extrudeXZConvexAlongY(
-        "Sealed bay inner liner",
-        state.color,
-        housingContour,
-        bayInnerY,
-        bayInnerY + baySkin
-      ));
-
-      var driveSleeveRadius = gearBoreRadius + Math.max(0.72, gearModule * 0.92);
-      var drivePortRadius = driveSleeveRadius + radialClearance + 0.2;
-      var portOuterRadius = drivePortRadius + Math.max(1.15, baySkin * 0.76);
-      var outerPlateY = (bayOuterY + cavityFrontY) / 2;
-      var leftPanelWidth = inputX - portOuterRadius - housingLeft;
-      var rightPanelWidth = housingRight - inputX - portOuterRadius;
-      if (leftPanelWidth > 0.2) solids.push(makeBoxSolid(
-        "Sealed outer skin left",
-        state.color,
-        housingLeft + leftPanelWidth / 2,
-        outerPlateY,
-        housingBottom,
-        leftPanelWidth,
-        baySkin,
-        housingHeight
-      ));
-      if (rightPanelWidth > 0.2) solids.push(makeBoxSolid(
-        "Sealed outer skin right",
-        state.color,
-        inputX + portOuterRadius + rightPanelWidth / 2,
-        outerPlateY,
-        housingBottom,
-        rightPanelWidth,
-        baySkin,
-        housingHeight
-      ));
-      solids.push(makeBoxSolid(
-        "Sealed outer skin upper",
-        state.color,
-        inputX,
-        outerPlateY,
-        gearCentreZ + drivePortRadius,
-        portOuterRadius * 2 + 0.24,
-        baySkin,
-        housingTop - gearCentreZ - drivePortRadius
-      ));
-      solids.push(makeBoxSolid(
-        "Sealed outer skin lower",
-        state.color,
-        inputX,
-        outerPlateY,
-        housingBottom,
-        portOuterRadius * 2 + 0.24,
-        baySkin,
-        gearCentreZ - drivePortRadius - housingBottom
-      ));
-      solids.push(tubeAlongY(
-        "Knob labyrinth collar",
-        trimColor,
-        inputX,
-        outerPlateY,
-        gearCentreZ,
-        baySkin + 0.18,
-        portOuterRadius,
-        drivePortRadius,
-        36
-      ));
-
-      var enclosureRail = Math.max(1.2, baySkin * 0.82);
-      solids.push(makeBoxSolid(
-        "Sealed bay left wall",
-        state.color,
-        housingLeft + enclosureRail / 2,
-        housingY,
-        housingBottom + enclosureRail - 0.12,
-        enclosureRail,
+      lidParts.push(makeBoxSolid(
+        "Cover mechanism left wall",
+        lidColor,
+        housingLeft + innerSkin / 2,
+        (housingFront + housingBack) / 2,
+        mechanism.cassetteBottomZ,
+        innerSkin,
         housingDepth,
-        housingHeight - enclosureRail * 1.45 + 0.12
+        wallHeight
       ));
-      solids.push(makeBoxSolid(
-        "Sealed bay right wall",
-        state.color,
-        housingRight - enclosureRail / 2,
-        housingY,
-        housingBottom + enclosureRail - 0.12,
-        enclosureRail,
+      lidParts.push(makeBoxSolid(
+        "Cover mechanism right wall",
+        lidColor,
+        housingRight - innerSkin / 2,
+        (housingFront + housingBack) / 2,
+        mechanism.cassetteBottomZ,
+        innerSkin,
         housingDepth,
-        housingHeight - enclosureRail * 1.45 + 0.12
+        wallHeight
       ));
-      solids.push(makeBoxSolid(
-        "Sealed bay floor",
-        state.color,
+      lidParts.push(makeBoxSolid(
+        "Cover mechanism rear wall",
+        lidColor,
         (housingLeft + housingRight) / 2,
-        housingY,
-        housingBottom,
+        housingBack - innerSkin / 2,
+        mechanism.cassetteBottomZ,
         housingWidth,
-        housingDepth,
-        enclosureRail
+        innerSkin,
+        wallHeight
       ));
 
-      var linkSlotHalfWidth = hookOuterRadius + radialClearance + 0.42;
-      var roofSlotLeft = Math.max(housingLeft + enclosureRail, outputX - linkSlotHalfWidth);
-      var roofSlotRight = Math.min(housingRight - enclosureRail, outputX + linkSlotHalfWidth);
-      var corbelContour = [
-        [roofBaseFrontY, roofStartZ],
-        [roofBaseBackY, roofStartZ],
-        [(roofBaseFrontY + roofBaseBackY) / 2, housingTop]
-      ];
-      var leftRoofStartX = housingLeft + enclosureRail * 0.24;
-      var rightRoofEndX = housingRight - enclosureRail * 0.24;
-      if (roofSlotLeft > leftRoofStartX) solids.push(extrudeYZConvexAlongX(
-        "Left 45 degree corbel roof",
-        state.color,
-        corbelContour,
-        leftRoofStartX,
-        roofSlotLeft
+      var frontLeftWidth = keeperWindow.left - housingLeft;
+      var frontRightWidth = housingRight - keeperWindow.right;
+      if (frontLeftWidth > 0.18) lidParts.push(makeBoxSolid(
+        "Cover mechanism front wall left",
+        lidColor,
+        housingLeft + frontLeftWidth / 2,
+        housingFront + innerSkin / 2,
+        mechanism.cassetteBottomZ,
+        frontLeftWidth,
+        innerSkin,
+        wallHeight
       ));
-      if (rightRoofEndX > roofSlotRight) solids.push(extrudeYZConvexAlongX(
-        "Right 45 degree corbel roof",
-        state.color,
-        corbelContour,
-        roofSlotRight,
-        rightRoofEndX
+      if (frontRightWidth > 0.18) lidParts.push(makeBoxSolid(
+        "Cover mechanism front wall right",
+        lidColor,
+        keeperWindow.right + frontRightWidth / 2,
+        housingFront + innerSkin / 2,
+        mechanism.cassetteBottomZ,
+        frontRightWidth,
+        innerSkin,
+        wallHeight
       ));
 
-      var inputAngle = -state.boxGearTurn;
-      var outputAngle = state.boxGearTurn * inputTeeth / outputTeeth;
-      var inputPhase = -0.375 * 360 / inputTeeth;
-      var outputPhase = 0.125 * 360 / outputTeeth;
-      solids.push(spurGearAlongY(
-        "12 tooth sealed drive gear",
-        trimColor,
-        inputX,
-        gearY,
-        gearCentreZ,
-        inputTeeth,
-        gearModule,
-        gearThickness,
-        gearBoreRadius,
-        inputPhase + inputAngle
+      var bridgeFrontY = -depth / 2 + wall * 0.34;
+      var bridgeBackY = mechanism.keeperY + mechanism.keeperRadius * 0.72;
+      var bridgeTopZ = mechanism.cassetteBottomZ - mechanism.axialClearance;
+      var bridgeZ0 = bridgeTopZ - Math.max(2.2, wall * 0.92);
+      solids.push(makeBoxSolid(
+        "Body internal keeper bridge",
+        state.color,
+        mechanism.keeperX,
+        (bridgeFrontY + bridgeBackY) / 2,
+        bridgeZ0,
+        mechanism.keeperRadius * 2 + wall * 0.84,
+        bridgeBackY - bridgeFrontY,
+        bridgeTopZ - bridgeZ0
       ));
-      solids.push(spurGearAlongY(
-        "18 tooth sealed cam gear",
+
+      var movingZ0 = mechanism.gearBottomZ + 0.1;
+      var movingZ1 = mechanism.gearTopZ - 0.1;
+      var movingThickness = movingZ1 - movingZ0;
+      var keeperPostZ0 = bridgeZ0 + 0.18;
+      var keeperPostZ1 = Math.min(height - 0.08, movingZ1 + 0.52);
+      solids.push(cylinderAlongZ(
+        "Body internal keeper post",
         pinColor,
-        outputX,
-        gearY,
-        gearCentreZ,
-        outputTeeth,
-        gearModule,
-        gearThickness,
-        gearBoreRadius,
-        outputPhase + outputAngle
+        mechanism.keeperX,
+        mechanism.keeperY,
+        (keeperPostZ0 + keeperPostZ1) / 2,
+        keeperPostZ1 - keeperPostZ0,
+        mechanism.keeperRadius,
+        34
       ));
 
-      var movingY0 = gearFrontY + 0.1;
-      var movingY1 = gearBackY - 0.1;
-      var movingThickness = movingY1 - movingY0;
-      var armWidth = clamp(gearModule * 4.45, 3.15, 4.6);
-      var armEndZ = keeperZ - hookOuterRadius * 0.7;
-      var outputArm = barBetweenXZAlongY(
-        "Captured over-centre output arm",
+      var inputPhase = -0.375 * 360 / mechanism.inputTeeth;
+      var outputPhase = 0.125 * 360 / mechanism.outputTeeth;
+      lidParts.push(spurGearAlongZ(
+        "Concealed cover drive gear",
+        trimColor,
+        mechanism.inputX,
+        mechanism.inputY,
+        mechanism.gearZ,
+        mechanism.inputTeeth,
+        mechanism.gearModule,
+        mechanism.gearThickness,
+        mechanism.gearBoreRadius,
+        inputPhase + mechanism.inputAngle
+      ));
+      lidParts.push(spurGearAlongZ(
+        "Concealed cover cam gear",
+        pinColor,
+        mechanism.outputX,
+        mechanism.outputY,
+        mechanism.gearZ,
+        mechanism.outputTeeth,
+        mechanism.gearModule,
+        mechanism.gearThickness,
+        mechanism.gearBoreRadius,
+        outputPhase + mechanism.outputAngle
+      ));
+
+      var armWidth = clamp(mechanism.gearModule * 4.35, 3.05, 4.55);
+      var outputArm = barBetweenXYAlongZ(
+        "Concealed over-centre cam arm",
         hardwareColor,
-        outputX,
-        gearCentreZ + axleRadius * 0.1,
-        outputX,
-        armEndZ,
+        mechanism.outputX,
+        mechanism.outputY,
+        mechanism.keeperX,
+        mechanism.keeperY,
         armWidth,
-        movingY0,
-        movingY1
+        movingZ0,
+        movingZ1
       );
-      var camHook = arcHookAlongY(
-        "Captured lid locking hook",
+      var camHook = arcHookAlongZ(
+        "Concealed rotary keeper hook",
         hardwareColor,
-        outputX,
-        gearY,
-        keeperZ,
-        hookInnerRadius,
-        hookOuterRadius,
-        85,
-        275,
+        mechanism.keeperX,
+        mechanism.keeperY,
+        mechanism.gearZ,
+        mechanism.hookInnerRadius,
+        mechanism.hookOuterRadius,
+        74,
+        286,
         movingThickness,
-        42
+        46
       );
-      rotateSolidAboutY(outputArm, outputX, gearCentreZ, outputAngle);
-      rotateSolidAboutY(camHook, outputX, gearCentreZ, outputAngle);
-      solids.push(outputArm);
-      solids.push(camHook);
-      solids.push(tubeAlongY(
-        "Output gear torque hub",
+      rotateSolidAboutZ(outputArm, mechanism.outputX, mechanism.outputY, mechanism.outputAngle);
+      rotateSolidAboutZ(camHook, mechanism.outputX, mechanism.outputY, mechanism.outputAngle);
+      lidParts.push(outputArm);
+      lidParts.push(camHook);
+      lidParts.push(tubeAlongZ(
+        "Concealed output torque hub",
         hardwareColor,
-        outputX,
-        gearY,
-        gearCentreZ,
-        gearThickness + 0.18,
-        gearBoreRadius + Math.max(0.68, gearModule * 0.9),
-        gearBoreRadius,
-        30
+        mechanism.outputX,
+        mechanism.outputY,
+        mechanism.gearZ,
+        mechanism.gearThickness + 0.18,
+        mechanism.gearBoreRadius + Math.max(0.66, mechanism.gearModule * 0.86),
+        mechanism.gearBoreRadius,
+        32
       ));
 
-      var rearSpacerFrontY = gearBackY + axialClearance;
-      var rearSpacerLength = cavityBackY - rearSpacerFrontY + 0.14;
-      var spacerOuterRadius = gearBoreRadius + Math.max(0.62, gearModule * 0.82);
-      if (rearSpacerLength > 0.2) {
-        solids.push(tubeAlongY(
-          "Input captured bearing spacer",
-          state.color,
-          inputX,
-          rearSpacerFrontY + rearSpacerLength / 2,
-          gearCentreZ,
-          rearSpacerLength,
-          spacerOuterRadius,
-          axleRadius + 0.08,
+      var lowerSeatTop = mechanism.gearBottomZ - mechanism.axialClearance;
+      var lowerSeatBottom = mechanism.cavityBottomZ - 0.08;
+      var bearingOuterRadius = mechanism.gearBoreRadius + Math.max(0.6, mechanism.gearModule * 0.78);
+      if (lowerSeatTop > lowerSeatBottom) {
+        lidParts.push(tubeAlongZ(
+          "Input lower bearing seat",
+          lidColor,
+          mechanism.inputX,
+          mechanism.inputY,
+          (lowerSeatBottom + lowerSeatTop) / 2,
+          lowerSeatTop - lowerSeatBottom,
+          bearingOuterRadius,
+          mechanism.axleRadius + 0.08,
           30
         ));
-        solids.push(tubeAlongY(
-          "Output captured bearing spacer",
-          state.color,
-          outputX,
-          rearSpacerFrontY + rearSpacerLength / 2,
-          gearCentreZ,
-          rearSpacerLength,
-          spacerOuterRadius,
-          axleRadius + 0.08,
+        lidParts.push(tubeAlongZ(
+          "Output lower bearing seat",
+          lidColor,
+          mechanism.outputX,
+          mechanism.outputY,
+          (lowerSeatBottom + lowerSeatTop) / 2,
+          lowerSeatTop - lowerSeatBottom,
+          bearingOuterRadius,
+          mechanism.axleRadius + 0.08,
           30
         ));
       }
 
-      var outputSeatBackY = gearFrontY - axialClearance;
-      var outputSeatLength = outputSeatBackY - cavityFrontY + 0.14;
-      if (outputSeatLength > 0.2) solids.push(tubeAlongY(
-        "Output opposing bearing seat",
-        state.color,
-        outputX,
-        cavityFrontY + outputSeatLength / 2,
-        gearCentreZ,
-        outputSeatLength,
-        spacerOuterRadius,
-        axleRadius + 0.08,
-        30
-      ));
-
-      var knobBackY = bayOuterY - 0.18;
-      var knobFrontY = knobBackY - Math.max(1.7, gearModule * 2.2);
-      var knobThickness = knobBackY - knobFrontY;
-      var knobModule = Math.max(0.56, gearModule * 0.78);
-      solids.push(spurGearAlongY(
-        "External knurled control knob",
-        trimColor,
-        inputX,
-        (knobFrontY + knobBackY) / 2,
-        gearCentreZ,
-        12,
-        knobModule,
-        knobThickness,
-        gearBoreRadius,
-        inputAngle
-      ));
-      var sleeveBackY = gearFrontY + 0.58;
-      solids.push(tubeAlongY(
-        "Rotary knob drive sleeve",
-        trimColor,
-        inputX,
-        (knobFrontY + sleeveBackY) / 2,
-        gearCentreZ,
-        sleeveBackY - knobFrontY,
-        driveSleeveRadius,
-        gearBoreRadius,
-        32
-      ));
-
-      var axleBackY = bayInnerY + baySkin * 0.58;
-      var outputAxleFrontY = bayOuterY + baySkin * 0.42;
-      var inputCapBackY = knobFrontY - axialClearance;
-      var inputCapThickness = Math.max(0.75, gearModule * 0.95);
-      var inputCapFrontY = inputCapBackY - inputCapThickness;
-      solids.push(cylinderAlongY(
-        "Integral input stub axle",
-        pinColor,
-        inputX,
-        (inputCapFrontY + axleBackY) / 2,
-        gearCentreZ,
-        axleBackY - inputCapFrontY,
-        axleRadius,
-        30
-      ));
-      solids.push(cylinderAlongY(
-        "Integral output stub axle",
-        pinColor,
-        outputX,
-        (outputAxleFrontY + axleBackY) / 2,
-        gearCentreZ,
-        axleBackY - outputAxleFrontY,
-        axleRadius,
-        30
-      ));
-      solids.push(cylinderAlongY(
-        "Input axle retaining head",
-        pinColor,
-        inputX,
-        (inputCapFrontY + inputCapBackY) / 2,
-        gearCentreZ,
-        inputCapThickness,
-        gearBoreRadius + 0.48,
-        30
-      ));
-
-      var keeperPinFrontY = gearFrontY - 0.55;
-      var keeperSupportFrontY = gearBackY + axialClearance + 0.18;
-      var keeperSupportBackY = -depth / 2 - 0.08;
-      lidParts.push(cylinderAlongY(
-        "Reinforced lid keeper pin",
-        pinColor,
-        outputX,
-        (keeperPinFrontY + keeperSupportFrontY) / 2,
-        keeperZ,
-        keeperSupportFrontY - keeperPinFrontY,
-        keeperRadius,
-        32
-      ));
-      lidParts.push(makeBoxSolid(
-        "Lid keeper drive link",
+      var outputUpperSeatBottom = mechanism.gearTopZ + mechanism.axialClearance;
+      if (mechanism.lidBottomZ > outputUpperSeatBottom) lidParts.push(tubeAlongZ(
+        "Output upper bearing seat",
         lidColor,
-        outputX,
-        (keeperSupportFrontY + keeperSupportBackY) / 2,
-        keeperZ - keeperRadius * 0.48,
-        keeperRadius * 2.45,
-        keeperSupportBackY - keeperSupportFrontY,
-        pivotZ - lidThickness / 2 - keeperZ + keeperRadius * 0.7
+        mechanism.outputX,
+        mechanism.outputY,
+        (outputUpperSeatBottom + mechanism.lidBottomZ + 0.08) / 2,
+        mechanism.lidBottomZ + 0.08 - outputUpperSeatBottom,
+        bearingOuterRadius,
+        mechanism.axleRadius + 0.08,
+        30
+      ));
+
+      var dialBottomZ = mechanism.lidTopZ - Math.min(0.54, lidThickness * 0.22);
+      var dialTopZ = mechanism.lidTopZ + 0.28;
+      var dialThickness = dialTopZ - dialBottomZ;
+      var dialTeeth = 14;
+      var dialModule = mechanism.dialRadius / (dialTeeth / 2 + 1);
+      lidParts.push(spurGearAlongZ(
+        "Recessed cover control dial",
+        trimColor,
+        mechanism.inputX,
+        mechanism.inputY,
+        (dialBottomZ + dialTopZ) / 2,
+        dialTeeth,
+        dialModule,
+        dialThickness,
+        mechanism.gearBoreRadius,
+        mechanism.inputAngle
+      ));
+
+      var sleeveBottomZ = mechanism.gearBottomZ + 0.06;
+      var sleeveTopZ = dialTopZ - 0.04;
+      lidParts.push(tubeAlongZ(
+        "Concealed dial drive sleeve",
+        trimColor,
+        mechanism.inputX,
+        mechanism.inputY,
+        (sleeveBottomZ + sleeveTopZ) / 2,
+        sleeveTopZ - sleeveBottomZ,
+        mechanism.sleeveOuterRadius,
+        mechanism.gearBoreRadius,
+        32
+      ));
+
+      var inputHeadBottomZ = dialTopZ + mechanism.axialClearance;
+      var inputHeadThickness = Math.max(0.68, mechanism.gearModule * 0.82);
+      var inputHeadTopZ = inputHeadBottomZ + inputHeadThickness;
+      var inputAxleBottomZ = mechanism.cassetteBottomZ + innerSkin * 0.42;
+      lidParts.push(cylinderAlongZ(
+        "Integral input cover axle",
+        pinColor,
+        mechanism.inputX,
+        mechanism.inputY,
+        (inputAxleBottomZ + inputHeadTopZ) / 2,
+        inputHeadTopZ - inputAxleBottomZ,
+        mechanism.axleRadius,
+        30
+      ));
+      lidParts.push(cylinderAlongZ(
+        "Input dial retaining head",
+        pinColor,
+        mechanism.inputX,
+        mechanism.inputY,
+        (inputHeadBottomZ + inputHeadTopZ) / 2,
+        inputHeadThickness,
+        mechanism.gearBoreRadius + 0.46,
+        30
+      ));
+
+      var outputAxleBottomZ = mechanism.cassetteBottomZ + innerSkin * 0.42;
+      var outputAxleTopZ = mechanism.lidBottomZ + 0.18;
+      lidParts.push(cylinderAlongZ(
+        "Integral output cover axle",
+        pinColor,
+        mechanism.outputX,
+        mechanism.outputY,
+        (outputAxleBottomZ + outputAxleTopZ) / 2,
+        outputAxleTopZ - outputAxleBottomZ,
+        mechanism.axleRadius,
+        30
       ));
     }
 
@@ -1248,7 +1352,7 @@
     });
 
     var name = state.boxHinges ? "Hinged storage box" : "Fitted storage box";
-    if (state.boxLatch) name = state.boxHinges ? "Sealed gearbox latch box" : "Sealed geared box";
+    if (coverMechanism) name = state.boxHinges ? "Print-in-place concealed cover latch box" : "Concealed cover latch box";
     return { name: name, solids: solids };
   }
 
@@ -2108,10 +2212,26 @@
     if (name === "boxLidAngle") return Math.round(value) + "°";
     if (name === "boxClearance") return Number(value).toFixed(2);
     if (name === "boxGearModule") {
-      var fittedModule = Math.min(Number(value), Math.max(0.58, Math.min((state.boxWidth - 16) / 32, (state.boxHeight - 6) / 21)));
+      var fittedModule = Math.min(Number(value), Math.max(0.58, Math.min(1.05, (state.boxWidth - 12) / 48, (state.boxDepth - 10) / 34)));
       return fittedModule.toFixed(2) + (fittedModule + 0.001 < Number(value) ? " · fitted" : "");
     }
-    if (name === "boxGearBayDepth") return Number(value).toFixed(1) + " mm";
+    if (name === "boxGearBayDepth") {
+      if (window.Form3DCoverLatch && typeof window.Form3DCoverLatch.calculate === "function") {
+        var fittedCover = window.Form3DCoverLatch.calculate({
+          width: state.boxWidth,
+          depth: state.boxDepth,
+          height: state.boxHeight,
+          wall: state.boxWall,
+          clearance: state.boxClearance,
+          lidThickness: state.boxLidThickness,
+          gearModule: state.boxGearModule,
+          bayDepth: value,
+          gearTurn: state.boxGearTurn
+        });
+        return fittedCover.bayDepth.toFixed(1) + " mm" + (fittedCover.bayDepth > Number(value) + 0.01 ? " · fitted" : "");
+      }
+      return Number(value).toFixed(1) + " mm";
+    }
     if (name === "boxGearTurn") {
       if (Number(value) <= 2) return Math.round(value) + "° · locked";
       if (Number(value) >= 92) return Math.round(value) + "° · released";
@@ -2369,6 +2489,15 @@
       button.addEventListener("click", function () {
         animateGearPosition(Number(button.dataset.gearState));
       });
+    });
+    document.getElementById("prepare-box-print").addEventListener("click", function () {
+      cancelAnimationFrame(mechanismAnimation);
+      state.boxLidAngle = 0;
+      state.boxGearTurn = 96;
+      syncControls();
+      saveState();
+      buildModel();
+      showToast("Cover closed and latch released — place a side wall on the build plate");
     });
 
     document.querySelectorAll("[data-color]").forEach(function (button) {
