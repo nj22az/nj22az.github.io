@@ -252,13 +252,17 @@ main { overflow: clip; }
 [data-theme="horizon"] .footer-links::before,
 [data-theme="botanical"] .footer-identity strong,
 [data-theme="botanical"] .footer-nav::before,
-[data-theme="botanical"] .footer-links::before { color: #ffffff; }
+[data-theme="botanical"] .footer-links::before,
+[data-theme="popwave"] .footer-identity strong,
+[data-theme="popwave"] .footer-nav::before,
+[data-theme="popwave"] .footer-links::before { color: #ffffff; }
 [data-theme="cobalt"] .footer-bottom,
 [data-theme="crimson"] .footer-bottom,
 [data-theme="inkcraft"] .footer-bottom,
 [data-theme="clarity"] .footer-bottom,
 [data-theme="horizon"] .footer-bottom,
-[data-theme="botanical"] .footer-bottom {
+[data-theme="botanical"] .footer-bottom,
+[data-theme="popwave"] .footer-bottom {
   border-top-color: rgba(255,255,255,.24);
   color: rgba(255,255,255,.72);
 }
@@ -274,6 +278,8 @@ main { overflow: clip; }
 [data-theme="horizon"] .footer-links a:hover { color: #37b1de; }
 [data-theme="botanical"] .footer-nav a:hover,
 [data-theme="botanical"] .footer-links a:hover { color: #ffd500; }
+[data-theme="popwave"] .footer-nav a:hover,
+[data-theme="popwave"] .footer-links a:hover { color: #ffffff; }
 
 /* ── Journal page ── */
 .page-eyebrow {

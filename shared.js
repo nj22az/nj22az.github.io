@@ -91,6 +91,13 @@
       description: "Warm and vivid",
       colors: ["#ffd500", "#fafaef", "#272727"],
       browserColor: "#ffd500"
+    },
+    {
+      id: "popwave",
+      label: "Popwave",
+      description: "Vivid magenta",
+      colors: ["#f2157f", "#ffffff", "#f3f3f3"],
+      browserColor: "#f2157f"
     }
   ];
 
