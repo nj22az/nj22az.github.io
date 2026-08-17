@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog – The Office of Nils Johansson</title>
+  <title>Journal – The Office of Nils Johansson</title>
   <meta name="description" content="Technical dispatches and cultural reflections from field engineering deployments around the world.">
+  <link rel="canonical" href="https://nj22az.github.io/blog/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Journal – The Office of Nils Johansson">
+  <meta property="og:description" content="Technical dispatches and cultural reflections from field engineering work around the world.">
+  <meta property="og:url" content="https://nj22az.github.io/blog/">
+  <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#343ec9">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
@@ -16,17 +22,20 @@
 </head>
 <body>
 
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <nav id="site-nav" class="site-nav"></nav>
 
-  <main>
+  <main id="main-content">
     <section class="page-hero">
-      <h1>Blog</h1>
-      <p>The latest from <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener" style="color:var(--accent)">theofficeofnils.wordpress.com</a> — leave comments with your GitHub account.</p>
+      <div class="page-eyebrow">Field Notes</div>
+      <h1>Journal</h1>
+      <p>Technical dispatches and cultural reflections from field engineering work around the world. Articles are published through <a class="page-hero-link" href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">The Office of Nils</a>.</p>
     </section>
 
     <div class="page-content">
       <div id="status" class="status-banner">Fetching the most recent posts&hellip;</div>
-      <div id="posts"></div>
+      <div id="posts" class="posts-grid"></div>
     </div>
   </main>
 

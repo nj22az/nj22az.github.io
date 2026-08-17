@@ -36,6 +36,8 @@ python3 -m http.server 8000
 ├── blog/index.html         Blog page (WordPress API)
 ├── config.js               All site data, projects, icons, logo, schedule
 ├── shared.js               Shared nav, footer, expandable theme switcher
+├── subpage-theme.js       Carries the selected palette into same-origin apps
+├── subpage-theme.css      Palette bridge for internal project interfaces
 ├── styles.css              CSS entry point — imports modular files from css/
 ├── css/                    Modular CSS files (tokens, nav, hero, sections, bento, etc.)
 ├── _posts/                 Markdown blog post archive
@@ -53,7 +55,8 @@ python3 -m http.server 8000
 2. CSS uses custom properties scoped to each theme ID
 3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
 4. The hamburger menu contains an expandable switcher with ten brand-neutral options: Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, and Botanical
-5. The SVG logo uses `currentColor`, so it adapts automatically
+5. Internal project pages read the same preference through `subpage-theme.js`; external sites are unaffected
+6. The SVG logo uses `currentColor`, so it adapts automatically
 
 ## How the Logo Works
 
@@ -82,6 +85,8 @@ Need a new icon? Add to `CONFIG.icons`:
 ```js
 iconName: "M... SVG path data ...",
 ```
+
+To remove a project from the public grid without deleting it, move its record from `CONFIG.projects` to `CONFIG.archivedProjects`.
 
 ## How to Add a New Page
 

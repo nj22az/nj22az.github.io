@@ -119,6 +119,10 @@
     var currentLabel = $("#theme-current");
     if (currentLabel) currentLabel.textContent = selectedTheme.label;
 
+    document.querySelectorAll(".theme-disclosure-mark i").forEach(function (bar, index) {
+      bar.style.background = selectedTheme.colors[index] || selectedTheme.colors[0];
+    });
+
     document.querySelectorAll(".theme-option").forEach(function (button) {
       var isActive = button.getAttribute("data-theme-value") === selectedTheme.id;
       button.classList.toggle("active", isActive);
@@ -136,12 +140,18 @@
     var nav = $("#site-nav");
     if (!nav) return;
     nav.classList.add("site-nav");
+    nav.setAttribute("aria-label", "Primary navigation");
 
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
+    var navLinks = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
+      var href = isHome ? "#" + item.id : "/#" + item.id;
+      return '<a class="nav-link" href="' + href + '">' + item.label + '</a>';
+    }).join("");
 
     nav.innerHTML =
       '<div class="nav-inner">' +
         '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
+        '<div class="nav-links">' + navLinks + '</div>' +
         '<div class="nav-actions">' +
           '<button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">' +
             icon("menu") +
@@ -153,6 +163,7 @@
     var overlay = document.createElement("div");
     overlay.className = "menu-overlay";
     overlay.id = "menu-overlay";
+    overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.map(function (n) {
       var href = isHome ? "#" + n.id : "/#" + n.id;
@@ -188,7 +199,7 @@
             '<span class="theme-disclosure-main">' +
               '<span class="theme-disclosure-mark" aria-hidden="true"><i></i><i></i><i></i></span>' +
               '<span class="theme-disclosure-copy">' +
-                '<span class="theme-disclosure-label">Theme</span>' +
+                '<span class="theme-disclosure-label">Appearance</span>' +
                 '<span id="theme-current" class="theme-disclosure-value"></span>' +
               '</span>' +
             '</span>' +
@@ -221,14 +232,18 @@
       var isOpen = overlay.classList.contains("open");
       if (isOpen) {
         overlay.classList.remove("open");
+        overlay.setAttribute("aria-hidden", "true");
         backdrop.classList.remove("open");
+        document.body.classList.remove("menu-open");
         hamburger.innerHTML = icon("menu");
         hamburger.setAttribute("aria-label", "Open menu");
         hamburger.setAttribute("aria-expanded", "false");
         closeThemeSwitcher();
       } else {
         overlay.classList.add("open");
+        overlay.setAttribute("aria-hidden", "false");
         backdrop.classList.add("open");
+        document.body.classList.add("menu-open");
         hamburger.innerHTML = icon("close");
         hamburger.setAttribute("aria-label", "Close menu");
         hamburger.setAttribute("aria-expanded", "true");
@@ -236,7 +251,9 @@
     }
     function closeMenu() {
       overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
       backdrop.classList.remove("open");
+      document.body.classList.remove("menu-open");
       hamburger.innerHTML = icon("menu");
       hamburger.setAttribute("aria-label", "Open menu");
       hamburger.setAttribute("aria-expanded", "false");
@@ -245,6 +262,13 @@
 
     hamburger.addEventListener("click", toggleMenu);
     backdrop.addEventListener("click", closeMenu);
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && overlay.classList.contains("open")) {
+        closeMenu();
+        hamburger.focus();
+      }
+    });
 
     overlay.querySelectorAll(".menu-row, .menu-cta").forEach(function (link) {
       link.addEventListener("click", closeMenu);
@@ -275,13 +299,25 @@
     if (!footer) return;
 
     var socialLinks = Object.keys(CONFIG.author.social).map(function (key) {
-      return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener">' + key + '</a>';
+      var label = key.charAt(0).toUpperCase() + key.slice(1);
+      return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener">' + label + '</a>';
+    }).join("");
+
+    var footerNav = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
+      return '<a href="/#' + item.id + '">' + item.label + '</a>';
     }).join("");
 
     footer.innerHTML =
       '<div class="footer-inner">' +
-        '<span>' + CONFIG.site.copyright + '</span>' +
-        '<div class="footer-links">' + socialLinks + '</div>' +
+        '<div class="footer-identity">' +
+          '<strong>' + CONFIG.site.title + '</strong>' +
+          '<span>' + CONFIG.site.footerTagline + '</span>' +
+        '</div>' +
+        '<div class="footer-columns">' +
+          '<nav class="footer-nav" aria-label="Footer navigation">' + footerNav + '</nav>' +
+          '<nav class="footer-links" aria-label="Social links">' + socialLinks + '</nav>' +
+        '</div>' +
+        '<div class="footer-bottom"><span>' + CONFIG.site.copyright + '</span><a href="#main-content">Back to top &uarr;</a></div>' +
       '</div>';
   }
 

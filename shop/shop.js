@@ -69,7 +69,7 @@
 
   /* ── Theme ── */
 
-  var THEME_KEY = "nj-theme";
+  var THEME_KEY = "nj-shop-theme";
 
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);

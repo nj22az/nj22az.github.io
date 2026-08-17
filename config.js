@@ -6,19 +6,19 @@
 const CONFIG = {
   site: {
     title: "The Office of Nils Johansson",
-    tagline: "Engineer. Builder. Explorer.",
+    tagline: "Engineering in the field. Building beyond it.",
     description:
-      "A digital hub for field engineering projects, technical writing, and tools built from real-world deployments.",
+      "Field service engineering, industrial commissioning, and practical digital tools shaped by work across marine and international environments.",
+    footerTagline: "Field engineering, practical tools, and writing from work across borders.",
     url: "https://nj22az.github.io",
     copyright: "\u00A9 " + new Date().getFullYear() + " Nils Johansson",
   },
 
   author: {
     name: "Nils Johansson",
-    role: "Field Service Engineer (Marine Engineer)",
+    role: "Field Service Engineer · Marine Systems",
     location: "Southeast Asia",
-    bio: "Marine engineer turned field service engineer with a background in maritime operations, precision material testing systems, and industrial commissioning. Used to working independently in complex technical environments, I combine hands-on engineering experience with structured execution and strong cross-cultural awareness.",
-    photo: "/assets/images/nils-profile.jpg",
+    bio: "Marine engineer turned field service engineer, working across maritime systems, precision material testing, and industrial commissioning. I combine hands-on diagnostics with structured delivery, clear documentation, and cross-cultural collaboration.",
     social: {
       github: "https://github.com/nj22az",
       linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
@@ -57,7 +57,7 @@ const CONFIG = {
     {
       title: "The Front-Row Seat",
       description:
-        "Read a six-book historical omnibus online — an illustrated compact edition with adjustable type and dark mode. Each book stands alone; together they follow five centuries of the East India Company from one Thames-side tavern.",
+        "A six-book illustrated historical omnibus with adjustable type, thoughtful reading controls, and five centuries of connected stories.",
       url: "/the-front-row-seat/",
       icon: "notebook",
       tags: ["Six Books", "Historical Fiction", "Read Online"],
@@ -67,7 +67,7 @@ const CONFIG = {
     {
       title: "Form 3D Studio",
       description:
-        "Create image keychains and simple 3D forms privately in your browser, then export STL or STEP files for Shapr3D, slicers, and other CAD tools.",
+        "Create image keychains and simple 3D forms privately in the browser, then export production-ready STL or STEP files.",
       url: "/form-3d-studio/",
       icon: "printer3d",
       tags: ["3D Modelling", "Offline", "STL & STEP"],
@@ -77,7 +77,7 @@ const CONFIG = {
     {
       title: "GitHub",
       description:
-        "Open-source projects, tools, and code experiments. Browse repositories, contributions, and engineering side projects.",
+        "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
       url: "https://github.com/nj22az",
       icon: "github",
       tags: ["Code", "Open Source", "Projects"],
@@ -87,7 +87,7 @@ const CONFIG = {
     {
       title: "LinkedIn",
       description:
-        "Professional profile, career history, and industry connections. Field service engineering across maritime and industrial sectors.",
+        "Career history and professional work across maritime systems, industrial equipment, and international field service.",
       url: "https://www.linkedin.com/in/nils-johansson-86744583",
       icon: "linkedin",
       tags: ["Career", "Networking", "Engineering"],
@@ -97,7 +97,7 @@ const CONFIG = {
     {
       title: "Etsy Shop",
       description:
-        "Curated digital products and templates built from real engineering workflows and field deployments.",
+        "Digital products and templates shaped by practical workflows, careful documentation, and field experience.",
       url: "https://www.etsy.com/shop/Colonialclub",
       icon: "store",
       tags: ["Templates", "Digital Products", "Shop"],
@@ -107,7 +107,7 @@ const CONFIG = {
     {
       title: "WordPress Blog",
       description:
-        "Long-form technical dispatches and cultural reflections from engineering deployments around the world.",
+        "Long-form technical dispatches and cultural reflections from engineering work around the world.",
       url: "https://theofficeofnils.wordpress.com",
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
@@ -117,22 +117,27 @@ const CONFIG = {
     {
       title: "StepWise",
       description:
-        "Interactive step-by-step calculator for engineering workflows. Built for precision and clarity.",
+        "A focused, step-by-step calculator for engineering workflows where precision and clarity matter.",
       url: "https://nj22az.github.io/stepbuddy/",
       icon: "calculator",
       tags: ["Tool", "Calculator", "Engineering"],
       bento: "normal",
       featured: true,
     },
+  ],
+
+  /** Preserved for possible future restoration; not shown on the public site. */
+  archivedProjects: [
     {
       title: "Jonsson's Anslagstavla",
       description:
-        "A small shop of practical products made in Stora Mell\u00f6sa, Sweden. Browse the catalog, order online, and pay with Swish. Available in Swedish and English.",
+        "A bilingual shop for practical products made in Stora Mell\u00f6sa, with online ordering and Swish payment.",
       url: "/shop/",
       icon: "package",
       tags: ["Shop", "Products", "Sweden"],
       bento: "wide",
-      featured: true,
+      featured: false,
+      archived: true,
     },
   ],
 

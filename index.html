@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Office of Nils Johansson</title>
-  <meta name="description" content="A digital hub for field engineering projects, technical writing, and tools built from real-world deployments.">
+  <meta name="description" content="Field service engineering, industrial commissioning, and practical digital tools shaped by work across marine and international environments.">
   <meta name="author" content="Nils Johansson">
+  <link rel="canonical" href="https://nj22az.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Office of Nils Johansson">
+  <meta property="og:description" content="Field service engineering, industrial commissioning, and practical digital tools shaped by international work.">
+  <meta property="og:url" content="https://nj22az.github.io/">
+  <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#343ec9">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
@@ -17,9 +23,11 @@
 </head>
 <body>
 
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <nav id="site-nav" class="site-nav"></nav>
 
-  <main>
+  <main id="main-content">
 
     <!-- Hero — vertical stack: text + photo -->
     <section class="hero" id="home">
@@ -28,6 +36,11 @@
         <p class="hero-role" id="hero-role"></p>
         <h1 class="hero-tagline" id="hero-title"></h1>
         <p class="hero-sub" id="hero-description"></p>
+        <ul class="hero-credentials" aria-label="Areas of expertise">
+          <li>Marine systems</li>
+          <li>Industrial commissioning</li>
+          <li>Field diagnostics</li>
+        </ul>
         <div class="hero-actions">
           <a href="#projects" class="btn-primary">
             View Projects
@@ -37,13 +50,21 @@
         </div>
       </div>
       <div class="hero-photo">
-        <img src="/assets/images/nils-lake-hero.jpg" alt="Field engineering in the field" loading="eager">
+        <picture>
+          <source srcset="/assets/images/nils-lake-hero.webp" type="image/webp">
+          <img src="/assets/images/nils-lake-hero-optimized.jpg" alt="Sunlit tropical garden in Southeast Asia" width="1920" height="1440" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
       </div>
     </section>
 
     <!-- Schedule — availability table -->
     <section class="section" id="schedule">
       <div class="container">
+        <div class="section-header section-header--compact">
+          <div class="section-subtitle">Availability</div>
+          <h2>Working week at a glance</h2>
+          <p>Current office-hours availability, adjusted for location and public holidays.</p>
+        </div>
         <div id="schedule-widget"></div>
       </div>
     </section>
@@ -56,9 +77,9 @@
       <div class="container">
         <div class="section-header">
           <div class="section-decor" id="decor-projects"></div>
-          <h2>Featured Projects</h2>
-          <div class="section-subtitle">Projects</div>
-          <p>Platforms, shops, and profiles where I build, write, and share.</p>
+          <div class="section-subtitle">Selected Work</div>
+          <h2>Projects &amp; platforms</h2>
+          <p>Practical tools, long-form work, and professional channels built around engineering and making.</p>
         </div>
         <div class="bento-grid" id="bento-grid"></div>
       </div>
@@ -69,12 +90,12 @@
 
     <!-- Journal — row-style list -->
     <section class="section section-alt" id="journal">
-      <div class="container" style="position:relative; overflow:hidden;">
+      <div class="container section-shell">
         <div class="decor-blob decor-blob-md decor-blob-tr"></div>
         <div class="section-header">
           <div class="section-decor" id="decor-journal"></div>
-          <h2>From the Journal</h2>
-          <div class="section-subtitle">News</div>
+          <div class="section-subtitle">Field Notes</div>
+          <h2>From the journal</h2>
           <p>Technical dispatches and reflections from the field.</p>
         </div>
         <div class="journal-list" id="journal-list"></div>
@@ -92,16 +113,23 @@
 
     <!-- About — gradient + centered -->
     <section class="section section-mint" id="about">
-      <div class="container" style="position:relative;">
+      <div class="container section-shell">
         <div class="about-blobs">
           <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
           <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
         </div>
         <div class="about-layout">
-          <div id="about-logo" class="about-logo logo-seal"></div>
-          <div class="section-label-bar">About</div>
+          <div class="about-identity">
+            <div id="about-logo" class="about-logo logo-seal"></div>
+            <div class="about-identity-copy">
+              <strong>Nils Johansson</strong>
+              <span id="about-role"></span>
+              <span id="about-location" class="about-location"></span>
+            </div>
+          </div>
           <div class="about-content">
-            <h2 id="about-heading">About</h2>
+            <div class="section-label-bar">About</div>
+            <h2 id="about-heading">Engineering with a wider field of view</h2>
             <p class="about-bio" id="about-bio"></p>
             <div class="social-links" id="social-links"></div>
           </div>
@@ -117,9 +145,9 @@
       <div class="container">
         <div class="section-header">
           <div class="section-decor"></div>
-          <h2>Locations</h2>
           <div class="section-subtitle">Where I Work</div>
-          <p>Based between Sweden and Southeast Asia.</p>
+          <h2>Locations</h2>
+          <p>Working between Sweden and Southeast Asia, with an international field-service perspective.</p>
         </div>
         <div class="locations-grid" id="locations-grid"></div>
       </div>
@@ -142,16 +170,6 @@
       $("#hero-role").textContent = CONFIG.author.role;
       $("#hero-title").textContent = CONFIG.site.tagline;
       $("#hero-description").textContent = CONFIG.site.description;
-
-      /* Hero photo fades out on scroll */
-      var heroPhoto = $(".hero-photo");
-      if (heroPhoto) {
-        window.addEventListener("scroll", function () {
-          var rect = heroPhoto.getBoundingClientRect();
-          var visible = Math.max(0, Math.min(1, rect.bottom / (window.innerHeight * 0.7)));
-          heroPhoto.style.opacity = visible;
-        }, { passive: true });
-      }
 
       /* Schedule — interactive week calendar */
       if (CONFIG.author.schedule && CONFIG.author.locations) {
@@ -393,16 +411,20 @@
         var tags = p.tags.map(function (t) {
           return '<span class="tag">' + t + '</span>';
         }).join("");
+        var isExternal = new URL(p.url, location.origin).origin !== location.origin;
+        var linkAttrs = isExternal ? ' target="_blank" rel="noopener"' : '';
+        var actionLabel = isExternal ? "Visit site" : "Open project";
 
-        return '<a href="' + p.url + '" target="_blank" rel="noopener" class="bento-card ' + bentoClass + '">' +
+        return '<a href="' + p.url + '"' + linkAttrs + ' class="bento-card ' + bentoClass + '" aria-label="' + actionLabel + ': ' + p.title + '">' +
           '<div class="bento-card-top">' +
             '<div class="bento-icon" data-icon="' + p.icon + '">' + siteIcon(p.icon) + '</div>' +
             '<div class="bento-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
           '</div>' +
-          '<div>' +
+          '<div class="bento-card-body">' +
             '<h3>' + p.title + '</h3>' +
             '<p>' + p.description + '</p>' +
             '<div class="card-tags">' + tags + '</div>' +
+            '<span class="bento-card-cta">' + actionLabel + '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>' +
           '</div>' +
         '</a>';
       }).join("");
@@ -447,6 +469,8 @@
 
       /* About */
       $("#about-logo").innerHTML = CONFIG.logo(140);
+      $("#about-role").textContent = CONFIG.author.role;
+      $("#about-location").textContent = "Based in " + CONFIG.author.location;
       $("#about-bio").textContent = CONFIG.author.bio;
 
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
@@ -458,9 +482,9 @@
       if (CONFIG.author.locations) {
         $("#locations-grid").innerHTML = CONFIG.author.locations.map(function (loc) {
           return '<div class="location-card reveal">' +
-            '<iframe class="location-map" src="' + loc.embed + '" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' +
+            '<iframe class="location-map" src="' + loc.embed + '" title="Map of ' + loc.name + '" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' +
             '<div class="location-info">' +
-              '<div class="location-label">' + loc.label + '</div>' +
+              '<div class="location-meta"><div class="location-label">' + loc.label + '</div><span class="location-status">Field base</span></div>' +
               '<div class="location-name">' + loc.name + '</div>' +
             '</div>' +
           '</div>';
