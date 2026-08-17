@@ -165,3 +165,180 @@
 @media (max-width: 640px) {
   [data-theme="popeye"] .section { padding-top: 2.5rem; padding-bottom: 2.5rem; }
 }
+
+/* ── LINE: bold messenger landing page ── */
+[data-theme="line"] body {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  font-feature-settings: "palt" 0;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+[data-theme="line"] ::selection { background: rgba(6, 199, 85, 0.22); color: #000000; }
+
+[data-theme="line"] .site-nav { border-bottom-color: #e5e5e5; }
+[data-theme="line"] .site-nav.scrolled { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+[data-theme="line"] .nav-brand { color: #000000; }
+[data-theme="line"] .nav-brand:hover { color: #06c755; }
+[data-theme="line"] .nav-hamburger {
+  width: 48px; height: 48px;
+  border-radius: 8px;
+  background: #06c755;
+  color: #ffffff;
+}
+[data-theme="line"] .nav-hamburger:hover { background: #05b34c; transform: none; }
+
+[data-theme="line"] .menu-overlay {
+  border-color: #e5e5e5;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+[data-theme="line"] .menu-overlay-body { gap: 8px; }
+[data-theme="line"] .menu-row {
+  min-height: 96px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 700;
+}
+[data-theme="line"] .menu-row:hover {
+  border-color: #06c755;
+  background: #f7f8f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: none;
+}
+[data-theme="line"] .menu-row-icon {
+  border-color: rgba(6, 199, 85, 0.22) !important;
+  border-radius: 12px;
+  background: rgba(6, 199, 85, 0.10) !important;
+  color: #06c755 !important;
+}
+
+[data-theme="line"] .theme-disclosure {
+  min-height: 56px;
+  border-color: #06c755;
+  border-radius: 8px;
+  background: #06c755;
+  color: #ffffff;
+}
+[data-theme="line"] .theme-disclosure:hover { border-color: #05b34c; background: #05b34c; }
+[data-theme="line"] .theme-disclosure-label,
+[data-theme="line"] .theme-disclosure-value { color: #ffffff; }
+[data-theme="line"] .theme-disclosure-mark { border-color: rgba(255, 255, 255, 0.55); border-radius: 8px; }
+[data-theme="line"] .theme-option {
+  min-height: 56px;
+  border-color: #e5e5e5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #000000;
+}
+[data-theme="line"] .theme-option:hover,
+[data-theme="line"] .theme-option.active {
+  border-color: #06c755;
+  background: rgba(6, 199, 85, 0.10);
+  color: #000000;
+}
+[data-theme="line"] .theme-option-name { font-weight: 700; }
+[data-theme="line"] .theme-option.active .theme-option-check::after { background: #06c755; }
+
+[data-theme="line"] .hero { padding-top: 8rem; }
+[data-theme="line"] .hero-logo,
+[data-theme="line"] .about-logo { color: #06c755; }
+[data-theme="line"] .hero-role { color: #06c755; font-weight: 700; }
+[data-theme="line"] .hero-tagline {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(42px, 7vw, 70px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: normal;
+  color: #000000;
+}
+[data-theme="line"] .hero-sub { font-size: 20px; line-height: normal; }
+
+[data-theme="line"] .section { padding-top: 64px; padding-bottom: 64px; }
+[data-theme="line"] .section-header { margin-bottom: 40px; }
+[data-theme="line"] .section-header h2,
+[data-theme="line"] .about-content h2,
+[data-theme="line"] .page-hero h1 {
+  font-size: clamp(42px, 6vw, 60px);
+  font-weight: 700;
+  line-height: 1.27;
+  letter-spacing: normal;
+  color: #000000;
+}
+[data-theme="line"] .section-header p,
+[data-theme="line"] .about-bio,
+[data-theme="line"] .page-hero p { font-size: 20px; line-height: normal; }
+[data-theme="line"] .section-divider { border-top: 1px solid #e5e5e5; opacity: 1; }
+[data-theme="line"] .decor-blob { border-radius: 12px; background: rgba(6, 199, 85, 0.10); }
+
+[data-theme="line"] .bento-grid { gap: 24px; }
+[data-theme="line"] .bento-card,
+[data-theme="line"] .location-card,
+[data-theme="line"] .post-card,
+[data-theme="line"] .schedule-frame,
+[data-theme="line"] .frame {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+[data-theme="line"] .location-card { padding: 0; }
+[data-theme="line"] .bento-card:hover,
+[data-theme="line"] .location-card:hover,
+[data-theme="line"] .post-card:hover {
+  border-color: #d4d4d4;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+[data-theme="line"] .bento-icon { border-radius: 12px; }
+[data-theme="line"] .bento-card h3,
+[data-theme="line"] .location-name,
+[data-theme="line"] .post-card h2 { font-weight: 700; }
+[data-theme="line"] .bento-card p,
+[data-theme="line"] .post-card p { line-height: normal; }
+[data-theme="line"] .tag { border-radius: 8px; font-weight: 700; }
+
+[data-theme="line"] .btn-primary,
+[data-theme="line"] .btn-secondary {
+  min-height: 44px;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+[data-theme="line"] .btn-primary { background: #06c755; color: #ffffff; }
+[data-theme="line"] .btn-primary:hover { background: #05b34c; box-shadow: none; }
+[data-theme="line"] .btn-secondary { border: 1px solid #e5e5e5; color: #000000; }
+[data-theme="line"] .btn-secondary:hover { border-color: #06c755; color: #000000; }
+[data-theme="line"] .journal-tag { border-radius: 8px; font-weight: 700; }
+
+[data-theme="line"] .schedule-day,
+[data-theme="line"] .schedule-legend,
+[data-theme="line"] .schedule-popup,
+[data-theme="line"] .schedule-loc-dropdown { border-radius: 8px; }
+[data-theme="line"] .schedule-day.today { background: #06c755; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+
+[data-theme="line"] .site-footer { border-top-color: #e5e5e5; background: #f7f8f9; }
+
+@media (max-width: 767px) {
+  [data-theme="line"] body { font-size: 18px; }
+  [data-theme="line"] .hero { padding-top: 7rem; }
+  [data-theme="line"] .hero-tagline,
+  [data-theme="line"] .section-header h2,
+  [data-theme="line"] .about-content h2,
+  [data-theme="line"] .page-hero h1 { font-size: clamp(36px, 11vw, 42px); }
+  [data-theme="line"] .hero-sub,
+  [data-theme="line"] .section-header p,
+  [data-theme="line"] .about-bio,
+  [data-theme="line"] .page-hero p { font-size: 18px; }
+  [data-theme="line"] .section { padding-top: 40px; padding-bottom: 40px; }
+  [data-theme="line"] .bento-grid { gap: 16px; }
+}

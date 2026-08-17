@@ -80,6 +80,29 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --font-body:      "DM Sans", "Zen Kaku Gothic New", sans-serif;
 }
 
+/* ── LINE theme ── */
+[data-theme="line"] {
+  --ink:            #000000;
+  --ink-light:      #666666;
+  --ink-faint:      #999999;
+  --surface:        #ffffff;
+  --surface-raised: #f7f8f9;
+  --surface-card:   #ffffff;
+  --surface-hover:  #f7f8f9;
+  --surface-mint:   #f7f8f9;
+  --border:         #e5e5e5;
+  --border-hover:   #d4d4d4;
+  --accent:         #06c755;
+  --accent-hover:   #05b34c;
+  --accent-glow:    rgba(6, 199, 85, 0.10);
+  --divider:        #e5e5e5;
+  --shadow-card:    0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lift:    0 4px 16px rgba(0, 0, 0, 0.12);
+  --nav-bg:         rgba(255, 255, 255, 0.96);
+  --font-display:   SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
+  --font-body:      SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
+}
+
 /* ── Body ── */
 body {
   font-family: var(--font-body);

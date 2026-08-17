@@ -50,9 +50,9 @@ python3 -m http.server 8000
 ## How the Theme Works
 
 1. `<html data-theme="light">` is set by default (warm cream)
-2. CSS uses custom properties scoped to `[data-theme="popeye"]`, `[data-theme="dark"]`, and `[data-theme="light"]`
+2. CSS uses custom properties scoped to `[data-theme="popeye"]`, `[data-theme="line"]`, `[data-theme="dark"]`, and `[data-theme="light"]`
 3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
-4. The hamburger menu contains an expandable theme switcher with POPEYE, Original, and Midnight options
+4. The hamburger menu contains an expandable theme switcher with POPEYE, LINE, Original, and Midnight options
 5. Dark mode uses true black (#000000) for AMOLED displays
 6. The SVG logo uses `currentColor`, so it adapts automatically
 

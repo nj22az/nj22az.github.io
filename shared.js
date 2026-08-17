@@ -30,6 +30,13 @@
       browserColor: "#343ec9"
     },
     {
+      id: "line",
+      label: "LINE",
+      description: "Friendly messenger",
+      colors: ["#06c755", "#ffffff", "#000000"],
+      browserColor: "#06c755"
+    },
+    {
       id: "light",
       label: "Original",
       description: "Warm cream",
@@ -59,7 +66,8 @@
   }
 
   function applyTheme(theme) {
-    var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) || THEMES[1];
+    var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) ||
+      THEMES.find(function (item) { return item.id === "light"; });
     document.documentElement.setAttribute("data-theme", selectedTheme.id);
     localStorage.setItem(THEME_KEY, selectedTheme.id);
     var themeColor = $('meta[name="theme-color"]');
@@ -221,7 +229,8 @@
       });
     });
 
-    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[1]);
+    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) ||
+      THEMES.find(function (theme) { return theme.id === "light"; }));
 
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);
