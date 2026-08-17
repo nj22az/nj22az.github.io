@@ -1645,13 +1645,13 @@
 
 /* ── Popwave: vivid magenta and flat variety-store energy ── */
 [data-theme="popwave"] body {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.59;
-  letter-spacing: 0.085em;
+  letter-spacing: 0.04em;
   font-feature-settings: "palt";
   overflow-wrap: break-word;
-  word-break: break-word;
+  word-break: normal;
 }
 [data-theme="popwave"] ::selection { background: #f2157f; color: #ffffff; }
 
@@ -1728,6 +1728,7 @@
   padding-top: 9rem;
   background: #ffffff;
 }
+[data-theme="popwave"] .hero .container { max-width: 60rem; }
 [data-theme="popwave"] .hero-logo,
 [data-theme="popwave"] .about-logo { color: #f2157f; }
 [data-theme="popwave"] .hero-role {
@@ -1736,20 +1737,20 @@
   letter-spacing: 0.16em;
 }
 [data-theme="popwave"] .hero-tagline {
-  max-width: 920px;
+  max-width: 900px;
   margin-right: auto;
   margin-left: auto;
   color: #f2157f;
-  font-size: clamp(42px, 7vw, 76px);
+  font-size: clamp(40px, 6vw, 64px);
   font-weight: 900;
-  line-height: 1.04;
-  letter-spacing: 0.12em;
+  line-height: 1.08;
+  letter-spacing: 0.06em;
 }
 [data-theme="popwave"] .hero-sub,
 [data-theme="popwave"] .hero-credentials {
   color: #b30f5e;
   line-height: 1.59;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
 }
 [data-theme="popwave"] .hero-photo {
   max-width: 1260px;
@@ -1767,13 +1768,12 @@
 [data-theme="popwave"] .section-header { margin-bottom: 42px; }
 [data-theme="popwave"] .section-header h2,
 [data-theme="popwave"] .about-content h2,
-[data-theme="popwave"] .page-hero h1,
-[data-theme="popwave"] .post-card h2 {
+[data-theme="popwave"] .page-hero h1 {
   color: #f2157f;
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: clamp(28px, 4vw, 40px);
   font-weight: 900;
-  line-height: 1.08;
-  letter-spacing: 0.12em;
+  line-height: 1.12;
+  letter-spacing: 0.075em;
 }
 [data-theme="popwave"] .section-header p,
 [data-theme="popwave"] .about-bio,
@@ -1781,7 +1781,7 @@
 [data-theme="popwave"] .bento-card p,
 [data-theme="popwave"] .post-card p {
   line-height: 1.59;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.05em;
 }
 [data-theme="popwave"] .section-subtitle,
 [data-theme="popwave"] .section-label-bar,
@@ -1822,7 +1822,12 @@
   color: #f2157f !important;
 }
 [data-theme="popwave"] .bento-card h3,
-[data-theme="popwave"] .location-name { color: #f2157f; font-weight: 900; letter-spacing: 0.085em; }
+[data-theme="popwave"] .location-name { color: #b30f5e; font-weight: 900; letter-spacing: 0.06em; }
+[data-theme="popwave"] .bento-card-cta,
+[data-theme="popwave"] .journal-item h3,
+[data-theme="popwave"] .read-all a,
+[data-theme="popwave"] .location-label,
+[data-theme="popwave"] .location-status { color: #b30f5e; }
 [data-theme="popwave"] .bento-card:nth-child(4n+1) h3 { color: #ffffff; }
 [data-theme="popwave"] .tag,
 [data-theme="popwave"] .journal-tag {
@@ -1861,8 +1866,13 @@
 [data-theme="popwave"] .section-mint .about-logo,
 [data-theme="popwave"] .section-mint .section-label-bar,
 [data-theme="popwave"] .section-mint .about-content h2,
-[data-theme="popwave"] .section-mint .about-bio,
-[data-theme="popwave"] .section-mint .social-link { color: #ffffff; }
+[data-theme="popwave"] .section-mint .about-bio { color: #ffffff; }
+[data-theme="popwave"] .section-mint .social-link {
+  border-color: #ffffff;
+  border-radius: 0;
+  background: #ffffff;
+  color: #f2157f;
+}
 [data-theme="popwave"] .about-identity { background: #ffffff; }
 [data-theme="popwave"] .about-identity-copy strong,
 [data-theme="popwave"] .about-identity-copy span { color: #f2157f; }
@@ -1873,15 +1883,31 @@
 [data-theme="popwave"] .page-hero .page-eyebrow,
 [data-theme="popwave"] .page-hero-link { color: #ffffff; }
 [data-theme="popwave"] .posts-grid { gap: 5px; }
+[data-theme="popwave"] .post-card h2 {
+  color: #b30f5e;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+}
+[data-theme="popwave"] .post-card h2 a { color: inherit; }
+[data-theme="popwave"] .status-banner {
+  border: 2px solid #f2157f;
+  border-radius: 0;
+  background: #ffffff;
+}
+[data-theme="popwave"] .journal-item:hover { border-radius: 0; }
 [data-theme="popwave"] .site-footer { border-top: 0; background: #f2157f; color: #ffffff; }
 [data-theme="popwave"] .footer-inner,
 [data-theme="popwave"] .footer-links a,
 [data-theme="popwave"] .footer-nav a { color: #ffffff; }
 
 @media (max-width: 767px) {
-  [data-theme="popwave"] body { font-size: 15px; letter-spacing: 0.075em; }
+  [data-theme="popwave"] body { font-size: 15px; letter-spacing: 0.025em; }
   [data-theme="popwave"] .hero { padding-top: 7.5rem; }
-  [data-theme="popwave"] .hero-tagline { font-size: clamp(34px, 10vw, 48px); letter-spacing: 0.085em; }
+  [data-theme="popwave"] .hero-tagline { font-size: clamp(32px, 9vw, 44px); letter-spacing: 0.04em; }
+  [data-theme="popwave"] .hero-sub,
+  [data-theme="popwave"] .hero-credentials { letter-spacing: 0.035em; }
   [data-theme="popwave"] .hero-photo { padding: 0 14px; }
   [data-theme="popwave"] .section { padding-top: 52px; padding-bottom: 52px; }
   [data-theme="popwave"] .section-header h2,

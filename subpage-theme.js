@@ -18,7 +18,7 @@
     horizon:  ["#0065bd", "#00529a", "rgba(0,101,189,.11)", "#f3f5fa", "#ffffff", "#e8eef6", "#252d33", "#69747d", "rgba(0,101,189,.2)", "#37b1de"],
     swift:    ["#006bd6", "#0055ad", "rgba(0,122,255,.12)", "#fffbe8", "#ffffff", "#fff3ad", "#212121", "#666050", "rgba(33,33,33,.2)", "#ffd700"],
     botanical:["#7a6500", "#5f4f00", "rgba(255,213,0,.2)", "#fafaef", "#ffffff", "#f0f0e2", "#272727", "#69695f", "rgba(39,39,39,.18)", "#ffd500"],
-    popwave:  ["#f2157f", "#d80f70", "rgba(242,21,127,.12)", "#ffffff", "#ffffff", "#f3f3f3", "#f2157f", "#a70e56", "rgba(242,21,127,.24)", "#f2157f"]
+    popwave:  ["#f2157f", "#d80f70", "rgba(242,21,127,.12)", "#ffffff", "#ffffff", "#f3f3f3", "#70133e", "#87546a", "rgba(242,21,127,.24)", "#f2157f"]
   };
 
   function applySiteTheme(themeId) {
