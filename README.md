@@ -35,7 +35,7 @@ python3 -m http.server 8000
 ├── index.html              Main portal (hero, schedule, projects, journal, about, locations)
 ├── blog/index.html         Blog page (WordPress API)
 ├── config.js               All site data, projects, icons, logo, schedule
-├── shared.js               Shared nav, footer, theme toggle
+├── shared.js               Shared nav, footer, expandable theme switcher
 ├── styles.css              CSS entry point — imports modular files from css/
 ├── css/                    Modular CSS files (tokens, nav, hero, sections, bento, etc.)
 ├── _posts/                 Markdown blog post archive
@@ -50,9 +50,9 @@ python3 -m http.server 8000
 ## How the Theme Works
 
 1. `<html data-theme="light">` is set by default (warm cream)
-2. CSS uses custom properties scoped to `[data-theme="dark"]` and `[data-theme="light"]`
+2. CSS uses custom properties scoped to `[data-theme="popeye"]`, `[data-theme="dark"]`, and `[data-theme="light"]`
 3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
-4. A sun/moon toggle button in the top nav switches the theme
+4. The hamburger menu contains an expandable theme switcher with POPEYE, Original, and Midnight options
 5. Dark mode uses true black (#000000) for AMOLED displays
 6. The SVG logo uses `currentColor`, so it adapts automatically
 

@@ -1,5 +1,5 @@
 /**
- * shared.js — Navigation, footer, theme toggle, smooth scrolling.
+ * shared.js — Navigation, footer, theme switcher, smooth scrolling.
  * Include config.js before this file on every page.
  */
 
@@ -21,6 +21,29 @@
 
   var THEME_KEY = "nj-theme";
   var DESIGN_VER = "nj-design-v2";
+  var THEMES = [
+    {
+      id: "popeye",
+      label: "POPEYE",
+      description: "Cobalt editorial",
+      colors: ["#343ec9", "#ffffff", "#3affff"],
+      browserColor: "#343ec9"
+    },
+    {
+      id: "light",
+      label: "Original",
+      description: "Warm cream",
+      colors: ["#f5f0e8", "#3ea88c", "#d4a574"],
+      browserColor: "#f5f0e8"
+    },
+    {
+      id: "dark",
+      label: "Midnight",
+      description: "Dark studio",
+      colors: ["#000000", "#5ec4a6", "#e8e2d8"],
+      browserColor: "#000000"
+    }
+  ];
 
   // One-time migration: reset dark preference from old design
   if (!localStorage.getItem(DESIGN_VER)) {
@@ -30,22 +53,29 @@
 
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
-    if (stored === "light" || stored === "dark") return stored;
+    if (THEMES.some(function (theme) { return theme.id === stored; })) return stored;
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
     return "light";
   }
 
   function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(THEME_KEY, theme);
-    updateToggleIcon(theme);
+    var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) || THEMES[1];
+    document.documentElement.setAttribute("data-theme", selectedTheme.id);
+    localStorage.setItem(THEME_KEY, selectedTheme.id);
+    var themeColor = $('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", selectedTheme.browserColor);
+    updateThemeControls(selectedTheme);
   }
 
-  function updateToggleIcon(theme) {
-    var btn = $("#theme-toggle");
-    if (!btn) return;
-    btn.innerHTML = theme === "dark" ? icon("sun") : icon("moon");
-    btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  function updateThemeControls(selectedTheme) {
+    var currentLabel = $("#theme-current");
+    if (currentLabel) currentLabel.textContent = selectedTheme.label;
+
+    document.querySelectorAll(".theme-option").forEach(function (button) {
+      var isActive = button.getAttribute("data-theme-value") === selectedTheme.id;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-checked", isActive ? "true" : "false");
+    });
   }
 
   applyTheme(getTheme());
@@ -73,10 +103,7 @@
       '<div class="nav-inner">' +
         '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
         '<div class="nav-actions">' +
-          '<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">' +
-            icon(getTheme() === "dark" ? "sun" : "moon") +
-          '</button>' +
-          '<button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu">' +
+          '<button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">' +
             icon("menu") +
           '</button>' +
         '</div>' +
@@ -97,9 +124,40 @@
       '</a>';
     }).join("");
 
+    var themeOptions = THEMES.map(function (theme, index) {
+      var swatches = theme.colors.map(function (color) {
+        return '<span class="theme-swatch" style="background:' + color + '"></span>';
+      }).join("");
+
+      return '<button class="theme-option" type="button" role="radio" aria-checked="false" data-theme-value="' + theme.id + '">' +
+        '<span class="theme-option-number">' + String(index + 1).padStart(2, "0") + '</span>' +
+        '<span class="theme-option-copy">' +
+          '<span class="theme-option-name">' + theme.label + '</span>' +
+          '<span class="theme-option-description">' + theme.description + '</span>' +
+        '</span>' +
+        '<span class="theme-swatches" aria-hidden="true">' + swatches + '</span>' +
+        '<span class="theme-option-check" aria-hidden="true"></span>' +
+      '</button>';
+    }).join("");
+
     overlay.innerHTML =
       '<div class="menu-overlay-body">' +
         menuRows +
+        '<div class="menu-theme">' +
+          '<button id="theme-disclosure" class="theme-disclosure" type="button" aria-expanded="false" aria-controls="theme-options">' +
+            '<span class="theme-disclosure-main">' +
+              '<span class="theme-disclosure-mark" aria-hidden="true"><i></i><i></i><i></i></span>' +
+              '<span class="theme-disclosure-copy">' +
+                '<span class="theme-disclosure-label">Theme</span>' +
+                '<span id="theme-current" class="theme-disclosure-value"></span>' +
+              '</span>' +
+            '</span>' +
+            '<span class="theme-chevron" aria-hidden="true"></span>' +
+          '</button>' +
+          '<div id="theme-options" class="theme-options">' +
+            '<div class="theme-options-inner" role="radiogroup" aria-label="Theme">' + themeOptions + '</div>' +
+          '</div>' +
+        '</div>' +
       '</div>';
 
     document.body.appendChild(overlay);
@@ -111,6 +169,13 @@
     document.body.appendChild(backdrop);
 
     var hamburger = $("#nav-hamburger");
+    var themeDisclosure = $("#theme-disclosure");
+    var themeOptionsPanel = $("#theme-options");
+
+    function closeThemeSwitcher() {
+      themeOptionsPanel.classList.remove("open");
+      themeDisclosure.setAttribute("aria-expanded", "false");
+    }
 
     function toggleMenu() {
       var isOpen = overlay.classList.contains("open");
@@ -118,16 +183,24 @@
         overlay.classList.remove("open");
         backdrop.classList.remove("open");
         hamburger.innerHTML = icon("menu");
+        hamburger.setAttribute("aria-label", "Open menu");
+        hamburger.setAttribute("aria-expanded", "false");
+        closeThemeSwitcher();
       } else {
         overlay.classList.add("open");
         backdrop.classList.add("open");
         hamburger.innerHTML = icon("close");
+        hamburger.setAttribute("aria-label", "Close menu");
+        hamburger.setAttribute("aria-expanded", "true");
       }
     }
     function closeMenu() {
       overlay.classList.remove("open");
       backdrop.classList.remove("open");
       hamburger.innerHTML = icon("menu");
+      hamburger.setAttribute("aria-label", "Open menu");
+      hamburger.setAttribute("aria-expanded", "false");
+      closeThemeSwitcher();
     }
 
     hamburger.addEventListener("click", toggleMenu);
@@ -137,9 +210,18 @@
       link.addEventListener("click", closeMenu);
     });
 
-    $("#theme-toggle").addEventListener("click", function () {
-      applyTheme(getTheme() === "dark" ? "light" : "dark");
+    themeDisclosure.addEventListener("click", function () {
+      var isOpen = themeOptionsPanel.classList.toggle("open");
+      themeDisclosure.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
+
+    themeOptionsPanel.querySelectorAll(".theme-option").forEach(function (button) {
+      button.addEventListener("click", function () {
+        applyTheme(button.getAttribute("data-theme-value"));
+      });
+    });
+
+    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[1]);
 
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);

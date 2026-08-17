@@ -3,6 +3,7 @@
  * Warm organic design inspired by c-morinosato.com
  * Modular CSS — each concern in its own file.
  */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400&family=Zen+Kaku+Gothic+New:wght@400&display=swap");
 @import url("css/tokens.css");
 @import url("css/nav.css");
 @import url("css/hero.css");
@@ -14,3 +15,4 @@
 @import url("css/locations.css");
 @import url("css/schedule.css");
 @import url("css/buttons.css");
+@import url("css/themes.css");

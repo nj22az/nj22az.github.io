@@ -1,0 +1,167 @@
+/*
+ * Theme-specific visual systems.
+ * POPEYE translates the cobalt editorial brief while preserving site content.
+ */
+
+[data-theme="popeye"] body {
+  font-size: 14.4px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  font-feature-settings: "palt";
+}
+[data-theme="popeye"] ::selection { background: #3affff; color: #002184; }
+
+[data-theme="popeye"] .site-nav {
+  border-bottom-color: #ffffff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme="popeye"] .site-nav.scrolled { box-shadow: none; }
+[data-theme="popeye"] .nav-brand { color: #ffffff; }
+[data-theme="popeye"] .nav-brand:hover { color: #ff9000; }
+[data-theme="popeye"] .nav-hamburger {
+  width: 46px; height: 46px;
+  border: 1px solid #ffffff;
+  border-radius: 24px;
+  background: #ffffff;
+  color: #343ec9;
+}
+[data-theme="popeye"] .nav-hamburger:hover { background: #3affff; }
+
+[data-theme="popeye"] .menu-overlay {
+  border-color: #343ec9;
+  border-radius: 0 24px 5px 0;
+  box-shadow: none;
+}
+[data-theme="popeye"] .menu-row,
+[data-theme="popeye"] .theme-option {
+  border: 1px solid #343ec9;
+  border-radius: 0 5px 5px 0;
+  background: #ffffff;
+  color: #343ec9;
+  font-weight: 400;
+}
+[data-theme="popeye"] .menu-row:nth-child(even),
+[data-theme="popeye"] .theme-option:nth-child(even) { border-radius: 5px 0 0 5px; }
+[data-theme="popeye"] .menu-row:hover,
+[data-theme="popeye"] .theme-option:hover,
+[data-theme="popeye"] .theme-option.active {
+  background: #343ec9;
+  color: #ffffff;
+  box-shadow: none;
+  transform: none;
+}
+[data-theme="popeye"] .menu-row-icon {
+  border-color: currentColor !important;
+  border-radius: 24px;
+  background: transparent !important;
+  color: currentColor !important;
+}
+[data-theme="popeye"] .theme-disclosure {
+  border-color: #343ec9;
+  border-radius: 24px;
+  background: #343ec9;
+  color: #ffffff;
+}
+[data-theme="popeye"] .theme-disclosure:hover { background: #4350ff; }
+[data-theme="popeye"] .theme-disclosure-label,
+[data-theme="popeye"] .theme-disclosure-value { color: #ffffff; font-weight: 400; }
+[data-theme="popeye"] .theme-option-name { font-weight: 400; }
+[data-theme="popeye"] .theme-option:hover .theme-option-description,
+[data-theme="popeye"] .theme-option.active .theme-option-description,
+[data-theme="popeye"] .theme-option:hover .theme-option-number,
+[data-theme="popeye"] .theme-option.active .theme-option-number { color: #ffffff; }
+[data-theme="popeye"] .theme-option.active .theme-option-check::after { background: #3affff; }
+
+[data-theme="popeye"] .hero { padding-top: 6rem; }
+[data-theme="popeye"] .hero-logo { color: #ff9000; }
+[data-theme="popeye"] .hero-role,
+[data-theme="popeye"] .hero-tagline,
+[data-theme="popeye"] .section-header h2,
+[data-theme="popeye"] .about-content h2,
+[data-theme="popeye"] .bento-card h3,
+[data-theme="popeye"] .location-name,
+[data-theme="popeye"] .journal-item h3 { font-weight: 400; }
+[data-theme="popeye"] .hero-tagline {
+  font-size: clamp(2.4rem, 7vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.0667em;
+}
+[data-theme="popeye"] .hero-sub,
+[data-theme="popeye"] .section-header p,
+[data-theme="popeye"] .about-bio { line-height: 1.5; }
+
+[data-theme="popeye"] .section { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+[data-theme="popeye"] .section-header { margin-bottom: 2rem; }
+[data-theme="popeye"] .section-divider { border-top-style: solid; border-top-width: 1px; opacity: 1; }
+[data-theme="popeye"] .decor-blob { display: none; }
+
+[data-theme="popeye"] .bento-grid { gap: 0; }
+[data-theme="popeye"] .bento-card,
+[data-theme="popeye"] .location-card,
+[data-theme="popeye"] .post-card,
+[data-theme="popeye"] .schedule-frame,
+[data-theme="popeye"] .frame {
+  border: 1px solid #343ec9;
+  border-radius: 0 5px 5px 0;
+  box-shadow: none;
+}
+[data-theme="popeye"] .bento-card:nth-child(even),
+[data-theme="popeye"] .location-card:nth-child(even),
+[data-theme="popeye"] .post-card:nth-child(even) { border-radius: 5px 0 0 5px; }
+[data-theme="popeye"] .bento-card:hover,
+[data-theme="popeye"] .location-card:hover,
+[data-theme="popeye"] .post-card:hover { box-shadow: none; transform: none; background: #f5f5f5; }
+[data-theme="popeye"] .page-hero h1,
+[data-theme="popeye"] .post-card h2,
+[data-theme="popeye"] .post-link { font-weight: 400; }
+[data-theme="popeye"] .post-card p { line-height: 1.5; }
+[data-theme="popeye"] .bento-icon { border-radius: 5px; }
+[data-theme="popeye"] .tag { border-radius: 5px 5px 0 0; }
+
+[data-theme="popeye"] .btn-primary,
+[data-theme="popeye"] .btn-secondary,
+[data-theme="popeye"] .journal-tag {
+  min-height: 44px;
+  border-width: 1px;
+  border-radius: 24px;
+  font-weight: 400;
+}
+[data-theme="popeye"] .btn-primary {
+  border: 1px solid #343ec9;
+  background: #ffffff;
+  color: #343ec9;
+}
+[data-theme="popeye"] .btn-primary:hover { background: #343ec9; color: #ffffff; box-shadow: none; }
+
+[data-theme="popeye"] .schedule-frame { background: #002184; color: #ffffff; }
+[data-theme="popeye"] .schedule-frame .schedule-week,
+[data-theme="popeye"] .schedule-frame .schedule-location-town { color: #3affff; }
+[data-theme="popeye"] .schedule-frame .schedule-month,
+[data-theme="popeye"] .schedule-frame .schedule-location-country,
+[data-theme="popeye"] .schedule-frame .schedule-note { color: rgba(255, 255, 255, 0.72); }
+[data-theme="popeye"] .schedule-frame .schedule-header { border-bottom-color: #3affff; }
+[data-theme="popeye"] .schedule-frame .schedule-day,
+[data-theme="popeye"] .schedule-frame .schedule-nav-btn,
+[data-theme="popeye"] .schedule-frame .schedule-legend,
+[data-theme="popeye"] .schedule-frame .schedule-popup { background: #ffffff; }
+[data-theme="popeye"] .schedule-frame .schedule-day.today {
+  background: #3affff;
+  border-color: #3affff;
+  box-shadow: none;
+}
+[data-theme="popeye"] .schedule-frame .schedule-day.today .schedule-day-name,
+[data-theme="popeye"] .schedule-frame .schedule-day.today .schedule-day-num { color: #002184; }
+
+[data-theme="popeye"] .site-footer {
+  border-top-color: #ffffff;
+  background: #343ec9;
+  color: #ffffff;
+}
+[data-theme="popeye"] .footer-inner,
+[data-theme="popeye"] .footer-links a { color: #ffffff; }
+
+@media (max-width: 640px) {
+  [data-theme="popeye"] .section { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+}

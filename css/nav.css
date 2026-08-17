@@ -38,17 +38,6 @@
 
 .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
 
-/* ── Theme toggle ── */
-.theme-toggle {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  color: var(--ink-light);
-  transition: color 0.2s, background 0.2s;
-}
-.theme-toggle:hover { color: var(--accent); background: var(--accent-glow); }
-.theme-toggle svg { width: 18px; height: 18px; }
-
 /* ── Green circle hamburger button ── */
 .nav-hamburger {
   width: 48px; height: 48px;
@@ -183,6 +172,126 @@
 
 /* Hide arrow in card mode */
 .menu-row-arrow { display: none; }
+
+/* ── Expandable theme switcher ── */
+.menu-theme {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+}
+
+.theme-disclosure {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface-raised);
+  color: var(--ink);
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+.theme-disclosure:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+
+.theme-disclosure-main { display: flex; align-items: center; gap: 0.75rem; }
+.theme-disclosure-mark {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+}
+.theme-disclosure-mark i { display: block; width: 11px; height: 100%; }
+.theme-disclosure-mark i:nth-child(1) { background: #343ec9; }
+.theme-disclosure-mark i:nth-child(2) { background: #ffffff; }
+.theme-disclosure-mark i:nth-child(3) { background: #3affff; }
+
+.theme-disclosure-label,
+.theme-disclosure-value,
+.theme-option-name,
+.theme-option-description { display: block; }
+.theme-disclosure-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.theme-disclosure-value { margin-top: 0.3rem; font-size: 0.8125rem; line-height: 1; }
+
+.theme-chevron {
+  width: 9px; height: 9px;
+  margin-right: 0.35rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.2s ease;
+}
+.theme-disclosure[aria-expanded="true"] .theme-chevron { transform: rotate(225deg) translate(-2px, -2px); }
+
+.theme-options {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 0.22s ease, opacity 0.18s ease, visibility 0s 0.22s;
+}
+.theme-options.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.theme-options-inner {
+  display: grid;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+.theme-options.open .theme-options-inner { padding-top: 0.5rem; }
+
+.theme-option {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface-card);
+  color: var(--ink-light);
+  text-align: left;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.theme-option:hover,
+.theme-option.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+.theme-option-number { font-size: 0.625rem; letter-spacing: 0.12em; color: var(--ink-faint); }
+.theme-option-name { font-size: 0.8125rem; font-weight: 700; line-height: 1.1; }
+.theme-option-description { margin-top: 0.2rem; font-size: 0.625rem; line-height: 1.2; color: var(--ink-faint); }
+
+.theme-swatches {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--border-hover);
+  border-radius: 9999px;
+}
+.theme-swatch { display: block; width: 10px; height: 22px; }
+.theme-option-check {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+}
+.theme-option.active .theme-option-check::after {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
 
 /* ── Click-outside backdrop ── */
 .menu-backdrop {
