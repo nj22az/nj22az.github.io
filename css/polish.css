@@ -281,6 +281,35 @@ main { overflow: clip; }
 [data-theme="popwave"] .footer-nav a:hover,
 [data-theme="popwave"] .footer-links a:hover { color: #ffffff; }
 
+/* Keep Popwave's About icons visible before interaction. */
+html[data-theme="popwave"] #about .social-links .social-link,
+html[data-theme="popwave"] #about .social-links .social-link:visited {
+  border: 2px solid #ffffff !important;
+  border-radius: 0;
+  background: #ffffff !important;
+  color: #f2157f !important;
+  opacity: 1;
+}
+html[data-theme="popwave"] #about .social-links .social-link svg,
+html[data-theme="popwave"] #about .social-links .social-link path {
+  color: #f2157f !important;
+  stroke: #f2157f !important;
+  opacity: 1;
+}
+html[data-theme="popwave"] #about .social-links .social-link:hover,
+html[data-theme="popwave"] #about .social-links .social-link:focus-visible {
+  border-color: #ffffff !important;
+  background: #d80f70 !important;
+  color: #ffffff !important;
+}
+html[data-theme="popwave"] #about .social-links .social-link:hover svg,
+html[data-theme="popwave"] #about .social-links .social-link:hover path,
+html[data-theme="popwave"] #about .social-links .social-link:focus-visible svg,
+html[data-theme="popwave"] #about .social-links .social-link:focus-visible path {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
 /* ── Journal page ── */
 .page-eyebrow {
   margin-bottom: 0.75rem;
