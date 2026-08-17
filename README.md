@@ -11,9 +11,9 @@ My personal website, where I share about my life.
 | Layer | Technology |
 |-------|-----------|
 | Markup | Semantic HTML5, multi-page |
-| Styling | Modular CSS with warm cream/teal-green design tokens |
+| Styling | Modular CSS with ten switchable visual systems |
 | Scripts | Vanilla JavaScript, no frameworks |
-| Typography | [Nunito](https://fonts.google.com/specimen/Nunito) (display + body) |
+| Typography | Theme-specific Google Fonts and system fallbacks |
 | Icons | Inline SVG paths (Lucide / SF Symbols aesthetic) |
 | Logo | Inline SVG rubber-stamp seal (theme-adaptive via `currentColor`) |
 | Hosting | GitHub Pages (auto-deploys on push) |
@@ -49,10 +49,10 @@ python3 -m http.server 8000
 
 ## How the Theme Works
 
-1. `<html data-theme="popeye">` is the first-load default
-2. CSS uses custom properties scoped to `[data-theme="popeye"]`, `[data-theme="line"]`, `[data-theme="sanrio"]`, and `[data-theme="kokuyo"]`
+1. `<html data-theme="cobalt">` is the first-load default
+2. CSS uses custom properties scoped to each theme ID
 3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
-4. The hamburger menu contains an expandable theme switcher with POPEYE, LINE, Sanrio, and KOKUYO options
+4. The hamburger menu contains an expandable switcher with ten brand-neutral options: Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, and Botanical
 5. The SVG logo uses `currentColor`, so it adapts automatically
 
 ## How the Logo Works
@@ -87,7 +87,7 @@ iconName: "M... SVG path data ...",
 
 1. Create `new-page/index.html`
 2. Use the same HTML shell as existing pages:
-   - `<html lang="en" data-theme="light">`
+   - `<html lang="en" data-theme="cobalt">`
    - `<nav id="site-nav" class="site-nav"></nav>` in body
    - `<footer id="site-footer" class="site-footer"></footer>`
    - Load `config.js` then `shared.js`

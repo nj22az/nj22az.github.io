@@ -20,39 +20,81 @@
   /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
-  var DESIGN_VER = "nj-design-v2";
+  var DESIGN_VER = "nj-design-v3";
   var THEMES = [
     {
-      id: "popeye",
-      label: "POPEYE",
+      id: "cobalt",
+      label: "Cobalt",
       description: "Cobalt editorial",
       colors: ["#343ec9", "#ffffff", "#3affff"],
       browserColor: "#343ec9"
     },
     {
-      id: "line",
-      label: "LINE",
-      description: "Friendly messenger",
+      id: "mossy",
+      label: "Mossy",
+      description: "Friendly green",
       colors: ["#06c755", "#ffffff", "#000000"],
       browserColor: "#06c755"
     },
     {
-      id: "sanrio",
-      label: "Sanrio",
+      id: "cute",
+      label: "Cute",
       description: "Pastel friendship",
       colors: ["#8bd0dd", "#e383a8", "#cda1dc"],
       browserColor: "#8bd0dd"
     },
     {
-      id: "kokuyo",
-      label: "KOKUYO",
+      id: "colorgrid",
+      label: "Colorgrid",
       description: "Modular curiosity",
       colors: ["#5dadd1", "#3eb088", "#e76654"],
       browserColor: "#5dadd1"
+    },
+    {
+      id: "crimson",
+      label: "Crimson",
+      description: "Confident red",
+      colors: ["#f00000", "#faf9f5", "#e6001e"],
+      browserColor: "#f00000"
+    },
+    {
+      id: "inkcraft",
+      label: "Inkcraft",
+      description: "Precise stationery",
+      colors: ["#002f9e", "#e9edf1", "#ffffff"],
+      browserColor: "#002f9e"
+    },
+    {
+      id: "clarity",
+      label: "Clarity",
+      description: "Quiet precision",
+      colors: ["#333333", "#f2f2f2", "#ffffff"],
+      browserColor: "#333333"
+    },
+    {
+      id: "horizon",
+      label: "Horizon",
+      description: "Editorial blue",
+      colors: ["#0065bd", "#f3f5fa", "#37b1de"],
+      browserColor: "#0065bd"
+    },
+    {
+      id: "swift",
+      label: "Swift",
+      description: "Energetic yellow",
+      colors: ["#ffd700", "#007aff", "#212121"],
+      browserColor: "#ffd700"
+    },
+    {
+      id: "botanical",
+      label: "Botanical",
+      description: "Warm and vivid",
+      colors: ["#ffd500", "#fafaef", "#272727"],
+      browserColor: "#ffd500"
     }
   ];
 
-  // One-time migration: reset dark preference from old design
+  // One-time migration: clear obsolete theme IDs from earlier collections.
   if (!localStorage.getItem(DESIGN_VER)) {
     localStorage.removeItem(THEME_KEY);
     localStorage.setItem(DESIGN_VER, "1");
@@ -86,7 +128,7 @@
 
   applyTheme(getTheme());
 
-  /* ── Navigation — green circle hamburger + overlay ── */
+  /* ── Navigation — theme-aware hamburger + overlay ── */
 
   var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user", locations: "mappin" };
 

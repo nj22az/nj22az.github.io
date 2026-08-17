@@ -1,5 +1,5 @@
 /*
- * Navigation — green circle hamburger + compact dropdown menu
+ * Navigation — theme-aware hamburger + compact dropdown menu
  */
 
 .site-nav {
@@ -38,7 +38,7 @@
 
 .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
 
-/* ── Green circle hamburger button ── */
+/* ── Hamburger button ── */
 .nav-hamburger {
   width: 48px; height: 48px;
   border-radius: 50%;

@@ -1,5 +1,5 @@
 /*
- * Design Tokens — Warm cream + teal green (c-morinosato style)
+ * Shared design tokens with ten independent theme scopes.
  */
 
 /* ── Reset ── */
@@ -35,8 +35,8 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --max-w:          1120px;
 }
 
-/* ── POPEYE theme ── */
-[data-theme="popeye"] {
+/* ── Cobalt theme ── */
+[data-theme="cobalt"] {
   --ink:            #343ec9;
   --ink-light:      #343ec9;
   --ink-faint:      #3b47e7;
@@ -58,8 +58,8 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --font-body:      "DM Sans", "Zen Kaku Gothic New", sans-serif;
 }
 
-/* ── LINE theme ── */
-[data-theme="line"] {
+/* ── Mossy theme ── */
+[data-theme="mossy"] {
   --ink:            #000000;
   --ink-light:      #666666;
   --ink-faint:      #999999;
@@ -81,8 +81,8 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --font-body:      SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
 }
 
-/* ── Sanrio theme ── */
-[data-theme="sanrio"] {
+/* ── Cute theme ── */
+[data-theme="cute"] {
   --ink:            #777777;
   --ink-light:      #777777;
   --ink-faint:      #9a9a9a;
@@ -105,8 +105,8 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --max-w:          1200px;
 }
 
-/* ── KOKUYO theme ── */
-[data-theme="kokuyo"] {
+/* ── Colorgrid theme ── */
+[data-theme="colorgrid"] {
   --ink:            #313131;
   --ink-light:      #7a7a7a;
   --ink-faint:      #a4a4a4;
@@ -127,6 +127,150 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --font-display:   Inter, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
   --font-body:      Inter, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
   --max-w:          1280px;
+}
+
+/* ── Crimson theme ── */
+[data-theme="crimson"] {
+  --ink:            #333333;
+  --ink-light:      #555555;
+  --ink-faint:      #777777;
+  --surface:        #ffffff;
+  --surface-raised: #faf9f5;
+  --surface-card:   #ffffff;
+  --surface-hover:  #fff3f3;
+  --surface-mint:   #faf9f5;
+  --border:         #d3d3d4;
+  --border-hover:   #f00000;
+  --accent:         #f00000;
+  --accent-hover:   #e6001e;
+  --accent-glow:    rgba(240, 0, 0, 0.08);
+  --divider:        #f00000;
+  --shadow-card:    none;
+  --shadow-lift:    none;
+  --nav-bg:         rgba(255, 255, 255, 0.98);
+  --font-display:   Roboto, "Noto Sans JP", sans-serif;
+  --font-body:      Roboto, "Noto Sans JP", sans-serif;
+  --max-w:          1120px;
+}
+
+/* ── Inkcraft theme ── */
+[data-theme="inkcraft"] {
+  --ink:            #000000;
+  --ink-light:      #333333;
+  --ink-faint:      #666666;
+  --surface:        #ffffff;
+  --surface-raised: #e9edf1;
+  --surface-card:   #ffffff;
+  --surface-hover:  #f6f7f9;
+  --surface-mint:   #d7e8f2;
+  --border:         #d7d7d7;
+  --border-hover:   #002f9e;
+  --accent:         #002f9e;
+  --accent-hover:   #001e5a;
+  --accent-glow:    rgba(0, 47, 158, 0.08);
+  --divider:        #002f9e;
+  --shadow-card:    none;
+  --shadow-lift:    none;
+  --nav-bg:         rgba(255, 255, 255, 0.98);
+  --font-display:   "Noto Sans JP", sans-serif;
+  --font-body:      "Noto Sans JP", sans-serif;
+  --max-w:          1180px;
+}
+
+/* ── Clarity theme ── */
+[data-theme="clarity"] {
+  --ink:            #1a1a1a;
+  --ink-light:      #666666;
+  --ink-faint:      #888888;
+  --surface:        #f2f2f2;
+  --surface-raised: #ffffff;
+  --surface-card:   #ffffff;
+  --surface-hover:  #e8e8e8;
+  --surface-mint:   #ffffff;
+  --border:         #cccccc;
+  --border-hover:   #333333;
+  --accent:         #333333;
+  --accent-hover:   #1a1a1a;
+  --accent-glow:    rgba(51, 51, 51, 0.07);
+  --divider:        #333333;
+  --shadow-card:    none;
+  --shadow-lift:    none;
+  --nav-bg:         rgba(242, 242, 242, 0.98);
+  --font-display:   "Noto Sans JP", "Noto Sans Display", sans-serif;
+  --font-body:      "Noto Sans JP", "Noto Sans Display", sans-serif;
+  --max-w:          1344px;
+}
+
+/* ── Horizon theme ── */
+[data-theme="horizon"] {
+  --ink:            #2d3133;
+  --ink-light:      #5f6365;
+  --ink-faint:      #838484;
+  --surface:        #ffffff;
+  --surface-raised: #f3f5fa;
+  --surface-card:   #ffffff;
+  --surface-hover:  #edf3fa;
+  --surface-mint:   #f3f5fa;
+  --border:         #d8d8db;
+  --border-hover:   #0065bd;
+  --accent:         #0065bd;
+  --accent-hover:   #0e8bd1;
+  --accent-glow:    rgba(0, 101, 189, 0.08);
+  --divider:        #0065bd;
+  --shadow-card:    none;
+  --shadow-lift:    none;
+  --nav-bg:         rgba(255, 255, 255, 0.96);
+  --font-display:   Inter, "Zen Kaku Gothic New", sans-serif;
+  --font-body:      "Zen Kaku Gothic New", sans-serif;
+  --max-w:          1200px;
+}
+
+/* ── Swift theme ── */
+[data-theme="swift"] {
+  --ink:            #212121;
+  --ink-light:      #4d4d4d;
+  --ink-faint:      #666666;
+  --surface:        #ffffff;
+  --surface-raised: #fff8cd;
+  --surface-card:   #ffffff;
+  --surface-hover:  #fff4a3;
+  --surface-mint:   #ffd700;
+  --border:         #212121;
+  --border-hover:   #007aff;
+  --accent:         #007aff;
+  --accent-hover:   #005edb;
+  --accent-glow:    rgba(255, 215, 0, 0.28);
+  --divider:        #ffd700;
+  --shadow-card:    none;
+  --shadow-lift:    0 4px 0 #005edb;
+  --nav-bg:         rgba(255, 255, 255, 0.98);
+  --font-display:   "Noto Sans JP", sans-serif;
+  --font-body:      "Noto Sans JP", sans-serif;
+  --max-w:          1020px;
+}
+
+/* ── Botanical theme ── */
+[data-theme="botanical"] {
+  --ink:            #272727;
+  --ink-light:      #585858;
+  --ink-faint:      #77776f;
+  --surface:        #fafaef;
+  --surface-raised: #f0f0e2;
+  --surface-card:   #ffffff;
+  --surface-hover:  #f8f8f8;
+  --surface-mint:   #f0f0e2;
+  --border:         #e3e3e3;
+  --border-hover:   #ffd500;
+  --accent:         #ffd500;
+  --accent-hover:   #f2c900;
+  --accent-glow:    rgba(255, 213, 0, 0.18);
+  --divider:        #ffd500;
+  --shadow-card:    none;
+  --shadow-lift:    0 2px 8px rgba(0, 0, 0, 0.06);
+  --nav-bg:         rgba(255, 255, 255, 0.98);
+  --font-display:   "Noto Sans JP", "Yu Gothic", YuGothic, sans-serif;
+  --font-body:      "Noto Sans JP", "Yu Gothic", YuGothic, sans-serif;
+  --max-w:          1200px;
 }
 
 /* ── Body ── */
