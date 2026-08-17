@@ -342,3 +342,374 @@
   [data-theme="line"] .section { padding-top: 40px; padding-bottom: 40px; }
   [data-theme="line"] .bento-grid { gap: 16px; }
 }
+
+/* ── Sanrio: soft pastel category world ── */
+[data-theme="sanrio"] body {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.125em;
+  font-feature-settings: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+[data-theme="sanrio"] ::selection { background: #fdf5fa; color: #e383a8; }
+
+[data-theme="sanrio"] .site-nav { border-bottom-color: #e2f2f7; }
+[data-theme="sanrio"] .site-nav.scrolled { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); }
+[data-theme="sanrio"] .nav-brand { color: #71c6d6; }
+[data-theme="sanrio"] .nav-brand:hover { color: #e383a8; }
+[data-theme="sanrio"] .nav-hamburger {
+  width: 48px; height: 48px;
+  border-radius: 80px;
+  background: #8bd0dd;
+  color: #ffffff;
+}
+[data-theme="sanrio"] .nav-hamburger:hover { background: #71c6d6; transform: scale(1.04); }
+
+[data-theme="sanrio"] .menu-overlay {
+  border-color: #f0f9fa;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+[data-theme="sanrio"] .menu-overlay-body { gap: 8px; }
+[data-theme="sanrio"] .menu-row {
+  min-height: 98px;
+  border-radius: 80px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+[data-theme="sanrio"] .menu-row:nth-child(1) { background: #8bd0dd; }
+[data-theme="sanrio"] .menu-row:nth-child(2) { background: #e383a8; }
+[data-theme="sanrio"] .menu-row:nth-child(3) { background: #cda1dc; }
+[data-theme="sanrio"] .menu-row:nth-child(4) { background: #f2d36b; color: #777777; }
+[data-theme="sanrio"] .menu-row:nth-child(5) { background: #91dea9; }
+[data-theme="sanrio"] .menu-row:hover { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); transform: translateY(-2px); }
+[data-theme="sanrio"] .menu-row-icon {
+  border-color: currentColor !important;
+  border-radius: 80px;
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: currentColor !important;
+}
+
+[data-theme="sanrio"] .theme-disclosure {
+  min-height: 60px;
+  border-color: #e383a8;
+  border-radius: 80px;
+  background: #e383a8;
+  color: #ffffff;
+}
+[data-theme="sanrio"] .theme-disclosure:hover { background: #ec7996; }
+[data-theme="sanrio"] .theme-disclosure-label,
+[data-theme="sanrio"] .theme-disclosure-value { color: #ffffff; }
+[data-theme="sanrio"] .theme-disclosure-mark { border-color: rgba(255, 255, 255, 0.7); border-radius: 80px; }
+[data-theme="sanrio"] .theme-option {
+  min-height: 60px;
+  border-color: #e2f2f7;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #777777;
+}
+[data-theme="sanrio"] .theme-option:hover,
+[data-theme="sanrio"] .theme-option.active { border-color: #8bd0dd; background: #f0f9fa; color: #71c6d6; }
+[data-theme="sanrio"] .theme-option.active .theme-option-check::after { background: #e383a8; }
+
+[data-theme="sanrio"] .hero {
+  padding-top: 7.5rem;
+  background:
+    radial-gradient(circle at 12% 22%, rgba(205, 161, 220, 0.22) 0 7rem, transparent 7.1rem),
+    radial-gradient(circle at 88% 32%, rgba(242, 211, 107, 0.24) 0 8rem, transparent 8.1rem),
+    linear-gradient(180deg, #f0f9fa 0%, #ffffff 72%);
+}
+[data-theme="sanrio"] .hero-logo,
+[data-theme="sanrio"] .about-logo { color: #8bd0dd; }
+[data-theme="sanrio"] .hero-role { color: #e383a8; font-weight: 700; }
+[data-theme="sanrio"] .hero-tagline {
+  font-size: clamp(36px, 6vw, 58px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.083em;
+  color: #71c6d6;
+}
+[data-theme="sanrio"] .hero-sub { font-size: 15px; line-height: 1.8; }
+[data-theme="sanrio"] .hero-photo { max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 24px; }
+[data-theme="sanrio"] .hero-photo img { border-radius: 24px; }
+
+[data-theme="sanrio"] .section { padding-top: 64px; padding-bottom: 64px; }
+[data-theme="sanrio"] .section-alt { background: #f7f7f7; }
+[data-theme="sanrio"] .section-mint { background: linear-gradient(180deg, #ffffff 0%, #fdf5fa 100%); }
+[data-theme="sanrio"] .section-header { margin-bottom: 40px; }
+[data-theme="sanrio"] .section-header h2,
+[data-theme="sanrio"] .about-content h2,
+[data-theme="sanrio"] .page-hero h1 {
+  font-size: 22.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.083em;
+  color: #71c6d6;
+}
+[data-theme="sanrio"] .section-header p,
+[data-theme="sanrio"] .about-bio,
+[data-theme="sanrio"] .page-hero p { font-size: 15px; line-height: 1.8; letter-spacing: 0.125em; }
+[data-theme="sanrio"] .section-divider { border-top: 3px dotted #b5e5ef; opacity: 1; }
+[data-theme="sanrio"] .decor-blob { background: #e2f2f7; opacity: 0.55; }
+
+[data-theme="sanrio"] .bento-grid { gap: 16px; }
+[data-theme="sanrio"] .bento-card,
+[data-theme="sanrio"] .location-card,
+[data-theme="sanrio"] .post-card,
+[data-theme="sanrio"] .schedule-frame,
+[data-theme="sanrio"] .frame {
+  border: 1px solid #e2f2f7;
+  border-radius: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+[data-theme="sanrio"] .bento-card:nth-child(6n+1) { background: #f0f9fa; border-color: #b5e5ef; }
+[data-theme="sanrio"] .bento-card:nth-child(6n+2) { background: #fdf5fa; border-color: #f2cfe0; }
+[data-theme="sanrio"] .bento-card:nth-child(6n+3) { background: #faf6fc; border-color: #e4cdeb; }
+[data-theme="sanrio"] .bento-card:nth-child(6n+4) { background: #fffbea; border-color: #f2d36b; }
+[data-theme="sanrio"] .bento-card:nth-child(6n+5) { background: #f1fbf4; border-color: #91dea9; }
+[data-theme="sanrio"] .bento-card:nth-child(6n+6) { background: #fff4f4; border-color: #f08080; }
+[data-theme="sanrio"] .bento-card:hover,
+[data-theme="sanrio"] .location-card:hover,
+[data-theme="sanrio"] .post-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10); transform: translateY(-2px); }
+[data-theme="sanrio"] .bento-icon { border-radius: 80px; }
+[data-theme="sanrio"] .bento-card h3,
+[data-theme="sanrio"] .location-name,
+[data-theme="sanrio"] .post-card h2 { font-weight: 700; letter-spacing: 0.08em; color: #777777; }
+[data-theme="sanrio"] .bento-card p,
+[data-theme="sanrio"] .post-card p { line-height: 1.8; letter-spacing: 0.125em; }
+[data-theme="sanrio"] .tag { border-radius: 100px; font-weight: 700; }
+
+[data-theme="sanrio"] .btn-primary,
+[data-theme="sanrio"] .btn-secondary,
+[data-theme="sanrio"] .journal-tag {
+  min-height: 44px;
+  border-radius: 80px;
+  font-weight: 700;
+}
+[data-theme="sanrio"] .btn-primary { background: #8bd0dd; color: #ffffff; }
+[data-theme="sanrio"] .btn-primary:hover { background: #71c6d6; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); }
+[data-theme="sanrio"] .btn-secondary { border-color: #e383a8; color: #e383a8; background: #ffffff; }
+[data-theme="sanrio"] .btn-secondary:hover { border-color: #e383a8; color: #e383a8; background: #fdf5fa; }
+[data-theme="sanrio"] .read-all a { color: #e383a8; }
+
+[data-theme="sanrio"] .schedule-frame { background: #f0f9fa; border-color: #b5e5ef; }
+[data-theme="sanrio"] .schedule-day,
+[data-theme="sanrio"] .schedule-legend,
+[data-theme="sanrio"] .schedule-popup,
+[data-theme="sanrio"] .schedule-loc-dropdown { border-radius: 20px; }
+[data-theme="sanrio"] .schedule-day.today { background: #8bd0dd; box-shadow: none; }
+[data-theme="sanrio"] .location-card:nth-child(even),
+[data-theme="sanrio"] .post-card:nth-child(even) { background: #fdf5fa; border-color: #f2cfe0; }
+[data-theme="sanrio"] .site-footer { border-top-color: #e2f2f7; background: #fdf5fa; }
+
+@media (max-width: 767px) {
+  [data-theme="sanrio"] body { font-size: 15px; }
+  [data-theme="sanrio"] .hero-tagline { font-size: clamp(34px, 11vw, 48px); }
+  [data-theme="sanrio"] .section { padding-top: 40px; padding-bottom: 40px; }
+  [data-theme="sanrio"] .btn-primary,
+  [data-theme="sanrio"] .btn-secondary { width: 100%; justify-content: center; }
+}
+
+/* ── KOKUYO: modular category tiles ── */
+[data-theme="kokuyo"] body {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.41;
+  letter-spacing: normal;
+  font-feature-settings: "palt";
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+[data-theme="kokuyo"] ::selection { background: #ecf5d5; color: #313131; }
+
+[data-theme="kokuyo"] .site-nav { height: 64px; border-bottom-color: #d4d4d4; }
+[data-theme="kokuyo"] .site-nav.scrolled { box-shadow: none; }
+[data-theme="kokuyo"] .nav-brand { color: #313131; }
+[data-theme="kokuyo"] .nav-brand:hover { color: #5dadd1; }
+[data-theme="kokuyo"] .nav-hamburger {
+  width: 48px; height: 48px;
+  border-radius: 0;
+  background: #5dadd1;
+  color: #ffffff;
+}
+[data-theme="kokuyo"] .nav-hamburger:hover { background: #4d9fc4; transform: none; }
+
+[data-theme="kokuyo"] .menu-overlay {
+  border-color: #d4d4d4;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 8px;
+}
+[data-theme="kokuyo"] .menu-overlay-body { gap: 8px; }
+[data-theme="kokuyo"] .menu-row {
+  min-height: 112px;
+  border-radius: 0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+[data-theme="kokuyo"] .menu-row:nth-child(1) { background: #5dadd1; }
+[data-theme="kokuyo"] .menu-row:nth-child(2) { background: #3eb088; }
+[data-theme="kokuyo"] .menu-row:nth-child(3) { background: #e08bbf; }
+[data-theme="kokuyo"] .menu-row:nth-child(4) { background: #e76654; }
+[data-theme="kokuyo"] .menu-row:nth-child(5) { background: #dde5e7; color: #313131; }
+[data-theme="kokuyo"] .menu-row:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); transform: none; }
+[data-theme="kokuyo"] .menu-row-icon {
+  border-color: currentColor !important;
+  border-radius: 0;
+  background: transparent !important;
+  color: currentColor !important;
+}
+
+[data-theme="kokuyo"] .theme-disclosure {
+  min-height: 64px;
+  border-color: #313131;
+  border-radius: 0;
+  background: #313131;
+  color: #ffffff;
+}
+[data-theme="kokuyo"] .theme-disclosure:hover { background: #5dadd1; border-color: #5dadd1; }
+[data-theme="kokuyo"] .theme-disclosure-label,
+[data-theme="kokuyo"] .theme-disclosure-value { color: #ffffff; }
+[data-theme="kokuyo"] .theme-disclosure-mark { border-color: #ffffff; border-radius: 0; }
+[data-theme="kokuyo"] .theme-option {
+  min-height: 64px;
+  border-color: #d4d4d4;
+  border-radius: 0;
+  background: #eeeeee;
+  color: #313131;
+}
+[data-theme="kokuyo"] .theme-option:hover,
+[data-theme="kokuyo"] .theme-option.active { border-color: #5dadd1; background: #ffffff; color: #313131; }
+[data-theme="kokuyo"] .theme-option-name { font-weight: 500; }
+[data-theme="kokuyo"] .theme-option.active .theme-option-check::after { background: #5dadd1; }
+
+[data-theme="kokuyo"] .hero { padding-top: 8rem; background: #ffffff; }
+[data-theme="kokuyo"] .hero-logo,
+[data-theme="kokuyo"] .about-logo { color: #313131; }
+[data-theme="kokuyo"] .hero-role { color: #7a7a7a; font-weight: 500; }
+[data-theme="kokuyo"] .hero-tagline {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 24px;
+  border-bottom: 8px solid;
+  border-image: linear-gradient(90deg, #5dadd1 0 25%, #3eb088 25% 50%, #e08bbf 50% 75%, #e76654 75%) 1;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: normal;
+  color: #313131;
+}
+[data-theme="kokuyo"] .hero-sub { font-size: 17px; line-height: 1.41; }
+[data-theme="kokuyo"] .hero-photo { margin-top: 64px; }
+[data-theme="kokuyo"] .hero-photo img { border-radius: 0; }
+
+[data-theme="kokuyo"] .section { padding-top: 80px; padding-bottom: 80px; }
+[data-theme="kokuyo"] .section-alt { background: #eeeeee; }
+[data-theme="kokuyo"] .section-mint { background: #ecf5d5; }
+[data-theme="kokuyo"] .section-header { margin-bottom: 48px; text-align: left; }
+[data-theme="kokuyo"] .section-header h2,
+[data-theme="kokuyo"] .about-content h2,
+[data-theme="kokuyo"] .page-hero h1 {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.47;
+  letter-spacing: normal;
+  color: #313131;
+}
+[data-theme="kokuyo"] .section-header p,
+[data-theme="kokuyo"] .about-bio,
+[data-theme="kokuyo"] .page-hero p { font-size: 17px; line-height: 1.41; letter-spacing: normal; }
+[data-theme="kokuyo"] .section-header p { margin-left: 0; }
+[data-theme="kokuyo"] .section-divider { margin: 0; border-top: 1px solid #d4d4d4; opacity: 1; }
+[data-theme="kokuyo"] .decor-blob { display: none; }
+
+[data-theme="kokuyo"] .bento-grid { gap: 8px; }
+[data-theme="kokuyo"] .bento-card {
+  border: 0;
+  border-radius: 0;
+  padding: 32px;
+  box-shadow: none;
+  color: #ffffff;
+}
+[data-theme="kokuyo"] .bento-card:nth-child(6n+1) { background: #5dadd1; }
+[data-theme="kokuyo"] .bento-card:nth-child(6n+2) { background: #3eb088; }
+[data-theme="kokuyo"] .bento-card:nth-child(6n+3) { background: #e08bbf; }
+[data-theme="kokuyo"] .bento-card:nth-child(6n+4) { background: #e76654; }
+[data-theme="kokuyo"] .bento-card:nth-child(6n+5) { background: #dde5e7; color: #313131; }
+[data-theme="kokuyo"] .bento-card:nth-child(6n+6) { background: #e6e2cb; color: #313131; }
+[data-theme="kokuyo"] .bento-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); transform: none; }
+[data-theme="kokuyo"] .bento-card h3,
+[data-theme="kokuyo"] .bento-card p,
+[data-theme="kokuyo"] .bento-card .bento-arrow,
+[data-theme="kokuyo"] .bento-card .tag { color: currentColor; }
+[data-theme="kokuyo"] .bento-card h3 { font-size: 19px; font-weight: 500; line-height: 1.47; }
+[data-theme="kokuyo"] .bento-card p { font-size: 17px; line-height: 1.41; }
+[data-theme="kokuyo"] .bento-icon {
+  border: 1px solid currentColor !important;
+  border-radius: 0;
+  background: transparent !important;
+  color: currentColor !important;
+}
+[data-theme="kokuyo"] .tag { border-radius: 0; background: rgba(255, 255, 255, 0.18); font-weight: 500; }
+
+[data-theme="kokuyo"] .location-card,
+[data-theme="kokuyo"] .post-card,
+[data-theme="kokuyo"] .schedule-frame,
+[data-theme="kokuyo"] .frame {
+  border: 0;
+  border-radius: 0;
+  background: #eeeeee;
+  box-shadow: none;
+}
+[data-theme="kokuyo"] .location-card:nth-child(even),
+[data-theme="kokuyo"] .post-card:nth-child(even) { background: #dde5e7; }
+[data-theme="kokuyo"] .location-card:hover,
+[data-theme="kokuyo"] .post-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); transform: none; }
+[data-theme="kokuyo"] .location-name,
+[data-theme="kokuyo"] .post-card h2 { font-size: 19px; font-weight: 500; line-height: 1.47; }
+[data-theme="kokuyo"] .post-card p { font-size: 17px; line-height: 1.41; }
+
+[data-theme="kokuyo"] .btn-primary,
+[data-theme="kokuyo"] .btn-secondary,
+[data-theme="kokuyo"] .journal-tag {
+  min-height: 44px;
+  border-radius: 0;
+  font-size: 17px;
+  font-weight: 500;
+}
+[data-theme="kokuyo"] .btn-primary { background: #5dadd1; color: #ffffff; }
+[data-theme="kokuyo"] .btn-primary:hover { background: #4d9fc4; box-shadow: none; transform: none; }
+[data-theme="kokuyo"] .btn-secondary { border: 1px solid #d4d4d4; color: #313131; }
+[data-theme="kokuyo"] .btn-secondary:hover { border-color: #5dadd1; color: #313131; transform: none; }
+[data-theme="kokuyo"] .journal-item { border-bottom-color: #d4d4d4; }
+[data-theme="kokuyo"] .journal-item:hover { border-radius: 0; }
+
+[data-theme="kokuyo"] .schedule-day,
+[data-theme="kokuyo"] .schedule-legend,
+[data-theme="kokuyo"] .schedule-popup,
+[data-theme="kokuyo"] .schedule-loc-dropdown { border-radius: 0; }
+[data-theme="kokuyo"] .schedule-day.today { background: #3eb088; box-shadow: none; }
+[data-theme="kokuyo"] .site-footer { padding: 64px 32px; border-top-color: #d4d4d4; background: #ffffff; }
+
+@media (max-width: 768px) {
+  [data-theme="kokuyo"] body { font-size: 16px; }
+  [data-theme="kokuyo"] .hero-tagline { font-size: clamp(40px, 12vw, 58px); }
+  [data-theme="kokuyo"] .section { padding-top: 32px; padding-bottom: 32px; }
+  [data-theme="kokuyo"] .section-header h2,
+  [data-theme="kokuyo"] .about-content h2,
+  [data-theme="kokuyo"] .page-hero h1 { font-size: 17px; }
+  [data-theme="kokuyo"] .section-header p,
+  [data-theme="kokuyo"] .about-bio,
+  [data-theme="kokuyo"] .page-hero p,
+  [data-theme="kokuyo"] .bento-card p { font-size: 15px; }
+  [data-theme="kokuyo"] .bento-grid { gap: 8px; }
+  [data-theme="kokuyo"] .bento-card { padding: 24px; }
+}

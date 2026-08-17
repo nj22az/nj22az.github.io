@@ -11,9 +11,8 @@ a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 button { border: none; background: none; cursor: pointer; font: inherit; color: inherit; }
 
-/* ── Light theme (default) ── */
-:root,
-[data-theme="light"] {
+/* ── Base fallback tokens ── */
+:root {
   --ink:            #3d3a37;
   --ink-light:      #6b6560;
   --ink-faint:      #9b9590;
@@ -34,27 +33,6 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --font-display:   "Nunito", system-ui, -apple-system, sans-serif;
   --font-body:      "Nunito", system-ui, -apple-system, sans-serif;
   --max-w:          1120px;
-}
-
-/* ── Dark theme ── */
-[data-theme="dark"] {
-  --ink:            #e8e2d8;
-  --ink-light:      #a89e94;
-  --ink-faint:      #7a726a;
-  --surface:        #000000;
-  --surface-raised: #0a0a08;
-  --surface-card:   #141210;
-  --surface-hover:  #1e1c18;
-  --surface-mint:   #0a1210;
-  --border:         rgba(255, 255, 255, 0.06);
-  --border-hover:   rgba(255, 255, 255, 0.10);
-  --accent:         #5ec4a6;
-  --accent-hover:   #6ed4b6;
-  --accent-glow:    rgba(94, 196, 166, 0.12);
-  --divider:        #8a6b4a;
-  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lift:    0 8px 32px rgba(0, 0, 0, 0.6);
-  --nav-bg:         rgba(0, 0, 0, 0.92);
 }
 
 /* ── POPEYE theme ── */
@@ -101,6 +79,54 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
   --nav-bg:         rgba(255, 255, 255, 0.96);
   --font-display:   SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
   --font-body:      SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
+}
+
+/* ── Sanrio theme ── */
+[data-theme="sanrio"] {
+  --ink:            #777777;
+  --ink-light:      #777777;
+  --ink-faint:      #9a9a9a;
+  --surface:        #ffffff;
+  --surface-raised: #f7f7f7;
+  --surface-card:   #ffffff;
+  --surface-hover:  #f0f9fa;
+  --surface-mint:   #fdf5fa;
+  --border:         #e2f2f7;
+  --border-hover:   #b5e5ef;
+  --accent:         #8bd0dd;
+  --accent-hover:   #71c6d6;
+  --accent-glow:    rgba(139, 208, 221, 0.16);
+  --divider:        #e383a8;
+  --shadow-card:    0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-lift:    0 4px 12px rgba(0, 0, 0, 0.10);
+  --nav-bg:         rgba(255, 255, 255, 0.96);
+  --font-display:   "Noto Sans JP", sans-serif;
+  --font-body:      "Noto Sans JP", sans-serif;
+  --max-w:          1200px;
+}
+
+/* ── KOKUYO theme ── */
+[data-theme="kokuyo"] {
+  --ink:            #313131;
+  --ink-light:      #7a7a7a;
+  --ink-faint:      #a4a4a4;
+  --surface:        #ffffff;
+  --surface-raised: #eeeeee;
+  --surface-card:   #ffffff;
+  --surface-hover:  #eeeeee;
+  --surface-mint:   #ecf5d5;
+  --border:         #d4d4d4;
+  --border-hover:   #bcbcbc;
+  --accent:         #5dadd1;
+  --accent-hover:   #4d9fc4;
+  --accent-glow:    rgba(93, 173, 209, 0.12);
+  --divider:        #313131;
+  --shadow-card:    none;
+  --shadow-lift:    0 2px 8px rgba(0, 0, 0, 0.06);
+  --nav-bg:         rgba(255, 255, 255, 0.98);
+  --font-display:   Inter, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-body:      Inter, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --max-w:          1280px;
 }
 
 /* ── Body ── */

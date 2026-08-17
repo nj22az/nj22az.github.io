@@ -37,18 +37,18 @@
       browserColor: "#06c755"
     },
     {
-      id: "light",
-      label: "Original",
-      description: "Warm cream",
-      colors: ["#f5f0e8", "#3ea88c", "#d4a574"],
-      browserColor: "#f5f0e8"
+      id: "sanrio",
+      label: "Sanrio",
+      description: "Pastel friendship",
+      colors: ["#8bd0dd", "#e383a8", "#cda1dc"],
+      browserColor: "#8bd0dd"
     },
     {
-      id: "dark",
-      label: "Midnight",
-      description: "Dark studio",
-      colors: ["#000000", "#5ec4a6", "#e8e2d8"],
-      browserColor: "#000000"
+      id: "kokuyo",
+      label: "KOKUYO",
+      description: "Modular curiosity",
+      colors: ["#5dadd1", "#3eb088", "#e76654"],
+      browserColor: "#5dadd1"
     }
   ];
 
@@ -61,13 +61,11 @@
   function getTheme() {
     var stored = localStorage.getItem(THEME_KEY);
     if (THEMES.some(function (theme) { return theme.id === stored; })) return stored;
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    return "light";
+    return THEMES[0].id;
   }
 
   function applyTheme(theme) {
-    var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) ||
-      THEMES.find(function (item) { return item.id === "light"; });
+    var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) || THEMES[0];
     document.documentElement.setAttribute("data-theme", selectedTheme.id);
     localStorage.setItem(THEME_KEY, selectedTheme.id);
     var themeColor = $('meta[name="theme-color"]');
@@ -87,14 +85,6 @@
   }
 
   applyTheme(getTheme());
-
-  if (window.matchMedia) {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
-      if (!localStorage.getItem(THEME_KEY)) {
-        applyTheme(e.matches ? "dark" : "light");
-      }
-    });
-  }
 
   /* ── Navigation — green circle hamburger + overlay ── */
 
@@ -229,8 +219,7 @@
       });
     });
 
-    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) ||
-      THEMES.find(function (theme) { return theme.id === "light"; }));
+    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[0]);
 
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);

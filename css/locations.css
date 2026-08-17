@@ -51,8 +51,3 @@
   font-size: 1.0625rem;
   color: var(--ink);
 }
-
-/* Invert map colors in dark mode for visual consistency */
-[data-theme="dark"] .location-map {
-  filter: invert(0.9) hue-rotate(180deg);
-}
