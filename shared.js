@@ -20,7 +20,6 @@
   /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
-  var VISIT_THEME_KEY = "nj-visit-theme-v1";
   var DESIGN_VER = "nj-design-v3";
   var THEMES = [
     {
@@ -110,15 +109,9 @@
   function getTheme() {
     if (window.NJThemeVisit) return window.NJThemeVisit.get();
 
-    var visitTheme = sessionStorage.getItem(VISIT_THEME_KEY);
-    if (THEMES.some(function (theme) { return theme.id === visitTheme; })) return visitTheme;
-
-    var previousTheme = localStorage.getItem(THEME_KEY);
-    var choices = THEMES.filter(function (theme) { return theme.id !== previousTheme; });
-    var selectedTheme = choices[Math.floor(Math.random() * choices.length)].id;
-    sessionStorage.setItem(VISIT_THEME_KEY, selectedTheme);
-    localStorage.setItem(THEME_KEY, selectedTheme);
-    return selectedTheme;
+    var storedTheme = localStorage.getItem(THEME_KEY);
+    if (THEMES.some(function (theme) { return theme.id === storedTheme; })) return storedTheme;
+    return THEMES[Math.floor(Math.random() * THEMES.length)].id;
   }
 
   function applyTheme(theme) {
@@ -127,7 +120,6 @@
     if (window.NJThemeVisit) {
       window.NJThemeVisit.remember(selectedTheme.id);
     } else {
-      sessionStorage.setItem(VISIT_THEME_KEY, selectedTheme.id);
       localStorage.setItem(THEME_KEY, selectedTheme.id);
     }
     var themeColor = $('meta[name="theme-color"]');

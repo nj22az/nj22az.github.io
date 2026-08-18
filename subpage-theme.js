@@ -7,7 +7,6 @@
   "use strict";
 
   var THEME_KEY = "nj-theme";
-  var VISIT_THEME_KEY = "nj-visit-theme-v1";
   var THEMES = {
     cobalt:   ["#343ec9", "#2833ad", "rgba(52,62,201,.12)", "#ffffff", "#ffffff", "#f5f5f8", "#20275f", "#5d6494", "rgba(52,62,201,.22)", "#3affff"],
     mossy:    ["#06a947", "#058c3c", "rgba(6,199,85,.12)", "#ffffff", "#ffffff", "#f5faf7", "#111814", "#5d6861", "rgba(17,24,20,.14)", "#06c755"],
@@ -25,15 +24,11 @@
   function getVisitTheme() {
     if (window.NJThemeVisit) return window.NJThemeVisit.get();
 
-    var visitTheme = sessionStorage.getItem(VISIT_THEME_KEY);
-    if (THEMES[visitTheme]) return visitTheme;
+    var storedTheme = localStorage.getItem(THEME_KEY);
+    if (THEMES[storedTheme]) return storedTheme;
 
-    var previousTheme = localStorage.getItem(THEME_KEY);
-    var choices = Object.keys(THEMES).filter(function (themeId) {
-      return themeId !== previousTheme;
-    });
-    var selectedTheme = choices[Math.floor(Math.random() * choices.length)];
-    sessionStorage.setItem(VISIT_THEME_KEY, selectedTheme);
+    var themeIds = Object.keys(THEMES);
+    var selectedTheme = themeIds[Math.floor(Math.random() * themeIds.length)];
     localStorage.setItem(THEME_KEY, selectedTheme);
     return selectedTheme;
   }

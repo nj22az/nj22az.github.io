@@ -1,13 +1,11 @@
 /**
- * Selects one theme per browser visit before the page renders.
- * The choice follows same-origin navigation through sessionStorage, while the
- * last choice is retained only to prevent an immediate repeat next visit.
+ * Selects a new theme whenever the homepage loads, before it renders.
+ * Same-origin subpages inherit the latest choice instead of rerandomizing.
  */
 (function () {
   "use strict";
 
   var THEME_KEY = "nj-theme";
-  var VISIT_THEME_KEY = "nj-visit-theme-v1";
   var THEME_IDS = [
     "cobalt", "mossy", "cute", "colorgrid", "crimson", "inkcraft",
     "clarity", "horizon", "swift", "botanical", "popwave"
@@ -36,26 +34,35 @@
     return Math.floor(Math.random() * length);
   }
 
+  var selectedTheme = null;
+
   function remember(themeId) {
     if (!isValid(themeId)) return;
-    write(sessionStorage, VISIT_THEME_KEY, themeId);
+    selectedTheme = themeId;
     write(localStorage, THEME_KEY, themeId);
   }
 
-  function getVisitTheme() {
-    var activeTheme = read(sessionStorage, VISIT_THEME_KEY);
-    if (isValid(activeTheme)) return activeTheme;
-
-    var previousTheme = read(localStorage, THEME_KEY);
+  function chooseDifferentTheme(previousTheme) {
     var choices = THEME_IDS.filter(function (themeId) {
       return themeId !== previousTheme;
     });
-    var selectedTheme = choices[randomIndex(choices.length)];
+    return choices[randomIndex(choices.length)];
+  }
+
+  function getPageTheme() {
+    if (isValid(selectedTheme)) return selectedTheme;
+    var previousTheme = read(localStorage, THEME_KEY);
+    var pagePath = location.pathname;
+    var isHomepage = pagePath === "/" || pagePath === "/index.html";
+
+    selectedTheme = isHomepage || !isValid(previousTheme)
+      ? chooseDifferentTheme(previousTheme)
+      : previousTheme;
     remember(selectedTheme);
     return selectedTheme;
   }
 
-  var selectedTheme = getVisitTheme();
+  selectedTheme = getPageTheme();
   var pagePath = location.pathname;
   var usesFullTheme = pagePath === "/" || pagePath === "/index.html" ||
     pagePath === "/blog/" || pagePath === "/blog/index.html";
@@ -63,7 +70,7 @@
 
   window.NJThemeVisit = {
     ids: THEME_IDS.slice(),
-    get: getVisitTheme,
+    get: getPageTheme,
     remember: remember
   };
 })();
