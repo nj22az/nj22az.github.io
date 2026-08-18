@@ -7,6 +7,7 @@
   "use strict";
 
   var THEME_KEY = "nj-theme";
+  var VISIT_THEME_KEY = "nj-visit-theme-v1";
   var THEMES = {
     cobalt:   ["#343ec9", "#2833ad", "rgba(52,62,201,.12)", "#ffffff", "#ffffff", "#f5f5f8", "#20275f", "#5d6494", "rgba(52,62,201,.22)", "#3affff"],
     mossy:    ["#06a947", "#058c3c", "rgba(6,199,85,.12)", "#ffffff", "#ffffff", "#f5faf7", "#111814", "#5d6861", "rgba(17,24,20,.14)", "#06c755"],
@@ -20,6 +21,22 @@
     botanical:["#7a6500", "#5f4f00", "rgba(255,213,0,.2)", "#fafaef", "#ffffff", "#f0f0e2", "#272727", "#69695f", "rgba(39,39,39,.18)", "#ffd500"],
     popwave:  ["#f2157f", "#d80f70", "rgba(242,21,127,.12)", "#ffffff", "#ffffff", "#f3f3f3", "#70133e", "#87546a", "rgba(242,21,127,.24)", "#f2157f"]
   };
+
+  function getVisitTheme() {
+    if (window.NJThemeVisit) return window.NJThemeVisit.get();
+
+    var visitTheme = sessionStorage.getItem(VISIT_THEME_KEY);
+    if (THEMES[visitTheme]) return visitTheme;
+
+    var previousTheme = localStorage.getItem(THEME_KEY);
+    var choices = Object.keys(THEMES).filter(function (themeId) {
+      return themeId !== previousTheme;
+    });
+    var selectedTheme = choices[Math.floor(Math.random() * choices.length)];
+    sessionStorage.setItem(VISIT_THEME_KEY, selectedTheme);
+    localStorage.setItem(THEME_KEY, selectedTheme);
+    return selectedTheme;
+  }
 
   function applySiteTheme(themeId) {
     var id = THEMES[themeId] ? themeId : "cobalt";
@@ -45,8 +62,5 @@
     });
   }
 
-  applySiteTheme(localStorage.getItem(THEME_KEY));
-  window.addEventListener("storage", function (event) {
-    if (event.key === THEME_KEY) applySiteTheme(event.newValue);
-  });
+  applySiteTheme(getVisitTheme());
 })();

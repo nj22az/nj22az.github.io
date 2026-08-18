@@ -53,9 +53,9 @@ python3 -m http.server 8000
 
 1. `<html data-theme="cobalt">` is the first-load default
 2. CSS uses custom properties scoped to each theme ID
-3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
+3. `theme-bootstrap.js` chooses a non-repeating random theme once per browser visit and keeps it in `sessionStorage`
 4. The hamburger menu contains an expandable switcher with eleven brand-neutral options: Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, Botanical, and Popwave
-5. Internal project pages read the same preference through `subpage-theme.js`; external sites are unaffected
+5. Manual choices update the current visit, and internal project pages inherit it through `subpage-theme.js`; external sites are unaffected
 6. The SVG logo uses `currentColor`, so it adapts automatically
 
 ## How the Logo Works
