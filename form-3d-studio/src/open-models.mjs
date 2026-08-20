@@ -2,7 +2,6 @@
 // Copyright (c) 2026 Form 3D Studio contributors
 
 import modeling from "@jscad/modeling";
-import earcut from "@jscad/modeling/src/operations/extrusions/earcut/index.js";
 
 const { booleans, extrusions, geometries, modifiers, primitives, transforms } = modeling;
 
@@ -224,42 +223,28 @@ function buildLBracket(parameters) {
   };
 }
 
-function transformMesh(mesh, rotateXAngle, offset) {
+function transformMesh(mesh, rotateXAngle, offset, rotateZAngle = 0) {
   const cosine = Math.cos(rotateXAngle);
   const sine = Math.sin(rotateXAngle);
+  const zCosine = Math.cos(rotateZAngle);
+  const zSine = Math.sin(rotateZAngle);
   return {
-    vertices: mesh.vertices.map((vertex) => [
-      vertex[0] + offset[0],
-      vertex[1] * cosine - vertex[2] * sine + offset[1],
-      vertex[1] * sine + vertex[2] * cosine + offset[2]
-    ]),
+    vertices: mesh.vertices.map((vertex) => {
+      const xRotated = vertex[0];
+      const yRotated = vertex[1] * cosine - vertex[2] * sine;
+      const zRotated = vertex[1] * sine + vertex[2] * cosine;
+      return [
+        xRotated * zCosine - yRotated * zSine + offset[0],
+        xRotated * zSine + yRotated * zCosine + offset[1],
+        zRotated + offset[2]
+      ];
+    }),
     faces: mesh.faces.map((face) => face.slice())
   };
 }
 
-function shellRadiusProfiles(outerRadius, shellLength, beadDepth) {
-  const beadWidth = 0.9;
-  const beadCentres = [2.2, 5.0, shellLength - 5.0, shellLength - 2.2];
-  const transitions = [{ z: 0, radius: outerRadius }];
-  beadCentres.forEach((centre) => {
-    transitions.push(
-      { z: centre - beadWidth / 2, radius: outerRadius },
-      { z: centre - beadWidth / 2, radius: outerRadius + beadDepth },
-      { z: centre + beadWidth / 2, radius: outerRadius + beadDepth },
-      { z: centre + beadWidth / 2, radius: outerRadius }
-    );
-  });
-  transitions.push({ z: shellLength, radius: outerRadius });
-  return transitions;
-}
-
-function triangulateSimplePolygon(points) {
-  const indices = earcut(points.flat());
-  const triangles = [];
-  for (let index = 0; index < indices.length; index += 3) {
-    triangles.push(indices.slice(index, index + 3));
-  }
-  return triangles;
+function shellRadiusProfiles(outerRadius, shellLength) {
+  return [{ z: 0, radius: outerRadius }, { z: shellLength, radius: outerRadius }];
 }
 
 function halfShellMesh(profiles, innerRadius, startAngle, endAngle, segments = 48, relief = null) {
@@ -319,19 +304,14 @@ function halfShellMesh(profiles, innerRadius, startAngle, endAngle, segments = 4
 
   const lastAngle = angles.length - 1;
   function addSeam(angleIndex, reverse) {
-    const entries = profiles.map((profile, profileIndex) => ({
-      point: [profile.radius + (relief ? relief.depthAt(angles[angleIndex], profile.z) : 0), profile.z],
-      vertex: outerRings[profileIndex][angleIndex]
-    }));
-    for (let profileIndex = profiles.length - 1; profileIndex >= 0; profileIndex -= 1) {
-      const vertex = innerRings[profileIndex][angleIndex];
-      if (entries.length && entries[entries.length - 1].vertex === vertex) continue;
-      entries.push({ point: [innerRadius, profiles[profileIndex].z], vertex });
+    for (let profileIndex = 0; profileIndex < profiles.length - 1; profileIndex += 1) {
+      const outerLow = outerRings[profileIndex][angleIndex];
+      const outerHigh = outerRings[profileIndex + 1][angleIndex];
+      const innerLow = innerRings[profileIndex][angleIndex];
+      const innerHigh = innerRings[profileIndex + 1][angleIndex];
+      if (reverse) addQuad(faces, outerLow, innerLow, innerHigh, outerHigh);
+      else addQuad(faces, outerLow, outerHigh, innerHigh, innerLow);
     }
-    triangulateSimplePolygon(entries.map((entry) => entry.point)).forEach((triangle) => {
-      const face = triangle.map((index) => entries[index].vertex);
-      faces.push(reverse ? face.reverse() : face);
-    });
   }
   addSeam(0, false);
   addSeam(lastAngle, true);
@@ -348,69 +328,123 @@ function halfShellMesh(profiles, innerRadius, startAngle, endAngle, segments = 4
   return { vertices, faces };
 }
 
-function capInnerProfiles(baseRadius, grooveRadius, insertionDepth) {
-  const grooveWidth = 1.25;
-  const profiles = [{ z: 0, radius: baseRadius }];
-  [2.2, 5.0].forEach((centre) => {
-    profiles.push(
-      { z: centre - grooveWidth / 2, radius: baseRadius },
-      { z: centre - grooveWidth / 2, radius: grooveRadius },
-      { z: centre + grooveWidth / 2, radius: grooveRadius },
-      { z: centre + grooveWidth / 2, radius: baseRadius }
-    );
-  });
-  profiles.push({ z: insertionDepth, radius: baseRadius });
-  return profiles;
+function normalizeAngle(angle) {
+  const normalized = angle % TAU;
+  return normalized < 0 ? normalized + TAU : normalized;
 }
 
-function snapCapMesh(capRadius, capHeight, innerProfiles, segments = 72) {
+function angularDistance(first, second) {
+  return Math.abs(Math.atan2(Math.sin(first - second), Math.cos(first - second)));
+}
+
+function bayonetCapMesh({
+  capRadius,
+  capHeight,
+  innerRadius,
+  insertionDepth,
+  trackCenter,
+  trackHeight,
+  slotWidth,
+  lockAngle,
+  pocketDrop,
+  segments = 96
+}) {
   const vertices = [];
   const faces = [];
-  const outerBottom = [];
-  const outerTop = [];
-  const innerRings = [];
-  for (let step = 0; step < segments; step += 1) {
-    const angle = TAU * step / segments;
-    outerBottom.push(vertices.push([Math.cos(angle) * capRadius, Math.sin(angle) * capRadius, 0]) - 1);
-    outerTop.push(vertices.push([Math.cos(angle) * capRadius, Math.sin(angle) * capRadius, capHeight]) - 1);
+  const ventRadius = 0.85;
+  const slotHalfAngle = slotWidth / (2 * innerRadius);
+  const trackLow = trackCenter - trackHeight / 2;
+  const trackHigh = trackCenter + trackHeight / 2;
+  const pocketLow = trackLow - pocketDrop;
+  const slotCenters = [Math.PI / 2, Math.PI * 1.5];
+  const angles = Array.from({ length: segments }, (_, index) => TAU * index / segments);
+  slotCenters.forEach((center) => {
+    angles.push(
+      normalizeAngle(center - slotHalfAngle),
+      normalizeAngle(center + slotHalfAngle),
+      normalizeAngle(center + lockAngle + slotHalfAngle)
+    );
+  });
+  angles.sort((first, second) => first - second);
+  for (let index = angles.length - 1; index > 0; index -= 1) {
+    if (Math.abs(angles[index] - angles[index - 1]) < 1e-8) angles.splice(index, 1);
   }
-  innerProfiles.forEach((profile, profileIndex) => {
-    const ring = [];
-    for (let step = 0; step < segments; step += 1) {
-      const angle = TAU * step / segments;
-      ring.push(vertices.push([Math.cos(angle) * profile.radius, Math.sin(angle) * profile.radius, profile.z]) - 1);
-    }
-    innerRings.push(ring);
+  const zLevels = [0, pocketLow, trackLow, trackHigh, insertionDepth];
+  const vertexMap = new Map();
+  function vertex(radius, angleIndex, zIndex, zOverride = null) {
+    const key = `${radius.toFixed(6)}:${angleIndex}:${zIndex}:${zOverride ?? ""}`;
+    if (vertexMap.has(key)) return vertexMap.get(key);
+    const angle = angles[angleIndex];
+    const z = zOverride === null ? zLevels[zIndex] : zOverride;
+    const index = vertices.push([Math.cos(angle) * radius, Math.sin(angle) * radius, z]) - 1;
+    vertexMap.set(key, index);
+    return index;
+  }
+  function isCutout(angle, z) {
+    return slotCenters.some((center) => {
+      const entry = angularDistance(angle, center) < slotHalfAngle && z < trackHigh;
+      const alongTrack = normalizeAngle(angle - (center - slotHalfAngle));
+      const track = alongTrack < lockAngle + slotHalfAngle * 2 && z > trackLow && z < trackHigh;
+      const lockingPocket = angularDistance(angle, center + lockAngle) < slotHalfAngle &&
+        z > pocketLow && z < trackHigh;
+      return entry || track || lockingPocket;
+    });
+  }
+  const angleCells = angles.length;
+  const zCells = zLevels.length - 1;
+  const occupied = Array.from({ length: angleCells }, (_, angleIndex) => {
+    const nextAngle = angleIndex === angleCells - 1 ? TAU : angles[angleIndex + 1];
+    const midpointAngle = normalizeAngle((angles[angleIndex] + nextAngle) / 2);
+    return Array.from({ length: zCells }, (_, zIndex) => {
+      const midpointZ = (zLevels[zIndex] + zLevels[zIndex + 1]) / 2;
+      return !isCutout(midpointAngle, midpointZ);
+    });
   });
 
-  for (let step = 0; step < segments; step += 1) {
-    const next = (step + 1) % segments;
-    addQuad(faces, outerBottom[step], outerBottom[next], outerTop[next], outerTop[step]);
-    addQuad(faces, outerBottom[step], innerRings[0][step], innerRings[0][next], outerBottom[next]);
-  }
-  for (let level = 0; level < innerProfiles.length - 1; level += 1) {
-    for (let step = 0; step < segments; step += 1) {
-      const next = (step + 1) % segments;
-      addQuad(faces,
-        innerRings[level][step], innerRings[level + 1][step],
-        innerRings[level + 1][next], innerRings[level][next]);
+  for (let angleIndex = 0; angleIndex < angleCells; angleIndex += 1) {
+    const nextAngle = (angleIndex + 1) % angleCells;
+    const previousAngle = (angleIndex - 1 + angleCells) % angleCells;
+    for (let zIndex = 0; zIndex < zCells; zIndex += 1) {
+      if (!occupied[angleIndex][zIndex]) continue;
+      const outer00 = vertex(capRadius, angleIndex, zIndex);
+      const outer10 = vertex(capRadius, nextAngle, zIndex);
+      const outer11 = vertex(capRadius, nextAngle, zIndex + 1);
+      const outer01 = vertex(capRadius, angleIndex, zIndex + 1);
+      const inner00 = vertex(innerRadius, angleIndex, zIndex);
+      const inner10 = vertex(innerRadius, nextAngle, zIndex);
+      const inner11 = vertex(innerRadius, nextAngle, zIndex + 1);
+      const inner01 = vertex(innerRadius, angleIndex, zIndex + 1);
+      addQuad(faces, outer00, outer10, outer11, outer01);
+      addQuad(faces, inner00, inner01, inner11, inner10);
+
+      if (!occupied[previousAngle][zIndex]) addQuad(faces, outer00, outer01, inner01, inner00);
+      if (!occupied[nextAngle][zIndex]) addQuad(faces, outer10, inner10, inner11, outer11);
+      if (zIndex === 0 || !occupied[angleIndex][zIndex - 1]) {
+        addQuad(faces, outer00, inner00, inner10, outer10);
+      }
+      if (zIndex < zCells - 1 && !occupied[angleIndex][zIndex + 1]) {
+        addQuad(faces, outer01, outer11, inner11, inner01);
+      }
     }
   }
-  const lastInner = innerRings[innerRings.length - 1];
-  const ventRadius = 0.85;
-  const ventBottom = [];
-  const ventTop = [];
-  const roofBottom = innerProfiles[innerProfiles.length - 1].z;
-  for (let step = 0; step < segments; step += 1) {
-    const angle = TAU * step / segments;
-    ventBottom.push(vertices.push([Math.cos(angle) * ventRadius, Math.sin(angle) * ventRadius, roofBottom]) - 1);
-    ventTop.push(vertices.push([Math.cos(angle) * ventRadius, Math.sin(angle) * ventRadius, capHeight]) - 1);
-  }
-  for (let step = 0; step < segments; step += 1) {
-    const next = (step + 1) % segments;
-    addQuad(faces, lastInner[step], ventBottom[step], ventBottom[next], lastInner[next]);
-    addQuad(faces, ventBottom[step], ventTop[step], ventTop[next], ventBottom[next]);
-    addQuad(faces, outerTop[step], outerTop[next], ventTop[next], ventTop[step]);
+
+  const topZIndex = zLevels.length - 1;
+  for (let angleIndex = 0; angleIndex < angleCells; angleIndex += 1) {
+    const nextAngle = (angleIndex + 1) % angleCells;
+    const outerBottom = vertex(capRadius, angleIndex, topZIndex);
+    const outerBottomNext = vertex(capRadius, nextAngle, topZIndex);
+    const innerBottom = vertex(innerRadius, angleIndex, topZIndex);
+    const innerBottomNext = vertex(innerRadius, nextAngle, topZIndex);
+    const outerTop = vertex(capRadius, angleIndex, topZIndex, capHeight);
+    const outerTopNext = vertex(capRadius, nextAngle, topZIndex, capHeight);
+    const ventBottom = vertex(ventRadius, angleIndex, topZIndex);
+    const ventBottomNext = vertex(ventRadius, nextAngle, topZIndex);
+    const ventTop = vertex(ventRadius, angleIndex, topZIndex, capHeight);
+    const ventTopNext = vertex(ventRadius, nextAngle, topZIndex, capHeight);
+    addQuad(faces, outerBottom, outerBottomNext, outerTopNext, outerTop);
+    addQuad(faces, innerBottom, ventBottom, ventBottomNext, innerBottomNext);
+    addQuad(faces, ventBottom, ventTop, ventTopNext, ventBottomNext);
+    addQuad(faces, outerTop, outerTopNext, ventTopNext, ventTop);
   }
   return { vertices, faces };
 }
@@ -497,17 +531,96 @@ function johanssonRelief(outerRadius, shellLength) {
   };
 }
 
-function makeVentedSnapCap(outerRadius, wall, capClearance, insertionDepth, beadDepth) {
+function bayonetLugRelief(outerRadius, shellLength, centerAngle, dimensions) {
+  const { lugDepth, lugDistance, lugHeight, lugWidth } = dimensions;
+  const angularHalfWidth = lugWidth / (outerRadius * 2);
+  const angularBevel = Math.min(0.18 / outerRadius, angularHalfWidth * 0.35);
+  const axialHalfHeight = lugHeight / 2;
+  const axialBevel = Math.min(0.16, axialHalfHeight * 0.35);
+  const lugCenters = [lugDistance, shellLength - lugDistance];
+  const angles = [
+    centerAngle - angularHalfWidth,
+    centerAngle - angularHalfWidth + angularBevel,
+    centerAngle + angularHalfWidth - angularBevel,
+    centerAngle + angularHalfWidth
+  ];
+  const zLevels = [];
+  lugCenters.forEach((center) => zLevels.push(
+    center - axialHalfHeight,
+    center - axialHalfHeight + axialBevel,
+    center + axialHalfHeight - axialBevel,
+    center + axialHalfHeight
+  ));
+  function taperedDepth(distance, halfExtent, bevel) {
+    const absolute = Math.abs(distance);
+    if (absolute >= halfExtent) return 0;
+    if (absolute <= halfExtent - bevel) return 1;
+    return (halfExtent - absolute) / bevel;
+  }
+  return {
+    angles,
+    zLevels,
+    depthAt(angle, z) {
+      const angularFactor = taperedDepth((angle - centerAngle) * outerRadius, lugWidth / 2, angularBevel * outerRadius);
+      let axialFactor = 0;
+      lugCenters.forEach((center) => {
+        axialFactor = Math.max(axialFactor, taperedDepth(z - center, axialHalfHeight, axialBevel));
+      });
+      return angularFactor * axialFactor * lugDepth;
+    }
+  };
+}
+
+function combineReliefs(...reliefs) {
+  const active = reliefs.filter(Boolean);
+  if (!active.length) return null;
+  const angles = active.flatMap((relief) => relief.angles || []);
+  const zLevels = active.flatMap((relief) => relief.zLevels || []);
+  return {
+    angles: [...new Set(angles.map((value) => value.toFixed(8)))].map(Number),
+    zLevels: [...new Set(zLevels.map((value) => value.toFixed(8)))].map(Number),
+    depthAt(angle, z) {
+      return active.reduce((depth, relief) => Math.max(depth, relief.depthAt(angle, z)), 0);
+    }
+  };
+}
+
+function profilesWithRelief(baseProfiles, relief, outerRadius, shellLength) {
+  if (!relief) return baseProfiles;
+  return baseProfiles.concat(relief.zLevels
+    .filter((z) => z > 0 && z < shellLength)
+    .map((z) => ({ z, radius: outerRadius })))
+    .sort((first, second) => first.z - second.z)
+    .filter((profile, index, profiles) => index === 0 || Math.abs(profile.z - profiles[index - 1].z) > 1e-8);
+}
+
+function makeVentedBayonetCap(outerRadius, capClearance, insertionDepth, dimensions) {
   const roof = 2.0;
   const capHeight = insertionDepth + roof;
-  const runningGap = 0.25;
-  const grooveRadius = outerRadius + beadDepth + capClearance;
-  const capRadius = grooveRadius + wall;
-  const innerProfiles = capInnerProfiles(outerRadius + runningGap, grooveRadius, insertionDepth);
+  const capWall = 1.4;
+  const innerRadius = outerRadius + capClearance;
+  const capRadius = innerRadius + capWall;
+  const trackCenter = insertionDepth - dimensions.lugDistance;
+  const trackHeight = dimensions.lugHeight + capClearance * 2;
+  const slotWidth = dimensions.lugWidth + capClearance * 2;
+  const lockAngle = 75 * Math.PI / 180;
+  const pocketDrop = 0.45;
   return {
-    mesh: snapCapMesh(capRadius, capHeight, innerProfiles),
+    mesh: bayonetCapMesh({
+      capRadius,
+      capHeight,
+      innerRadius,
+      insertionDepth,
+      trackCenter,
+      trackHeight,
+      slotWidth,
+      lockAngle,
+      pocketDrop
+    }),
     capHeight,
-    capRadius
+    capRadius,
+    lockAngle,
+    pocketDrop
   };
 }
 
@@ -520,42 +633,43 @@ function buildApplePencilCase(parameters) {
   const shellLength = pencilLength + 2.0;
   const cavityRadius = pencilDiameter / 2 + pencilClearance;
   const outerRadius = cavityRadius + wall;
-  const beadDepth = 0.4;
-  const insertionDepth = 7.2;
-  const baseProfiles = shellRadiusProfiles(outerRadius, shellLength, beadDepth);
-  let upperProfiles = baseProfiles;
-  const relief = parameters.pencilLogo === false ? null : johanssonRelief(outerRadius, shellLength);
-  if (relief) {
-    upperProfiles = baseProfiles.concat(relief.zLevels.map((z) => ({ z, radius: outerRadius })))
-      .sort((first, second) => first.z - second.z);
-  }
-  const upperShellMesh = halfShellMesh(upperProfiles, cavityRadius, 0, Math.PI, 48, relief);
-  const lowerShellMesh = halfShellMesh(baseProfiles, cavityRadius, Math.PI, TAU);
+  const insertionDepth = 7.5;
+  const bayonet = { lugDepth: 0.8, lugDistance: 2.2, lugHeight: 1.2, lugWidth: 2.4 };
+  const baseProfiles = shellRadiusProfiles(outerRadius, shellLength);
+  const upperLugs = bayonetLugRelief(outerRadius, shellLength, Math.PI / 2, bayonet);
+  const lowerLugs = bayonetLugRelief(outerRadius, shellLength, Math.PI * 1.5, bayonet);
+  const logo = parameters.pencilLogo === false ? null : johanssonRelief(outerRadius, shellLength);
+  const upperRelief = combineReliefs(logo, upperLugs);
+  const lowerRelief = combineReliefs(lowerLugs);
+  const upperProfiles = profilesWithRelief(baseProfiles, upperRelief, outerRadius, shellLength);
+  const lowerProfiles = profilesWithRelief(baseProfiles, lowerRelief, outerRadius, shellLength);
+  const upperShellMesh = halfShellMesh(upperProfiles, cavityRadius, 0, Math.PI, 48, upperRelief);
+  const lowerShellMesh = halfShellMesh(lowerProfiles, cavityRadius, Math.PI, TAU, 48, lowerRelief);
 
-  const capResult = makeVentedSnapCap(outerRadius, wall, capClearance, insertionDepth, beadDepth);
+  const capResult = makeVentedBayonetCap(outerRadius, capClearance, insertionDepth, bayonet);
   let parts;
   if (parameters.pencilPrintLayout !== false) {
-    const shellSpacing = outerRadius + beadDepth + 3.2;
-    const shellLift = outerRadius + beadDepth + 0.55;
+    const shellSpacing = outerRadius + bayonet.lugDepth + 3.2;
+    const shellLift = outerRadius + bayonet.lugDepth + 0.55;
     const firstShell = transformMesh(upperShellMesh, -Math.PI / 2, [-shellSpacing, -shellLength / 2, shellLift]);
     const secondShell = transformMesh(lowerShellMesh, Math.PI / 2, [shellSpacing, shellLength / 2, shellLift]);
-    const capSpacing = (outerRadius + beadDepth) * 3.45;
+    const capSpacing = capResult.capRadius * 2.4;
     const printableCap = transformMesh(capResult.mesh, Math.PI, [0, 0, capResult.capHeight]);
     parts = [
       { name: "Johansson upper split shell", mesh: firstShell },
       { name: "Lower split shell", mesh: secondShell },
-      { name: "Tip vented snap cap", mesh: transformMesh(printableCap, 0, [-capSpacing, 0, 0]) },
-      { name: "Tail vented snap cap", mesh: transformMesh(printableCap, 0, [capSpacing, 0, 0]) }
+      { name: "Tip vented bayonet cap", mesh: transformMesh(printableCap, 0, [-capSpacing, 0, 0]) },
+      { name: "Tail vented bayonet cap", mesh: transformMesh(printableCap, 0, [capSpacing, 0, 0]) }
     ];
   } else {
     const capMesh = capResult.mesh;
-    const bottomCap = transformMesh(capMesh, Math.PI, [0, 0, insertionDepth]);
-    const topCap = transformMesh(capMesh, 0, [0, 0, shellLength - insertionDepth]);
+    const bottomCap = transformMesh(capMesh, Math.PI, [0, 0, insertionDepth - capResult.pocketDrop], capResult.lockAngle);
+    const topCap = transformMesh(capMesh, 0, [0, 0, shellLength - insertionDepth + capResult.pocketDrop], -capResult.lockAngle);
     parts = [
       { name: "Johansson upper split shell", mesh: upperShellMesh },
       { name: "Lower split shell", mesh: lowerShellMesh },
-      { name: "Tip vented snap cap", mesh: bottomCap },
-      { name: "Tail vented snap cap", mesh: topCap }
+      { name: "Tip vented bayonet cap", mesh: bottomCap },
+      { name: "Tail vented bayonet cap", mesh: topCap }
     ];
   }
 

@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
+import modeling from "@jscad/modeling";
 import { buildModel } from "../src/open-models.mjs";
+
+const { intersect } = modeling.booleans;
+const { measureVolume } = modeling.measurements;
+const { polyhedron } = modeling.primitives;
 
 function bounds(mesh) {
   const minimum = [Infinity, Infinity, Infinity];
@@ -77,16 +82,39 @@ for (const printLayout of [false, true]) {
   assert.equal(pencilCase.solids.length, 4, "the case must remain four separately printable parts");
   pencilCase.solids.forEach((solid) => assertClosedPositiveMesh(solid.mesh, solid.name));
   assert.match(pencilCase.solids[0].name, /Johansson/);
-  assert.match(pencilCase.solids[2].name, /vented snap cap/);
+  assert.match(pencilCase.solids[2].name, /vented bayonet cap/);
 }
 
 const assembled = buildModel("applePencilCase", { ...pencilParameters, pencilPrintLayout: false });
 const upperSize = bounds(assembled.solids[0].mesh);
 const capSize = bounds(assembled.solids[2].mesh);
-assert.ok(upperSize[0] <= 12.91, "the split shell should stay near 12.9 mm at its retention beads");
+assert.ok(upperSize[0] <= 12.11, "the split shell body should stay near 12.1 mm wide");
 assert.ok(upperSize[2] >= 167.99, "the shell must protect the full 166 mm Pencil");
-assert.ok(capSize[0] <= 16.11, "the closure cap should remain slim");
+assert.ok(capSize[0] <= 15.71, "the bayonet cap should remain slim");
 const capRadii = assembled.solids[3].mesh.vertices.map((vertex) => Math.hypot(vertex[0], vertex[1]));
 assert.ok(Math.min(...capRadii) > 0.8 && Math.min(...capRadii) < 0.9, "the cap pressure vent must be a real through-hole");
+const assembledZ = assembled.solids.flatMap((solid) => solid.mesh.vertices.map((vertex) => vertex[2]));
+assert.ok(Math.max(...assembledZ) - Math.min(...assembledZ) > 172.8,
+  "the locked preview must show both caps released outward into their terminal pockets");
+
+const topCap = assembled.solids[3].mesh;
+const mouthZ = Math.min(...topCap.vertices.map((vertex) => vertex[2]));
+const lockedEntryAngle = Math.PI / 2 - 75 * Math.PI / 180;
+const positiveEntryDistance = Math.min(...topCap.vertices
+  .filter((vertex) => Math.abs(vertex[2] - mouthZ) < 1e-8 && Math.hypot(vertex[0], vertex[1]) > 7.8)
+  .map((vertex) => Math.abs(Math.atan2(Math.sin(Math.atan2(vertex[1], vertex[0]) - lockedEntryAngle), Math.cos(Math.atan2(vertex[1], vertex[0]) - lockedEntryAngle)))));
+assert.ok(positiveEntryDistance > 0.2, "the cap mouth must contain an open axial bayonet entry slot");
+
+const assembledGeometries = assembled.solids.map((solid) => polyhedron({
+  points: solid.mesh.vertices,
+  faces: solid.mesh.faces,
+  orientation: "outward"
+}));
+for (let shellIndex = 0; shellIndex < 2; shellIndex += 1) {
+  for (let capIndex = 2; capIndex < 4; capIndex += 1) {
+    assert.ok(measureVolume(intersect(assembledGeometries[shellIndex], assembledGeometries[capIndex])) < 1e-7,
+      "locked bayonet lugs and caps must not intersect");
+  }
+}
 
 console.log("open model geometry tests passed");

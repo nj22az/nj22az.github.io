@@ -10,12 +10,16 @@ browser and continue to work offline:
 - a four-hole L-bracket with twin reinforcing gussets.
 
 The Apple Pencil Pro template defaults to Apple's 166 mm × 8.9 mm dimensions.
-It uses two longitudinal half-shells and two shallow compression caps instead
-of a long blind tube or a print-in-place hinge. The complete interior is open
-for washing and post-curing before assembly; each cap has a 1.7 mm through-vent,
-and the default 0.40 mm fit values are editable for a specific resin/printer.
-The print-layout switch lays both shells cavity-up and both caps open-side-up;
-the assembled view is for checking the closure only.
+It uses two longitudinal half-shells and two shallow quarter-turn bayonet caps
+instead of threads, a long blind tube or a print-in-place hinge. Each cap has
+two through-wall axial entry slots, 75-degree locking tracks, release pockets,
+hard end stops and a 1.7 mm pressure vent. The user pushes the cap fully on,
+turns to the stop and releases it outward into the pocket; opening requires a
+short inward push before the reverse turn. The complete interior and slots are
+open for washing and post-curing before assembly; the default 0.40 mm fit values are
+editable for a specific resin/printer. The print-layout switch lays both shells
+cavity-up and both caps open-side-up; the assembled view shows the caps rotated
+into their locked positions.
 
 Each recipe accepts the dimensions exposed by the **Models** panel and returns
 a closed triangular solid for STL and faceted STEP export. The source recipes
