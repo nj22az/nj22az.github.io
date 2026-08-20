@@ -110,8 +110,17 @@ assert.ok(flatFaceVertices.length > 4000, "the Body must have a real longitudina
 assert.ok(Math.max(...flatFaceVertices.map((vertex) => vertex[1])) > 1.45 &&
   Math.min(...flatFaceVertices.map((vertex) => vertex[1])) < -1.45,
   "the Pencil-style flat must be wide enough to carry the mark");
-assert.ok(Math.max(...assembled.solids[0].mesh.vertices.map((vertex) => vertex[0])) > bodyFlatOffset + 0.27,
-  "the JOHANSSON (C) pixels must be raised from and fused to the flat face");
+const raisedLogoVertices = assembled.solids[0].mesh.vertices.filter((vertex) =>
+  vertex[0] > bodyFlatOffset + 0.2
+);
+assert.ok(Math.max(...assembled.solids[0].mesh.vertices.map((vertex) => vertex[0])) > bodyFlatOffset + 0.25,
+  "the JOHANSSON © strokes must be raised from and fused to the flat face");
+assert.ok(Math.max(...raisedLogoVertices.map((vertex) => vertex[2])) -
+  Math.min(...raisedLogoVertices.map((vertex) => vertex[2])) > 22,
+  "the readable wordmark must run in one line along the Pencil's long axis");
+assert.ok(Math.max(...raisedLogoVertices.map((vertex) => vertex[1])) -
+  Math.min(...raisedLogoVertices.map((vertex) => vertex[1])) < 2.85,
+  "the wordmark must remain inside the narrow Pencil-style flat");
 
 const bodyWithoutLogo = buildModel("applePencilCase", {
   ...pencilParameters,

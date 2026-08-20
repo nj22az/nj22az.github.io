@@ -1,9 +1,9 @@
-const CACHE_NAME = "form-3d-studio-v26";
+const CACHE_NAME = "form-3d-studio-v27";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css?v=15",
-  "./open-models.js?v=12",
+  "./open-models.js?v=13",
   "./monochrome-svg.js?v=13",
   "./image-to-svg/keychain-bridge.js?v=2",
   "./image-to-svg/?embed=1",

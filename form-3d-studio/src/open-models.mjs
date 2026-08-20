@@ -10,6 +10,7 @@ const { extrudeLinear } = extrusions;
 const { geom2, geom3 } = geometries;
 const { generalize, retessellate } = modifiers;
 const { cuboid, cylinder, polyhedron } = primitives;
+const { vectorText } = modeling.text;
 const { rotateX, translate } = transforms;
 const TAU = Math.PI * 2;
 
@@ -245,7 +246,10 @@ function transformMesh(mesh, rotateXAngle, offset, rotateZAngle = 0) {
 
 function placeMeshOnBuildPlane(mesh, rotateXAngle, offsetX, offsetY, rotateZAngle = 0, lift = 0.4) {
   const transformed = transformMesh(mesh, rotateXAngle, [offsetX, offsetY, 0], rotateZAngle);
-  const minimumZ = Math.min(...transformed.vertices.map((vertex) => vertex[2]));
+  const minimumZ = transformed.vertices.reduce(
+    (minimum, vertex) => Math.min(minimum, vertex[2]),
+    Infinity
+  );
   return transformMesh(transformed, 0, [0, 0, lift - minimumZ]);
 }
 
@@ -580,56 +584,90 @@ function buildCableRing(parameters) {
   };
 }
 
-const LOGO_GLYPHS = Object.freeze({
-  "(": ["001", "010", "100", "010", "001"],
-  ")": ["100", "010", "001", "010", "100"],
-  A: ["010", "101", "111", "101", "101"],
-  C: ["011", "100", "100", "100", "011"],
-  H: ["101", "101", "111", "101", "101"],
-  J: ["111", "001", "001", "101", "010"],
-  N: ["101", "111", "111", "111", "101"],
-  O: ["010", "101", "101", "101", "010"],
-  S: ["011", "100", "010", "001", "110"]
-});
-
 function johanssonFlatRelief(flatOffset, shellLength, flatAngle = 0) {
-  const word = "JOHANSSON(C)";
-  const cell = 0.72;
-  const glyphAdvance = cell * 6;
-  const totalLength = (word.length - 1) * glyphAdvance + cell * 5;
-  const startZ = (shellLength - totalLength) / 2;
-  const pixels = [];
+  const fontHeight = 1.58;
+  const outerStrokeRadius = 0.2;
+  const coreStrokeRadius = 0.11;
+  const reliefDepth = 0.26;
+  const wordStrokes = vectorText({ height: fontHeight }, "JOHANSSON");
+  const wordPoints = wordStrokes.flat();
+  const minimumX = Math.min(...wordPoints.map((point) => point[0]));
+  const maximumX = Math.max(...wordPoints.map((point) => point[0]));
+  const minimumY = Math.min(...wordPoints.map((point) => point[1]));
+  const maximumY = Math.max(...wordPoints.map((point) => point[1]));
+  const centerY = (minimumY + maximumY) / 2;
+  const copyrightRadius = 0.84;
+  const copyrightCenterX = maximumX + 0.78 + copyrightRadius;
+  const copyrightCenterY = centerY;
+
+  function arcStroke(centerX, centerYValue, radius, startAngle, endAngle, segmentCount) {
+    return Array.from({ length: segmentCount + 1 }, (_, index) => {
+      const angle = startAngle + (endAngle - startAngle) * index / segmentCount;
+      return [centerX + Math.cos(angle) * radius, centerYValue + Math.sin(angle) * radius];
+    });
+  }
+
+  const artworkStrokes = [
+    ...wordStrokes,
+    arcStroke(copyrightCenterX, copyrightCenterY, copyrightRadius, 0, TAU, 24),
+    arcStroke(copyrightCenterX, copyrightCenterY, 0.43, Math.PI / 4, Math.PI * 7 / 4, 14)
+  ];
+  const maximumArtworkX = copyrightCenterX + copyrightRadius;
+  const startZ = (shellLength - (maximumArtworkX - minimumX)) / 2 - minimumX;
+  const segments = [];
   const zLevels = [];
   const tangentLevels = [];
-  word.split("").forEach((letter, letterIndex) => {
-    const rows = LOGO_GLYPHS[letter];
-    rows.forEach((row, rowIndex) => {
-      const z = startZ + letterIndex * glyphAdvance + (4 - rowIndex) * cell;
-      [-0.5, -0.22, 0, 0.22, 0.5].forEach((offset) => zLevels.push(z + offset * cell));
-      row.split("").forEach((pixel, columnIndex) => {
-        if (pixel !== "1") return;
-        const tangent = (columnIndex - 1) * cell;
-        pixels.push({ tangent, z });
-        [-0.5, -0.22, 0, 0.22, 0.5].forEach((offset) => tangentLevels.push(tangent + offset * cell));
+
+  artworkStrokes.forEach((stroke) => {
+    for (let index = 0; index < stroke.length - 1; index += 1) {
+      const from = stroke[index];
+      const to = stroke[index + 1];
+      const segment = {
+        tangent0: centerY - from[1],
+        z0: startZ + from[0],
+        tangent1: centerY - to[1],
+        z1: startZ + to[0]
+      };
+      segments.push(segment);
+      [0, 1].forEach((amount) => {
+        const tangent = segment.tangent0 + (segment.tangent1 - segment.tangent0) * amount;
+        const z = segment.z0 + (segment.z1 - segment.z0) * amount;
+        [-outerStrokeRadius, -coreStrokeRadius, 0, coreStrokeRadius, outerStrokeRadius]
+          .forEach((offset) => tangentLevels.push(tangent + offset));
+        [-outerStrokeRadius, 0, outerStrokeRadius]
+          .forEach((offset) => zLevels.push(z + offset));
       });
-    });
+    }
   });
-  const angles = tangentLevels.map((tangent) => flatAngle + Math.atan2(tangent, flatOffset));
-  function axisDepth(distance) {
-    const absolute = Math.abs(distance);
-    if (absolute >= cell * 0.5) return 0;
-    if (absolute <= cell * 0.22) return 1;
-    return (cell * 0.5 - absolute) / (cell * 0.28);
+
+  function distanceToSegment(tangent, z, segment) {
+    const tangentDelta = segment.tangent1 - segment.tangent0;
+    const zDelta = segment.z1 - segment.z0;
+    const lengthSquared = tangentDelta * tangentDelta + zDelta * zDelta;
+    const amount = lengthSquared === 0 ? 0 : clamp(
+      ((tangent - segment.tangent0) * tangentDelta + (z - segment.z0) * zDelta) / lengthSquared,
+      0,
+      1
+    );
+    return Math.hypot(
+      tangent - (segment.tangent0 + tangentDelta * amount),
+      z - (segment.z0 + zDelta * amount)
+    );
   }
+
+  const angles = tangentLevels.map((tangent) => flatAngle + Math.atan2(tangent, flatOffset));
   return {
     angles,
     zLevels: [...new Set(zLevels.map((value) => value.toFixed(6)))].map(Number),
     depthAt(tangent, z) {
-      let depth = 0;
-      pixels.forEach((pixel) => {
-        depth = Math.max(depth, axisDepth(tangent - pixel.tangent) * axisDepth(z - pixel.z) * 0.28);
+      let minimumDistance = Infinity;
+      segments.forEach((segment) => {
+        minimumDistance = Math.min(minimumDistance, distanceToSegment(tangent, z, segment));
       });
-      return depth;
+      if (minimumDistance >= outerStrokeRadius) return 0;
+      if (minimumDistance <= coreStrokeRadius) return reliefDepth;
+      return reliefDepth * (outerStrokeRadius - minimumDistance) /
+        (outerStrokeRadius - coreStrokeRadius);
     }
   };
 }
