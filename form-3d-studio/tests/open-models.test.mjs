@@ -89,7 +89,8 @@ for (const printLayout of [false, true]) {
 const assembled = buildModel("applePencilCase", { ...pencilParameters, pencilPrintLayout: false });
 const bodySize = bounds(assembled.solids[0].mesh);
 const capSize = bounds(assembled.solids[1].mesh);
-assert.ok(bodySize[0] <= 12.11, "the main capsule body should stay near 12.1 mm wide");
+assert.ok(bodySize[0] <= 12.21, "the fused flat-face mark should keep the body near its 12.1 mm shell diameter");
+assert.ok(bodySize[1] <= 13.31, "the bayonet lugs should remain the body's widest feature");
 assert.ok(capSize[0] <= 14.51, "the capsule cap should stay near 14.5 mm wide");
 assert.ok(capSize[2] > 29 && capSize[2] < 29.3, "the cap must retain its short pharmaceutical-capsule proportion");
 const bodyRadii = assembled.solids[0].mesh.vertices.map((vertex) => Math.hypot(vertex[0], vertex[1]));
@@ -99,6 +100,36 @@ assert.ok(Math.min(...capRadii) > 0.8 && Math.min(...capRadii) < 0.9, "the cap p
 const assembledZ = assembled.solids.flatMap((solid) => solid.mesh.vertices.map((vertex) => vertex[2]));
 assert.ok(Math.max(...assembledZ) - Math.min(...assembledZ) > 183.5,
   "the capsule must provide the requested seven millimetres of protection at each end");
+
+const bodyFlatOffset = 8.9 / 2 + 0.4 + 1.2 - 0.18;
+const flatFaceVertices = assembled.solids[0].mesh.vertices.filter((vertex) =>
+  Math.abs(vertex[0] - bodyFlatOffset) < 1e-8 && vertex[2] > 20 && vertex[2] < 130
+);
+assert.ok(flatFaceVertices.length > 4000, "the Body must have a real longitudinal planar face");
+assert.ok(Math.max(...flatFaceVertices.map((vertex) => vertex[1])) > 1.45 &&
+  Math.min(...flatFaceVertices.map((vertex) => vertex[1])) < -1.45,
+  "the Pencil-style flat must be wide enough to carry the mark");
+assert.ok(Math.max(...assembled.solids[0].mesh.vertices.map((vertex) => vertex[0])) > bodyFlatOffset + 0.27,
+  "the JOHANSSON (C) pixels must be raised from and fused to the flat face");
+
+const bodyWithoutLogo = buildModel("applePencilCase", {
+  ...pencilParameters,
+  pencilLogo: false,
+  pencilPrintLayout: false
+}).solids[0].mesh;
+assert.ok(Math.abs(Math.max(...bodyWithoutLogo.vertices.map((vertex) => vertex[0])) - bodyFlatOffset) < 1e-8,
+  "turning off the mark must leave the underlying planar face intact");
+
+const capFlatOffset = 8.9 / 2 + 0.4 + 1.2 - 0.2 + 0.4 + 1.0 - 0.18;
+assert.ok(Math.abs(Math.max(...assembled.solids[1].mesh.vertices.map((vertex) => vertex[0])) - capFlatOffset) < 1e-8,
+  "the Cap flat must align with the Body flat in the locked position");
+const alignedCapFlat = assembled.solids[1].mesh.vertices.filter((vertex) =>
+  Math.abs(vertex[0] - capFlatOffset) < 1e-8 && vertex[2] > 150 && vertex[2] < 174
+);
+assert.ok(alignedCapFlat.length > 70 &&
+  Math.max(...alignedCapFlat.map((vertex) => vertex[1])) > 1.6 &&
+  Math.min(...alignedCapFlat.map((vertex) => vertex[1])) < -1.6,
+  "the locked Cap must present a real planar face in the same direction as the Body");
 
 const lockedCap = assembled.solids[1].mesh;
 const mouthZ = Math.min(...lockedCap.vertices.map((vertex) => vertex[2]));

@@ -4,7 +4,7 @@ Form 3D Studio ships five editable starter models that build entirely in the
 browser and continue to work offline:
 
 - a Johansson cable-ring builder with an optional full-depth loading slot;
-- a slim two-piece Apple Pencil Pro pill capsule with a raised JOHANSSON wordmark;
+- a slim two-piece Apple Pencil Pro pill capsule with an aligned Pencil-style flat and raised JOHANSSON (C) mark;
 - a 20-degree pressure-angle involute spur gear;
 - a coarse-pitch, right-hand threaded hex bolt; and
 - a four-hole L-bracket with twin reinforcing gussets.
@@ -12,6 +12,9 @@ browser and continue to work offline:
 The Apple Pencil Pro template defaults to Apple's 166 mm × 8.9 mm dimensions.
 It uses one long rounded Body and one short rounded Cap, like a pharmaceutical
 capsule, with a quarter-turn bayonet instead of threads or a friction-only fit.
+The long Body has a shallow 0.18 mm longitudinal flat, and the Cap's matching
+flat aligns only in the locked position. The JOHANSSON (C) mark is fused into
+that planar face instead of wrapping around the curved shell.
 Both domes have 1.7 mm through-vents. The cap has two open axial entry slots,
 75-degree locking tracks, a release pocket and a hard end stop. Push the cap on,
 turn to the stop and release it into the pocket; opening requires a short inward

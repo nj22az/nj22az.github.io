@@ -249,12 +249,50 @@ function placeMeshOnBuildPlane(mesh, rotateXAngle, offsetX, offsetY, rotateZAngl
   return transformMesh(transformed, 0, [0, 0, lift - minimumZ]);
 }
 
-function revolvedProfileMesh(profiles, relief = null, segments = 96, closeProfile = true) {
+function addLongitudinalFlatAngles(angles, profiles, flat) {
+  if (!flat) return;
+  profiles.forEach((profile) => {
+    if (!profile.flat || profile.radius <= flat.offset + 1e-8) return;
+    const halfAngle = Math.acos(flat.offset / profile.radius);
+    angles.push(
+      normalizeAngle(flat.angle - halfAngle),
+      normalizeAngle(flat.angle + halfAngle)
+    );
+  });
+}
+
+function flattenedRadialPoint(radius, angle, flat = null) {
+  let x = Math.cos(angle) * radius;
+  let y = Math.sin(angle) * radius;
+  if (!flat) return [x, y];
+  const normalX = Math.cos(flat.angle);
+  const normalY = Math.sin(flat.angle);
+  const distance = x * normalX + y * normalY;
+  if (distance > flat.offset) {
+    x -= normalX * (distance - flat.offset);
+    y -= normalY * (distance - flat.offset);
+  }
+  return [x, y];
+}
+
+function revolvedProfileMesh(
+  profiles,
+  relief = null,
+  segments = 96,
+  closeProfile = true,
+  flat = null,
+  flatRelief = null
+) {
   const vertices = [];
   const faces = [];
   const angles = Array.from({ length: segments }, (_, index) => TAU * index / segments);
-  if (relief && Array.isArray(relief.angles)) {
-    relief.angles.forEach((angle) => angles.push(normalizeAngle(angle)));
+  [relief, flatRelief].filter(Boolean).forEach((surface) => {
+    if (Array.isArray(surface.angles)) {
+      surface.angles.forEach((angle) => angles.push(normalizeAngle(angle)));
+    }
+  });
+  addLongitudinalFlatAngles(angles, profiles, flat);
+  if (relief || flatRelief || flat) {
     angles.sort((first, second) => first - second);
     for (let index = angles.length - 1; index > 0; index -= 1) {
       if (Math.abs(angles[index] - angles[index - 1]) < 1e-8) angles.splice(index, 1);
@@ -263,7 +301,14 @@ function revolvedProfileMesh(profiles, relief = null, segments = 96, closeProfil
   const rings = profiles.map((profile) => angles.map((angle) => {
     const reliefDepth = relief && profile.relief ? relief.depthAt(angle, profile.z) : 0;
     const radius = profile.radius + reliefDepth;
-    return vertices.push([Math.cos(angle) * radius, Math.sin(angle) * radius, profile.z]) - 1;
+    const point = flattenedRadialPoint(radius, angle, profile.flat ? flat : null);
+    if (flatRelief && profile.flat) {
+      const tangent = -Math.sin(flat.angle) * point[0] + Math.cos(flat.angle) * point[1];
+      const flatDepth = flatRelief.depthAt(tangent, profile.z);
+      point[0] += Math.cos(flat.angle) * flatDepth;
+      point[1] += Math.sin(flat.angle) * flatDepth;
+    }
+    return vertices.push([point[0], point[1], profile.z]) - 1;
   }));
   const profileEdges = profiles.length - 1 + (closeProfile ? 1 : 0);
   for (let profileIndex = 0; profileIndex < profileEdges; profileIndex += 1) {
@@ -379,6 +424,7 @@ function bayonetCapMesh({
   slotWidth,
   lockAngle,
   pocketDrop,
+  flat,
   segments = 96
 }) {
   const vertices = [];
@@ -389,6 +435,33 @@ function bayonetCapMesh({
   const trackHigh = trackCenter + trackHeight / 2;
   const pocketLow = trackLow - pocketDrop;
   const slotCenters = [Math.PI / 2, Math.PI * 1.5];
+  const outerDomeAngle = Math.acos(ventRadius / capRadius);
+  const innerDomeAngle = Math.acos(ventRadius / cavityRadius);
+  const upperProfile = [
+    { radius: capRadius, z: insertionDepth, flat: true },
+    { radius: capRadius, z: domeStart, flat: true }
+  ];
+  const domeSteps = 18;
+  for (let step = 1; step <= domeSteps; step += 1) {
+    const angle = outerDomeAngle * step / domeSteps;
+    upperProfile.push({
+      radius: capRadius * Math.cos(angle),
+      z: domeStart + capRadius * Math.sin(angle),
+      flat: true
+    });
+  }
+  upperProfile.push({ radius: ventRadius, z: domeStart + Math.sqrt(cavityRadius ** 2 - ventRadius ** 2) });
+  for (let step = 1; step <= domeSteps; step += 1) {
+    const angle = innerDomeAngle * (1 - step / domeSteps);
+    upperProfile.push({
+      radius: cavityRadius * Math.cos(angle),
+      z: domeStart + cavityRadius * Math.sin(angle)
+    });
+  }
+  upperProfile.push(
+    { radius: cavityRadius, z: insertionDepth },
+    { radius: innerRadius, z: insertionDepth }
+  );
   const angles = Array.from({ length: segments }, (_, index) => TAU * index / segments);
   slotCenters.forEach((center) => {
     angles.push(
@@ -397,22 +470,24 @@ function bayonetCapMesh({
       normalizeAngle(center + lockAngle + slotHalfAngle)
     );
   });
+  addLongitudinalFlatAngles(angles, upperProfile, flat);
   angles.sort((first, second) => first - second);
   for (let index = angles.length - 1; index > 0; index -= 1) {
     if (Math.abs(angles[index] - angles[index - 1]) < 1e-8) angles.splice(index, 1);
   }
   const zLevels = [0, pocketLow, trackLow, trackHigh, insertionDepth];
   const vertexMap = new Map();
-  function vertex(radius, angleIndex, z) {
-    const key = `${radius.toFixed(6)}:${angleIndex}:${z.toFixed(6)}`;
+  function vertex(radius, angleIndex, z, applyFlat = false) {
+    const key = `${radius.toFixed(6)}:${angleIndex}:${z.toFixed(6)}:${applyFlat ? 1 : 0}`;
     if (vertexMap.has(key)) return vertexMap.get(key);
     const angle = angles[angleIndex];
-    const index = vertices.push([Math.cos(angle) * radius, Math.sin(angle) * radius, z]) - 1;
+    const point = flattenedRadialPoint(radius, angle, applyFlat ? flat : null);
+    const index = vertices.push([point[0], point[1], z]) - 1;
     vertexMap.set(key, index);
     return index;
   }
-  function gridVertex(radius, angleIndex, zIndex) {
-    return vertex(radius, angleIndex, zLevels[zIndex]);
+  function gridVertex(radius, angleIndex, zIndex, applyFlat = false) {
+    return vertex(radius, angleIndex, zLevels[zIndex], applyFlat);
   }
   function isCutout(angle, z) {
     return slotCenters.some((center) => {
@@ -440,10 +515,10 @@ function bayonetCapMesh({
     const previousAngle = (angleIndex - 1 + angleCells) % angleCells;
     for (let zIndex = 0; zIndex < zCells; zIndex += 1) {
       if (!occupied[angleIndex][zIndex]) continue;
-      const outer00 = gridVertex(capRadius, angleIndex, zIndex);
-      const outer10 = gridVertex(capRadius, nextAngle, zIndex);
-      const outer11 = gridVertex(capRadius, nextAngle, zIndex + 1);
-      const outer01 = gridVertex(capRadius, angleIndex, zIndex + 1);
+      const outer00 = gridVertex(capRadius, angleIndex, zIndex, true);
+      const outer10 = gridVertex(capRadius, nextAngle, zIndex, true);
+      const outer11 = gridVertex(capRadius, nextAngle, zIndex + 1, true);
+      const outer01 = gridVertex(capRadius, angleIndex, zIndex + 1, true);
       const inner00 = gridVertex(innerRadius, angleIndex, zIndex);
       const inner10 = gridVertex(innerRadius, nextAngle, zIndex);
       const inner11 = gridVertex(innerRadius, nextAngle, zIndex + 1);
@@ -462,34 +537,8 @@ function bayonetCapMesh({
     }
   }
 
-  const outerDomeAngle = Math.acos(ventRadius / capRadius);
-  const innerDomeAngle = Math.acos(ventRadius / cavityRadius);
-  const upperProfile = [
-    { radius: capRadius, z: insertionDepth },
-    { radius: capRadius, z: domeStart }
-  ];
-  const domeSteps = 18;
-  for (let step = 1; step <= domeSteps; step += 1) {
-    const angle = outerDomeAngle * step / domeSteps;
-    upperProfile.push({
-      radius: capRadius * Math.cos(angle),
-      z: domeStart + capRadius * Math.sin(angle)
-    });
-  }
-  upperProfile.push({ radius: ventRadius, z: domeStart + Math.sqrt(cavityRadius ** 2 - ventRadius ** 2) });
-  for (let step = 1; step <= domeSteps; step += 1) {
-    const angle = innerDomeAngle * (1 - step / domeSteps);
-    upperProfile.push({
-      radius: cavityRadius * Math.cos(angle),
-      z: domeStart + cavityRadius * Math.sin(angle)
-    });
-  }
-  upperProfile.push(
-    { radius: cavityRadius, z: insertionDepth },
-    { radius: innerRadius, z: insertionDepth }
-  );
   const profileRings = upperProfile.map((profile) => angles.map((angle, angleIndex) =>
-    vertex(profile.radius, angleIndex, profile.z)
+    vertex(profile.radius, angleIndex, profile.z, profile.flat)
   ));
   for (let profileIndex = 0; profileIndex < upperProfile.length - 1; profileIndex += 1) {
     const nextProfile = profileIndex + 1;
@@ -532,7 +581,10 @@ function buildCableRing(parameters) {
 }
 
 const LOGO_GLYPHS = Object.freeze({
+  "(": ["001", "010", "100", "010", "001"],
+  ")": ["100", "010", "001", "010", "100"],
   A: ["010", "101", "111", "101", "101"],
+  C: ["011", "100", "100", "100", "011"],
   H: ["101", "101", "111", "101", "101"],
   J: ["111", "001", "001", "101", "010"],
   N: ["101", "111", "111", "111", "101"],
@@ -540,14 +592,15 @@ const LOGO_GLYPHS = Object.freeze({
   S: ["011", "100", "010", "001", "110"]
 });
 
-function johanssonRelief(outerRadius, shellLength) {
-  const word = "JOHANSSON";
-  const cell = 0.8;
+function johanssonFlatRelief(flatOffset, shellLength, flatAngle = 0) {
+  const word = "JOHANSSON(C)";
+  const cell = 0.72;
   const glyphAdvance = cell * 6;
   const totalLength = (word.length - 1) * glyphAdvance + cell * 5;
   const startZ = (shellLength - totalLength) / 2;
   const pixels = [];
   const zLevels = [];
+  const tangentLevels = [];
   word.split("").forEach((letter, letterIndex) => {
     const rows = LOGO_GLYPHS[letter];
     rows.forEach((row, rowIndex) => {
@@ -555,16 +608,13 @@ function johanssonRelief(outerRadius, shellLength) {
       [-0.5, -0.22, 0, 0.22, 0.5].forEach((offset) => zLevels.push(z + offset * cell));
       row.split("").forEach((pixel, columnIndex) => {
         if (pixel !== "1") return;
-        pixels.push({ arc: (columnIndex - 1) * cell, z });
+        const tangent = (columnIndex - 1) * cell;
+        pixels.push({ tangent, z });
+        [-0.5, -0.22, 0, 0.22, 0.5].forEach((offset) => tangentLevels.push(tangent + offset * cell));
       });
     });
   });
-  const angles = [];
-  [-1, 0, 1].forEach((column) => {
-    [-0.5, -0.22, 0, 0.22, 0.5].forEach((offset) => {
-      angles.push(Math.PI / 2 + (column + offset) * cell / outerRadius);
-    });
-  });
+  const angles = tangentLevels.map((tangent) => flatAngle + Math.atan2(tangent, flatOffset));
   function axisDepth(distance) {
     const absolute = Math.abs(distance);
     if (absolute >= cell * 0.5) return 0;
@@ -574,11 +624,10 @@ function johanssonRelief(outerRadius, shellLength) {
   return {
     angles,
     zLevels: [...new Set(zLevels.map((value) => value.toFixed(6)))].map(Number),
-    depthAt(angle, z) {
-      const arc = (angle - Math.PI / 2) * outerRadius;
+    depthAt(tangent, z) {
       let depth = 0;
       pixels.forEach((pixel) => {
-        depth = Math.max(depth, axisDepth(arc - pixel.arc) * axisDepth(z - pixel.z) * 0.32);
+        depth = Math.max(depth, axisDepth(tangent - pixel.tangent) * axisDepth(z - pixel.z) * 0.28);
       });
       return depth;
     }
@@ -645,6 +694,8 @@ function capsuleBodyMesh({
   shoulder,
   openEnd,
   relief,
+  flat,
+  flatRelief,
   ventRadius = 0.85
 }) {
   const profiles = [];
@@ -656,15 +707,16 @@ function capsuleBodyMesh({
     profiles.push({
       radius: bodyRadius * Math.cos(angle),
       z: bodyRadius * Math.sin(angle),
-      relief: true
+      relief: true,
+      flat: true
     });
   }
 
-  const reliefLevels = relief ? relief.zLevels : [];
+  const reliefLevels = [relief, flatRelief].filter(Boolean).flatMap((surface) => surface.zLevels || []);
   const mainLevels = [0, shoulder, ...reliefLevels.filter((z) => z > 0 && z < shoulder)]
     .sort((first, second) => first - second)
     .filter((z, index, levels) => index === 0 || Math.abs(z - levels[index - 1]) > 1e-8);
-  mainLevels.slice(1).forEach((z) => profiles.push({ radius: bodyRadius, z, relief: true }));
+  mainLevels.slice(1).forEach((z) => profiles.push({ radius: bodyRadius, z, relief: true, flat: true }));
   profiles.push({ radius: neckRadius, z: shoulder, relief: true });
   const neckLevels = [shoulder, openEnd, ...reliefLevels.filter((z) => z > shoulder && z < openEnd)]
     .sort((first, second) => first - second)
@@ -681,7 +733,7 @@ function capsuleBodyMesh({
       z: cavityRadius * Math.sin(angle)
     });
   }
-  return revolvedProfileMesh(profiles, relief, 96, true);
+  return revolvedProfileMesh(profiles, relief, 96, true, flat, flatRelief);
 }
 
 function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionDepth, dimensions, domeStart) {
@@ -694,6 +746,7 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
   const slotWidth = dimensions.lugWidth + capClearance * 2;
   const lockAngle = 75 * Math.PI / 180;
   const pocketDrop = 0.45;
+  const flat = { offset: capRadius - 0.18, angle: lockAngle };
   const capHeight = domeStart + Math.sqrt(capRadius ** 2 - ventRadius ** 2);
   return {
     mesh: bayonetCapMesh({
@@ -706,7 +759,8 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
       trackHeight,
       slotWidth,
       lockAngle,
-      pocketDrop
+      pocketDrop,
+      flat
     }),
     capHeight,
     capRadius,
@@ -741,8 +795,9 @@ function buildApplePencilCase(parameters) {
   const lugCenter = shoulder + capResult.trackCenter - capResult.pocketDrop;
   const upperLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI / 2, bayonet);
   const lowerLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI * 1.5, bayonet);
-  const logo = parameters.pencilLogo === false ? null : johanssonRelief(bodyRadius, shoulder);
-  const bodyRelief = combineReliefs(logo, upperLug, lowerLug);
+  const bodyFlat = { offset: bodyRadius - 0.18, angle: 0 };
+  const logo = parameters.pencilLogo === false ? null : johanssonFlatRelief(bodyFlat.offset, shoulder, bodyFlat.angle);
+  const bodyRelief = combineReliefs(upperLug, lowerLug);
   const bodyMesh = capsuleBodyMesh({
     bodyRadius,
     cavityRadius,
@@ -750,6 +805,8 @@ function buildApplePencilCase(parameters) {
     shoulder,
     openEnd,
     relief: bodyRelief,
+    flat: bodyFlat,
+    flatRelief: logo,
     ventRadius
   });
 
