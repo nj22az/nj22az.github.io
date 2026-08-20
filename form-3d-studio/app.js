@@ -43,6 +43,7 @@
     pencilClearance: 0.4,
     pencilWall: 1.2,
     pencilCapClearance: 0.4,
+    pencilEndProtection: 7,
     pencilLogo: true,
     pencilPrintLayout: true,
     gearTeeth: 20,
@@ -2266,7 +2267,7 @@
       var fittedInner = Math.min(Number(value), Math.max(20, state.ringOuterDiameter - 6));
       return fittedInner.toFixed(0) + (fittedInner + 0.001 < Number(value) ? " · fitted" : "");
     }
-    if (name === "pencilLength") return Number(value).toFixed(1);
+    if (["pencilLength", "pencilEndProtection"].includes(name)) return Number(value).toFixed(1);
     if (name === "pencilDiameter") return Number(value).toFixed(2);
     if (["pencilClearance", "pencilWall", "pencilCapClearance"].includes(name)) return Number(value).toFixed(2);
     if (name === "ringTrayWidth") return Number(value).toFixed(1);

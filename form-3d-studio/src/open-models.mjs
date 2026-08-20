@@ -243,8 +243,39 @@ function transformMesh(mesh, rotateXAngle, offset, rotateZAngle = 0) {
   };
 }
 
-function shellRadiusProfiles(outerRadius, shellLength) {
-  return [{ z: 0, radius: outerRadius }, { z: shellLength, radius: outerRadius }];
+function placeMeshOnBuildPlane(mesh, rotateXAngle, offsetX, offsetY, rotateZAngle = 0, lift = 0.4) {
+  const transformed = transformMesh(mesh, rotateXAngle, [offsetX, offsetY, 0], rotateZAngle);
+  const minimumZ = Math.min(...transformed.vertices.map((vertex) => vertex[2]));
+  return transformMesh(transformed, 0, [0, 0, lift - minimumZ]);
+}
+
+function revolvedProfileMesh(profiles, relief = null, segments = 96, closeProfile = true) {
+  const vertices = [];
+  const faces = [];
+  const angles = Array.from({ length: segments }, (_, index) => TAU * index / segments);
+  if (relief && Array.isArray(relief.angles)) {
+    relief.angles.forEach((angle) => angles.push(normalizeAngle(angle)));
+    angles.sort((first, second) => first - second);
+    for (let index = angles.length - 1; index > 0; index -= 1) {
+      if (Math.abs(angles[index] - angles[index - 1]) < 1e-8) angles.splice(index, 1);
+    }
+  }
+  const rings = profiles.map((profile) => angles.map((angle) => {
+    const reliefDepth = relief && profile.relief ? relief.depthAt(angle, profile.z) : 0;
+    const radius = profile.radius + reliefDepth;
+    return vertices.push([Math.cos(angle) * radius, Math.sin(angle) * radius, profile.z]) - 1;
+  }));
+  const profileEdges = profiles.length - 1 + (closeProfile ? 1 : 0);
+  for (let profileIndex = 0; profileIndex < profileEdges; profileIndex += 1) {
+    const nextProfile = (profileIndex + 1) % profiles.length;
+    for (let angleIndex = 0; angleIndex < angles.length; angleIndex += 1) {
+      const nextAngle = (angleIndex + 1) % angles.length;
+      addQuad(faces,
+        rings[profileIndex][angleIndex], rings[profileIndex][nextAngle],
+        rings[nextProfile][nextAngle], rings[nextProfile][angleIndex]);
+    }
+  }
+  return { vertices, faces };
 }
 
 function halfShellMesh(profiles, innerRadius, startAngle, endAngle, segments = 48, relief = null) {
@@ -339,7 +370,8 @@ function angularDistance(first, second) {
 
 function bayonetCapMesh({
   capRadius,
-  capHeight,
+  cavityRadius,
+  domeStart,
   innerRadius,
   insertionDepth,
   trackCenter,
@@ -371,14 +403,16 @@ function bayonetCapMesh({
   }
   const zLevels = [0, pocketLow, trackLow, trackHigh, insertionDepth];
   const vertexMap = new Map();
-  function vertex(radius, angleIndex, zIndex, zOverride = null) {
-    const key = `${radius.toFixed(6)}:${angleIndex}:${zIndex}:${zOverride ?? ""}`;
+  function vertex(radius, angleIndex, z) {
+    const key = `${radius.toFixed(6)}:${angleIndex}:${z.toFixed(6)}`;
     if (vertexMap.has(key)) return vertexMap.get(key);
     const angle = angles[angleIndex];
-    const z = zOverride === null ? zLevels[zIndex] : zOverride;
     const index = vertices.push([Math.cos(angle) * radius, Math.sin(angle) * radius, z]) - 1;
     vertexMap.set(key, index);
     return index;
+  }
+  function gridVertex(radius, angleIndex, zIndex) {
+    return vertex(radius, angleIndex, zLevels[zIndex]);
   }
   function isCutout(angle, z) {
     return slotCenters.some((center) => {
@@ -406,14 +440,14 @@ function bayonetCapMesh({
     const previousAngle = (angleIndex - 1 + angleCells) % angleCells;
     for (let zIndex = 0; zIndex < zCells; zIndex += 1) {
       if (!occupied[angleIndex][zIndex]) continue;
-      const outer00 = vertex(capRadius, angleIndex, zIndex);
-      const outer10 = vertex(capRadius, nextAngle, zIndex);
-      const outer11 = vertex(capRadius, nextAngle, zIndex + 1);
-      const outer01 = vertex(capRadius, angleIndex, zIndex + 1);
-      const inner00 = vertex(innerRadius, angleIndex, zIndex);
-      const inner10 = vertex(innerRadius, nextAngle, zIndex);
-      const inner11 = vertex(innerRadius, nextAngle, zIndex + 1);
-      const inner01 = vertex(innerRadius, angleIndex, zIndex + 1);
+      const outer00 = gridVertex(capRadius, angleIndex, zIndex);
+      const outer10 = gridVertex(capRadius, nextAngle, zIndex);
+      const outer11 = gridVertex(capRadius, nextAngle, zIndex + 1);
+      const outer01 = gridVertex(capRadius, angleIndex, zIndex + 1);
+      const inner00 = gridVertex(innerRadius, angleIndex, zIndex);
+      const inner10 = gridVertex(innerRadius, nextAngle, zIndex);
+      const inner11 = gridVertex(innerRadius, nextAngle, zIndex + 1);
+      const inner01 = gridVertex(innerRadius, angleIndex, zIndex + 1);
       addQuad(faces, outer00, outer10, outer11, outer01);
       addQuad(faces, inner00, inner01, inner11, inner10);
 
@@ -428,23 +462,43 @@ function bayonetCapMesh({
     }
   }
 
-  const topZIndex = zLevels.length - 1;
-  for (let angleIndex = 0; angleIndex < angleCells; angleIndex += 1) {
-    const nextAngle = (angleIndex + 1) % angleCells;
-    const outerBottom = vertex(capRadius, angleIndex, topZIndex);
-    const outerBottomNext = vertex(capRadius, nextAngle, topZIndex);
-    const innerBottom = vertex(innerRadius, angleIndex, topZIndex);
-    const innerBottomNext = vertex(innerRadius, nextAngle, topZIndex);
-    const outerTop = vertex(capRadius, angleIndex, topZIndex, capHeight);
-    const outerTopNext = vertex(capRadius, nextAngle, topZIndex, capHeight);
-    const ventBottom = vertex(ventRadius, angleIndex, topZIndex);
-    const ventBottomNext = vertex(ventRadius, nextAngle, topZIndex);
-    const ventTop = vertex(ventRadius, angleIndex, topZIndex, capHeight);
-    const ventTopNext = vertex(ventRadius, nextAngle, topZIndex, capHeight);
-    addQuad(faces, outerBottom, outerBottomNext, outerTopNext, outerTop);
-    addQuad(faces, innerBottom, ventBottom, ventBottomNext, innerBottomNext);
-    addQuad(faces, ventBottom, ventTop, ventTopNext, ventBottomNext);
-    addQuad(faces, outerTop, outerTopNext, ventTopNext, ventTop);
+  const outerDomeAngle = Math.acos(ventRadius / capRadius);
+  const innerDomeAngle = Math.acos(ventRadius / cavityRadius);
+  const upperProfile = [
+    { radius: capRadius, z: insertionDepth },
+    { radius: capRadius, z: domeStart }
+  ];
+  const domeSteps = 18;
+  for (let step = 1; step <= domeSteps; step += 1) {
+    const angle = outerDomeAngle * step / domeSteps;
+    upperProfile.push({
+      radius: capRadius * Math.cos(angle),
+      z: domeStart + capRadius * Math.sin(angle)
+    });
+  }
+  upperProfile.push({ radius: ventRadius, z: domeStart + Math.sqrt(cavityRadius ** 2 - ventRadius ** 2) });
+  for (let step = 1; step <= domeSteps; step += 1) {
+    const angle = innerDomeAngle * (1 - step / domeSteps);
+    upperProfile.push({
+      radius: cavityRadius * Math.cos(angle),
+      z: domeStart + cavityRadius * Math.sin(angle)
+    });
+  }
+  upperProfile.push(
+    { radius: cavityRadius, z: insertionDepth },
+    { radius: innerRadius, z: insertionDepth }
+  );
+  const profileRings = upperProfile.map((profile) => angles.map((angle, angleIndex) =>
+    vertex(profile.radius, angleIndex, profile.z)
+  ));
+  for (let profileIndex = 0; profileIndex < upperProfile.length - 1; profileIndex += 1) {
+    const nextProfile = profileIndex + 1;
+    for (let angleIndex = 0; angleIndex < angles.length; angleIndex += 1) {
+      const nextAngle = (angleIndex + 1) % angles.length;
+      addQuad(faces,
+        profileRings[profileIndex][angleIndex], profileRings[profileIndex][nextAngle],
+        profileRings[nextProfile][nextAngle], profileRings[nextProfile][angleIndex]);
+    }
   }
   return { vertices, faces };
 }
@@ -531,13 +585,12 @@ function johanssonRelief(outerRadius, shellLength) {
   };
 }
 
-function bayonetLugRelief(outerRadius, shellLength, centerAngle, dimensions) {
-  const { lugDepth, lugDistance, lugHeight, lugWidth } = dimensions;
+function bayonetLugRelief(outerRadius, lugCenters, centerAngle, dimensions) {
+  const { lugDepth, lugHeight, lugWidth } = dimensions;
   const angularHalfWidth = lugWidth / (outerRadius * 2);
   const angularBevel = Math.min(0.18 / outerRadius, angularHalfWidth * 0.35);
   const axialHalfHeight = lugHeight / 2;
   const axialBevel = Math.min(0.16, axialHalfHeight * 0.35);
-  const lugCenters = [lugDistance, shellLength - lugDistance];
   const angles = [
     centerAngle - angularHalfWidth,
     centerAngle - angularHalfWidth + angularBevel,
@@ -585,30 +638,68 @@ function combineReliefs(...reliefs) {
   };
 }
 
-function profilesWithRelief(baseProfiles, relief, outerRadius, shellLength) {
-  if (!relief) return baseProfiles;
-  return baseProfiles.concat(relief.zLevels
-    .filter((z) => z > 0 && z < shellLength)
-    .map((z) => ({ z, radius: outerRadius })))
-    .sort((first, second) => first.z - second.z)
-    .filter((profile, index, profiles) => index === 0 || Math.abs(profile.z - profiles[index - 1].z) > 1e-8);
+function capsuleBodyMesh({
+  bodyRadius,
+  cavityRadius,
+  neckRadius,
+  shoulder,
+  openEnd,
+  relief,
+  ventRadius = 0.85
+}) {
+  const profiles = [];
+  const outerDomeAngle = Math.acos(ventRadius / bodyRadius);
+  const innerDomeAngle = Math.acos(ventRadius / cavityRadius);
+  const domeSteps = 18;
+  for (let step = 0; step <= domeSteps; step += 1) {
+    const angle = -outerDomeAngle + outerDomeAngle * step / domeSteps;
+    profiles.push({
+      radius: bodyRadius * Math.cos(angle),
+      z: bodyRadius * Math.sin(angle),
+      relief: true
+    });
+  }
+
+  const reliefLevels = relief ? relief.zLevels : [];
+  const mainLevels = [0, shoulder, ...reliefLevels.filter((z) => z > 0 && z < shoulder)]
+    .sort((first, second) => first - second)
+    .filter((z, index, levels) => index === 0 || Math.abs(z - levels[index - 1]) > 1e-8);
+  mainLevels.slice(1).forEach((z) => profiles.push({ radius: bodyRadius, z, relief: true }));
+  profiles.push({ radius: neckRadius, z: shoulder, relief: true });
+  const neckLevels = [shoulder, openEnd, ...reliefLevels.filter((z) => z > shoulder && z < openEnd)]
+    .sort((first, second) => first - second)
+    .filter((z, index, levels) => index === 0 || Math.abs(z - levels[index - 1]) > 1e-8);
+  neckLevels.slice(1).forEach((z) => profiles.push({ radius: neckRadius, z, relief: true }));
+  profiles.push(
+    { radius: cavityRadius, z: openEnd },
+    { radius: cavityRadius, z: 0 }
+  );
+  for (let step = 1; step <= domeSteps; step += 1) {
+    const angle = -innerDomeAngle * step / domeSteps;
+    profiles.push({
+      radius: cavityRadius * Math.cos(angle),
+      z: cavityRadius * Math.sin(angle)
+    });
+  }
+  return revolvedProfileMesh(profiles, relief, 96, true);
 }
 
-function makeVentedBayonetCap(outerRadius, capClearance, insertionDepth, dimensions) {
-  const roof = 2.0;
-  const capHeight = insertionDepth + roof;
-  const capWall = 1.4;
-  const innerRadius = outerRadius + capClearance;
+function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionDepth, dimensions, domeStart) {
+  const ventRadius = 0.85;
+  const capWall = 1.0;
+  const innerRadius = neckRadius + capClearance;
   const capRadius = innerRadius + capWall;
-  const trackCenter = insertionDepth - dimensions.lugDistance;
-  const trackHeight = dimensions.lugHeight + capClearance * 2;
+  const trackCenter = insertionDepth - 2.2;
+  const trackHeight = dimensions.lugHeight + 0.3;
   const slotWidth = dimensions.lugWidth + capClearance * 2;
   const lockAngle = 75 * Math.PI / 180;
   const pocketDrop = 0.45;
+  const capHeight = domeStart + Math.sqrt(capRadius ** 2 - ventRadius ** 2);
   return {
     mesh: bayonetCapMesh({
       capRadius,
-      capHeight,
+      cavityRadius,
+      domeStart,
       innerRadius,
       insertionDepth,
       trackCenter,
@@ -619,6 +710,8 @@ function makeVentedBayonetCap(outerRadius, capClearance, insertionDepth, dimensi
     }),
     capHeight,
     capRadius,
+    innerRadius,
+    trackCenter,
     lockAngle,
     pocketDrop
   };
@@ -630,51 +723,59 @@ function buildApplePencilCase(parameters) {
   const pencilClearance = clamp(parameters.pencilClearance, 0.25, 0.7);
   const wall = clamp(parameters.pencilWall, 1.0, 2.0);
   const capClearance = clamp(parameters.pencilCapClearance, 0.25, 0.6);
-  const shellLength = pencilLength + 2.0;
+  const endProtection = clamp(parameters.pencilEndProtection ?? 7, 4, 10);
   const cavityRadius = pencilDiameter / 2 + pencilClearance;
-  const outerRadius = cavityRadius + wall;
+  const bodyRadius = cavityRadius + wall;
+  const neckRadius = bodyRadius - 0.2;
   const insertionDepth = 7.5;
-  const bayonet = { lugDepth: 0.8, lugDistance: 2.2, lugHeight: 1.2, lugWidth: 2.4 };
-  const baseProfiles = shellRadiusProfiles(outerRadius, shellLength);
-  const upperLugs = bayonetLugRelief(outerRadius, shellLength, Math.PI / 2, bayonet);
-  const lowerLugs = bayonetLugRelief(outerRadius, shellLength, Math.PI * 1.5, bayonet);
-  const logo = parameters.pencilLogo === false ? null : johanssonRelief(outerRadius, shellLength);
-  const upperRelief = combineReliefs(logo, upperLugs);
-  const lowerRelief = combineReliefs(lowerLugs);
-  const upperProfiles = profilesWithRelief(baseProfiles, upperRelief, outerRadius, shellLength);
-  const lowerProfiles = profilesWithRelief(baseProfiles, lowerRelief, outerRadius, shellLength);
-  const upperShellMesh = halfShellMesh(upperProfiles, cavityRadius, 0, Math.PI, 48, upperRelief);
-  const lowerShellMesh = halfShellMesh(lowerProfiles, cavityRadius, Math.PI, TAU, 48, lowerRelief);
+  const domeStart = 22.0;
+  const ventRadius = 0.85;
+  const innerDomeHeight = Math.sqrt(cavityRadius ** 2 - ventRadius ** 2);
+  const innerCapsuleLength = pencilLength + endProtection * 2;
+  const shoulder = innerCapsuleLength - domeStart - innerDomeHeight * 2;
+  const openEnd = shoulder + insertionDepth;
+  const bayonet = { lugDepth: 0.8, lugHeight: 1.2, lugWidth: 2.4 };
+  const capResult = makeVentedBayonetCap(
+    cavityRadius, neckRadius, capClearance, insertionDepth, bayonet, domeStart
+  );
+  const lugCenter = shoulder + capResult.trackCenter - capResult.pocketDrop;
+  const upperLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI / 2, bayonet);
+  const lowerLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI * 1.5, bayonet);
+  const logo = parameters.pencilLogo === false ? null : johanssonRelief(bodyRadius, shoulder);
+  const bodyRelief = combineReliefs(logo, upperLug, lowerLug);
+  const bodyMesh = capsuleBodyMesh({
+    bodyRadius,
+    cavityRadius,
+    neckRadius,
+    shoulder,
+    openEnd,
+    relief: bodyRelief,
+    ventRadius
+  });
 
-  const capResult = makeVentedBayonetCap(outerRadius, capClearance, insertionDepth, bayonet);
   let parts;
   if (parameters.pencilPrintLayout !== false) {
-    const shellSpacing = outerRadius + bayonet.lugDepth + 3.2;
-    const shellLift = outerRadius + bayonet.lugDepth + 0.55;
-    const firstShell = transformMesh(upperShellMesh, -Math.PI / 2, [-shellSpacing, -shellLength / 2, shellLift]);
-    const secondShell = transformMesh(lowerShellMesh, Math.PI / 2, [shellSpacing, shellLength / 2, shellLift]);
-    const capSpacing = capResult.capRadius * 2.4;
-    const printableCap = transformMesh(capResult.mesh, Math.PI, [0, 0, capResult.capHeight]);
+    const partSpacing = bodyRadius + bayonet.lugDepth + capResult.capRadius + 4.0;
     parts = [
-      { name: "Johansson upper split shell", mesh: firstShell },
-      { name: "Lower split shell", mesh: secondShell },
-      { name: "Tip vented bayonet cap", mesh: transformMesh(printableCap, 0, [-capSpacing, 0, 0]) },
-      { name: "Tail vented bayonet cap", mesh: transformMesh(printableCap, 0, [capSpacing, 0, 0]) }
+      {
+        name: "Johansson vented capsule body",
+        mesh: placeMeshOnBuildPlane(bodyMesh, -75 * Math.PI / 180, -partSpacing / 2, 0)
+      },
+      {
+        name: "Vented bayonet capsule cap",
+        mesh: placeMeshOnBuildPlane(capResult.mesh, 105 * Math.PI / 180, partSpacing / 2, 0)
+      }
     ];
   } else {
-    const capMesh = capResult.mesh;
-    const bottomCap = transformMesh(capMesh, Math.PI, [0, 0, insertionDepth - capResult.pocketDrop], capResult.lockAngle);
-    const topCap = transformMesh(capMesh, 0, [0, 0, shellLength - insertionDepth + capResult.pocketDrop], -capResult.lockAngle);
+    const lockedCap = transformMesh(capResult.mesh, 0, [0, 0, shoulder], -capResult.lockAngle);
     parts = [
-      { name: "Johansson upper split shell", mesh: upperShellMesh },
-      { name: "Lower split shell", mesh: lowerShellMesh },
-      { name: "Tip vented bayonet cap", mesh: bottomCap },
-      { name: "Tail vented bayonet cap", mesh: topCap }
+      { name: "Johansson vented capsule body", mesh: bodyMesh },
+      { name: "Vented bayonet capsule cap", mesh: lockedCap }
     ];
   }
 
   return {
-    name: `Johansson Apple Pencil Pro split-shell case`,
+    name: `Johansson Apple Pencil Pro pill capsule`,
     solids: parts
   };
 }
