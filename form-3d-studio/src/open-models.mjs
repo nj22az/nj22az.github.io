@@ -742,10 +742,10 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
   const innerRadius = neckRadius + capClearance;
   const capRadius = innerRadius + capWall;
   const trackCenter = insertionDepth - 2.2;
-  const trackHeight = dimensions.lugHeight + 0.3;
-  const slotWidth = dimensions.lugWidth + capClearance * 2;
+  const trackHeight = dimensions.lugHeight + dimensions.runningClearance * 2;
+  const slotWidth = dimensions.lugWidth + dimensions.runningClearance * 2;
   const lockAngle = 75 * Math.PI / 180;
-  const pocketDrop = 0.45;
+  const pocketDrop = 0.65;
   const flat = { offset: capRadius - 0.18, angle: lockAngle };
   const capHeight = domeStart + Math.sqrt(capRadius ** 2 - ventRadius ** 2);
   return {
@@ -776,7 +776,7 @@ function buildApplePencilCase(parameters) {
   const pencilDiameter = clamp(parameters.pencilDiameter, 8.6, 9.4);
   const pencilClearance = clamp(parameters.pencilClearance, 0.25, 0.7);
   const wall = clamp(parameters.pencilWall, 1.0, 2.0);
-  const capClearance = clamp(parameters.pencilCapClearance, 0.25, 0.6);
+  const capClearance = clamp(parameters.pencilCapClearance, 0.5, 1.0);
   const endProtection = clamp(parameters.pencilEndProtection ?? 7, 4, 10);
   const cavityRadius = pencilDiameter / 2 + pencilClearance;
   const bodyRadius = cavityRadius + wall;
@@ -788,7 +788,12 @@ function buildApplePencilCase(parameters) {
   const innerCapsuleLength = pencilLength + endProtection * 2;
   const shoulder = innerCapsuleLength - domeStart - innerDomeHeight * 2;
   const openEnd = shoulder + insertionDepth;
-  const bayonet = { lugDepth: 0.8, lugHeight: 1.2, lugWidth: 2.4 };
+  const bayonet = {
+    lugDepth: capClearance + 0.55,
+    lugHeight: 1.2,
+    lugWidth: 2.4,
+    runningClearance: 0.4
+  };
   const capResult = makeVentedBayonetCap(
     cavityRadius, neckRadius, capClearance, insertionDepth, bayonet, domeStart
   );

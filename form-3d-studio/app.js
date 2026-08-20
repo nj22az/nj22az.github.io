@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v8";
+  var STORAGE_KEY = "form-3d-studio-settings-v9";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -42,7 +42,7 @@
     pencilDiameter: 8.9,
     pencilClearance: 0.4,
     pencilWall: 1.2,
-    pencilCapClearance: 0.4,
+    pencilCapClearance: 0.7,
     pencilEndProtection: 7,
     pencilLogo: true,
     pencilPrintLayout: true,
@@ -135,9 +135,10 @@
   function loadState() {
     try {
       var current = localStorage.getItem(STORAGE_KEY);
-      var saved = JSON.parse(current || localStorage.getItem("form-3d-studio-settings-v7") || localStorage.getItem("form-3d-studio-settings-v6") || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
+      var saved = JSON.parse(current || localStorage.getItem("form-3d-studio-settings-v8") || localStorage.getItem("form-3d-studio-settings-v7") || localStorage.getItem("form-3d-studio-settings-v6") || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
       if (!current) merged.monochromeThreshold = defaults.monochromeThreshold;
+      if (!current || Number(merged.pencilCapClearance) < 0.5) merged.pencilCapClearance = defaults.pencilCapClearance;
       if (!["keychain", "box", "cylinder", "library"].includes(merged.mode)) merged.mode = "keychain";
       if (!["cableRing", "applePencilCase", "spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
       merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);

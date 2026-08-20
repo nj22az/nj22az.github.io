@@ -16,11 +16,14 @@ The long Body has a shallow 0.18 mm longitudinal flat, and the Cap's matching
 flat aligns only in the locked position. The JOHANSSON (C) mark is fused into
 that planar face instead of wrapping around the curved shell.
 Both domes have 1.7 mm through-vents. The cap has two open axial entry slots,
-75-degree locking tracks, a release pocket and a hard end stop. Push the cap on,
-turn to the stop and release it into the pocket; opening requires a short inward
-push before the reverse turn. The 0.40 mm default fit values and 4–10 mm end
-protection are editable for a specific resin/printer. Print layout separates
-and tilts both parts so their open interiors and dome vents can drain.
+75-degree locking tracks, a release pocket and a hard end stop. Its cylindrical
+wall has a deliberate 0.70 mm radial gap and provides no friction retention.
+The bayonet instead uses 0.55 mm radial lug engagement, 0.40 mm running
+clearance on each side of the tracks, and a 0.65 mm locking drop. Push the cap
+on, turn to the stop and release it into the pocket; opening requires a short
+inward push before the reverse turn. The loose cap gap is adjustable from
+0.50–1.00 mm without reducing lug engagement. Print layout separates and tilts
+both parts so their open interiors and dome vents can drain.
 
 Each recipe accepts the dimensions exposed by the **Models** panel and returns
 a closed triangular solid for STL and faceted STEP export. The source recipes

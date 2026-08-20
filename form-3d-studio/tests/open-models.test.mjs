@@ -73,7 +73,7 @@ const pencilParameters = {
   pencilDiameter: 8.9,
   pencilClearance: 0.4,
   pencilWall: 1.2,
-  pencilCapClearance: 0.4,
+  pencilCapClearance: 0.7,
   pencilEndProtection: 7,
   pencilLogo: true
 };
@@ -90,9 +90,10 @@ const assembled = buildModel("applePencilCase", { ...pencilParameters, pencilPri
 const bodySize = bounds(assembled.solids[0].mesh);
 const capSize = bounds(assembled.solids[1].mesh);
 assert.ok(bodySize[0] <= 12.21, "the fused flat-face mark should keep the body near its 12.1 mm shell diameter");
-assert.ok(bodySize[1] <= 13.31, "the bayonet lugs should remain the body's widest feature");
-assert.ok(capSize[0] <= 14.51, "the capsule cap should stay near 14.5 mm wide");
-assert.ok(capSize[2] > 29 && capSize[2] < 29.3, "the cap must retain its short pharmaceutical-capsule proportion");
+assert.ok(bodySize[1] <= 14.21, "the deep bayonet lugs should remain the body's widest feature");
+assert.ok(capSize[0] <= 14.93 && capSize[1] <= 15.11,
+  "the deliberately oversized capsule cap should stay near 15.1 mm wide");
+assert.ok(capSize[2] > 29.4 && capSize[2] < 29.6, "the cap must retain its short pharmaceutical-capsule proportion");
 const bodyRadii = assembled.solids[0].mesh.vertices.map((vertex) => Math.hypot(vertex[0], vertex[1]));
 const capRadii = assembled.solids[1].mesh.vertices.map((vertex) => Math.hypot(vertex[0], vertex[1]));
 assert.ok(Math.min(...bodyRadii) > 0.8 && Math.min(...bodyRadii) < 0.9, "the body dome must have a real drain hole");
@@ -120,7 +121,7 @@ const bodyWithoutLogo = buildModel("applePencilCase", {
 assert.ok(Math.abs(Math.max(...bodyWithoutLogo.vertices.map((vertex) => vertex[0])) - bodyFlatOffset) < 1e-8,
   "turning off the mark must leave the underlying planar face intact");
 
-const capFlatOffset = 8.9 / 2 + 0.4 + 1.2 - 0.2 + 0.4 + 1.0 - 0.18;
+const capFlatOffset = 8.9 / 2 + 0.4 + 1.2 - 0.2 + 0.7 + 1.0 - 0.18;
 assert.ok(Math.abs(Math.max(...assembled.solids[1].mesh.vertices.map((vertex) => vertex[0])) - capFlatOffset) < 1e-8,
   "the Cap flat must align with the Body flat in the locked position");
 const alignedCapFlat = assembled.solids[1].mesh.vertices.filter((vertex) =>
@@ -133,6 +134,14 @@ assert.ok(alignedCapFlat.length > 70 &&
 
 const lockedCap = assembled.solids[1].mesh;
 const mouthZ = Math.min(...lockedCap.vertices.map((vertex) => vertex[2]));
+const neckRadius = 8.9 / 2 + 0.4 + 1.2 - 0.2;
+const mouthRadii = lockedCap.vertices
+  .filter((vertex) => Math.abs(vertex[2] - mouthZ) < 1e-8)
+  .map((vertex) => Math.hypot(vertex[0], vertex[1]));
+assert.ok(Math.abs(Math.min(...mouthRadii) - (neckRadius + 0.7)) < 1e-8,
+  "the cap wall must have a deliberate 0.70 mm radial air gap around the Body neck");
+assert.ok(Math.abs(Math.max(...bodyRadii) - (neckRadius + 0.7 + 0.55)) < 1e-8,
+  "the lugs must retain 0.55 mm radial engagement independently of the loose cap gap");
 const lockedEntryAngle = Math.PI / 2 - 75 * Math.PI / 180;
 const positiveEntryDistance = Math.min(...lockedCap.vertices
   .filter((vertex) => Math.abs(vertex[2] - mouthZ) < 1e-8 && Math.hypot(vertex[0], vertex[1]) > 7.2)
@@ -150,7 +159,7 @@ assert.ok(measureVolume(intersect(assembledGeometries[0], assembledGeometries[1]
 const thickWallCapsule = buildModel("applePencilCase", {
   ...pencilParameters,
   pencilWall: 2,
-  pencilCapClearance: 0.25,
+  pencilCapClearance: 0.5,
   pencilEndProtection: 10,
   pencilLogo: false,
   pencilPrintLayout: false
@@ -163,5 +172,31 @@ const thickWallGeometry = thickWallCapsule.solids.map((solid) => polyhedron({
 }));
 assert.ok(measureVolume(intersect(thickWallGeometry[0], thickWallGeometry[1])) < 1e-7,
   "the bayonet must remain interference-free at the thick-wall parameter limit");
+
+const maximumGapCapsule = buildModel("applePencilCase", {
+  ...pencilParameters,
+  pencilCapClearance: 1,
+  pencilLogo: false,
+  pencilPrintLayout: false
+});
+maximumGapCapsule.solids.forEach((solid) => assertClosedPositiveMesh(solid.mesh, `maximum-gap ${solid.name}`));
+const maximumGapBodyRadius = Math.max(...maximumGapCapsule.solids[0].mesh.vertices
+  .map((vertex) => Math.hypot(vertex[0], vertex[1])));
+const maximumGapCap = maximumGapCapsule.solids[1].mesh;
+const maximumGapMouth = Math.min(...maximumGapCap.vertices.map((vertex) => vertex[2]));
+const maximumGapInnerRadius = Math.min(...maximumGapCap.vertices
+  .filter((vertex) => Math.abs(vertex[2] - maximumGapMouth) < 1e-8)
+  .map((vertex) => Math.hypot(vertex[0], vertex[1])));
+assert.ok(Math.abs(maximumGapInnerRadius - (neckRadius + 1)) < 1e-8,
+  "the maximum cap gap must remain a true non-contact cylindrical clearance");
+assert.ok(Math.abs(maximumGapBodyRadius - maximumGapInnerRadius - 0.55) < 1e-8,
+  "increasing the loose cap gap must not reduce the bayonet lug engagement");
+const maximumGapGeometry = maximumGapCapsule.solids.map((solid) => polyhedron({
+  points: solid.mesh.vertices,
+  faces: solid.mesh.faces,
+  orientation: "outward"
+}));
+assert.ok(measureVolume(intersect(maximumGapGeometry[0], maximumGapGeometry[1])) < 1e-7,
+  "the widest loose cap setting must remain interference-free when locked");
 
 console.log("open model geometry tests passed");
