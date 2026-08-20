@@ -306,7 +306,8 @@ function revolvedProfileMesh(
     const reliefDepth = relief && profile.relief ? relief.depthAt(angle, profile.z) : 0;
     const radius = profile.radius + reliefDepth;
     const point = flattenedRadialPoint(radius, angle, profile.flat ? flat : null);
-    if (flatRelief && profile.flat) {
+    const flatDistance = flat ? Math.cos(flat.angle) * point[0] + Math.sin(flat.angle) * point[1] : 0;
+    if (flatRelief && profile.flat && Math.abs(flatDistance - flat.offset) < 1e-8) {
       const tangent = -Math.sin(flat.angle) * point[0] + Math.cos(flat.angle) * point[1];
       const flatDepth = flatRelief.depthAt(tangent, profile.z);
       point[0] += Math.cos(flat.angle) * flatDepth;

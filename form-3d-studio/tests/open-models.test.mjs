@@ -133,6 +133,16 @@ assert.ok(Math.max(...raisedLogoVertices.map((vertex) => vertex[2])) -
 assert.ok(Math.max(...raisedLogoVertices.map((vertex) => vertex[1])) -
   Math.min(...raisedLogoVertices.map((vertex) => vertex[1])) < 2.85,
   "the wordmark must remain inside the narrow Pencil-style flat");
+const logoMinimumZ = Math.min(...raisedLogoVertices.map((vertex) => vertex[2]));
+const logoMaximumZ = Math.max(...raisedLogoVertices.map((vertex) => vertex[2]));
+const oppositeOuterSurface = assembled.solids[0].mesh.vertices.filter((vertex) => {
+  const radius = Math.hypot(vertex[0], vertex[1]);
+  return vertex[0] < 0 && vertex[2] >= logoMinimumZ && vertex[2] <= logoMaximumZ &&
+    radius > 8.9 / 2 + 0.4 + 1.2 - 0.5;
+});
+assert.ok(Math.min(...oppositeOuterSurface.map((vertex) => Math.hypot(vertex[0], vertex[1]))) >
+  8.9 / 2 + 0.4 + 1.2 - 1e-8,
+  "the JOHANSSON © relief must affect only the +X flat face, never the opposite side");
 
 const bodyWithoutLogo = buildModel("applePencilCase", {
   ...pencilParameters,
