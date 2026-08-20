@@ -1940,69 +1940,10 @@
   }
 
   function makeSTEP(currentModel) {
-    var entities = [];
-    var nextId = 1;
-    function add(value) { var id = nextId++; entities.push("#" + id + "=" + value + ";"); return id; }
-    function ref(id) { return "#" + id; }
-    function stepNumber(value) {
-      var fixed = Number(value).toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
-      if (!fixed.includes(".")) fixed += ".";
-      if (fixed === "-0.") fixed = "0.";
-      return fixed;
+    if (!window.Form3DStepExport || typeof window.Form3DStepExport.makeAP242STEP !== "function") {
+      throw new Error("AP242 STEP export engine is unavailable");
     }
-    function safeName(value) { return String(value).replace(/'/g, ""); }
-
-    var appContext = add("APPLICATION_CONTEXT('automotive design')");
-    add("APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000," + ref(appContext) + ")");
-    var productContext = add("PRODUCT_CONTEXT(''," + ref(appContext) + ",'mechanical')");
-    var product = add("PRODUCT('FORM3D','" + safeName(currentModel.name) + "','',(" + ref(productContext) + "))");
-    var formation = add("PRODUCT_DEFINITION_FORMATION('',''," + ref(product) + ")");
-    var definitionContext = add("PRODUCT_DEFINITION_CONTEXT('part definition'," + ref(appContext) + ",'design')");
-    var definition = add("PRODUCT_DEFINITION('design',''," + ref(formation) + "," + ref(definitionContext) + ")");
-    var breps = [];
-
-    currentModel.solids.forEach(function (solid) {
-      var pointIds = solid.vertices.map(function (vertex) {
-        return add("CARTESIAN_POINT('',(" + vertex.map(stepNumber).join(",") + "))");
-      });
-      var faceIds = solid.faces.map(function (face) {
-        var loop = add("POLY_LOOP('',(" + face.map(function (index) { return ref(pointIds[index]); }).join(",") + "))");
-        var bound = add("FACE_OUTER_BOUND(''," + ref(loop) + ",.T.)");
-        return add("FACE('',(" + ref(bound) + "))");
-      });
-      var shell = add("CLOSED_SHELL('" + safeName(solid.name) + "',(" + faceIds.map(ref).join(",") + "))");
-      breps.push(add("FACETED_BREP('" + safeName(solid.name) + "'," + ref(shell) + ")"));
-    });
-
-    var origin = add("CARTESIAN_POINT('',(0.,0.,0.))");
-    var zDirection = add("DIRECTION('',(0.,0.,1.))");
-    var xDirection = add("DIRECTION('',(1.,0.,0.))");
-    var axis = add("AXIS2_PLACEMENT_3D(''," + ref(origin) + "," + ref(zDirection) + "," + ref(xDirection) + ")");
-    var lengthUnit = add("(LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.))");
-    var angleUnit = add("(NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.))");
-    var solidAngleUnit = add("(NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT())");
-    var uncertainty = add("UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.E-6)," + ref(lengthUnit) + ",'distance_accuracy_value','confusion accuracy')");
-    var representationContext = add("(GEOMETRIC_REPRESENTATION_CONTEXT(3) GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((" + ref(uncertainty) + ")) GLOBAL_UNIT_ASSIGNED_CONTEXT((" + [lengthUnit, angleUnit, solidAngleUnit].map(ref).join(",") + ")) REPRESENTATION_CONTEXT('Context','3D'))");
-    var representationItems = breps.concat([axis]).map(ref).join(",");
-    var representation = add("SHAPE_REPRESENTATION('',(" + representationItems + ")," + ref(representationContext) + ")");
-    var productShape = add("PRODUCT_DEFINITION_SHAPE('',''," + ref(definition) + ")");
-    add("SHAPE_DEFINITION_REPRESENTATION(" + ref(productShape) + "," + ref(representation) + ")");
-    add("PRODUCT_RELATED_PRODUCT_CATEGORY('part','',(" + ref(product) + "))");
-
-    var now = new Date().toISOString();
-    return [
-      "ISO-10303-21;",
-      "HEADER;",
-      "FILE_DESCRIPTION(('Faceted model exported by Form 3D Studio'),'2;1');",
-      "FILE_NAME('" + fileStem() + ".step','" + now + "',('Form 3D Studio'),('nj22az.github.io'),'Form 3D Studio','Form 3D Studio','');",
-      "FILE_SCHEMA(('AUTOMOTIVE_DESIGN'));",
-      "ENDSEC;",
-      "DATA;",
-      entities.join("\n"),
-      "ENDSEC;",
-      "END-ISO-10303-21;",
-      ""
-    ].join("\n");
+    return window.Form3DStepExport.makeAP242STEP(currentModel, { fileName: fileStem() + ".step" });
   }
 
   function xmlEscape(value) {
@@ -2206,7 +2147,7 @@
         showToast("AMS 3MF with embedded SVG exported");
       } else if (format === "step") {
         downloadBlob(new Blob([makeSTEP(model)], { type: "application/step" }), fileStem() + ".step");
-        showToast("STEP model exported");
+        showToast("AP242 STEP model exported");
       } else {
         downloadBlob(new Blob([makeBinarySTL(model)], { type: "model/stl" }), fileStem() + ".stl");
         showToast("STL model exported");

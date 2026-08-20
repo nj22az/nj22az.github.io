@@ -28,7 +28,7 @@ inward push before the reverse turn. The loose cap gap is adjustable from
 both parts so their open interiors and dome vents can drain.
 
 Each recipe accepts the dimensions exposed by the **Models** panel and returns
-a closed triangular solid for STL and faceted STEP export. The source recipes
+a closed triangular solid for STL and standards-compliant AP242 tessellated STEP export. The source recipes
 are in `src/open-models.mjs`; `npm run build:models` recreates the browser
 bundle with the pinned JSCAD 2.13.0 dependency.
 

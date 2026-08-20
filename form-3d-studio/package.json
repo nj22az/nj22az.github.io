@@ -6,7 +6,7 @@
     "build:models": "esbuild src/open-models.mjs --bundle --minify --format=iife --global-name=Form3DOpenModels --legal-comments=eof --banner:js=\"/*! Form 3D Open Models · JSCAD 2.13.0 · MIT */\" --outfile=open-models.js",
     "build:vectorizer": "node scripts/build-vectorizer.mjs",
     "build": "npm run build:models && npm run build:vectorizer",
-    "test": "node tests/monochrome-svg.test.cjs && node tests/vector-artwork.test.mjs && node tests/vector-core.test.mjs && node tests/concealed-cover-latch.test.mjs && node tests/open-models.test.mjs && node tests/studio-integration.test.mjs && node tests/vector-worker.test.mjs",
+    "test": "node tests/monochrome-svg.test.cjs && node tests/vector-artwork.test.mjs && node tests/vector-core.test.mjs && node tests/concealed-cover-latch.test.mjs && node tests/open-models.test.mjs && node tests/step-export.test.cjs && node tests/studio-integration.test.mjs && node tests/vector-worker.test.mjs",
     "vectorize": "node scripts/image-to-svg-cli.mjs"
   },
   "dependencies": {
