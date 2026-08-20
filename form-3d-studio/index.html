@@ -52,7 +52,7 @@
           <div class="segmented" role="tablist" aria-label="Model type">
             <button class="active" data-mode="keychain" type="button" role="tab" aria-selected="true">Keychain</button>
             <button data-mode="box" type="button" role="tab" aria-selected="false">Box</button>
-            <button data-mode="library" type="button" role="tab" aria-selected="false">Models</button>
+            <button data-mode="library" type="button" role="tab" aria-selected="false">Templates</button>
             <button data-mode="cylinder" type="button" role="tab" aria-selected="false">Cylinder</button>
           </div>
 
@@ -125,16 +125,68 @@
           </section>
 
           <section class="control-section library-controls hidden">
-            <div class="section-title"><span>Open models</span><span class="privacy-label">MIT</span></div>
+            <div class="section-title"><span>Printable templates</span><span class="privacy-label">On-device</span></div>
             <label class="select-row" for="open-model-select">
               <span>Parametric model</span>
               <select id="open-model-select" data-param="openModel">
+                <option value="cableRing">Johansson cable ring</option>
+                <option value="applePencilCase">Apple Pencil Pro case</option>
                 <option value="spurGear">Involute spur gear</option>
                 <option value="hexBolt">Threaded hex bolt</option>
                 <option value="lBracket">Reinforced L-bracket</option>
               </select>
             </label>
-            <p class="control-note">Built locally with the <a href="https://github.com/jscad/OpenJSCAD.org">MIT-licensed JSCAD engine</a>. The <a href="https://github.com/nj22az/nj22az.github.io/tree/main/form-3d-studio/src">MIT model recipes</a> and notices are public and inspectable; the modeller itself is cached for offline use.</p>
+            <p class="control-note">Built locally with the <a href="https://github.com/jscad/OpenJSCAD.org">MIT-licensed JSCAD engine</a>. Every export is generated privately in this browser and remains available offline.</p>
+          </section>
+
+          <section class="control-section library-ring-controls hidden">
+            <div class="section-title"><span>Cable ring builder</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="ring-outer-diameter">Outer diameter</label><output data-output="ringOuterDiameter">115</output>
+              <input id="ring-outer-diameter" data-param="ringOuterDiameter" type="range" min="45" max="180" step="1" value="115" />
+            </div>
+            <div class="range-row">
+              <label for="ring-inner-diameter">Inner diameter</label><output data-output="ringInnerDiameter">40</output>
+              <input id="ring-inner-diameter" data-param="ringInnerDiameter" type="range" min="20" max="160" step="1" value="40" />
+            </div>
+            <div class="range-row">
+              <label for="ring-height">Height</label><output data-output="ringHeight">18</output>
+              <input id="ring-height" data-param="ringHeight" type="range" min="3" max="30" step="1" value="18" />
+            </div>
+            <label class="switch-row"><span>Add cable loading slot</span><input id="ring-tray" data-param="ringTray" type="checkbox" /><i></i></label>
+            <div class="range-row ring-slot-controls hidden">
+              <label for="ring-slot-width">Slot width</label><output data-output="ringTrayWidth">10.0</output>
+              <input id="ring-slot-width" data-param="ringTrayWidth" type="range" min="4" max="24" step="0.5" value="10" />
+            </div>
+            <p class="control-note">The optional full-depth loading slot keeps the ring a single watertight body while letting an existing cable enter without disconnecting it.</p>
+          </section>
+
+          <section class="control-section library-pencil-controls hidden">
+            <div class="section-title"><span>Apple Pencil Pro case</span><span>Resin-ready</span></div>
+            <div class="range-row">
+              <label for="pencil-length">Pencil length</label><output data-output="pencilLength">166.0</output>
+              <input id="pencil-length" data-param="pencilLength" type="range" min="164" max="168" step="0.1" value="166" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-diameter">Pencil diameter</label><output data-output="pencilDiameter">8.90</output>
+              <input id="pencil-diameter" data-param="pencilDiameter" type="range" min="8.6" max="9.4" step="0.05" value="8.9" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-clearance">Radial clearance</label><output data-output="pencilClearance">0.40</output>
+              <input id="pencil-clearance" data-param="pencilClearance" type="range" min="0.25" max="0.7" step="0.05" value="0.4" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-wall">Shell wall</label><output data-output="pencilWall">1.20</output>
+              <input id="pencil-wall" data-param="pencilWall" type="range" min="1" max="2" step="0.1" value="1.2" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-cap-clearance">Cap groove clearance</label><output data-output="pencilCapClearance">0.40</output>
+              <input id="pencil-cap-clearance" data-param="pencilCapClearance" type="range" min="0.25" max="0.6" step="0.05" value="0.4" />
+            </div>
+            <label class="switch-row"><span>Raised JOHANSSON wordmark</span><input id="pencil-logo" data-param="pencilLogo" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Arrange four parts for printing</span><input id="pencil-print-layout" data-param="pencilPrintLayout" type="checkbox" checked /><i></i></label>
+            <p class="control-note"><strong>Resin-safe construction:</strong> two longitudinal shells expose the entire 168 mm interior for washing and curing. Two shallow, pressure-vented compression caps snap over paired retention beads to close the case—there is no blind tube, trapped pocket or print-in-place hinge.</p>
+            <p class="control-note">Leave the print layout enabled when exporting. Turn it off only to inspect the closed assembly. Use tough or durable resin and make a cap-fit test before committing to both long shells.</p>
           </section>
 
           <section class="control-section library-gear-controls hidden">
@@ -378,10 +430,10 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="./open-models.js?v=3" defer></script>
+    <script src="./open-models.js?v=5" defer></script>
     <script src="./monochrome-svg.js?v=13" defer></script>
     <script src="./image-to-svg/keychain-bridge.js?v=2" defer></script>
     <script src="./cover-latch-geometry.js?v=1" defer></script>
-    <script src="./app.js?v=17" defer></script>
+    <script src="./app.js?v=18" defer></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "form-3d-studio-settings-v7";
+  var STORAGE_KEY = "form-3d-studio-settings-v8";
   var defaults = {
     mode: "keychain",
     keyWidth: 52,
@@ -33,6 +33,18 @@
     boxGearBayDepth: 9.2,
     boxGearTurn: 0,
     openModel: "spurGear",
+    ringOuterDiameter: 115,
+    ringInnerDiameter: 40,
+    ringHeight: 18,
+    ringTray: false,
+    ringTrayWidth: 10,
+    pencilLength: 166,
+    pencilDiameter: 8.9,
+    pencilClearance: 0.4,
+    pencilWall: 1.2,
+    pencilCapClearance: 0.4,
+    pencilLogo: true,
+    pencilPrintLayout: true,
     gearTeeth: 20,
     gearModule: 1,
     gearThickness: 5,
@@ -56,6 +68,11 @@
     var pageParameters = new URLSearchParams(window.location.search);
     var requestedMode = pageParameters.get("mode");
     if (["keychain", "box", "cylinder", "library"].includes(requestedMode)) state.mode = requestedMode;
+    var requestedModel = pageParameters.get("model");
+    if (["cableRing", "applePencilCase", "spurGear", "hexBolt", "lBracket"].includes(requestedModel)) {
+      state.mode = "library";
+      state.openModel = requestedModel;
+    }
     if (pageParameters.get("workspace") === "vector") activeSuiteWorkspace = "vector";
   }
   var uploadedImage = null;
@@ -117,11 +134,11 @@
   function loadState() {
     try {
       var current = localStorage.getItem(STORAGE_KEY);
-      var saved = JSON.parse(current || localStorage.getItem("form-3d-studio-settings-v6") || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
+      var saved = JSON.parse(current || localStorage.getItem("form-3d-studio-settings-v7") || localStorage.getItem("form-3d-studio-settings-v6") || localStorage.getItem("form-3d-studio-settings-v5") || localStorage.getItem("form-3d-studio-settings-v4") || localStorage.getItem("form-3d-studio-settings-v3") || "{}");
       var merged = Object.assign({}, defaults, saved);
       if (!current) merged.monochromeThreshold = defaults.monochromeThreshold;
       if (!["keychain", "box", "cylinder", "library"].includes(merged.mode)) merged.mode = "keychain";
-      if (!["spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
+      if (!["cableRing", "applePencilCase", "spurGear", "hexBolt", "lBracket"].includes(merged.openModel)) merged.openModel = "spurGear";
       merged.detail = clamp(Number(merged.detail) || defaults.detail, 32, 96);
       merged.amsColours = clamp(Number(merged.amsColours) || defaults.amsColours, 2, 4);
       merged.monochromeThreshold = clamp(Number(merged.monochromeThreshold) || defaults.monochromeThreshold, 15, 85);
@@ -2245,6 +2262,14 @@
       var fittedHole = Math.min(Number(value), 12, state.bracketThickness * 2.2);
       return fittedHole.toFixed(1) + (fittedHole + 0.001 < Number(value) ? " · fitted" : "");
     }
+    if (name === "ringInnerDiameter") {
+      var fittedInner = Math.min(Number(value), Math.max(20, state.ringOuterDiameter - 6));
+      return fittedInner.toFixed(0) + (fittedInner + 0.001 < Number(value) ? " · fitted" : "");
+    }
+    if (name === "pencilLength") return Number(value).toFixed(1);
+    if (name === "pencilDiameter") return Number(value).toFixed(2);
+    if (["pencilClearance", "pencilWall", "pencilCapClearance"].includes(name)) return Number(value).toFixed(2);
+    if (name === "ringTrayWidth") return Number(value).toFixed(1);
     if (["gearModule", "gearThickness", "boltDiameter", "bracketThickness"].includes(name)) return Number(value).toFixed(1);
     if (["keyThickness", "holeSize", "boxCornerRadius", "boxWall", "boxBottom", "boxLidThickness", "boxHingeDiameter"].includes(name)) return Number(value).toFixed(1);
     return String(Math.round(value));
@@ -2275,6 +2300,12 @@
     document.querySelectorAll(".box-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "box"); });
     document.querySelectorAll(".cylinder-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "cylinder"); });
     document.querySelectorAll(".library-controls").forEach(function (element) { element.classList.toggle("hidden", state.mode !== "library"); });
+    document.querySelectorAll(".library-ring-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "cableRing");
+    });
+    document.querySelectorAll(".library-pencil-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "applePencilCase");
+    });
     document.querySelectorAll(".library-gear-controls").forEach(function (element) {
       element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "spurGear");
     });
@@ -2283,6 +2314,9 @@
     });
     document.querySelectorAll(".library-bracket-controls").forEach(function (element) {
       element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "lBracket");
+    });
+    document.querySelectorAll(".ring-slot-controls").forEach(function (element) {
+      element.classList.toggle("hidden", state.mode !== "library" || state.openModel !== "cableRing" || !state.ringTray);
     });
     document.querySelectorAll(".gear-controls").forEach(function (element) {
       element.classList.toggle("hidden", state.mode !== "box" || !state.boxLid || !state.boxLatch);
@@ -2477,7 +2511,7 @@
         if (input.type === "range") updateRangeFill(input);
         var output = document.querySelector('[data-output="' + name + '"]');
         if (output) output.textContent = displayValue(name, state[name]);
-        if (name === "boxLid" || name === "boxLatch" || name === "removeBackground" || name === "openModel") syncControls();
+        if (name === "boxLid" || name === "boxLatch" || name === "removeBackground" || name === "openModel" || name === "ringTray") syncControls();
         saveState();
         var traceParameters = ["keyWidth", "keyHeight", "detail", "monochromeThreshold", "imageSmoothing", "removeBackground", "backgroundTolerance"];
         if (uploadedImage && traceParameters.includes(name)) scheduleArtworkVectorization();
