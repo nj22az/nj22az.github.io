@@ -2,6 +2,7 @@
 // Copyright (c) 2026 Form 3D Studio contributors
 
 import modeling from "@jscad/modeling";
+import { HG_MARU_JOHANSSON_CONTOURS } from "./hg-maru-johansson.mjs";
 
 const { booleans, extrusions, geometries, modifiers, primitives, transforms } = modeling;
 
@@ -10,7 +11,6 @@ const { extrudeLinear } = extrusions;
 const { geom2, geom3 } = geometries;
 const { generalize, retessellate } = modifiers;
 const { cuboid, cylinder, polyhedron } = primitives;
-const { vectorText } = modeling.text;
 const { rotateX, translate } = transforms;
 const TAU = Math.PI * 2;
 
@@ -585,60 +585,56 @@ function buildCableRing(parameters) {
 }
 
 function johanssonFlatRelief(flatOffset, shellLength, flatAngle = 0) {
-  const fontHeight = 1.58;
-  const outerStrokeRadius = 0.2;
-  const coreStrokeRadius = 0.11;
+  const artworkHeight = 2.55;
+  const edgeTaper = 0.06;
   const reliefDepth = 0.26;
-  const wordStrokes = vectorText({ height: fontHeight }, "JOHANSSON");
-  const wordPoints = wordStrokes.flat();
-  const minimumX = Math.min(...wordPoints.map((point) => point[0]));
-  const maximumX = Math.max(...wordPoints.map((point) => point[0]));
-  const minimumY = Math.min(...wordPoints.map((point) => point[1]));
-  const maximumY = Math.max(...wordPoints.map((point) => point[1]));
-  const centerY = (minimumY + maximumY) / 2;
-  const copyrightRadius = 0.84;
-  const copyrightCenterX = maximumX + 0.78 + copyrightRadius;
-  const copyrightCenterY = centerY;
+  const sourcePoints = HG_MARU_JOHANSSON_CONTOURS.flat();
+  const sourceMinimumX = Math.min(...sourcePoints.map((point) => point[0]));
+  const sourceMaximumX = Math.max(...sourcePoints.map((point) => point[0]));
+  const sourceMinimumY = Math.min(...sourcePoints.map((point) => point[1]));
+  const sourceMaximumY = Math.max(...sourcePoints.map((point) => point[1]));
+  const sourceCenterX = (sourceMinimumX + sourceMaximumX) / 2;
+  const sourceCenterY = (sourceMinimumY + sourceMaximumY) / 2;
+  const startZ = shellLength / 2 - sourceCenterX * artworkHeight;
+  const contours = HG_MARU_JOHANSSON_CONTOURS.map((contour) => contour.map((point) => [
+    startZ + point[0] * artworkHeight,
+    -(point[1] - sourceCenterY) * artworkHeight
+  ]));
+  const segments = contours.flatMap((contour) => contour.slice(0, -1).map((point, index) => ({
+    z0: point[0],
+    tangent0: point[1],
+    z1: contour[index + 1][0],
+    tangent1: contour[index + 1][1]
+  })));
+  const artworkMinimumZ = startZ + sourceMinimumX * artworkHeight - edgeTaper;
+  const artworkMaximumZ = startZ + sourceMaximumX * artworkHeight + edgeTaper;
+  const artworkMinimumTangent = -(sourceMaximumY - sourceCenterY) * artworkHeight - edgeTaper;
+  const artworkMaximumTangent = -(sourceMinimumY - sourceCenterY) * artworkHeight + edgeTaper;
 
-  function arcStroke(centerX, centerYValue, radius, startAngle, endAngle, segmentCount) {
-    return Array.from({ length: segmentCount + 1 }, (_, index) => {
-      const angle = startAngle + (endAngle - startAngle) * index / segmentCount;
-      return [centerX + Math.cos(angle) * radius, centerYValue + Math.sin(angle) * radius];
-    });
+  function sampleLevels(minimum, maximum, maximumStep) {
+    const count = Math.ceil((maximum - minimum) / maximumStep);
+    return Array.from({ length: count + 1 }, (_, index) =>
+      minimum + (maximum - minimum) * index / count
+    );
   }
 
-  const artworkStrokes = [
-    ...wordStrokes,
-    arcStroke(copyrightCenterX, copyrightCenterY, copyrightRadius, 0, TAU, 24),
-    arcStroke(copyrightCenterX, copyrightCenterY, 0.43, Math.PI / 4, Math.PI * 7 / 4, 14)
-  ];
-  const maximumArtworkX = copyrightCenterX + copyrightRadius;
-  const startZ = (shellLength - (maximumArtworkX - minimumX)) / 2 - minimumX;
-  const segments = [];
-  const zLevels = [];
-  const tangentLevels = [];
+  const zLevels = sampleLevels(artworkMinimumZ, artworkMaximumZ, 0.06);
+  const tangentLevels = sampleLevels(artworkMinimumTangent, artworkMaximumTangent, 0.04);
 
-  artworkStrokes.forEach((stroke) => {
-    for (let index = 0; index < stroke.length - 1; index += 1) {
-      const from = stroke[index];
-      const to = stroke[index + 1];
-      const segment = {
-        tangent0: centerY - from[1],
-        z0: startZ + from[0],
-        tangent1: centerY - to[1],
-        z1: startZ + to[0]
-      };
-      segments.push(segment);
-      [0, 1].forEach((amount) => {
-        const tangent = segment.tangent0 + (segment.tangent1 - segment.tangent0) * amount;
-        const z = segment.z0 + (segment.z1 - segment.z0) * amount;
-        [-outerStrokeRadius, -coreStrokeRadius, 0, coreStrokeRadius, outerStrokeRadius]
-          .forEach((offset) => tangentLevels.push(tangent + offset));
-        [-outerStrokeRadius, 0, outerStrokeRadius]
-          .forEach((offset) => zLevels.push(z + offset));
-      });
-    }
-  });
+  function pointInsideArtwork(tangent, z) {
+    let inside = false;
+    contours.forEach((contour) => {
+      for (let index = 0; index < contour.length - 1; index += 1) {
+        const from = contour[index];
+        const to = contour[index + 1];
+        if ((from[1] > tangent) === (to[1] > tangent)) continue;
+        const crossingZ = from[0] + (to[0] - from[0]) *
+          (tangent - from[1]) / (to[1] - from[1]);
+        if (z < crossingZ) inside = !inside;
+      }
+    });
+    return inside;
+  }
 
   function distanceToSegment(tangent, z, segment) {
     const tangentDelta = segment.tangent1 - segment.tangent0;
@@ -658,16 +654,17 @@ function johanssonFlatRelief(flatOffset, shellLength, flatAngle = 0) {
   const angles = tangentLevels.map((tangent) => flatAngle + Math.atan2(tangent, flatOffset));
   return {
     angles,
-    zLevels: [...new Set(zLevels.map((value) => value.toFixed(6)))].map(Number),
+    zLevels,
     depthAt(tangent, z) {
+      if (tangent < artworkMinimumTangent || tangent > artworkMaximumTangent ||
+        z < artworkMinimumZ || z > artworkMaximumZ) return 0;
+      if (pointInsideArtwork(tangent, z)) return reliefDepth;
       let minimumDistance = Infinity;
       segments.forEach((segment) => {
         minimumDistance = Math.min(minimumDistance, distanceToSegment(tangent, z, segment));
       });
-      if (minimumDistance >= outerStrokeRadius) return 0;
-      if (minimumDistance <= coreStrokeRadius) return reliefDepth;
-      return reliefDepth * (outerStrokeRadius - minimumDistance) /
-        (outerStrokeRadius - coreStrokeRadius);
+      if (minimumDistance >= edgeTaper) return 0;
+      return reliefDepth * (edgeTaper - minimumDistance) / edgeTaper;
     }
   };
 }

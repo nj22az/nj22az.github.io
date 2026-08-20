@@ -13,9 +13,10 @@ The Apple Pencil Pro template defaults to Apple's 166 mm × 8.9 mm dimensions.
 It uses one long rounded Body and one short rounded Cap, like a pharmaceutical
 capsule, with a quarter-turn bayonet instead of threads or a friction-only fit.
 The long Body has a shallow 0.18 mm longitudinal flat, and the Cap's matching
-flat aligns only in the locked position. The single-line JOHANSSON © vector
-wordmark follows the Pencil's long axis and is fused into that planar face
-instead of wrapping around the curved shell.
+flat aligns only in the locked position. The single-line JOHANSSON © wordmark
+uses the original HG Maru Gothic Pro glyph outlines, follows the Pencil's long
+axis and is fused into that planar face instead of wrapping around the curved
+shell.
 Both domes have 1.7 mm through-vents. The cap has two open axial entry slots,
 75-degree locking tracks, a release pocket and a hard end stop. Its cylindrical
 wall has a deliberate 0.70 mm radial gap and provides no friction retention.

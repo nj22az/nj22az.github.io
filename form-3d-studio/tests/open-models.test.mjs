@@ -1,10 +1,22 @@
 import assert from "node:assert/strict";
 import modeling from "@jscad/modeling";
+import { HG_MARU_JOHANSSON_CONTOURS } from "../src/hg-maru-johansson.mjs";
 import { buildModel } from "../src/open-models.mjs";
 
 const { intersect } = modeling.booleans;
 const { measureVolume } = modeling.measurements;
 const { polyhedron } = modeling.primitives;
+
+assert.equal(HG_MARU_JOHANSSON_CONTOURS.length, 15,
+  "the HG Maru Gothic Pro wordmark must retain every filled contour and counter");
+[6, 11].forEach((contourIndex) => {
+  const contour = HG_MARU_JOHANSSON_CONTOURS[contourIndex];
+  assert.ok(contour.some((point, index) => {
+    if (index === contour.length - 1) return false;
+    const next = contour[index + 1];
+    return Math.abs(next[0] - point[0]) > 0.5 && Math.abs(next[1] - point[1]) > 0.65;
+  }), "both HG Maru Gothic Pro N glyphs must retain their full diagonal stroke");
+});
 
 function bounds(mesh) {
   const minimum = [Infinity, Infinity, Infinity];
