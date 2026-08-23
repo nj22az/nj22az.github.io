@@ -179,9 +179,9 @@ assert.ok(Math.abs(Math.max(...bodyRadii) - (neckRadius + 0.7 + 0.55)) < 1e-8,
 const defaultCavityRadius = 8.9 / 2 + 0.4;
 const defaultShoulder = 166 + 7 * 2 - 22 - Math.sqrt(defaultCavityRadius ** 2 - 0.85 ** 2) * 2;
 const defaultTrackCenter = 7.5 - 2.2;
-const defaultTrackHeight = 1.2 + 0.4 * 2;
+const defaultTrackHeight = 1.2 + 0.5 * 2;
 const defaultPocketLow = defaultTrackCenter - defaultTrackHeight / 2 - 0.65;
-const defaultLugCenter = defaultShoulder + defaultPocketLow + 1.2 / 2 + 0.18;
+const defaultLugCenter = defaultShoulder + defaultPocketLow + 1.2 / 2 + 0.30;
 function upperLugRow(offset) {
   return bodyWithoutLogo.vertices.filter((vertex) => {
     const radius = Math.hypot(vertex[0], vertex[1]);
@@ -274,7 +274,7 @@ function testRoundedRectangleDistance(x, y, x0, x1, y0, y1, radius) {
 }
 function expectedCutoutDistance(angle, z, slotCenter) {
   const innerRadius = neckRadius + 0.7;
-  const slotWidth = 2.4 + 0.4 * 2;
+  const slotWidth = 2.4 + 0.5 * 2;
   const trackCornerRadius = Math.min(0.36, defaultTrackHeight * 0.22, slotWidth * 0.14);
   const pocketCornerRadius = Math.min(0.30, 0.65 * 0.46, slotWidth * 0.12);
   const tangent = Math.atan2(Math.sin(angle - slotCenter), Math.cos(angle - slotCenter)) * innerRadius;
@@ -307,8 +307,8 @@ const raisedLugVertices = bodyWithoutLogo.vertices.filter((vertex) =>
     const slotCenter = vertex[1] > 0 ? Math.PI / 2 : Math.PI * 1.5;
     return Math.max(maximum, expectedCutoutDistance(localAngle, localZ, slotCenter));
   }, -Infinity);
-  assert.ok(maximumCutoutDistance < -0.25,
-    `the rounded lug must retain at least 0.25 mm path clearance at ${Math.round(turnFraction * 75)}°`);
+  assert.ok(maximumCutoutDistance < -0.35,
+    `the rounded lug must retain at least 0.35 mm path clearance at ${Math.round(turnFraction * 75)}°`);
 });
 
 const thickWallCapsule = buildModel("applePencilCase", {

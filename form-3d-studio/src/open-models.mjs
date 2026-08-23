@@ -898,12 +898,12 @@ function buildApplePencilCase(parameters) {
     lugDepth: capClearance + 0.55,
     lugHeight: 1.2,
     lugWidth: 2.4,
-    runningClearance: 0.4
+    runningClearance: 0.5
   };
   const capResult = makeVentedBayonetCap(
     cavityRadius, neckRadius, capClearance, insertionDepth, bayonet, domeStart
   );
-  const lockFloorClearance = 0.18; // Limits axial rattle without demanding a resin press fit.
+  const lockFloorClearance = 0.30; // Gravity/tension seats the loose lug without a resin press fit.
   const lugCenter = shoulder + capResult.pocketLow + bayonet.lugHeight / 2 + lockFloorClearance;
   const upperLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI / 2, bayonet);
   const lowerLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI * 1.5, bayonet);
