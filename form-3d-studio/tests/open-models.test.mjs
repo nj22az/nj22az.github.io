@@ -111,7 +111,9 @@ const capRadii = assembled.solids[1].mesh.vertices.map((vertex) => Math.hypot(ve
 assert.ok(Math.min(...bodyRadii) > 0.8 && Math.min(...bodyRadii) < 0.9, "the body dome must have a real drain hole");
 assert.ok(Math.min(...capRadii) > 0.8 && Math.min(...capRadii) < 0.9, "the cap pressure vent must be a real through-hole");
 const assembledZ = assembled.solids.flatMap((solid) => solid.mesh.vertices.map((vertex) => vertex[2]));
-assert.ok(Math.max(...assembledZ) - Math.min(...assembledZ) > 183.5,
+const assembledMinimumZ = assembledZ.reduce((minimum, value) => Math.min(minimum, value), Infinity);
+const assembledMaximumZ = assembledZ.reduce((maximum, value) => Math.max(maximum, value), -Infinity);
+assert.ok(assembledMaximumZ - assembledMinimumZ > 183.5,
   "the capsule must provide the requested seven millimetres of protection at each end");
 
 const bodyFlatOffset = 8.9 / 2 + 0.4 + 1.2 - 0.18;
@@ -173,6 +175,60 @@ assert.ok(Math.abs(Math.min(...mouthRadii) - (neckRadius + 0.7)) < 1e-8,
   "the cap wall must have a deliberate 0.70 mm radial air gap around the Body neck");
 assert.ok(Math.abs(Math.max(...bodyRadii) - (neckRadius + 0.7 + 0.55)) < 1e-8,
   "the lugs must retain 0.55 mm radial engagement independently of the loose cap gap");
+
+const defaultCavityRadius = 8.9 / 2 + 0.4;
+const defaultShoulder = 166 + 7 * 2 - 22 - Math.sqrt(defaultCavityRadius ** 2 - 0.85 ** 2) * 2;
+const defaultTrackCenter = 7.5 - 2.2;
+const defaultTrackHeight = 1.2 + 0.4 * 2;
+const defaultPocketLow = defaultTrackCenter - defaultTrackHeight / 2 - 0.65;
+const defaultLugCenter = defaultShoulder + defaultPocketLow + 1.2 / 2 + 0.18;
+function upperLugRow(offset) {
+  return bodyWithoutLogo.vertices.filter((vertex) => {
+    const radius = Math.hypot(vertex[0], vertex[1]);
+    return vertex[1] > 0 && Math.abs(vertex[2] - (defaultLugCenter + offset)) < 1e-7 &&
+      radius > neckRadius + 0.01;
+  });
+}
+const centralLugRow = upperLugRow(0);
+const roundedLugShoulderRow = upperLugRow(0.5);
+assert.ok(centralLugRow.length > 12 && roundedLugShoulderRow.length > 8,
+  "the rounded lug must retain a broad central contact pad and a supported shoulder");
+const centralLugSpan = Math.max(...centralLugRow.map((vertex) => vertex[0])) -
+  Math.min(...centralLugRow.map((vertex) => vertex[0]));
+const roundedLugShoulderSpan = Math.max(...roundedLugShoulderRow.map((vertex) => vertex[0])) -
+  Math.min(...roundedLugShoulderRow.map((vertex) => vertex[0]));
+assert.ok(centralLugSpan - roundedLugShoulderSpan > 0.25,
+  "the lug footprint must taper through genuinely rounded corners instead of a sharp rectangle");
+const upperLugDepths = bodyWithoutLogo.vertices
+  .filter((vertex) => vertex[1] > 0 && Math.abs(vertex[2] - defaultLugCenter) < 0.61)
+  .map((vertex) => Math.hypot(vertex[0], vertex[1]) - neckRadius)
+  .filter((depth) => depth > 0.05 && depth < 1.20);
+assert.ok(new Set(upperLugDepths.map((depth) => depth.toFixed(3))).size >= 5,
+  "the lug edge must use a smooth multi-level radial roll rather than one hard bevel");
+
+let roundedCutoutEdges = 0;
+lockedCap.faces.forEach((face) => {
+  const points = face.map((index) => lockedCap.vertices[index]);
+  const radii = points.map((point) => Math.hypot(point[0], point[1]));
+  if (Math.min(...radii) > neckRadius + 0.7 + 1e-5 || Math.max(...radii) < neckRadius + 1.2) return;
+  for (let index = 0; index < points.length; index += 1) {
+    const first = points[index];
+    const second = points[(index + 1) % points.length];
+    if (Math.abs(Math.hypot(first[0], first[1]) - (neckRadius + 0.7)) > 1e-5 ||
+      Math.abs(Math.hypot(second[0], second[1]) - (neckRadius + 0.7)) > 1e-5) continue;
+    const firstZ = first[2] - defaultShoulder;
+    const secondZ = second[2] - defaultShoulder;
+    if (Math.min(firstZ, secondZ) < 3.5 || Math.max(firstZ, secondZ) > 6.5) continue;
+    const firstAngle = Math.atan2(first[1], first[0]) + 75 * Math.PI / 180;
+    const secondAngle = Math.atan2(second[1], second[0]) + 75 * Math.PI / 180;
+    const tangentChange = Math.abs(Math.atan2(
+      Math.sin(secondAngle - firstAngle), Math.cos(secondAngle - firstAngle)
+    ) * (neckRadius + 0.7));
+    if (tangentChange > 1e-4 && Math.abs(secondZ - firstZ) > 1e-4) roundedCutoutEdges += 1;
+  }
+});
+assert.ok(roundedCutoutEdges > 40,
+  "the cap entry, track and locking pocket must contain radiused diagonal transitions");
 const lockedEntryAngle = Math.PI / 2 - 75 * Math.PI / 180;
 const positiveEntryDistance = Math.min(...lockedCap.vertices
   .filter((vertex) => Math.abs(vertex[2] - mouthZ) < 1e-8 && Math.hypot(vertex[0], vertex[1]) > 7.2)
@@ -186,6 +242,74 @@ const assembledGeometries = assembled.solids.map((solid) => polyhedron({
 }));
 assert.ok(measureVolume(intersect(assembledGeometries[0], assembledGeometries[1])) < 1e-7,
   "the locked capsule body and cap must not intersect");
+
+function rotateVertexZ(vertex, angle) {
+  const cosine = Math.cos(angle);
+  const sine = Math.sin(angle);
+  return [
+    vertex[0] * cosine - vertex[1] * sine,
+    vertex[0] * sine + vertex[1] * cosine,
+    vertex[2]
+  ];
+}
+const lockAngle = 75 * Math.PI / 180;
+const localCap = {
+  vertices: lockedCap.vertices.map((vertex) =>
+    rotateVertexZ([vertex[0], vertex[1], vertex[2] - defaultShoulder], lockAngle)
+  )
+};
+const capInternalShoulder = Math.max(...localCap.vertices
+  .filter((vertex) => Math.abs(Math.hypot(vertex[0], vertex[1]) - (neckRadius + 0.7)) < 1e-5)
+  .map((vertex) => vertex[2]));
+assert.ok(capInternalShoulder - 7.5 > 0.79,
+  "the cap must provide 0.80 mm of internal overtravel for push-to-release motion");
+
+function testRoundedRectangleDistance(x, y, x0, x1, y0, y1, radius) {
+  const halfWidth = (x1 - x0) / 2;
+  const halfHeight = (y1 - y0) / 2;
+  const safeRadius = Math.min(radius, halfWidth, halfHeight);
+  const qx = Math.abs(x - (x0 + x1) / 2) - (halfWidth - safeRadius);
+  const qy = Math.abs(y - (y0 + y1) / 2) - (halfHeight - safeRadius);
+  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - safeRadius;
+}
+function expectedCutoutDistance(angle, z, slotCenter) {
+  const innerRadius = neckRadius + 0.7;
+  const slotWidth = 2.4 + 0.4 * 2;
+  const trackCornerRadius = Math.min(0.36, defaultTrackHeight * 0.22, slotWidth * 0.14);
+  const pocketCornerRadius = Math.min(0.30, 0.65 * 0.46, slotWidth * 0.12);
+  const tangent = Math.atan2(Math.sin(angle - slotCenter), Math.cos(angle - slotCenter)) * innerRadius;
+  const lockRun = lockAngle * innerRadius;
+  return Math.min(
+    testRoundedRectangleDistance(
+      tangent, z, -slotWidth / 2, slotWidth / 2,
+      -trackCornerRadius, defaultTrackCenter + defaultTrackHeight / 2, trackCornerRadius
+    ),
+    testRoundedRectangleDistance(
+      tangent, z, -slotWidth / 2, lockRun + slotWidth / 2,
+      defaultTrackCenter - defaultTrackHeight / 2,
+      defaultTrackCenter + defaultTrackHeight / 2,
+      trackCornerRadius
+    ),
+    testRoundedRectangleDistance(
+      tangent, z, lockRun - slotWidth / 2, lockRun + slotWidth / 2,
+      defaultPocketLow, defaultTrackCenter + defaultTrackHeight / 2,
+      pocketCornerRadius
+    )
+  );
+}
+const raisedLugVertices = bodyWithoutLogo.vertices.filter((vertex) =>
+  vertex[2] > defaultShoulder && Math.hypot(vertex[0], vertex[1]) > neckRadius + 0.01
+);
+[0, 0.5, 1].forEach((turnFraction) => {
+  const maximumCutoutDistance = raisedLugVertices.reduce((maximum, vertex) => {
+    const localAngle = Math.atan2(vertex[1], vertex[0]) + lockAngle * turnFraction;
+    const localZ = vertex[2] - (defaultShoulder - 0.65);
+    const slotCenter = vertex[1] > 0 ? Math.PI / 2 : Math.PI * 1.5;
+    return Math.max(maximum, expectedCutoutDistance(localAngle, localZ, slotCenter));
+  }, -Infinity);
+  assert.ok(maximumCutoutDistance < -0.25,
+    `the rounded lug must retain at least 0.25 mm path clearance at ${Math.round(turnFraction * 75)}°`);
+});
 
 const thickWallCapsule = buildModel("applePencilCase", {
   ...pencilParameters,

@@ -414,8 +414,17 @@ function normalizeAngle(angle) {
   return normalized < 0 ? normalized + TAU : normalized;
 }
 
-function angularDistance(first, second) {
-  return Math.abs(Math.atan2(Math.sin(first - second), Math.cos(first - second)));
+function signedAngularDistance(first, second) {
+  return Math.atan2(Math.sin(first - second), Math.cos(first - second));
+}
+
+function roundedRectangleDistance(x, y, x0, x1, y0, y1, radius) {
+  const halfWidth = (x1 - x0) / 2;
+  const halfHeight = (y1 - y0) / 2;
+  const safeRadius = Math.min(radius, halfWidth, halfHeight);
+  const qx = Math.abs(x - (x0 + x1) / 2) - (halfWidth - safeRadius);
+  const qy = Math.abs(y - (y0 + y1) / 2) - (halfHeight - safeRadius);
+  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - safeRadius;
 }
 
 function bayonetCapMesh({
@@ -435,11 +444,12 @@ function bayonetCapMesh({
   const vertices = [];
   const faces = [];
   const ventRadius = 0.85;
-  const slotHalfAngle = slotWidth / (2 * innerRadius);
   const trackLow = trackCenter - trackHeight / 2;
   const trackHigh = trackCenter + trackHeight / 2;
   const pocketLow = trackLow - pocketDrop;
   const slotCenters = [Math.PI / 2, Math.PI * 1.5];
+  const trackCornerRadius = Math.min(0.36, trackHeight * 0.22, slotWidth * 0.14);
+  const pocketCornerRadius = Math.min(0.30, pocketDrop * 0.46, slotWidth * 0.12);
   const outerDomeAngle = Math.acos(ventRadius / capRadius);
   const innerDomeAngle = Math.acos(ventRadius / cavityRadius);
   const upperProfile = [
@@ -467,83 +477,139 @@ function bayonetCapMesh({
     { radius: cavityRadius, z: insertionDepth },
     { radius: innerRadius, z: insertionDepth }
   );
-  const angles = Array.from({ length: segments }, (_, index) => TAU * index / segments);
+  const surfaceSegments = segments * 2;
+  const angles = Array.from({ length: surfaceSegments }, (_, index) => TAU * index / surfaceSegments);
   slotCenters.forEach((center) => {
-    angles.push(
-      normalizeAngle(center - slotHalfAngle),
-      normalizeAngle(center + slotHalfAngle),
-      normalizeAngle(center + lockAngle + slotHalfAngle)
-    );
+    angles.push(normalizeAngle(center), normalizeAngle(center + lockAngle));
   });
   addLongitudinalFlatAngles(angles, upperProfile, flat);
   angles.sort((first, second) => first - second);
   for (let index = angles.length - 1; index > 0; index -= 1) {
     if (Math.abs(angles[index] - angles[index - 1]) < 1e-8) angles.splice(index, 1);
   }
-  const zLevels = [0, pocketLow, trackLow, trackHigh, insertionDepth];
+  const axialSlices = Math.ceil(insertionDepth / 0.18);
+  const zLevels = Array.from({ length: axialSlices + 1 }, (_, index) => insertionDepth * index / axialSlices);
   const vertexMap = new Map();
-  function vertex(radius, angleIndex, z, applyFlat = false) {
-    const key = `${radius.toFixed(6)}:${angleIndex}:${z.toFixed(6)}:${applyFlat ? 1 : 0}`;
+  function vertex(radius, angle, z, applyFlat = false) {
+    const normalizedAngle = normalizeAngle(angle);
+    const key = `${radius.toFixed(6)}:${normalizedAngle.toFixed(8)}:${z.toFixed(6)}:${applyFlat ? 1 : 0}`;
     if (vertexMap.has(key)) return vertexMap.get(key);
-    const angle = angles[angleIndex];
-    const point = flattenedRadialPoint(radius, angle, applyFlat ? flat : null);
+    const point = flattenedRadialPoint(radius, normalizedAngle, applyFlat ? flat : null);
     const index = vertices.push([point[0], point[1], z]) - 1;
     vertexMap.set(key, index);
     return index;
   }
-  function gridVertex(radius, angleIndex, zIndex, applyFlat = false) {
-    return vertex(radius, angleIndex, zLevels[zIndex], applyFlat);
-  }
-  function isCutout(angle, z) {
-    return slotCenters.some((center) => {
-      const entry = angularDistance(angle, center) < slotHalfAngle && z < trackHigh;
-      const alongTrack = normalizeAngle(angle - (center - slotHalfAngle));
-      const track = alongTrack < lockAngle + slotHalfAngle * 2 && z > trackLow && z < trackHigh;
-      const lockingPocket = angularDistance(angle, center + lockAngle) < slotHalfAngle &&
-        z > pocketLow && z < trackHigh;
-      return entry || track || lockingPocket;
+  function cutoutDistance(angle, z) {
+    let distance = Infinity;
+    const lockRun = lockAngle * innerRadius;
+    slotCenters.forEach((center) => {
+      const tangent = signedAngularDistance(angle, center) * innerRadius;
+      distance = Math.min(
+        distance,
+        roundedRectangleDistance(
+          tangent, z,
+          -slotWidth / 2, slotWidth / 2,
+          -trackCornerRadius, trackHigh,
+          trackCornerRadius
+        ),
+        roundedRectangleDistance(
+          tangent, z,
+          -slotWidth / 2, lockRun + slotWidth / 2,
+          trackLow, trackHigh,
+          trackCornerRadius
+        ),
+        roundedRectangleDistance(
+          tangent, z,
+          lockRun - slotWidth / 2, lockRun + slotWidth / 2,
+          pocketLow, trackHigh,
+          pocketCornerRadius
+        )
+      );
     });
+    return distance;
   }
-  const angleCells = angles.length;
-  const zCells = zLevels.length - 1;
-  const occupied = Array.from({ length: angleCells }, (_, angleIndex) => {
-    const nextAngle = angleIndex === angleCells - 1 ? TAU : angles[angleIndex + 1];
-    const midpointAngle = normalizeAngle((angles[angleIndex] + nextAngle) / 2);
-    return Array.from({ length: zCells }, (_, zIndex) => {
-      const midpointZ = (zLevels[zIndex] + zLevels[zIndex + 1]) / 2;
-      return !isCutout(midpointAngle, midpointZ);
-    });
-  });
-
-  for (let angleIndex = 0; angleIndex < angleCells; angleIndex += 1) {
-    const nextAngle = (angleIndex + 1) % angleCells;
-    const previousAngle = (angleIndex - 1 + angleCells) % angleCells;
-    for (let zIndex = 0; zIndex < zCells; zIndex += 1) {
-      if (!occupied[angleIndex][zIndex]) continue;
-      const outer00 = gridVertex(capRadius, angleIndex, zIndex, true);
-      const outer10 = gridVertex(capRadius, nextAngle, zIndex, true);
-      const outer11 = gridVertex(capRadius, nextAngle, zIndex + 1, true);
-      const outer01 = gridVertex(capRadius, angleIndex, zIndex + 1, true);
-      const inner00 = gridVertex(innerRadius, angleIndex, zIndex);
-      const inner10 = gridVertex(innerRadius, nextAngle, zIndex);
-      const inner11 = gridVertex(innerRadius, nextAngle, zIndex + 1);
-      const inner01 = gridVertex(innerRadius, angleIndex, zIndex + 1);
-      addQuad(faces, outer00, outer10, outer11, outer01);
-      addQuad(faces, inner00, inner01, inner11, inner10);
-
-      if (!occupied[previousAngle][zIndex]) addQuad(faces, outer00, outer01, inner01, inner00);
-      if (!occupied[nextAngle][zIndex]) addQuad(faces, outer10, inner10, inner11, outer11);
-      if (zIndex === 0 || !occupied[angleIndex][zIndex - 1]) {
-        addQuad(faces, outer00, inner00, inner10, outer10);
-      }
-      if (zIndex < zCells - 1 && !occupied[angleIndex][zIndex + 1]) {
-        addQuad(faces, outer01, outer11, inner11, inner01);
-      }
+  function gridPoint(angle, z) {
+    const value = cutoutDistance(normalizeAngle(angle), z);
+    return { angle, z, value, boundary: Math.abs(value) < 1e-10 };
+  }
+  function boundaryPoint(first, second) {
+    const amount = first.value / (first.value - second.value);
+    return {
+      angle: first.angle + (second.angle - first.angle) * amount,
+      z: first.z + (second.z - first.z) * amount,
+      value: 0,
+      boundary: true
+    };
+  }
+  function clipMaterialPolygon(points) {
+    const clipped = [];
+    for (let index = 0; index < points.length; index += 1) {
+      const current = points[index];
+      const previous = points[(index - 1 + points.length) % points.length];
+      const currentInside = current.value >= 0;
+      const previousInside = previous.value >= 0;
+      if (currentInside !== previousInside) clipped.push(boundaryPoint(previous, current));
+      if (currentInside) clipped.push(current);
+    }
+    return clipped;
+  }
+  const wallSegments = new Set();
+  function pointKey(point) {
+    return `${normalizeAngle(point.angle).toFixed(8)}:${point.z.toFixed(6)}`;
+  }
+  function addMaterialTriangle(points) {
+    const polygon = clipMaterialPolygon(points);
+    if (polygon.length < 3) return;
+    const outer = polygon.map((point) => vertex(capRadius, point.angle, point.z, true));
+    const inner = polygon.map((point) => vertex(innerRadius, point.angle, point.z));
+    for (let index = 1; index < polygon.length - 1; index += 1) {
+      faces.push([outer[0], outer[index], outer[index + 1]]);
+      faces.push([inner[0], inner[index + 1], inner[index]]);
+    }
+    for (let index = 0; index < polygon.length; index += 1) {
+      const next = (index + 1) % polygon.length;
+      if (!polygon[index].boundary || !polygon[next].boundary) continue;
+      const firstKey = pointKey(polygon[index]);
+      const secondKey = pointKey(polygon[next]);
+      if (firstKey === secondKey) continue;
+      const segmentKey = firstKey < secondKey ? `${firstKey}|${secondKey}` : `${secondKey}|${firstKey}`;
+      if (wallSegments.has(segmentKey)) continue;
+      wallSegments.add(segmentKey);
+      addQuad(faces, inner[index], inner[next], outer[next], outer[index]);
     }
   }
 
-  const profileRings = upperProfile.map((profile) => angles.map((angle, angleIndex) =>
-    vertex(profile.radius, angleIndex, profile.z, profile.flat)
+  for (let angleIndex = 0; angleIndex < angles.length; angleIndex += 1) {
+    const angle0 = angles[angleIndex];
+    const angle1 = angleIndex === angles.length - 1 ? TAU : angles[angleIndex + 1];
+    for (let zIndex = 0; zIndex < zLevels.length - 1; zIndex += 1) {
+      const z0 = zLevels[zIndex];
+      const z1 = zLevels[zIndex + 1];
+      const lowerLeft = gridPoint(angle0, z0);
+      const lowerRight = gridPoint(angle1, z0);
+      const upperRight = gridPoint(angle1, z1);
+      const upperLeft = gridPoint(angle0, z1);
+      addMaterialTriangle([lowerLeft, lowerRight, upperRight]);
+      addMaterialTriangle([lowerLeft, upperRight, upperLeft]);
+    }
+
+    const bottomFirst = gridPoint(angle0, 0);
+    const bottomSecond = gridPoint(angle1, 0);
+    if (bottomFirst.value >= 0 || bottomSecond.value >= 0) {
+      let first = bottomFirst;
+      let second = bottomSecond;
+      if (first.value < 0) first = boundaryPoint(first, second);
+      if (second.value < 0) second = boundaryPoint(second, first);
+      const outerFirst = vertex(capRadius, first.angle, 0, true);
+      const innerFirst = vertex(innerRadius, first.angle, 0);
+      const outerSecond = vertex(capRadius, second.angle, 0, true);
+      const innerSecond = vertex(innerRadius, second.angle, 0);
+      addQuad(faces, outerFirst, innerFirst, innerSecond, outerSecond);
+    }
+  }
+
+  const profileRings = upperProfile.map((profile) => angles.map((angle) =>
+    vertex(profile.radius, angle, profile.z, profile.flat)
   ));
   for (let profileIndex = 0; profileIndex < upperProfile.length - 1; profileIndex += 1) {
     const nextProfile = profileIndex + 1;
@@ -672,39 +738,40 @@ function johanssonFlatRelief(flatOffset, shellLength, flatAngle = 0) {
 
 function bayonetLugRelief(outerRadius, lugCenters, centerAngle, dimensions) {
   const { lugDepth, lugHeight, lugWidth } = dimensions;
-  const angularHalfWidth = lugWidth / (outerRadius * 2);
-  const angularBevel = Math.min(0.18 / outerRadius, angularHalfWidth * 0.35);
+  const halfWidth = lugWidth / 2;
+  const angularHalfWidth = halfWidth / outerRadius;
   const axialHalfHeight = lugHeight / 2;
-  const axialBevel = Math.min(0.16, axialHalfHeight * 0.35);
-  const angles = [
-    centerAngle - angularHalfWidth,
-    centerAngle - angularHalfWidth + angularBevel,
-    centerAngle + angularHalfWidth - angularBevel,
-    centerAngle + angularHalfWidth
-  ];
+  const cornerRadius = Math.min(0.30, halfWidth * 0.3, axialHalfHeight * 0.55);
+  const edgeRoll = Math.min(0.16, cornerRadius * 0.55);
+  const angularSamples = 16;
+  const axialSamples = 12;
+  const angles = Array.from({ length: angularSamples + 1 }, (_, index) =>
+    centerAngle - angularHalfWidth + angularHalfWidth * 2 * index / angularSamples
+  );
   const zLevels = [];
-  lugCenters.forEach((center) => zLevels.push(
-    center - axialHalfHeight,
-    center - axialHalfHeight + axialBevel,
-    center + axialHalfHeight - axialBevel,
-    center + axialHalfHeight
-  ));
-  function taperedDepth(distance, halfExtent, bevel) {
-    const absolute = Math.abs(distance);
-    if (absolute >= halfExtent) return 0;
-    if (absolute <= halfExtent - bevel) return 1;
-    return (halfExtent - absolute) / bevel;
-  }
+  lugCenters.forEach((center) => {
+    for (let index = 0; index <= axialSamples; index += 1) {
+      zLevels.push(center - axialHalfHeight + axialHalfHeight * 2 * index / axialSamples);
+    }
+  });
   return {
     angles,
     zLevels,
     depthAt(angle, z) {
-      const angularFactor = taperedDepth((angle - centerAngle) * outerRadius, lugWidth / 2, angularBevel * outerRadius);
-      let axialFactor = 0;
+      const tangent = signedAngularDistance(angle, centerAngle) * outerRadius;
+      let depthFactor = 0;
       lugCenters.forEach((center) => {
-        axialFactor = Math.max(axialFactor, taperedDepth(z - center, axialHalfHeight, axialBevel));
+        const distance = roundedRectangleDistance(
+          tangent, z,
+          -halfWidth, halfWidth,
+          center - axialHalfHeight, center + axialHalfHeight,
+          cornerRadius
+        );
+        const amount = clamp(-distance / edgeRoll, 0, 1);
+        const eased = amount * amount * (3 - amount * 2);
+        depthFactor = Math.max(depthFactor, eased);
       });
-      return angularFactor * axialFactor * lugDepth;
+      return depthFactor * lugDepth;
     }
   };
 }
@@ -782,6 +849,9 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
   const slotWidth = dimensions.lugWidth + dimensions.runningClearance * 2;
   const lockAngle = 75 * Math.PI / 180;
   const pocketDrop = 0.65;
+  const pocketLow = trackCenter - trackHeight / 2 - pocketDrop;
+  const axialOvertravel = 0.80; // 0.65 mm release stroke plus 0.15 mm hard-stop clearance.
+  const capInsertionDepth = insertionDepth + axialOvertravel;
   const flat = { offset: capRadius - 0.18, angle: lockAngle };
   const capHeight = domeStart + Math.sqrt(capRadius ** 2 - ventRadius ** 2);
   return {
@@ -790,7 +860,7 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
       cavityRadius,
       domeStart,
       innerRadius,
-      insertionDepth,
+      insertionDepth: capInsertionDepth,
       trackCenter,
       trackHeight,
       slotWidth,
@@ -803,7 +873,7 @@ function makeVentedBayonetCap(cavityRadius, neckRadius, capClearance, insertionD
     innerRadius,
     trackCenter,
     lockAngle,
-    pocketDrop
+    pocketLow
   };
 }
 
@@ -833,7 +903,8 @@ function buildApplePencilCase(parameters) {
   const capResult = makeVentedBayonetCap(
     cavityRadius, neckRadius, capClearance, insertionDepth, bayonet, domeStart
   );
-  const lugCenter = shoulder + capResult.trackCenter - capResult.pocketDrop;
+  const lockFloorClearance = 0.18; // Limits axial rattle without demanding a resin press fit.
+  const lugCenter = shoulder + capResult.pocketLow + bayonet.lugHeight / 2 + lockFloorClearance;
   const upperLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI / 2, bayonet);
   const lowerLug = bayonetLugRelief(neckRadius, [lugCenter], Math.PI * 1.5, bayonet);
   const bodyFlat = { offset: bodyRadius - 0.18, angle: 0 };
