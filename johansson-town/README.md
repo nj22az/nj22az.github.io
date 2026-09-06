@@ -1,6 +1,6 @@
 # Johansson Town — Harbour Edition
 
-An original, explorable 1988 Japanese harbour neighbourhood. Retains all eight existing project destinations and their interiors.
+An original, explorable 1988 Japanese harbour neighbourhood inspired by the grounded everyday atmosphere of late-1980s Japan and classic street-level adventure games. It retains all eight existing project destinations and their interiors.
 
 ## Play
 
@@ -10,16 +10,22 @@ An original, explorable 1988 Japanese harbour neighbourhood. Retains all eight e
 - The notebook, money, items, visited shops and quest progress save on the current device. Clearing browser data removes this save.
 - The bus stop is a readable timetable; buses and interiors beyond the eight project buildings are not simulated.
 
+## Characters
+
+The live game now uses original procedural human-proportioned residents instead of the previous Kenney Mini Character layer. The player, Aiko, Kenji, Mrs Sato and the harbour master have separate heights, builds, ages, clothing palettes, hairstyles and silhouettes. Faces, hands, layered clothing, shoes, collars and individual hair shapes are modelled from local Three.js geometry.
+
+Walking, jogging, breathing, head movement and conversational gestures are animated procedurally. Characters are created synchronously, so there is no delayed GLB model swap, skeleton cloning or character pop-in during play. Legacy Kenney CC0 files remain in `assets/characters/` only for licence/history reference and are not loaded by the current character system.
+
 ## Assets and rendering
 
-Three local CC0 Kenney Mini Characters (779 KB total) replace the player and four residents. Each carries 32 original animation clips. The game uses idle, walk, sprint and conversational acknowledgement. Palette images are embedded. Characters stream in after startup, with simple fallback figures if a model fails.
+Four local 1K CC0 Poly Haven diffuse textures provide road, plaster, timber and roofing surfaces. These free public-domain materials remain the principal external visual assets; original buildings, props and scenery use instanced geometry.
 
-Four local 1K CC0 Poly Haven diffuse textures (2.43 MB total) provide road, plaster, timber and roofing surfaces. Original buildings and scenery use instanced geometry. Mobile caps pixel ratio at 1, targets 30 fps and disables shadow maps. Desktop uses soft shadows. Day/evening/night, rain, four camera views and a live minimap are available.
+`preflight.js` raises touch-device rendering resolution conservatively and requests hardware antialiasing before the existing Three.js renderer is created. Larger tablets target up to 1.6 device-pixel ratio, smaller touch devices up to 1.35, and desktop up to 2. The UI polish layer removes the previous scanline treatment and keeps a restrained vignette, improving clarity without changing gameplay or collision logic.
 
-No external asset host is required at runtime. The Three.js r169 module and matching GLTFLoader/SkeletonUtils helpers are served from this repository.
+Day/evening/night, rain, four camera views and a live minimap remain available. No external asset host is required at runtime. Three.js r169 is served from this repository.
 
-Credits and original licences: `assets/ATTRIBUTION.md`, `assets/characters/ATTRIBUTION.md`, `assets/characters/LICENSE-KENNEY.txt`, `vendor/LICENSE-THREE.txt`. Source manifests retain original download details; the four textures have been renamed locally to asphalt.jpg, plaster.jpg, timber.jpg and roof.jpg.
+Credits and original licences: `assets/ATTRIBUTION.md`, `assets/characters/ATTRIBUTION.md`, `assets/characters/LICENSE-KENNEY.txt`, `vendor/LICENSE-THREE.txt`. Source manifests retain original download details; the four Poly Haven textures have been renamed locally to asphalt.jpg, plaster.jpg, timber.jpg and roof.jpg.
 
 ## Validation
 
-JavaScript syntax and local asset/import paths checked. Node smoke checks exercised purchases, insufficient funds, quest progression and one-time reward, fish sales, timed fishing, three-round arcade payout, save restoration, unique visits, all eight interiors, world updates and collision bounds. Shipped GLTFLoader parsed all three actual GLBs; skeleton clones and walk clips produced finite transforms. Browser rendering, visual appearance and physical iPhone performance have not been play-tested in this revision.
+New character and preflight modules were syntax-checked before commit. Existing gameplay, collision, activities and world geometry remain isolated from the character replacement. The entry point cache-busts the new renderer/UI revision and remaps the previous character module URL to the current human-character revision.
