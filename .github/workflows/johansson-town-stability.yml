@@ -1,0 +1,28 @@
+name: Johansson Town Stability
+
+on:
+  push:
+    paths:
+      - 'johansson-town/**'
+      - '.github/workflows/johansson-town-stability.yml'
+  pull_request:
+    paths:
+      - 'johansson-town/**'
+      - '.github/workflows/johansson-town-stability.yml'
+
+jobs:
+  stability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse ES modules
+        shell: bash
+        run: |
+          for file in johansson-town/main.js johansson-town/world.js johansson-town/characters.js johansson-town/activities.js johansson-town/physics.js; do
+            node --input-type=module --check < "$file"
+          done
+      - name: Run stability regression tests
+        run: node johansson-town/tests/stability.test.mjs
