@@ -117,11 +117,20 @@ document.addEventListener('keydown',e=>{
   const gesture=map[e.code];if(!gesture)return;e.preventDefault();e.stopImmediatePropagation();completeQTE(gesture===qteState.direction);
 },{capture:true});
 
+function fixCredits(){
+  const body=document.querySelector('#activityBody p');
+  if(body)body.textContent='Original town, buildings, activities and current procedural human rigs: Johansson Town. Road, plaster, timber and roof photography: Poly Haven (CC0). Three.js: MIT licence. Legacy Kenney Mini Character files remain archived but are not loaded by the v11 game.';
+  const old=[...document.querySelectorAll('#activityActions button')].find(b=>b.textContent.includes('Character credits'));
+  if(old)old.textContent='Legacy character archive';
+}
+
 const title=document.querySelector('#activityTitle');
 if(title){
   const watch=new MutationObserver(()=>{
-    const match=title.textContent.match(/STAR PORT · Round (\d)\/3/);
+    const text=title.textContent;
+    const match=text.match(/STAR PORT · Round (\d)\/3/);
     if(match)armQTE(Number(match[1]));else if(qteState){lastRound=0;disarmQTE();}
+    if(text==='Credits')requestAnimationFrame(fixCredits);
   });
   watch.observe(title,{childList:true,characterData:true,subtree:true});
 }
