@@ -11,6 +11,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?v=11">
 <link rel="stylesheet" href="./polish.css?v=11">
+<link rel="stylesheet" href="./viewport-fix.css?v=12">
 <title>Johansson Town</title>
 </head>
 <body>
@@ -81,7 +82,7 @@
     },8000);
     try{
       await import('./touch-ui.js?v=11');
-      await import('./main.js?v=11');
+      await import('./main.js?v=12');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
