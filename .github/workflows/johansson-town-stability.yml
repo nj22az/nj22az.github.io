@@ -10,17 +10,19 @@ on:
       - 'johansson-town/**'
       - '.github/workflows/johansson-town-stability.yml'
 
+permissions:
+  contents: read
+
 jobs:
   stability:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Parse ES modules
         shell: bash
         run: |
+          node --version
           for file in johansson-town/main.js johansson-town/world.js johansson-town/characters.js johansson-town/activities.js johansson-town/physics.js; do
             node --input-type=module --check < "$file"
           done
