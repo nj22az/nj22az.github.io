@@ -9,32 +9,35 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?v=7">
+<link rel="stylesheet" href="./styles.css?v=8">
 <title>Johansson Town</title>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
 <section id="start">
   <div class="start-card">
     <div class="kicker">JOHANSSON TOWN · 1988</div>
     <h1>JOHANSSON<br><span>TOWN</span></h1>
     <div class="jp">ヨハンソン町</div>
-    <div class="scene-line">16:42 · Harbour District</div>
+    <div class="scene-line">昭和63年 · A harbour neighbourhood, 1988</div>
     <button id="enter">ENTER TOWN</button>
     <div id="bootStatus" class="boot-status">READY</div>
-    <div class="desktop-help">WASD · mouse · E interact · Q directory · V camera · N time</div>
+    <div class="desktop-help">WASD move · mouse look · E interact<br>Q directory · B notebook · V camera · N time</div>
   </div>
 </section>
 <div id="hud" class="hidden">
-  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div id="clock">16:42</div></div>
+  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div><div id="wallet">¥1,200</div></div></div>
   <button id="directoryButton">DIRECTORY</button>
   <button id="fullscreenButton">FULL SCREEN</button>
-  <div id="prompt"></div>
-  <div id="subtitle"></div>
+  <div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↑</span></div>
+  <nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="cameraButton">CAMERA</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND OFF</button></nav>
+  <div id="prompt" role="status"></div>
+  <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden"><div class="directory-card"><div class="directory-head"><div><h2>Town Directory</h2><p>JOHANSSON TOWN · HARBOUR DISTRICT</p></div><button id="closeDirectory">CLOSE</button></div><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988</div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town directory"><div class="directory-card"><div class="directory-head"><div><h2>Town Directory</h2><p>JOHANSSON TOWN · HARBOUR DISTRICT</p></div><button id="closeDirectory">CLOSE</button></div><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span>JOHANSSON TOWN · 1988</span><button id="closeActivity" aria-label="Close activity">CLOSE</button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile"><div id="stick"><div id="knob"></div></div><button id="act">INTERACT</button></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
@@ -75,7 +78,7 @@
       }
     },8000);
     try{
-      await import('./main.js?v=7');
+      await import('./main.js?v=8');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
