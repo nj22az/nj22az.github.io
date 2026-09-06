@@ -75,6 +75,16 @@ const CONFIG = {
       featured: true,
     },
     {
+      title: "Mizuhama 1988",
+      description:
+        "A playable Three.js street-adventure demo set in an original late-1980s Japanese harbour shopping district, with third-person exploration and CC0 environmental assets.",
+      url: "/mizuhama-1988/",
+      icon: "home",
+      tags: ["Three.js", "Playable Demo", "3D Web"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
