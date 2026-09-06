@@ -1,8 +1,7 @@
-/* iPad/iOS fullscreen compositor guard — v13.
-   Safari can briefly expose the layout/root surface while the visual viewport,
-   safe area and Fullscreen compositor are changing.  Keep every layer behind
-   WebGL dark and overscan far enough that fractional device-pixel rounding can
-   never reveal a light strip. */
+/* iPad/iOS fullscreen compositor guard — v14.
+   Every compositor surface behind WebGL is dark. The canvas is deliberately
+   overscanned, but is not paint-contained: WebKit may otherwise expose the
+   containment boundary for a frame while Fullscreen/visualViewport resizes. */
 :root{
   background:#0b171b!important;
   color-scheme:dark;
@@ -20,25 +19,24 @@ html,body{
   overscroll-behavior:none!important;
   background:#0b171b!important;
 }
-/* A separate opaque compositor layer remains present even for the frame in
-   which Safari detaches/re-attaches the WebGL surface during fullscreen. */
 body::before{
   content:"";
   position:fixed;
-  inset:-48px;
-  z-index:-2;
+  inset:-96px;
+  z-index:-1;
   pointer-events:none;
   background:#0b171b;
   transform:translate3d(0,0,0);
+  -webkit-transform:translate3d(0,0,0);
 }
 #game{
   position:fixed!important;
-  left:-18px!important;
-  top:-18px!important;
-  right:-18px!important;
-  bottom:-18px!important;
-  width:calc(100% + 36px)!important;
-  height:calc(100% + 36px)!important;
+  left:-24px!important;
+  top:-24px!important;
+  right:-24px!important;
+  bottom:-24px!important;
+  width:calc(100% + 48px)!important;
+  height:calc(100% + 48px)!important;
   max-width:none!important;
   max-height:none!important;
   margin:0!important;
@@ -46,22 +44,22 @@ body::before{
   border:0!important;
   outline:0!important;
   background:#0b171b!important;
+  box-shadow:0 0 0 96px #0b171b!important;
   transform:translate3d(0,0,0);
+  -webkit-transform:translate3d(0,0,0);
   transform-origin:50% 50%;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
-  contain:layout paint size;
+  will-change:transform;
+  touch-action:none;
 }
-#ink{
-  inset:-2px!important;
-}
-@supports(height:100dvh){
-  html,body{height:100dvh!important;}
-}
+#ink{inset:-3px!important;}
+@supports(height:100dvh){html,body{height:100dvh!important;}}
 @media (display-mode:fullscreen){
   :root,html,body{background:#0b171b!important;}
-  #game{left:-24px!important;top:-24px!important;right:-24px!important;bottom:-24px!important;width:calc(100% + 48px)!important;height:calc(100% + 48px)!important;}
+  #game{
+    left:-32px!important;top:-32px!important;right:-32px!important;bottom:-32px!important;
+    width:calc(100% + 64px)!important;height:calc(100% + 64px)!important;
+  }
 }
-@media (display-mode:standalone){
-  :root,html,body{background:#0b171b!important;}
-}
+@media (display-mode:standalone){:root,html,body{background:#0b171b!important;}}
