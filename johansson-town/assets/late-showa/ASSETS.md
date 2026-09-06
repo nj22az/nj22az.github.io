@@ -43,6 +43,13 @@ This directory is the controlled intake area for third-party assets used by Joha
 
 ## Reference-only until licence/download is re-verified
 
+### Keshi Corner / MrTalida — Internet Archive
+- Collection: https://archive.org/details/@keshicorner
+- Content: hundreds of highly detailed 3D scans of vintage Japanese keshi-gomu toys, including sets based on Super Mario Bros., The Legend of Zelda, Ghosts 'n Goblins, Goemon, Donkey Kong Country, Street Fighter, Dragon Quest and other game properties.
+- The creator explicitly makes the scan files freely downloadable for preservation, research and printing.
+- Production policy: **reference-only for Johansson Town unless the exact item has a licence that clearly permits redistribution and game use, and the underlying depicted IP is also safe to use.** The scans reproduce copyrighted franchise characters/toys, so free download alone is not sufficient clearance for a public game.
+- Potential safe use: study scan density, surface treatment, 1980s gashapon aesthetics and toy-display presentation; create original Johansson Town keshi-style capsule toys rather than importing franchise characters.
+
 ### bta_kelorinjo — Shouwa Minka / Nagaya / Omise
 These are excellent visual references for the architecture target. Current public listings inspected during the September 2026 asset pass include links or wording associated with commercial Asset Store versions. Do not mirror or redistribute them until the exact downloadable file and its current licence are verified.
 
