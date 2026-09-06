@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#172323">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Johansson Town">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./styles.css">
+<title>Johansson Town</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="ink"></div>
+<section id="start">
+  <div class="start-card">
+    <div class="kicker">JOHANSSON TOWN · 1988</div>
+    <h1>JOHANSSON<br><span>TOWN</span></h1>
+    <div class="jp">ヨハンソン町</div>
+    <div class="scene-line">16:42 · Harbour District</div>
+    <button id="enter">ENTER TOWN</button>
+    <div class="desktop-help">WASD · mouse · E interact · Q directory · V camera · N time</div>
+  </div>
+</section>
+<div id="hud" class="hidden">
+  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div id="clock">16:42</div></div>
+  <button id="directoryButton">DIRECTORY</button>
+  <div id="prompt"></div>
+  <div id="subtitle"></div>
+  <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
+</div>
+<div id="directory" class="hidden"><div class="directory-card"><div class="directory-head"><div><h2>Town Directory</h2><p>JOHANSSON TOWN · HARBOUR DISTRICT</p></div><button id="closeDirectory">CLOSE</button></div><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988</div></div></div>
+<div id="mobile"><div id="stick"><div id="knob"></div></div><button id="act">INTERACT</button></div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
