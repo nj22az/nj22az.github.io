@@ -9,7 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?v=8">
+<link rel="stylesheet" href="./styles.css?v=9">
+<link rel="stylesheet" href="./polish.css?v=9">
+<script type="importmap">{"imports":{"./characters.js?v=8":"./characters.js?v=9"}}</script>
 <title>Johansson Town</title>
 </head>
 <body>
@@ -78,7 +80,8 @@
       }
     },8000);
     try{
-      await import('./main.js?v=8');
+      await import('./preflight.js?v=9');
+      await import('./main.js?v=9');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
