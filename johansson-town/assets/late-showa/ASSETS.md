@@ -24,9 +24,10 @@ This directory is the controlled intake area for third-party assets used by Joha
 - Intended use: walk, jog, idle, gesture and contextual animations. Curate only the clips Johansson Town needs.
 
 ### Quaternius — Sushi Restaurant Kit
-- Source mirror inspected: https://github.com/agentkaerf/FreeModels/tree/main/Sushi%20Restaurant%20Kit%20-%20May%202023
-- Original creator: Quaternius.
-- Licence family: Quaternius free releases are CC0; verify the original pack page/version again when a runtime model is selected.
+- Original source: https://quaternius.com/packs/sushirestaurantkit.html
+- Public source mirror inspected: https://github.com/agentkaerf/FreeModels/tree/main/Sushi%20Restaurant%20Kit%20-%20May%202023
+- Licence: CC0.
+- Original pack: 108 models in FBX, OBJ, glTF and Blend formats.
 - Intended use: period-compatible Japanese restaurant/interior props where the model does not look too modern or stylised.
 
 ### Poly Haven
