@@ -1,28 +1,67 @@
-/* iPad/iOS fullscreen compositor guard.
-   Overscan the WebGL surface slightly so transient visualViewport changes never
-   expose the document underneath the canvas. */
+/* iPad/iOS fullscreen compositor guard — v13.
+   Safari can briefly expose the layout/root surface while the visual viewport,
+   safe area and Fullscreen compositor are changing.  Keep every layer behind
+   WebGL dark and overscan far enough that fractional device-pixel rounding can
+   never reveal a light strip. */
+:root{
+  background:#0b171b!important;
+  color-scheme:dark;
+}
 html,body{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%!important;
   min-height:0!important;
-  overflow:hidden;
-  overscroll-behavior:none;
-  background:#9fb5bc;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  background:#0b171b!important;
+}
+/* A separate opaque compositor layer remains present even for the frame in
+   which Safari detaches/re-attaches the WebGL surface during fullscreen. */
+body::before{
+  content:"";
+  position:fixed;
+  inset:-48px;
+  z-index:-2;
+  pointer-events:none;
+  background:#0b171b;
+  transform:translate3d(0,0,0);
 }
 #game{
   position:fixed!important;
-  inset:-3px!important;
-  width:calc(100% + 6px)!important;
-  height:calc(100% + 6px)!important;
+  left:-18px!important;
+  top:-18px!important;
+  right:-18px!important;
+  bottom:-18px!important;
+  width:calc(100% + 36px)!important;
+  height:calc(100% + 36px)!important;
   max-width:none!important;
   max-height:none!important;
-  background:#9fb5bc;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:#0b171b!important;
   transform:translate3d(0,0,0);
+  transform-origin:50% 50%;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
+  contain:layout paint size;
+}
+#ink{
+  inset:-2px!important;
+}
+@supports(height:100dvh){
+  html,body{height:100dvh!important;}
 }
 @media (display-mode:fullscreen){
-  html,body{background:#9fb5bc!important;}
+  :root,html,body{background:#0b171b!important;}
+  #game{left:-24px!important;top:-24px!important;right:-24px!important;bottom:-24px!important;width:calc(100% + 48px)!important;height:calc(100% + 48px)!important;}
+}
+@media (display-mode:standalone){
+  :root,html,body{background:#0b171b!important;}
 }
