@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content">
 <meta name="theme-color" content="#172323">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./styles.css?v=7">
 <title>Johansson Town</title>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"}}</script>
 </head>
 <body>
 <canvas id="game"></canvas>
@@ -23,18 +22,81 @@
     <div class="jp">ヨハンソン町</div>
     <div class="scene-line">16:42 · Harbour District</div>
     <button id="enter">ENTER TOWN</button>
+    <div id="bootStatus" class="boot-status">READY</div>
     <div class="desktop-help">WASD · mouse · E interact · Q directory · V camera · N time</div>
   </div>
 </section>
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div id="clock">16:42</div></div>
   <button id="directoryButton">DIRECTORY</button>
+  <button id="fullscreenButton">FULL SCREEN</button>
   <div id="prompt"></div>
   <div id="subtitle"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
 <div id="directory" class="hidden"><div class="directory-card"><div class="directory-head"><div><h2>Town Directory</h2><p>JOHANSSON TOWN · HARBOUR DISTRICT</p></div><button id="closeDirectory">CLOSE</button></div><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988</div></div></div>
 <div id="mobile"><div id="stick"><div id="knob"></div></div><button id="act">INTERACT</button></div>
-<script type="module" src="./main.js"></script>
+<div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
+<div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
+<script>
+(() => {
+  const enter=document.getElementById('enter');
+  const status=document.getElementById('bootStatus');
+  const fatal=document.getElementById('fatal');
+  const retry=document.getElementById('retry');
+  const fsButton=document.getElementById('fullscreenButton');
+  const fsHelp=document.getElementById('iosFullscreen');
+  const fsClose=document.getElementById('closeFullscreenHelp');
+  const isIPhone=/iPhone|iPod/.test(navigator.userAgent);
+  const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+
+  async function fullscreen(){
+    if(document.fullscreenElement||document.webkitFullscreenElement){
+      const exit=document.exitFullscreen||document.webkitExitFullscreen;
+      if(exit){try{await exit.call(document)}catch{}}
+      return;
+    }
+    const el=document.documentElement;
+    const request=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(request){try{await request.call(el);return}catch{}}
+    if(isIPhone&&!standalone())fsHelp.classList.remove('hidden');
+  }
+
+  async function launch(){
+    if(window.__JOHANSSON_BOOTING__)return;
+    window.__JOHANSSON_BOOTING__=true;
+    enter.disabled=true;
+    status.textContent='OPENING…';
+    fullscreen();
+    const watchdog=setTimeout(()=>{
+      if(!window.__JOHANSSON_RUNNING__){
+        status.textContent='STARTUP TOOK TOO LONG';
+        fatal.classList.remove('hidden');
+      }
+    },8000);
+    try{
+      await import('./main.js?v=7');
+      clearTimeout(watchdog);
+      window.__JOHANSSON_RUNNING__=true;
+      fatal.classList.add('hidden');
+    }catch(err){
+      clearTimeout(watchdog);
+      console.error(err);
+      status.textContent='START FAILED';
+      fatal.querySelector('p').textContent='Johansson Town could not start. Reload and try again.';
+      fatal.classList.remove('hidden');
+      window.__JOHANSSON_BOOTING__=false;
+      enter.disabled=false;
+    }
+  }
+
+  enter.addEventListener('click',launch);
+  retry.addEventListener('click',()=>location.reload());
+  fsButton.addEventListener('click',fullscreen);
+  fsClose.addEventListener('click',()=>fsHelp.classList.add('hidden'));
+  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
+  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
+})();
+</script>
 </body>
 </html>
