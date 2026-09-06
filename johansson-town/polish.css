@@ -1,6 +1,6 @@
 /* Johansson Town visual polish — crisp, restrained 1988 game UI. */
 #game{image-rendering:auto;backface-visibility:hidden}
-#ink{background:radial-gradient(circle at 50% 44%,transparent 64%,rgba(7,13,15,.16));mix-blend-mode:normal;opacity:.7}
+#ink{background:radial-gradient(circle at 50% 44%,transparent 64%,rgba(7,13,15,.16));mix-blend-mode:normal;opacity:.52}
 .placard,#clock,#wallet,#directoryButton,#fullscreenButton,.timecard,.map-frame,#townControls,#prompt,#subtitle{
   border-color:rgba(236,227,201,.2);
   box-shadow:0 10px 28px rgba(7,14,17,.2);
@@ -20,10 +20,30 @@
 .map-frame{background:rgba(17,40,48,.86)}
 .directory-card,.activity-card,.modal-card{border-radius:2px}
 .dir-item{transition:transform .1s ease,background .1s ease}.dir-item:active{transform:translateY(1px)}
+
+/* Touch UI: floating stick, context action and Shenmue-style gesture QTEs. */
+#qte{position:fixed;inset:0;z-index:90;display:grid;place-items:center;pointer-events:auto;background:radial-gradient(circle at center,rgba(6,13,16,.04),rgba(6,13,16,.28));touch-action:none}
+#qte.hidden{display:none!important}
+.qte-card{position:relative;display:grid;place-items:center;width:min(210px,42vw);aspect-ratio:1;border-radius:50%;border:2px solid rgba(245,235,205,.8);background:rgba(10,25,31,.76);box-shadow:0 18px 60px rgba(0,0,0,.3),inset 0 0 0 10px rgba(255,255,255,.025);backdrop-filter:blur(8px)}
+#qteGlyph{font:300 clamp(54px,10vw,86px)/1 system-ui;color:#f3e8ca;text-shadow:0 4px 20px rgba(0,0,0,.38)}
+#qteText{position:absolute;bottom:25px;font:800 13px/1.2 system-ui;letter-spacing:.16em;color:#f1d493}
+.qte-track{position:absolute;left:18%;right:18%;bottom:-22px;height:4px;background:rgba(255,255,255,.2);overflow:hidden}.qte-track span{display:block;width:100%;height:100%;transform-origin:left;background:#efc96d}
+#qte.good .qte-card{border-color:#9fd69d;box-shadow:0 0 0 8px rgba(105,184,114,.12),0 18px 60px rgba(0,0,0,.3)}
+#qte.bad .qte-card{border-color:#df7e69;animation:qte-shake .16s linear 1}
+@keyframes qte-shake{0%,100%{transform:translateX(0)}33%{transform:translateX(-8px)}66%{transform:translateX(8px)}}
+
 @media(pointer:coarse){
-  #ink{opacity:.55}
-  #act{background:rgba(17,40,48,.9);border:1px solid rgba(236,227,201,.5);box-shadow:0 8px 24px rgba(5,10,12,.24)}
-  #stick{background:rgba(17,40,48,.22);border-color:rgba(236,227,201,.3)}
-  #knob{background:rgba(236,227,201,.66);border-color:rgba(17,40,48,.35)}
+  #ink{opacity:.38}
+  #mobile{display:block!important}
+  #stick{position:absolute;left:84px;top:auto;bottom:86px;width:116px;height:116px;margin:0;transform:translate(-50%,-50%) scale(.86);opacity:0;border:1px solid rgba(240,230,200,.38);background:radial-gradient(circle,rgba(238,229,202,.08) 0 27%,rgba(14,35,43,.24) 28% 100%);box-shadow:0 12px 38px rgba(0,0,0,.16),inset 0 0 0 12px rgba(255,255,255,.018);transition:opacity .1s ease,transform .1s ease;pointer-events:none}
+  #stick::before,#stick::after{content:"";position:absolute;left:50%;top:50%;background:rgba(240,230,200,.16);transform:translate(-50%,-50%)}
+  #stick::before{width:54%;height:1px}#stick::after{height:54%;width:1px}
+  #stick.active{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #knob{left:50%;top:50%;width:48px;height:48px;margin:-24px;border:1px solid rgba(20,39,45,.45);background:radial-gradient(circle at 38% 32%,rgba(255,248,224,.92),rgba(220,211,183,.72));box-shadow:0 5px 16px rgba(0,0,0,.18)}
+  #act{display:grid;place-items:center;align-content:center;gap:2px;width:92px;height:92px;border-radius:50%;background:rgba(13,31,38,.83);border:1px solid rgba(236,227,201,.44);box-shadow:0 10px 30px rgba(4,9,11,.25),inset 0 0 0 8px rgba(255,255,255,.018);transition:transform .1s ease,background .1s ease,border-color .1s ease}
+  #act.available{background:rgba(131,83,55,.9);border-color:rgba(247,219,151,.82);transform:scale(1.06)}
+  #act:active{transform:scale(.94)}
+  .act-glyph{display:block;font:500 25px/1 system-ui;color:#f3e8ca}.act-label{display:block;font:800 9px/1.1 system-ui;letter-spacing:.12em;color:#f3e8ca}
+  #prompt{bottom:31%;font-size:13px;padding:10px 15px;background:rgba(10,24,29,.88)}
 }
-@media(prefers-reduced-motion:reduce){#directoryButton,#fullscreenButton,.dir-item{transition:none}}
+@media(prefers-reduced-motion:reduce){#directoryButton,#fullscreenButton,.dir-item,#stick,#act{transition:none}.qte-card{animation:none!important}}
