@@ -1,0 +1,30 @@
+/* Johansson Town character controls: dedicated jump control for touch devices. */
+#jump{display:none}
+@media(pointer:coarse){
+  #jump{
+    pointer-events:auto;
+    position:absolute;
+    right:max(116px,calc(env(safe-area-inset-right) + 106px));
+    bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px));
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    border:1px solid #e6dbb977;
+    background:#142d37e8;
+    color:#efe3c7;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1px;
+    box-shadow:none;
+    touch-action:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #jump:active{transform:translateY(2px);background:#35535d}
+  #jump .jump-glyph{font:800 20px/1 system-ui}
+  #jump .jump-label{font:800 9px/1.1 system-ui;letter-spacing:.08em}
+}
+@media(pointer:coarse) and (max-height:520px){
+  #jump{right:max(108px,calc(env(safe-area-inset-right) + 98px));bottom:max(72px,calc(env(safe-area-inset-bottom) + 62px));width:62px;height:62px}
+}
