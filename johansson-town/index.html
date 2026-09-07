@@ -18,7 +18,7 @@
 {
   "imports": {
     "./world.js?v=11": "./world-professional.js?v=14",
-    "./characters.js?v=11": "./characters-aaa.js?v=19",
+    "./characters.js?v=11": "./characters-aaa.js?v=20",
     "./physics.js?v=10": "./physics.js?v=11",
     "./main.js?v=15": "./main-professional.js?v=16"
   }
@@ -94,9 +94,9 @@
     },25000);
     try{
       await import('./touch-ui.js?v=11');
-      const cast=await import('./characters-aaa.js?v=19');
+      const cast=await import('./characters-aaa.js?v=20');
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
-      status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total} HD`;
+      status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total}`;
       await import('./main.js?v=15');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
