@@ -22,7 +22,7 @@ const CONFIG = {
     social: {
       github: "https://github.com/nj22az",
       linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
-      etsy: "https://www.etsy.com/shop/Colonialclub",
+      store: "https://3va6hr-fw.myshopify.com/",
       wordpress: "https://theofficeofnils.wordpress.com",
     },
     locations: [
@@ -48,6 +48,7 @@ const CONFIG = {
   navigation: [
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
+    { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
     { id: "journal", label: "Journal" },
     { id: "about", label: "About" },
     { id: "locations", label: "Locations" },
@@ -105,12 +106,12 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Etsy Shop",
+      title: "JOJO-Engineering Shop",
       description:
-        "Digital products and templates shaped by practical workflows, careful documentation, and field experience.",
-      url: "https://www.etsy.com/shop/Colonialclub",
+        "Printify-made apparel, drinkware, and field-ready merchandise from JOJO-Engineering.",
+      url: "https://3va6hr-fw.myshopify.com/",
       icon: "store",
-      tags: ["Templates", "Digital Products", "Shop"],
+      tags: ["Printify", "Merchandise", "Shop"],
       bento: "normal",
       featured: true,
     },

@@ -134,6 +134,11 @@
   background: rgba(91, 106, 191, 0.1);
   border-color: rgba(91, 106, 191, 0.15);
 }
+.menu-row-icon[data-icon="store"] {
+  color: #d88900;
+  background: rgba(216, 137, 0, 0.1);
+  border-color: rgba(216, 137, 0, 0.15);
+}
 .menu-row-icon[data-icon="wordpress"] {
   color: #217538;
   background: rgba(33, 117, 56, 0.1);

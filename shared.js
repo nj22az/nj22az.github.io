@@ -146,7 +146,16 @@
 
   /* ── Navigation — theme-aware hamburger + overlay ── */
 
-  var navIcons = { home: "home", projects: "notebook", journal: "wordpress", about: "user", locations: "mappin" };
+  var navIcons = { home: "home", projects: "notebook", shop: "store", journal: "wordpress", about: "user", locations: "mappin" };
+
+  function navLink(item, isHome) {
+    var href = item.url || (isHome ? "#" + item.id : "/#" + item.id);
+    var isExternal = new URL(href, location.origin).origin !== location.origin;
+    return {
+      href: href,
+      attrs: isExternal ? ' target="_blank" rel="noopener"' : ''
+    };
+  }
 
   function buildNav() {
     var nav = $("#site-nav");
@@ -156,8 +165,8 @@
 
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
     var navLinks = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
-      var href = isHome ? "#" + item.id : "/#" + item.id;
-      return '<a class="nav-link" href="' + href + '">' + item.label + '</a>';
+      var link = navLink(item, isHome);
+      return '<a class="nav-link" href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
     }).join("");
 
     nav.innerHTML =
@@ -178,9 +187,9 @@
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.map(function (n) {
-      var href = isHome ? "#" + n.id : "/#" + n.id;
+      var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
-      return '<a href="' + href + '" class="menu-row">' +
+      return '<a href="' + link.href + '"' + link.attrs + ' class="menu-row">' +
         '<span class="menu-row-icon" data-icon="' + iconName + '">' + icon(iconName) + '</span>' +
         '<span class="menu-row-label">' + n.label + '</span>' +
         '<span class="menu-row-arrow">' + icon("arrow") + '</span>' +
@@ -316,7 +325,8 @@
     }).join("");
 
     var footerNav = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
-      return '<a href="/#' + item.id + '">' + item.label + '</a>';
+      var link = navLink(item, false);
+      return '<a href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
     }).join("");
 
     footer.innerHTML =
