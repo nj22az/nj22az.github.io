@@ -2,10 +2,10 @@ import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { createCharacters as createFallbackCharacters } from './characters-cel.js?v=12';
 
-// Naturalistic adult cast for Johansson Town.
-// Source models are MakeHuman / MPFB2 exports published CC0 by the vsim project.
-// Motion is deliberately restrained: the town owns translation, root drift is removed,
-// locomotion uses hysteresis and measured gait timing, and conversation gestures are subtle.
+// MakeHuman / MPFB2 NPC layer with a deliberately conservative runtime policy.
+// Johansson himself uses the deterministic local hero rig until a bespoke skinned
+// protagonist is available. This avoids the deformed suited avatar and keeps the
+// player readable while retaining realistic NPC bodies where they are stable.
 const SOURCE='https://raw.githubusercontent.com/kunalkushwaha/vsim/main/packages/assets/library/';
 const MODEL_URLS=Object.freeze({
   suited:`${SOURCE}suited.glb`,
@@ -15,11 +15,11 @@ const MODEL_URLS=Object.freeze({
 });
 
 const CAST=Object.freeze({
-  player:{asset:'suited',height:1.80,width:1.00,depth:1.00,hair:0x1d1917,hairStyle:'sidepart',heroic:true},
-  Aiko:{asset:'woman',height:1.59,width:.97,depth:.99,hair:0x171313,hairStyle:'ponytail',necklace:true},
-  Kenji:{asset:'man',height:1.76,width:1.00,depth:1.00,hair:0x141414,hairStyle:'crop',workCap:0x294b60},
-  'Mrs Sato':{asset:'speaker',height:1.55,width:.98,depth:1.00,hair:0x6d6864,hairStyle:'bun',stoop:.026,apron:0xb9ad96},
-  'Harbour master':{asset:'man',height:1.74,width:1.04,depth:1.02,hair:0x35302c,hairStyle:'receding',peakedCap:0x233c4b}
+  player:{asset:'suited',height:1.82,useFallback:true,heroic:true},
+  Aiko:{asset:'woman',height:1.59,width:.98,depth:1.00},
+  Kenji:{asset:'man',height:1.76,width:1.00,depth:1.00},
+  'Mrs Sato':{asset:'speaker',height:1.55,width:.98,depth:1.00},
+  'Harbour master':{asset:'man',height:1.74,width:1.04,depth:1.02}
 });
 
 const loaded=new Map();
@@ -40,7 +40,7 @@ export function preloadCharacters({onProgress}={}){
       const gltf=await withTimeout(loader.loadAsync(url),15000,`character ${key}`);
       loaded.set(key,gltf);
     }catch(error){
-      console.warn(`[Johansson Town] naturalistic ${key} character unavailable; using local fallback`,error);
+      console.warn(`[Johansson Town] ${key} model unavailable; local stable rig will be used`,error);
     }finally{
       done++;onProgress?.(done/entries.length,key,loaded.has(key));
     }
@@ -66,23 +66,15 @@ function cloneSkinned(source){
   return cloned;
 }
 
-function profileFor(entity){return CAST[entity.userData.name||'player']||CAST.player;}
-function clipByName(clips,name){return clips.find(c=>c.name.toLowerCase()===name)||clips.find(c=>c.name.toLowerCase().includes(name));}
-function findBone(root,...names){
-  const wanted=names.map(n=>n.toLowerCase());let exact=null,fuzzy=null;
-  root.traverse(o=>{
-    if(!o.isBone)return;
-    const n=o.name.toLowerCase();
-    if(!exact&&wanted.includes(n))exact=o;
-    if(!fuzzy&&wanted.some(x=>n.endsWith(x)))fuzzy=o;
-  });
-  return exact||fuzzy;
+function clipByName(clips,name){
+  const n=name.toLowerCase();
+  return clips.find(c=>c.name.toLowerCase()===n)||clips.find(c=>c.name.toLowerCase().includes(n));
 }
 
 function sanitiseClip(sourceClip){
-  // Three.js moves the entity through the town. Retain the body's gait but remove
-  // authored root X/Z travel. We also preserve the original travel speed so feet
-  // can be timed to the actual world-space speed instead of skating.
+  // World movement is code-driven. Root X/Z translation is removed so clips
+  // cannot drag or skate characters through the scene. Authored travel speed is
+  // preserved as metadata for gait timing.
   const clip=sourceClip.clone();
   let locomotionSpeed=0;
   clip.tracks.forEach(track=>{
@@ -99,98 +91,21 @@ function sanitiseClip(sourceClip){
   return clip;
 }
 
-function mat(color,rough=.84,metal=0){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});}
-function addMesh(parent,geo,material,pos=[0,0,0],scale=[1,1,1]){
-  const m=new THREE.Mesh(geo,material);m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
-}
-
-function makeHair(style,color,height){
-  const g=new THREE.Group(),m=mat(color,.91),r=height*.103;
-  const scalp=addMesh(g,new THREE.SphereGeometry(r,30,20,0,Math.PI*2,0,Math.PI*.66),m,[0,0,0],[.94,.62,.97]);
-  scalp.rotation.y=Math.PI/2;
-  if(style==='ponytail'){
-    for(let i=-4;i<=4;i++){
-      const lock=addMesh(g,new THREE.CapsuleGeometry(r*.055,r*.23,5,10),m,[i*r*.155,-r*.10,-r*.77],[1,1,.78]);
-      lock.rotation.x=.06;lock.rotation.z=i*.012;
-    }
-    for(const side of [-1,1]){
-      const strand=addMesh(g,new THREE.CapsuleGeometry(r*.07,r*.52,6,11),m,[side*r*.76,-r*.28,-r*.34],[.84,1,.82]);
-      strand.rotation.z=-side*.04;
-    }
-    addMesh(g,new THREE.SphereGeometry(r*.105,14,10),mat(0x2a2020,.90),[0,-r*.02,r*.80]);
-    const tail=addMesh(g,new THREE.CapsuleGeometry(r*.22,r*.84,8,14),m,[0,-r*.52,r*.91],[.72,1,.68]);tail.rotation.x=.10;
-  }else if(style==='bun'){
-    scalp.scale.y=.58;addMesh(g,new THREE.SphereGeometry(r*.43,24,16),m,[0,r*.16,r*.72],[1,.96,1]);
-  }else if(style==='crop'){
-    scalp.scale.y=.43;scalp.position.y=r*.03;
-  }else if(style==='receding'){
-    scalp.scale.set(.92,.34,.95);scalp.position.z=r*.16;
-    for(const side of [-1,1])addMesh(g,new THREE.CapsuleGeometry(r*.10,r*.24,5,9),m,[side*r*.69,-r*.10,r*.03],[.78,1,.78]);
-  }else{
-    scalp.scale.y=.48;
-    const left=addMesh(g,new THREE.CapsuleGeometry(r*.075,r*.38,5,10),m,[-r*.28,-r*.02,-r*.66],[1,.92,.74]);
-    const right=addMesh(g,new THREE.CapsuleGeometry(r*.07,r*.30,5,10),m,[r*.22,-r*.01,-r*.67],[1,.90,.74]);
-    left.rotation.z=-.18;right.rotation.z=.13;
-  }
-  return g;
-}
-
-function makeCap(color,peaked=false,height=1.75){
-  const g=new THREE.Group(),r=height*.110,m=mat(color,.80),band=mat(0x182126,.70);
-  addMesh(g,new THREE.SphereGeometry(r,28,16,0,Math.PI*2,0,Math.PI*.47),m,[0,0,0],[1.01,.48,1.01]);
-  const bill=addMesh(g,new THREE.BoxGeometry(r*1.10,r*.10,r*.56),m,[0,-r*.05,-r*.58],[1,.6,1]);bill.rotation.x=-.05;
-  if(peaked){
-    addMesh(g,new THREE.BoxGeometry(r*1.25,r*.10,r*.08),band,[0,-r*.01,-r*.28]);
-    addMesh(g,new THREE.SphereGeometry(r*.07,12,8),mat(0xb79b58,.58,.12),[0,-r*.02,-r*.75]);
-  }
-  return g;
-}
-
-function anchorAccessory(wrapper,bone,object,position){
-  wrapper.add(object);object.position.copy(position);wrapper.updateMatrixWorld(true);bone?.attach(object);return object;
-}
-
-function decorate(actor){
-  const {wrapper,model,profile,height,localBox}=actor;
-  model.updateMatrixWorld(true);
-  const box=localBox,center=box.getCenter(new THREE.Vector3());
-  const headBone=findBone(model,'head','mixamorigHead','DEF-spine006');
-  const neckBone=findBone(model,'neck_01','neck','mixamorigNeck','DEF-spine005');
-  const spineBone=findBone(model,'spine_02','spine2','mixamorigSpine2','DEF-spine003');
-  const leftArm=findBone(model,'leftarm','mixamorigLeftArm','upper_arm.L','DEF-upper_arm.L');
-  const rightArm=findBone(model,'rightarm','mixamorigRightArm','upper_arm.R','DEF-upper_arm.R');
-  const headPos=new THREE.Vector3(center.x,box.max.y-height*.055,center.z);
-  Object.assign(actor,{headBone,neckBone,spineBone,leftArm,rightArm});
-
-  if(profile.hairStyle)anchorAccessory(wrapper,headBone,makeHair(profile.hairStyle,profile.hair,height),headPos);
-  if(profile.workCap)anchorAccessory(wrapper,headBone,makeCap(profile.workCap,false,height),headPos.clone().add(new THREE.Vector3(0,height*.020,0)));
-  if(profile.peakedCap)anchorAccessory(wrapper,headBone,makeCap(profile.peakedCap,true,height),headPos.clone().add(new THREE.Vector3(0,height*.022,0)));
-  if(profile.necklace){
-    const chain=new THREE.Group(),silver=mat(0xb8b7b3,.58,.20);
-    const loop=addMesh(chain,new THREE.TorusGeometry(height*.058,height*.0045,7,28),silver,[0,0,0],[1,.72,1]);loop.rotation.x=Math.PI/2;
-    addMesh(chain,new THREE.SphereGeometry(height*.009,10,8),silver,[0,-height*.065,-height*.016],[.65,1,.65]);
-    anchorAccessory(wrapper,neckBone,chain,new THREE.Vector3(center.x,box.max.y-height*.178,center.z-height*.010));
-  }
-  // Johansson's former torus satchel strap was the curved 'arch' intersecting his torso.
-  // It is intentionally gone; the heroic player silhouette is now clean and unobstructed.
-  if(profile.apron){
-    const apron=addMesh(wrapper,new THREE.PlaneGeometry(height*.30,height*.42,5,7),mat(profile.apron,.92),[center.x,box.max.y-height*.49,center.z-height*.105]);
-    apron.rotation.y=Math.PI;apron.material.side=THREE.DoubleSide;
-  }
-}
-
 function prepareMaterials(root){
   root.traverse(o=>{
-    if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=true;
-    const srcList=Array.isArray(o.material)?o.material:[o.material];
-    const prepared=srcList.map(src=>{
-      if(!src)return src;const m=src.clone();
-      if(m.map){m.map.colorSpace=THREE.SRGBColorSpace;m.map.anisotropy=Math.max(m.map.anisotropy||1,4);}
-      if('roughness' in m)m.roughness=THREE.MathUtils.clamp(m.roughness??.74,.60,.94);
-      if('metalness' in m)m.metalness=Math.min(.14,m.metalness??0);
-      if(m.normalScale?.multiplyScalar)m.normalScale.multiplyScalar(.68);
-      if('envMapIntensity' in m)m.envMapIntensity=Math.min(.55,m.envMapIntensity??.55);
-      m.dithering=true;return m;
+    if(!o.isMesh)return;
+    o.castShadow=true;o.receiveShadow=true;o.frustumCulled=true;
+    const list=Array.isArray(o.material)?o.material:[o.material];
+    const prepared=list.map(src=>{
+      if(!src)return src;
+      const m=src.clone();
+      if(m.map){m.map.colorSpace=THREE.SRGBColorSpace;m.map.anisotropy=Math.max(2,m.map.anisotropy||1);}
+      if('roughness' in m)m.roughness=THREE.MathUtils.clamp(m.roughness??.76,.62,.95);
+      if('metalness' in m)m.metalness=Math.min(.12,m.metalness??0);
+      if(m.normalScale?.multiplyScalar)m.normalScale.multiplyScalar(.65);
+      if('envMapIntensity' in m)m.envMapIntensity=Math.min(.5,m.envMapIntensity??.5);
+      m.dithering=true;
+      return m;
     });
     o.material=Array.isArray(o.material)?prepared:prepared[0];
   });
@@ -199,51 +114,98 @@ function prepareMaterials(root){
 function instantiate(profile){
   const source=loaded.get(profile.asset);if(!source?.scene)return null;
   const model=cloneSkinned(source.scene);prepareMaterials(model);
-  const wrapper=new THREE.Group();wrapper.name='AAA-character';wrapper.add(model);
+  const wrapper=new THREE.Group();wrapper.name='stable-hd-character';wrapper.add(model);
   model.rotation.y=Math.PI/2;model.updateMatrixWorld(true);
-  let box=new THREE.Box3().setFromObject(model),rawHeight=Math.max(.01,box.max.y-box.min.y),scale=profile.height/rawHeight;
-  model.scale.setScalar(scale);model.updateMatrixWorld(true);box.setFromObject(model);model.position.y-=box.min.y;model.updateMatrixWorld(true);
-  const localBox=new THREE.Box3().setFromObject(model);
-  wrapper.scale.set(profile.width,1,profile.depth);wrapper.rotation.x=profile.stoop||0;
+  let box=new THREE.Box3().setFromObject(model);
+  const rawHeight=Math.max(.01,box.max.y-box.min.y),scale=profile.height/rawHeight;
+  model.scale.setScalar(scale);model.updateMatrixWorld(true);
+  box=new THREE.Box3().setFromObject(model);model.position.y-=box.min.y;model.updateMatrixWorld(true);
+  wrapper.scale.set(profile.width||1,1,profile.depth||1);
   const clips=(source.animations||[]).map(sanitiseClip);
-  return {wrapper,model,height:profile.height,clips,localBox};
+  return {wrapper,model,clips,height:profile.height};
+}
+
+function stripFallbackSatchel(actor){
+  // The older local hero has a straight strap, but even that is unnecessary for
+  // the emergency clean silhouette. Remove only the extremely thin long chest strap.
+  actor?.rig?.root?.traverse(o=>{
+    const p=o.geometry?.parameters;
+    if(o.isMesh&&o.geometry?.type==='BoxGeometry'&&p&&p.width<.06&&p.height>.8&&p.depth<.06&&o.position.z<-.2)o.visible=false;
+  });
 }
 
 export function createCharacters(options={}){
   const fallback=createFallbackCharacters(options),actors=[];
-  let playerEntity=null,playerActor=null,playerGroundY=0,jumpVelocity=0,jumping=false;
+  const conversations=new Map();
+  let playerEntity=null,playerFallbackActor=null,playerGroundY=0,jumpVelocity=0,jumping=false;
 
   function attach(entity,file,height){
-    const isPlayer=file==='player'||!entity.userData.name;
-    if(isPlayer){playerEntity=entity;playerGroundY=entity.position.y;}
-    const profile={...profileFor(entity)};if(isPlayer&&height)profile.height=height;
-    const instance=instantiate(profile);
-    if(!instance)return fallback.attach(entity,file,height);
+    const name=entity.userData.name||'player';
+    const isPlayer=file==='player'||name==='player';
+    const profile={...(CAST[name]||CAST.player)};
+    if(isPlayer&&height)profile.height=height;
 
+    if(isPlayer||profile.useFallback){
+      playerEntity=entity;playerGroundY=entity.position.y;
+      const actor=fallback.attach(entity,file,height||profile.height);
+      playerFallbackActor=actor;stripFallbackSatchel(actor);
+      return actor;
+    }
+
+    const instance=instantiate(profile);
+    if(!instance)return fallback.attach(entity,file,height||profile.height);
     [...entity.children].forEach(c=>c.visible=false);
     entity.add(instance.wrapper);
-    const mixer=new THREE.AnimationMixer(instance.model),clips=instance.clips;
-    const actions={};
+
+    const mixer=new THREE.AnimationMixer(instance.model),actions={};
+    // 'wave' remains discoverable for provenance/compatibility but is never used
+    // in normal conversation. Only idle/walk/run are selected by the state machine.
     for(const name of ['idle','walk','run','wave']){
-      const clip=clipByName(clips,name);if(clip)actions[name]=mixer.clipAction(clip);
+      const clip=clipByName(instance.clips,name);if(clip)actions[name]=mixer.clipAction(clip);
     }
-    const actor={entity,profile,...instance,mixer,actions,current:null,state:'idle',gestureTime:0,gestureDuration:.72,lastPosition:entity.position.clone(),speed:0,isPlayer,airborne:false};
-    actors.push(actor);entity.userData.character=actor;decorate(actor);if(isPlayer)playerActor=actor;
+    const actor={entity,profile,...instance,mixer,actions,current:null,state:'idle',lastPosition:entity.position.clone(),speed:0};
+    actors.push(actor);entity.userData.character=actor;
     const idle=actions.idle||actions.walk;
     if(idle){idle.reset().setLoop(THREE.LoopRepeat,Infinity).setEffectiveWeight(1).play();idle.timeScale=.62;actor.current=idle;}
     return actor;
   }
 
-  function transition(actor,name,fade=.38){
+  function transition(actor,name,fade=.42){
     const next=actor.actions[name]||actor.actions.idle||actor.actions.walk;
     if(!next||next===actor.current){actor.state=name;return;}
     next.enabled=true;next.setLoop(THREE.LoopRepeat,Infinity);next.reset().setEffectiveWeight(1).play();
     actor.current?.crossFadeTo(next,fade,false);actor.current=next;actor.state=name;
   }
 
+  function faceConversation(entity,target,isNpc=false){
+    if(!entity||!target)return;
+    entity.lookAt(target.position.x,entity.position.y,target.position.z);
+    if(isNpc)entity.rotateY(Math.PI);
+  }
+
+  function stageConversation(entity){
+    if(!playerEntity||entity===playerEntity)return;
+    const now=performance.now(),hold=1900;
+    const anchor=entity.position.clone();
+    conversations.set(entity,{until:now+hold,anchor});
+
+    // If the player has approached too closely, establish a clear conversational
+    // gap instead of letting the two bodies intersect.
+    const dx=playerEntity.position.x-entity.position.x,dz=playerEntity.position.z-entity.position.z;
+    let d=Math.hypot(dx,dz),nx=0,nz=1;
+    if(d>.001){nx=dx/d;nz=dz/d;}
+    if(d<1.22){
+      const shift=Math.min(.72,1.28-d);
+      playerEntity.position.x+=nx*shift;playerEntity.position.z+=nz*shift;
+    }
+    faceConversation(entity,playerEntity,true);
+    faceConversation(playerEntity,entity,false);
+  }
+
   function gesture(entity){
-    const actor=actors.find(a=>a.entity===entity);if(!actor)return fallback.gesture(entity);
-    actor.gestureDuration=.72;actor.gestureTime=actor.gestureDuration;
+    // No waving and no incremental bone rotations. Those additive rotations were
+    // the source of the accumulating 'nightmare' deformation during dialogue.
+    stageConversation(entity);
   }
 
   function canJump(){
@@ -253,8 +215,7 @@ export function createCharacters(options={}){
 
   function jump(){
     if(!canJump()||jumping)return false;
-    jumping=true;jumpVelocity=4.35;playerGroundY=playerEntity.position.y;
-    if(playerActor){playerActor.airborne=true;transition(playerActor,'idle',.16);}
+    jumping=true;jumpVelocity=4.25;playerGroundY=playerEntity.position.y;
     if(navigator.vibrate)navigator.vibrate(12);
     return true;
   }
@@ -262,65 +223,69 @@ export function createCharacters(options={}){
   if(!window.__JOHANSSON_JUMP_BOUND__){
     window.__JOHANSSON_JUMP_BOUND__=true;
     document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat)jump();});
-    const jumpButton=document.querySelector('#jump');
-    jumpButton?.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();jump();});
+    document.querySelector('#jump')?.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();jump();});
   }
   window.__JOHANSSON_JUMP__=jump;
 
   function updateJump(dt){
     if(!playerEntity)return;
-    if(!jumping){
-      if(Math.abs(playerEntity.position.y-playerGroundY)>.05)playerGroundY=playerEntity.position.y;
-      return;
-    }
-    jumpVelocity-=11.4*dt;
-    playerEntity.position.y+=jumpVelocity*dt;
-    if(playerEntity.position.y<=playerGroundY){
-      playerEntity.position.y=playerGroundY;jumpVelocity=0;jumping=false;
-      if(playerActor)playerActor.airborne=false;
-    }
+    if(!jumping){playerGroundY=playerEntity.position.y;return;}
+    jumpVelocity-=11.2*dt;playerEntity.position.y+=jumpVelocity*dt;
+    if(playerEntity.position.y<=playerGroundY){playerEntity.position.y=playerGroundY;jumpVelocity=0;jumping=false;}
   }
 
-  function desiredState(a){
-    if(a.airborne)return'idle';
-    if(a.state==='idle')return a.speed>.22?'walk':'idle';
-    if(a.state==='walk')return a.speed<.09?'idle':a.speed>3.05?'run':'walk';
-    if(a.state==='run')return a.speed<2.55?'walk':'run';
-    return a.speed>.22?'walk':'idle';
+  function desiredState(actor,now){
+    const conversation=conversations.get(actor.entity);
+    if(conversation&&conversation.until>now)return'idle';
+    if(actor.state==='idle')return actor.speed>.22?'walk':'idle';
+    if(actor.state==='walk')return actor.speed<.09?'idle':actor.speed>3.05?'run':'walk';
+    if(actor.state==='run')return actor.speed<2.55?'walk':'run';
+    return actor.speed>.22?'walk':'idle';
   }
 
   function actionSpeed(action,fallbackSpeed){
     return Math.max(.25,action?.getClip?.()?.userData?.locomotionSpeed||fallbackSpeed);
   }
 
+  function poseFallbackJump(dt){
+    if(!jumping||!playerFallbackActor?.rig)return;
+    const rig=playerFallbackActor.rig;
+    const rise=THREE.MathUtils.clamp((playerEntity.position.y-playerGroundY)/.65,0,1);
+    rig.legs.forEach((leg,i)=>{
+      const target=i===0?-.18:-.28;
+      leg.hip.rotation.x=THREE.MathUtils.damp(leg.hip.rotation.x,target*rise,12,dt);
+      leg.knee.rotation.x=THREE.MathUtils.damp(leg.knee.rotation.x,.42*rise,12,dt);
+    });
+    rig.arms.forEach((arm,i)=>{
+      const target=i===0?.20:.16;
+      arm.shoulder.rotation.x=THREE.MathUtils.damp(arm.shoulder.rotation.x,target*rise,10,dt);
+      arm.shoulder.rotation.z=THREE.MathUtils.damp(arm.shoulder.rotation.z,(i?-.08:.08)*rise,10,dt);
+    });
+  }
+
   function update(dt){
-    updateJump(dt);fallback.update(dt);
+    updateJump(dt);
+    fallback.update(dt);
+    poseFallbackJump(dt);
+    const now=performance.now();
+
+    for(const [entity,c] of conversations){
+      if(c.until<=now){conversations.delete(entity);continue;}
+      entity.position.x=c.anchor.x;entity.position.z=c.anchor.z;
+      faceConversation(entity,playerEntity,true);faceConversation(playerEntity,entity,false);
+    }
+
     for(const a of actors){
       const dx=a.entity.position.x-a.lastPosition.x,dz=a.entity.position.z-a.lastPosition.z;
       const raw=Math.hypot(dx,dz)/Math.max(dt,.001);a.lastPosition.copy(a.entity.position);
       const bounded=raw>8?0:Math.min(raw,5.2);a.speed=THREE.MathUtils.damp(a.speed,bounded,5.2,dt);
-      const desired=desiredState(a);if(desired!==a.state)transition(a,desired,desired==='idle'?.44:.36);
-
+      const desired=desiredState(a,now);if(desired!==a.state)transition(a,desired,desired==='idle'?.46:.38);
       if(a.current===a.actions.walk){
-        const authored=actionSpeed(a.actions.walk,1.45);a.current.timeScale=THREE.MathUtils.clamp(a.speed/authored,.58,1.18);
+        const authored=actionSpeed(a.actions.walk,1.45);a.current.timeScale=THREE.MathUtils.clamp(a.speed/authored,.58,1.12);
       }else if(a.current===a.actions.run){
-        const authored=actionSpeed(a.actions.run,3.55);a.current.timeScale=THREE.MathUtils.clamp(a.speed/authored,.70,1.15);
-      }else if(a.current===a.actions.idle)a.current.timeScale=a.airborne?.28:.62;
-
+        const authored=actionSpeed(a.actions.run,3.55);a.current.timeScale=THREE.MathUtils.clamp(a.speed/authored,.70,1.10);
+      }else if(a.current===a.actions.idle)a.current.timeScale=.62;
       a.mixer.update(dt);
-
-      if(a.airborne){
-        const lift=THREE.MathUtils.clamp((a.entity.position.y-playerGroundY)/.72,0,1);
-        if(a.spineBone)a.spineBone.rotateX(-.045*lift);
-        if(a.leftArm)a.leftArm.rotateX(.12*lift);
-        if(a.rightArm)a.rightArm.rotateX(.12*lift);
-      }
-      if(a.gestureTime>0&&!a.airborne){
-        a.gestureTime=Math.max(0,a.gestureTime-dt);
-        const p=1-a.gestureTime/a.gestureDuration,envelope=Math.sin(Math.PI*THREE.MathUtils.clamp(p,0,1));
-        if(a.headBone)a.headBone.rotateX(-envelope*.055);
-        if(a.neckBone)a.neckBone.rotateY(Math.sin(p*Math.PI*2)*.009*envelope);
-      }
     }
   }
 
