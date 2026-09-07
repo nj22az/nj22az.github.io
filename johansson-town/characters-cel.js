@@ -1,8 +1,9 @@
 import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
 import { createCharacters as createBaseCharacters } from './characters.js?v=11-base';
 
-// Converts the stable procedural rigs to a restrained stepped-lighting treatment
-// without changing their hierarchy, gait or interaction API.
+// Converts the stable procedural rigs to restrained stepped lighting without
+// changing their hierarchy, gait or interaction API. Hidden legacy fallback
+// meshes are deliberately skipped to avoid pointless GPU materials and work.
 const bands=new Uint8Array([
   42,42,42,255,
   94,94,94,255,
@@ -32,10 +33,13 @@ export function createCharacters(options={}){
       emissiveIntensity:src.emissiveIntensity??1,
       transparent:src.transparent||false,
       opacity:src.opacity??1,
+      alphaTest:src.alphaTest??0,
       side:src.side??THREE.FrontSide,
       depthWrite:src.depthWrite!==false,
       depthTest:src.depthTest!==false,
       vertexColors:src.vertexColors||false,
+      fog:src.fog!==false,
+      toneMapped:src.toneMapped!==false,
       dithering:true
     });
     m.name=`cel-${src.name||src.uuid}`;
@@ -45,7 +49,7 @@ export function createCharacters(options={}){
 
   function shade(root){
     root.traverse(o=>{
-      if(!o.isMesh||!o.material)return;
+      if(!o.isMesh||!o.material||o.visible===false)return;
       if(Array.isArray(o.material))o.material=o.material.map(celMaterial);
       else o.material=celMaterial(o.material);
     });
@@ -58,5 +62,6 @@ export function createCharacters(options={}){
     return result;
   };
   base.celShade=shade;
+  base.celMaterialCount=()=>cache.size;
   return base;
 }
