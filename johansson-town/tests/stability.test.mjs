@@ -25,7 +25,7 @@ assert.equal(townBoundsBlocked(0,-79,.28),true,'pier end must stop the player be
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 
-for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js']){
+for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js','resource-catalog.js','prop-factory.js']){
   const source=await readFile(resolve(root,file),'utf8');
   const refs=[...source.matchAll(/(?:from\s+|import\()['"]([^'"]+)["']/g)].map(m=>m[1]);
   for(const ref of refs){if(!ref.startsWith('.'))continue;const clean=ref.split('?')[0];await access(resolve(root,clean));}
@@ -34,7 +34,7 @@ for(const file of ['main.js','main-professional.js','world.js','world-profession
 const main=await readFile(resolve(root,'main.js'),'utf8');
 assert.match(main,/sweepFraction/,'third-person camera must use swept collision');
 assert.match(main,/residentBlocked/,'NPCs must participate in player collision');
-assert.match(main,/activities\.js\?v=9/,'interactive activity layer must be cache-busted');
+assert.match(main,/activities\.js\?v=9/,'gameplay module must retain the activity import specifier targeted by the import map');
 assert.match(main,/function addRoomProps/,'interiors must have a dedicated prop builder');
 for(const id of ['office','frontrow','form3d','stepwise','journal','electronics','market','career'])assert.match(main,new RegExp(`s\\.id==='${id}'`),`interior ${id} must have an individual layout`);
 for(const feature of ['addDesk','addShelf','addCabinet','addMachine','addCounter','addChair'])assert.match(main,new RegExp(`function ${feature}`),`${feature} must remain available to build interactive interiors`);
@@ -47,15 +47,34 @@ assert.match(professional,/replaceCableLines/,'professional layer must replace r
 assert.match(professional,/InstancedMesh/,'replacement cables must be batched');
 assert.doesNotMatch(professional,/new THREE\.Line\(/,'professional layer must not introduce new raster line primitives');
 assert.doesNotMatch(professional,/LineBasicMaterial/,'professional layer must not use one-pixel line materials');
+assert.match(professional,/createPropFactory/,'professional layer must use the local resource-backed prop factory');
 assert.match(professional,/addStreetLife/,'street-life pass must remain enabled');
+assert.match(professional,/addSiteFrontage/,'every shop frontage must receive an environmental interaction pass');
 assert.match(professional,/streetInteractions/,'street-life interaction count must be reported');
-assert.match(professional,/Fasani\/three-js-resources/,'resource catalogue provenance must remain documented');
+for(const prop of ['bicycleRack','convexMirror','menuBoard','baitStation','pierWinch'])assert.match(professional,new RegExp(`factory\\.${prop}`),`${prop} must remain in the interactive city pass`);
+for(const kind of ["'read'","'buy'","'radio'","'machine'"])assert.match(professional,new RegExp(kind),`street layer must route ${kind} interactions`);
 assert.match(professional,/walkableOuterPier:true/,'professional layer must report walkable pier support');
+assert.match(professional,/resourceBackedProps:true/,'professional layer must report resource-backed props');
+assert.match(professional,/localRuntimeAssets:true/,'third-party hotlinks must not be required at runtime');
 assert.match(professional,/computeVertexNormals/,'animated cel water must refresh normals');
 
+const resources=await readFile(resolve(root,'resource-catalog.js'),'utf8');
+assert.match(resources,/Fasani\/three-js-resources/,'resource discovery provenance must be explicit');
+assert.match(resources,/Poly Haven asphalt_02/,'local asphalt provenance must remain documented');
+assert.match(resources,/Quaternius Sushi Restaurant Kit/,'approved Japanese prop source must remain documented');
+assert.match(resources,/localOnly:true/,'runtime resource policy must remain local-only');
+assert.match(resources,/fallbackRequired:true/,'all future sourced models must retain fallbacks');
+
+const props=await readFile(resolve(root,'prop-factory.js'),'utf8');
+assert.match(props,/getTextureResource/,'prop factory must resolve documented local textures');
+for(const texture of ['asphalt','timber','roof','plaster'])assert.match(props,new RegExp(texture),`prop factory must retain ${texture} resource support`);
+for(const prop of ['bench','postbox','newspaperRack','deliveryTrolley','noticeBoard','utilityCabinet','bicycleRack','convexMirror','airConditioner','noren','awning','crateStack','baitStation','pierWinch','menuBoard'])assert.match(props,new RegExp(`function ${prop}`),`${prop} must remain a dedicated prop factory`);
+assert.doesNotMatch(props,/https?:\/\//,'runtime prop factory must not hot-link remote assets');
+
 const activities=await readFile(resolve(root,'activities.js'),'utf8');
-assert.match(activities,/johansson-town-1988-v3/,'expanded interaction state must use the v3 save namespace');
-for(const kind of ['inspect','machine','seat'])assert.match(activities,new RegExp(`case '${kind}'`),`activity system must support ${kind} interactions`);
+assert.match(activities,/johansson-town-1988-v3/,'expanded interaction state must preserve the current save namespace');
+for(const kind of ['inspect','read','machine','seat','buy','radio'])assert.match(activities,new RegExp(`case '${kind}'`),`activity system must support ${kind} interactions`);
+assert.match(activities,/Quaternius CC0 packs/,'credits must explain curated CC0 model intake');
 assert.match(activities,/Fasani\/three-js-resources/,'credits must expose the approved resource catalogue');
 
 const boot=await readFile(resolve(root,'main-professional.js'),'utf8');
@@ -91,9 +110,10 @@ assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physic
 assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
-assert.match(index,/world-professional\.js\?v=15/,'boot import map must select the interactive street pass');
+assert.match(index,/world-professional\.js\?v=16/,'boot import map must select the resource-backed street pass');
 assert.match(index,/characters-aaa\.js\?v=20/,'boot import map must select the current stable individual cast');
-assert.match(index,/main-professional\.js\?v=17/,'boot import map must select the interactive interior pass');
+assert.match(index,/activities\.js\?v=10/,'boot import map must bypass stale activity caches');
+assert.match(index,/main-professional\.js\?v=18/,'boot import map must select the current professional wrapper');
 assert.match(index,/preloadCharacters/,'character system must initialise before gameplay');
 assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast initialisation must complete before gameplay starts');
 assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
