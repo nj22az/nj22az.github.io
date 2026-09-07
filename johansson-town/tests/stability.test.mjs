@@ -54,27 +54,31 @@ assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset eac
 assert.match(boot,/main\.js\?v=13-base/,'professional wrapper must load the stable gameplay module exactly once');
 
 const aaa=await readFile(resolve(root,'characters-aaa.js'),'utf8');
-assert.match(aaa,/MakeHuman \/ MPFB2/,'high-detail cast must retain its CC0 source declaration');
-assert.match(aaa,/new THREE\.AnimationMixer/,'high-detail cast must use skeletal animation mixers');
-for(const clip of ['idle','walk','run','wave'])assert.match(aaa,new RegExp(`['"]${clip}['"]`),`character cast must retain ${clip} animation support`);
-for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(aaa,new RegExp(name.replace(' ','\\s')),`high-detail cast must retain unique ${name} profile`);
-assert.match(aaa,/createFallbackCharacters/,'high-detail characters must retain a deterministic local fallback');
-assert.match(aaa,/suited\.glb/,'player must use the authored suited MakeHuman source');
+assert.match(aaa,/MakeHuman \/ MPFB2/,'high-detail NPC cast must retain its CC0 source declaration');
+assert.match(aaa,/new THREE\.AnimationMixer/,'high-detail NPCs must use skeletal animation mixers');
+for(const clip of ['idle','walk','run','wave'])assert.match(aaa,new RegExp(`['"]${clip}['"]`),`character cast must retain ${clip} clip discovery`);
+for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(aaa,new RegExp(name.replace(' ','\\s')),`character cast must retain unique ${name} profile`);
+assert.match(aaa,/createFallbackCharacters/,'character system must retain a deterministic local fallback');
+assert.match(aaa,/suited\.glb/,'suited MakeHuman source must remain available for future bespoke hero work');
 assert.match(aaa,/human\.glb/,'female MakeHuman source must remain available');
 assert.match(aaa,/man\.glb/,'male MakeHuman source must remain available');
 assert.match(aaa,/speaker\.glb/,'alternate MakeHuman source must remain available');
-assert.match(aaa,/sanitiseClip/,'character locomotion must sanitise authored root motion');
-assert.match(aaa,/locomotionSpeed/,'character locomotion must time gait against authored travel speed');
+assert.match(aaa,/useFallback:true/,'Johansson must use the stable local hero rig until the bespoke protagonist is ready');
+assert.match(aaa,/sanitiseClip/,'NPC locomotion must sanitise authored root motion');
+assert.match(aaa,/locomotionSpeed/,'NPC locomotion must time gait against authored travel speed');
 assert.match(aaa,/desiredState/,'character locomotion must use stable state selection');
+assert.match(aaa,/stageConversation/,'dialogue must stage spacing and facing explicitly');
+assert.doesNotMatch(aaa,/anchorAccessory|makeHair/,'runtime must not restore floating procedural head accessories');
+assert.doesNotMatch(aaa,/\.rotateX\(/,'dialogue and jump must not accumulate direct bone rotations');
 assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physics');
 assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
 assert.doesNotMatch(aaa,/satchel:true/,'Johansson must not restore the intersecting curved satchel strap');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
-assert.match(index,/characters-aaa\.js\?v=18/,'boot import map must select the current high-detail cast');
-assert.match(index,/preloadCharacters/,'high-detail cast must preload before gameplay');
+assert.match(index,/characters-aaa\.js\?v=19/,'boot import map must select the current stable character pass');
+assert.match(index,/preloadCharacters/,'character assets must preload before gameplay');
 assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast preload must complete before the gameplay module starts');
-assert.match(index,/25000/,'boot watchdog must allow the high-detail mobile preload window');
+assert.match(index,/25000/,'boot watchdog must allow the mobile preload window');
 assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
 assert.match(index,/character-controls\.css/,'jump control styling must be loaded');
 
