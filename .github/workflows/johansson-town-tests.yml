@@ -1,0 +1,27 @@
+name: Johansson Town stability
+
+on:
+  push:
+    paths:
+      - 'johansson-town/**'
+      - '.github/workflows/johansson-town-tests.yml'
+  pull_request:
+    paths:
+      - 'johansson-town/**'
+
+permissions:
+  contents: read
+
+jobs:
+  stability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Johansson Town regression checks
+        run: node johansson-town/tests/stability.test.mjs
