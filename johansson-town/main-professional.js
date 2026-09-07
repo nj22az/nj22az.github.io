@@ -17,7 +17,10 @@ if(mapCanvas){
     const proxy=new Proxy(real,{
       get(target,prop){
         if(prop==='fillRect')return (x,y,w,h)=>{
-          target.fillRect(x,(h<=9&&y!==0)?transformY(y):y,w,(h<=9&&y!==0)?h*scaleY:h);
+          // The first full-canvas fill is the start of a new minimap frame.
+          if(x===0&&y===0&&w===mapCanvas.width&&h===mapCanvas.height)paintedHarbour=false;
+          const worldMarker=h<=9&&y!==0;
+          target.fillRect(x,worldMarker?transformY(y):y,w,worldMarker?h*scaleY:h);
           // Base map paints its water strip immediately before world markers.
           // Add the widened harbour apron and outer pier at that exact stage so
           // people/player markers remain on top and readable.
