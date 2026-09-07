@@ -17,13 +17,9 @@ if(mapCanvas){
     const proxy=new Proxy(real,{
       get(target,prop){
         if(prop==='fillRect')return (x,y,w,h)=>{
-          // The first full-canvas fill is the start of a new minimap frame.
           if(x===0&&y===0&&w===mapCanvas.width&&h===mapCanvas.height)paintedHarbour=false;
           const worldMarker=h<=9&&y!==0;
           target.fillRect(x,worldMarker?transformY(y):y,w,worldMarker?h*scaleY:h);
-          // Base map paints its water strip immediately before world markers.
-          // Add the widened harbour apron and outer pier at that exact stage so
-          // people/player markers remain on top and readable.
           if(!paintedHarbour&&y===0&&h===11&&w===mapCanvas.width){
             paintedHarbour=true;
             const previous=target.fillStyle;
@@ -31,10 +27,8 @@ if(mapCanvas){
             const yApron=((-63.7)-newMin)/newSpan*mapCanvas.height;
             const yTown=((-52)-newMin)/newSpan*mapCanvas.height;
             const yPierEnd=((-79)-newMin)/newSpan*mapCanvas.height;
-            target.fillStyle='#58686a';
-            target.fillRect(px(-17.2),yApron,17.2*6,yTown-yApron);
-            target.fillStyle='#747b78';
-            target.fillRect(px(-4.15),yPierEnd,4.15*6,yApron-yPierEnd);
+            target.fillStyle='#58686a';target.fillRect(px(-17.2),yApron,17.2*6,yTown-yApron);
+            target.fillStyle='#747b78';target.fillRect(px(-4.15),yPierEnd,4.15*6,yApron-yPierEnd);
             target.fillStyle=previous;
           }
         };
@@ -50,4 +44,4 @@ if(mapCanvas){
   }
 }
 
-await import('./main.js?v=13-base');
+await import('./main.js?v=14-base');
