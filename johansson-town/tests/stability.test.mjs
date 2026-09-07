@@ -63,11 +63,19 @@ assert.match(aaa,/suited\.glb/,'player must use the authored suited MakeHuman so
 assert.match(aaa,/human\.glb/,'female MakeHuman source must remain available');
 assert.match(aaa,/man\.glb/,'male MakeHuman source must remain available');
 assert.match(aaa,/speaker\.glb/,'alternate MakeHuman source must remain available');
+assert.match(aaa,/sanitiseClip/,'character locomotion must sanitise authored root motion');
+assert.match(aaa,/locomotionSpeed/,'character locomotion must time gait against authored travel speed');
+assert.match(aaa,/desiredState/,'character locomotion must use stable state selection');
+assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physics');
+assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
+assert.doesNotMatch(aaa,/satchel:true/,'Johansson must not restore the intersecting curved satchel strap');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
-assert.match(index,/characters-aaa\.js\?v=17/,'boot import map must select the high-detail cast');
+assert.match(index,/characters-aaa\.js\?v=18/,'boot import map must select the current high-detail cast');
 assert.match(index,/preloadCharacters/,'high-detail cast must preload before gameplay');
 assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast preload must complete before the gameplay module starts');
 assert.match(index,/25000/,'boot watchdog must allow the high-detail mobile preload window');
+assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
+assert.match(index,/character-controls\.css/,'jump control styling must be loaded');
 
 console.log('Johansson Town stability regression tests: PASS');
