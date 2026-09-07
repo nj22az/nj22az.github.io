@@ -25,7 +25,7 @@ assert.equal(townBoundsBlocked(0,-79,.28),true,'pier end must stop the player be
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 
-for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js','resource-catalog.js','prop-factory.js']){
+for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js','resource-catalog.js','prop-factory.js','webmcp.js','webmcp-characters.js']){
   const source=await readFile(resolve(root,file),'utf8');
   const refs=[...source.matchAll(/(?:from\s+|import\()['"]([^'"]+)["']/g)].map(m=>m[1]);
   for(const ref of refs){if(!ref.startsWith('.'))continue;const clean=ref.split('?')[0];await access(resolve(root,clean));}
@@ -108,14 +108,31 @@ assert.match(aaa,/stageConversation/,'dialogue must stage spacing and facing exp
 assert.match(aaa,/targetDistance=1\.34/,'dialogue must maintain a deliberate conversational gap');
 assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physics');
 assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
+assert.match(aaa,/__JOHANSSON_CHARACTER_CONTROL__/,'named residents must expose bounded browser-agent control');
+assert.match(aaa,/moveNPC/,'NPC AI control must use a bounded movement function');
+assert.match(aaa,/MathUtils\.clamp\(e\.position\.x/,'NPC control must remain within the playable street width');
+
+const webmcp=await readFile(resolve(root,'webmcp.js'),'utf8');
+assert.match(webmcp,/document\.modelContext\|\|navigator\.modelContext/,'WebMCP must prefer the current document.modelContext API with legacy alias fallback');
+for(const tool of ['johansson_get_state','johansson_move','johansson_look','johansson_jump','johansson_interact','johansson_travel','johansson_choose_action','johansson_ui'])assert.match(webmcp,new RegExp(tool),`${tool} must be registered`);
+assert.match(webmcp,/__JOHANSSON_AGENT_API__/,'compatible browser-agent bridges must have a bounded fallback API');
+assert.doesNotMatch(webmcp,/\beval\s*\(|new Function\s*\(/,'WebMCP must not expose arbitrary JavaScript execution');
+
+const npcWebmcp=await readFile(resolve(root,'webmcp-characters.js'),'utf8');
+for(const tool of ['johansson_list_characters','johansson_control_npc'])assert.match(npcWebmcp,new RegExp(tool),`${tool} must be registered`);
+assert.match(npcWebmcp,/Only town NPCs can be controlled directly/,'direct AI character control must exclude Johansson position writes');
+assert.match(npcWebmcp,/minimum:\.1,maximum:4/,'NPC movement distance must be bounded in the tool schema');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
 assert.match(index,/world-professional\.js\?v=16/,'boot import map must select the resource-backed street pass');
-assert.match(index,/characters-aaa\.js\?v=20/,'boot import map must select the current stable individual cast');
+assert.match(index,/characters-aaa\.js\?v=21/,'boot import map must select the AI-controllable stable individual cast');
 assert.match(index,/activities\.js\?v=10/,'boot import map must bypass stale activity caches');
 assert.match(index,/main-professional\.js\?v=18/,'boot import map must select the current professional wrapper');
+assert.match(index,/webmcp\.js\?v=1/,'WebMCP player tool surface must load after gameplay');
+assert.match(index,/webmcp-characters\.js\?v=1/,'WebMCP NPC tool surface must load after the cast');
 assert.match(index,/preloadCharacters/,'character system must initialise before gameplay');
 assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast initialisation must complete before gameplay starts');
+assert.ok(index.indexOf("import('./main.js?v=15')")<index.indexOf("import('./webmcp.js?v=1')"),'WebMCP must register only after the game surface exists');
 assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
 assert.match(index,/character-controls\.css/,'jump control styling must be loaded');
 
