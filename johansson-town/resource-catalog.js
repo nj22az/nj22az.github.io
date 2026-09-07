@@ -16,6 +16,13 @@ export const RESOURCE_CATALOG=Object.freeze({
     plaster:{name:'Poly Haven plastered_stone_wall',path:'./assets/plaster.jpg',licence:'CC0 1.0',source:'https://polyhaven.com/a/plastered_stone_wall'}
   },
   approvedModelSources:{
+    kenney:{
+      name:'Kenney game assets',
+      source:'https://kenney.nl/assets',
+      licence:'CC0 1.0',
+      status:'approved-for-curated-intake',
+      use:'Street furniture, interior clutter and neutral environment props when period/style fit is good.'
+    },
     sushiKit:{
       name:'Quaternius Sushi Restaurant Kit',
       source:'https://quaternius.com/packs/sushirestaurantkit.html',
