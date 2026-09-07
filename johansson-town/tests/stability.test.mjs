@@ -34,6 +34,12 @@ for(const file of ['main.js','main-professional.js','world.js','world-profession
 const main=await readFile(resolve(root,'main.js'),'utf8');
 assert.match(main,/sweepFraction/,'third-person camera must use swept collision');
 assert.match(main,/residentBlocked/,'NPCs must participate in player collision');
+assert.match(main,/activities\.js\?v=9/,'interactive activity layer must be cache-busted');
+assert.match(main,/function addRoomProps/,'interiors must have a dedicated prop builder');
+for(const id of ['office','frontrow','form3d','stepwise','journal','electronics','market','career'])assert.match(main,new RegExp(`s\\.id==='${id}'`),`interior ${id} must have an individual layout`);
+for(const feature of ['addDesk','addShelf','addCabinet','addMachine','addCounter','addChair'])assert.match(main,new RegExp(`function ${feature}`),`${feature} must remain available to build interactive interiors`);
+assert.match(main,/activities\.action\(kind,title,text\)/,'interior props must route through activity interactions');
+assert.match(main,/streetInteractions/,'runtime stability must check street interaction coverage');
 assert.doesNotMatch(main,/import\('\.\/characters\.js/,'characters must not stream asynchronously after play begins');
 
 const professional=await readFile(resolve(root,'world-professional.js'),'utf8');
@@ -41,13 +47,21 @@ assert.match(professional,/replaceCableLines/,'professional layer must replace r
 assert.match(professional,/InstancedMesh/,'replacement cables must be batched');
 assert.doesNotMatch(professional,/new THREE\.Line\(/,'professional layer must not introduce new raster line primitives');
 assert.doesNotMatch(professional,/LineBasicMaterial/,'professional layer must not use one-pixel line materials');
+assert.match(professional,/addStreetLife/,'street-life pass must remain enabled');
+assert.match(professional,/streetInteractions/,'street-life interaction count must be reported');
+assert.match(professional,/Fasani\/three-js-resources/,'resource catalogue provenance must remain documented');
 assert.match(professional,/walkableOuterPier:true/,'professional layer must report walkable pier support');
 assert.match(professional,/computeVertexNormals/,'animated cel water must refresh normals');
+
+const activities=await readFile(resolve(root,'activities.js'),'utf8');
+assert.match(activities,/johansson-town-1988-v3/,'expanded interaction state must use the v3 save namespace');
+for(const kind of ['inspect','machine','seat'])assert.match(activities,new RegExp(`case '${kind}'`),`activity system must support ${kind} interactions`);
+assert.match(activities,/Fasani\/three-js-resources/,'credits must expose the approved resource catalogue');
 
 const boot=await readFile(resolve(root,'main-professional.js'),'utf8');
 assert.match(boot,/newMin=-82,newSpan=144/,'minimap projection must include the outer pier');
 assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset each frame');
-assert.match(boot,/main\.js\?v=13-base/,'professional wrapper must load the stable gameplay module exactly once');
+assert.match(boot,/main\.js\?v=14-base/,'professional wrapper must load the current gameplay module exactly once');
 
 const local=await readFile(resolve(root,'characters.js'),'utf8');
 for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(local,new RegExp(name.replace(' ','\\s')),`local cast must retain ${name}`);
@@ -77,7 +91,9 @@ assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physic
 assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
+assert.match(index,/world-professional\.js\?v=15/,'boot import map must select the interactive street pass');
 assert.match(index,/characters-aaa\.js\?v=20/,'boot import map must select the current stable individual cast');
+assert.match(index,/main-professional\.js\?v=17/,'boot import map must select the interactive interior pass');
 assert.match(index,/preloadCharacters/,'character system must initialise before gameplay');
 assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast initialisation must complete before gameplay starts');
 assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
