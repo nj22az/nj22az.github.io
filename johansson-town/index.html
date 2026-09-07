@@ -18,7 +18,7 @@
 {
   "imports": {
     "./world.js?v=11": "./world-professional.js?v=16",
-    "./characters.js?v=11": "./characters-aaa.js?v=20",
+    "./characters.js?v=11": "./characters-aaa.js?v=21",
     "./activities.js?v=9": "./activities.js?v=10",
     "./physics.js?v=10": "./physics.js?v=11",
     "./main.js?v=15": "./main-professional.js?v=18"
@@ -95,11 +95,12 @@
     },25000);
     try{
       await import('./touch-ui.js?v=11');
-      const cast=await import('./characters-aaa.js?v=20');
+      const cast=await import('./characters-aaa.js?v=21');
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
       status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total}`;
       await import('./main.js?v=15');
       await import('./webmcp.js?v=1');
+      await import('./webmcp-characters.js?v=1');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
