@@ -13,9 +13,13 @@ export function roomBoundsBlocked(x,z,r=0){
   return x<-5.6+r||x>5.6-r||z<-5.5+r||z>5.7-r;
 }
 
+// Town envelope follows the actual playable ground instead of a single rectangle:
+// narrow shopping street -> broad harbour apron -> central working pier.
 export function townBoundsBlocked(x,z,r=0){
-  if(z<-62+r||z>58.2-r)return true;
-  const limit=z<-52?17.2:7;
+  if(z>58.2-r||z<-79+r)return true;
+  let limit=7;
+  if(z<-52)limit=17.2;
+  if(z<-63.7)limit=4.15;
   return Math.abs(x)>limit-r;
 }
 
