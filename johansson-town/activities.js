@@ -1,17 +1,19 @@
-const SAVE_KEY='johansson-town-1988-v3';
+import {DIALOGUE} from './cast-ai.js';
+import {JOURNAL} from './content-data.js';
+const SAVE_KEY='johansson-town-1988-v4';
 
-export function createActivities({say,onWeather,onTime,onCamera}) {
+export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{}}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:false,operated:[]};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:false,operated:[],inspectedIds:[],notes:['Website is the town. Town is the website.'],shrineIntent:null,kenjiEscort:false};
   let state={...defaults},timer=null,modalOpen=false,previousFocus=null,audio=null,hum=null,radioStation=0;
 
   try {
-    const saved=JSON.parse(localStorage.getItem(SAVE_KEY));
+    const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||localStorage.getItem('johansson-town-1988-v3'));
     if(saved&&typeof saved==='object'){
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
-      for(const k of ['inventory','visited','operated'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
-      state.weather=saved.weather===true;
+      for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
+      state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;
     }
   } catch {}
 
@@ -35,13 +37,36 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aiko near the southern shops.','Find Tama, Aiko’s cat, near the ramen stall. A fish might help.','Return to Aiko with news of Tama.','Tama is safely home. Aiko has paid you ¥500.'][state.quest];
-    show('Pocket notebook',`${quest}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}/8\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\nShrine intention: ${state.shrineIntent||'Unset'}\n\n${quest}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}/8\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[['Back to town',close]]);
+  }
+
+
+  function note(text){if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}}
+  function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
+  function openURL(url){const u=new URL(url,location.href);if(!['https:','http:'].includes(u.protocol))return;const win=window.open('about:blank','_blank');if(win){win.opener=null;win.location.href=u.href;}else {note(u.href);say('Link saved in the field book.');}}
+  function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aiko has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
+  const histories=new Map();
+  function resident(name){
+    const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
+    const history=histories.get(name)||[];
+    const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
+    // Newly discovered callbacks take precedence, then cycle through authored topics.
+    const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
+    let text=row[1];
+    if(name==='Mrs Sato'&&state.shrineIntent&&row[0]==='home')text='You chose '+state.shrineIntent+'. Good. Now do one small thing about it.';
+    const buttons=[['Another subject',()=>resident(name)]];
+    if(name==='Aiko')buttons.push(['About Tama',()=>legacyResident(name)]);
+    if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Keep up. These are the accurate directions.',4);}]);
+    if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
+    if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
+    if(name==='Harbour master')buttons.push(['Sell a catch',()=>legacyResident(name)]);
+    buttons.push(['Goodbye',close]);show(name,text,buttons);
   }
 
   function vending(){show('自動販売機 · Vending machine','The compressor hums. A can drops into the tray when you make a purchase.',[['Green tea · ¥120',()=>buyDrink('Green tea')],['Canned coffee · ¥120',()=>buyDrink('Canned coffee')],['Leave',close]]);}
   function buyDrink(name){if(!spend(120))return;addItem(name);tone(640,.1);receipt('Thank you',`${name} is in your bag.`);}
 
-  function resident(name){
+  function legacyResident(name){
     if(name==='Aiko'){
       if(state.quest===0){show('Aiko · Bookshop assistant','My ginger cat Tama has wandered off again. He likes the warm corner by the ramen stall. Would you find him?',[['I will look for Tama',()=>{state.quest=1;save();receipt('A note in your notebook','Look near the ramen stall. If Tama is hungry, try the fishing pier.');}],['Later',close]]);}
       else if(state.quest===2){state.quest=3;state.yen+=500;save();receipt('Aiko','Tama followed you home! Thank you. Please take ¥500 for your trouble.');}
@@ -51,17 +76,18 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
     const lines={
       Kenji:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
       'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the harbour bus leaves at 18:20.',
-      'Harbour master':'There are mackerel off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
+      'Harbour master':'There are sea bream off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
     };
     show(name,lines[name]||'The resident nods politely.',[
-      ...(name==='Harbour master'?[['Sell a fish · +¥180',()=>{const i=state.inventory.indexOf('Mackerel');if(i<0){say('Catch a fish at the pier first.');return;}state.inventory.splice(i,1);state.yen+=180;save();receipt('Harbour master','A fine mackerel. Here is ¥180.');},!state.inventory.includes('Mackerel')]]:[]),
+      ...(name==='Harbour master'?[['Sell a fish · +¥180',()=>{const i=state.inventory.indexOf('Sea bream');if(i<0){say('Catch a fish at the pier first.');return;}state.inventory.splice(i,1);state.yen+=180;save();receipt('Harbour master','A fine sea bream. Here is ¥180.');},!state.inventory.includes('Sea bream')]]:[]),
       ['Goodbye',close]
     ]);
   }
 
   function cat(){
+    note('Tama approved this route');
     if(state.quest===1){
-      if(state.inventory.includes('Mackerel'))show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{state.inventory.splice(state.inventory.indexOf('Mackerel'),1);state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Aiko’s shop. Tell Aiko where he is.');}],['Leave',close]]);
+      if(state.inventory.includes('Sea bream'))show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{state.inventory.splice(state.inventory.indexOf('Sea bream'),1);state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Aiko’s shop. Tell Aiko where he is.');}],['Leave',close]]);
       else receipt('Tama','The ginger cat chirps, but keeps his distance. He seems hungry. Try fishing at the harbour.');
     } else receipt('Ginger cat',state.quest===3?'A neighbourhood cat stretches in the afternoon warmth.':'A ginger cat is warming himself beside the ramen stall.');
   }
@@ -69,7 +95,7 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
   function fishing(){
     show('Harbour fishing','Cast a line. Wait for BITE, then reel in before the fish gets away.',[
       ['Cast line',()=>{let elapsed=0,biteAt=2+Math.random()*2.5,caught=false;show('Harbour fishing','Waiting for a bite…',[
-        ['Reel in',()=>{if(caught)return;caught=true;if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;addItem('Mackerel');tone(880,.2);receipt('A mackerel!','A fresh mackerel is in your bag. Keep it, give it to Tama, or sell it to the harbour master.');}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
+        ['Reel in',()=>{if(caught)return;caught=true;if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;if(state.fish===2){addItem('Waterlogged page · Kings of Ben…');note('Recovered a Book Three fragment: Kings of Ben…');receipt('A waterlogged page','Only “Kings of Ben…” survives. Aiko will want this dried away from the stove.');return;}addItem('Sea bream');tone(880,.2);receipt('A sea bream!','A fresh sea bream is in your bag. Keep it, give it to Tama, or sell it to the harbour master.');}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
         ['Put away the rod',close]
       ]);timer=setInterval(()=>{elapsed+=.05;if(elapsed>=biteAt&&elapsed<biteAt+1.35){body.firstChild.textContent='BITE — REEL IN NOW';body.classList.add('signal');}if(elapsed>=biteAt+1.35){body.classList.remove('signal');receipt('The fish got away','Try again and reel in when BITE appears.');}},50);}],
       ['Leave',close]
@@ -78,7 +104,7 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
 
   function arcade(){
     show('STAR PORT · 1988','Stop the moving signal inside the green zone. Three rounds. Entry ¥100; three hits pays ¥250.',[
-      ['Insert ¥100',()=>{if(!spend(100))return;let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3)state.yen+=250;save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
+      ['Insert ¥100',()=>{if(!spend(100))return;let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3){state.yen+=250;state.kenjiEscort=true;note('Perfect Star Port run. Kenji offered a workshop escort.');}save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
       ['Leave',close]
     ]);
   }
@@ -92,8 +118,8 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
     } catch {say('Audio could not start.');}
   }
 
-  function inspect(name,detail){show(name,detail||'There is nothing unusual here.',[['Close',close]]);}
-  function read(name,detail){show(name,detail||'The text is faded but still legible.',[['Put it back',close]]);}
+  function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
+  function read(name,detail){show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
   function operate(name,detail){
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
@@ -108,11 +134,12 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
   }
   function radio(name,detail){
     const stations=[
-      '82.1 Harbour Service — tide times, weather and fishing notices.',
-      '89.4 JOJO Radio — light music, local adverts and the evening request programme.',
-      '95.7 Sports — baseball scores and commentary from the prefectural league.'
+      '82.1 Harbour Service — fictional relay: Sweden, cool rain; Nam Phuoc, warm showers. Check the moorings.',
+      '89.4 JOJO — tonight’s request: '+JOURNAL[Math.floor(getMinutes())%JOURNAL.length][1]+'. A title from the journal, for the late shift.',
+      '95.7 Sports — fictional prefectural score: Harbour '+Math.floor(getMinutes()/30)%8+', Mountain '+Math.floor(getMinutes()/47)%6+'.'
     ];
-    const render=()=>show(name,`${detail||'A compact transistor radio.'}\n\n${stations[radioStation]}`,[['Tune +',()=>{radioStation=(radioStation+1)%stations.length;tone(440+radioStation*110,.08);render();}],['Tune −',()=>{radioStation=(radioStation+stations.length-1)%stations.length;tone(440+radioStation*110,.08);render();}],['Leave',close]]);
+    if(state.weather)radioStation=0;
+    const render=()=>{note(stations[radioStation]);show(name,`${detail||'A compact transistor radio.'}\n\n${stations[radioStation]}`,[['Tune +',()=>{radioStation=(radioStation+1)%stations.length;tone(440+radioStation*110,.08);render();}],['Tune −',()=>{radioStation=(radioStation+stations.length-1)%stations.length;tone(440+radioStation*110,.08);render();}],['Leave',close]]);};
     render();
   }
 
@@ -131,9 +158,9 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
       case 'buy':buy(name,detail);break;
       case 'radio':radio(name,detail);break;
       case 'ramen':show('中華そば · Ramen stall','A steaming bowl of shoyu ramen, served at the counter.',[['Order ramen · ¥300',()=>{if(spend(300)){onTime(20);receipt('Ramen at the counter','You finish your bowl while the radio plays. Twenty quiet minutes pass.');}}],['Leave',close]]);break;
-      case 'phone':show('Public telephone','A handwritten card lists the harbour office.',[['Call harbour office · ¥10',()=>{if(spend(10))receipt('Harbour office','“Last passenger bus: 18:20. Fishing is allowed at the promenade. Speak to the harbour master if you want to sell a catch.”');}],['Hang up',close]]);break;
+      case 'phone':show('Public telephone','A handwritten card lists the harbour office.',[['Call harbour office · ¥10',()=>{if(spend(10)&&!onPhone())receipt('Harbour office','“Last passenger bus: 18:20. Fishing is allowed at the promenade. Speak to the harbour master if you want to sell a catch.”');}],['Hang up',close]]);break;
       case 'bus':receipt('Harbour bus timetable','Harbour → Station\n06:40 · 08:10 · 10:40 · 13:10 · 16:40 · 18:20');break;
-      case 'shrine':show('Neighbourhood shrine','The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);receipt('A quiet moment','You ring the bell and pause beneath the tiled roof.');}}],['Leave',close]]);break;
+      case 'shrine':show('Neighbourhood shrine','The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);show('Set an intention','A bell note hangs above the roofs. Choose one thing to carry back into the street.',['Book','Work','Home'].map(intent=>[intent,()=>{state.shrineIntent=intent;note('Shrine intention: '+intent+'.');receipt('A quiet moment',intent+'. Noted.');}]));}}],['Leave',close]]);break;
     }
   }
 
@@ -145,9 +172,9 @@ export function createActivities({say,onWeather,onTime,onCamera}) {
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#cameraButton').onclick=onCamera;
-  $('#creditsButton').onclick=()=>show('Credits','Johansson Town uses Three.js and local procedural geometry. Resource discovery is guided by Fasani/three-js-resources (MIT). Road, plaster, timber and roof textures come from Poly Haven / Texture Haven (CC0). Quaternius CC0 packs are approved for curated local intake; no third-party host is required at runtime. The stable character rigs are original Johansson Town geometry.',[['Texture credits',()=>window.open('./assets/ATTRIBUTION.md','_blank','noopener')],['Resource catalogue',()=>window.open('https://github.com/Fasani/three-js-resources','_blank','noopener')],['Asset intake policy',()=>window.open('./assets/late-showa/ASSETS.md','_blank','noopener')],['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Content from The Office of Nils Johansson · nj22az.github.io. Johansson Town uses Three.js and local procedural geometry. Resource discovery is guided by Fasani/three-js-resources (MIT). Road, plaster, timber and roof textures come from Poly Haven / Texture Haven (CC0). Quaternius CC0 packs are approved for curated local intake; no third-party host is required at runtime. The stable character rigs are original Johansson Town geometry.',[['Texture credits',()=>window.open('./assets/ATTRIBUTION.md','_blank','noopener')],['Resource catalogue',()=>window.open('https://github.com/Fasani/three-js-resources','_blank','noopener')],['Asset intake policy',()=>window.open('./assets/late-showa/ASSETS.md','_blank','noopener')],['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(audio){if(document.hidden)audio.suspend().catch(()=>{});else if(state.sound)audio.resume().catch(()=>{});}});
 
   save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
+  return {action,inventory,close,save,note,inspectItem,openURL,quietRead,footstep(material){tone(material==='asphalt'?125:material==='timber'?190:240,.04);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
 }

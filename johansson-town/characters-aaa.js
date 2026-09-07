@@ -1,5 +1,5 @@
 import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
-import { createCharacters as createStableCharacters } from './characters-cel.js?v=13';
+import { createCharacters as createStableCharacters } from './characters-cel.js?v=24';
 
 // Stable cast controller. Remote MakeHuman bodies are intentionally not used at runtime:
 // they produced T-poses, incomplete clothing and incompatible head/accessory transforms on mobile.
@@ -49,7 +49,7 @@ export function createCharacters(options={}){
 
   function canJump(){
     const hud=document.querySelector('#hud'),directory=document.querySelector('#directory'),activity=document.querySelector('#activity'),qte=document.querySelector('#qte');
-    return !!playerEntity&&window.__JOHANSSON_RUNNING__===true&&hud&&!hud.classList.contains('hidden')&&directory?.classList.contains('hidden')&&activity?.classList.contains('hidden')&&qte?.classList.contains('hidden');
+    return !window.__JOHANSSON_INSPECTING__&&!!playerEntity&&window.__JOHANSSON_RUNNING__===true&&hud&&!hud.classList.contains('hidden')&&directory?.classList.contains('hidden')&&activity?.classList.contains('hidden')&&qte?.classList.contains('hidden');
   }
 
   function jump(){if(!canJump()||jumping)return false;jumping=true;jumpVelocity=4.25;groundY=playerEntity.position.y;navigator.vibrate?.(12);return true;}

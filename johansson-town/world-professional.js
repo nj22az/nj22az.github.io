@@ -1,6 +1,6 @@
 import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
-import { createTown as createBaseTown } from './world.js?v=12-base';
-import { createPropFactory } from './prop-factory.js?v=1';
+import { createTown as createBaseTown } from './world.js?v=24-base';
+import { createPropFactory, createLivingProps } from './prop-factory.js?v=24';
 
 // Johansson Town professionalisation layer.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -149,9 +149,15 @@ function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.para
 
 export function createTown(options){
   const world=createBaseTown(options);
+  for(const [name,x,z] of [['Bus driver',-4.5,44],['Cold-storage kid',-8,-55]]){
+    const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
+    world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
+    options.register(g,'Talk to '+name,()=>options.onAction('resident',name));
+  }
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   let normalTick=-1;
+  world.beats=createLivingProps(world,factory);
   if(sea?.material){sea.material.flatShading=true;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
   world.update=(dt,time,day)=>{

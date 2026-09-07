@@ -80,7 +80,7 @@ assert.match(activities,/Fasani\/three-js-resources/,'credits must expose the ap
 const boot=await readFile(resolve(root,'main-professional.js'),'utf8');
 assert.match(boot,/newMin=-82,newSpan=144/,'minimap projection must include the outer pier');
 assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset each frame');
-assert.match(boot,/main\.js\?v=14-base/,'professional wrapper must load the current gameplay module exactly once');
+assert.match(boot,/main\.js\?v=24-base/,'professional wrapper must load the current gameplay module exactly once');
 
 const local=await readFile(resolve(root,'characters.js'),'utf8');
 for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(local,new RegExp(name.replace(' ','\\s')),`local cast must retain ${name}`);
@@ -114,7 +114,8 @@ assert.match(aaa,/MathUtils\.clamp\(e\.position\.x/,'NPC control must remain wit
 
 const webmcp=await readFile(resolve(root,'webmcp.js'),'utf8');
 assert.match(webmcp,/document\.modelContext\|\|navigator\.modelContext/,'WebMCP must prefer the current document.modelContext API with legacy alias fallback');
-for(const tool of ['johansson_get_state','johansson_move','johansson_look','johansson_jump','johansson_interact','johansson_travel','johansson_choose_action','johansson_ui'])assert.match(webmcp,new RegExp(tool),`${tool} must be registered`);
+assert.match(webmcp,/const TOOL_PREFIX='johansson_'/);
+for(const tool of ['get_state','move','look','jump','interact','travel','choose_action','ui'])assert.ok(webmcp.includes("name:TOOL_PREFIX+'"+tool+"'"),`johansson_${tool} must be registered`);
 assert.match(webmcp,/__JOHANSSON_AGENT_API__/,'compatible browser-agent bridges must have a bounded fallback API');
 assert.doesNotMatch(webmcp,/\beval\s*\(|new Function\s*\(/,'WebMCP must not expose arbitrary JavaScript execution');
 
@@ -124,10 +125,10 @@ assert.match(npcWebmcp,/Only town NPCs can be controlled directly/,'direct AI ch
 assert.match(npcWebmcp,/minimum:\.1,maximum:4/,'NPC movement distance must be bounded in the tool schema');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
-assert.match(index,/world-professional\.js\?v=16/,'boot import map must select the resource-backed street pass');
-assert.match(index,/characters-aaa\.js\?v=21/,'boot import map must select the AI-controllable stable individual cast');
-assert.match(index,/activities\.js\?v=10/,'boot import map must bypass stale activity caches');
-assert.match(index,/main-professional\.js\?v=18/,'boot import map must select the current professional wrapper');
+assert.match(index,/world-professional\.js\?v=24/,'boot import map must select the resource-backed street pass');
+assert.match(index,/characters-aaa\.js\?v=24/,'boot import map must select the AI-controllable stable individual cast');
+assert.match(index,/activities\.js\?v=24/,'boot import map must bypass stale activity caches');
+assert.match(index,/main-professional\.js\?v=24/,'boot import map must select the current professional wrapper');
 assert.match(index,/webmcp\.js\?v=1/,'WebMCP player tool surface must load after gameplay');
 assert.match(index,/webmcp-characters\.js\?v=1/,'WebMCP NPC tool surface must load after the cast');
 assert.match(index,/preloadCharacters/,'character system must initialise before gameplay');

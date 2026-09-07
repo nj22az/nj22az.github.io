@@ -1,0 +1,5 @@
+.inspecting #hud,.inspecting #prompt,.inspecting #subtitle,.inspecting #stick,.inspecting #act,.inspecting #jump,.inspecting #ink{visibility:hidden!important}
+#inspect-caption{position:fixed;z-index:1000;bottom:max(12px,env(safe-area-inset-bottom));left:2%;width:96%;box-sizing:border-box;padding:10px 14px;background:#eee4cd;color:#263e42;border:1px solid #927b54;font:14px/1.4 Georgia,serif}
+#inspect-caption[hidden]{display:none}#inspect-caption>div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}#inspect-caption button{min-height:40px;padding:6px 12px;background:#294449;color:#fff3d6;border:1px solid #8a7b61;font:14px system-ui;cursor:pointer}#inspect-caption button:focus-visible{outline:3px solid #b66939;outline-offset:2px}
+#activityBody p{white-space:pre-line}.directory-section{grid-column:1/-1;color:#dac595;font:16px Georgia;margin:12px 0 0}
+@media(max-width:600px){#inspect-caption{font-size:12px}#inspect-caption button{padding:5px 9px;min-height:40px;font-size:12px}}

@@ -1,4 +1,26 @@
 import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+
+// Small local-authored moving props, separate from the human rigs.
+export function createLivingProps(world,factory){
+  const bird=new THREE.Group();world.group.add(bird);
+  factory.box(bird,[.12,.10,.36],[0,0,0],0xe3ded0);
+  const wings=[-1,1].map(s=>factory.box(bird,[.48,.025,.17],[s*.26,0,0],0xcbd1cb));
+  const bike=new THREE.Group();bike.position.set(5.6,0,31.7);world.group.add(bike);
+  for(const z of [-.55,.55]){const m=new THREE.Mesh(new THREE.TorusGeometry(.32,.032,8,24),factory.material(null,0x252f31));m.rotation.y=Math.PI/2;m.position.set(0,.35,z);bike.add(m);}
+  for(const [a,b] of [[[0,.35,-.55],[0,.76,-.1]],[[0,.76,-.1],[0,.35,.55]],[[0,.35,.55],[0,.35,-.55]],[[0,.35,-.55],[0,.9,-.5]]])factory.beam(bike,a,b,.025,0x53696a);
+  factory.box(bike,[.24,.06,.25],[0,.81,.06],0x343e3e);factory.beam(bike,[-.22,.91,-.5],[.22,.91,-.5],.025,0x84908a);
+  const reflection=world.cat.clone();reflection.scale.setScalar(.35);reflection.position.set(-6.15,2.4,16.07);reflection.rotation.y=Math.PI;reflection.visible=false;world.group.add(reflection);
+  let mirrorUntil=0;
+  const trolley=world.group.getObjectByName('prop:delivery-trolley');
+  return {mirror(){mirrorUntil=performance.now()+6000;},update(dt,time,minutes){
+    bird.position.set(Math.cos(time*.13)*10,7+Math.sin(time*.3)*.4,-73+Math.sin(time*.13)*5);bird.rotation.y=-time*.13;wings.forEach((w,i)=>w.rotation.z=Math.sin(time*3)*(i?1:-1)*.12);
+    reflection.visible=performance.now()<mirrorUntil;
+    const kenji=world.people.find(p=>p.g.userData.name==='Kenji')?.g;
+    const h=minutes/60%24;
+    if(kenji&&h>=17&&h<19&&kenji.position.z>28){bike.position.set(kenji.position.x+.55,0,kenji.position.z);bike.rotation.y=kenji.rotation.y;}
+    if(trolley&&kenji&&h<11){trolley.position.set(kenji.position.x+.6,0,kenji.position.z);trolley.rotation.y=kenji.rotation.y;}
+  }};
+}
 import {getTextureResource,resourceSummary} from './resource-catalog.js?v=1';
 
 // Local-first environment prop factory. Poly Haven textures are the actual sourced

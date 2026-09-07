@@ -44,4 +44,4 @@ if(mapCanvas){
   }
 }
 
-await import('./main.js?v=14-base');
+await import('./main.js?v=24-base');

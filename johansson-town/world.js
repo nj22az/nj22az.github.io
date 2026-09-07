@@ -257,7 +257,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
 
   return {
-    group,colliders,people,
+    group,colliders,people,cat,
     setRain(value){
       wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;seaMat.color.set(value?0x345b66:0x426f79);
     },
@@ -270,6 +270,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});
       const playerPos=getPlayerPosition?.(),now=performance.now();
       people.forEach(p=>{
+        if(p.g.userData.scheduled)return;
         let desiredZ=p.z+Math.sin(time*.11+p.index)*2.2;if(playerPos){const dx=p.g.position.x-playerPos.x,dz=desiredZ-playerPos.z;if(dx*dx+dz*dz<.72*.72)desiredZ=p.g.position.z;}
         p.g.position.z=THREE.MathUtils.damp(p.g.position.z,desiredZ,7,dt);
         if(p.g.userData.facePlayerUntil>now&&playerPos){p.g.lookAt(playerPos.x,p.g.position.y,playerPos.z);p.g.rotateY(Math.PI);}else p.g.rotation.y=Math.cos(time*.11+p.index)>0?Math.PI:0;

@@ -52,7 +52,7 @@ function hideStick(){stick?.classList.remove('active');}
 // analogue input maths into a floating thumbstick without duplicating or fighting the movement system.
 if(coarse&&canvas){
   canvas.addEventListener('touchstart',e=>{
-    if(qteState)return;
+    if(qteState||window.__JOHANSSON_INSPECTING__)return;
     for(const t of e.changedTouches){
       if(moveId===null&&t.clientX<innerWidth*.48){moveId=t.identifier;placeStick(t);break;}
     }
@@ -119,7 +119,7 @@ document.addEventListener('keydown',e=>{
 
 function fixCredits(){
   const body=document.querySelector('#activityBody p');
-  if(body)body.textContent='Original town, buildings, activities and current procedural human rigs: Johansson Town. Road, plaster, timber and roof photography: Poly Haven (CC0). Three.js: MIT licence. Legacy Kenney Mini Character files remain archived but are not loaded by the v11 game.';
+  if(body)body.textContent='Content from The Office of Nils Johansson · nj22az.github.io. Original town, buildings, activities and current procedural human rigs: Johansson Town. Road, plaster, timber and roof photography: Poly Haven (CC0). Three.js: MIT licence. Legacy Kenney Mini Character files remain archived but are not loaded by the v11 game.';
   const old=[...document.querySelectorAll('#activityActions button')].find(b=>b.textContent.includes('Character credits'));
   if(old)old.textContent='Legacy character archive';
 }

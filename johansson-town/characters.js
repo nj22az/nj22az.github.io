@@ -87,6 +87,8 @@ export function createCharacters({mobile,onError,shadows=!mobile}){
     clothes(root,p);return {root,head,torso,hips,legs,arms,eyelids};
   }
 
+  profiles['Bus driver']={...profiles['Harbour master'],height:1.71,outer:0x324c59,top:0x9daea7};
+  profiles['Cold-storage kid']={...profiles.Kenji,height:1.68,outer:0x74774c,top:0xb5b7a1,build:.92};
   function attach(entity,file,height=1.8){try{const name=entity.userData.name||'player',profile=profiles[name]||profiles.player;const old=[...entity.children],rig=build(entity,profile,name==='player'?(height||profile.height):profile.height);old.forEach(o=>o.visible=false);const actor={entity,profile,rig,gesture:0,lastPosition:entity.position.clone(),phase:actors.length*.93,speed:0,blink:0,nextBlink:1.5+actors.length*.42};actors.push(actor);entity.userData.character=actor;return actor;}catch(error){onError?.(file,error);return null;}}
   function gesture(entity){const a=entity.userData.character;if(a)a.gesture=.65;}
 

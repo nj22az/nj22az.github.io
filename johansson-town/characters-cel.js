@@ -1,5 +1,5 @@
 import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
-import { createCharacters as createBaseCharacters } from './characters.js?v=11-base';
+import { createCharacters as createBaseCharacters } from './characters.js?v=24-base';
 
 // Converts the stable procedural rigs to restrained stepped lighting without
 // changing their hierarchy, gait or interaction API. Hidden legacy fallback
