@@ -113,9 +113,9 @@ function anchorAccessory(wrapper,bone,object,position){
 }
 
 function decorate(actor){
-  const {wrapper,model,profile,height}=actor;
+  const {wrapper,model,profile,height,localBox}=actor;
   model.updateMatrixWorld(true);
-  const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3());
+  const box=localBox,center=box.getCenter(new THREE.Vector3());
   const headBone=findBone(model,'head','mixamorigHead','DEF-spine006');
   const neckBone=findBone(model,'neck_01','neck','mixamorigNeck','DEF-spine005');
   const spineBone=findBone(model,'spine_02','spine2','mixamorigSpine2','DEF-spine003');
@@ -162,8 +162,9 @@ function instantiate(profile){
   model.rotation.y=Math.PI/2;model.updateMatrixWorld(true);
   let box=new THREE.Box3().setFromObject(model),rawHeight=Math.max(.01,box.max.y-box.min.y),scale=profile.height/rawHeight;
   model.scale.setScalar(scale);model.updateMatrixWorld(true);box.setFromObject(model);model.position.y-=box.min.y;model.updateMatrixWorld(true);
+  const localBox=new THREE.Box3().setFromObject(model);
   wrapper.scale.set(profile.width,1,profile.depth);wrapper.rotation.x=profile.stoop||0;
-  return {wrapper,model,height:profile.height,clips:source.animations||[]};
+  return {wrapper,model,height:profile.height,clips:source.animations||[],localBox};
 }
 
 export function createCharacters(options={}){
