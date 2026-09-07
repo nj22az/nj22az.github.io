@@ -13,11 +13,12 @@
 <link rel="stylesheet" href="./styles.css?v=11">
 <link rel="stylesheet" href="./polish.css?v=11">
 <link rel="stylesheet" href="./viewport-fix.css?v=14">
+<link rel="stylesheet" href="./character-controls.css?v=1">
 <script type="importmap">
 {
   "imports": {
     "./world.js?v=11": "./world-professional.js?v=14",
-    "./characters.js?v=11": "./characters-aaa.js?v=17",
+    "./characters.js?v=11": "./characters-aaa.js?v=18",
     "./physics.js?v=10": "./physics.js?v=11",
     "./main.js?v=15": "./main-professional.js?v=16"
   }
@@ -36,7 +37,7 @@
     <div class="scene-line">昭和63年 · A harbour neighbourhood, 1988</div>
     <button id="enter">ENTER TOWN</button>
     <div id="bootStatus" class="boot-status">READY</div>
-    <div class="desktop-help">WASD move · mouse look · E interact<br>Q directory · B notebook · V camera · N time</div>
+    <div class="desktop-help">WASD move · mouse look · SPACE jump · E interact<br>Q directory · B notebook · V camera · N time</div>
   </div>
 </section>
 <div id="hud" class="hidden">
@@ -51,7 +52,7 @@
 </div>
 <div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town directory"><div class="directory-card"><div class="directory-head"><div><h2>Town Directory</h2><p>JOHANSSON TOWN · HARBOUR DISTRICT</p></div><button id="closeDirectory">CLOSE</button></div><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span>JOHANSSON TOWN · 1988</span><button id="closeActivity" aria-label="Close activity">CLOSE</button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
-<div id="mobile"><div id="stick"><div id="knob"></div></div><button id="act" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
+<div id="mobile"><div id="stick"><div id="knob"></div></div><button id="jump" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button><button id="act" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
@@ -93,7 +94,7 @@
     },25000);
     try{
       await import('./touch-ui.js?v=11');
-      const cast=await import('./characters-aaa.js?v=17');
+      const cast=await import('./characters-aaa.js?v=18');
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
       status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total} HD`;
       await import('./main.js?v=15');
