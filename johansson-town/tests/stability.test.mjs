@@ -25,7 +25,7 @@ assert.equal(townBoundsBlocked(0,-79,.28),true,'pier end must stop the player be
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 
-for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','activities.js']){
+for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js']){
   const source=await readFile(resolve(root,file),'utf8');
   const refs=[...source.matchAll(/(?:from\s+|import\()['"]([^'"]+)["']/g)].map(m=>m[1]);
   for(const ref of refs){
@@ -52,5 +52,22 @@ const boot=await readFile(resolve(root,'main-professional.js'),'utf8');
 assert.match(boot,/newMin=-82,newSpan=144/,'minimap projection must include the outer pier');
 assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset each frame');
 assert.match(boot,/main\.js\?v=13-base/,'professional wrapper must load the stable gameplay module exactly once');
+
+const aaa=await readFile(resolve(root,'characters-aaa.js'),'utf8');
+assert.match(aaa,/MakeHuman \/ MPFB2/,'high-detail cast must retain its CC0 source declaration');
+assert.match(aaa,/new THREE\.AnimationMixer/,'high-detail cast must use skeletal animation mixers');
+for(const clip of ['idle','walk','run','wave'])assert.match(aaa,new RegExp(`['"]${clip}['"]`),`character cast must retain ${clip} animation support`);
+for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(aaa,new RegExp(name.replace(' ','\\s')),`high-detail cast must retain unique ${name} profile`);
+assert.match(aaa,/createFallbackCharacters/,'high-detail characters must retain a deterministic local fallback');
+assert.match(aaa,/suited\.glb/,'player must use the authored suited MakeHuman source');
+assert.match(aaa,/human\.glb/,'female MakeHuman source must remain available');
+assert.match(aaa,/man\.glb/,'male MakeHuman source must remain available');
+assert.match(aaa,/speaker\.glb/,'alternate MakeHuman source must remain available');
+
+const index=await readFile(resolve(root,'index.html'),'utf8');
+assert.match(index,/characters-aaa\.js\?v=17/,'boot import map must select the high-detail cast');
+assert.match(index,/preloadCharacters/,'high-detail cast must preload before gameplay');
+assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast preload must complete before the gameplay module starts');
+assert.match(index,/25000/,'boot watchdog must allow the high-detail mobile preload window');
 
 console.log('Johansson Town stability regression tests: PASS');
