@@ -99,6 +99,7 @@
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
       status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total}`;
       await import('./main.js?v=15');
+      await import('./webmcp.js?v=1');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
