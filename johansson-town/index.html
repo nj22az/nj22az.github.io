@@ -16,8 +16,9 @@
 <script type="importmap">
 {
   "imports": {
-    "./world.js?v=11": "./world.js?v=12",
-    "./characters.js?v=11": "./characters-cel.js?v=12"
+    "./world.js?v=11": "./world-professional.js?v=14",
+    "./characters.js?v=11": "./characters-cel.js?v=12",
+    "./physics.js?v=10": "./physics.js?v=11"
   }
 }
 </script>
@@ -91,7 +92,7 @@
     },8000);
     try{
       await import('./touch-ui.js?v=11');
-      await import('./main.js?v=13');
+      await import('./main.js?v=14');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
