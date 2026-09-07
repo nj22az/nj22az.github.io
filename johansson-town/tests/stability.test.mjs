@@ -25,7 +25,7 @@ assert.equal(townBoundsBlocked(0,-79,.28),true,'pier end must stop the player be
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 
-for(const file of ['main.js','world.js','world-professional.js','characters.js','characters-cel.js','activities.js']){
+for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','activities.js']){
   const source=await readFile(resolve(root,file),'utf8');
   const refs=[...source.matchAll(/(?:from\s+|import\()['"]([^'"]+)["']/g)].map(m=>m[1]);
   for(const ref of refs){
@@ -47,5 +47,10 @@ assert.doesNotMatch(professional,/new THREE\.Line\(/,'professional layer must no
 assert.doesNotMatch(professional,/LineBasicMaterial/,'professional layer must not use one-pixel line materials');
 assert.match(professional,/walkableOuterPier:true/,'professional layer must report walkable pier support');
 assert.match(professional,/computeVertexNormals/,'animated cel water must refresh normals');
+
+const boot=await readFile(resolve(root,'main-professional.js'),'utf8');
+assert.match(boot,/newMin=-82,newSpan=144/,'minimap projection must include the outer pier');
+assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset each frame');
+assert.match(boot,/main\.js\?v=13-base/,'professional wrapper must load the stable gameplay module exactly once');
 
 console.log('Johansson Town stability regression tests: PASS');
