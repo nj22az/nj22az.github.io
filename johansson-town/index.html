@@ -38,7 +38,7 @@
     <div class="scene-line">昭和63年 · A harbour neighbourhood, 1988</div>
     <button id="enter">ENTER TOWN</button>
     <div id="bootStatus" class="boot-status">READY</div>
-    <div class="desktop-help">WASD move · mouse look · SPACE jump · E interact<br>Q directory · B notebook · V camera · N time</div>
+    <div class="desktop-help">FIRST PERSON · WASD move · mouse look · SPACE jump · E interact<br>Q directory · B notebook · V camera · N time</div>
   </div>
 </section>
 <div id="hud" class="hidden">
@@ -46,7 +46,7 @@
   <button id="directoryButton">DIRECTORY</button>
   <button id="fullscreenButton">FULL SCREEN</button>
   <div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↑</span></div>
-  <nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="cameraButton">CAMERA</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND OFF</button></nav>
+  <nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="cameraButton">CAMERA · FIRST</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND OFF</button></nav>
   <div id="prompt" role="status"></div>
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
@@ -99,6 +99,7 @@
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
       status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total}`;
       await import('./main.js?v=15');
+      await import('./first-person.js?v=1');
       await import('./webmcp.js?v=1');
       await import('./webmcp-characters.js?v=1');
       clearTimeout(watchdog);
