@@ -21,12 +21,14 @@ export function preloadCharacters({onProgress}={}){
 }
 
 export function createCharacters(options={}){
-  const stable=createStableCharacters(options),actors=stable.actors||[],conversations=new Map();
+  const stable=createStableCharacters(options),actors=stable.actors||[],conversations=new Map(),entities=new Map(),aiControls=new Map();
   let playerEntity=null,playerActor=null,groundY=0,jumpVelocity=0,jumping=false;
 
   function attach(entity,file,height){
     const isPlayer=file==='player'||!entity.userData.name;
     const actor=stable.attach(entity,file,height||(isPlayer?CAST.player.height:CAST[entity.userData.name]?.height));
+    const identity=isPlayer?'Johansson':entity.userData.name;
+    if(identity)entities.set(identity,entity);
     if(isPlayer){playerEntity=entity;playerActor=actor;groundY=entity.position.y;}
     return actor;
   }
@@ -63,11 +65,43 @@ export function createCharacters(options={}){
     rig.arms.forEach((arm,i)=>{arm.shoulder.rotation.x=THREE.MathUtils.damp(arm.shoulder.rotation.x,.11*lift,10,dt);arm.shoulder.rotation.z=THREE.MathUtils.damp(arm.shoulder.rotation.z,(i?-.07:.07),10,dt);});
   }
 
+  // Bounded AI/NPC control. This deliberately operates on the same local actor entities
+  // that the player sees; it does not spawn hidden duplicate avatars or bypass the cast pipeline.
+  function listCharacters(){return [...entities.entries()].map(([name,e])=>({name,x:+e.position.x.toFixed(2),y:+e.position.y.toFixed(2),z:+e.position.z.toFixed(2),player:name==='Johansson',aiControlled:aiControls.has(e)}));}
+  function getCharacter(name){const e=entities.get(name);return e?{name,x:+e.position.x.toFixed(2),y:+e.position.y.toFixed(2),z:+e.position.z.toFixed(2),player:name==='Johansson',aiControlled:aiControls.has(e)}:null;}
+  function moveNPC(name,{dx=0,dz=0,seconds=4}={}){
+    const e=entities.get(name);if(!e||e===playerEntity)return false;
+    const targetX=THREE.MathUtils.clamp(e.position.x+THREE.MathUtils.clamp(Number(dx)||0,-4,4),-5.7,5.7);
+    const targetZ=THREE.MathUtils.clamp(e.position.z+THREE.MathUtils.clamp(Number(dz)||0,-6,6),-55,48);
+    aiControls.set(e,{targetX,targetZ,until:performance.now()+THREE.MathUtils.clamp(Number(seconds)||4,.5,15)*1000,faceName:null});
+    return true;
+  }
+  function faceCharacter(name,targetName='Johansson',seconds=4){
+    const e=entities.get(name),target=entities.get(targetName);if(!e||!target||e===playerEntity)return false;
+    const current=aiControls.get(e)||{targetX:e.position.x,targetZ:e.position.z};
+    aiControls.set(e,{...current,until:performance.now()+THREE.MathUtils.clamp(Number(seconds)||4,.5,15)*1000,faceName:targetName});
+    return true;
+  }
+  function commandGesture(name){const e=entities.get(name);if(!e||e===playerEntity)return false;stable.gesture?.(e);return true;}
+  function releaseCharacter(name){const e=entities.get(name);if(!e||e===playerEntity)return false;aiControls.delete(e);return true;}
+  function updateAIControls(dt){
+    const now=performance.now();
+    for(const [e,c] of aiControls){
+      if(c.until<=now){aiControls.delete(e);continue;}
+      e.position.x=THREE.MathUtils.damp(e.position.x,c.targetX,6.5,dt);
+      e.position.z=THREE.MathUtils.damp(e.position.z,c.targetZ,6.5,dt);
+      if(c.faceName){const target=entities.get(c.faceName);if(target)face(e,target,true);}
+    }
+  }
+  window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter});
+
   function update(dt){
-    updateJump(dt);stable.update(dt);poseJump(dt);
+    updateJump(dt);updateAIControls(dt);stable.update(dt);poseJump(dt);
     const now=performance.now();
     for(const [entity,c] of conversations){if(c.until<=now){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
+    // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
+    updateAIControls(dt);
   }
 
-  return {attach,gesture,jump,update,actors,preloaded:()=>5,profiles:CAST,mode:'stable-local-authored'};
+  return {attach,gesture,jump,update,actors,preloaded:()=>5,profiles:CAST,mode:'stable-local-authored',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }
