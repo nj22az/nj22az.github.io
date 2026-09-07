@@ -17,7 +17,7 @@
 {
   "imports": {
     "./world.js?v=11": "./world-professional.js?v=14",
-    "./characters.js?v=11": "./characters-cel.js?v=13",
+    "./characters.js?v=11": "./characters-aaa.js?v=17",
     "./physics.js?v=10": "./physics.js?v=11",
     "./main.js?v=15": "./main-professional.js?v=16"
   }
@@ -90,9 +90,12 @@
         status.textContent='STARTUP TOOK TOO LONG';
         fatal.classList.remove('hidden');
       }
-    },8000);
+    },25000);
     try{
       await import('./touch-ui.js?v=11');
+      const cast=await import('./characters-aaa.js?v=17');
+      const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
+      status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total} HD`;
       await import('./main.js?v=15');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
