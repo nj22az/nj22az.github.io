@@ -18,7 +18,7 @@
 {
   "imports": {
     "./world.js?v=11": "./world-professional.js?v=14",
-    "./characters.js?v=11": "./characters-aaa.js?v=18",
+    "./characters.js?v=11": "./characters-aaa.js?v=19",
     "./physics.js?v=10": "./physics.js?v=11",
     "./main.js?v=15": "./main-professional.js?v=16"
   }
@@ -94,7 +94,7 @@
     },25000);
     try{
       await import('./touch-ui.js?v=11');
-      const cast=await import('./characters-aaa.js?v=18');
+      const cast=await import('./characters-aaa.js?v=19');
       const report=await cast.preloadCharacters({onProgress:p=>{status.textContent=`LOADING CAST · ${Math.round(p*100)}%`;}});
       status.textContent=report.ready===report.total?'CAST READY':`CAST READY · ${report.ready}/${report.total} HD`;
       await import('./main.js?v=15');
