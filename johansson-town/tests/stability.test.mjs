@@ -28,11 +28,7 @@ assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${swe
 for(const file of ['main.js','main-professional.js','world.js','world-professional.js','characters.js','characters-cel.js','characters-aaa.js','activities.js']){
   const source=await readFile(resolve(root,file),'utf8');
   const refs=[...source.matchAll(/(?:from\s+|import\()['"]([^'"]+)["']/g)].map(m=>m[1]);
-  for(const ref of refs){
-    if(!ref.startsWith('.'))continue;
-    const clean=ref.split('?')[0];
-    await access(resolve(root,clean));
-  }
+  for(const ref of refs){if(!ref.startsWith('.'))continue;const clean=ref.split('?')[0];await access(resolve(root,clean));}
 }
 
 const main=await readFile(resolve(root,'main.js'),'utf8');
@@ -53,32 +49,37 @@ assert.match(boot,/newMin=-82,newSpan=144/,'minimap projection must include the 
 assert.match(boot,/paintedHarbour=false/,'minimap harbour overlay must reset each frame');
 assert.match(boot,/main\.js\?v=13-base/,'professional wrapper must load the stable gameplay module exactly once');
 
+const local=await readFile(resolve(root,'characters.js'),'utf8');
+for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(local,new RegExp(name.replace(' ','\\s')),`local cast must retain ${name}`);
+assert.match(local,/hero:true/,'Johansson must have a dedicated hero body/wardrobe branch');
+assert.match(local,/blouse:true/,'Aiko must have dedicated blouse geometry');
+assert.match(local,/workwear:true/,'Kenji must have dedicated workwear geometry');
+assert.match(local,/cardigan:true/,'Mrs Sato must have dedicated cardigan geometry');
+assert.match(local,/apron:true/,'Mrs Sato must have dedicated apron geometry');
+assert.match(local,/coat:true/,'harbour master must have dedicated coat geometry');
+assert.match(local,/peakedCap:true/,'harbour master must have dedicated cap geometry');
+assert.match(local,/moustache:true/,'harbour master must have distinct facial geometry');
+assert.match(local,/hairStyle:'ponytail'/,'Aiko must keep her own hair silhouette');
+assert.match(local,/hairStyle:'crop'/,'Kenji must keep his own hair silhouette');
+assert.match(local,/hairStyle:'bun'/,'Mrs Sato must keep her own hair silhouette');
+assert.match(local,/hairStyle:'receding'/,'harbour master must keep his own hair silhouette');
+assert.doesNotMatch(local,/satchel:true|suitcase:true/,'Johansson must not carry a suitcase or satchel');
+assert.match(local,/head:\[/,'cast identities must include distinct head proportions, not palette swaps');
+assert.match(local,/stride:/,'cast identities must include distinct movement cadence, not palette swaps');
+
 const aaa=await readFile(resolve(root,'characters-aaa.js'),'utf8');
-assert.match(aaa,/MakeHuman \/ MPFB2/,'high-detail NPC cast must retain its CC0 source declaration');
-assert.match(aaa,/new THREE\.AnimationMixer/,'high-detail NPCs must use skeletal animation mixers');
-for(const clip of ['idle','walk','run','wave'])assert.match(aaa,new RegExp(`['"]${clip}['"]`),`character cast must retain ${clip} clip discovery`);
-for(const name of ['player','Aiko','Kenji','Mrs Sato','Harbour master'])assert.match(aaa,new RegExp(name.replace(' ','\\s')),`character cast must retain unique ${name} profile`);
-assert.match(aaa,/createFallbackCharacters/,'character system must retain a deterministic local fallback');
-assert.match(aaa,/suited\.glb/,'suited MakeHuman source must remain available for future bespoke hero work');
-assert.match(aaa,/human\.glb/,'female MakeHuman source must remain available');
-assert.match(aaa,/man\.glb/,'male MakeHuman source must remain available');
-assert.match(aaa,/speaker\.glb/,'alternate MakeHuman source must remain available');
-assert.match(aaa,/useFallback:true/,'Johansson must use the stable local hero rig until the bespoke protagonist is ready');
-assert.match(aaa,/sanitiseClip/,'NPC locomotion must sanitise authored root motion');
-assert.match(aaa,/locomotionSpeed/,'NPC locomotion must time gait against authored travel speed');
-assert.match(aaa,/desiredState/,'character locomotion must use stable state selection');
+assert.match(aaa,/stable-local-authored/,'runtime must use the stable individually authored cast');
+assert.match(aaa,/createStableCharacters/,'runtime must delegate to stable local character rigs');
+assert.doesNotMatch(aaa,/GLTFLoader|AnimationMixer|raw\.githubusercontent/,'unstable remote skinned actors must not be active at runtime');
 assert.match(aaa,/stageConversation/,'dialogue must stage spacing and facing explicitly');
-assert.doesNotMatch(aaa,/anchorAccessory|makeHair/,'runtime must not restore floating procedural head accessories');
-assert.doesNotMatch(aaa,/\.rotateX\(/,'dialogue and jump must not accumulate direct bone rotations');
+assert.match(aaa,/targetDistance=1\.34/,'dialogue must maintain a deliberate conversational gap');
 assert.match(aaa,/jumpVelocity/,'Johansson must retain deterministic jump physics');
 assert.match(aaa,/__JOHANSSON_JUMP__/,'Johansson jump must remain externally callable by the touch control');
-assert.doesNotMatch(aaa,/satchel:true/,'Johansson must not restore the intersecting curved satchel strap');
 
 const index=await readFile(resolve(root,'index.html'),'utf8');
-assert.match(index,/characters-aaa\.js\?v=19/,'boot import map must select the current stable character pass');
-assert.match(index,/preloadCharacters/,'character assets must preload before gameplay');
-assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast preload must complete before the gameplay module starts');
-assert.match(index,/25000/,'boot watchdog must allow the mobile preload window');
+assert.match(index,/characters-aaa\.js\?v=20/,'boot import map must select the current stable individual cast');
+assert.match(index,/preloadCharacters/,'character system must initialise before gameplay');
+assert.ok(index.indexOf('preloadCharacters')<index.indexOf("import('./main.js?v=15')"),'cast initialisation must complete before gameplay starts');
 assert.match(index,/id="jump"/,'touch HUD must expose a dedicated Johansson jump button');
 assert.match(index,/character-controls\.css/,'jump control styling must be loaded');
 
