@@ -68,3 +68,7 @@ Kenji now uses a locally embedded, textured MakeHuman/MPFB body authored in Blen
 ## Sakura Shōten milestone
 
 Yui is a second Blender-authored adult identity, working inside the market from 09:00 to 20:00. Eight goods can be inspected and bought using saved town yen; the cooler and till drawer move physically. Shopify product and cart operations pass the supplied Storefront schema validator, but remain disabled and unconnected pending an approved real product mapping. No real orders, payments or store mutations were made. See `docs/SAKURA_STORE.md`.
+
+## Live-feedback visual revision
+
+Clear-day fog starts at 180 m; interiors are clear. Yuri has revised facial proportions, smile, dark hair and fitted accessories. Sakura has a dedicated glass frontage and shell, four stocked racks, 96 selectable goods, back-wall household stock and pitch-aware targeting. CPU aisle and render reviews are recorded in `docs/SAKURA_VISUAL_REVIEW.md`. Other interiors and cast identities remain incomplete; browser GPU/device checks are still outstanding.

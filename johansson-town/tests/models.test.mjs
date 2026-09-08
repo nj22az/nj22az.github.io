@@ -17,10 +17,10 @@ test('seven local skinned bodies parse, animate and clone independently',async()
  try{
   assert.deepEqual(await preloadModels(),{ready:7,total:7});
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
-  for(const name of ['Johansson','Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui']){
+  for(const name of ['Johansson','Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yui')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yui'||name==='Yuri')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
   }
   for(let tick=0;tick<60;tick++){actors[2].entity.position.z-=.02;models.update(1/60);scene.updateMatrixWorld(true);}

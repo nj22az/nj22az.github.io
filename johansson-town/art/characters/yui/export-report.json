@@ -1,5 +1,5 @@
 {
-  "triangles": 20986,
+  "triangles": 19997,
   "meshes": [
     {
       "name": "Yui.Body",
@@ -8,18 +8,23 @@
     },
     {
       "name": "Yui.Collar",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 30,
+      "triangles": 56
     },
     {
       "name": "Yui.Collar.001",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 30,
+      "triangles": 56
+    },
+    {
+      "name": "Yui.CollarTie",
+      "vertices": 5,
+      "triangles": 3
     },
     {
       "name": "Yui.CreamBeret",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 288,
+      "triangles": 480
     },
     {
       "name": "Yui.eyebrow001",
@@ -29,7 +34,7 @@
     {
       "name": "Yui.female_elegantsuit01",
       "vertices": 824,
-      "triangles": 1467
+      "triangles": 1466
     },
     {
       "name": "Yui.GlassesBridge",
@@ -48,8 +53,8 @@
     },
     {
       "name": "Yui.long01",
-      "vertices": 1534,
-      "triangles": 1642
+      "vertices": 1557,
+      "triangles": 1643
     },
     {
       "name": "Yui.low-poly",
@@ -118,13 +123,6 @@
       ]
     },
     {
-      "name": "Town.long01_diffuse.png",
-      "size": [
-        1024,
-        1024
-      ]
-    },
-    {
       "name": "Town.shoes03_diffuse.png",
       "size": [
         1024,
@@ -139,6 +137,13 @@
       ]
     },
     {
+      "name": "Town.Yui.long01.black",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
       "name": "Town.Yui.PinkCotton",
       "size": [
         1024,
@@ -146,6 +151,6 @@
       ]
     }
   ],
-  "bytes": 3569016,
+  "bytes": 3022532,
   "heightMetres": 1.62
 }
