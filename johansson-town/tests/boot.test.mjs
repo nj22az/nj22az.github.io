@@ -70,13 +70,19 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const api=await import(dataModule(source));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
-    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Default camera remains first person');
+    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'third','Start in third person to see the supplied protagonist');
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     api.simulate(1/60);
     api.setTime();
     assert.equal(api.scene.fog,null,'Scene fog is disabled');
     assertFiniteTransforms(api,'outdoor startup');
 
+    assert.equal(api.player.visible,true);
+    document.querySelector('#viewButton').onclick();api.simulate(1/60);
+    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first');assert.equal(api.player.visible,false);assert.equal(api.camera.fov,65);
+    assert.equal(api.activities.state.cameraMode,'first');
+    document.querySelector('#cameraButton').onclick();api.simulate(1/60);
+    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'third');assert.equal(api.player.visible,true);
     const runningStart=api.player.position.clone();
     api.keys.KeyW=true;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
     api.player.position.copy(runningStart);document.querySelector('#run').onclick();api.simulate(.1);
@@ -93,13 +99,16 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     document.querySelector('#directoryButton').onclick();
     assert.ok(document.querySelector('#directoryGrid').children.length>api.SITES.length,'Directory includes town content');
     for(const site of api.SITES)assert.ok(document.querySelector('#directoryGrid').children.some(b=>b.dataset.id===site.id),'WebMCP travel target '+site.id);
-    const shortcut=document.querySelector('#directoryGrid').children.find(b=>b.dataset.id==='find-izakaya');
-    assert.ok(shortcut,'Izakaya has a prominent menu shortcut');shortcut.onclick();
+    const find=id=>document.querySelector('#directoryGrid').children.find(b=>b.dataset.id===id);
+    const walkingStart=api.player.position.clone();
+    for(const site of api.SITES){document.querySelector('#directoryButton').onclick();assert.equal(find(site.id).dataset.travel,'locked');find(site.id).onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Locked destination only marks directions: '+site.id);}
+    assert.match(document.querySelector('#waypoint').textContent,/Corner Tea House|Minato Izakaya/);
+    api.activities.state.quest=3;document.querySelector('#directoryButton').onclick();find('izakaya').onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'One completed quest does not unlock shortcuts');
+    api.activities.state.kenjiEscort='done';api.activities.save();document.querySelector('#directoryButton').onclick();
+    const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
     assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
-    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Shortcut faces the usable entrance');
-    document.querySelector('#directoryButton').onclick();
-    const teaShortcut=document.querySelector('#directoryGrid').children.find(b=>b.dataset.id==='find-tea-house');
-    assert.ok(teaShortcut);teaShortcut.onclick();assert.equal(api.player.position.x,46);assert.equal(api.player.position.z,62.7);
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Unlocked shortcut faces the usable entrance');
+    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,46);assert.equal(api.player.position.z,62.7);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Corner Tea House/);
     const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();
@@ -112,6 +121,11 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.equal(api.reviewCurrentRoom()?.id,site.id,'Interior entry: '+site.id);
       assert.deepEqual(api.reviewRoomState(),{visible:true,townVisible:false,colliders:api.reviewRoomState().colliders});
       assert.ok(api.reviewRoomState().colliders>0,'Interior has colliders: '+site.id);
+      api.simulate(1/60);assert.equal(api.camera.fov,38);assert.equal(api.player.visible,true);
+      document.querySelector('#viewButton').onclick();api.simulate(1/60);assert.equal(api.camera.fov,65);assert.equal(api.player.visible,false,'FPV inside '+site.id);
+      const roomStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.z<roomStart.z,'Interior FPV walks forward');
+      document.querySelector('#viewButton').onclick();api.simulate(1/60);assert.equal(api.camera.fov,38);assert.equal(api.player.visible,true);
+
       api.simulate(1/60);
       assertFiniteTransforms(api,'inside '+site.id);
       if(site.id==='market'){
