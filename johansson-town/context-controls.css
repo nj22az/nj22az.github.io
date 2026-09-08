@@ -1,0 +1,24 @@
+/* Quiet exploration HUD; detailed information and settings live in the menu. */
+#hud .placard{border:0;box-shadow:none;background:transparent;padding:3px 0;max-width:65vw}
+#hud .placard b{color:#f4ead3;font-size:12px;text-shadow:0 1px 4px #000;letter-spacing:.08em}
+#hud .placard small,#hud .timecard{display:none}
+#hud #clock{font-size:15px;padding:4px 8px;border-radius:12px;box-shadow:none;background:#132b35b8;border:0}
+#hud #directoryButton{top:max(54px,calc(env(safe-area-inset-top) + 48px));right:max(14px,env(safe-area-inset-right));min-height:44px;border-radius:22px;padding:8px 16px;font-size:12px;letter-spacing:.04em}
+#directory .directory-card{max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;border-radius:24px}
+#directory #wallet{position:static;display:block;border:0;box-shadow:none;background:transparent;color:#415e4e;margin:8px 0;font-size:17px}
+#directory .menu-tools{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#directory #fullscreenButton,#directory #townControls{position:static;transform:none;inset:auto;width:auto;max-width:none;margin:0;border:0;background:transparent;box-shadow:none}
+#directory #townControls{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start}
+#directory #townControls button,#directory #fullscreenButton{flex:0 1 auto;min-height:44px;padding:10px 14px;font-size:12px;letter-spacing:.02em;border-radius:14px;background:#d9e4d6;color:#243d38;border:1px solid #b8c9b4}
+#directory #closeDirectory{min-height:44px;padding:10px 14px;border-radius:14px}
+#directory .menu-map{margin:12px 0;color:#243d38}
+#directory .menu-map summary{cursor:pointer;min-height:44px;padding:12px;border-radius:12px;background:#e8dfc9}
+#directory .map-frame{position:static;inset:auto;margin:8px 0;width:fit-content;opacity:1}
+#directory .map-frame canvas{position:static;width:110px;height:200px}
+#directory h3{color:#41584d;margin:20px 0 8px;font-size:14px}
+@media(pointer:coarse){
+ #hud #prompt{display:none}
+ #run{bottom:calc(env(safe-area-inset-bottom) + 140px)}
+ #drink{bottom:calc(env(safe-area-inset-bottom) + 140px)}
+ #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 210px);font-size:14px}
+}
