@@ -37,5 +37,19 @@ export function prepareYuriAnimations(asset){
     }
     return clip;
   });
+  const authoredIdle=locomotion.find(clip=>clip.name==='Idle_Neutral');
+  if(authoredIdle){
+    // Preserve the Blender-cleaned resting pose; layer the existing greeting onto it.
+    const greeting=authoredIdle.clone();greeting.name='Wave';const duration=1.2;
+    for(const track of greeting.tracks){
+      for(let i=0;i<track.times.length;i++)track.times[i]*=duration/authoredIdle.duration;
+      if(track.name==='Head.quaternion'||track.name==='RightHand.quaternion')for(let i=0;i<track.times.length;i++){
+        const t=track.times[i]/duration,envelope=Math.sin(Math.PI*t)**2;
+        const delta=track.name==='Head.quaternion'?new THREE.Euler(.10*envelope,0,.075*envelope):new THREE.Euler(0,0,.13*envelope*Math.sin(t*Math.PI*4));
+        new THREE.Quaternion().fromArray(track.values,i*4).multiply(new THREE.Quaternion().setFromEuler(delta)).toArray(track.values,i*4);
+      }
+    }
+    greeting.duration=duration;return [...locomotion,greeting];
+  }
   return [...locomotion,poseClip('Idle_Neutral',4),poseClip('Wave',1.2,true)];
 }

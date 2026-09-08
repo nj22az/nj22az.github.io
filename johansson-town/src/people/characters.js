@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?yuri-playful-2';
+import {createLocalCharacters,preloadModels} from './models.js?yuri-rig-2';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 

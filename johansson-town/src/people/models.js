@@ -1,4 +1,4 @@
-import {prepareYuriAnimations} from './yuri-animation.js';
+import {prepareYuriAnimations} from './yuri-animation.js?yuri-rig-2';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -14,7 +14,7 @@ export function preloadModels({onProgress}={}){
   pending=Promise.allSettled(SOURCES.map(async id=>{
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),['kenji','yui','yuri-playful'].includes(id)?12000:2500);
     try{
-      const response=await fetch(assetURL(['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const response=await fetch(assetURL(['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
       const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);loaded.set(id,gltf);
