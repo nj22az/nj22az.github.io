@@ -1,3 +1,6 @@
+import {STORE_ITEMS} from './src/commerce/catalogue.js';
+import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
+import {createShopify} from './src/commerce/shopify.js';
 import {townAudio} from './src/audio/town-audio.js';
 import {DIALOGUE} from './src/people/schedules.js';
 import {JOURNAL} from './content-data.js';
@@ -6,6 +9,7 @@ import {SAVE_KEY,readSave} from './src/save.js';
 export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false};
+  const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
@@ -25,15 +29,16 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');previousFocus?.focus?.();}
+  function close(){modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');previousFocus?.focus?.();}
   function show(title,text,buttons=[]){
+    modalRevision++;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b);});
     modal.classList.remove('hidden');$('#closeActivity').focus();
   }
-  function addItem(item){if(['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
@@ -125,6 +130,18 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
     ]);
   }
   function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
+  async function realProduct(item){
+    show('Mail-order catalogue','Looking up the current price…',[['Close',close]]);const revision=modalRevision;
+    try{const product=await realShop.product(item.id);if(revision!==modalRevision)return;
+      if(!product||!product.availableForSale){receipt('Mail-order catalogue','This item is not available to order.');return;}
+      const price=new Intl.NumberFormat(undefined,{style:'currency',currency:product.price.currencyCode}).format(Number(product.price.amount));
+      show(product.title,`Real-world order · ${price}\nThis uses real money through Shopify. Town yen cannot pay for it. Delivery and taxes are shown at checkout.`,[['Prepare Shopify checkout',async()=>{
+        show('Preparing checkout','Please wait…',[['Cancel',close]]);const checkoutRevision=modalRevision;
+        try{const url=await realShop.checkout(product.id);if(checkoutRevision!==modalRevision)return;show('Shopify checkout',`Real-world purchase · ${price}. Review the total and delivery details on Shopify.`,[['Return to town',close]]);const link=document.createElement('a');link.textContent='Continue to Shopify checkout';link.href=url;link.target='_blank';link.rel='noopener noreferrer';body.append(link);}catch(error){if(checkoutRevision===modalRevision)receipt('Mail-order catalogue',error.message);}
+      }],['Back',close]]);
+    }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
+  }
+  function storeItem(item){if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till is closed. Yui returns at 09:00.');return;}show(item.jp+' · '+item.name,item.text,[[`Buy in town · ¥${item.cost}`,()=>{if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till has closed for the evening.');return;}if(state.inventory.length>=100){receipt('Your bag is full','Make room before buying another item.');return;}if(!spend(item.cost))return;addItem(item.name);if(['Green tea','Canned coffee'].includes(item.name))onPurchase(item.name);receipt('Thank you',item.name+' is in your bag.');}],...(realShop.enabled&&SHOPIFY_CONFIG.products[item.id]?[['View real-world product',()=>realProduct(item)]]:[]),['Put it back',close]]);}
   function buy(name,detail){
     const spec=detail&&typeof detail==='object'?detail:{};const cost=Number.isFinite(spec.cost)?Math.max(0,Math.round(spec.cost)):100,item=typeof spec.item==='string'?spec.item:name,text=typeof spec.text==='string'?spec.text:`${name} is ready to purchase.`;
     show(name,text,[[`Buy · ¥${cost}`,()=>{if(!spend(cost))return;addItem(item);tone(700,.12);receipt(name,`${item} has been added to your bag.`);}],['Leave',close]]);
@@ -143,6 +160,8 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
+      case 'store-item':storeItem(detail);break;
+      case 'store-catalogue':show('Yui’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Yui is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'vending':vending();break;
       case 'resident':resident(name);break;
       case 'cat':cat();break;
@@ -169,7 +188,7 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#cameraButton').onclick=onCamera;
-  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji: Blender-authored MakeHuman / MPFB anatomical body, skin, hair and clothes · CC0. Original scripted animations.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji and Yui: Blender-authored MakeHuman / MPFB anatomical body, skin, hair and clothes · CC0. Original scripted animations.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';

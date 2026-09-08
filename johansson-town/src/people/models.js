@@ -5,24 +5,25 @@ import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 
-const SOURCES=['worker','suit','casual_2','female_casual','female_formal','kenji'];
+const SOURCES=['worker','suit','casual_2','female_casual','female_formal','kenji','yui'];
 const loaded=new Map();let pending=null;
 export function preloadModels({onProgress}={}){
   if(pending)return pending;
   const loader=new GLTFLoader();let complete=0;
   pending=Promise.allSettled(SOURCES.map(async id=>{
-    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),id==='kenji'?6000:2500);
+    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),['kenji','yui'].includes(id)?6000:2500);
     try{
-      const response=await fetch(assetURL(id==='kenji'?'characters/realistic/kenji.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const response=await fetch(assetURL(['kenji','yui'].includes(id)?'characters/realistic/'+id+'.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&id!=='kenji'){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});loaded.set(id,gltf);
+      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!['kenji','yui'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
   })).then(()=>({ready:loaded.size,total:SOURCES.length}));
   return pending;
 }
 function sourceFor(name,profile){
+  if(name==='Yui')return loaded.has('yui')?'yui':'female_casual';
   if(name==='Kenji'&&loaded.has('kenji'))return 'kenji';
   if(name==='player'||name==='Johansson')return 'suit';
   if(profile?.female)return profile.age>=50?'female_formal':'female_casual';
@@ -37,9 +38,9 @@ export function createLocalCharacters({shadows=false}={}){
     const model=clone(asset.scene),bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const scale=(height||profile?.height||1.75)/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(source!=='kenji')dressCharacter(o,profile?.top);}});
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!['kenji','yui'].includes(source))dressCharacter(o,profile?.top);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualSource=source==='kenji'?'Blender / MakeHuman · Kenji':'Quaternius / '+source;
+    entity.add(model);entity.userData.visualSource=['kenji','yui'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     const actor={entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0};
     byEntity.set(entity,actor);actors.push(actor);return actor;

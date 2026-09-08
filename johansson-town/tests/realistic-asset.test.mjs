@@ -16,3 +16,10 @@ test('Blender resident has embedded textures, bounded geometry and portable anim
  assert.deepEqual(gltf.animations.map(a=>a.name).sort(),['Idle','Idle_Neutral','Interact','Run','Walk','Wave']);
  assert.ok(gltf.materials.every(m=>m.pbrMetallicRoughness?.baseColorTexture),'All visible parts keep authored textures');
 });
+
+test('Yui accessories remain bound to the animated skeleton',async()=>{
+ const bytes=await readFile(new URL('../assets/characters/realistic/yui.glb',import.meta.url));
+ const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
+ for(const node of gltf.nodes.filter(n=>n.mesh!==undefined))assert.ok(Number.isInteger(node.skin),'Unbound visible part: '+node.name);
+ assert.ok(bytes.length<7_000_000);for(const image of gltf.images)assert.ok(Number.isInteger(image.bufferView));
+});

@@ -64,3 +64,7 @@ Added crease-aware shading normal smoothing (positions, topology, skin weights a
 ## Blender character milestone
 
 Kenji now uses a locally embedded, textured MakeHuman/MPFB body authored in Blender, with six skinned parts and original idle/walk/run/wave actions. The source remains editable; see `art/characters/kenji/`. Other identities retain the interim Quaternius bases. CPU render reviews cover the actual reduced mesh; browser GPU appearance, motion polish and device frame budgets remain unverified.
+
+## Sakura Shōten milestone
+
+Yui is a second Blender-authored adult identity, working inside the market from 09:00 to 20:00. Eight goods can be inspected and bought using saved town yen; the cooler and till drawer move physically. Shopify product and cart operations pass the supplied Storefront schema validator, but remain disabled and unconnected pending an approved real product mapping. No real orders, payments or store mutations were made. See `docs/SAKURA_STORE.md`.

@@ -47,3 +47,5 @@ The latest draft improves character normal seams without adding triangles, appli
 This is still **not a finished Shenmue/Yakuza-like slice**: the character faces, silhouettes, clothing and room layouts remain interim, and the street requires a rendered visual review. See `docs/ART_DIRECTION.md` and the measured limits in `docs/art-pass-measurements.json`.
 
 Kenji’s editable Blender source, actual model renders and reproducible export instructions are in `art/characters/kenji/README.md`. This establishes the anatomical character pipeline; it does not make the rest of the cast or city finished.
+
+Sakura Shōten now has Yui, an adult Blender-authored clerk, eight selectable goods, a hinged cooler, till, radio and service bell. A disabled Shopify Storefront adapter supports future approved product mappings and explicit real-money checkout. See `docs/SAKURA_STORE.md`. No live Shopify store or payment flow has been activated.

@@ -1,0 +1,151 @@
+{
+  "triangles": 20986,
+  "meshes": [
+    {
+      "name": "Yui.Body",
+      "vertices": 4830,
+      "triangles": 9468
+    },
+    {
+      "name": "Yui.Collar",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.Collar.001",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.CreamBeret",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.eyebrow001",
+      "vertices": 124,
+      "triangles": 192
+    },
+    {
+      "name": "Yui.female_elegantsuit01",
+      "vertices": 824,
+      "triangles": 1467
+    },
+    {
+      "name": "Yui.GlassesBridge",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.GlassesRim",
+      "vertices": 264,
+      "triangles": 512
+    },
+    {
+      "name": "Yui.GlassesRim.001",
+      "vertices": 264,
+      "triangles": 512
+    },
+    {
+      "name": "Yui.long01",
+      "vertices": 1534,
+      "triangles": 1642
+    },
+    {
+      "name": "Yui.low-poly",
+      "vertices": 96,
+      "triangles": 172
+    },
+    {
+      "name": "Yui.RibbonKnot",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.RibbonLoop",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.RibbonLoop.001",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.RibbonTail",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.RibbonTail.001",
+      "vertices": 266,
+      "triangles": 528
+    },
+    {
+      "name": "Yui.shoes03",
+      "vertices": 1286,
+      "triangles": 2269
+    }
+  ],
+  "clips": [
+    "Idle",
+    "Idle_Neutral",
+    "Interact",
+    "Run",
+    "Walk",
+    "Wave"
+  ],
+  "textures": [
+    {
+      "name": "Town.brown_eye.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.eyebrow001.png",
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "Town.female_elegantsuit01_normal.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.long01_diffuse.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.shoes03_diffuse.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.young_lightskinned_female_diffuse3.png",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "Town.Yui.PinkCotton",
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "bytes": 3569016,
+  "heightMetres": 1.62
+}

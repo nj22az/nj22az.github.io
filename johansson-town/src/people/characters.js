@@ -98,5 +98,5 @@ export function createCharacters(options={}){
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }
 
-  return {attach,gesture,jump,update,physics:updateJump,actors,preloaded:()=>5,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {attach,gesture,jump,update,physics:updateJump,actors,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }
