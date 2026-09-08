@@ -6,7 +6,7 @@ import {DIALOGUE} from './src/people/schedules.js';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 
-export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
+export function createActivities({say,onConversation=()=>{},onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -29,14 +29,17 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');previousFocus?.focus?.();}
+  function close(){modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');document.body.classList.remove('conversation-open');onConversation(null);previousFocus?.focus?.();}
   function show(title,text,buttons=[]){
     modalRevision++;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b);});
-    modal.classList.remove('hidden');$('#closeActivity').focus();
+    const speaker=title.split('·')[0].trim();
+    const conversation=speaker==='Yuri'||!!DIALOGUE[speaker];
+    modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
+    modal.classList.remove('hidden');onConversation(conversation?speaker:null);$('#closeActivity').focus();
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
