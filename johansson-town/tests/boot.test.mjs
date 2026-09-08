@@ -97,6 +97,10 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.ok(shortcut,'Izakaya has a prominent menu shortcut');shortcut.onclick();
     assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Shortcut faces the usable entrance');
+    document.querySelector('#directoryButton').onclick();
+    const teaShortcut=document.querySelector('#directoryGrid').children.find(b=>b.dataset.id==='find-tea-house');
+    assert.ok(teaShortcut);teaShortcut.onclick();assert.equal(api.player.position.x,46);assert.equal(api.player.position.z,62.7);
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Corner Tea House/);
     const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();
     assert.equal(document.querySelector('#activityTitle').textContent,'Field book');

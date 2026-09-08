@@ -5,7 +5,8 @@ const assets=new Map();
 export async function preloadIzakaya(){
  const loader=new GLTFLoader();await Promise.allSettled(['exterior','interior'].map(async kind=>{
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
-  try{const response=await fetch(assetURL('models/izakaya/minato-'+kind+'.glb'),{signal:controller.signal});if(!response.ok)throw Error(response.status);assets.set(kind,(await loader.parseAsync(await response.arrayBuffer(),'')).scene);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
+  const file=kind==='exterior'?'minato-supplied-exterior.glb':'minato-interior.glb';
+  try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);assets.set(kind,(await loader.parseAsync(await response.arrayBuffer(),'')).scene);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
  }));return {ready:assets.size,total:2};
 }
 function asset(kind,parent){
@@ -15,18 +16,20 @@ function asset(kind,parent){
 export function buildIzakaya(world,options){
  const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:24,z:25,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–23:30',door:[24,0,20],opens:'16:00'};
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(24,0,25);exterior.rotation.y=Math.PI;world.group.add(exterior);
- if(!asset('exterior',exterior)){
+ const suppliedExterior=asset('exterior',exterior);
+ if(!suppliedExterior){
   const fallback=new THREE.Mesh(new THREE.BoxGeometry(8,4,8),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.y=2;exterior.add(fallback);
  }
  // Warm readable bilingual sign remains a runtime canvas so it does not require font textures in GLB.
  const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
- const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.68),new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3}));sign.position.set(0,3.35,4.3);exterior.add(sign);
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.68),new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3}));sign.position.set(0,3.35,4.3);sign.visible=!suppliedExterior;exterior.add(sign);
  const entrance=new THREE.Object3D();entrance.position.set(24,1.2,20);world.group.add(entrance);options.register(entrance,'Come into Minato Izakaya',()=>options.enter(site));
  const board=document.createElement('canvas');board.width=768;board.height=256;const pen=board.getContext('2d');pen.fillStyle='#a94435';pen.fillRect(0,0,768,256);pen.textAlign='center';pen.fillStyle='#fff0ce';pen.font='bold 64px sans-serif';pen.fillText('IZAKAYA →',384,102);pen.font='32px sans-serif';pen.fillText('MINATO · EAST LANE',384,158);pen.fillText('16:00–23:30',384,208);
  const boardTexture=new THREE.CanvasTexture(board);boardTexture.colorSpace=THREE.SRGBColorSpace;
  const wayfinder=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.94),new THREE.MeshBasicMaterial({map:boardTexture,side:THREE.DoubleSide}));wayfinder.position.set(6.6,2.15,18.5);world.group.add(wayfinder);
  const post=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.15,6),new THREE.MeshStandardMaterial({color:0x633d2a}));post.position.set(6.6,1.075,18.5);world.group.add(post);
- world.colliders.push({x:24,z:29,w:8,d:.3,height:5},{x:20,z:25,w:.3,d:8,height:5},{x:28,z:25,w:.3,d:8,height:5});
+ // The supplied building has a narrower footprint and an open central doorway.
+ world.colliders.push({x:24,z:27.8,w:5.6,d:.3,height:5.2},{x:21.3,z:24.3,w:.3,d:7,height:5.2},{x:26.7,z:24.3,w:.3,d:7,height:5.2},{x:22.3,z:20.9,w:2,d:.3,height:2.5},{x:25.7,z:20.9,w:2,d:.3,height:2.5});
  return site;
 }
 export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}){
