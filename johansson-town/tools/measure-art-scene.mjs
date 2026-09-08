@@ -20,6 +20,7 @@ globalThis.fetch=async path=>{
  if(!pathname.startsWith('/johansson-town/assets/'))throw new Error('Unexpected model URL: '+path);
  return new Response(await readFile(root+'/assets/'+pathname.split('/assets/')[1]));
 };
+const {preloadTeaHouse}=await import(url('src/world/tea-house.js'));if(!await preloadTeaHouse())throw Error('Missing tea house asset');
 const izakayaLoaded=await preloadIzakaya();if(izakayaLoaded.ready!==2)throw Error('Missing izakaya assets');
 const world=createTown({scene,sites,harbourBatching:!process.argv.includes('--legacy'),harbourCellSize:Number(process.argv.find(a=>a.startsWith('--cell='))?.split('=')[1]||48),mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>player.position});
 createContentItems({group:world.group,colliders:world.colliders,register(){},onInspect(){},onRead(){}});

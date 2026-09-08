@@ -1,3 +1,4 @@
+import {buildTeaHouse} from './tea-house.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,groundHeight,nearestOnSegment} from './layout.js';
 import {createMaterials} from '../render/materials.js';
@@ -47,7 +48,7 @@ export function buildDistricts(world,options){
   }
   building({id:'sento',x:-34,z:34,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
   box([1.15,17,1.15],[-37,8.5,30],'plaster',0x8d8b7a);
-  building({id:'home',x:46,z:57,w:9,d:6,h:6.7,jp:'潮見荘',title:'Shiomi Apartments',roof:0});
+  buildTeaHouse(world,options);
   building({id:'ramen',x:24,z:10,w:7,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
   building({id:'bus-hut',x:-26,z:43,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
   // River mouth, flood walls and an accessible timber jetty form the western loop.

@@ -5,6 +5,9 @@ dist/
 /art/characters/kenji/kenji-source.blend
 /art/characters/kenji/kenji-review.blend
 *.blend1
+/art/izakaya/supplied/exterior-uncompressed.glb
 
 /art/characters/yui/yui-source.blend
 /art/characters/yui/yui-review.blend
+
+/art/tea-house/supplied/exterior-uncompressed.glb

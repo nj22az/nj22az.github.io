@@ -99,6 +99,19 @@ function addRoomProps(s){
   const warm=new THREE.PointLight(0xffcf91,highTier?2.0:1.35,14,2);warm.position.set(0,3.45,-.5);warm.castShadow=false;room.add(warm);
   box([12.4,.12,12.4],[0,4.25,0],s.id==='market'?0xf2eedf:0x6f7168,room,false);box([12.1,.035,12.1],[0,.04,0],s.id==='market'?0xe0ded2:0x706b5e,room,false);for(const x of [-5.7,5.7])box([.08,3.7,12],[x,2.1,0],0x4b4339,room,false);
 
+  if(s.id==='tea-house'){
+    wallPanel('一服どうぞ','TAKE YOUR TIME',[2.8,2.8,-6.25],3.1,.85,s.accent);
+    addCounter(-2.5,-3.6,4.5,'Tea counter','Roasted hojicha, a pot of sencha and a handwritten recipe for dorayaki.');
+    addShelf(-4.7,-1.9,'Tea tins','Green tins hold sencha; the brown tin smells gently of roasted leaves.');
+    for(const [x,z] of [[-2.8,1.1],[2.9,-1.5]]){
+      furnitureBox([1.7,.12,1.5],[x,.72,z],0xa78059,'Pause over tea','A quiet table','The cups are warm. Beyond the curtains, footsteps pass along the lane.','inspect');roomCollider(x,z,1.8,1.6);
+      for(const dx of [-1.3,1.3])addChair(x+dx,z,'Tea house chair','A cushioned seat beside the little tea table.');
+      for(const dx of [-.45,.45]){box([.2,.18,.2],[x+dx,.88,z],0xe7eedc,room,false);box([.32,.025,.32],[x+dx,.795,z],0x719987,room,false);}
+      box([.42,.035,.42],[x,.81,z+.38],0xeee0b7,room,false);
+    }
+    addCabinet(4.6,-4.3,'Cupboard of cups','No two cups quite match. The chipped blue one is the owner’s favourite.');
+    addLamp(2.8,-3.2);return;
+  }
   if(s.id==='ramen'){
     wallPanel('中華そば 佐藤','RAMEN · ¥300',[0,2.65,-6.25],4,.8,s.accent);
     addCounter(0,-1.8,7.5,'Ramen counter','Worn lacquer, a tin of chopsticks and a small bottle of pepper.');
@@ -162,6 +175,8 @@ function updateDirectory(){
  const grid=$('#directoryGrid');grid.replaceChildren();
  const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
+ const teaHouse=SITES.find(s=>s.id==='tea-house');
+ if(teaHouse)row('🍵 Visit Corner Tea House','Residential lane · Open 09:00–19:00',()=>visitPlace(teaHouse),'find-tea-house');
  const izakaya=SITES.find(s=>s.id==='izakaya');
  if(izakaya){row('🏮 Visit Minato Izakaya','East lane · Food & gossip · Open 16:00–23:30',()=>visitPlace(izakaya),'find-izakaya');grid.lastChild.className+=' izakaya-shortcut';}
  section('Street');SITES.forEach(s=>row(s.title,s.sub,()=>visitPlace(s),s.id));
