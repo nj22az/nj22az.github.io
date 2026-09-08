@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {preloadModels,createLocalCharacters} from '../src/people/models.js';
 import {installDOM} from './fixtures.mjs';
 
-test('seven local skinned bodies parse, animate and clone independently',async()=>{
+test('local rigged residents and posed Meshy Yuri load safely',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async url=>{
@@ -15,12 +15,12 @@ test('seven local skinned bodies parse, animate and clone independently',async()
   return new Response(await readFile(new URL('../assets/characters/'+name,import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:7,total:7});
+  assert.deepEqual(await preloadModels(),{ready:8,total:8});
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   for(const name of ['Johansson','Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
-   const actor=models.attach(entity,name);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yui'||name==='Yuri')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
+   const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yuri'){assert.equal(skins,0);assert.equal(actor.actions.size,0);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);continue;}if(name==='Yui')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
   }
   for(let tick=0;tick<60;tick++){actors[2].entity.position.z-=.02;models.update(1/60);scene.updateMatrixWorld(true);}

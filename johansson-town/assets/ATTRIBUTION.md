@@ -30,3 +30,7 @@ The older Kenney Mini Character archive remains on disk under its included CC0 l
 Kenji: `characters/realistic/kenji.glb` is authored in Blender using MPFB/MakeHuman anatomical data and the MakeHuman CC0 system asset pack (skin, casualsuit01, shoes01, short01, low-poly eyes, eyebrow001). Exact file hashes, holders, source links and full CC0 text are in `characters/realistic/`. The editable packed `.blend`, scripts and actual CPU render previews are included under `art/characters/kenji/` and `tools/blender/`. MPFB add-on code is an authoring dependency and is not bundled.
 
 Yui: `characters/realistic/yui.glb` uses the MakeHuman CC0 anatomical base, young Asian female skin, female_elegantsuit01, shoes03, long01 hair, low-poly eyes and eyebrow001. Pink textile adaptation, A-line skirt shape, cream collar, glasses, hat and ribbon geometry were authored in Blender. Source hashes and rights holders: `characters/realistic/yui-provenance.json`; full CC0 text is shared with Kenji. User reference photographs are not redistributed.
+
+## Yuri — user-supplied Meshy design
+
+`characters/realistic/yuri-meshy.glb` is the user's uploaded `Meshy_AI_Garden_Charm_0908113531_texture.glb`, included at their explicit request. It embeds three 2048px JPEG textures and contains 14,235 triangles. It is an unrigged posed mesh with no animation clips. It is **not represented as CC0**; the original author/account retains their applicable rights. The previous MakeHuman Yuri remains the local loading fallback.
