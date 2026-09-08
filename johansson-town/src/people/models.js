@@ -1,4 +1,4 @@
-import {prepareProtagonistAnimations} from './protagonist-animation.js';
+import {prepareProtagonistAnimations} from './protagonist-animation.js?swagger-1';
 import {prepareYuriAnimations} from './yuri-animation.js?yuri-greeting-1';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -65,7 +65,7 @@ export function createLocalCharacters({shadows=false}={}){
       const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
-      const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/1.25,.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
+      const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/(actor.isPlayer?2.3:1.25),.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
       mixer.update(dt);
     }
   }
