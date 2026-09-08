@@ -1,11 +1,11 @@
-import {createLocalCharacters,preloadModels} from './models.js?gaze-1';
+import {createLocalCharacters,preloadModels} from './models.js?fpv-1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
 // Locally vendored skinned bodies use their own compatible clips. Procedural rigs
 // preserve interaction and collision when an asset cannot load.
 const CAST=Object.freeze({
-  player:{source:'local-authored',height:1.82,identity:'Johansson'},
+  player:{source:'first-person-controller',height:1.82,identity:'Johansson'},
   Aiko:{source:'local-authored',height:1.59,identity:'Aiko'},
   Kenji:{source:'local-authored',height:1.76,identity:'Kenji'},
   'Mrs Sato':{source:'local-authored',height:1.55,identity:'Mrs Sato'},
@@ -21,10 +21,14 @@ export function createCharacters(options={}){
   function attach(entity,file,height){
     const isPlayer=file==='player'||!entity.userData.name;
     const targetHeight=height||(isPlayer?CAST.player.height:CAST[entity.userData.name]?.height);
-    const actor=models.attach(entity,file,targetHeight)||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
     const identity=isPlayer?'Johansson':entity.userData.name;
     if(identity)entities.set(identity,entity);
-    if(isPlayer){playerEntity=entity;playerActor=actor;groundY=entity.position.y;}
+    if(isPlayer){
+      playerEntity=entity;playerActor=null;groundY=entity.position.y;entity.visible=false;
+      entity.userData.visualSource='First-person controller';
+      return null;
+    }
+    const actor=models.attach(entity,file,targetHeight)||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
     return actor;
   }
 

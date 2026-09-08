@@ -29,7 +29,7 @@ function activityOpen(){return visible(document.querySelector('#activity'));}
 function directoryOpen(){return visible(document.querySelector('#directory'));}
 
 function dispatchKey(code,type='keydown'){
-  const keyMap={KeyW:'w',KeyA:'a',KeyS:'s',KeyD:'d',ShiftLeft:'Shift',Space:' ',KeyE:'e',KeyQ:'q',KeyB:'b',KeyV:'v',KeyN:'n'};
+  const keyMap={KeyW:'w',KeyA:'a',KeyS:'s',KeyD:'d',ShiftLeft:'Shift',Space:' ',KeyE:'e',KeyQ:'q',KeyB:'b',KeyN:'n'};
   const event=new KeyboardEvent(type,{code,key:keyMap[code]||'',bubbles:true,cancelable:true,repeat:false});
   document.dispatchEvent(event);
 }
@@ -153,7 +153,7 @@ async function chooseAction({label,index}={}){
 async function ui({control}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
   const map={
-    notebook:'#notebookButton',camera:'#cameraButton',time:'#timeButton',weather:'#weatherButton',sound:'#soundButton',directory:'#directoryButton',close_activity:'#closeActivity',close_directory:'#closeDirectory'
+    notebook:'#notebookButton',time:'#timeButton',weather:'#weatherButton',sound:'#soundButton',directory:'#directoryButton',close_activity:'#closeActivity',close_directory:'#closeDirectory'
   };
   const selector=map[control];
   if(!selector)return result(false,{error:'Unknown control.',controls:Object.keys(map)});
@@ -220,8 +220,8 @@ const tools=[
   },
   {
     name:TOOL_PREFIX+'ui',
-    description:'Operate a Johansson Town HUD control: notebook, camera, time, weather, sound, directory, close_activity, or close_directory.',
-    inputSchema:{type:'object',properties:{control:{type:'string',enum:['notebook','camera','time','weather','sound','directory','close_activity','close_directory']}},required:['control'],additionalProperties:false},
+    description:'Operate a Johansson Town HUD control: notebook, time, weather, sound, directory, close_activity, or close_directory.',
+    inputSchema:{type:'object',properties:{control:{type:'string',enum:['notebook','time','weather','sound','directory','close_activity','close_directory']}},required:['control'],additionalProperties:false},
     annotations:{readOnlyHint:false,untrustedContentHint:false},
     execute:ui
   }

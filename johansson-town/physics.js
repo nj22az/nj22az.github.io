@@ -27,7 +27,7 @@ export function townBoundsBlocked(x,z,r=0){
 }
 
 // Sweep from start to end and return the last safe interpolation fraction.
-// This prevents a third-person camera from tunnelling through thin props/walls.
+// This prevents a swept observer or object from tunnelling through thin props/walls.
 export function sweepFraction(start,end,isBlocked,step=.14){
   const dx=end.x-start.x,dz=end.z-start.z,dist=Math.hypot(dx,dz);
   const count=Math.max(1,Math.ceil(dist/Math.max(.04,step)));
