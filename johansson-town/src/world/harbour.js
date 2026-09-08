@@ -1,3 +1,5 @@
+import {addHorizon} from './horizon.js';
+import {buildStorefront} from './storefront.js';
 import {MERCHANT_FRONTAGES,merchantRoofGeometry} from './merchant-roofs.js';
 import {assetURL} from '../assets.js';
 import {createMaterials} from '../render/materials.js';
@@ -96,6 +98,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),markingMaterials.get(c));m.rotation.x=-Math.PI/2;m.position.set(x,-.046,z);m.renderOrder=1;group.add(m);return m;
   }
 
+  addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   box([150,.5,190],[0,-.65,0],0x606b61);
   box([15,.2,112],[0,-.16,0],0xb8b8af,[0,0,0],'road');
@@ -111,6 +114,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(s.id==='market'){buildStorefront({parent:group,site:s,register,enter,label});return;}
     const style=MERCHANT_FRONTAGES[i%MERCHANT_FRONTAGES.length],side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=style.height;
     box([8.2,height,10],[x,height/2,z],style.wall,[0,0,0],'wall');
     box([.25,2.7,10.15],[side*7.65,1.4,z],s.color,[0,0,0],'wood');

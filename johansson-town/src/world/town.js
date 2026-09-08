@@ -82,6 +82,7 @@ function addSiteFrontage(world,options,factory,lights){
   const group=world.group,colliders=world.colliders;let interactions=0;
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   (options.sites||[]).forEach((s,i)=>{
+    if(s.id==='market')return;
     const side=s.side,x=side*6.88,z=s.z+2.55,frontRot=side<0?Math.PI/2:-Math.PI/2;
     factory.box(group,[.72,.025,1.2],[x,.15,z],0x5e5549,'timber',false);
     const awn=addWithCollider(group,colliders,factory.awning(side*6.95,s.z+1.2,frontRot,i%3===0?0x65766f:i%3===1?0x7b5e54:0x596b73));

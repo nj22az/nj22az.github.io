@@ -23,7 +23,7 @@ export function preloadModels({onProgress}={}){
   return pending;
 }
 function sourceFor(name,profile){
-  if(name==='Yui')return loaded.has('yui')?'yui':'female_casual';
+  if(name==='Yui'||name==='Yuri')return loaded.has('yui')?'yui':'female_casual';
   if(name==='Kenji'&&loaded.has('kenji'))return 'kenji';
   if(name==='player'||name==='Johansson')return 'suit';
   if(profile?.female)return profile.age>=50?'female_formal':'female_casual';

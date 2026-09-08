@@ -96,12 +96,110 @@
     "Pink cotton texture authored from CC0 garment; A-line skirt reshaping",
     "Original cream collar, glasses, hat and pink ribbons fitted and weighted in Blender",
     "Six original scripted skeletal clips",
-    "Locally embedded textures and reduced meshes; no reference photos distributed"
+    "Locally embedded textures and reduced meshes; no reference photos distributed",
+    "Facial proportions and restrained smile expression",
+    "Near-black textured hair; fitted brimmed hat with covered scalp",
+    "Smaller glasses, sewn collar and cloth tie"
   ],
   "source": "art/characters/yui/yui.blend",
   "scripts": [
     "tools/blender/build-yui.py",
     "tools/blender/export-yui.py"
   ],
-  "age": 26
+  "age": 26,
+  "displayName": "Yuri",
+  "faceTargets": {
+    "nose/nose-scale-depth-decr": 0.4,
+    "chin/chin-height-decr": 0.35,
+    "chin/chin-bones-decr": 0.22,
+    "mouth/mouth-upperlip-volume-decr": 0.48,
+    "mouth/mouth-lowerlip-volume-decr": 0.4,
+    "mouth/mouth-upperlip-ext-up": 0.65,
+    "mouth/mouth-lowerlip-ext-up": 0.55,
+    "cheek/l-cheek-volume-incr": 0.22,
+    "cheek/r-cheek-volume-incr": 0.22,
+    "eyes/l-eye-scale-decr": 0.08,
+    "eyes/r-eye-scale-decr": 0.08,
+    "expression/units/asian/mouth-corner-puller": 0.38,
+    "expression/units/asian/mouth-upward-retraction": 0.12,
+    "expression/units/asian/eye-left-slit": 0.07,
+    "expression/units/asian/eye-right-slit": 0.07
+  },
+  "targetFiles": [
+    {
+      "path": "nose/nose-scale-depth-decr.target.gz",
+      "weight": 0.4,
+      "sha256": "0842aa0f4265fef85b6e708cdd0b0665e9a951c08a1c768dc285206f0ae4c7ad"
+    },
+    {
+      "path": "chin/chin-height-decr.target.gz",
+      "weight": 0.35,
+      "sha256": "1f4196d330b418d576e9400a754cb99d7e60b069ee8fdef645713f84db984e0c"
+    },
+    {
+      "path": "chin/chin-bones-decr.target.gz",
+      "weight": 0.22,
+      "sha256": "88613903c211706f31de1868318bfb88d51bd23791a11e1a4488266a88083396"
+    },
+    {
+      "path": "mouth/mouth-upperlip-volume-decr.target.gz",
+      "weight": 0.48,
+      "sha256": "b2f940f8187112ee233ddfcdfb4a025fa01ee878b17dc44c64971c96583e7caf"
+    },
+    {
+      "path": "mouth/mouth-lowerlip-volume-decr.target.gz",
+      "weight": 0.4,
+      "sha256": "01d4f0c2889b43d3b97e4c7c6179d1217214a7caa0073db36d09b2b4b6edcf18"
+    },
+    {
+      "path": "mouth/mouth-upperlip-ext-up.target.gz",
+      "weight": 0.65,
+      "sha256": "33f822cdf57e6bc63f36d592011b2a70386e90898ec412eb3808f93f69868ad1"
+    },
+    {
+      "path": "mouth/mouth-lowerlip-ext-up.target.gz",
+      "weight": 0.55,
+      "sha256": "d43f4bd02628f543ce880af9c1166671cd580cad3be42e6cfa826d528570d111"
+    },
+    {
+      "path": "cheek/l-cheek-volume-incr.target.gz",
+      "weight": 0.22,
+      "sha256": "75bf330b96d0036c46f779ed003782c7380c77dd06c14fd80f1fa20a5093fee1"
+    },
+    {
+      "path": "cheek/r-cheek-volume-incr.target.gz",
+      "weight": 0.22,
+      "sha256": "4df3e61e843c2d3381ef534e90d347b6b8ea763428d69eba8ef2ed5ab0affb8c"
+    },
+    {
+      "path": "eyes/l-eye-scale-decr.target.gz",
+      "weight": 0.08,
+      "sha256": "ef7be84caabecc9c0e4d937b68b4438ce3719f4a197a7ec3298f67faea7c5dbc"
+    },
+    {
+      "path": "eyes/r-eye-scale-decr.target.gz",
+      "weight": 0.08,
+      "sha256": "2ea82bce144a084c7c86c3e2b6b23b0c3f45293f6762fec4afba53e5c3684675"
+    },
+    {
+      "path": "expression/units/asian/mouth-corner-puller.target.gz",
+      "weight": 0.38,
+      "sha256": "d881bb8feda2637bdaef2c7d7c6bed12f0be5914949e5a2cb9b06a583af412c0"
+    },
+    {
+      "path": "expression/units/asian/mouth-upward-retraction.target.gz",
+      "weight": 0.12,
+      "sha256": "e341e45bbc1602469d048bc2897973315355e4d833202fc040282163a945e49f"
+    },
+    {
+      "path": "expression/units/asian/eye-left-slit.target.gz",
+      "weight": 0.07,
+      "sha256": "fd52d7390efc03d5d8d1d1b94e0e56d157950038adfa783242658394e49314f8"
+    },
+    {
+      "path": "expression/units/asian/eye-right-slit.target.gz",
+      "weight": 0.07,
+      "sha256": "24be25615e6d6069939911ff975ed7410330b277291a5819231f2f4a458a5e3f"
+    }
+  ]
 }

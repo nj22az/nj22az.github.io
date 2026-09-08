@@ -13,8 +13,13 @@ repo=next(r for r in bpy.context.preferences.extensions.repos if r.directory==re
 HumanService=importlib.import_module(module+'.services.humanservice').HumanService
 TargetService=importlib.import_module(module+'.services.targetservice').TargetService
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-macro={'age':.28,'gender':0.,'height':.5,'muscle':.30,'weight':.42,'proportions':.52,'cupsize':.5,'firmness':.5,'race':{'asian':1.,'caucasian':0.,'african':0.}}
+macro={'age':.28,'gender':0.,'height':.5,'muscle':.30,'weight':.50,'proportions':.45,'cupsize':.30,'firmness':.5,'race':{'asian':1.,'caucasian':0.,'african':0.}}
 base=HumanService.create_human(macro_detail_dict=macro);base.name='Yui.Body'
+# Subtle authored facial changes, fitted before the eyes, hair and rig.
+face_targets={'nose/nose-scale-depth-decr':.40,'chin/chin-height-decr':.35,'chin/chin-bones-decr':.22,'mouth/mouth-upperlip-volume-decr':.48,'mouth/mouth-lowerlip-volume-decr':.40,'mouth/mouth-upperlip-ext-up':.65,'mouth/mouth-lowerlip-ext-up':.55,'cheek/l-cheek-volume-incr':.22,'cheek/r-cheek-volume-incr':.22,'eyes/l-eye-scale-decr':.08,'eyes/r-eye-scale-decr':.08}
+face_targets.update({'expression/units/asian/mouth-corner-puller':.38,'expression/units/asian/mouth-upward-retraction':.12,'expression/units/asian/eye-left-slit':.07,'expression/units/asian/eye-right-slit':.07})
+for fragment,weight in face_targets.items():
+ TargetService.load_target(base,str(Path(args.mpfb)/'data/targets'/(fragment+'.target.gz')),weight=weight)
 rig=HumanService.add_builtin_rig(base,'game_engine');rig.name='Yui.Rig'
 print('RIG',[(b.name,tuple(b.head_local),tuple(b.tail_local)) for b in rig.data.bones],flush=True)
 
@@ -65,9 +70,16 @@ for node in cloth.active_material.node_tree.nodes:
   import array
   pixels=array.array('f',[0])*(1024*1024*4);image.pixels.foreach_get(pixels)
   for i in range(0,len(pixels),4):
-   light=.64+.36*(pixels[i]+pixels[i+1]+pixels[i+2])/3
-   pixels[i]=light*.88;pixels[i+1]=light*.46;pixels[i+2]=light*.59
+   light=.86+.14*(pixels[i]+pixels[i+1]+pixels[i+2])/3
+   pixels[i]=light*.78;pixels[i+1]=light*.43;pixels[i+2]=light*.51
   fresh=bpy.data.images.new('Yui.PinkCotton',width=1024,height=1024);fresh.pixels.foreach_set(pixels);fresh.pack();node.image=fresh
+hairObj=next(o for o in meshes if 'long01' in o.name)
+for node in hairObj.active_material.node_tree.nodes:
+ if node.type=='TEX_IMAGE' and node.image.colorspace_settings.name=='sRGB':
+  old=node.image;_=old.pixels[0];old.scale(1024,1024);pixels=array.array('f',[0])*(1024*1024*4);old.pixels.foreach_get(pixels)
+  for i in range(0,len(pixels),4):
+   value=(pixels[i]+pixels[i+1]+pixels[i+2])/3;pixels[i]=value*.20;pixels[i+1]=value*.17;pixels[i+2]=value*.16
+  fresh=bpy.data.images.new('Yui.long01.black',width=1024,height=1024,alpha=True);fresh.pixels.foreach_set(pixels);fresh.pack();node.image=fresh
 # Ease the skirt into an A-line; retain its original skin weights.
 for v in cloth.data.vertices:
  if .38<v.co.z<.78:
@@ -84,23 +96,47 @@ def bind(obj,name,material,bone):
 def ellipsoid(name,location,scale,material,bone):
  bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,location=location);o=bpy.context.object;o.scale=scale;bpy.ops.object.transform_apply(location=False,rotation=False,scale=True);return bind(o,name,material,bone)
 head=rig.data.bones['head'];neck=rig.data.bones['neck_01'].head_local
+# Fit sewn cloth to the actual chest surface.
+def surfaceY(x,z):
+ candidates=sorted((v.co for v in base.data.vertices if v.co.y<0),key=lambda v:(v.x-x)**2+(v.z-z)**2)[:6]
+ return min(v.y for v in candidates)-.012
+# Flat sewn Peter Pan collar, not inflated spheres.
 for side in [-1,1]:
- o=ellipsoid('Collar', (side*.043,neck.y-.070,neck.z-.037),(.038,.009,.037),cream,'spine_03');o.rotation_euler.y=side*.32
+ outline=[(0,0),(.027,.004)]+[(.032+.022*math.cos(t),-.018+.027*math.sin(t)) for t in [1.25,.95,.65,.35,0,-.35,-.7,-1.05,-1.4,-1.75,-2.1,-2.45]]+[(.012,-.022)]
+ verts=[(side*x,surfaceY(side*x,neck.z+z-.007),neck.z+z-.007) for x,z in outline]
+ data=bpy.data.meshes.new('SewnCollar');data.from_pydata(verts,[],[(0,i+1,i) if side<0 else (0,i,i+1) for i in range(1,len(verts)-1)]);data.update();o=bpy.data.objects.new('Collar',data);bpy.context.scene.collection.objects.link(o);bind(o,'Collar',cream,'spine_03')
+ solid=o.modifiers.new('Cloth thickness','SOLIDIFY');solid.thickness=.0015
+ bpy.context.view_layer.objects.active=o;bpy.ops.object.modifier_apply(modifier=solid.name)
+# A small cloth tie covers the blouse opening.
+verts=[(-.012,neck.y-.080,neck.z-.026),(.012,neck.y-.080,neck.z-.026),(.018,neck.y-.072,neck.z-.125),(0,neck.y-.072,neck.z-.147),(-.018,neck.y-.072,neck.z-.125)]
+verts=[(x,surfaceY(x,z)-.003,z) for x,y,z in verts]
+data=bpy.data.meshes.new('CottonTie');data.from_pydata(verts,[],[(0,1,2,3,4)]);o=bpy.data.objects.new('Tie',data);bpy.context.scene.collection.objects.link(o);bind(o,'CollarTie',pink,'spine_03')
 # Fit the glasses to the exported eyes rather than a guessed face position.
 eyes=next(o for o in meshes if 'low-poly' in o.name);points=[eyes.matrix_world@v.co for v in eyes.data.vertices];eyeZ=(min(v.z for v in points)+max(v.z for v in points))/2;eyeY=min(v.y for v in points)-.010
 for side in [-1,1]:
- verts=[(side*.035+.030*math.cos(i*math.tau/32),eyeY,eyeZ+.019*math.sin(i*math.tau/32)) for i in range(33)]
- curve=bpy.data.curves.new('Glasses rim','CURVE');curve.dimensions='3D';curve.bevel_depth=.0015;curve.bevel_resolution=2;spline=curve.splines.new('POLY');spline.points.add(32)
+ verts=[(side*.035+.027*math.cos(i*math.tau/32),eyeY,eyeZ+.014*math.sin(i*math.tau/32)) for i in range(33)]
+ curve=bpy.data.curves.new('Glasses rim','CURVE');curve.dimensions='3D';curve.bevel_depth=.0009;curve.bevel_resolution=2;spline=curve.splines.new('POLY');spline.points.add(32)
  for point,co in zip(spline.points,verts):point.co=(*co,1)
  o=bpy.data.objects.new('Rim',curve);scene=bpy.context.scene;scene.collection.objects.link(o);bpy.ops.object.select_all(action='DESELECT');bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.convert(target='MESH');bind(bpy.context.object,'GlassesRim',metal,'head');bpy.ops.object.select_all(action='DESELECT')
 ellipsoid('GlassesBridge',(0,eyeY,eyeZ+.004),(.01,.0016,.0016),metal,'head')
-hair=next(o for o in meshes if 'long01' in o.name);hatZ=max((hair.matrix_world@v.co).z for v in hair.data.vertices)-.020
-ellipsoid('CreamBeret',(0,.005,hatZ),(.111,.103,.052),cream,'head')
+hair=next(o for o in meshes if 'long01' in o.name);hatZ=max((hair.matrix_world@v.co).z for v in hair.data.vertices)-.058
+# Keep the hidden scalp cards underneath the fitted hat brim.
+for covered in [hair,base]:
+ for vertex in covered.data.vertices:
+  if vertex.co.z>hatZ+.005:vertex.co.z=hatZ+.005
+# Brim and crown form one continuous hat mesh.
+verts=[];faces=[];profile=[(.125,-.020),(.105,-.017),(.098,.012),(.081,.038),(.040,.048),(.002,.048)]
+for r,dz in profile:
+ for n in range(48):
+  angle=n*math.tau/48;verts.append((r*math.cos(angle),.005+r*.93*math.sin(angle),hatZ+dz+.028))
+for row in range(len(profile)-1):
+ for n in range(48):faces.append((row*48+n,row*48+(n+1)%48,(row+1)*48+(n+1)%48,(row+1)*48+n))
+data=bpy.data.meshes.new('BrimmedHat');data.from_pydata(verts,[],faces);o=bpy.data.objects.new('Hat',data);bpy.context.scene.collection.objects.link(o);hatMat=cream.copy();hatMat.name='Yui.Straw';hatMat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.72,.61,.42,1);hatMat.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.92;bind(o,'CreamBeret',hatMat,'head')
 for side in [-1,1]:
- o=ellipsoid('RibbonLoop',(-.103+side*.021,-.020,hatZ-.025),(.032,.012,.018),pink,'head');o.rotation_euler.y=side*.45
+ o=ellipsoid('RibbonLoop',(-.103+side*.021,-.020,hatZ-.025),(.025,.004,.015),pink,'head');o.rotation_euler.y=side*.45
 ellipsoid('RibbonKnot',(-.103,-.033,hatZ-.026),(.012,.010,.013),pink,'head')
 for side in [-1,1]:
- o=ellipsoid('RibbonTail',(-.103+side*.012,-.005,hatZ-.090),(.011,.006,.055),pink,'head');o.rotation_euler.y=side*.17
+ o=ellipsoid('RibbonTail',(-.103+side*.012,-.005,hatZ-.090),(.010,.002,.045),pink,'head');o.rotation_euler.y=side*.17
 # Keep an editable, packed Blender source before decimation.
 source=root/'art/characters/yui';source.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(source/'yui-source.blend'),compress=True)
@@ -124,6 +160,6 @@ bpy.ops.object.camera_add(location=(2.2,-4.7,1.55));cam=bpy.context.object;cam.r
 scene.render.image_settings.file_format='PNG';scene.render.filepath=str(source/'yui-full.png');bpy.ops.render.render(write_still=True)
 cam.location=(.30,-2.7,1.68);cam.rotation_euler=(Vector((0,-.02,1.53))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=.72;scene.render.resolution_x=900;scene.render.resolution_y=1000;scene.render.filepath=str(source/'yui-face.png');bpy.ops.render.render(write_still=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(source/'yui-review.blend'),compress=True)
-report={'phenotype':macro,'meshes':[{'name':o.name,'vertices':len(o.data.vertices),'triangles':sum(len(p.vertices)-2 for p in o.data.polygons)} for o in meshes],'bones':[b.name for b in rig.data.bones]}
+report={'phenotype':macro,'faceTargets':face_targets,'meshes':[{'name':o.name,'vertices':len(o.data.vertices),'triangles':sum(len(p.vertices)-2 for p in o.data.polygons)} for o in meshes],'bones':[b.name for b in rig.data.bones]}
 (source/'construction.json').write_text(json.dumps(report,indent=2)+'\n')
 print('TOWN_CHARACTER_RENDERED',source,flush=True)

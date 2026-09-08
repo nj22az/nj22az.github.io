@@ -4,15 +4,32 @@
     "gender": 0.0,
     "height": 0.5,
     "muscle": 0.3,
-    "weight": 0.42,
-    "proportions": 0.52,
-    "cupsize": 0.5,
+    "weight": 0.5,
+    "proportions": 0.45,
+    "cupsize": 0.3,
     "firmness": 0.5,
     "race": {
       "asian": 1.0,
       "caucasian": 0.0,
       "african": 0.0
     }
+  },
+  "faceTargets": {
+    "nose/nose-scale-depth-decr": 0.4,
+    "chin/chin-height-decr": 0.35,
+    "chin/chin-bones-decr": 0.22,
+    "mouth/mouth-upperlip-volume-decr": 0.48,
+    "mouth/mouth-lowerlip-volume-decr": 0.4,
+    "mouth/mouth-upperlip-ext-up": 0.65,
+    "mouth/mouth-lowerlip-ext-up": 0.55,
+    "cheek/l-cheek-volume-incr": 0.22,
+    "cheek/r-cheek-volume-incr": 0.22,
+    "eyes/l-eye-scale-decr": 0.08,
+    "eyes/r-eye-scale-decr": 0.08,
+    "expression/units/asian/mouth-corner-puller": 0.38,
+    "expression/units/asian/mouth-upward-retraction": 0.12,
+    "expression/units/asian/eye-left-slit": 0.07,
+    "expression/units/asian/eye-right-slit": 0.07
   },
   "meshes": [
     {
@@ -47,13 +64,18 @@
     },
     {
       "name": "Yui.Collar",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 30,
+      "triangles": 56
     },
     {
       "name": "Yui.Collar.001",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 30,
+      "triangles": 56
+    },
+    {
+      "name": "Yui.CollarTie",
+      "vertices": 5,
+      "triangles": 3
     },
     {
       "name": "Yui.GlassesRim",
@@ -72,8 +94,8 @@
     },
     {
       "name": "Yui.CreamBeret",
-      "vertices": 266,
-      "triangles": 528
+      "vertices": 288,
+      "triangles": 480
     },
     {
       "name": "Yui.RibbonLoop",
