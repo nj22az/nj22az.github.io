@@ -66,7 +66,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     const api=await import(dataModule(source));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
@@ -99,6 +99,17 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       api.simulate(1/60);
       assertFiniteTransforms(api,'inside '+site.id);
       assert.equal(api.scene.fog,null,'No interior fog');
+      if(site.id==='market'){
+        const gesture=api.characters.gesture;let welcomes=0;
+        api.characters.gesture=entity=>{assert.equal(entity.userData.name,'Yuri');welcomes++;};
+        try{
+          api.interaction();assert.equal(welcomes,0,'No distant wave from the entrance');
+          api.player.position.set(3.35,0,-4.5);api.interaction();assert.equal(welcomes,0,'Do not wave behind the camera');
+          api.player.position.set(3.35,0,.7);api.interaction();assert.equal(welcomes,1,'Approaching the counter triggers a visible welcome');
+          api.interaction();api.interaction();assert.equal(welcomes,1,'Only one proximity welcome per visit');
+          assert.equal(api.activities.paused,false,'The greeting must not open a panel over Yuri');
+        }finally{api.characters.gesture=gesture;}
+      }
       api.leaveRoom();
       assert.equal(api.reviewCurrentRoom(),null,'Interior exit: '+site.id);
       assert.equal(api.reviewRoomState().townVisible,true);

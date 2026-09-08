@@ -8,11 +8,11 @@ import {routeAt,groundHeight} from './world/layout.js';
 import {drawTownMap} from './world/map.js';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js';
-import { createActivities } from '../activities.js?yuri-rig-2';
+import { createActivities } from '../activities.js?yuri-greeting-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?yuri-rig-2';
+import { createCharacters } from './people/characters.js?yuri-greeting-1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction } from '../physics.js';
 
 const $=s=>document.querySelector(s);
@@ -84,7 +84,7 @@ function addCounter(x,z,w,title,text){const g=new THREE.Group();g.position.set(x
 function addCrates(x,z,title='Delivery crates',text='Wooden crates are stacked with their labels facing the aisle.'){const g=new THREE.Group();g.position.set(x,0,z);room.add(g);box([1,.72,1],[0,.36,0],0x9a764e,g);box([.85,.58,.85],[.8,.29,.55],0x806447,g);roomCollider(x+.3,z+.2,1.8,1.5);roomHit(g,'Inspect crates','inspect',title,text);return g;}
 function addLamp(x,z){const stem=box([.08,1.45,.08],[x,.73,z],0x4b4f4a,room,false);const shade=mesh(new THREE.CylinderGeometry(.28,.42,.28,12),[x,1.55,z],0xb99a69,room,false);shade.rotation.x=Math.PI;roomHit(stem,'Switch lamp','inspect','Desk lamp','A compact late-1980s lamp with a warm tungsten bulb.');}
 
-let storeClerk=null;
+let storeClerk=null,storeWelcomed=false;
 function addRoomProps(s){
   const warm=new THREE.PointLight(0xffcf91,highTier?2.0:1.35,14,2);warm.position.set(0,3.45,-.5);warm.castShadow=false;room.add(warm);
   box([12.4,.12,12.4],[0,4.25,0],s.id==='market'?0xf2eedf:0x6f7168,room,false);box([12.1,.035,12.1],[0,.04,0],s.id==='market'?0xe0ded2:0x706b5e,room,false);for(const x of [-5.7,5.7])box([.08,3.7,12],[x,2.1,0],0x4b4339,room,false);
@@ -111,6 +111,7 @@ function addRoomProps(s){
   } else if(s.id==='electronics'){
     wallPanel('電子工作所','TEST BENCH',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.8,-1.85,'Electronics bench','Solder, test leads, small circuit boards and handwritten schematics cover the bench.');addScreen(-2.8,-1.9,'Development terminal','A green-on-black terminal is connected to a compact development board.');addMachine(2.55,-1.85,1.45,1.05,1.15,0x43575d,'Oscilloscope','The trace settles into a clean repeating waveform after a short test.');addCabinet(3.65,1.25,'Parts drawers','Resistors, capacitors, connectors and spare ICs are sorted into dozens of small drawers.');furnitureBox([1.0,.52,.55],[-3.7,.26,1.25],0x6e5843,'Tune workshop radio','Workshop radio','A small radio carries weather, baseball scores and harbour traffic reports.','machine');
   } else if(s.id==='market'){
+    storeWelcomed=false;
     if(!storeClerk){storeClerk=new THREE.Group();storeClerk.userData.name='Yuri';scene.add(storeClerk);characters.attach(storeClerk,'Yuri',1.88);}
     buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});
   } else if(s.id==='career'){
@@ -124,7 +125,15 @@ function roomShell(s){clearRoom();town.visible=false;room.visible=true;if(s.id==
 function enterRoom(s){seated=false;if(world.isOpen&&!world.isOpen(s,minutes)){say('準備中 · Closed. Opens at '+(s.opens||'09:00')+'.',4);return;}activities.close();activities.visit(s.id);current=s;roomShell(s);addRoomProps(s);player.position.set(0,0,4.3);yaw=0;active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(`${s.title} · E to examine nearby objects.`,2.5);camera.position.set(0,2.8,5.7)}
 function leaveRoom(){if(storeClerk)storeClerk.visible=false;seated=false;active=null;const s=current;current=null;room.visible=false;town.visible=true;if(s){player.position.copy(doors.get(s.id));player.position.z+=.6}$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
 
-function interaction(){if(storeClerk)storeClerk.visible=current?.id==='market'&&minutes%1440>=540&&minutes%1440<1200;active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));for(const o of interactables){const h=o.userData.hit;if(!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
+function welcomeAtCounter(forward){
+  if(storeWelcomed||!storeClerk?.visible||current?.id!=='market')return;
+  const towards=storeClerk.position.clone().sub(player.position);towards.y=0;
+  // Let the player see the greeting before the dialogue card covers the view.
+  // Once per visit, only when approaching and looking towards the counter.
+  if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
+  storeWelcomed=true;characters.gesture(storeClerk);
+}
+function interaction(){if(storeClerk)storeClerk.visible=current?.id==='market'&&minutes%1440>=540&&minutes%1440<1200;active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function doInteract(){if(seated){seated=false;say('You stand up.',2);return;}if(inspector?.active)return;if(!activities.paused&&$('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?roomBoundsBlocked(x,z,r):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function residentBlocked(x,z){return !current&&world.people.some(p=>p.g.visible&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}

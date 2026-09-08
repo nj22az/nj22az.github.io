@@ -1,4 +1,4 @@
-import {prepareYuriAnimations} from './yuri-animation.js?yuri-rig-2';
+import {prepareYuriAnimations} from './yuri-animation.js?yuri-greeting-1';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -44,7 +44,10 @@ export function createLocalCharacters({shadows=false}={}){
     for(const child of entity.children)child.visible=false;
     entity.add(model);entity.userData.visualSource=source==='yuri-playful'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-playful'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
-    const actor={entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0};
+    if(source==='yuri-playful'){
+      const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
+    }
+    const actor={entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful'};
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
@@ -62,5 +65,5 @@ export function createLocalCharacters({shadows=false}={}){
       mixer.update(dt);
     }
   }
-  return {attach,update,actors,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;actor.gestureTime=1.2;return true;}};
+  return {attach,update,actors,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.isYuri&&actor.gestureTime>0)return true;actor.gestureTime=actor.isYuri?(actor.actions.get('Wave')?.getClip().duration||1.2):1.2;return true;}};
 }
