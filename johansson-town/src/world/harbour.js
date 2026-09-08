@@ -161,7 +161,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       if(z<48){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
     }
     beam([side*6.7,5.7,z],[side*5.6,5.7,z],.06);box([.6,.12,.26],[side*5.5,5.65,z],0xdac08d);
-    if(shadows&&z%32===16){const light=new THREE.PointLight(0xffc17b,0,10,2);light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
+    if(z===-32||z===32){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
   }
   for(const x of [-7,7])cyl(.17,6.8,[x,3.4,48],0x416568);beam([-7,6.4,48],[7,6.4,48],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[0,6.3,48],7.2,1.15,0,'#d8d5b9','#31565d');
 
@@ -283,7 +283,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
       for(let i=0;i<seaPos.count;i++){const x=seaPos.getX(i),y=seaPos.getY(i);seaPos.setZ(i,Math.sin(x*.17+time*.72)*.035+Math.sin(y*.12-time*.47)*.024);}seaPos.needsUpdate=true;
       for(const m of lamps){m.emissive.set(0xf0a65c);m.emissiveIntensity=.12+(1-day)*.82;}
-      lampLights.forEach((l,i)=>l.intensity=(1-day)*(i<2?1.05:.68));
+      lampLights.forEach((l,i)=>l.intensity=(1-day)*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+(1-day)*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});
       const playerPos=getPlayerPosition?.(),now=performance.now();

@@ -19,9 +19,8 @@ export function buildDistricts(world,options){
     if(route.surface==='wood')for(let j=0;j<length;j+=3){const t=j/length;box([route.width+.25,.2,.16],[a[0]+dx*t,.0,a[1]+dz*t],'timber',0x74654a,[0,Math.atan2(dx,dz),0]);}
   }
   for(const route of ROUTES.slice(3))for(const [x,z] of route.points){const g=new THREE.CircleGeometry(route.width/2,24);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,library.material(route.surface==='wood'?'timber':route.surface==='asphalt'?'asphalt':'plaster',0xa8a898));const pos=g.attributes.position;for(let i=0;i<pos.count;i++)pos.setY(i,groundHeight(x+pos.getX(i),z+pos.getZ(i))+.041);g.computeVertexNormals();m.position.set(x,0,z);m.receiveShadow=true;group.add(m);}
-  // A high, translucent shotengai roof. The main path stays clear underneath.
-  const roofMaterial=new THREE.MeshStandardMaterial({color:0x9aab9c,roughness:.66,side:THREE.DoubleSide,transparent:true,opacity:.45,depthWrite:false});
-  for(let z=-34;z<47;z+=9){for(const side of [-1,1]){box([.16,5.8,.16],[side*7.08,2.9,z],'timber',0x53594d);box([7.3,.12,.13],[side*3.55,6.32,z],'roof',0x57685e,[0,0,-side*.145]);}const r=new THREE.Mesh(new THREE.CylinderGeometry(7.3,7.3,8.85,16,1,true,0,Math.PI),roofMaterial);r.rotation.set(Math.PI/2,0,Math.PI/2);r.scale.x=.2;r.position.set(0,5.8,z+4.4);group.add(r);}
+  // Open-air shopping street. The former rotated transparent cylinder canopy
+  // intersected the walking corridor and looked like vertical sheets of fog.
   function building({id,x,z,w=8,d=7,h=6,colour=0xbeb394,roof=0,angle=0,jp,title,frontZ=z+d/2}){
     box([w,h,.25],[x,h/2,z-d/2],'plaster',colour);for(const side of [-1,1])box([.25,h,d],[x+side*w/2,h/2,z],'plaster',colour);
     box([w,2.65,.3],[x,h-1.32,frontZ],'plaster',colour);for(const side of [-1,1])box([w/2-1.2,2.65,.3],[x+side*(w/4+.6),1.32,frontZ],'timber',0x8f866c);

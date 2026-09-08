@@ -77,6 +77,14 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(api.scene.fog,null,'Scene fog is disabled');
     assertFiniteTransforms(api,'outdoor startup');
 
+    const runningStart=api.player.position.clone();
+    api.keys.KeyW=true;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
+    api.player.position.copy(runningStart);document.querySelector('#run').onclick();api.simulate(.1);
+    const ran=api.player.position.distanceTo(runningStart);assert.ok(ran>walked*1.6&&ran<walked*1.9,'Touch Run increases movement speed');
+    document.querySelector('#run').onclick();api.player.position.copy(runningStart);api.keys.ShiftRight=true;api.simulate(.1);
+    assert.ok(api.player.position.distanceTo(runningStart)>walked*1.6,'Right Shift also runs');
+    api.keys.ShiftRight=false;api.keys.KeyW=false;api.player.position.copy(runningStart);
+
     const startX=api.player.position.x;
     api.keys.KeyA=true;api.simulate(.1);api.keys.KeyA=false;assert.ok(api.player.position.x<startX,'A moves left in first person');
     const leftX=api.player.position.x;api.keys.KeyD=true;api.simulate(.1);api.keys.KeyD=false;assert.ok(api.player.position.x>leftX,'D moves right in first person');
