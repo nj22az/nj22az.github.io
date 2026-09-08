@@ -1,0 +1,103 @@
+{
+  "triangles": 17941,
+  "meshes": [
+    {
+      "name": "Kenji.Body",
+      "vertices": 4352,
+      "triangles": 8525
+    },
+    {
+      "name": "Kenji.eyebrow001",
+      "vertices": 124,
+      "triangles": 192
+    },
+    {
+      "name": "Kenji.low-poly",
+      "vertices": 96,
+      "triangles": 172
+    },
+    {
+      "name": "Kenji.male_casualsuit01",
+      "vertices": 2987,
+      "triangles": 5835
+    },
+    {
+      "name": "Kenji.shoes01",
+      "vertices": 935,
+      "triangles": 1746
+    },
+    {
+      "name": "Kenji.short01",
+      "vertices": 1645,
+      "triangles": 1471
+    }
+  ],
+  "clips": [
+    "Idle",
+    "Idle_Neutral",
+    "Interact",
+    "Run",
+    "Walk",
+    "Wave"
+  ],
+  "textures": [
+    {
+      "name": "Town.brown_eye.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.eyebrow001.png",
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "Town.male_casualsuit01_diffuse.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.male_casualsuit01_normal.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.shoes01_diffuse.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.shoes01_normal.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.short01_diffuse.png",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Town.young_lightskinned_male_diffuse3.png",
+      "size": [
+        2048,
+        2048
+      ]
+    }
+  ],
+  "bytes": 4959344,
+  "heightMetres": 1.76
+}

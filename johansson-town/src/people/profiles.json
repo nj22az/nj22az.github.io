@@ -1,0 +1,462 @@
+[
+  {
+    "name": "Aiko",
+    "age": 24,
+    "role": "bookshop assistant",
+    "female": true,
+    "height": 1.59,
+    "work": [
+      4.3,
+      34
+    ],
+    "evening": [
+      24,
+      18
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#354c51",
+    "start": 540,
+    "close": 1110,
+    "retire": 1170
+  },
+  {
+    "name": "Kenji",
+    "age": 32,
+    "role": "repairman",
+    "female": false,
+    "height": 1.76,
+    "work": [
+      -3.5,
+      17
+    ],
+    "evening": [
+      4.5,
+      21
+    ],
+    "home": [
+      36,
+      30
+    ],
+    "top": "#89775e",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Mrs Sato",
+    "age": 68,
+    "role": "shopkeeper",
+    "female": true,
+    "height": 1.55,
+    "work": [
+      -4.2,
+      -26
+    ],
+    "evening": [
+      -26,
+      46
+    ],
+    "home": [
+      -34,
+      39
+    ],
+    "top": "#6f574f",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Harbour master",
+    "age": 58,
+    "role": "harbour master",
+    "female": false,
+    "height": 1.74,
+    "work": [
+      1.6,
+      -70
+    ],
+    "evening": [
+      4.2,
+      -48
+    ],
+    "home": [
+      -26,
+      46
+    ],
+    "top": "#526c62",
+    "start": 300,
+    "close": 840,
+    "retire": 1260
+  },
+  {
+    "name": "Bus driver",
+    "age": 49,
+    "role": "bus driver",
+    "female": false,
+    "height": 1.73,
+    "work": [
+      -4.5,
+      44
+    ],
+    "evening": [
+      -26,
+      46
+    ],
+    "home": [
+      0,
+      50
+    ],
+    "top": "#b2a381",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Cold-storage kid",
+    "age": 19,
+    "role": "ice store assistant",
+    "female": false,
+    "height": 1.69,
+    "work": [
+      -8,
+      -55
+    ],
+    "evening": [
+      -8,
+      -55
+    ],
+    "home": [
+      24,
+      18
+    ],
+    "top": "#354c51",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Officer Mori",
+    "age": 45,
+    "role": "policeman",
+    "female": false,
+    "height": 1.78,
+    "work": [
+      0,
+      49
+    ],
+    "evening": [
+      -26,
+      46
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#89775e",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Hana",
+    "age": 17,
+    "role": "school pupil",
+    "female": true,
+    "height": 1.57,
+    "work": [
+      66,
+      48
+    ],
+    "evening": [
+      36,
+      30
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#6f574f",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Daichi",
+    "age": 17,
+    "role": "school pupil",
+    "female": false,
+    "height": 1.7,
+    "work": [
+      68,
+      48
+    ],
+    "evening": [
+      42,
+      62
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#526c62",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Mr Fujita",
+    "age": 73,
+    "role": "retired fisherman",
+    "female": false,
+    "height": 1.64,
+    "work": [
+      -58,
+      -60
+    ],
+    "evening": [
+      -34,
+      39
+    ],
+    "home": [
+      -29,
+      50
+    ],
+    "top": "#b2a381",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Masaru",
+    "age": 51,
+    "role": "fisherman",
+    "female": false,
+    "height": 1.72,
+    "work": [
+      -58,
+      -76
+    ],
+    "evening": [
+      24,
+      18
+    ],
+    "home": [
+      0,
+      50
+    ],
+    "top": "#354c51",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Yoshiko",
+    "age": 61,
+    "role": "bathhouse keeper",
+    "female": true,
+    "height": 1.58,
+    "work": [
+      -34,
+      39
+    ],
+    "evening": [
+      -34,
+      39
+    ],
+    "home": [
+      -29,
+      50
+    ],
+    "top": "#89775e",
+    "start": 540,
+    "close": 1260,
+    "retire": 1260
+  },
+  {
+    "name": "Reiko",
+    "age": 36,
+    "role": "newspaper editor",
+    "female": true,
+    "height": 1.62,
+    "work": [
+      -4,
+      -2
+    ],
+    "evening": [
+      -4,
+      -2
+    ],
+    "home": [
+      42,
+      62
+    ],
+    "top": "#6f574f",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Tetsuo",
+    "age": 40,
+    "role": "radio repairer",
+    "female": false,
+    "height": 1.7,
+    "work": [
+      4,
+      -13
+    ],
+    "evening": [
+      24,
+      18
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#526c62",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Emi",
+    "age": 29,
+    "role": "seamstress",
+    "female": true,
+    "height": 1.61,
+    "work": [
+      38,
+      34
+    ],
+    "evening": [
+      42,
+      62
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#b2a381",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Mr Tanabe",
+    "age": 66,
+    "role": "shrine caretaker",
+    "female": false,
+    "height": 1.66,
+    "work": [
+      25,
+      84
+    ],
+    "evening": [
+      43,
+      97
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#354c51",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Naoko",
+    "age": 33,
+    "role": "postal worker",
+    "female": true,
+    "height": 1.65,
+    "work": [
+      4,
+      11
+    ],
+    "evening": [
+      -26,
+      46
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#89775e",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Hiroshi",
+    "age": 54,
+    "role": "grocer",
+    "female": false,
+    "height": 1.68,
+    "work": [
+      -4,
+      -28
+    ],
+    "evening": [
+      24,
+      18
+    ],
+    "home": [
+      -29,
+      50
+    ],
+    "top": "#6f574f",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Fumiko",
+    "age": 77,
+    "role": "neighbour",
+    "female": true,
+    "height": 1.49,
+    "work": [
+      -29,
+      50
+    ],
+    "evening": [
+      -34,
+      39
+    ],
+    "home": [
+      -29,
+      50
+    ],
+    "top": "#526c62",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  },
+  {
+    "name": "Kenta",
+    "age": 21,
+    "role": "apprentice engineer",
+    "female": false,
+    "height": 1.8,
+    "work": [
+      -4.5,
+      17
+    ],
+    "evening": [
+      24,
+      18
+    ],
+    "home": [
+      46,
+      62
+    ],
+    "top": "#b2a381",
+    "start": 540,
+    "close": 1080,
+    "retire": 1260
+  }
+]

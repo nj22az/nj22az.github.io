@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Reproducible intermediate Blender builds; final packed source is tracked.
+/art/characters/kenji/kenji-source.blend
+/art/characters/kenji/kenji-review.blend
+*.blend1
+
+/art/characters/yui/yui-source.blend
+/art/characters/yui/yui-review.blend

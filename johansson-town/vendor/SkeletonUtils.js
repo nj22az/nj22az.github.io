@@ -7,7 +7,7 @@ import {
 	SkeletonHelper,
 	Vector3,
 	VectorKeyframeTrack
-} from '../../the-front-row-seat/pelican/vendor/three.module.min.js';
+} from './three.module.js';
 
 function getBoneName( bone, options ) {
 

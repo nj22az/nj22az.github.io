@@ -1,0 +1,22 @@
+// CPU scene/frustum estimate, not a GPU benchmark. Run from the game directory.
+import {readFile} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+const root=process.argv[2]||process.cwd(),url=p=>pathToFileURL(root+'/'+p).href;
+const THREE=await import(url('vendor/three.module.js'));
+const {installDOM}=await import(url('tests/fixtures.mjs'));installDOM();
+const {createTown}=await import(url('src/world/town.js'));
+const {preloadModels,createLocalCharacters}=await import(url('src/people/models.js'));
+const {createCastAI}=await import(url('src/people/schedules.js'));
+const {createContentItems}=await import(url('content-items.js'));
+const source=await readFile(root+'/src/game.js','utf8');const sites=Function('return '+source.match(/const SITES=(\[[\s\S]*?\n\]);/)[1])();
+const scene=new THREE.Scene(),player=new THREE.Group();player.position.set(0,0,46);
+const world=createTown({scene,sites,mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>player.position});
+createContentItems({group:world.group,colliders:world.colliders,register(){},onInspect(){},onRead(){}});
+globalThis.fetch=async path=>new Response(await readFile(root+'/assets/characters/residents/'+new URL(path).pathname.split('/').at(-1)));
+await preloadModels();const cast=createLocalCharacters({shadows:true});for(const p of world.people)cast.attach(p.g,p.g.userData.name);
+createCastAI({world,player,state:()=>({inventory:[],quest:0}),paused:()=>false,collides:()=>false}).update(1/60,1002,false);cast.update(1/60);
+const camera=new THREE.PerspectiveCamera(65,16/9,.07,220);camera.position.set(0,1.65,46);camera.lookAt(0,1.6,20);scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
+let calls=0,triangles=0,totalCalls=0,totalTriangles=0;const actors=[];
+scene.traverseVisible(o=>{if(!o.isMesh||!o.layers.test(camera.layers))return;const count=(o.geometry.index?.count||o.geometry.attributes.position.count)/3*(o.isInstancedMesh?o.count:1),draws=Array.isArray(o.material)?o.geometry.groups.length:1;totalCalls+=draws;totalTriangles+=count;if(!o.frustumCulled||frustum.intersectsObject(o)){calls+=draws;triangles+=count;}if(o.isSkinnedMesh)actors.push({normalSmoothing:o.geometry.userData.normalSmoothing,wardrobeVertices:o.geometry.userData.wardrobeVertices});});
+console.log(JSON.stringify({staticProps:world.quality.staticProps,visibleCallsEstimate:calls,submittedTrianglesEstimate:triangles,totalVisibleSceneCalls:totalCalls,totalVisibleSceneTriangles:totalTriangles,actors},null,2));

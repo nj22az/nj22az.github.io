@@ -1,0 +1,107 @@
+{
+  "asset": "Yui",
+  "authoring": "Blender 4.2.23 LTS / MPFB 2.0.17",
+  "mpfb": {
+    "source": "https://github.com/makehumancommunity/mpfb2",
+    "revision": "437dd513888a92399d1d3200d2e80859fae55abc",
+    "assetLicence": "CC0-1.0",
+    "codeLicence": "GPL; authoring add-on not distributed"
+  },
+  "pack": {
+    "source": "https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip",
+    "sha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+    "licence": "CC0-1.0",
+    "holders": [
+      "Data Collection AB",
+      "Joel Palmius",
+      "Jonas Hauquier"
+    ]
+  },
+  "files": [
+    {
+      "path": "clothes/female_elegantsuit01/female_elegantsuit01.mhclo",
+      "sha256": "8ed657dbc49466e6a485993cfdcfd7b6ac30a0f44408dfd38de7a649477d8928"
+    },
+    {
+      "path": "clothes/female_elegantsuit01/female_elegantsuit01.mhmat",
+      "sha256": "a0b1708efbff3c4ad96f8e7d8cc27fb1652719549455ce94b89bcf6294cfbed0"
+    },
+    {
+      "path": "clothes/female_elegantsuit01/female_elegantsuit01_diffuse.png",
+      "sha256": "ebe6f2afcbaadbe56d5cee6e00bab45e97ce482f0be0e34491d16ca5f98b38ac"
+    },
+    {
+      "path": "clothes/female_elegantsuit01/female_elegantsuit01_normal.png",
+      "sha256": "ae3650bce6678cd67d025ab70e68b22683176aeaabc06d8e5b2129af99c762e9"
+    },
+    {
+      "path": "clothes/shoes03/shoes03.mhclo",
+      "sha256": "5a388e18e6759db99bcc8c7d062a2b3bed02eecd32705731ba90063a6e35265b"
+    },
+    {
+      "path": "clothes/shoes03/shoes03.mhmat",
+      "sha256": "0104a8ecf68aa81bca878c12f909aca45a59e265f8b49cf4e4d5e2667773776e"
+    },
+    {
+      "path": "clothes/shoes03/shoes03_diffuse.png",
+      "sha256": "fe8216fbd0c34ecd3ac0e1a01970a4ccf844417be5fd1d72c527c9209256db93"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.mhclo",
+      "sha256": "54c8892c2ba577f4152d779ce1f20f7cd323beb8cbd9cb701796165c221b4f5b"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.mhmat",
+      "sha256": "976e5f4f1d3922d7a11c6e2db233f8b4584b068d00619d5749687e81c92d61fc"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.png",
+      "sha256": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+    },
+    {
+      "path": "eyes/low-poly/low-poly.mhclo",
+      "sha256": "68582e28e9176cba7cfcf35208f671b6201b8d1bc95c32decff61a3160ec34d8"
+    },
+    {
+      "path": "eyes/materials/brown.mhmat",
+      "sha256": "4abad93ce50541c08127721e77bce035640c9f16bed16cd0f5524b1cd5908465"
+    },
+    {
+      "path": "eyes/materials/brown_eye.png",
+      "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b"
+    },
+    {
+      "path": "hair/long01/long01.mhclo",
+      "sha256": "94ecbebfd834da2cbee2ce90b730972590eb22a252ecd9592038ea736e063646"
+    },
+    {
+      "path": "hair/long01/long01.mhmat",
+      "sha256": "74ec88267e679d316f8037a074511ffc887b27e198ea381d0ae4a3f180f96760"
+    },
+    {
+      "path": "hair/long01/long01_diffuse.png",
+      "sha256": "e8dc25d90f8f62467e8630420e1240a400d070054fb7c3f1d3f7bf3e457d6c2c"
+    },
+    {
+      "path": "skins/young_asian_female/young_asian_female.mhmat",
+      "sha256": "2baeded5fdfd31acc187e83b278f9c4e4cbb59a7ffedf50ebcffcc44e4eab220"
+    },
+    {
+      "path": "skins/young_asian_female/young_lightskinned_female_diffuse3.png",
+      "sha256": "1d82f782b7d2da732229633bd2d14754d873fff53cdb1d088977bcf67ae19dde"
+    }
+  ],
+  "changes": [
+    "Adult Asian female macro fitting",
+    "Pink cotton texture authored from CC0 garment; A-line skirt reshaping",
+    "Original cream collar, glasses, hat and pink ribbons fitted and weighted in Blender",
+    "Six original scripted skeletal clips",
+    "Locally embedded textures and reduced meshes; no reference photos distributed"
+  ],
+  "source": "art/characters/yui/yui.blend",
+  "scripts": [
+    "tools/blender/build-yui.py",
+    "tools/blender/export-yui.py"
+  ],
+  "age": 26
+}

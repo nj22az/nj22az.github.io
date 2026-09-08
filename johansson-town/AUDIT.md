@@ -1,84 +1,70 @@
-# Johansson Town — Living Quality Audit
+# Johansson Town — implementation and acceptance audit
 
-This file is the continuing engineering audit for the project. A visual improvement is not considered complete merely because it looks better in source; it must also preserve collision, interaction, mobile stability and predictable rendering.
+Updated 8 September 2026. This supersedes the previous document's inaccurate claim that remote high-detail humans were shipping. The branch is an unaccepted development slice; no live deployment is implied.
 
-## Quality target
+## Phase status
 
-An original late-Shōwa Japanese street/harbour adventure with the grounded density and readability of a commercial third-person game. The target is not literal reproduction of Shenmue or Yakuza assets/UI. Period authenticity, human scale, stable touch rendering and coherent art direction take priority over decorative effects.
+| Phase | Implemented in this draft | Still required |
+| --- | --- | --- |
+| A — honesty and loading | Local Three r170, one boot graph, canonical imports, obsolete wrappers removed, local model loading/fallback, corrected docs and in-world records | WebGL startup and cached load timing on actual hardware |
+| B — town skeleton | Connected district paths, two OSM way fragments, shared route/height data, raised shrine, school approach, arcade, four new building silhouettes, raster navigation, timed shutters, ramen room | Complete historical blockout/coastline, GSI reference study, twelve distinct buildings, unique bookshop/harbour interiors and visual walk-through |
+| C — bodies and sound | Five CC0 clothed bases with embedded compatible clips, twenty schedules, eight visible residents, original local audio files, can hold/drink and seated view | Per-resident wardrobe/age specificity, audible tuning, in-world fishing and CRT Star Port |
+| D — density and quests | Existing Tama and workshop escort are retained; paper notebook map added | Enterable sentō, player room, shrine office and bus hut; fifteen inspectables per room; physical drawers; complete book-drying/Mrs Sato quests; postcard camera |
+| E — grade and performance | PBR map channels, quantised following shadow target, model material merging | GPU profiling, baked/half-res AO, window interior cards, final grade, LOD/batching, iPad matrix and credits review |
 
-## Resolved in the September 2026 professionalisation pass
+Phase D expansion is held at the requested gate: a stranger must walk shrine → arcade → ramen → quay → outer pier and review the façades first. Source tests cannot substitute for that visual gate.
 
-### Procedural-only final characters — resolved
-The old human-proportioned procedural rigs are no longer the intended final visual layer. `characters-aaa.js` preloads realistic rigged MakeHuman / MPFB 2 CC0 adults with authored skin/clothing textures and named `idle`, `walk`, `run` and `wave` clips. Three.js `AnimationMixer` blends states from measured actor speed and conversation gestures. The procedural system remains only as a deterministic fallback.
+## Acceptance evidence
 
-### Character sameness — substantially reduced
-Five explicit identity profiles are retained: player, Aiko, Kenji, Mrs Sato and harbour master. They differ in source body, height, horizontal build, hair silhouette, posture and period-role accessories. The player uses a fitted skinned suit source; Aiko uses the female source; Kenji a broad male source; Mrs Sato an alternate speaker/morph source; the harbour master deliberately exaggerates the male base into a broader silhouette. Hair, work/peaked caps, scarf, apron and satchel provide further silhouette separation.
+| Requested check | Current evidence / result |
+| --- | --- |
+| Cold/cached load under 4 seconds, offline play | Local imports/assets are checked. Optional production build succeeds. Timing and offline reload are **not verified**; no service-worker offline guarantee is implemented. |
+| Shrine → shopping street → ramen → quay → outer pier | CPU routes include detailed content colliders; pier boundaries, school, bathhouse route and raised shrine landing are checked. Visual mesh/collision agreement remains **unverified**. |
+| A/D, mouse, jump, vending can | Coordinate convention, fixed simulation, can animation/one-time consumption and purchase save checks pass. Physical keyboard/pointer-lock/touch input needs browser play. |
+| Afternoon → night closure | Bookshop opening rules and Aiko's departure are tested; shutters and emissive windows are wired to town minutes. Night appearance and radio audibility unverified. |
+| Five residents, dialogue, Tama | Twenty named profiles have at least three topics. Five GLBs parse and animate with independent skeletons. Tama reward and no duplicate payout tested. Silhouette quality unverified. |
+| Bench, coffee, harbour/train audio | Seated camera and can consumption wired; local positional loops and train intervals implemented. Listening/seat alignment still required. |
+| Paper notebook map | Notebook and HUD share a paper map renderer and route data. CPU wiring passes; rendered legibility unverified. |
+| iPhone/iPad | Dedicated controls and dark fullscreen backing retained. No actual device verification. |
+| Reload save | v3/v4 import, corrupt-save fallback, inventory/yen/quest persistence and legacy preservation tested. |
+| Credits/licences | Three MIT, Poly Haven CC0, Quaternius CC0 and OSM ODbL are listed on screen and in the local ledger. ambientCG is explicitly a proposed source, not a shipped asset. |
 
-### Character pop-in risk — controlled
-High-detail sources are loaded on the opening screen before the gameplay module is imported. There is no intentional in-play procedural-to-HD swap. Each source load has a timeout and per-source failure handling; failure selects the local procedural human instead of preventing the game from starting. The title-screen watchdog has been extended to accommodate the larger mobile preload.
+## Regression coverage
 
-### Character accessory coordinate-space error — resolved before release
-The first high-detail implementation derived hair/cap positions from a world-space model box after attachment to an NPC. That would have made accessory placement depend on the actor's town position. The corrected implementation stores normalized model bounds before attachment and uses those local-space bounds for skeletal accessory placement.
+Run `npm test`: all test files are selected, including the migrated office and stability suites. Old assertions demanding removed filenames, remote models and import-map aliases were retired. Their meaningful geometry, inspector, dialogue, save and bounded WebMCP checks remain.
 
-### Harbour traversal mismatch — resolved
-The harbour scenery extended well beyond the old `z ≈ -62` movement boundary. The collision envelope now follows three real playable zones: the narrow shopping street, broad harbour apron and a central outer pier extending to approximately `z = -79`. The professional world layer builds matching pier geometry so collision and visible ground agree.
+The CPU full-game test constructs actual geometry/content/cast, checks startup stability, enters and exits all nine registered interiors and checks finite scene/camera matrices. It replaces WebGLRenderer and browser APIs, so it is not a rendered gameplay test. Separate tests load all five binary models through the vendored GLTFLoader, sample animation and verify independent skeletons.
 
-### One-pixel overhead cable shimmer — resolved
-The base scene generated utility wires using `THREE.Line`/`LineBasicMaterial`. The professional world layer removes those runtime line objects and converts their polyline segments into one instanced batch of dark cylindrical cables. This avoids sub-pixel raster-line crawling while reducing cable draw-call cost.
+Review caught and fixed circular interaction metadata that broke object cloning, a journal doorway intersecting a book pedestal, low-elevation interaction assumptions, duplicate NPC destinations, a Kenji/Kenta escort deadlock, navigation edges cutting bounds, missing school pavement, shrine bounds mismatch, obsolete credit overwrites and directory IDs needed by WebMCP.
 
-### Road/quay bright-line z-fighting — resolved
-Road paint uses dedicated non-depth-writing decal planes with polygon offset. Harbour edges are separated solid geometry rather than overlapping near-coplanar strips.
+## Graphics and performance limits
 
-### Animated cel water lacked changing normals — resolved
-The professional layer refreshes moving-water vertex normals at a deliberately limited rate, producing readable stepped-light changes without recomputing normals every rendered frame.
+The selected Quaternius assets were converted offline from 10–13 material parts to one skinned mesh/material each; the suit's weapon accessory and unused combat clips were removed. Geometry deformation was compared across every retained animation and an idle/walk blend before and after export. No external decoder is needed.
 
-### Regression coverage — expanded
-The deterministic/static tests cover harbour traversal, swept camera collision, NPC collision, anti-shimmer cable requirements, moving-water normals, professional minimap coverage and the new character requirements: the AAA module must exist, retain all five named profiles, use `AnimationMixer`, retain `idle`/`walk`/`run`/`wave`, preserve the local fallback and preload before gameplay.
+An earlier CPU frustum estimate with the procedural fallback counted 983 visible draw submissions and 69,804 triangles at the starting camera, excluding shadow passes. It is not a GPU measurement and predates the merged local bodies. The requested <100 calls / <150k triangles and 60 desktop / 30 iPad FPS are **not certified**. Batch the remaining static and fallback geometry after measuring with WebGL; do not describe post-processing as solving this budget.
 
-## Current strengths
+The imported adults are generic low-poly bases. Mrs Sato's biography and height do not establish an elderly body; customised age and wardrobe work remains. All rendered bodies and buildings use Standard/PBR materials, but final coherence still needs visual direction.
 
-- Deterministic movement sub-stepping prevents ordinary collision tunnelling.
-- Player/NPC collision is active.
-- Third-person camera uses swept collision rather than endpoint-only checks.
-- High-detail characters preload before play and retain a deterministic local fallback.
-- Realistic character sources use proper skinned human anatomy and authored motion clips rather than cylinders/boxes as their final body layer.
-- Five cast profiles preserve distinct height/build/hair/accessory silhouettes.
-- AgX tone mapping and conservative touch-device DPR limits are in place.
-- iPad/iOS has a dedicated fullscreen dark-backplane/compositor guard.
-- Unverified Archive.org/Sketchfab material is not hot-linked into gameplay.
+The navigation implementation is a conservative raster A* over the shared collision predicate, not a Recast bake. Population streams by proximity, not interior loading. Shops close to new entries but residents do not yet occupy individually modelled indoor workplaces/homes. The original eight interiors retain their common shell. Fishing and Star Port still use activity panels. Audio is original synthesised Foley/music, not field recordings, spoken weather broadcasts or recorded baseball commentary.
 
-## Remaining technical debt, in priority order
+## Browser blocker and release matrix
 
-### P0 — vendor and optimise character GLBs locally
-The MakeHuman sources are CC0, but the current implementation fetches the GLBs from the public `kunalkushwaha/vsim` GitHub library because the available repository text-write path cannot copy binary GLBs. This reintroduces a network dependency at the opening screen. The production solution is local vendoring with texture/mesh optimisation (Meshopt/Draco where appropriate) and a character asset manifest with explicit memory budgets.
+The supplied cloud browser fails WebGL context creation (`GL_VENDOR = Disabled`, `GL_RENDERER = Disabled`). This was reproduced on ENTER TOWN. No game screenshot or FPS claim is available.
 
-### P0 — bespoke Asian/age-specific cast generation
-The free MakeHuman bases are a realism improvement but are not bespoke Japanese actors. MakeHuman's CC0 system-asset pack includes young/middle-aged/old Asian male/female skins, hair and work/casual clothing. Generate a separate body/face/age/wardrobe export for each Johansson resident rather than continuing to derive multiple identities from a small free base set. Mrs Sato in particular should use a genuinely older female phenotype rather than relying principally on posture, bun and accessory cues.
+Before release, test desktop Chromium and Safari, iPad Safari landscape/portrait, iPhone touch controls, fullscreen enter/exit, background/foreground, rain/night, camera near benches/walls, model-load failure, all shop entries/exits, the full Tama loop and all save fields after reload. Record actual draw calls, triangles, p95 frame time, memory and cache timing. Keep the pull request draft until these gates and the stated scope are resolved.
 
-### P0 — real-device visual validation
-Source inspection and deterministic regression tests cannot prove absence of a device-specific WebKit/GPU artefact. iPad Safari/fullscreen should be treated as a release platform with an explicit visual test matrix: portrait/landscape, fullscreen transition, camera near geometry, rain, afternoon/night, all five character profiles, conversation animation and repeated app background/foreground transitions.
+## Subsequent art-direction pass
 
-### P1 — facial animation and gaze
-The `speaker` source exposes a `mouthOpen` morph, but ordinary residents currently rely mainly on skeletal idle/wave animation. Add blink, gaze targeting, subtle facial motion and speech-driven mouth shapes. Avoid exaggerated anime expressions; the visual target is restrained early-3D-adventure naturalism with modern rendering quality.
+Added crease-aware shading normal smoothing (positions, topology, skin weights and source GLB files unchanged), per-identity garment colour buffers, eased heading changes and velocity-scaled walk clips. Eight original frontages now draw from four authored roof forms with differentiated sign proportions and timber framing. Local Industrial Sunset 02 HDR lighting is verified by source MD5 and parsed by the vendored r170 RGBELoader; shader output is not verified.
 
-### P1 — height-aware camera collision
-Current camera collision is conservative 2D XZ collision. Low benches and props therefore block the camera as though infinitely tall. Future colliders should carry vertical ranges or use a true 3D sphere/capsule cast.
+221 static factory meshes become 25 spatial batches, saving 196 draws. Dynamic trolleys, living props, animated shutters and resident meshes are excluded. A current comparable CPU starting-view estimate falls from 823 to 621 mesh draws, with submitted triangles approximately 99,600 → 100,200. This does **not** meet the draw-call target and is not an FPS measurement. Full method/data are recorded in `docs/art-pass-measurements.json`; reproduce using `node tools/measure-art-scene.mjs`.
 
-### P1 — NPC navigation
-Residents still follow simple scheduled sinusoidal movement. Replace this with waypoint/navmesh navigation, idle states, destination selection and local avoidance before increasing NPC population.
+18 automated tests and the Vite build pass, including normal/geometry invariants, batching/anchor preservation, roof bounds, dialogue cancellation and the original gameplay regressions. Visual style, natural Japanese listening, reflection exposure and mobile performance still require real WebGL review. The four generated Japanese dialogue clips are now included; six further clips and all five TRELLIS meshes remain blocked by the public ZeroGPU quota.
 
-### P1 — shadow stability
-The directional shadow volume is broad and static. A production pass should use a camera/player-following quantised shadow anchor or cascaded strategy so shadow resolution remains stable from the shrine to the outer pier without texel crawl.
+## Blender character milestone
 
-### P1 — interior/exterior material parity
-Exterior world geometry retains stepped cel lighting while realistic characters now keep their authored textured/PBR materials. This contrast should be art-directed deliberately: either move the environment toward richer grounded PBR or create a shared restrained character/environment grading pipeline rather than reverting high-detail skin to flat toon shading.
+Kenji now uses a locally embedded, textured MakeHuman/MPFB body authored in Blender, with six skinned parts and original idle/walk/run/wave actions. The source remains editable; see `art/characters/kenji/`. Other identities retain the interim Quaternius bases. CPU render reviews cover the actual reduced mesh; browser GPU appearance, motion polish and device frame budgets remain unverified.
 
-### P2 — richer environmental material data
-The current Poly Haven usage is principally diffuse texture data. Add verified local normal/roughness/AO maps for asphalt, timber, plaster, ceramic roofing and corrugated metal, with mobile memory budgets and texture-size tiers.
+## Sakura Shōten milestone
 
-### P2 — performance instrumentation
-Add a development-only profiler for draw calls, triangles, texture count, renderer memory, character skinning cost and frame-time percentiles. The new human meshes make this more important on iPad-class GPUs.
-
-## Rule for future passes
-
-Every substantial graphics pass should contain at least one measurable stability/performance improvement or regression check alongside the visual work. New third-party assets require licence verification before entering the runtime. New thin raster lines, near-coplanar surfaces, unbounded transparent layers and asynchronous in-play model swaps are presumed unsafe until proven otherwise.
+Yui is a second Blender-authored adult identity, working inside the market from 09:00 to 20:00. Eight goods can be inspected and bought using saved town yen; the cooler and till drawer move physically. Shopify product and cart operations pass the supplied Storefront schema validator, but remain disabled and unconnected pending an approved real product mapping. No real orders, payments or store mutations were made. See `docs/SAKURA_STORE.md`.

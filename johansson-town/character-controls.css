@@ -28,3 +28,5 @@
 @media(pointer:coarse) and (max-height:520px){
   #jump{right:max(108px,calc(env(safe-area-inset-right) + 98px));bottom:max(72px,calc(env(safe-area-inset-bottom) + 62px));width:62px;height:62px}
 }
+
+#drink{position:absolute;right:max(26px,env(safe-area-inset-right));bottom:220px;min-height:46px;padding:10px 18px;pointer-events:auto;background:#13272be0;border:1px solid #c0ab78;color:#f0e6cc;border-radius:4px;font-size:13px;}

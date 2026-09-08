@@ -1,52 +1,51 @@
-# Johansson Town — Harbour Edition
+# Johansson Town
 
-An original, explorable 1988 Japanese harbour neighbourhood inspired by the grounded everyday atmosphere of late-1980s Japan and classic street-level adventure games. It retains all eight existing project destinations and their interiors.
+A first-person browser town set on 14 September 1988. This branch upgrades the existing game in place and is a **draft development slice**, not the completed visual specification. The live GitHub Pages deployment is separate from this branch.
 
-## Play
+## What this revision contains
 
-- Desktop: click the scene for mouse look; WASD/arrows move, Shift jogs, E interacts, Q opens the directory, B opens the notebook, V changes camera, N changes time. Escape releases the mouse or closes a panel.
-- Touch: a floating left thumbstick handles movement and the right side handles camera look; the contextual action button changes with the nearby interaction. Touch-native QTE swipes/taps are supported at Star Port.
-- Talk to Aiko to start the Tama errand. Fish at the harbour, sell catches to the harbour master, play Star Port, buy drinks, order ramen, use the phone, or visit the shrine.
-- The notebook, money, items, visited shops and quest progress save on the current device. Clearing browser data removes this save.
+- One module entry point in `src/boot.js`, local Three.js r170 and matching loaders. Runtime imports and assets stay inside this directory.
+- A fixed 1/60-second movement/physics step with a 0.1-second frame cap, first-person default, correct A/D strafing, jumping, and height-aware camera sweeps.
+- The existing street, quay and outer pier, connected western/eastern lanes, a second jetty, a school route and a raised shrine approach. The residential circuit adapts two Tomonoura OSM ways; connecting streets and the harbour are fictional. This is not a historical survey or a complete 1:1 reconstruction.
+- Shared PBR shading and local 1K albedo, normal and packed ARM maps, catenary cable geometry, shutters with opening hours, lit evening windows and a paper map using the same route coordinates as movement.
+- Twenty named resident profiles, eight visible at once, town-minute schedules, collision-aware raster A* and local slide avoidance. Five locally vendored Quaternius body bases provide compatible walk/idle/run/wave clips. Procedural bodies remain the failure fallback. Kenji now has a separate Blender-authored, textured anatomical model with six original clips. The remaining bases are interim stylised adults, not twenty bespoke Japanese identities or age-specific exports.
+- The eight inherited room layouts plus a ramen room; nearby furniture and documents remain interactive. Rooms still share a shell. Bathhouse, apartment and bus-hut exteriors are not yet enterable.
+- Local original synthesised Foley and instrumental WAV files, positional ambience/radio, material footsteps, can purchase/holding/drinking and seated camera height. Sound unlocks on ENTER TOWN.
+- Tama, yen, fishing, Star Port, notebooks and existing transactions preserved. Website portals have become in-world paper records. Version 5 saves import valid v4/v3 data without deleting the old save.
 
-## High-detail characters
+## Controls
 
-The normal runtime now uses realistic rigged MakeHuman / MPFB 2 CC0 humans rather than presenting the procedural rigs as the final visual layer. Four authored source files supply a realistic female body, adult male body, alternate speaker body and a male body with real fitted, skin-weighted suit/shoe geometry. Each source carries named `idle`, `walk`, `run` and `wave` clips, which Johansson Town blends through Three.js `AnimationMixer` according to actual movement speed and conversation gestures.
+Desktop: click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; V changes camera; N cycles time. Escape closes panels or releases the mouse.
 
-The player, Aiko, Kenji, Mrs Sato and the harbour master remain separate characters rather than recolours of one prefab. Their live profiles specify different heights, horizontal proportions, hair silhouettes, posture and accessories: the player retains his side-part and satchel; Aiko has a bob and scarf; Kenji has a close crop and work cap; Mrs Sato has a grey bun, apron and slight stoop; the harbour master is broader with receding hair and a peaked cap. These additions are attached to the character skeleton/head where possible so they follow animation rather than floating independently.
+Touch: left stick, right-side look, JUMP, ACTION and DRINK. The notebook can select a drink from the bag. Sound preference, inventory, money and quest state save on this device.
 
-The cast is preloaded on the opening screen before the gameplay module starts. This avoids a deliberate low-detail-to-high-detail pop after play begins. If a high-detail model fails to load, the existing local procedural human system remains available as a deterministic fallback, so character-network failure does not make the town unplayable.
+## Development and deployment
 
-The current MakeHuman GLBs are fetched from the public `kunalkushwaha/vsim` GitHub library because the available repository write connector cannot yet transfer binary GLB payloads directly. The assets themselves are documented as CC0. Local vendoring and per-resident age/ethnicity/wardrobe-specific MakeHuman exports are the next character-pipeline optimisation.
+The raw directory remains a static GitHub Pages application; it requires no build step to deploy in its existing location. For local development:
 
-## Professional harbour pass
+```sh
+npm ci
+npm run dev -- --host 0.0.0.0
+npm test
+npm run build
+```
 
-The waterfront is a working late-Shōwa harbour rather than a single quay slab. It includes two warehouses, rolling shutters, fishing crates, rope coils, bollards, tyre fenders, a net-drying rack, ice cabinet, drums, harbour lamps, an original unbranded kei service truck, a detailed fishing boat, breakwater beacons, distant industrial sheds and crane silhouettes.
+Vite's optional `dist/` output preserves the local asset tree. `node_modules/` and `dist/` are not committed. No runtime package CDN, Google Maps API or geolocation is used.
 
-A further professionalisation layer makes the outer harbour genuinely playable. The collision envelope follows three visible zones — narrow shopping street, broad harbour apron and central outer pier — and the scene builds matching pier geometry out to approximately `z = -79`. The pier has mooring bollards, safety rails, a ladder, service cabinet, rope, lighting and a second fishing interaction point. The minimap projection includes the same area.
+## Verification and remaining work
 
-Road and quay markings use dedicated non-depth-writing decal planes with polygon offset and muted paint colours rather than very thin bright boxes sitting almost coplanar with asphalt. Overhead utility wires are reconstructed as an instanced batch of cylindrical cables rather than one-pixel raster lines. The harbour water is cel shaded and animated with limited-rate normal refresh so its stepped lighting follows the wave geometry.
+`npm test` runs the complete retained/migrated regression suite, a CPU-only full-game boot/interior smoke, navigation and save tests, and actual GLB parsing/animation checks. The CPU boot test substitutes the renderer and DOM: it cannot prove shader compilation, frame rate, pointer lock, audible quality or mobile rendering.
 
-## Assets and rendering
+The available test browser reports its WebGL renderer as disabled. Visual acceptance and desktop/iPad performance therefore remain blocked. Do not treat this branch as ready for release. `AUDIT.md` records each acceptance criterion and outstanding scope, including unique interiors, richer age/wardrobe identity, in-world fishing/CRT play, the additional quests and frame budgets.
 
-Four local 1K CC0 Poly Haven diffuse textures currently provide road, plaster, timber and roofing surfaces. Original buildings, vehicles and harbour props use local geometry, while the controlled asset-intake folder records approved or reference-only third-party sources before they can enter the runtime.
+Before Phase D density work, complete the requested stranger play-through from shrine to outer pier and review façade variety. Asset licences and exact provenance are in `assets/ATTRIBUTION.md`.
 
-Three.js r169 is served locally. The renderer uses AgX tone mapping, hardware antialiasing, conservative device-pixel-ratio limits and soft shadows on desktop/iPad-class hardware. Exterior town geometry retains the restrained stepped-light treatment while the new character sources keep their authored textured/PBR materials so skin and clothing retain more surface information than the former primitive cel rigs.
+## Art direction pass
 
-The iPad fullscreen guard uses a permanently dark page/backplane plus an overscanned WebGL surface. Day/evening/night, rain, four camera views and a live minimap remain available.
+The latest draft improves character normal seams without adding triangles, applies resident garment palettes, smooths turns and matches walk playback to movement speed. Merchant fronts now have curved-gable, hipped, shallow-tin and parapet roof forms with varied sign proportions and timber framing. A verified local CC0 HDR environment provides shared lighting/reflections. Static factory props are batched in spatial cells while interaction anchors and moving trolleys remain separate.
 
-## Third-party asset policy
+This is still **not a finished Shenmue/Yakuza-like slice**: the character faces, silhouettes, clothing and room layouts remain interim, and the street requires a rendered visual review. See `docs/ART_DIRECTION.md` and the measured limits in `docs/art-pass-measurements.json`.
 
-Runtime assets require verified licence provenance. Quaternius CC0 character/animation packs, MakeHuman/MPFB CC0 graphical assets and output, Poly Haven and ambientCG are approved source families. Keshi Corner's Internet Archive scans remain reference-only unless an exact item has both redistribution permission and safe underlying IP; franchise character scans are not imported simply because they are downloadable.
+Kenji’s editable Blender source, actual model renders and reproducible export instructions are in `art/characters/kenji/README.md`. This establishes the anatomical character pipeline; it does not make the rest of the cast or city finished.
 
-Character provenance is recorded in `assets/characters/ATTRIBUTION.md`. Other credits and original licences: `assets/ATTRIBUTION.md`, `assets/late-showa/ASSETS.md`, `assets/characters/LICENSE-KENNEY.txt`, `vendor/LICENSE-THREE.txt`.
-
-## Validation and audit
-
-`AUDIT.md` is the living engineering audit for the project. It records resolved defects, remaining technical debt and the rule that substantial graphics work should carry a measurable stability/performance improvement or regression check alongside it.
-
-The deterministic stability test covers the shopping-street envelope, harbour apron, walkable outer pier, pier water boundaries, room boundaries, NPC collision and camera sweep. Static quality checks also require the professional cable replacement to remain instanced, moving water to refresh normals, the minimap to include the outer pier, and the high-detail character system to retain preload-before-play, four named locomotion/conversation clips, five explicit identity profiles and the deterministic local fallback.
-
-The high-detail character module was syntax-checked independently before activation. Existing movement sub-stepping, swept third-person camera collision, player/NPC collision and startup stability checks remain in place.
-
-The largest remaining visual limitations are bespoke asset fidelity and character specificity rather than basic human anatomy. Buildings and vehicles remain primarily procedural, while the new humans are high-detail free-source bases rather than custom-scanned actors. The next generational graphics step is to vendor optimised GLBs locally, generate separate age/Asian-phenotype/wardrobe MakeHuman characters for the cast, add richer facial animation, and continue replacing procedural architecture with licence-verified authored assets.
+Sakura Shōten now has Yui, an adult Blender-authored clerk, eight selectable goods, a hinged cooler, till, radio and service bell. A disabled Shopify Storefront adapter supports future approved product mappings and explicit real-money checkout. See `docs/SAKURA_STORE.md`. No live Shopify store or payment flow has been activated.
