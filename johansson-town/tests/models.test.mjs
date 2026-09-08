@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {preloadModels,createLocalCharacters} from '../src/people/models.js';
 import {installDOM} from './fixtures.mjs';
 
-test('local rigged residents and repaired Meshy Yuri load safely',async()=>{
+test('local rigged residents and animated Meshy Yuri load safely',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async url=>{
@@ -20,11 +20,11 @@ test('local rigged residents and repaired Meshy Yuri load safely',async()=>{
   for(const name of ['Johansson','Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yuri'){assert.equal(skins,1);for(const clip of ['Idle_Neutral','Walk','Run'])assert.ok(actor.actions.has(clip));assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);continue;}if(name==='Yui')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>20);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,4);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else assert.equal(skins,name==='Kenji'?6:1);
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
   }
   for(let tick=0;tick<60;tick++){actors[2].entity.position.z-=.02;models.update(1/60);scene.updateMatrixWorld(true);}
-  assert.equal(actors[2].current,'Walk');models.gesture(actors[0].entity);models.update(1/60);assert.equal(actors[0].current,'Wave');models.gesture(actors[7].entity);assert.doesNotThrow(()=>models.update(1/60));
+  assert.equal(actors[2].current,'Walk');models.gesture(actors[0].entity);models.update(1/60);assert.equal(actors[0].current,'Wave');
   for(const actor of actors){const bounds=new THREE.Box3().setFromObject(actor.model);assert.ok(bounds.max.y-bounds.min.y>1.3);actor.model.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite)));}
   // Exercise the actual exported vertex skinning at several times in every new clip.
   const point=new THREE.Vector3();
@@ -36,6 +36,16 @@ test('local rigged residents and repaired Meshy Yuri load safely',async()=>{
      for(let vertex=0;vertex<mesh.geometry.attributes.position.count;vertex+=17){mesh.getVertexPosition(vertex,point);assert.ok(point.toArray().every(Number.isFinite),'Finite deformed vertices');assert.ok(point.length()<4,'No exploded limbs');}
     });
    }
+  }
+  const yuri=actors[7];
+  yuri.mixer.stopAllAction();yuri.current=null;yuri.speed=0;models.update(1/60);scene.updateMatrixWorld(true);
+  assert.equal(yuri.current,'Idle_Neutral');
+  assert.ok(new THREE.Box3().setFromObject(yuri.model,true).getSize(new THREE.Vector3()).x<1,'Idle arms must be lowered, not a T-pose');
+  models.gesture(yuri.entity);models.update(1/60);assert.equal(yuri.current,'Wave');
+  for(let i=0;i<100;i++)models.update(1/60);assert.equal(yuri.current,'Idle_Neutral');
+  for(const name of ['Walk','Run']){
+   const track=yuri.actions.get(name).getClip().tracks.find(t=>t.name==='Hips.position');
+   for(let i=0;i<track.values.length;i+=3){assert.equal(track.values[i],track.values[0]);assert.equal(track.values[i+2],track.values[2]);}
   }
   const skin=actor=>{let result;actor.model.traverse(o=>{if(o.isSkinnedMesh)result=o;});return result;};
   assert.notEqual(skin(actors[1]).skeleton,skin(actors[4]).skeleton,'Two women keep independent animation skeletons');

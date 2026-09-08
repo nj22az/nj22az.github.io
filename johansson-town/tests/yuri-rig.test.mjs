@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 test('repaired Yuri has one skeleton, deduplicated compatible clips and local textures',async()=>{
- const b=await readFile(new URL('../assets/characters/realistic/yuri-meshy.glb',import.meta.url));
+ const b=await readFile(new URL('../assets/characters/realistic/yuri-playful.glb',import.meta.url));
  assert.equal(b.readUInt32LE(0),0x46546c67);assert.equal(b.readUInt32LE(8),b.length);
  const g=JSON.parse(b.subarray(20,20+b.readUInt32LE(12)).toString());
  assert.equal(g.skins.length,1);assert.equal(g.skins[0].joints.length,28);

@@ -14,5 +14,9 @@
   "headWeightsCorrected": 886,
   "collarWeightsCorrected": 295,
   "normalStrength": 0.35,
-  "subdivisionLevels": 1
+  "subdivisionLevels": 1,
+  "runtimeBytes": 1505456,
+  "runtimeSHA256": "85fc55e4ed9ac6b3522b96a65c219f7fd66c0e720f4cbcb3c11d29a7cb16dd92",
+  "runtimeTextureSize": 1024,
+  "runtimeFile": "assets/characters/realistic/yuri-playful.glb"
 }

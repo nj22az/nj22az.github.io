@@ -37,4 +37,10 @@ Yui: `characters/realistic/yui.glb` uses the MakeHuman CC0 anatomical base, youn
 
 ## Yuri — Thoughtful Girl biped revision
 
-The runtime `characters/realistic/yuri-meshy.glb` now uses the user's newer `Meshy_AI_Thoughtful_Girl_in_Pi_biped.zip`, containing textured Walking and Running GLBs. Included at the user's request; not represented as CC0. The supplied skeleton and locomotion are retained, with local Blender geometry/shading/weight repairs and an original quiet idle. The previous Garden Charm design is preserved in git history. Editable packed source and renders: `art/characters/yuri-biped/`.
+The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `Meshy_AI_Thoughtful_Girl_in_Pi_biped.zip`, containing textured Walking and Running GLBs. Included at the user's request; not represented as CC0. The supplied skeleton and locomotion are retained, with local Blender geometry/shading/weight repairs and an original quiet idle. The previous Garden Charm design is preserved in git history. Editable packed source and renders: `art/characters/yuri-biped/`.
+## Yuri — Thoughtful Girl (2026-09-08)
+- Source: owner-supplied `Meshy_AI_Thoughtful_Girl_in_Pi_biped(1).zip`, used at the owner's request. No CC0 licence is asserted.
+- Active file: `characters/realistic/yuri-playful.glb`; one textured skinned mesh with the supplied walking and running clips.
+- Packed with `tools/prepare-yuri.py`: duplicate clip removal, shared mesh/textures, embedded 1024px JPEG maps.
+- Original rig-specific idle/head tilt and greeting nod/hand flutter: `src/people/yuri-animation.js`. No facial morph targets or facial animation are supplied.
+- Previous Garden Charm asset is retained for rollback and is no longer requested at boot.

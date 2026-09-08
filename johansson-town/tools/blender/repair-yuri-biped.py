@@ -114,7 +114,7 @@ bpy.ops.wm.open_mainfile(filepath=str(work/'yuri-biped-clean.blend'));s=bpy.cont
 rig.animation_data.action=bpy.data.actions['Idle_Neutral'];s.frame_set(1)
 bpy.ops.file.pack_all();bpy.ops.wm.save_as_mainfile(filepath=str(out/'yuri.blend'),compress=True)
 bpy.ops.object.select_all(action='DESELECT');rig.select_set(True);mesh.select_set(True);bpy.context.view_layer.objects.active=rig
-bpy.ops.export_scene.gltf(filepath=str(root/'assets/characters/realistic/yuri-meshy.glb'),export_format='GLB',use_selection=True,export_animations=True,export_animation_mode='ACTIONS',export_nla_strips=False,export_force_sampling=True,export_frame_range=False,export_skins=True,export_morph=False,export_cameras=False,export_lights=False)
+bpy.ops.export_scene.gltf(filepath=str(out/'cleaned.glb'),export_format='GLB',use_selection=True,export_animations=True,export_animation_mode='ACTIONS',export_nla_strips=False,export_force_sampling=True,export_frame_range=False,export_skins=True,export_morph=False,export_cameras=False,export_lights=False)
 for name,frame in [('Idle_Neutral',1),('Walk',7),('Walk',18),('Run',5),('Run',13)]:
  rig.animation_data.action=bpy.data.actions[name];s.frame_set(frame);s.render.filepath=str(out/(name+'-'+str(frame)+'.png'));bpy.ops.render.render(write_still=True)
 print('DONE')

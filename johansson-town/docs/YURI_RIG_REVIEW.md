@@ -9,9 +9,9 @@ The user's `Meshy_AI_Thoughtful_Girl_in_Pi_biped.zip` supplies the new textured 
 - Added one geometry subdivision pass to soften angular silhouettes and interpolate weights. No texture repainting or generated replacement image is used.
 - Corrected 886 head-region vertex weights so the face, hair, hat and ribbon follow the head consistently. Bound the white collar cloth to the chest to remove stray auto-rig influences.
 - Removed duplicate animation takes, retained one Walk and one Run, and removed horizontal hip translation so the game's controller owns movement.
-- Added an original subtle breathing Idle_Neutral pose. Unsupported gestures safely fall back to idle rather than throwing an error. This revision does not claim a waving or facial-animation clip.
+- Added an original subtle breathing Idle_Neutral pose. Unsupported gestures safely fall back to idle rather than throwing an error. The greeting from the concurrent main update is retained by layering its head/hand motion onto the authored idle; there is no facial rig.
 
-The updated local `assets/characters/realistic/yuri-meshy.glb` retains Yuri's larger 1.88 m total visual height and her dedicated Sakura conversations. The MakeHuman model remains the local load fallback. Fog remains disabled.
+The updated local `assets/characters/realistic/yuri-playful.glb` retains Yuri's larger 1.88 m total visual height and her dedicated Sakura conversations. The MakeHuman model remains the local load fallback. Fog remains disabled.
 
 ## Evidence and limits
 
@@ -24,3 +24,5 @@ blender -b --python tools/blender/repair-yuri-biped.py -- --root /path/to/johans
 ```
 
 The user supplied the mesh, textures, skeleton and locomotion files for use in this project. They are not labelled CC0. See assets/ATTRIBUTION.md.
+
+Integration preserves the concurrent main update’s greeting callbacks and 1K texture budget. After Blender export, run `python tools/compact-yuri-rig.py art/characters/yuri-biped/cleaned.glb assets/characters/realistic/yuri-playful.glb` to package the runtime GLB. The previous Garden Charm file remains archived under its existing filename.

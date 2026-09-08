@@ -14,6 +14,10 @@ test('Yuri offers selectable topics, remembers an introduction and never charges
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/You are back/);
  dom.button('Tell me a shop secret');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/assistant manager/);
+ dom.button('Tell me something else');dom.button('Give me a little challenge');
+ assert.match(document.querySelector('#activityBody').firstChild.textContent,/seagull/);
+ dom.button('Tell me something else');dom.button('Do you sing along to the radio?');
+ assert.match(document.querySelector('#activityBody').firstChild.textContent,/concert hall/);
  assert.equal(acts.state.yen,yen);acts.close();
  const restored=createActivities(options);restored.action('resident','Yuri');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/You are back/);
