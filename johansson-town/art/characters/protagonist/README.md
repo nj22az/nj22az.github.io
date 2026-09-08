@@ -24,9 +24,13 @@ Validation: 48 CPU tests pass, plus the new WebMCP travel test (49 checks total)
 
 The runtime Walk now uses a wider stance and restrained pelvis motion on this same skeleton. Two-bone leg IK holds the supplied ankle height/forward stride while separating foot placement into two lanes, 0.26–0.28m apart. Hip roll falls to about 22% of the original; a modest chest counterturn and relaxed arm swing provide the swagger. The loop is 1.14 seconds before speed adjustment. Only the protagonist gets the slower walk cadence; travel speed and Run remain unchanged.
 
-`src/people/swagger-walk.js` bakes the cycle once during model loading, keeping IK out of the frame loop. The GLB, appearance, rig, skin weights, idle and run clips are unchanged. `swagger-report.json` compares the original and adapted cycle. The dedicated gait check covers foot separation, pelvis motion, original ankle clearance, finite transforms and a matching loop seam. All 50 CPU checks and the production build pass. Preview frames are the actual runtime-skinned mesh rendered in Blender; mobile GPU performance was not measured.
+`src/people/swagger-walk.js` bakes the cycle once during model loading, keeping IK out of the frame loop. The GLB, appearance, rig, skin weights, idle and run clips are unchanged. `swagger-report.json` compares the original and adapted cycle. The dedicated gait check covers foot separation, pelvis motion, original ankle clearance, finite transforms and a matching loop seam. All 51 CPU checks and the production build pass. Preview frames are the actual runtime-skinned mesh rendered in Blender; mobile GPU performance was not measured.
 
 ```sh
 node tools/review-protagonist-geometry.mjs /tmp/swagger-cycle.json --walk-cycle
 blender -b --python tools/blender/review-protagonist.py -- --root . --poses /tmp/swagger-cycle.json --output /tmp/swagger-frames --samples 12
 ```
+
+## Straight gaze revision
+
+The supplied head direction looked roughly 24° down at idle, 22° down while walking and 9° down while running. `src/people/straight-gaze.js` uses the rig’s `headfront` marker to bake the Head rotation for idle, Walk and Run until the face direction is level. This corrects the actual eye line without changing the face mesh, body, feet or Yuri. It samples in the character’s model space, so turning in the world does not affect the correction. See `gaze-report.json` for before/after measurements. The gait test samples the face marker throughout all three loops and keeps it within 0.35° of level.

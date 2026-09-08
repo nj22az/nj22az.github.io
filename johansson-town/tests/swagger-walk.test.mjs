@@ -32,3 +32,20 @@ test('swagger keeps separate foot lanes, steadier hips, foot timing and a seamle
   }
  }finally{globalThis.createImageBitmap=bitmap;globalThis.self=self;}
 });
+
+test('idle, walk and run keep the protagonist’s gaze level',async()=>{
+ const bitmap=globalThis.createImageBitmap,self=globalThis.self;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ try{
+  const bytes=await readFile(new URL('../assets/characters/protagonist/johansson.glb',import.meta.url));const asset=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
+  const clips=prepareProtagonistAnimations(asset),mixer=new THREE.AnimationMixer(asset.scene),head=asset.scene.getObjectByName('Head'),front=asset.scene.getObjectByName('headfront');
+  const headPosition=new THREE.Vector3(),frontPosition=new THREE.Vector3();
+  for(const name of ['Idle_Neutral','Walk','Run']){
+   const clip=clips.find(c=>c.name===name);mixer.stopAllAction();mixer.clipAction(clip).reset().play();
+   for(let i=0;i<64;i++){
+    mixer.setTime(clip.duration*i/64);asset.scene.updateMatrixWorld(true);head.getWorldPosition(headPosition);front.getWorldPosition(frontPosition);
+    const face=frontPosition.sub(headPosition).normalize(),pitch=THREE.MathUtils.radToDeg(Math.atan2(face.y,Math.hypot(face.x,face.z)));
+    assert.ok(Math.abs(pitch)<.35,`${name} gaze is ${pitch.toFixed(2)}° from level`);
+   }
+  }
+ }finally{globalThis.createImageBitmap=bitmap;globalThis.self=self;}
+});

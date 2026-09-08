@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?swagger-1';
+import {createLocalCharacters,preloadModels} from './models.js?gaze-1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
