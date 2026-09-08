@@ -22,3 +22,8 @@
 #directoryGrid .izakaya-shortcut span{color:#fff0d4}
 @media(prefers-reduced-motion:reduce){#activity #activityActions button{transition:none}}
 @media(pointer:coarse) and (max-width:430px){#movementActions{right:100px;width:74px}#movementActions #run{width:74px}#act{right:14px;width:76px;height:76px}}
+
+#hud #viewButton{position:fixed;pointer-events:auto;top:max(108px,calc(env(safe-area-inset-top) + 102px));right:max(14px,env(safe-area-inset-right));min-height:44px;padding:8px 14px;border:2px solid #e5eed9;border-radius:16px;background:#487c76;color:#fff7df;font:800 12px system-ui;box-shadow:0 3px 0 #273e4055;cursor:pointer}
+#hud #waypoint{position:fixed;pointer-events:auto;top:max(166px,calc(env(safe-area-inset-top) + 160px));left:max(14px,env(safe-area-inset-left));max-width:calc(100vw - 28px);min-height:44px;padding:10px 14px;border:2px solid #eed1ac;border-radius:15px;background:#fff2dbe8;color:#704d4e;font:700 13px system-ui;cursor:pointer}
+#hud #viewButton:focus-visible,#hud #waypoint:focus-visible{outline:3px solid #f7cd6c;outline-offset:3px}
+#directoryGrid [data-id="travel-progress"]{grid-column:1/-1;background:#eadcbd;color:#635443;border:2px dashed #c8ae83;border-radius:16px}

@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {preloadModels,createLocalCharacters} from '../src/people/models.js';
 import {installDOM} from './fixtures.mjs';
 
-test('local rigged residents and animated Meshy Yuri load safely',async()=>{
+test('supplied protagonist, residents and Yuri load with bounded animation',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async url=>{
@@ -15,7 +15,7 @@ test('local rigged residents and animated Meshy Yuri load safely',async()=>{
   return new Response(await readFile(new URL('../assets/characters/'+name,import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:24,total:24});
+  assert.deepEqual(await preloadModels(),{ready:25,total:25});
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   for(const name of ['Johansson','Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
@@ -28,7 +28,7 @@ test('local rigged residents and animated Meshy Yuri load safely',async()=>{
   for(const actor of actors){const bounds=new THREE.Box3().setFromObject(actor.model);assert.ok(bounds.max.y-bounds.min.y>1.3);actor.model.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite)));}
   // Exercise the actual exported vertex skinning at several times in every new clip.
   const point=new THREE.Vector3();
-  for(const kenji of [actors[2],actors[6],actors[7]])for(const action of kenji.actions.values()){
+  for(const kenji of [actors[0],actors[2],actors[6],actors[7]])for(const action of kenji.actions.values()){
    kenji.mixer.stopAllAction();action.reset().play();
    for(const fraction of [0,.25,.5,.75,1]){
     kenji.mixer.setTime(action.getClip().duration*fraction);scene.updateMatrixWorld(true);
@@ -37,6 +37,11 @@ test('local rigged residents and animated Meshy Yuri load safely',async()=>{
     });
    }
   }
+  const protagonist=actors[0];assert.match(protagonist.entity.userData.visualSource,/User-supplied Meshy · Johansson/);
+  protagonist.entity.visible=false;protagonist.gestureTime=0;
+  for(let i=0;i<90;i++){protagonist.entity.position.z-=5/60;models.update(1/60);}assert.equal(protagonist.current,'Run','FPV keeps the protagonist animation current');
+  protagonist.entity.visible=true;for(let i=0;i<90;i++)models.update(1/60);assert.equal(protagonist.current,'Idle_Neutral');
+  for(const clip of ['Walk','Run'])for(const track of protagonist.actions.get(clip).getClip().tracks)if(track.name==='Hips.position')for(let i=0;i<track.values.length;i+=3){assert.equal(track.values[i],track.values[0]);assert.equal(track.values[i+2],track.values[2]);}
   const yuri=actors[7];
   yuri.mixer.stopAllAction();yuri.current=null;yuri.speed=0;models.update(1/60);scene.updateMatrixWorld(true);
   assert.equal(yuri.current,'Idle_Neutral');

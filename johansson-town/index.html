@@ -19,7 +19,7 @@
 
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="living-town.css?v=3">
+<link rel="stylesheet" href="living-town.css?v=5">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -33,11 +33,13 @@
     <div class="scene-line">昭和63年 · A harbour neighbourhood, 1988</div>
     <button id="enter">ENTER TOWN</button>
     <div id="bootStatus" class="boot-status">READY</div>
-    <div class="desktop-help">FIRST PERSON · WASD move · SHIFT run · mouse look · SPACE jump · E interact · R drink<br>Q directory · B notebook · V camera · N time</div>
+    <div class="desktop-help">1ST / 3RD PERSON · WASD move · SHIFT run · mouse look · SPACE jump · E interact · R drink<br>Q directory · B notebook · V camera · N time</div>
   </div>
 </section>
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
+  <button id="viewButton" aria-label="Switch to first person" aria-pressed="false">3rd person ⇄</button>
+  <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
   <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
 
 
@@ -46,7 +48,7 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="cameraButton">CAMERA · FIRST</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="cameraButton">VIEW · THIRD PERSON</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1988</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick"><div id="knob"></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
@@ -91,7 +93,7 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       }
     },25000);
     try{
-      await import('./src/boot.js?living-town=4');
+      await import('./src/boot.js?living-town=5');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

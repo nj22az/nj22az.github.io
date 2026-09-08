@@ -56,3 +56,7 @@ The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `M
 ## Living-town prototype · September 2026
 
 Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Yuri's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Yuri; see `docs/LIVING-TOWN.md`.
+
+## User-supplied protagonist
+
+`characters/protagonist/johansson.glb` is the owner-supplied Meshy floral-shirt character, with its own rig and merged animations. Embedded textures resized to 1K; mesh and rig preserved. Source hash and reproducible commands: `art/characters/protagonist/`.

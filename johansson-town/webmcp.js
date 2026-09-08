@@ -12,7 +12,10 @@ const DESTINATIONS=Object.freeze({
   journal:'The Journal Press',
   electronics:'Johansson Electronics',
   market:'Colonial Club Market',
-  career:'Career Bureau'
+  career:'Career Bureau',
+  ramen:'Sato Ramen',
+  izakaya:'Minato Izakaya',
+  'tea-house':'Corner Tea House'
 });
 
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -39,7 +42,7 @@ function getState(){
   const modal=activityOpen();
   const directory=directoryOpen();
   const buttons=modal?actionButtons().map((b,index)=>({index,label:(b.textContent||'').trim()})):[];
-  const destinations=directory?[...document.querySelectorAll('#directoryGrid .dir-item')].map(b=>({id:b.dataset.id,label:(b.querySelector('b')?.textContent||b.textContent||'').trim()})):[];
+  const destinations=directory?[...document.querySelectorAll('#directoryGrid .dir-item')].map(b=>({id:b.dataset.id,label:(b.querySelector('b')?.textContent||b.textContent||'').trim(),quickTravel:b.dataset.travel==='ready'})):[];
   return {
     running:gameReady(),
     place:text('#place'),
@@ -128,6 +131,7 @@ async function travel({destination}={}){
   await sleep(20);
   const button=document.querySelector(`#directoryGrid .dir-item[data-id="${CSS.escape(id)}"]`);
   if(!button)return result(false,{error:'Destination button is unavailable.',destination:id,state:getState()});
+  if(button.dataset.travel!=='ready'){button.click();return result(false,{error:'Quick travel is locked. Bring Tama home and finish Kenji’s workshop escort. Walking directions are marked.',destination:id,state:getState()});}
   button.click();
   await sleep(80);
   return result(true,{action:'directory_travel',destination:id,label:DESTINATIONS[id],state:getState()});
@@ -202,7 +206,7 @@ const tools=[
   },
   {
     name:TOOL_PREFIX+'travel',
-    description:'Use the in-game town directory to travel Johansson to a named shop or bureau. This uses the same directory destination buttons available to the player.',
+    description:'Use unlocked town shortcuts to travel to a named place. Requires bringing Tama home and finishing Kenji’s workshop escort. Before unlocking, marks walking directions and returns a locked result without moving the player.',
     inputSchema:{type:'object',properties:{destination:{type:'string',description:'Destination id or display name, such as frontrow or Front-Row Books.'}},required:['destination'],additionalProperties:false},
     annotations:{readOnlyHint:false,untrustedContentHint:false},
     execute:travel

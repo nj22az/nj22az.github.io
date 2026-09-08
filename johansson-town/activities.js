@@ -1,3 +1,4 @@
+import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {PROFILES} from './src/people/profiles.js';
 import {gossipAt} from './src/people/social.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
@@ -11,7 +12,7 @@ import {SAVE_KEY,readSave} from './src/save.js';
 
 export function createActivities({say,onConversation=()=>{},onWeather,onTime,onCamera,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false,cameraMode:'third',quickTravelNotified:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
@@ -21,13 +22,14 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
-      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;
+      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;state.cameraMode=saved.cameraMode==='first'?'first':'third';state.quickTravelNotified=saved.quickTravelNotified===true;
     }
   } catch {}
 
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
 
   function save(){
+    if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Kenji’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
     try {state.minutes=getMinutes();localStorage.setItem(SAVE_KEY,JSON.stringify(state));$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
@@ -49,7 +51,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aiko beside the bookshop.','Find Tama, Aiko’s cat, near the ramen stall. A fish might help.','Return to Aiko with news of Tama.','Tama is safely home. Aiko has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\nShrine intention: ${state.shrineIntent||'Unset'}\n\n${quest}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\nShrine intention: ${state.shrineIntent||'Unset'}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -123,7 +125,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
   function legacyResident(name){
     if(name==='Aiko'){
       if(state.quest===0){show('Aiko · Bookshop assistant','My ginger cat Tama has wandered off again. He likes the warm corner by the ramen stall. Would you find him?',[['I will look for Tama',()=>{state.quest=1;save();receipt('A note in your notebook','Look near the ramen stall. If Tama is hungry, try the fishing pier.');}],['Later',close]]);}
-      else if(state.quest===2){state.quest=3;state.yen+=500;save();receipt('Aiko','Tama followed you home! Thank you. Please take ¥500 for your trouble.');}
+      else if(state.quest===2){state.quest=3;state.yen+=500;save();receipt('Aiko','Tama followed you home! Thank you. Please take ¥500 for your trouble. That is one town favour complete — your Field book tracks the shortcuts you can earn.');}
       else receipt('Aiko',state.quest===3?'Tama is sleeping upstairs. The harbour is lovely at sunset.':'Try the ramen stall further down the street. Tama cannot resist fresh fish.');
       return;
     }
@@ -158,7 +160,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
 
   function arcade(){
     show('STAR PORT · 1988','Stop the moving signal inside the green zone. Three rounds. Entry ¥100; three hits pays ¥250.',[
-      ['Insert ¥100',()=>{if(!spend(100))return;let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3){state.yen+=250;state.kenjiEscort=true;note('Perfect Star Port run. Kenji offered a workshop escort.');}save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
+      ['Insert ¥100',()=>{if(!spend(100))return;let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3){state.yen+=250;if(state.kenjiEscort!=='done')state.kenjiEscort=true;note('Perfect Star Port run. Kenji offered a workshop escort.');}save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
       ['Leave',close]
     ]);
   }
@@ -208,6 +210,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
     switch(kind){
       case 'store-item':storeItem(detail);break;
       case 'store-catalogue':show('Yuri’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Yuri is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
+      case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
       case 'resident':resident(name);break;
       case 'izakaya-menu':izakayaMenu();break;
@@ -236,7 +239,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#cameraButton').onclick=onCamera;
-  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji and fallback Yuri: Blender-authored MakeHuman / MPFB · CC0. Original scripted animations.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji and fallback Yuri: Blender-authored MakeHuman / MPFB · CC0. Original scripted animations.\nProtagonist: user-supplied Meshy character with supplied walk/run and gesture animations.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
