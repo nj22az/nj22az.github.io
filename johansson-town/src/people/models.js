@@ -1,4 +1,4 @@
-import {prepareProtagonistAnimations} from './protagonist-animation.js?swagger-1';
+import {prepareProtagonistAnimations} from './protagonist-animation.js?gaze-1';
 import {prepareYuriAnimations} from './yuri-animation.js?yuri-greeting-1';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';

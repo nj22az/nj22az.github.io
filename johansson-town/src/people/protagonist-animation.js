@@ -1,3 +1,4 @@
+import {straightenGaze} from './straight-gaze.js';
 import {swaggerWalk} from './swagger-walk.js';
 import * as THREE from '../../vendor/three.module.js';
 
@@ -29,5 +30,6 @@ export function prepareProtagonistAnimations(asset){
  }
  const index=clips.findIndex(c=>c.name==='Walk');
  if(index>=0)clips[index]=swaggerWalk(asset,clips[index],clips.find(c=>c.name==='Idle_Neutral'));
+ for(let i=0;i<clips.length;i++)if(['Idle_Neutral','Walk','Run'].includes(clips[i].name))clips[i]=straightenGaze(asset,clips[i],{targetDegrees:0,loop:true});
  return clips;
 }
