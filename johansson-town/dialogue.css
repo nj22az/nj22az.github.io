@@ -1,0 +1,26 @@
+/* Original, playful town conversation UI. Loaded after the older square-panel styles. */
+#activity{background:rgba(29,48,57,.28);padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));backdrop-filter:none}
+#activity .activity-card{width:min(640px,100%);max-height:88dvh;border:3px solid #fffdf2;border-radius:32px;padding:24px 28px 28px;background:#fff8e9;color:#293e48;box-shadow:0 8px 0 #b9c6b5,0 20px 60px #142e4133;font-family:"Avenir Next","Arial Rounded MT Bold","Yu Gothic",system-ui,sans-serif;animation:conversation-pop .24s ease-out;scrollbar-width:thin;scrollbar-color:#d5b998 #fff8e9}
+#activity .activity-card header{gap:12px;align-items:center}
+#activity .activity-card header>span{display:inline-flex;align-items:center;gap:8px;color:#775c4a;font-size:11px;font-weight:800;letter-spacing:.09em}
+#activity .activity-card header>span>span{display:grid;place-items:center;width:32px;height:32px;background:#ffe1a4;border-radius:50%;font-size:23px;color:#a75439}
+#activity #closeActivity{flex-shrink:0;min-height:44px;padding:8px 15px;border:2px solid #e6d8bd;border-radius:999px;background:#fffdf7;color:#52615c;font-family:inherit;font-weight:800;font-size:13px;line-height:1.2;letter-spacing:0;cursor:pointer}
+#activity #closeActivity span{font-size:22px;vertical-align:middle;margin-left:5px}
+#activity #activityTitle{margin:20px 0 16px;font-family:inherit;font-size:clamp(23px,4vw,32px);line-height:1.25;letter-spacing:-.025em;color:#28594f}
+#activity #activityBody{font-size:17px;line-height:1.65;overflow-wrap:anywhere}
+#activity #activityBody p{margin:0 0 22px;padding:18px 20px;border-radius:20px 20px 20px 5px;background:#fffdf8;border:1px solid #eadfc8}
+#activity #activityActions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px;padding:3px 0 5px}
+#activity #activityActions button{position:relative;min-height:50px;padding:13px 18px;border:2px solid #98c7ae;border-radius:19px;background:#d7efdc;color:#214b3b;box-shadow:0 4px 0 #91b49d;font-family:inherit;font-size:15px;font-weight:800;line-height:1.35;letter-spacing:0;text-align:left;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .12s ease;overflow-wrap:anywhere}
+#activity #activityActions button:nth-child(3n+2){background:#ffebbd;border-color:#e7c47f;color:#654a22;box-shadow:0 4px 0 #ceb079}
+#activity #activityActions button:nth-child(3n){background:#f9dfe3;border-color:#dfaebc;color:#744657;box-shadow:0 4px 0 #c79aab}
+#activity #activityActions button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none;transform:none}
+#activity button:focus-visible{outline:3px solid #285d8c;outline-offset:4px}
+#activity #activityActions button:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #91b49d}
+#activity a{color:#285d8c;text-underline-offset:3px}
+#activity .arcade-track{border-radius:999px;border:3px solid #e8cf97}
+#activity .signal{color:#9a452b}
+@media(hover:hover){#activity #activityActions button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.035)}#activity #closeActivity:hover{background:#ffebbd}}
+@keyframes conversation-pop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){#activity .activity-card{padding:18px;border-radius:25px}#activity #activityBody{font-size:16px}#activity #activityBody p{padding:14px}#activity #activityActions{grid-template-columns:1fr}}
+@media(max-height:520px){#activity .activity-card{max-height:92dvh;padding:16px 20px}#activity #activityTitle{margin:10px 0}#activity #activityBody p{padding:10px 14px;margin-bottom:12px}}
+@media(prefers-reduced-motion:reduce){#activity .activity-card{animation:none}#activity #activityActions button{transition:none}#activity #activityActions button:hover:not(:disabled),#activity #activityActions button:active:not(:disabled){transform:none}}

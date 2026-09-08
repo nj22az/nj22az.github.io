@@ -37,10 +37,10 @@ test('store purchases charge once, stack goods, survive reload and honour closin
  restored.close();acts.close();
 });
 
-test('clear-day atmosphere keeps fog beyond the shopping street and out of interiors',async()=>{
+test('fog stays disabled in daylight, night, rain and interiors',async()=>{
  const {atmosphere}=await import('../src/render/atmosphere.js');
- const clear=atmosphere(1,false,false),wet=atmosphere(1,true,false),inside=atmosphere(1,false,true);
- assert.ok(clear.near>=180);assert.ok(clear.far>=500);assert.ok(wet.near<clear.near);assert.ok(inside.near>=500);assert.ok(inside.ambient>=1);
+ for(const day of [0,.4,1])for(const rain of [false,true])for(const inside of [false,true])assert.equal(atmosphere(day,rain,inside).fog,null);
+ assert.ok(atmosphere(1,false,true).ambient>=1);
 });
 test('stocked shop has a walkable approach to every shelf item',()=>{
  const room=new THREE.Group(),clerk=new THREE.Group(),colliders=[];

@@ -58,7 +58,7 @@ test('every resident has several authored subjects and schedules stream at most 
 test('runtime assets, PBR maps and sound files exist locally',async()=>{
  for(const name of ['asphalt','timber','plaster','roof'])for(const suffix of ['nor_gl','arm'])assert.ok((await readFile(resolve(root,'assets/materials/'+name+'-'+suffix+'.jpg'))).length>1000);
  for(const name of ['water','cicadas','crickets','engine','train','steps-asphalt','steps-wood','steps-stone','clunk','click','radio-0','radio-1','radio-2'])assert.equal((await readFile(resolve(root,'assets/audio/'+name+'.wav'))).toString('ascii',0,4),'RIFF');
- const walk=async dir=>{for(const e of await readdir(dir,{withFileTypes:true})){if(['node_modules','dist','tests','tools'].includes(e.name))continue;const p=resolve(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.js')){const s=(await readFile(p,'utf8')).replace(/\/\*[\s\S]*?\*\//g,'').replace(/^\s*\/\/.*$/gm,'');for(const m of s.matchAll(/(?:from\s+|import\()['"]([^'"]+)/g)){const ref=m[1];assert.ok(!ref.startsWith('http'),'remote import '+p);if(ref.startsWith('.'))await access(resolve(dirname(p),ref));}}}};await walk(root);
+ const walk=async dir=>{for(const e of await readdir(dir,{withFileTypes:true})){if(['node_modules','dist','tests','tools'].includes(e.name))continue;const p=resolve(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.js')){const s=(await readFile(p,'utf8')).replace(/\/\*[\s\S]*?\*\//g,'').replace(/^\s*\/\/.*$/gm,'');for(const m of s.matchAll(/(?:from\s+|import\()['"]([^'"]+)/g)){const ref=m[1];assert.ok(!ref.startsWith('http'),'remote import '+p);if(ref.startsWith('.'))await access(resolve(dirname(p),ref.split(/[?#]/)[0]));}}}};await walk(root);
 });
 
 

@@ -1,5 +1,5 @@
 import {shelfAimScore} from './interact/aim.js';
-import {atmosphere} from './render/atmosphere.js';
+import {atmosphere} from './render/atmosphere.js?clear-air-1';
 import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js';
@@ -22,7 +22,7 @@ const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=70
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight,false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=new THREE.Fog(0xb8dce9,180,520);const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
 const bands=new Uint8Array([48,48,48,255,115,115,115,255,184,184,184,255,255,255,255,255]),gradient=new THREE.DataTexture(bands,4,1,THREE.RGBAFormat);gradient.needsUpdate=true;gradient.magFilter=THREE.NearestFilter;gradient.minFilter=THREE.NearestFilter;
 const outlineMat=new THREE.MeshBasicMaterial({color:0x252821,side:THREE.BackSide}),boxCache=new Map();
 const toon=(c,map=null)=>new THREE.MeshStandardMaterial({color:c,map,roughness:.82});
@@ -134,7 +134,7 @@ function updatePlayer(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.A
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
-function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.02+day*.32)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog.color.copy(scene.background);scene.fog.near=air.near;scene.fog.far=air.far;ambient.intensity=air.ambient;renderer.toneMappingExposure=air.exposure;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
+function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.02+day*.32)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient;renderer.toneMappingExposure=air.exposure;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
 function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;}$('#directory').classList.toggle('hidden',!open);if(open)$('#closeDirectory').focus();}
 $('#directoryGrid').innerHTML=SITES.map(s=>`<button class="dir-item" data-id="${s.id}"><b>${s.title}</b><span>${s.sub}</span></button>`).join('');document.querySelectorAll('.dir-item').forEach(b=>b.onclick=()=>{if(current)leaveRoom();const s=SITES.find(x=>x.id===b.dataset.id);player.position.copy(doors.get(s.id));player.position.z+=.5;yaw=s.side?-s.side*Math.PI/2:0;toggleDir(false);say(s.title,1.4)});$('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){

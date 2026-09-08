@@ -74,6 +74,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     api.simulate(1/60);
     api.setTime();
+    assert.equal(api.scene.fog,null,'Scene fog is disabled');
     assertFiniteTransforms(api,'outdoor startup');
 
     const startX=api.player.position.x;
@@ -97,6 +98,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.ok(api.reviewRoomState().colliders>0,'Interior has colliders: '+site.id);
       api.simulate(1/60);
       assertFiniteTransforms(api,'inside '+site.id);
+      assert.equal(api.scene.fog,null,'No interior fog');
       api.leaveRoom();
       assert.equal(api.reviewCurrentRoom(),null,'Interior exit: '+site.id);
       assert.equal(api.reviewRoomState().townVisible,true);
