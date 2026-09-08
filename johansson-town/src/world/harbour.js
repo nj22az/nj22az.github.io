@@ -1,3 +1,4 @@
+import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js';
 import {MERCHANT_FRONTAGES,merchantRoofGeometry} from './merchant-roofs.js';
@@ -7,7 +8,7 @@ import * as THREE from '../../vendor/three.module.js';
 
 // Johansson Town original harbour geometry, using the shared PBR surface maps.
 // Static geometry is instanced by geometry/material; interaction anchors stay independent.
-export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition}) {
+export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition,harbourCellSize=48,harbourBatching=true}) {
   const group=new THREE.Group();scene.add(group);
   const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],people=[],water=[],wetMeshes=[];
   const loader=new THREE.TextureLoader();
@@ -49,7 +50,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const key=scalable?(type==='box'?'box:unit':'cylinder:unit/'+args[3]):type+args.join(',');
     if(!geometries.has(key))geometries.set(key,type==='box'?new THREE.BoxGeometry(1,1,1):type==='cylinder'?new THREE.CylinderGeometry(...(scalable?[1,1,1,args[3]]:args)):new THREE.SphereGeometry(...args));
     const mat=material(c,map),bk=key+mat.uuid;
-    if(!batches.has(bk))batches.set(bk,{geo:geometries.get(key),mat,matrices:[]});
+    if(!batches.has(bk))batches.set(bk,{geo:geometries.get(key),mat,mutable:map==='road',matrices:[]});
     const obj=new THREE.Object3D();obj.position.set(...p);obj.rotation.set(...rotation);if(scalable)obj.scale.set(...(type==='box'?args:[args[0],args[2],args[0]]));obj.updateMatrix();batches.get(bk).matrices.push(obj.matrix.clone());
   }
   const box=(s,p,c=0xffffff,r=[0,0,0],map=null)=>shape('box',s,p,c,r,map);
@@ -267,9 +268,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   });
   const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);const cb=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.65),material(0xd0a471));cb.position.y=.28;cat.add(cb);const ch=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0xd0a471));ch.position.set(0,.49,-.3);cat.add(ch);for(const x of [-.11,.11]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.085,.18,3),material(0xd0a471));ear.position.set(x,.67,-.3);cat.add(ear);}register(cat,'Greet the cat',()=>onAction('cat'));
 
-  for(const {geo,mat,matrices} of batches.values()){
-    const m=new THREE.InstancedMesh(geo,mat,matrices.length);matrices.forEach((matrix,i)=>m.setMatrixAt(i,matrix));m.castShadow=shadows;m.receiveShadow=shadows;group.add(m);
-  }
+  for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
   let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*3);
   for(let i=0;i<rainCount;i++){positions[i*3]=(Math.random()-.5)*32;positions[i*3+1]=Math.random()*16;positions[i*3+2]=(Math.random()-.5)*120;}
