@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import {ITEMS} from '../content-data.js';
-import {DIALOGUE} from '../cast-ai.js';
+import {DIALOGUE} from '../src/people/schedules.js';
 import {makeContentObject} from '../content-items.js';
 import {createContentItems} from '../content-items.js';
-import {createTown} from '../world-professional.js';
-import {createCharacters} from '../characters-aaa.js';
+import {createTown} from '../src/world/town.js';
+import {createCharacters} from '../src/people/characters.js';
 import {createActivities} from '../activities.js';
 import {createInspector} from '../inspect-3d.js';
-import * as THREE from '../../the-front-row-seat/pelican/vendor/three.module.min.js';
+import * as THREE from '../vendor/three.module.js';
 class Element{
  constructor(){this.children=[];this.hidden=false;this.style={};this.listeners={};this.classList={add(){},remove(){},contains(){return true;},toggle(){}};}
  append(...items){this.children.push(...items);}appendChild(e){this.append(e);}replaceChildren(){this.children=[];}focus(){}setAttribute(){}querySelectorAll(){return this.children;}
@@ -28,8 +28,8 @@ const acts=createActivities({say(){},onWeather(){},onTime(){},onCamera(){}});
 assert.equal(acts.state.yen,888);assert.equal(acts.state.quest,1);assert.ok(storage.has('johansson-town-1988-v3'),'migration preserves v3');
 for(const id of ['book','cv','keychain','bligh'])acts.inspectItem(ITEMS.find(i=>i.id===id));
 acts.inspectItem(ITEMS.find(i=>i.id==='book'));assert.equal(acts.state.inspectedIds.length,4);
-assert.equal(JSON.parse(storage.get('johansson-town-1988-v4')).inspectedIds.length,4);
-acts.openURL('https://example.com/');assert.ok(acts.state.notes.includes('https://example.com/'));
+assert.equal(JSON.parse(storage.get('johansson-town-1988-v5')).inspectedIds.length,4);
+acts.openURL('https://example.com/');assert.ok(!acts.state.notes.includes('https://example.com/'));
 for(const name of Object.keys(DIALOGUE)){const lines=[];for(let i=0;i<8;i++){acts.action('resident',name);const text=document.querySelector('#activityBody').firstChild.textContent;assert.ok(!lines.slice(-3).includes(text),name+' repeated within three lines');lines.push(text);}assert.ok(lines.length>=6);}
 const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();let dpr=2;const renderer={getPixelRatio:()=>dpr,setPixelRatio:n=>dpr=n,render(){}};
 const inspector=createInspector({scene,camera,renderer,canvas:new Element(),onInspect:i=>acts.inspectItem(i),onLink(){},onContact(){},resetInput(){}});
@@ -38,9 +38,8 @@ console.log('Office checks passed: 18 mesh items, pages, v3 migration, deduplica
 const anchors=[];
 const world=createTown({scene,sites:[],mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
 const characters=createCharacters({mobile:true,shadows:false});world.people.forEach(p=>characters.attach(p.g,p.g.userData.name));
-assert.equal(world.people.length,6);assert.equal(characters.actors.length,6);
+assert.equal(world.people.length,20);assert.equal(characters.actors.length,20);
 createContentItems({group:world.group,register:(o,label,fn)=>anchors.push({o,label,fn}),colliders:world.colliders,onInspect(){},onRead(){}});
 world.update(.016,1,1);world.beats.update(.016,1,1000);characters.update(.016);
-assert.ok(anchors.some(a=>a.label==='Lift Form 3D Studio'));
-assert.ok(anchors.some(a=>a.label==='Lift NILS JOHANSSON — FIELD NOTES / CV'));
-console.log('Combined world construction passed: six local residents, working pier, content anchors and living props.');
+for(const id of ['keychain','cv'])assert.ok(anchors.some(a=>a.label==='Lift '+ITEMS.find(i=>i.id===id).title),id+' stays inspectable');
+console.log('Combined world construction passed: twenty local residents, working pier, content anchors and living props.');

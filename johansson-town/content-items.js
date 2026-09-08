@@ -1,4 +1,4 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import * as THREE from './vendor/three.module.js';
 import {ITEMS} from './content-data.js';
 
 export function textTexture(title,body){
@@ -62,7 +62,7 @@ export function createContentItems({group,register,colliders,onInspect,onRead}){
   // Calipers and vice occupy the workshop edge; they are never attached to a character.
   cube(group,[.34,.25,.35],[-9.3,1.17,-56.8],0x4e5c5e);cube(group,[.5,.05,.05],[-9.1,1.24,-56.5],0xaab4b0);cube(group,[.035,.05,.25],[-9.25,1.25,-56.5],0xaab4b0);
   const label=(title,body,pos)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.75),new THREE.MeshBasicMaterial({map:textTexture(title,body),side:THREE.DoubleSide}));p.position.set(...pos);group.add(p);};
-  label('FORM 3D STUDIO','Private, in-browser. STL & STEP.',[-8.7,1.85,-57.6]);
+  label('PATTERN WORKSHOP','BRASS · TIMBER · HAND TOOLS',[-8.7,1.85,-57.6]);
   label('HARBOUR OFFICE','FIELD SERVICE · MARINE SYSTEMS',[-8.1,1.85,-53.6]);
   label('SIX BOOKS','Five centuries. Read in the chair by the window.',[5.25,1.85,35.9]);
   return {items:ITEMS,objects};

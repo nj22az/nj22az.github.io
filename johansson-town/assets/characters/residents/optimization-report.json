@@ -1,0 +1,131 @@
+[
+  {
+    "name": "worker",
+    "filename": "town-worker.glb",
+    "bytes": 1113800,
+    "sourceDrawCalls": 13,
+    "drawCalls": 1,
+    "triangles": 5240,
+    "vertices": 10534,
+    "removedAccessories": [],
+    "clips": [
+      "Idle",
+      "Idle_Neutral",
+      "Interact",
+      "Run",
+      "Walk",
+      "Wave"
+    ],
+    "comparedVertices": 393000,
+    "maxDeformationErrorM": 0,
+    "maxExportErrorM": 4.951060842998367e-09,
+    "sha256": "63795f39dc539d9b244110e4639d9851b071c27717c49f1e1dc1b0c387939179",
+    "license": "CC0-1.0",
+    "creator": "Quaternius",
+    "sourcePage": "https://quaternius.com/packs/ultimatemodularcharacters.html"
+  },
+  {
+    "name": "suit",
+    "filename": "town-suit.glb",
+    "bytes": 1278824,
+    "sourceDrawCalls": 13,
+    "drawCalls": 1,
+    "triangles": 6634,
+    "vertices": 13333,
+    "removedAccessories": [
+      "Cube204",
+      "Cube204_1",
+      "Cube204_2"
+    ],
+    "clips": [
+      "Idle",
+      "Idle_Neutral",
+      "Interact",
+      "Run",
+      "Walk",
+      "Wave"
+    ],
+    "comparedVertices": 497550,
+    "maxDeformationErrorM": 0,
+    "maxExportErrorM": 0,
+    "sha256": "813f84938172a05f29176c0c0096f8e09515e32c6d27971009c5514a39e947c2",
+    "license": "CC0-1.0",
+    "creator": "Quaternius",
+    "sourcePage": "https://quaternius.com/packs/ultimatemodularcharacters.html"
+  },
+  {
+    "name": "casual_2",
+    "filename": "town-casual_2.glb",
+    "bytes": 1180008,
+    "sourceDrawCalls": 10,
+    "drawCalls": 1,
+    "triangles": 5776,
+    "vertices": 11660,
+    "removedAccessories": [],
+    "clips": [
+      "Idle",
+      "Idle_Neutral",
+      "Interact",
+      "Run",
+      "Walk",
+      "Wave"
+    ],
+    "comparedVertices": 433200,
+    "maxDeformationErrorM": 0,
+    "maxExportErrorM": 8.543090750888618e-10,
+    "sha256": "d4b7825a1b10d1610500e68d5a3616d9fe5e6b83f8d1ce06588ded3a62ea191d",
+    "license": "CC0-1.0",
+    "creator": "Quaternius",
+    "sourcePage": "https://quaternius.com/packs/ultimatemodularcharacters.html"
+  },
+  {
+    "name": "female_casual",
+    "filename": "town-female_casual.glb",
+    "bytes": 1253268,
+    "sourceDrawCalls": 9,
+    "drawCalls": 1,
+    "triangles": 6424,
+    "vertices": 12968,
+    "removedAccessories": [],
+    "clips": [
+      "Idle",
+      "Idle_Neutral",
+      "Interact",
+      "Run",
+      "Walk",
+      "Wave"
+    ],
+    "comparedVertices": 481800,
+    "maxDeformationErrorM": 0,
+    "maxExportErrorM": 1.4172120650117554e-09,
+    "sha256": "5962c6358be9d0bf5f349d4845fe83439354c135eaf21a39ea840653e27b7fd6",
+    "license": "CC0-1.0",
+    "creator": "Quaternius",
+    "sourcePage": "https://quaternius.com/packs/ultimatemodularwomen.html"
+  },
+  {
+    "name": "female_formal",
+    "filename": "town-female_formal.glb",
+    "bytes": 1213704,
+    "sourceDrawCalls": 10,
+    "drawCalls": 1,
+    "triangles": 6108,
+    "vertices": 12296,
+    "removedAccessories": [],
+    "clips": [
+      "Idle",
+      "Idle_Neutral",
+      "Interact",
+      "Run",
+      "Walk",
+      "Wave"
+    ],
+    "comparedVertices": 458100,
+    "maxDeformationErrorM": 0,
+    "maxExportErrorM": 6.755889010334249e-09,
+    "sha256": "97d9cfcd516567a187a32b1cbaf96ff70c4326384cdd61158b9de845bd98d50f",
+    "license": "CC0-1.0",
+    "creator": "Quaternius",
+    "sourcePage": "https://quaternius.com/packs/ultimatemodularwomen.html"
+  }
+]

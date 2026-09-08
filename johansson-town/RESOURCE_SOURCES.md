@@ -1,29 +1,9 @@
-# Johansson Town resource sources
+# Resource sources
 
-Johansson Town uses [Fasani/three-js-resources](https://github.com/Fasani/three-js-resources) as the approved discovery catalogue for external Three.js resources.
+The authoritative ledger of shipped files is `assets/ATTRIBUTION.md`.
 
-## Current live use
+This branch includes local Three.js r170 (MIT), Poly Haven PBR maps (CC0), five Quaternius Ultimate Modular character bases and compatible embedded clips (CC0), an OSM extract/adapted road dataset (ODbL), and original generated audio. All runtime paths stay inside the town directory.
 
-- **Poly Haven / Texture Haven** — CC0 asphalt, plaster, timber and roof photography is stored locally in `assets/` and used by the environment/prop pipeline.
-- **Three.js** — rendering engine.
-- **`resource-catalog.js`** — records provenance, licence and runtime policy for sourced assets.
-- **`prop-factory.js`** — creates deterministic interactive street and harbour props while applying the locally stored sourced textures.
-- **glTF / Draco references** — preferred future pipeline for compressed authored props.
+`resource-catalog.js` retains the existing prop-source catalogue. Its approved/future entries are intake candidates, not a statement that a file is included. The selected character packs are Ultimate Modular Men/Women, not UBC or UAL2. ambientCG and GSI imagery are not included.
 
-## Approved curated model sources
-
-- **Quaternius Sushi Restaurant Kit (CC0)** — approved for individual Japanese interior props after scale, style and performance validation.
-- **Quaternius Universal Base Characters / Universal Animation Library 2 (CC0)** — approved only for a future controlled character/animation pipeline; they must not replace the stable cast until retargeting and visual validation pass.
-- **Kenney** — approved CC0 source for environment props where a local procedural equivalent is not preferable.
-
-See `assets/late-showa/ASSETS.md` for the detailed intake rules and reference-only sources.
-
-## Runtime policy
-
-Johansson Town does **not** hot-link third-party model hosts. Runtime assets must be served locally from this repository. Important gameplay props keep deterministic procedural geometry, collision and interaction anchors so the game remains functional if a future authored replacement is removed or fails validation.
-
-The current resource-backed prop layer includes benches, postbox, newspaper rack, delivery trolley, harbour notice board, utility cabinet, bicycle rack, convex traffic mirror, exterior air-conditioning units, noren, awnings, crate stacks, bait station, pier winch and ramen menu board.
-
-## Character policy
-
-Do not use generic downloaded characters merely as palette swaps. Each resident must remain structurally individual in body proportions, wardrobe, hair silhouette and movement cadence. Imported characters must pass the same stability checks before replacing a local rig.
+Accept a new asset only with exact-file provenance and permission to redistribute. Keep required notices on screen and in the ledger. Preserve collision/interaction anchors when a visual model fails. Do not add remote asset URLs or franchise scans to the runtime.

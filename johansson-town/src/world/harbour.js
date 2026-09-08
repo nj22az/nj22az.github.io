@@ -1,6 +1,8 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import {assetURL} from '../assets.js';
+import {createMaterials} from '../render/materials.js';
+import * as THREE from '../../vendor/three.module.js';
 
-// Johansson Town world — late-Showa cel-shaded harbour pass.
+// Johansson Town original harbour geometry, using the shared PBR surface maps.
 // Static geometry is instanced by geometry/material; interaction anchors stay independent.
 export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition}) {
   const group=new THREE.Group();scene.add(group);
@@ -19,11 +21,12 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const outlineMaterial=new THREE.MeshBasicMaterial({color:0x1c2729,side:THREE.BackSide});
 
   function texture(file,repeat){
-    const t=loader.load(new URL(`./assets/${file}`,import.meta.url).href,undefined,undefined,()=>{});
+    const t=loader.load(assetURL(file),undefined,undefined,()=>{});
     t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(...repeat);t.anisotropy=Math.min(maxAnisotropy,mobile?4:8);return t;
   }
   const maps={road:texture('asphalt.jpg',[4,24]),wall:texture('plaster.jpg',[2,2]),wood:texture('timber.jpg',[2,3]),roof:texture('roof.jpg',[3,3])};
 
+  const pbr=createMaterials({mobile,anisotropy:maxAnisotropy});
   function material(color,map,glow=0){
     const key=`${color}/${map||''}/${glow}`;
     if(!materials.has(key)){
@@ -31,8 +34,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       if(map==='road'){
         m=new THREE.MeshStandardMaterial({color,map:maps.road,roughness:.84,metalness:0,dithering:true});
       }else{
-        m=new THREE.MeshToonMaterial({color,map:maps[map]||null,gradientMap:toonGradient,emissive:glow?color:0,emissiveIntensity:glow,dithering:true});
+        m=new THREE.MeshStandardMaterial({color,map:maps[map]||null,emissive:glow?color:0,emissiveIntensity:glow,dithering:true});
       }
+      if(map){const source=pbr.material(({road:'asphalt',wall:'plaster',wood:'timber',roof:'roof'})[map],color);source.normalMap.repeat.copy(maps[map].repeat);source.roughnessMap.repeat.copy(maps[map].repeat);m.normalMap=source.normalMap;m.normalScale=source.normalScale;m.roughnessMap=source.roughnessMap;m.aoMap=source.aoMap;m.aoMapIntensity=.45;}
       materials.set(key,m);
     }
     return materials.get(key);
@@ -66,7 +70,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false){
     const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,768,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,744,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='700 96px "Yu Gothic",system-ui';ctx.fillText(text,384,106,716);ctx.font='600 30px system-ui';ctx.fillText(sub,384,201,700);
     const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
-    const mat=new THREE.MeshToonMaterial({map:tex,gradientMap:toonGradient,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05,side:THREE.DoubleSide});
+    const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05,side:THREE.DoubleSide});
     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);return mesh;
   }
   function anchor(p,label,action){const a=new THREE.Object3D();a.position.set(...p);group.add(a);register(a,label,action);return a;}
@@ -95,7 +99,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([15,.2,112],[0,-.16,0],0xb8b8af,[0,0,0],'road');
   for(const side of [-1,1]){
     box([4.5,.25,112],[side*9.5,0,0],0x99998f,[0,0,0],'wall');
-    box([.22,.3,112],[side*7.35,.02,0],0x777c77);
+    for(let z=-55;z<56;z+=1)if(![18,50,-11].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
     for(let z=-52.5;z<52;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
     for(let z=-52;z<52;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
   }
@@ -103,7 +107,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,43,0xbeb79a);
   [[-2.1,36,1.15,.45,.2],[2.7,25,.8,.35,-.3],[-1.5,8,1,.42,.4],[2,-11,.75,.32,.1],[-2.7,-27,.95,.38,-.2],[1.2,-43,1.2,.48,.25]].forEach(v=>puddle(...v));
 
-  // Shopfronts — cel shaded masonry and timber with physically-rendered glass only where useful.
+  // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     const side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=6.2+(i%3)*.6;
     box([8.2,height,10],[x,height/2,z],i%2?0xb7b4a3:0xc0b29a,[0,0,0],'wall');
@@ -130,7 +134,6 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     box([.65,.18,1.8],[side*7.05,.18,z+2.5],0xb2afa3);box([.65,.65,1.1],[front-side*.32,4.05,z+4.2],0xaaa497);
     for(let y=3.8;y<4.3;y+=.1)box([.02,.025,.85],[front-side*.66,y,z+4.2],0x5c655f);
     cyl(.045,height,[front-side*.22,height/2,z-4.8],0x555f60);cyl(.28,.46,[side*6.75,.25,z-4.25],0x98705a);shape('sphere',[.4,9,7],[side*6.75,.78,z-4.25],0x627857);obstacle(side*6.75,z-4.25,.65,.65);
-    box([8,7+i%4,12],[side*22,(7+i%4)/2,z+4],0x7d8782,[0,0,0],'wall');for(let n=0;n<3;n++)box([.08,1.5,1.4],[side*17.95,5.5,z+n*3],0x435d63);
   });
 
   // Utility poles and overhead cables.
@@ -138,7 +141,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     cyl(.13,8,[side*6.7,4,z],0x574f49);obstacle(side*6.7,z,.38,.38);box([2.4,.14,.18],[side*6.7,7.3,z],0x4b534e);
     for(const dx of [-.8,0,.8]){
       cyl(.08,.26,[side*6.7+dx,7.52,z],0xc6cac1);
-      if(z<48){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58-Math.sin(k/8*Math.PI)*.75,z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
+      if(z<48){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
     }
     beam([side*6.7,5.7,z],[side*5.6,5.7,z],.06);box([.6,.12,.26],[side*5.5,5.65,z],0xdac08d);
     if(shadows&&z%32===16){const light=new THREE.PointLight(0xffc17b,0,10,2);light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
@@ -165,7 +168,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([38,.18,.55],[0,.19,-63.28],0x343f41);
 
   const seaGeo=new THREE.PlaneGeometry(160,86,42,28);
-  const seaMat=new THREE.MeshToonMaterial({color:0x426f79,gradientMap:toonGradient,transparent:false,dithering:true});
+  const seaMat=new THREE.MeshStandardMaterial({color:0x426f79,transparent:false,dithering:true});
   const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.50,-106.5);sea.receiveShadow=false;group.add(sea);water.push(sea);
   const seaPos=seaGeo.attributes.position;
 
@@ -237,7 +240,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [x,z,w,h] of [[-24,-119,15,7],[20,-121,18,8],[-3,-128,22,6]])box([w,h,10],[x,h/2-1,z],0x66706f);
 
   // Shrine at the far end of town.
-  for(const x of [-3,3]){cyl(.16,4,[x,2,55],0xa34531);obstacle(x,55,.38,.38);}box([7.3,.24,.36],[0,4.1,55],0x973f30);box([6.7,.18,.32],[0,3.45,55],0x973f30);box([3,2.6,2],[0,1.3,60],0x8b7050,[0,0,0],'wood');box([3.8,.22,2.8],[0,2.8,60],0x4e6061);anchor([0,1,57.8],'Visit the shrine',()=>onAction('shrine'));
+  for(const x of [-3,3]){cyl(.16,4,[x,2,55],0xa34531);obstacle(x,55,.38,.38);}box([7.3,.24,.36],[0,4.1,55],0x973f30);box([6.7,.18,.32],[0,3.45,55],0x973f30);box([3,2.6,2],[0,1.3,60],0x8b7050,[0,0,0],'wood');obstacle(0,60,3,2);box([3.8,.22,2.8],[0,2.8,60],0x4e6061);anchor([0,1,57.8],'Visit the shrine',()=>onAction('shrine'));
 
   const residents=[['Aiko',-4,34,0x9b5347],['Kenji',4,13,0x51717d],['Mrs Sato',-3,-23,0x766484],['Harbour master',3,-54,0x465965]];
   residents.forEach(([name,x,z,color],index)=>{

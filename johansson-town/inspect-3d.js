@@ -1,4 +1,4 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import * as THREE from './vendor/three.module.js';
 import {makeContentObject} from './content-items.js';
 import {ITEMS} from './content-data.js';
 
@@ -13,11 +13,11 @@ export function createInspector({scene,camera,renderer,canvas,onInspect,onReturn
   const button=(label,fn)=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;controls.append(b);return b;};
   button('↶',()=>held.rotation.y-=.2);button('↷',()=>held.rotation.y+=.2);button('−',()=>zoom=Math.min(3.5,zoom+.15));button('+',()=>zoom=Math.max(.8,zoom-.15));
   button('← Page',()=>held?.userData.reader.next(-1));button('Page →',()=>held?.userData.reader.next(1));button('FLIP / OPEN',()=>held?.userData.reader.flip());button('RESET',reset);
-  const secondary=button('Open',()=>item?.url?onLink(item.url):onContact());button('CLOSE',close);
+  const secondary=button('CLOSE',close);
   const volume=button('NEXT VOLUME',()=>{const books=ITEMS.filter(i=>i.kind==='book');open(books[(books.findIndex(i=>i.id===item.id)+1)%books.length]);});
   function reset(){if(!held)return;held.rotation.set(0,0,0);zoom=1.9;pan.set(0,0);held.userData.reader.open();}
   function close(){if(!held)return;onReturn(item);tray.remove(held);held.traverse(o=>{o.geometry?.dispose();for(const m of (Array.isArray(o.material)?o.material:[o.material])){m?.map?.dispose();m?.dispose();}});held=null;item=null;tray.visible=false;caption.hidden=true;renderer.setPixelRatio(saved.dpr);document.documentElement.classList.remove('inspecting');window.__JOHANSSON_INSPECTING__=false;resetInput();saved.focus?.focus?.();}
-  function open(data){if(held)close();saved={dpr:renderer.getPixelRatio(),focus:document.activeElement};document.exitPointerLock?.();resetInput();item=data;held=makeContentObject(item);held.traverse(o=>{if(o.isMesh){o.renderOrder=1000;for(const m of (Array.isArray(o.material)?o.material:[o.material])){m.depthTest=false;m.depthWrite=false;}}});tray.add(held);volume.hidden=item.kind!=='book';tray.position.copy(camera.position);tray.quaternion.copy(camera.quaternion);overlayCamera.position.copy(camera.position);overlayCamera.quaternion.copy(camera.quaternion);tray.visible=true;caption.hidden=false;document.documentElement.classList.add('inspecting');window.__JOHANSSON_INSPECTING__=true;renderer.setPixelRatio(Math.max(.8,saved.dpr-.35));secondary.hidden=!item.url&&item.id!=='cv';secondary.textContent=item.action||'Open '+item.title;reset();onInspect(item);secondary.focus();}
+  function open(data){if(held)close();saved={dpr:renderer.getPixelRatio(),focus:document.activeElement};document.exitPointerLock?.();resetInput();item=data;held=makeContentObject(item);held.traverse(o=>{if(o.isMesh){o.renderOrder=1000;for(const m of (Array.isArray(o.material)?o.material:[o.material])){m.depthTest=false;m.depthWrite=false;}}});tray.add(held);volume.hidden=item.kind!=='book';tray.position.copy(camera.position);tray.quaternion.copy(camera.quaternion);overlayCamera.position.copy(camera.position);overlayCamera.quaternion.copy(camera.quaternion);tray.visible=true;caption.hidden=false;document.documentElement.classList.add('inspecting');window.__JOHANSSON_INSPECTING__=true;renderer.setPixelRatio(Math.max(.8,saved.dpr-.35));reset();onInspect(item);secondary.focus();}
   function stop(e){e.preventDefault();e.stopImmediatePropagation();}
   canvas.addEventListener('pointerdown',e=>{if(!held)return;stop(e);drag={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,pan:e.button===2||e.altKey};canvas.setPointerCapture(e.pointerId);},{capture:true});
   canvas.addEventListener('pointermove',e=>{if(!held||!drag)return;stop(e);const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(drag.pan){pan.x+=dx*.002;pan.y-=dy*.002;}else{held.rotation.y+=dx*.008;held.rotation.x+=dy*.008;}drag.x=e.clientX;drag.y=e.clientY;},{capture:true});

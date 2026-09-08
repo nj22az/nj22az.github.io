@@ -1,4 +1,4 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import * as THREE from './vendor/three.module.js';
 
 // Small local-authored moving props, separate from the human rigs.
 export function createLivingProps(world,factory){
@@ -21,7 +21,7 @@ export function createLivingProps(world,factory){
     if(trolley&&kenji&&h<11){trolley.position.set(kenji.position.x+.6,0,kenji.position.z);trolley.rotation.y=kenji.rotation.y;}
   }};
 }
-import {getTextureResource,resourceSummary} from './resource-catalog.js?v=1';
+import {getTextureResource,resourceSummary} from './resource-catalog.js';
 
 // Local-first environment prop factory. Poly Haven textures are the actual sourced
 // runtime assets; geometry remains deterministic and procedural so iOS never depends

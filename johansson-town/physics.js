@@ -1,3 +1,4 @@
+import {routeAt} from './src/world/layout.js';
 // Deterministic 2D collision helpers used by Johansson Town.
 // Kept independent of Three.js so the core movement rules can be regression-tested.
 export function circleHitsRect(x,z,r,c){
@@ -16,6 +17,8 @@ export function roomBoundsBlocked(x,z,r=0){
 // Town envelope follows the actual playable ground instead of a single rectangle:
 // narrow shopping street -> broad harbour apron -> central working pier.
 export function townBoundsBlocked(x,z,r=0){
+  if(z<-79+r&&Math.abs(x)<5)return true;
+  if(routeAt(x,z,r))return false;
   if(z>58.2-r||z<-79+r)return true;
   let limit=7;
   if(z<-52)limit=17.2;
@@ -31,7 +34,8 @@ export function sweepFraction(start,end,isBlocked,step=.14){
   let safe=0;
   for(let i=1;i<=count;i++){
     const t=i/count,x=start.x+dx*t,z=start.z+dz*t;
-    if(isBlocked(x,z))break;
+    const y=Number.isFinite(start.y)&&Number.isFinite(end.y)?start.y+(end.y-start.y)*t:undefined;
+    if(isBlocked(x,z,y))break;
     safe=t;
   }
   return safe;

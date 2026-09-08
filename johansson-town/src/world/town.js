@@ -1,8 +1,10 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
-import { createTown as createBaseTown } from './world.js?v=24-base';
-import { createPropFactory, createLivingProps } from './prop-factory.js?v=24';
+import {PROFILES} from '../people/profiles.js';
+import {buildDistricts} from './districts.js';
+import * as THREE from '../../vendor/three.module.js';
+import { createTown as createBaseTown } from './harbour.js';
+import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 
-// Johansson Town professionalisation layer.
+// Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
 // assets remain local and every sourced element has a deterministic procedural fallback.
 
@@ -29,7 +31,7 @@ function replaceCableLines(group,mobile){
 }
 
 function addWithCollider(group,colliders,entry){
-  if(!entry)return null;group.add(entry.object);if(entry.collider)colliders.push(entry.collider);return entry.object;
+  if(!entry)return null;group.add(entry.object);if(entry.collider){const bounds=new THREE.Box3().setFromObject(entry.object);entry.collider.height=bounds.max.y;entry.collider.minY=bounds.min.y;colliders.push(entry.collider);}return entry.object;
 }
 
 function addWalkablePier(world,options,factory){
@@ -156,11 +158,17 @@ export function createTown(options){
   }
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
+  const originalSites=[...options.sites],districts=buildDistricts(world,options);
+  const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
+  for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],0,profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],0,profile.work[1]);}
+  for(const s of originalSites){const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
+  world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=open?4:1.3;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
   world.beats=createLivingProps(world,factory);
-  if(sea?.material){sea.material.flatShading=true;sea.material.dithering=true;sea.material.needsUpdate=true;}
+  if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
-  world.update=(dt,time,day)=>{
+  world.update=(dt,time,day,minutes=1002)=>{
+    world.updateHours(minutes);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
     if(sea){const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}

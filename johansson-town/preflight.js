@@ -1,4 +1,4 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import * as THREE from './vendor/three.module.js';
 
 // Johansson Town display preflight. It runs before main.js so the existing renderer
 // keeps its stable game logic while using a sharper touch-device presentation.

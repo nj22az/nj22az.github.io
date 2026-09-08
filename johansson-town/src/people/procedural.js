@@ -1,4 +1,5 @@
-import * as THREE from '../the-front-row-seat/pelican/vendor/three.module.min.js';
+import {PROFILES} from './profiles.js';
+import * as THREE from '../../vendor/three.module.js';
 
 // Stable local cast for Johansson Town.
 // Every named resident is a separately authored procedural character: body proportions,
@@ -89,11 +90,16 @@ export function createCharacters({mobile,onError,shadows=!mobile}){
 
   profiles['Bus driver']={...profiles['Harbour master'],height:1.71,outer:0x324c59,top:0x9daea7};
   profiles['Cold-storage kid']={...profiles.Kenji,height:1.68,outer:0x74774c,top:0xb5b7a1,build:.92};
+  for(const [index,data] of PROFILES.entries())if(!profiles[data.name]){
+    const template=data.female?(data.age>60?profiles['Mrs Sato']:profiles.Aiko):data.age>60?profiles['Harbour master']:profiles.Kenji;
+    profiles[data.name]={...template,height:data.height,age:data.age,outer:Number(data.top.replace('#','0x')),build:.83+(index%5)*.08,shoulders:.88+(index%4)*.075,waist:.83+(index%5)*.07,head:[.9+(index%3)*.045,1+(index%4)*.03,.94],hair:data.age>60?0x777169:0x211c19,stoop:data.age>65?.06:0,stride:data.age>65?.7:.9+(index%3)*.05,hero:false,peakedCap:data.role==='policeman'||data.role==='bus driver',apron:data.role==='bathhouse keeper'||data.role==='grocer'};
+  }
   function attach(entity,file,height=1.8){try{const name=entity.userData.name||'player',profile=profiles[name]||profiles.player;const old=[...entity.children],rig=build(entity,profile,name==='player'?(height||profile.height):profile.height);old.forEach(o=>o.visible=false);const actor={entity,profile,rig,gesture:0,lastPosition:entity.position.clone(),phase:actors.length*.93,speed:0,blink:0,nextBlink:1.5+actors.length*.42};actors.push(actor);entity.userData.character=actor;return actor;}catch(error){onError?.(file,error);return null;}}
   function gesture(entity){const a=entity.userData.character;if(a)a.gesture=.65;}
 
   function update(dt){
     for(const a of actors){
+      if(!a.entity.visible){a.lastPosition.copy(a.entity.position);continue;}
       const dx=a.entity.position.x-a.lastPosition.x,dz=a.entity.position.z-a.lastPosition.z,raw=Math.hypot(dx,dz)/Math.max(dt,.001);a.lastPosition.copy(a.entity.position);a.speed=THREE.MathUtils.damp(a.speed,Math.min(raw,5.5),7,dt);
       const walking=a.speed>.09,run=a.speed>3.45,stride=a.profile.stride||1;a.phase+=dt*(walking?THREE.MathUtils.clamp(a.speed*2.15*stride,3.0,run?8.2:6.2):.55);const g=Math.sin(a.phase),amp=walking?(run?.46:.28)*stride:0;
       a.rig.legs.forEach((leg,i)=>{const sign=i?-1:1,swing=g*amp*sign;leg.hip.rotation.x=THREE.MathUtils.damp(leg.hip.rotation.x,swing,12,dt);leg.hip.rotation.z=THREE.MathUtils.damp(leg.hip.rotation.z,walking?sign*.012:0,10,dt);leg.knee.rotation.x=THREE.MathUtils.damp(leg.knee.rotation.x,Math.max(0,-swing)*.46,12,dt);leg.ankle.rotation.x=THREE.MathUtils.damp(leg.ankle.rotation.x,walking?-swing*.13:0,12,dt);});

@@ -1,26 +1,27 @@
-import {DIALOGUE} from './cast-ai.js';
+import {townAudio} from './src/audio/town-audio.js';
+import {DIALOGUE} from './src/people/schedules.js';
 import {JOURNAL} from './content-data.js';
-const SAVE_KEY='johansson-town-1988-v4';
+import {SAVE_KEY,readSave} from './src/save.js';
 
-export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{}}) {
+export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:false,operated:[],inspectedIds:[],notes:['Website is the town. Town is the website.'],shrineIntent:null,kenjiEscort:false};
-  let state={...defaults},timer=null,modalOpen=false,previousFocus=null,audio=null,hum=null,radioStation=0;
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false};
+  let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
-    const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||localStorage.getItem('johansson-town-1988-v3'));
+    const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
-      state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;
+      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;
     }
   } catch {}
 
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
 
   function save(){
-    try {localStorage.setItem(SAVE_KEY,JSON.stringify(state));$('#saveState').textContent='PROGRESS SAVED';}
+    try {state.minutes=getMinutes();localStorage.setItem(SAVE_KEY,JSON.stringify(state));$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
@@ -32,18 +33,20 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
     buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b);});
     modal.classList.remove('hidden');$('#closeActivity').focus();
   }
-  function addItem(item){if(!state.inventory.includes(item))state.inventory.push(item);save();}
+  function addItem(item){if(['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
-    const quest=['Speak to Aiko near the southern shops.','Find Tama, Aiko’s cat, near the ramen stall. A fish might help.','Return to Aiko with news of Tama.','Tama is safely home. Aiko has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\nShrine intention: ${state.shrineIntent||'Unset'}\n\n${quest}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}/8\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[['Back to town',close]]);
+    const quest=['Speak to Aiko beside the bookshop.','Find Tama, Aiko’s cat, near the ramen stall. A fish might help.','Return to Aiko with news of Tama.','Tama is safely home. Aiko has paid you ¥500.'][state.quest];
+    show('Field book',`${state.notes.join('\n')}\n\nShrine intention: ${state.shrineIntent||'Unset'}\n\n${quest}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),['Back to town',close]]);
+    const map=onMap();if(map)body.append(map);
   }
 
 
   function note(text){if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}}
   function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
-  function openURL(url){const u=new URL(url,location.href);if(!['https:','http:'].includes(u.protocol))return;const win=window.open('about:blank','_blank');if(win){win.opener=null;win.location.href=u.href;}else {note(u.href);say('Link saved in the field book.');}}
+  function openURL(){say('The ledger is kept here in town.');}
+
   function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aiko has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
   function resident(name){
@@ -64,7 +67,7 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
   }
 
   function vending(){show('自動販売機 · Vending machine','The compressor hums. A can drops into the tray when you make a purchase.',[['Green tea · ¥120',()=>buyDrink('Green tea')],['Canned coffee · ¥120',()=>buyDrink('Canned coffee')],['Leave',close]]);}
-  function buyDrink(name){if(!spend(120))return;addItem(name);tone(640,.1);receipt('Thank you',`${name} is in your bag.`);}
+  function buyDrink(name){if(!spend(120))return;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${name} is in your bag.`);}
 
   function legacyResident(name){
     if(name==='Aiko'){
@@ -109,14 +112,8 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
     ]);
   }
 
-  function tone(frequency,duration=.15){if(!audio||!state.sound)return;const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.type='sine';oscillator.frequency.value=frequency;gain.gain.setValueAtTime(.06,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);oscillator.connect(gain).connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+duration);}
-  function toggleSound(){
-    const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext){say('Audio is unavailable in this browser.');return;}
-    try {
-      if(!audio){audio=new AudioContext();const buffer=audio.createBuffer(1,audio.sampleRate*3,audio.sampleRate);const samples=buffer.getChannelData(0);for(let i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*.16;const source=audio.createBufferSource();source.buffer=buffer;source.loop=true;const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=550;hum=audio.createGain();hum.gain.value=0;source.connect(filter).connect(hum).connect(audio.destination);source.start();}
-      state.sound=!state.sound;audio.resume().catch(()=>{});hum.gain.setTargetAtTime(state.sound?.17:0,audio.currentTime,.25);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';tone(550);
-    } catch {say('Audio could not start.');}
-  }
+  function tone(){townAudio.play('click',.35);}
+  function toggleSound(){state.sound=!state.sound;townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';save();}
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
   function read(name,detail){show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
@@ -127,7 +124,7 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
       ['Leave',close]
     ]);
   }
-  function sit(name,detail){show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
+  function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
   function buy(name,detail){
     const spec=detail&&typeof detail==='object'?detail:{};const cost=Number.isFinite(spec.cost)?Math.max(0,Math.round(spec.cost)):100,item=typeof spec.item==='string'?spec.item:name,text=typeof spec.text==='string'?spec.text:`${name} is ready to purchase.`;
     show(name,text,[[`Buy · ¥${cost}`,()=>{if(!spend(cost))return;addItem(item);tone(700,.12);receipt(name,`${item} has been added to your bag.`);}],['Leave',close]]);
@@ -139,7 +136,7 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
       '95.7 Sports — fictional prefectural score: Harbour '+Math.floor(getMinutes()/30)%8+', Mountain '+Math.floor(getMinutes()/47)%6+'.'
     ];
     if(state.weather)radioStation=0;
-    const render=()=>{note(stations[radioStation]);show(name,`${detail||'A compact transistor radio.'}\n\n${stations[radioStation]}`,[['Tune +',()=>{radioStation=(radioStation+1)%stations.length;tone(440+radioStation*110,.08);render();}],['Tune −',()=>{radioStation=(radioStation+stations.length-1)%stations.length;tone(440+radioStation*110,.08);render();}],['Leave',close]]);};
+    const render=()=>{note(stations[radioStation]);show(name,`${detail||'A compact transistor radio.'}\n\n${stations[radioStation]}`,[['Tune +',()=>{radioStation=(radioStation+1)%stations.length;state.radioStation=radioStation;save();tone(440+radioStation*110,.08);render();}],['Tune −',()=>{radioStation=(radioStation+stations.length-1)%stations.length;state.radioStation=radioStation;save();tone(440+radioStation*110,.08);render();}],['Leave',close]]);};
     render();
   }
 
@@ -172,9 +169,9 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#cameraButton').onclick=onCamera;
-  $('#creditsButton').onclick=()=>show('Credits','Content from The Office of Nils Johansson · nj22az.github.io. Johansson Town uses Three.js and local procedural geometry. Resource discovery is guided by Fasani/three-js-resources (MIT). Road, plaster, timber and roof textures come from Poly Haven / Texture Haven (CC0). Quaternius CC0 packs are approved for curated local intake; no third-party host is required at runtime. The stable character rigs are original Johansson Town geometry.',[['Texture credits',()=>window.open('./assets/ATTRIBUTION.md','_blank','noopener')],['Resource catalogue',()=>window.open('https://github.com/Fasani/three-js-resources','_blank','noopener')],['Asset intake policy',()=>window.open('./assets/late-showa/ASSETS.md','_blank','noopener')],['Close',close]]);
-  document.addEventListener('visibilitychange',()=>{if(audio){if(document.hidden)audio.suspend().catch(()=>{});else if(state.sound)audio.resume().catch(()=>{});}});
+  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
-  save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,note,inspectItem,openURL,quietRead,footstep(material){tone(material==='asphalt'?125:material==='timber'?190:240,.04);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
+  if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
+  return {action,inventory,close,save,note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
 }
