@@ -1,6 +1,6 @@
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?clear-air-1';
-import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js';
+import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-host-1';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js';
 import {townAudio} from './audio/town-audio.js';
@@ -8,11 +8,11 @@ import {routeAt,groundHeight} from './world/layout.js';
 import {drawTownMap} from './world/map.js';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js';
-import { createActivities } from '../activities.js';
+import { createActivities } from '../activities.js?yuri-host-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js';
+import { createCharacters } from './people/characters.js?yuri-host-1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction } from '../physics.js';
 
 const $=s=>document.querySelector(s);
@@ -111,7 +111,7 @@ function addRoomProps(s){
   } else if(s.id==='electronics'){
     wallPanel('電子工作所','TEST BENCH',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.8,-1.85,'Electronics bench','Solder, test leads, small circuit boards and handwritten schematics cover the bench.');addScreen(-2.8,-1.9,'Development terminal','A green-on-black terminal is connected to a compact development board.');addMachine(2.55,-1.85,1.45,1.05,1.15,0x43575d,'Oscilloscope','The trace settles into a clean repeating waveform after a short test.');addCabinet(3.65,1.25,'Parts drawers','Resistors, capacitors, connectors and spare ICs are sorted into dozens of small drawers.');furnitureBox([1.0,.52,.55],[-3.7,.26,1.25],0x6e5843,'Tune workshop radio','Workshop radio','A small radio carries weather, baseball scores and harbour traffic reports.','machine');
   } else if(s.id==='market'){
-    if(!storeClerk){storeClerk=new THREE.Group();storeClerk.userData.name='Yuri';scene.add(storeClerk);characters.attach(storeClerk,'Yuri',1.62);}
+    if(!storeClerk){storeClerk=new THREE.Group();storeClerk.userData.name='Yuri';scene.add(storeClerk);characters.attach(storeClerk,'Yuri',1.88);}
     buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});
   } else if(s.id==='career'){
     wallPanel('潮汐表','TIDES · 14 SEPTEMBER',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.7,-1.8,'Harbour log desk','The tide chart, berth allocation sheet and morning weather bulletin lie beneath a brass paperweight.');addScreen(-2.7,-1.85,'Harbour radio console','A green lamp marks channel 16. The microphone is returned to its hook after each call.');addCabinet(3.45,-2.3,'Ice ledger','The cold store supplied twenty blocks before dawn. Each boat’s order is written in blue pencil.');addCabinet(3.45,.45,'Berth records','Tonnage, draught and departure times, filed by vessel name. Yesterday’s entries have been checked twice.');addChair(-.55,-1.55,'Skipper’s chair','A canvas cushion softens the chair where captains wait for their clearance.');

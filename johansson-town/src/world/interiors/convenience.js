@@ -49,7 +49,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  sign('桜商店','SAKURA SHŌTEN · DAILY GOODS',[0,2.8,-6.25],3.6);
  item([.5,.28,.20],[1.35,1.1,-1],0x735344,'Tune counter radio',()=>action('radio','Yuri’s radio','The volume is low enough to hear the door bell.'));
  item([.25,.12,.25],[3.8,1.06,-.80],0xbda263,'Ring service bell',()=>action('resident','Yuri'));
- clerk.position.set(2.7,0,-2.25);clerk.rotation.y=Math.PI;clerk.visible=true;reg(clerk,'Talk to Yuri',()=>action('resident','Yuri'),true);collider(2.7,-2.25,.6,.6);
+ clerk.position.set(3.35,0,-1.95);clerk.rotation.y=Math.PI;clerk.visible=true;reg(clerk,'Say hello to Yuri',()=>action('resident','Yuri'),true);collider(3.35,-1.95,.75,.65);
  return {products:productObjects,placements,cooler,door};
 }
 
