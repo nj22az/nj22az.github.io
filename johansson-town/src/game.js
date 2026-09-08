@@ -18,7 +18,7 @@ import { createActivities } from '../activities.js?exploration-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?protagonist-1';
+import { createCharacters } from './people/characters.js?swagger-1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction } from '../physics.js';
 
 const $=s=>document.querySelector(s);

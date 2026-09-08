@@ -1,3 +1,4 @@
+import {swaggerWalk} from './swagger-walk.js';
 import * as THREE from '../../vendor/three.module.js';
 
 // These motions belong to this supplied skeleton. The player controller owns
@@ -26,5 +27,7 @@ export function prepareProtagonistAnimations(asset){
   });
   clips.push(new THREE.AnimationClip('Idle_Neutral',duration,tracks));
  }
+ const index=clips.findIndex(c=>c.name==='Walk');
+ if(index>=0)clips[index]=swaggerWalk(asset,clips[index],clips.find(c=>c.name==='Idle_Neutral'));
  return clips;
 }

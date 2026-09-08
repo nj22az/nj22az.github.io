@@ -1,0 +1,25 @@
+{
+  "cycles": [
+    {
+      "clip": "Walking",
+      "duration": 1.0333333015441895,
+      "minWidth": 0.058506535417131494,
+      "maxWidth": 0.08689483717906052,
+      "hipRange": 0.03713261344229679,
+      "hipRollRange": 0.17291608947211679,
+      "minY": 0.006108722872873825,
+      "maxY": 1.8714828674429036
+    },
+    {
+      "clip": "Walk",
+      "duration": 1.14,
+      "minWidth": 0.25995984454130233,
+      "maxWidth": 0.28000012822876735,
+      "hipRange": 0.020422935471208103,
+      "hipRollRange": 0.037684990733901955,
+      "minY": 0.00908918103379584,
+      "maxY": 1.8608991862762525
+    }
+  ],
+  "note": "Model-space metres, 64 samples per cycle. Same source mesh/rig; only runtime Walk changes."
+}
