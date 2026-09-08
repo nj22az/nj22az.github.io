@@ -1,6 +1,6 @@
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?clear-air-1';
-import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-host-1';
+import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-playful-2';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js';
 import {townAudio} from './audio/town-audio.js';
@@ -8,11 +8,11 @@ import {routeAt,groundHeight} from './world/layout.js';
 import {drawTownMap} from './world/map.js';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js';
-import { createActivities } from '../activities.js?yuri-host-1';
+import { createActivities } from '../activities.js?yuri-playful-2';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?yuri-host-1';
+import { createCharacters } from './people/characters.js?yuri-playful-2';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction } from '../physics.js';
 
 const $=s=>document.querySelector(s);

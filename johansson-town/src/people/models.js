@@ -1,3 +1,4 @@
+import {prepareYuriAnimations} from './yuri-animation.js';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -5,25 +6,25 @@ import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 
-const SOURCES=['worker','suit','casual_2','female_casual','female_formal','kenji','yui','yuri-meshy'];
+const SOURCES=['worker','suit','casual_2','female_casual','female_formal','kenji','yui','yuri-playful'];
 const loaded=new Map();let pending=null;
 export function preloadModels({onProgress}={}){
   if(pending)return pending;
   const loader=new GLTFLoader();let complete=0;
   pending=Promise.allSettled(SOURCES.map(async id=>{
-    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),['kenji','yui','yuri-meshy'].includes(id)?12000:2500);
+    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),['kenji','yui','yuri-playful'].includes(id)?12000:2500);
     try{
-      const response=await fetch(assetURL(['kenji','yui','yuri-meshy'].includes(id)?'characters/realistic/'+id+'.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const response=await fetch(assetURL(['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!['kenji','yui','yuri-meshy'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});loaded.set(id,gltf);
+      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
   })).then(()=>({ready:loaded.size,total:SOURCES.length}));
   return pending;
 }
 function sourceFor(name,profile){
-  if(name==='Yuri'&&loaded.has('yuri-meshy'))return 'yuri-meshy';
+  if(name==='Yuri'&&loaded.has('yuri-playful'))return 'yuri-playful';
   if(name==='Yui'||name==='Yuri')return loaded.has('yui')?'yui':'female_casual';
   if(name==='Kenji'&&loaded.has('kenji'))return 'kenji';
   if(name==='player'||name==='Johansson')return 'suit';
@@ -39,9 +40,9 @@ export function createLocalCharacters({shadows=false}={}){
     const model=clone(asset.scene),bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const scale=(height||profile?.height||1.75)/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!['kenji','yui','yuri-meshy'].includes(source))dressCharacter(o,profile?.top);}});
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!['kenji','yui','yuri-playful'].includes(source))dressCharacter(o,profile?.top);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualSource=source==='yuri-meshy'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-meshy'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
+    entity.add(model);entity.userData.visualSource=source==='yuri-playful'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-playful'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     const actor={entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0};
     byEntity.set(entity,actor);actors.push(actor);return actor;
@@ -52,9 +53,11 @@ export function createLocalCharacters({shadows=false}={}){
       const distance=entity.position.distanceTo(actor.last);actor.last.copy(entity.position);
       actor.speed=THREE.MathUtils.damp(actor.speed,distance/Math.max(dt,.001),12,dt);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
-      if(actions.size===0)continue; // Supplied Meshy mesh has an authored pose, but no skeleton or clips.
-      const clip=actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.speed>.12?'Walk':'Idle_Neutral';
-      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip)||actions.get('Idle');next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
+      if(actions.size===0)continue;
+      const requested=actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.speed>.12?'Walk':'Idle_Neutral';
+      const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
+      if(!clip)continue;
+      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
       const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/1.25,.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
       mixer.update(dt);
     }

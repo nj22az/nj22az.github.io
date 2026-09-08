@@ -34,3 +34,10 @@ Yui: `characters/realistic/yui.glb` uses the MakeHuman CC0 anatomical base, youn
 ## Yuri — user-supplied Meshy design
 
 `characters/realistic/yuri-meshy.glb` is the user's uploaded `Meshy_AI_Garden_Charm_0908113531_texture.glb`, included at their explicit request. It embeds three 2048px JPEG textures and contains 14,235 triangles. It is an unrigged posed mesh with no animation clips. It is **not represented as CC0**; the original author/account retains their applicable rights. The previous MakeHuman Yuri remains the local loading fallback.
+
+## Yuri — Thoughtful Girl (2026-09-08)
+- Source: owner-supplied `Meshy_AI_Thoughtful_Girl_in_Pi_biped(1).zip`, used at the owner's request. No CC0 licence is asserted.
+- Active file: `characters/realistic/yuri-playful.glb`; one textured skinned mesh with the supplied walking and running clips.
+- Packed with `tools/prepare-yuri.py`: duplicate clip removal, shared mesh/textures, embedded 1024px JPEG maps.
+- Original rig-specific idle/head tilt and greeting nod/hand flutter: `src/people/yuri-animation.js`. No facial morph targets or facial animation are supplied.
+- Previous Garden Charm asset is retained for rollback and is no longer requested at boot.
