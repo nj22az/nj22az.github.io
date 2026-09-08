@@ -16,5 +16,9 @@
 #hud #subtitle{background:#fff2dbeb;color:#4c4141;border:1px solid #dbbe91;border-radius:18px;padding:12px 18px;text-shadow:none;max-width:min(560px,86vw)}
 .diorama #hud #place{background:#fff2dbe8;color:#79534e;text-shadow:none;border-radius:12px;padding:7px 12px;display:inline-block}
 .diorama #game{touch-action:none}
+#exitRoomButton{position:fixed;left:max(16px,env(safe-area-inset-left));top:max(86px,calc(env(safe-area-inset-top) + 76px));z-index:90;min-height:48px;padding:12px 18px;border:2px solid #fff6de;border-radius:18px;background:#a94435;color:#fff8e9;font:800 15px system-ui;letter-spacing:0;box-shadow:0 4px 0 #65382c;cursor:pointer}
+#exitRoomButton:focus-visible{outline:3px solid #f7cd6c;outline-offset:4px}
+#directoryGrid .izakaya-shortcut{grid-column:1/-1;background:#a94435;color:#fff8e9;border-color:#efc891;border-radius:16px;padding:16px;min-height:64px}
+#directoryGrid .izakaya-shortcut span{color:#fff0d4}
 @media(prefers-reduced-motion:reduce){#activity #activityActions button{transition:none}}
 @media(pointer:coarse) and (max-width:430px){#movementActions{right:100px;width:74px}#movementActions #run{width:74px}#act{right:14px;width:76px;height:76px}}
