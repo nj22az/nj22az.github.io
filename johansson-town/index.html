@@ -19,11 +19,12 @@
 
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="living-town.css?v=1">
+<link rel="stylesheet" href="living-town.css?v=3">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
+<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
 <section id="start">
   <div class="start-card">
     <div class="kicker">JOHANSSON TOWN · 1988</div>
@@ -90,7 +91,7 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       }
     },25000);
     try{
-      await import('./src/boot.js?living-town=2');
+      await import('./src/boot.js?living-town=3');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

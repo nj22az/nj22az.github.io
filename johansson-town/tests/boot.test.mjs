@@ -93,7 +93,11 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     document.querySelector('#directoryButton').onclick();
     assert.ok(document.querySelector('#directoryGrid').children.length>api.SITES.length,'Directory includes town content');
     for(const site of api.SITES)assert.ok(document.querySelector('#directoryGrid').children.some(b=>b.dataset.id===site.id),'WebMCP travel target '+site.id);
-    document.querySelector('#closeDirectory').onclick();
+    const shortcut=document.querySelector('#directoryGrid').children.find(b=>b.dataset.id==='find-izakaya');
+    assert.ok(shortcut,'Izakaya has a prominent menu shortcut');shortcut.onclick();
+    assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Shortcut faces the usable entrance');
+    const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();
     assert.equal(document.querySelector('#activityTitle').textContent,'Field book');
     api.activities.close();
@@ -141,7 +145,12 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
           assert.equal(api.activities.paused,false,'The greeting must not open a panel over Yuri');
         }finally{api.characters.gesture=gesture;}
       }
-      api.leaveRoom();
+      const exitButton=document.querySelector('#exitRoomButton');
+      assert.equal(exitButton.classList.contains('hidden'),false,'Visible exit control: '+site.id);
+      if(site.id==='market')api.activities.action('resident','Yuri');
+      exitButton.onclick();
+      assert.equal(api.activities.paused,false,'Exit closes conversation');
+      assert.equal(exitButton.classList.contains('hidden'),true,'Exit hides on the street');
       assert.equal(api.reviewCurrentRoom(),null,'Interior exit: '+site.id);
       assert.equal(api.reviewRoomState().townVisible,true);
       api.simulate(1/60);

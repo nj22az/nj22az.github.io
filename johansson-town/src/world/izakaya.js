@@ -13,7 +13,7 @@ function asset(kind,parent){
  const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});parent.add(model);return true;
 }
 export function buildIzakaya(world,options){
- const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–23:30',door:[24,0,20],opens:'16:00'};
+ const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:24,z:25,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–23:30',door:[24,0,20],opens:'16:00'};
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(24,0,25);exterior.rotation.y=Math.PI;world.group.add(exterior);
  if(!asset('exterior',exterior)){
   const fallback=new THREE.Mesh(new THREE.BoxGeometry(8,4,8),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.y=2;exterior.add(fallback);
@@ -22,6 +22,10 @@ export function buildIzakaya(world,options){
  const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.68),new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3}));sign.position.set(0,3.35,4.3);exterior.add(sign);
  const entrance=new THREE.Object3D();entrance.position.set(24,1.2,20);world.group.add(entrance);options.register(entrance,'Come into Minato Izakaya',()=>options.enter(site));
+ const board=document.createElement('canvas');board.width=768;board.height=256;const pen=board.getContext('2d');pen.fillStyle='#a94435';pen.fillRect(0,0,768,256);pen.textAlign='center';pen.fillStyle='#fff0ce';pen.font='bold 64px sans-serif';pen.fillText('IZAKAYA →',384,102);pen.font='32px sans-serif';pen.fillText('MINATO · EAST LANE',384,158);pen.fillText('16:00–23:30',384,208);
+ const boardTexture=new THREE.CanvasTexture(board);boardTexture.colorSpace=THREE.SRGBColorSpace;
+ const wayfinder=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.94),new THREE.MeshBasicMaterial({map:boardTexture,side:THREE.DoubleSide}));wayfinder.position.set(6.6,2.15,18.5);world.group.add(wayfinder);
+ const post=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.15,6),new THREE.MeshStandardMaterial({color:0x633d2a}));post.position.set(6.6,1.075,18.5);world.group.add(post);
  world.colliders.push({x:24,z:29,w:8,d:.3,height:5},{x:20,z:25,w:.3,d:8,height:5},{x:28,z:25,w:.3,d:8,height:5});
  return site;
 }
