@@ -60,3 +60,7 @@ Added crease-aware shading normal smoothing (positions, topology, skin weights a
 221 static factory meshes become 25 spatial batches, saving 196 draws. Dynamic trolleys, living props, animated shutters and resident meshes are excluded. A current comparable CPU starting-view estimate falls from 823 to 621 mesh draws, with submitted triangles approximately 99,600 → 100,200. This does **not** meet the draw-call target and is not an FPS measurement. Full method/data are recorded in `docs/art-pass-measurements.json`; reproduce using `node tools/measure-art-scene.mjs`.
 
 18 automated tests and the Vite build pass, including normal/geometry invariants, batching/anchor preservation, roof bounds, dialogue cancellation and the original gameplay regressions. Visual style, natural Japanese listening, reflection exposure and mobile performance still require real WebGL review. The four generated Japanese dialogue clips are now included; six further clips and all five TRELLIS meshes remain blocked by the public ZeroGPU quota.
+
+## Blender character milestone
+
+Kenji now uses a locally embedded, textured MakeHuman/MPFB body authored in Blender, with six skinned parts and original idle/walk/run/wave actions. The source remains editable; see `art/characters/kenji/`. Other identities retain the interim Quaternius bases. CPU render reviews cover the actual reduced mesh; browser GPU appearance, motion polish and device frame budgets remain unverified.

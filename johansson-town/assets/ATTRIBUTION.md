@@ -17,7 +17,7 @@ Poly Haven's [licence statement](https://polyhaven.com/license) and [CC0 1.0](ht
 
 Original town geometry, procedural fallback rigs, signs and fictional paper text are authored project content. This ledger does not relicense the entire repository.
 
-The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs, MakeHuman exports and Sketchfab kits are **not included** in this revision. No commercial asset pack or franchise model is included.
+The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs and Sketchfab kits are **not included** in this revision. No commercial asset pack or franchise model is included.
 
 ## Generation pilot
 
@@ -26,3 +26,5 @@ The older Kenney Mini Character archive remains on disk under its included CC0 l
 `generation/pilot/references/*.png`: five OpenAI-generated isolated prop references, with original project prompts and hashes alongside them. Authoring only; no generated street photograph is used as a game surface. TRELLIS.2 conversion was attempted but blocked by public GPU quota; no TRELLIS meshes ship in this revision.
 
 `lighting/industrial_sunset_02_1k.hdr`: [Industrial Sunset 02 — Sergej Majboroda / Poly Haven](https://polyhaven.com/a/industrial_sunset_02), CC0. Unmodified 1K HDR file; verified against the creator API's MD5, SHA-256 in `lighting/PROVENANCE.json`. Used for lighting/reflections, not photographed modern scenery. `../vendor/RGBELoader.js` is Three.js r170, MIT under the included Three licence, with its import made local.
+
+Kenji: `characters/realistic/kenji.glb` is authored in Blender using MPFB/MakeHuman anatomical data and the MakeHuman CC0 system asset pack (skin, casualsuit01, shoes01, short01, low-poly eyes, eyebrow001). Exact file hashes, holders, source links and full CC0 text are in `characters/realistic/`. The editable packed `.blend`, scripts and actual CPU render previews are included under `art/characters/kenji/` and `tools/blender/`. MPFB add-on code is an authoring dependency and is not bundled.
