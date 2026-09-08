@@ -1,4 +1,49 @@
 import * as THREE from '../../vendor/three.module.js';
+import {clone} from '../../vendor/SkeletonUtils.js';
+
+// A single, unhurried greeting; the existing body rig and idle remain authoritative.
+export const YURI_GREETING_DURATION=1.6;
+
+function greetingClip(asset,idle){
+  const duration=YURI_GREETING_DURATION,greeting=idle.clone();greeting.name='Wave';
+  for(const track of greeting.tracks)for(let i=0;i<track.times.length;i++)track.times[i]*=duration/idle.duration;
+  // Bake in model space, then convert into each bone's parent space. Meshy's
+  // shoulder/elbow axes are not aligned with the model or with one another.
+  const pose=clone(asset.scene),bones=new Map();
+  pose.traverse(o=>{if(o.isBone)bones.set(o.name,o);});
+  const names=['RightArm','RightForeArm','RightHand','Head'];
+  const times=Array.from({length:97},(_,i)=>i*duration/96),values=new Map(names.map(name=>[name,[]]));
+  const smooth=x=>{x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
+  // Sample every channel explicitly: an AnimationMixer may skip unchanged
+  // static channels, which would accumulate our offsets while baking.
+  const samples=idle.tracks.map(track=>({interpolant:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
+  for(const t of times){
+    for(const {interpolant,binding} of samples)binding.setValue(interpolant.evaluate(t/duration*idle.duration),0);
+    pose.updateMatrixWorld(true);
+    const lift=smooth(t/.36)*(1-smooth((t-1.02)/.5));
+    const wavePhase=THREE.MathUtils.clamp((t-.38)/.62,0,1);
+    const wave=Math.sin(wavePhase*Math.PI)**2*Math.sin(wavePhase*Math.PI*4);
+    const head=smooth(t/.48)*(1-smooth((t-.94)/.56));
+    const offsets={RightArm:[-.18*lift,0,-.34*lift],RightForeArm:[-2.1*lift,0,0],RightHand:[0,0,.18*wave],Head:[.045*head,0,.065*head]};
+    for(const name of names){
+      const bone=bones.get(name);if(!bone)continue;
+      const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());
+      const delta=new THREE.Quaternion().setFromEuler(new THREE.Euler(...offsets[name]));
+      bone.quaternion.premultiply(parent.clone().invert().multiply(delta).multiply(parent)).normalize();
+      bone.updateWorldMatrix(false,true);values.get(name).push(...bone.quaternion.toArray());
+    }
+  }
+  for(const {binding} of samples)binding.unbind();
+  // Replace only the expressive upper-body rotations. Preserve feet, hips,
+  // skinning, translation/scale tracks, and the authored breathing underneath.
+  for(const name of names){
+    if(!values.get(name).length)continue;
+    const trackName=name+'.quaternion';
+    greeting.tracks=greeting.tracks.filter(track=>track.name!==trackName);
+    greeting.tracks.push(new THREE.QuaternionKeyframeTrack(trackName,times,values.get(name)));
+  }
+  greeting.duration=duration;return greeting;
+}
 
 // These clips belong to the supplied Meshy skeleton. Do not retarget other rigs.
 export function prepareYuriAnimations(asset){
@@ -38,18 +83,6 @@ export function prepareYuriAnimations(asset){
     return clip;
   });
   const authoredIdle=locomotion.find(clip=>clip.name==='Idle_Neutral');
-  if(authoredIdle){
-    // Preserve the Blender-cleaned resting pose; layer the existing greeting onto it.
-    const greeting=authoredIdle.clone();greeting.name='Wave';const duration=1.2;
-    for(const track of greeting.tracks){
-      for(let i=0;i<track.times.length;i++)track.times[i]*=duration/authoredIdle.duration;
-      if(track.name==='Head.quaternion'||track.name==='RightHand.quaternion')for(let i=0;i<track.times.length;i++){
-        const t=track.times[i]/duration,envelope=Math.sin(Math.PI*t)**2;
-        const delta=track.name==='Head.quaternion'?new THREE.Euler(.10*envelope,0,.075*envelope):new THREE.Euler(0,0,.13*envelope*Math.sin(t*Math.PI*4));
-        new THREE.Quaternion().fromArray(track.values,i*4).multiply(new THREE.Quaternion().setFromEuler(delta)).toArray(track.values,i*4);
-      }
-    }
-    greeting.duration=duration;return [...locomotion,greeting];
-  }
+  if(authoredIdle)return [...locomotion,greetingClip(asset,authoredIdle)];
   return [...locomotion,poseClip('Idle_Neutral',4),poseClip('Wave',1.2,true)];
 }

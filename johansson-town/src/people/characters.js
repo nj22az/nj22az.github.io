@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?yuri-rig-2';
+import {createLocalCharacters,preloadModels} from './models.js?yuri-greeting-1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
@@ -77,7 +77,7 @@ export function createCharacters(options={}){
     aiControls.set(e,{...current,until:performance.now()+THREE.MathUtils.clamp(Number(seconds)||4,.5,15)*1000,faceName:targetName});
     return true;
   }
-  function commandGesture(name){const e=entities.get(name);if(!e||e===playerEntity)return false;if(!models.gesture(e))stable.gesture?.(e);return true;}
+  function commandGesture(name){const e=entities.get(name);if(!e||e===playerEntity)return false;if(name==='Yuri'){stageConversation(e);return true;}if(!models.gesture(e))stable.gesture?.(e);return true;}
   function releaseCharacter(name){const e=entities.get(name);if(!e||e===playerEntity)return false;aiControls.delete(e);return true;}
   function updateAIControls(dt){
     const now=performance.now();

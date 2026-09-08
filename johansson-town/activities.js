@@ -55,7 +55,7 @@ export function createActivities({say,onWeather,onTime,onCamera,getMinutes=()=>1
   function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aiko has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
   function yuriConversation(topic=null){
-    window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Yuri');
+    if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Yuri');
     const met=state.notes.includes('Met Yuri, the heart of Sakura Konbini.');
     if(!met)note('Met Yuri, the heart of Sakura Konbini.');
     const replies={

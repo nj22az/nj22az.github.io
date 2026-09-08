@@ -42,6 +42,8 @@ test('local rigged residents and animated Meshy Yuri load safely',async()=>{
   assert.equal(yuri.current,'Idle_Neutral');
   assert.ok(new THREE.Box3().setFromObject(yuri.model,true).getSize(new THREE.Vector3()).x<1,'Idle arms must be lowered, not a T-pose');
   models.gesture(yuri.entity);models.update(1/60);assert.equal(yuri.current,'Wave');
+  assert.equal(yuri.actions.get('Wave').loop,THREE.LoopOnce);
+  const greetingRemaining=yuri.gestureTime;models.gesture(yuri.entity);assert.equal(yuri.gestureTime,greetingRemaining,'Repeated interaction must not extend or restart the greeting');
   for(let i=0;i<100;i++)models.update(1/60);assert.equal(yuri.current,'Idle_Neutral');
   for(const name of ['Walk','Run']){
    const track=yuri.actions.get(name).getClip().tracks.find(t=>t.name==='Hips.position');
