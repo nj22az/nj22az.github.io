@@ -5,6 +5,7 @@ const root=process.argv.slice(2).find(a=>!a.startsWith('--'))||process.cwd(),url
 const THREE=await import(url('vendor/three.module.js'));
 const {installDOM}=await import(url('tests/fixtures.mjs'));installDOM();
 const {preloadIzakaya}=await import(url('src/world/izakaya.js'));
+const {preloadHarbourBlock}=await import(url('src/world/harbour-block.js'));
 const {createTown}=await import(url('src/world/town.js'));
 const {preloadModels,createLocalCharacters}=await import(url('src/people/models.js'));
 const {createCastAI}=await import(url('src/people/schedules.js'));
@@ -21,6 +22,7 @@ globalThis.fetch=async path=>{
  return new Response(await readFile(root+'/assets/'+pathname.split('/assets/')[1]));
 };
 const {preloadTeaHouse}=await import(url('src/world/tea-house.js'));if(!await preloadTeaHouse())throw Error('Missing tea house asset');
+if(!process.argv.includes('--without-block')&&!await preloadHarbourBlock())throw Error('Missing harbour block');
 const izakayaLoaded=await preloadIzakaya();if(izakayaLoaded.ready!==2)throw Error('Missing izakaya assets');
 const world=createTown({scene,sites,harbourBatching:!process.argv.includes('--legacy'),harbourCellSize:Number(process.argv.find(a=>a.startsWith('--cell='))?.split('=')[1]||48),mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>player.position});
 createContentItems({group:world.group,colliders:world.colliders,register(){},onInspect(){},onRead(){}});
@@ -30,6 +32,7 @@ const camera=new THREE.PerspectiveCamera(65,16/9,.07,220);camera.position.set(0,
 const frustum=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
 function measure(position,target){
  camera.position.set(...position);camera.lookAt(...target);camera.updateMatrixWorld(true);scene.updateMatrixWorld(true);
+ scene.traverse(o=>{if(o.isLOD)o.update(camera);});
  frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
  let calls=0,triangles=0,totalCalls=0,totalTriangles=0;const contributors={};
  scene.traverseVisible(o=>{
@@ -59,5 +62,5 @@ for(const [state,day,minutes,rain] of [['day',1,1002,false],['rainNight',0,1200,
 console.log(JSON.stringify({
  method:'CPU frustum estimate; all local character assets must load. Images are stubbed. No shadows, Points, GPU timings, player/held objects or interiors. Fixed starting resident population across viewpoints; not a gameplay walk-through.',
  configuration:{consolidate:!process.argv.includes('--legacy'),cellSize:process.argv.find(a=>a.startsWith('--cell='))?.split('=')[1]||'48'},
- loaded,staticProps:world.quality.staticProps,...initial,views
+ loaded,harbourBlock:world.quality.harbourBlock,staticProps:world.quality.staticProps,...initial,views
 },null,2));

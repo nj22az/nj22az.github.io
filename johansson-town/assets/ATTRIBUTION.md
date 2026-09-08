@@ -56,3 +56,7 @@ The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `M
 ## Living-town prototype · September 2026
 
 Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Yuri's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Yuri; see `docs/LIVING-TOWN.md`.
+
+## Quiet City Block — owner-supplied Meshy asset (2026-09-08)
+
+`models/harbour-block/harbour-shops.glb` and its three JPEG maps derive from the owner's `Meshy_AI_Quiet_City_Block_0908215843_texture.glb`, supplied through [Drive](https://drive.google.com/file/d/1n-K5OgB0sRO5Ve4Z82Uf-wP-nDythdoN/view) and included at their request. No CC0 licence is asserted for this supplied asset. Four buildings are extracted and simplified into near/far versions; source ground and detached vegetation/poles are removed, fused foliage is trimmed, and textures are re-encoded at their original 2048px resolution. Exact source hash and runtime counts: `models/harbour-block/manifest.json`. The boardwalk, entry frames and signs are authored project geometry; the extra surface grain uses the existing credited Poly Haven timber and plaster textures. Reproduction and validation: `../docs/HARBOUR-BOARDWALK.md`.

@@ -1,4 +1,7 @@
 import {createVendingMachine} from './vending.js';
+import {buildHarbourShop} from './harbour-block.js';
+import {buildBoardwalk} from './boardwalk.js';
+import {BOARDWALK} from './layout.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js';
@@ -11,6 +14,7 @@ import * as THREE from '../../vendor/three.module.js';
 // Static geometry is instanced by geometry/material; interaction anchors stay independent.
 export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition,harbourCellSize=48,harbourBatching=true}) {
   const group=new THREE.Group();scene.add(group);
+  const harbourShops=[];
   const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],people=[],water=[],wetMeshes=[];
   const loader=new THREE.TextureLoader();
 
@@ -103,19 +107,23 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   box([150,.5,190],[0,-.65,0],0x606b61);
-  box([15,.2,112],[0,-.16,0],0xb8b8af,[0,0,0],'road');
+  box([15,.2,48],[0,-.16,32],0xb8b8af,[0,0,0],'road');
+  box([15,.2,4],[0,-.16,-54],0xb8b8af,[0,0,0],'road');
+  const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const side of [-1,1]){
-    box([4.5,.25,112],[side*9.5,0,0],0x99998f,[0,0,0],'wall');
-    for(let z=-55;z<56;z+=1)if(![18,50,-11].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
-    for(let z=-52.5;z<52;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
-    for(let z=-52;z<52;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
+    box([4.5,.25,48],[side*9.5,0,32],0x99998f,[0,0,0],'wall');
+    for(let z=9;z<56;z+=1)if(![18,50].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
+    for(let z=11;z<52;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
+    for(let z=10;z<52;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
   }
-  for(let z=-47;z<47;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
+  for(let z=11;z<47;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
   for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,43,0xbeb79a);
-  [[-2.1,36,1.15,.45,.2],[2.7,25,.8,.35,-.3],[-1.5,8,1,.42,.4],[2,-11,.75,.32,.1],[-2.7,-27,.95,.38,-.2],[1.2,-43,1.2,.48,.25]].forEach(v=>puddle(...v));
+  [[-2.1,36,1.15,.45,.2],[2.7,25,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    const harbourShop=buildHarbourShop({parent:group,site:s,register,enter,label,mobile,shadows,maxAnisotropy});
+    if(harbourShop){harbourShops.push(harbourShop);colliders.push(harbourShop.collider);return;}
     if(s.id==='market'){buildStorefront({parent:group,site:s,register,enter,label});return;}
     const style=MERCHANT_FRONTAGES[i%MERCHANT_FRONTAGES.length],side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=style.height;
     box([8.2,height,10],[x,height/2,z],[0xe0cfaa,0xe5c8b5,0xc0d0c9,0xe4d5bb,0xd8c3ba,0xc5cfd5,0xead5b8,0xc5d0bf][i%8]);
@@ -168,6 +176,14 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Utility poles and overhead cables.
   for(const side of [-1,1])for(let z=-48;z<=48;z+=16){
+    if(z<=BOARDWALK.maxZ){
+      if(z===-32){
+        // Low deck lights replace the southern overhead power poles.
+        cyl(.10,.85,[side*6.3,.425,z],0x3b4848);box([.22,.10,.22],[side*6.3,.9,z],0xe7c080);obstacle(side*6.3,z,.25,.25);
+        const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(side*6.3,1,z);group.add(light);lampLights.push(light);
+      }
+      continue;
+    }
     cyl(.13,8,[side*6.7,4,z],0x574f49);obstacle(side*6.7,z,.38,.38);box([2.4,.14,.18],[side*6.7,7.3,z],0x4b534e);
     for(const dx of [-.8,0,.8]){
       cyl(.08,.26,[side*6.7+dx,7.52,z],0xc6cac1);
@@ -288,7 +304,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   return {
     group,colliders,people,cat,
+    harbourShops,boardwalk,
     setRain(value){
+      boardwalk.setRain(value);
       wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;seaMat.color.set(value?0x345b66:0x426f79);
     },
     update(dt,time,day){

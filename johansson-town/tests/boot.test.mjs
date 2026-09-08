@@ -70,7 +70,14 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
     source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    // Exercise the new geometry in the full game, including actual room exits.
+    const originalFetch=globalThis.fetch;
+    globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
+    globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
+    const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
+    assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const api=await import(dataModule(source));
+    assert.equal(api.world.harbourShops.length,4);
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
     assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');

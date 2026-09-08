@@ -83,7 +83,7 @@ function addSiteFrontage(world,options,factory,lights){
   const group=world.group,colliders=world.colliders;let interactions=0;
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   (options.sites||[]).forEach((s,i)=>{
-    if(s.id==='market')return;
+    if(s.id==='market'||world.harbourShops.some(shop=>shop.id===s.id))return;
     const side=s.side,x=side*6.88,z=s.z+2.55,frontRot=side<0?Math.PI/2:-Math.PI/2;
     factory.box(group,[.72,.025,1.2],[x,.15,z],0x5e5549,'timber',false);
     const awn=addWithCollider(group,colliders,factory.awning(side*6.95,s.z+1.2,frontRot,i%3===0?0x65766f:i%3===1?0x7b5e54:0x596b73));
@@ -164,7 +164,7 @@ export function createTown(options){
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return h>=960&&h<1410;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
   for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],0,profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],0,profile.work[1]);}
-  for(const s of originalSites){const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
+  for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildIzakaya(world,options);
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=!open;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
@@ -174,6 +174,7 @@ export function createTown(options){
   const baseUpdate=world.update.bind(world);
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);
+    for(const shop of world.harbourShops)shop.update(isOpen(options.sites.find(s=>s.id===shop.id),minutes),day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
     if(sea){const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
@@ -182,6 +183,7 @@ export function createTown(options){
   world.quality={
     ...(world.quality||{}),
     cableSegments,
+    harbourBlock:{shops:world.harbourShops.map(s=>s.id),nearTriangles:world.harbourShops.reduce((n,s)=>n+s.nearTriangles,0),farTriangles:world.harbourShops.reduce((n,s)=>n+s.farTriangles,0),boardwalk:true},
     staticProps,
     walkableOuterPier:true,
     pierPosts:pier.posts,

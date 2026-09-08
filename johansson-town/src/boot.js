@@ -1,11 +1,12 @@
 import {preloadTeaHouse} from './world/tea-house.js';
+import {preloadHarbourBlock} from './world/harbour-block.js';
 import {preloadIzakaya} from './world/izakaya.js';
 import {preloadVending} from './world/vending.js';
 // One boot path: settle local character loading before constructing the town.
 import {preloadCharacters} from './people/characters.js?fpv-1';
 await preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus').textContent='OPENING · '+Math.round(value*100)+'%';}});
-await Promise.all([preloadVending(),preloadIzakaya(),preloadTeaHouse()]);
+await Promise.all([preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadHarbourBlock()]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=8');
+await import('./game.js?living-town=9');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');
