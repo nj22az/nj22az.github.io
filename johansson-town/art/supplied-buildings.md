@@ -18,6 +18,6 @@ blender -b --python tools/blender/prepare-supplied-izakaya.py -- --input /path/t
 python tools/pack-supplied-izakaya.py --asset tea-house
 ```
 
-Minato's supplied exterior replaces its previous Blender facade; the existing diorama interior, supper/gossip and Yuri's alternate-evening visits remain. Corner Tea House replaces the decorative Shiomi apartment shell at (46,57), with an entrance on the residential lane at (46,62), a furnished tea room and a Town Book shortcut. It opens 09:00–19:00. The tea room offers inspection and seating; it does not implement food purchases. Both rooms use the visible Exit to street control.
+Minato's supplied exterior replaces its previous Blender facade; the existing first-person interior, supper/gossip and Yuri's alternate-evening visits remain. Corner Tea House replaces the decorative Shiomi apartment shell at (46,57), with an entrance on the residential lane at (46,62), a furnished tea room and a Town Book shortcut. It opens 09:00–19:00. The tea room offers inspection and seating; it does not implement food purchases. Both rooms use the visible Exit to street control.
 
 Validation: CPU game entry/exit checks cover every registered interior; dedicated supplied-building checks load embedded textures and verify triangle, file-size, bounds and entrance limits. Production Vite build passes with the existing large-chunk warning. Blender previews were reviewed; browser interaction and mobile GPU performance were not measured in this environment.

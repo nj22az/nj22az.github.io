@@ -13,7 +13,7 @@ This branch implements that direction around **Minato Izakaya**, reached along t
 - Adults visit for supper after their own shifts. The roster changes over the evening. Existing scene entities are temporarily moved into the room; their street state and interaction ownership are restored on leaving.
 - Guests have seated, eating and drinking animation clips. A drinking guest carries a small cup. Food prices are fictional game prices. Purchasing a plate spends town yen, advances eight town minutes and records a memory.
 - The table offers different gossip when the relevant friends are present. Its clues point towards existing activities, people and objects rather than requiring a visit to a website page.
-- Interiors use an elevated cutaway perspective. The street keeps its existing camera modes. Movement follows the room camera; nearby objects can be tapped. Boundary collision and the exit remain active when front walls are hidden.
+- Exploration is first person on the street and inside every building. The player avatar is not rendered; nearby objects can still be tapped, and boundary collision plus the persistent Exit to street control remain active indoors.
 - Warm paper, red and green controls replace the austere panel colours. Contextual visibility and the separated Run/Jump layout remain in place.
 - Shopfronts gain brighter plaster, finer joinery, planted boxes and small posters. Open shutters disappear into their housings instead of floating above the roofs. Oversized circular road patches no longer cover the main street at lane junctions.
 
@@ -37,13 +37,13 @@ The [Three.js optimisation guide](https://threejs.org/manual/en/optimize-lots-of
 
 The [official Khronos Blender glTF importer/exporter](https://github.com/KhronosGroup/glTF-Blender-IO) supports Blender-to-glTF delivery and documents its import/export and round-trip validation workflow. The practical evidence here is the actual local export and loader checks, rather than an assumption that a Blender file will render identically in WebGL.
 
-The [Three.js orthographic-camera documentation](https://threejs.org/docs/pages/OrthographicCamera.html) establishes the constant apparent scale that makes orthographic projection useful for miniature views. This implementation deliberately retains a narrow perspective camera, so the inspector and the existing camera contract continue to work. The diorama effect comes from cutaway walls and elevated framing; it is not true orthographic projection.
+The game uses one perspective-camera contract throughout exploration. Keeping the same first-person projection indoors and outdoors avoids an abrupt change of scale and prevents the hidden player controller from ever becoming visible.
 
 The user-supplied screenshots and the inspected repository are the primary evidence for the visual diagnosis. The named friendships, gossip, prices, building and opening schedule are original fictional design decisions. Attempts to retrieve JNTO izakaya guidance and the Blender manual were unsuccessful; no claim of historically verified 1988 izakaya practice is made. Further broad searching would not settle whether this particular cast is appealing or the game runs well on the user's iPad, so research stopped at the implementation and device-verification boundary.
 
 ## Verification and remaining work
 
-- **44 tests pass**, including existing saves, quests, Yuri's greeting, every registered interior, navigation, independent character rigs, purchases, guest restoration and finite grounded poses across every new character clip.
+- **49 tests pass**, including existing saves, quests, Yuri's greeting, every registered interior in forced first person, navigation, independent character rigs, purchases, guest restoration and finite grounded poses across every resident clip.
 - The **Vite production build passes**. It retains a warning for a JavaScript chunk over 500 kB.
 - Static Sakura stock batching removes **93 estimated draws** from the otherwise identical new street scene. The full updated start-view estimate, including the exported izakaya exterior, is **575 mesh draws and 200,690 submitted triangles**. It remains over budget.
 - The measurement tool loads the actual exterior GLB and all 24 preloaded character sources. Counts are CPU/frustum estimates, excluding shadow passes, points, the player, held objects, interiors and GPU timings. They are not FPS results. The new cast also increases asset download volume.

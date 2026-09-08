@@ -4,7 +4,7 @@ import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';
 
 test('Yuri offers selectable topics, remembers an introduction and never charges for conversation',()=>{
- const dom=installDOM(),options={say(){},onWeather(){},onTime(){},onCamera(){},getMinutes:()=>1002};
+ const dom=installDOM(),options={say(){},onWeather(){},onTime(){},getMinutes:()=>1002};
  const acts=createActivities(options),yen=acts.state.yen;
  let greetings=0;window.__JOHANSSON_CHARACTER_CONTROL__={gesture(name){assert.equal(name,'Yuri');greetings++;}};
  acts.action('resident','Yuri');

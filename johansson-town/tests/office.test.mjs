@@ -24,7 +24,7 @@ navigator.vibrate=()=>{};
 assert.equal(new Set(ITEMS.map(i=>i.id)).size,ITEMS.length);
 assert.equal(ITEMS.filter(i=>i.kind==='book').length,6);
 for(const item of ITEMS){const g=makeContentObject(item);assert.ok(g.children.length>0);g.userData.reader.open();g.userData.reader.next(999);assert.equal(g.userData.reader.page,item.pages.length);g.userData.reader.next(-999);assert.equal(g.userData.reader.page,1);g.userData.reader.flip();g.userData.reader.update(.1);g.traverse(o=>{if(o.isMesh)assert.ok(o.geometry.attributes.position.count>0);});}
-const acts=createActivities({say(){},onWeather(){},onTime(){},onCamera(){}});
+const acts=createActivities({say(){},onWeather(){},onTime(){}});
 assert.equal(acts.state.yen,888);assert.equal(acts.state.quest,1);assert.ok(storage.has('johansson-town-1988-v3'),'migration preserves v3');
 for(const id of ['book','cv','keychain','bligh'])acts.inspectItem(ITEMS.find(i=>i.id===id));
 acts.inspectItem(ITEMS.find(i=>i.id==='book'));assert.equal(acts.state.inspectedIds.length,4);

@@ -15,7 +15,7 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 
 ## Controls
 
-Desktop: click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; V changes camera; N cycles time. Escape closes panels or releases the mouse.
+Desktop: exploration is always first person. Click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; N cycles time. Escape closes panels or releases the mouse.
 
 Touch: left stick, right-side look, JUMP, ACTION and DRINK. The notebook can select a drink from the bag. Sound preference, inventory, money and quest state save on this device.
 

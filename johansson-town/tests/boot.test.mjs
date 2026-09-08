@@ -52,6 +52,9 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const gameUrl=pathToFileURL(resolve(root,'src/game.js'));
     const threeUrl=pathToFileURL(resolve(root,'vendor/three.module.js')).href;
     let source=await readFile(gameUrl,'utf8');
+    const index=await readFile(resolve(root,'index.html'),'utf8');
+    assert.doesNotMatch(index,/id="(?:view|camera)Button"/,'FPV-only UI must not expose camera switching');
+    assert.doesNotMatch(source,/toggleCamera|KeyV|cameraMode/,'FPV-only runtime must not retain a third-person path');
     source=source.replace(/(from\s*['"])(\.[^'"]+)(['"])/g,(_,prefix,relative,suffix)=>prefix+new URL(relative,gameUrl).href+suffix);
     const rendererShim=dataModule(`
       export * from ${JSON.stringify(threeUrl)};
@@ -66,23 +69,20 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     const api=await import(dataModule(source));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
-    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'third','Start in third person to see the supplied protagonist');
+    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     api.simulate(1/60);
     api.setTime();
     assert.equal(api.scene.fog,null,'Scene fog is disabled');
     assertFiniteTransforms(api,'outdoor startup');
 
-    assert.equal(api.player.visible,true);
-    document.querySelector('#viewButton').onclick();api.simulate(1/60);
-    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first');assert.equal(api.player.visible,false);assert.equal(api.camera.fov,65);
-    assert.equal(api.activities.state.cameraMode,'first');
-    document.querySelector('#cameraButton').onclick();api.simulate(1/60);
-    assert.equal(window.__JOHANSSON_CAMERA_MODE__,'third');assert.equal(api.player.visible,true);
+    assert.equal(api.player.visible,false);assert.equal(api.player.children.length,0,'No protagonist mesh is attached to the controller');
+    assert.equal(api.player.userData.visualSource,'First-person controller');assert.equal(api.camera.fov,65);
+    assert.equal('cameraMode' in api.activities.state,false,'Legacy camera preference is discarded');
     const runningStart=api.player.position.clone();
     api.keys.KeyW=true;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
     api.player.position.copy(runningStart);document.querySelector('#run').onclick();api.simulate(.1);
@@ -121,10 +121,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.equal(api.reviewCurrentRoom()?.id,site.id,'Interior entry: '+site.id);
       assert.deepEqual(api.reviewRoomState(),{visible:true,townVisible:false,colliders:api.reviewRoomState().colliders});
       assert.ok(api.reviewRoomState().colliders>0,'Interior has colliders: '+site.id);
-      api.simulate(1/60);assert.equal(api.camera.fov,38);assert.equal(api.player.visible,true);
-      document.querySelector('#viewButton').onclick();api.simulate(1/60);assert.equal(api.camera.fov,65);assert.equal(api.player.visible,false,'FPV inside '+site.id);
+      api.simulate(1/60);assert.equal(api.camera.fov,65);assert.equal(api.player.visible,false,'FPV inside '+site.id);assert.equal(api.reviewHiddenCutaways(),0,'FPV keeps the room enclosure visible: '+site.id);
       const roomStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.z<roomStart.z,'Interior FPV walks forward');
-      document.querySelector('#viewButton').onclick();api.simulate(1/60);assert.equal(api.camera.fov,38);assert.equal(api.player.visible,true);
 
       api.simulate(1/60);
       assertFiniteTransforms(api,'inside '+site.id);
@@ -134,7 +132,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
         assert.ok(api.camera.aspect<aspect,'Speech rail reserves horizontal scene space');
         const clerk=api.scene.children.find(o=>o.userData.name==='Yuri');assert.ok(clerk);
         const target=clerk.position.clone();target.y+=1.25;api.camera.updateMatrixWorld(true);target.project(api.camera);
-        assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Cutaway keeps Yuri inside the unobstructed scene');
+        assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Conversation keeps Yuri inside the unobstructed scene');
         api.activities.close();assert.equal(api.camera.aspect,aspect);
         const canvas=document.querySelector('#game');
         for(const [width,height] of [[390,844],[768,1030],[1024,768],[844,390]]){
@@ -172,6 +170,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.equal(api.reviewCurrentRoom(),null,'Interior exit: '+site.id);
       assert.equal(api.reviewRoomState().townVisible,true);
       api.simulate(1/60);
+      assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first');assert.equal(api.player.visible,false,'Leaving '+site.id+' remains FPV');
       assertFiniteTransforms(api,'outside '+site.id);
       entered++;
     }

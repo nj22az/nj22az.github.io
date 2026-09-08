@@ -21,7 +21,7 @@ GitHub Pages supplies the required HTTPS secure context.
 - `johansson_interact` — activate the nearby ACTION/TALK/ENTER interaction.
 - `johansson_travel` — use the in-game town directory to travel to a named location.
 - `johansson_choose_action` — press one enabled button in an open dialogue/activity, including quest, shopping and minigame actions.
-- `johansson_ui` — operate notebook, camera, time, weather, sound and modal controls.
+- `johansson_ui` — operate notebook, time, weather, sound and modal controls.
 
 ## Character tools
 

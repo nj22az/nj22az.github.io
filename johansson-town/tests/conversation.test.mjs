@@ -15,7 +15,7 @@ test('conversation reserves a separate scene area on phones, tablets and desktop
 });
 test('Yuri topics and resident quest replies retain bubbles; notebook and close restore the scene',()=>{
  const dom=installDOM(),speakers=[];
- const acts=createActivities({say(){},onWeather(){},onTime(){},onCamera(){},onConversation:name=>speakers.push(name)});
+ const acts=createActivities({say(){},onWeather(){},onTime(){},onConversation:name=>speakers.push(name)});
  const modal=document.querySelector('#activity');
  acts.action('resident','Yuri');assert.equal(speakers.at(-1),'Yuri');assert.ok(modal.classList.contains('conversation'));
  dom.button('I like your ribbon');assert.equal(speakers.at(-1),'Yuri');
