@@ -5,7 +5,7 @@ import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?clear-air-1';
 import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-rig-2';
 import {loadTownEnvironment} from './render/environment.js';
-import {createHands} from './interact/hands.js';
+import {createHands} from './interact/hands.js?ui=compact-2';
 import {townAudio} from './audio/town-audio.js';
 import {routeAt,groundHeight} from './world/layout.js';
 import {drawTownMap} from './world/map.js';

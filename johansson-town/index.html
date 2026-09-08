@@ -10,14 +10,14 @@
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <style>:root,html,body{margin:0;background:#0b171b!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css">
-<link rel="stylesheet" href="./polish.css">
-<link rel="stylesheet" href="./viewport-fix.css">
-<link rel="stylesheet" href="./character-controls.css">
-<link rel="stylesheet" href="./office.css">
-<link rel="stylesheet" href="./dialogue.css?yuri-rig-2">
+<link rel="stylesheet" href="./styles.css?ui=compact-2">
+<link rel="stylesheet" href="./polish.css?ui=compact-2">
+<link rel="stylesheet" href="./viewport-fix.css?ui=compact-2">
+<link rel="stylesheet" href="./character-controls.css?ui=compact-2">
+<link rel="stylesheet" href="./office.css?ui=compact-2">
+<link rel="stylesheet" href="./dialogue.css?ui=compact-2">
 
-<link rel="stylesheet" href="./context-controls.css">
+<link rel="stylesheet" href="./context-controls.css?ui=compact-2">
 <title>Johansson Town</title>
 </head>
 <body>
@@ -89,7 +89,7 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       }
     },25000);
     try{
-      await import('./src/boot.js?yuri-greeting-1');
+      await import('./src/boot.js?ui=compact-2');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
