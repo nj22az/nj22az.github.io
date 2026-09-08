@@ -11,7 +11,7 @@ import {routeAt,groundHeight} from './world/layout.js';
 import {drawTownMap} from './world/map.js';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js';
-import { createActivities } from '../activities.js?yuri-greeting-1';
+import { createActivities } from '../activities.js?ui=controls-3';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';

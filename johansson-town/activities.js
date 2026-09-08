@@ -1,3 +1,4 @@
+import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
@@ -94,8 +95,8 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
     buttons.push(['Goodbye',close]);show(name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
-  function vending(){show('自動販売機 · Vending machine','The compressor hums. A can drops into the tray when you make a purchase.',[['Green tea · ¥120',()=>buyDrink('Green tea')],['Canned coffee · ¥120',()=>buyDrink('Canned coffee')],['Leave',close]]);}
-  function buyDrink(name){if(!spend(120))return;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${name} is in your bag.`);}
+  function vending(){show('MINATO DRINKS · 自動販売機','A harbour break. Choose a chilled drink · ¥120.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
+  function buyDrink(product){if(!spend(product.price))return;const name=product.inventoryName;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${product.brand} — ${name} is in your bag.`);}
 
   function legacyResident(name){
     if(name==='Aiko'){
@@ -211,7 +212,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#cameraButton').onclick=onCamera;
-  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji and fallback Yuri: Blender-authored MakeHuman / MPFB · CC0. Original scripted animations.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Three.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nQuaternius Ultimate Modular Men and Women: five local skinned body bases and embedded clips · CC0.\nKenji and fallback Yuri: Blender-authored MakeHuman / MPFB · CC0. Original scripted animations.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
