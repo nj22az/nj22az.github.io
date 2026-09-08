@@ -13,7 +13,7 @@ export function preloadModels({onProgress}={}){
   pending=Promise.allSettled(SOURCES.map(async id=>{
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),['kenji','yui','yuri-meshy'].includes(id)?12000:2500);
     try{
-      const response=await fetch(assetURL(['kenji','yui','yuri-meshy'].includes(id)?'characters/realistic/'+id+'.glb':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const response=await fetch(assetURL(['kenji','yui','yuri-meshy'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-meshy'?'?yuri-rig-1':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
       const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!['kenji','yui','yuri-meshy'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});loaded.set(id,gltf);
@@ -54,7 +54,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       if(actions.size===0)continue; // Supplied Meshy mesh has an authored pose, but no skeleton or clips.
       const clip=actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.speed>.12?'Walk':'Idle_Neutral';
-      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip)||actions.get('Idle');next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
+      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip)||actions.get('Idle_Neutral')||actions.get('Idle')||actions.values().next().value;next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
       const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/1.25,.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
       mixer.update(dt);
     }
