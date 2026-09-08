@@ -56,17 +56,17 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const rendererShim=dataModule(`
       export * from ${JSON.stringify(threeUrl)};
       export class WebGLRenderer {
-        constructor(){this.capabilities={getMaxAnisotropy:()=>8};this.shadowMap={};this.dpr=1;this.info={render:{calls:0,triangles:0}};}
+        constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8};this.shadowMap={};this.dpr=1;this.info={render:{calls:0,triangles:0}};}
         setPixelRatio(value){this.dpr=value;}
         getPixelRatio(){return this.dpr;}
-        setSize(){}
+        setSize(width,height,updateStyle=true){this.width=width;this.height=height;if(updateStyle){this.domElement.style.width=width+'px';this.domElement.style.height=height+'px';}}
         render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);}
       }
     `);
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     const api=await import(dataModule(source));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
@@ -114,6 +114,19 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
         const target=clerk.position.clone();target.y+=1.25;api.camera.updateMatrixWorld(true);target.project(api.camera);
         assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Cutaway keeps Yuri inside the unobstructed scene');
         api.activities.close();assert.equal(api.camera.aspect,aspect);
+        const canvas=document.querySelector('#game');
+        for(const [width,height] of [[390,844],[768,1030],[1024,768],[844,390]]){
+          globalThis.innerWidth=width;globalThis.innerHeight=height;
+          api.resizeRenderer();
+          for(const talking of [true,false]){
+            if(talking)api.activities.action('resident','Yuri');else api.activities.close();
+            const displayWidth=parseFloat(canvas.style.width),displayHeight=parseFloat(canvas.style.height);
+            assert.ok(Math.abs(api.camera.aspect-displayWidth/displayHeight)<1e-12,'Camera must match the canvas dimensions');
+            const projection=api.camera.projectionMatrix.elements;
+            assert.ok(Math.abs(projection[0]*displayWidth/(projection[5]*displayHeight)-1)<1e-12,'Equal world lengths project to equal pixel lengths');
+          }
+        }
+        globalThis.innerWidth=1024;globalThis.innerHeight=768;api.resizeRenderer();
         assert.ok(api.camera.quaternion.angleTo(rotation)<1e-6,'Closing restores the previous camera direction');
       }
       assert.equal(api.scene.fog,null,'No interior fog');
@@ -136,6 +149,18 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       entered++;
     }
     assert.ok(entered>=8,'All existing interiors remain registered');
+    const yuri=api.scene.children.find(o=>o.userData.name==='Yuri'),yuriScale=yuri.scale.clone();
+    api.reviewSetMinutes(1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
+    assert.equal(yuri.visible,true,'Yuri visits after Sakura closes');
+    assert.equal(yuri.userData.inIzakaya,true);assert.ok(yuri.scale.equals(yuriScale));
+    assert.equal(api.scene.children.filter(o=>o.userData.name==='Yuri').length,1,'Reuse the existing Yuri');
+    yuri.userData.hit.fn();assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · After hours');api.activities.close();
+    api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.equal(yuri.visible,false,'Yuri leaves when her visit ends');
+    api.leaveRoom();api.reviewSetMinutes(1440+1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
+    assert.equal(yuri.visible,false,'She does not visit every evening');api.leaveRoom();
+    api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
+    assert.equal(yuri.visible,true,'Yuri returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
+    assert.equal(yuri.position.x,3.35);assert.equal(yuri.position.z,-1.95);api.leaveRoom();
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

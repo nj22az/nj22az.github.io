@@ -1,5 +1,11 @@
 import {PROFILES} from './profiles.js';
 export const IZAKAYA_DOOR=[24,20];
+// A repeatable visit on alternate town days, with time to lock up and walk over.
+// Keep the unwrapped saved clock so revisiting or reloading never rerolls her.
+export function yuriVisitsIzakaya(minutes){
+ const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
+ return day%2===0&&minute>=1220&&minute<1290;
+}
 export const IZAKAYA_SEATS=[[-3.8,-1.42],[-2.3,-1.42],[-.8,-1.42],[.7,-1.42],[2.2,-1.42],[-4.1,1.12],[-2.9,1.12],[2,3.08]];
 export function supperGuests(minutes){
  const minute=((minutes%1440)+1440)%1440;
@@ -14,6 +20,7 @@ export function residentPlan(profile,minutes,rain=false){
  return {place:rain?'home':'evening',target:rain?profile.home:profile.evening,activity:rain?'sheltering from rain':'taking an evening stroll'};
 }
 export const GOSSIP=[
+ {id:'yuri-evening',a:'Yuri',b:'Nao',line:'Yuri: I told the assistant manager I would be home early.\nNao: The plant?\nYuri: He looked very disappointed. I watered him twice.',clue:'Yuri sometimes stops at Minato after locking Sakura. Look for her after 20:20.'},
  {id:'apron',a:'Aiko',b:'Emi',line:'Aiko: The cat apron needs bigger pockets.\nEmi: For what?\nAiko: His responsibilities.',clue:'Aiko is worried about Tama. Ask her by the bookshop.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: I fixed the crackling.\nTetsuo: That was the music.\nKenji: Then I have improved it.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Mr Fujita',line:'Fujita: This big!\nHarbour master: Yesterday it was smaller.\nFujita: Yesterday you were sitting further away.',clue:'The outer pier has a bait station and a working winch.'},

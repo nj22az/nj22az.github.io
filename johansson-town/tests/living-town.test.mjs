@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
-import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt} from '../src/people/social.js';
+import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createActivities} from '../activities.js';
 import {installDOM} from './fixtures.mjs';
@@ -32,6 +32,17 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
  acts.action('izakaya-menu');dom.button('Yakitori plate · ¥180');assert.equal(acts.state.yen,1020);assert.equal(minutes,1108);assert.ok(acts.state.notes.includes('Supper at Minato: Yakitori plate.'));
  dom.button('Listen to the table');assert.match(document.querySelector('#activityBody').firstChild.textContent,/cat apron/);
  acts.state.yen=0;acts.action('izakaya-menu');dom.button('Oden supper · ¥260');assert.equal(acts.state.yen,0);assert.equal(minutes,1108);
+});
+
+test('Yuri visits after closing on alternate days and has off-duty conversation',()=>{
+ for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(yuriVisitsIzakaya(m),false);
+ for(const m of [1220,1230,1289,2880+1230])assert.equal(yuriVisitsIzakaya(m),true);
+ const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onCamera(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Yuri','Nao']})});
+ acts.action('resident','Yuri');assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · After hours');
+ assert.match(document.querySelector('#activityBody').firstChild.textContent,/all locked up/);
+ dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Nao saved me/);
+ assert.ok(acts.state.notes.includes('Caught up with Yuri after closing at Minato Izakaya.'));
+ assert.equal(gossipAt(1230,['Yuri','Nao']).id,'yuri-evening');
 });
 
 test('all exported Blender residents retain finite grounded poses and a single body draw',async()=>{

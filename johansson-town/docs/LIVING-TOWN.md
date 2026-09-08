@@ -66,3 +66,9 @@ node tools/measure-art-scene.mjs
 ```
 
 The source of resident identity data is `src/people/profiles.json`; its generated JavaScript module must be kept synchronised. Construction and runtime asset reports record geometry and clip counts.
+
+## Follow-up: Yuri after hours and dialogue proportions
+
+Yuri visits Minato on alternate town days from 20:20 to 21:30, after Sakura closes at 20:00. The first town evening is a visit evening. The saved town clock determines the schedule, so reloading does not reroll it. Her existing actor is reused, with her original model, scale, idle and greeting; she stands by the table and has off-duty dialogue and a gossip exchange with Nao. On return to Sakura she resumes her counter position.
+
+The dialogue canvas now respects renderer-owned dimensions. The previous fullscreen CSS forcibly stretched the reserved scene viewport across the entire display, widening characters. CPU regression checks cover camera/canvas proportions and the visit/return lifecycle. A real-browser CSS fixture is included at `tests/conversation-layout.html`; the cloud review browser blocked both local and embedded test pages, so that fixture and iPad compositing have not been visually verified.

@@ -62,19 +62,27 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
   const histories=new Map();
   function yuriConversation(topic=null){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Yuri');
+    const offDuty=getSocialContext().inside==='izakaya';
+    if(offDuty)note('Caught up with Yuri after closing at Minato Izakaya.');
     const met=state.notes.includes('Met Yuri, the heart of Sakura Konbini.');
     if(!met)note('Met Yuri, the heart of Sakura Konbini.');
     const replies={
       snack:'おすすめ？ 任せて！\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.',
       ribbon:'このリボン？\nThis ribbon? I tied it three times this morning. Effortlessly charming takes a surprising amount of effort.',
-      town:'夕方の港が好き。\nAfter closing I like a walk by the harbour. Nao’s izakaya is up the eastern lane — follow the red lanterns. She always keeps a chair for a good story.',
+      town:'夕方の港が好き。\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is up the eastern lane — follow the red lanterns. She always keeps a chair for a good story.',
       compliment:'もう、照れちゃう。\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.',
       challenge:'勝負しよう！\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.',
       radio:'内緒だよ。\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.',
       secret:'ここだけの話ね。\nA little shop secret: I name the plants. The stubborn one by the door is the assistant manager. Terrible at counting change.',
     };
-    const greeting=met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ ゆりです。\nWelcome! I am Yuri. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
-    const title='Yuri · Heart of Sakura';
+    if(offDuty){
+      replies.snack='Nao saved me some edamame and barley tea. Choosing a snack is much easier when I am not the person stocking the shelves.';
+      replies.compliment='Thank you. It is lovely being here with everyone, just as Yuri. No till to count tonight.';
+      replies.challenge='A little challenge: ask Nao which neighbour tells the tallest stories. I have my suspicions.';
+      replies.radio='When this song comes on at Sakura I sing along. Here I let Nao join in. She knows all the wrong words with enormous confidence.';
+    }
+    const greeting=offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ ゆりです。\nWelcome! I am Yuri. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
+    const title=offDuty?'Yuri · After hours':'Yuri · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Yuri',close]]);return;}
     show(title,greeting,[['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
   }

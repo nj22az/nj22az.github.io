@@ -1,7 +1,7 @@
-/* iPad/iOS fullscreen compositor guard — v14.
-   Every compositor surface behind WebGL is dark. The canvas is deliberately
-   overscanned, but is not paint-contained: WebKit may otherwise expose the
-   containment boundary for a frame while Fullscreen/visualViewport resizes. */
+/* Keep iPad/iOS compositor surfaces dark without stretching the WebGL image.
+   Renderer-owned inline dimensions must win: dialogue reserves a smaller scene
+   viewport and the camera uses that exact aspect ratio. Overscan belongs to
+   the dark backing surface, never to the rendered canvas. */
 :root{
   background:#0b171b!important;
   color-scheme:dark;
@@ -31,12 +31,12 @@ body::before{
 }
 #game{
   position:fixed!important;
-  left:-24px!important;
-  top:-24px!important;
-  right:-24px!important;
-  bottom:-24px!important;
-  width:calc(100% + 48px)!important;
-  height:calc(100% + 48px)!important;
+  left:0!important;
+  top:0!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:100vw;
+  height:100dvh;
   max-width:none!important;
   max-height:none!important;
   margin:0!important;
@@ -57,9 +57,5 @@ body::before{
 @supports(height:100dvh){html,body{height:100dvh!important;}}
 @media (display-mode:fullscreen){
   :root,html,body{background:#0b171b!important;}
-  #game{
-    left:-32px!important;top:-32px!important;right:-32px!important;bottom:-32px!important;
-    width:calc(100% + 64px)!important;height:calc(100% + 64px)!important;
-  }
 }
 @media (display-mode:standalone){:root,html,body{background:#0b171b!important;}}
