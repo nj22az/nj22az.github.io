@@ -52,3 +52,11 @@ The navigation implementation is a conservative raster A* over the shared collis
 The supplied cloud browser fails WebGL context creation (`GL_VENDOR = Disabled`, `GL_RENDERER = Disabled`). This was reproduced on ENTER TOWN. No game screenshot or FPS claim is available.
 
 Before release, test desktop Chromium and Safari, iPad Safari landscape/portrait, iPhone touch controls, fullscreen enter/exit, background/foreground, rain/night, camera near benches/walls, model-load failure, all shop entries/exits, the full Tama loop and all save fields after reload. Record actual draw calls, triangles, p95 frame time, memory and cache timing. Keep the pull request draft until these gates and the stated scope are resolved.
+
+## Subsequent art-direction pass
+
+Added crease-aware shading normal smoothing (positions, topology, skin weights and source GLB files unchanged), per-identity garment colour buffers, eased heading changes and velocity-scaled walk clips. Eight original frontages now draw from four authored roof forms with differentiated sign proportions and timber framing. Local Industrial Sunset 02 HDR lighting is verified by source MD5 and parsed by the vendored r170 RGBELoader; shader output is not verified.
+
+221 static factory meshes become 25 spatial batches, saving 196 draws. Dynamic trolleys, living props, animated shutters and resident meshes are excluded. A current comparable CPU starting-view estimate falls from 823 to 621 mesh draws, with submitted triangles approximately 99,600 → 100,200. This does **not** meet the draw-call target and is not an FPS measurement. Full method/data are recorded in `docs/art-pass-measurements.json`; reproduce using `node tools/measure-art-scene.mjs`.
+
+18 automated tests and the Vite build pass, including normal/geometry invariants, batching/anchor preservation, roof bounds, dialogue cancellation and the original gameplay regressions. Visual style, natural Japanese listening, reflection exposure and mobile performance still require real WebGL review. The four generated Japanese dialogue clips are now included; six further clips and all five TRELLIS meshes remain blocked by the public ZeroGPU quota.

@@ -1,3 +1,4 @@
+import {MERCHANT_FRONTAGES,merchantRoofGeometry} from './merchant-roofs.js';
 import {assetURL} from '../assets.js';
 import {createMaterials} from '../render/materials.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -42,11 +43,12 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     return materials.get(key);
   }
   function shape(type,args,p,c,rotation=[0,0,0],map=null){
-    const key=type+args.join(',');
-    if(!geometries.has(key))geometries.set(key,type==='box'?new THREE.BoxGeometry(...args):type==='cylinder'?new THREE.CylinderGeometry(...args):new THREE.SphereGeometry(...args));
+    const scalable=type==='box'||type==='cylinder'&&args[0]===args[1];
+    const key=scalable?(type==='box'?'box:unit':'cylinder:unit/'+args[3]):type+args.join(',');
+    if(!geometries.has(key))geometries.set(key,type==='box'?new THREE.BoxGeometry(1,1,1):type==='cylinder'?new THREE.CylinderGeometry(...(scalable?[1,1,1,args[3]]:args)):new THREE.SphereGeometry(...args));
     const mat=material(c,map),bk=key+mat.uuid;
     if(!batches.has(bk))batches.set(bk,{geo:geometries.get(key),mat,matrices:[]});
-    const obj=new THREE.Object3D();obj.position.set(...p);obj.rotation.set(...rotation);obj.updateMatrix();batches.get(bk).matrices.push(obj.matrix.clone());
+    const obj=new THREE.Object3D();obj.position.set(...p);obj.rotation.set(...rotation);if(scalable)obj.scale.set(...(type==='box'?args:[args[0],args[2],args[0]]));obj.updateMatrix();batches.get(bk).matrices.push(obj.matrix.clone());
   }
   const box=(s,p,c=0xffffff,r=[0,0,0],map=null)=>shape('box',s,p,c,r,map);
   const cyl=(r,h,p,c=0x444b4b)=>shape('cylinder',[r,r,h,10],p,c);
@@ -109,13 +111,23 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
-    const side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=6.2+(i%3)*.6;
-    box([8.2,height,10],[x,height/2,z],i%2?0xb7b4a3:0xc0b29a,[0,0,0],'wall');
+    const style=MERCHANT_FRONTAGES[i%MERCHANT_FRONTAGES.length],side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=style.height;
+    box([8.2,height,10],[x,height/2,z],style.wall,[0,0,0],'wall');
     box([.25,2.7,10.15],[side*7.65,1.4,z],s.color,[0,0,0],'wood');
-    box([4.7,.22,11],[x-side*2,height+.6,z],0x68787a,[0,0,side*.24],'roof');
-    box([4.7,.22,11],[x+side*2,height+.6,z],0x68787a,[0,0,-side*.24],'roof');
-    beam([x,height+1.18,z-5.6],[x,height+1.18,z+5.6],.13,0x465256);
-    label(s.jp,s.title.toUpperCase(),[front-side*.06,3.55,z-.4],6.8,1.22,angle,'#e5dcc4',s.accent,true);
+    if(style.roof==='parapet'){
+      box([8.65,.2,10.5],[x,height+.1,z],style.roofColour,[0,0,0],'wall');
+      for(const edge of [-1,1]){box([.23,.7,10.6],[x+edge*4.2,height+.46,z],style.wall,[0,0,0],'wall');box([8.65,.7,.23],[x,height+.46,z+edge*5.18],style.wall,[0,0,0],'wall');}
+    }else{
+      const roof=directMesh(merchantRoofGeometry(style.roof),material(style.roofColour,'roof'),group,[x,height+.18,z]);roof.name='merchant-roof:'+s.id+':'+style.roof;roof.material.side=THREE.DoubleSide;
+      if(style.roof!=='hipped')beam([x,height+(style.roof==='low-gable'?.82:1.74),z-5.5],[x,height+(style.roof==='low-gable'?.82:1.74),z+5.5],.105,0x4d554e);
+    }
+    // Deep eaves and exposed timber establish a two-storey merchant house silhouette.
+    box([.52,.2,10.7],[front-side*.2,height-.1,z],0x565549,[0,0,0],'wood');
+    if(style.timber){
+      for(const offset of [-4.65,-1.55,1.55,4.65])box([.14,2.65,.14],[front-side*.17,4.96,z+offset],0x655c49,[0,0,0],'wood');
+      for(const y of [3.9,height-.3])box([.14,.16,9.6],[front-side*.18,y,z],0x655c49,[0,0,0],'wood');
+    }
+    label(s.jp,s.title.toUpperCase(),[front-side*.09,3.43,z-.4],style.signWidth,style.signHeight,angle,'#d9ceb3',s.accent,false);
     for(const dz of [-3,-.2,2.6]){
       box([.07,1.45,1.7],[front-side*.1,5.12,z+dz],0x40595d);
       shopGlass.push(glassPanel(front-side*.145,5.12,z+dz,1.62,1.34,angle));

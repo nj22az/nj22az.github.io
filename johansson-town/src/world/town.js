@@ -1,3 +1,4 @@
+import {batchStaticProps} from '../render/static-props.js';
 import {PROFILES} from '../people/profiles.js';
 import {buildDistricts} from './districts.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -164,6 +165,7 @@ export function createTown(options){
   for(const s of originalSites){const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=open?4:1.3;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
+  const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);
   if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
@@ -177,6 +179,7 @@ export function createTown(options){
   world.quality={
     ...(world.quality||{}),
     cableSegments,
+    staticProps,
     walkableOuterPier:true,
     pierPosts:pier.posts,
     antiShimmerCables:true,

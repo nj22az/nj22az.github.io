@@ -39,3 +39,9 @@ Vite's optional `dist/` output preserves the local asset tree. `node_modules/` a
 The available test browser reports its WebGL renderer as disabled. Visual acceptance and desktop/iPad performance therefore remain blocked. Do not treat this branch as ready for release. `AUDIT.md` records each acceptance criterion and outstanding scope, including unique interiors, richer age/wardrobe identity, in-world fishing/CRT play, the additional quests and frame budgets.
 
 Before Phase D density work, complete the requested stranger play-through from shrine to outer pier and review façade variety. Asset licences and exact provenance are in `assets/ATTRIBUTION.md`.
+
+## Art direction pass
+
+The latest draft improves character normal seams without adding triangles, applies resident garment palettes, smooths turns and matches walk playback to movement speed. Merchant fronts now have curved-gable, hipped, shallow-tin and parapet roof forms with varied sign proportions and timber framing. A verified local CC0 HDR environment provides shared lighting/reflections. Static factory props are batched in spatial cells while interaction anchors and moving trolleys remain separate.
+
+This is still **not a finished Shenmue/Yakuza-like slice**: the character faces, silhouettes, clothing and room layouts remain interim, and the street requires a rendered visual review. See `docs/ART_DIRECTION.md` and the measured limits in `docs/art-pass-measurements.json`.

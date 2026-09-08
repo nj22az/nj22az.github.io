@@ -1,3 +1,4 @@
+import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js';
 import {townAudio} from './audio/town-audio.js';
 import {routeAt,groundHeight} from './world/layout.js';
@@ -28,6 +29,7 @@ function mesh(geo,pos,color,parent,outline=true){const m=new THREE.Mesh(geo,toon
 function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');x.fillStyle='#efe3c7';x.fillRect(0,0,512,128);x.fillStyle=accent;x.fillRect(0,0,14,128);x.strokeStyle='#252821';x.lineWidth=5;x.strokeRect(5,5,502,118);x.fillStyle='#252821';x.textAlign='center';x.textBaseline='middle';x.font='700 43px Yu Gothic,system-ui';x.fillText(a,256,50);x.font='800 15px system-ui';x.fillText(b.toUpperCase(),256,99);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
 
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
+loadTownEnvironment(scene,renderer);
 const ambient=new THREE.HemisphereLight(0xdde9ec,0x695c4d,1.35);scene.add(ambient);
 const sun=new THREE.DirectionalLight(0xffd39a,highTier?3.8:3.2);sun.position.set(-28,38,18);sun.castShadow=shadows;
 if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
@@ -127,7 +129,7 @@ function updatePlayer(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.A
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
-function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=.55+day*.95;sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();scene.background.set(weather?0x667985:day>.7?0x9fb5bc:day>.1?0x9a786f:0x14283e);scene.fog.color.copy(scene.background);scene.fog.near=weather?28:58;scene.fog.far=weather?118:155;renderer.toneMappingExposure=.84+day*.13;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
+function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.02+day*.32)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();scene.background.set(weather?0x667985:day>.7?0x9fb5bc:day>.1?0x9a786f:0x14283e);scene.fog.color.copy(scene.background);scene.fog.near=weather?28:58;scene.fog.far=weather?118:155;renderer.toneMappingExposure=.84+day*.13;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
 function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;}$('#directory').classList.toggle('hidden',!open);if(open)$('#closeDirectory').focus();}
 $('#directoryGrid').innerHTML=SITES.map(s=>`<button class="dir-item" data-id="${s.id}"><b>${s.title}</b><span>${s.sub}</span></button>`).join('');document.querySelectorAll('.dir-item').forEach(b=>b.onclick=()=>{if(current)leaveRoom();const s=SITES.find(x=>x.id===b.dataset.id);player.position.copy(doors.get(s.id));player.position.z+=.5;yaw=s.side?-s.side*Math.PI/2:0;toggleDir(false);say(s.title,1.4)});$('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){

@@ -1,3 +1,4 @@
+import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {clone} from '../../vendor/SkeletonUtils.js';
@@ -15,7 +16,7 @@ export function preloadModels({onProgress}={}){
       const response=await fetch(assetURL('characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,'');loaded.set(id,gltf);
+      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
   })).then(()=>({ready:loaded.size,total:SOURCES.length}));
@@ -35,7 +36,7 @@ export function createLocalCharacters({shadows=false}={}){
     const model=clone(asset.scene),bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const scale=(height||profile?.height||1.75)/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;}});
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;dressCharacter(o,profile?.top);}});
     for(const child of entity.children)child.visible=false;
     entity.add(model);entity.userData.visualSource='Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
@@ -50,6 +51,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       const clip=actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.speed>.12?'Walk':'Idle_Neutral';
       if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip)||actions.get('Idle');next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
+      const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/1.25,.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
       mixer.update(dt);
     }
   }
