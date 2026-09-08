@@ -4,6 +4,6 @@ import {preloadCharacters} from './people/characters.js?yuri-greeting-1';
 await preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus').textContent='OPENING · '+Math.round(value*100)+'%';}});
 await preloadVending();
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?ui=controls-3');
+await import('./game.js?ui=dialogue-proportions-1');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

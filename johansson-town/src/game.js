@@ -24,7 +24,7 @@ const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700,highTier=!mobile||tabletLike,shadows=highTier,canvas=$('#game');
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
-renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight,false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
 const bands=new Uint8Array([48,48,48,255,115,115,115,255,184,184,184,255,255,255,255,255]),gradient=new THREE.DataTexture(bands,4,1,THREE.RGBAFormat);gradient.needsUpdate=true;gradient.magFilter=THREE.NearestFilter;gradient.minFilter=THREE.NearestFilter;
 const outlineMat=new THREE.MeshBasicMaterial({color:0x252821,side:THREE.BackSide}),boxCache=new Map();

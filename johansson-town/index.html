@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?ui=controls-3">
 <link rel="stylesheet" href="./polish.css?ui=controls-3">
-<link rel="stylesheet" href="./viewport-fix.css?ui=controls-3">
+<link rel="stylesheet" href="./viewport-fix.css?ui=dialogue-proportions-1">
 <link rel="stylesheet" href="./character-controls.css?ui=controls-3">
 <link rel="stylesheet" href="./office.css?ui=controls-3">
 <link rel="stylesheet" href="./dialogue.css?ui=controls-3">
@@ -89,7 +89,7 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       }
     },25000);
     try{
-      await import('./src/boot.js?ui=controls-3');
+      await import('./src/boot.js?ui=dialogue-proportions-1');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
