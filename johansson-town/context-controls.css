@@ -22,3 +22,16 @@
  #drink{bottom:calc(env(safe-area-inset-bottom) + 140px)}
  #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 210px);font-size:14px}
 }
+
+/* Run and Jump share a layout container: separate absolute offsets can overlap. */
+@media(pointer:coarse){
+ #movementActions{position:absolute;right:max(116px,calc(env(safe-area-inset-right) + 106px));bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px));display:grid;grid-template-rows:48px 70px;gap:14px;width:84px;justify-items:center;pointer-events:none}
+ #movementActions #run,#movementActions #jump{position:static;inset:auto;transform:none;margin:0;pointer-events:auto}
+ #movementActions #run{grid-row:1;width:84px;height:48px;min-height:48px}
+ #movementActions #jump{grid-row:2;width:70px;height:70px}
+}
+@media(pointer:coarse) and (max-height:520px){
+ #movementActions{bottom:max(72px,calc(env(safe-area-inset-bottom) + 62px));right:max(108px,calc(env(safe-area-inset-right) + 98px));grid-template-rows:44px 62px;gap:12px}
+ #movementActions #run{height:44px;min-height:44px}
+ #movementActions #jump{width:62px;height:62px}
+}
