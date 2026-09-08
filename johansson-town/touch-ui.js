@@ -18,7 +18,8 @@ function setActionLabel(){
   const active=prompt.classList.contains('on')&&text;
   let verb='ACTION',glyph='◎';
   if(active){
-    if(/^Talk/i.test(text)){verb='TALK';glyph='◇';}
+    if(/^Stand/i.test(text)){verb='STAND';glyph='↑';}
+    else if(/^Talk/i.test(text)){verb='TALK';glyph='◇';}
     else if(/^Enter/i.test(text)){verb='ENTER';glyph='→';}
     else if(/cat/i.test(text)){verb='GREET';glyph='♡';}
     else if(/fish|Cast/i.test(text)){verb='USE';glyph='⌁';}
