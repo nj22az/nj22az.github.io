@@ -24,3 +24,23 @@
 @media(max-width:480px){#activity .activity-card{padding:18px;border-radius:25px}#activity #activityBody{font-size:16px}#activity #activityBody p{padding:14px}#activity #activityActions{grid-template-columns:1fr}}
 @media(max-height:520px){#activity .activity-card{max-height:92dvh;padding:16px 20px}#activity #activityTitle{margin:10px 0}#activity #activityBody p{padding:10px 14px;margin-bottom:12px}}
 @media(prefers-reduced-motion:reduce){#activity .activity-card{animation:none}#activity #activityActions button{transition:none}#activity #activityActions button:hover:not(:disabled),#activity #activityActions button:active:not(:disabled){transform:none}}
+
+/* Conversations occupy their own rail; the renderer uses the remaining viewport. */
+body.conversation-open #hud,body.conversation-open #mobile,body.conversation-open #townControls,body.conversation-open #subtitle{visibility:hidden}
+#activity.conversation{inset:0 0 0 auto;width:clamp(300px,36vw,420px);height:100dvh;box-sizing:border-box;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) 16px;background:transparent;align-items:center;justify-content:center}
+#activity.conversation .activity-card{position:relative;width:100%;max-height:100%;box-sizing:border-box;padding:16px;border-radius:28px;border:3px solid #fffdf2;box-shadow:0 5px 0 #b9c6b5,0 12px 30px #142e4126;animation:none;overscroll-behavior:contain}
+#activity.conversation::before{content:"";position:absolute;left:8px;top:50%;width:24px;height:24px;background:#fff8e9;transform:rotate(45deg);border-bottom:3px solid #fffdf2;border-left:3px solid #fffdf2}
+#activity.conversation .activity-card header{justify-content:flex-end}
+#activity.conversation .activity-card header>span{display:none}
+#activity.conversation #activityTitle{margin:4px 0 12px;font-size:22px}
+#activity.conversation #activityBody{font-size:16px;line-height:1.5}
+#activity.conversation #activityBody p{padding:0;margin:0 0 16px;border:0;background:transparent;border-radius:0}
+#activity.conversation #activityActions{grid-template-columns:1fr;gap:8px}
+#activity.conversation #activityActions button{min-height:44px;padding:10px 12px;font-size:14px;border-radius:18px}
+@media(max-width:719px){
+ #activity.conversation{inset:auto 0 0;width:100%;height:48dvh;padding:14px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));align-items:stretch}
+ #activity.conversation::before{left:calc(50% - 12px);top:8px;transform:rotate(135deg)}
+ #activity.conversation .activity-card{padding:12px 16px;border-radius:25px}
+ #activity.conversation #activityTitle{font-size:20px}
+ #activity.conversation #activityActions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
