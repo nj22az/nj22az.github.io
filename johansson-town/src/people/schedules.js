@@ -1,3 +1,4 @@
+import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js';
 import {groundHeight} from '../world/layout.js';
 import {PROFILES} from './profiles.js';
@@ -10,6 +11,7 @@ export const DIALOGUE={
  'Bus driver':[['time','The timetable is optimistic. I admire that in paper.'],['stop','This is the Harbour Line. The bus is the part currently missing.'],['book','Those Swedish books need their own ticket.','book'],['cv','Two bases? I have two stops. It is not quite the same.','cv'],['rain','A wet timetable is still wrong.'],['route','Station that way. Harbour the other way. I keep it simple.']],
  'Cold-storage kid':[['ice','Ice. Twenty yen. Briefly solid.'],['books','The Swedish books weigh more than the fish.'],['paper','The Bligh paper is dry. That is already a good voyage.','bligh'],['key','That blank could label the freezer key. We have lost the label twice.','keychain'],['shift','Night shift. The fish keep very unsociable hours.'],['home','Go home before you smell like your work.']]
 };
+for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
 for(const p of PROFILES)if(!DIALOGUE[p.name])DIALOGUE[p.name]=[
  ['hello','こんにちは。\n'+p.name+' · '+p.role+'. The afternoon deliveries have arrived.'],
  ['work','お疲れさまです。\n'+({'policeman':'The last bus is at 18:20. The driver will not see you waving from the pier.','bathhouse keeper':'A damp page dries best on the warm rack. Never put it against the stove.','radio repairer':'The little dial is the tuning control. The big dial makes your neighbours regret it.','school pupil':'Practice finished early. We lost the ball and won an afternoon.'}[p.role]||'I finish before supper. There is always one more small job.')] ,

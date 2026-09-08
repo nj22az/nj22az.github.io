@@ -18,3 +18,9 @@ Poly Haven's [licence statement](https://polyhaven.com/license) and [CC0 1.0](ht
 Original town geometry, procedural fallback rigs, signs and fictional paper text are authored project content. This ledger does not relicense the entire repository.
 
 The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs, MakeHuman exports and Sketchfab kits are **not included** in this revision. No commercial asset pack or franchise model is included.
+
+## Generation pilot
+
+`audio/voices/*.wav`: four project-scripted synthetic Japanese dialogue clips generated with [Qwen3-TTS CustomVoice](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) via its public Hugging Face Space. Model licence: Apache-2.0; no weights distributed. Output provenance, exact requests and licensing scope are in `audio/voices/PROVENANCE.md`.
+
+`generation/pilot/references/*.png`: five OpenAI-generated isolated prop references, with original project prompts and hashes alongside them. Authoring only; no generated street photograph is used as a game surface. TRELLIS.2 conversion was attempted but blocked by public GPU quota; no TRELLIS meshes ship in this revision.
