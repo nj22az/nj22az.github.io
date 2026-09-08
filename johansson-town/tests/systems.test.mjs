@@ -27,7 +27,7 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(72,116)>5.9);
 });
 test('world construction, original route and new door reachability',()=>{
- const {world,all}=build();assert.equal(world.people.length,20);assert.ok(world.quality.streetInteractions>=8);
+ const {world,all}=build();assert.equal(world.people.length,21);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  for(let z=57.5;z>=-76;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
  for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}

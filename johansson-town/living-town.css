@@ -1,0 +1,20 @@
+/* Warm paper and lacquer: compact controls, generous touch targets. */
+:root{--town-cream:#fff2d5;--town-ink:#493e43;--town-red:#b74e56;--town-green:#41776b}
+#hud #directoryButton{background:var(--town-cream);color:var(--town-ink);border:2px solid #fff8e8;box-shadow:0 3px 0 #74544d66;border-radius:18px;letter-spacing:0;text-transform:none}
+#directory .directory-card{background:#fff5df;color:#493e43;border:3px solid #e2c29c}
+#activity .activity-card{background:#fff4db;border-color:#e4be95;color:#493e43;border-radius:24px;box-shadow:0 6px 0 #553f3930,0 16px 48px #251a2230}
+#activity #activityActions{gap:9px}
+#activity #activityActions button{min-height:46px;background:#f5dfbe;color:#493e43;border:1px solid #ddb990;border-radius:15px;text-transform:none;letter-spacing:0;box-shadow:0 3px 0 #d5af8540;transition:transform .12s,background .12s}
+#activity #activityActions button:hover{background:#f5c9b0;transform:translateY(-2px)}
+#activity #activityActions button:active{transform:translateY(1px)}
+#activity #activityActions button:focus-visible{outline:3px solid #41776b;outline-offset:3px}
+#activity #activityTitle{color:#8d4850;letter-spacing:0;text-transform:none}
+#movementActions #run{background:#fff1d5;color:#704c4b;border:2px solid #dfb982;box-shadow:0 3px 0 #54413a55;border-radius:18px}
+#movementActions #run[aria-pressed=true]{background:#b65059;color:#fff7e7}
+#movementActions #jump{background:#487c76;color:#fff3d8;border:2px solid #aad0b0;box-shadow:0 4px 0 #273e4055}
+#act{background:#bd6261;border:2px solid #ffdaad;color:#fff7df;box-shadow:0 4px 0 #633d4155}
+#hud #subtitle{background:#fff2dbeb;color:#4c4141;border:1px solid #dbbe91;border-radius:18px;padding:12px 18px;text-shadow:none;max-width:min(560px,86vw)}
+.diorama #hud #place{background:#fff2dbe8;color:#79534e;text-shadow:none;border-radius:12px;padding:7px 12px;display:inline-block}
+.diorama #game{touch-action:none}
+@media(prefers-reduced-motion:reduce){#activity #activityActions button{transition:none}}
+@media(pointer:coarse) and (max-width:430px){#movementActions{right:100px;width:74px}#movementActions #run{width:74px}#act{right:14px;width:76px;height:76px}}

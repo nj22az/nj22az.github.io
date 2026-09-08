@@ -1,0 +1,12 @@
+{
+  "minato-exterior": {
+    "meshes": 7,
+    "triangles": 36400,
+    "bytes": 1852464
+  },
+  "minato-interior": {
+    "meshes": 10,
+    "triangles": 78964,
+    "bytes": 3986252
+  }
+}

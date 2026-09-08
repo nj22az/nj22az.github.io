@@ -86,7 +86,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     if(shadows){const light=new THREE.PointLight(0xffb96e,0,8,2);light.position.set(x,2.55,z);group.add(light);lampLights.push(light);}
   }
   function glassPanel(x,y,z,w,h,angle){
-    const mat=new THREE.MeshPhysicalMaterial({color:0x355662,roughness:.24,metalness:.04,clearcoat:.22,clearcoatRoughness:.18,emissive:0x17292e,emissiveIntensity:.05});
+    const mat=new THREE.MeshPhysicalMaterial({color:0x355662,roughness:.40,metalness:.02,clearcoat:.12,clearcoatRoughness:.18,emissive:0xdba978,emissiveIntensity:.16});
     const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);m.position.set(x,y,z);m.rotation.y=angle;m.receiveShadow=false;m.castShadow=false;group.add(m);return m;
   }
   const shopGlass=[];
@@ -118,7 +118,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   sites.forEach((s,i)=>{
     if(s.id==='market'){buildStorefront({parent:group,site:s,register,enter,label});return;}
     const style=MERCHANT_FRONTAGES[i%MERCHANT_FRONTAGES.length],side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=style.height;
-    box([8.2,height,10],[x,height/2,z],style.wall,[0,0,0],'wall');
+    box([8.2,height,10],[x,height/2,z],[0xe0cfaa,0xe5c8b5,0xc0d0c9,0xe4d5bb,0xd8c3ba,0xc5cfd5,0xead5b8,0xc5d0bf][i%8]);
     box([.25,2.7,10.15],[side*7.65,1.4,z],s.color,[0,0,0],'wood');
     if(style.roof==='parapet'){
       box([8.65,.2,10.5],[x,height+.1,z],style.roofColour,[0,0,0],'wall');
@@ -127,6 +127,18 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       const roof=directMesh(merchantRoofGeometry(style.roof),material(style.roofColour,'roof'),group,[x,height+.18,z]);roof.name='merchant-roof:'+s.id+':'+style.roof;roof.material.side=THREE.DoubleSide;
       if(style.roof!=='hipped')beam([x,height+(style.roof==='low-gable'?.82:1.74),z-5.5],[x,height+(style.roof==='low-gable'?.82:1.74),z+5.5],.105,0x4d554e);
     }
+    // Broad painted plaster, fine joinery and stocked windows read at walking distance.
+    for(const dz of [-3,-.2,2.6]){
+      box([.42,.18,2.0],[front-side*.25,4.23,z+dz],0x875c44);
+      for(let n=0;n<7;n++)box([.12,.66,.04],[front-side*.47,4.58,z+dz-.75+n*.25],0x6b493c);
+    }
+    for(let n=0;n<19;n++)box([.07,.78,.055],[front-side*.20,.42,z-4.5+n*.23],0x765342);
+    box([.38,.36,1.5],[front-side*.62,.40,z-3.2],0x9c6850);
+    for(let n=0;n<6;n++){
+      shape('sphere',[.10,10,8],[front-side*.64,.74,z-3.8+n*.23],0x66864f);
+      shape('sphere',[.045,10,8],[front-side*.65,.84,z-3.8+n*.23],[0xdb9a91,0xe4bd6a,0xd9aec0][i%3]);
+    }
+    label(['新刊','修理','手仕事','喫茶'][i%4],['NEW ARRIVALS','REPAIRS WELCOME','MADE HERE','TAKE A LITTLE BREAK'][i%4],[front-side*.36,1.65,z+4.0],.72,.98,angle,'#f8e7c3',s.accent);
     // Deep eaves and exposed timber establish a two-storey merchant house silhouette.
     box([.52,.2,10.7],[front-side*.2,height-.1,z],0x565549,[0,0,0],'wood');
     if(style.timber){

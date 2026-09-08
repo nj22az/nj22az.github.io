@@ -3,7 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 // Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.
 export function buildStorefront({parent,site,register,enter,label}){
  const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(site.side*7.55,0,site.z);group.rotation.y=-site.side*Math.PI/2;parent.add(group);
- const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;group.add(o);return o;}
+ const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
  box([10,.18,8.2],[0,.09,-4.1],0xdad9c8,'plaster');box([10,3.7,.18],[0,1.85,-8.1],0xeee7d1,'plaster');
  for(const x of [-5,5])box([.18,3.8,8.2],[x,1.9,-4.1],0xd9d7c9,'plaster');
  box([10.5,.22,8.7],[0,3.9,-4.1],0xd5d0bd);box([10.3,.8,.45],[0,3.25,.12],0xb84e45);
