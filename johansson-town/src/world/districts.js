@@ -18,7 +18,7 @@ export function buildDistricts(world,options){
 
     if(route.surface==='wood')for(let j=0;j<length;j+=3){const t=j/length;box([route.width+.25,.2,.16],[a[0]+dx*t,.0,a[1]+dz*t],'timber',0x74654a,[0,Math.atan2(dx,dz),0]);}
   }
-  for(const route of ROUTES.slice(3))for(const [x,z] of route.points){const g=new THREE.CircleGeometry(route.width/2,24);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,library.material(route.surface==='wood'?'timber':route.surface==='asphalt'?'asphalt':'plaster',0xa8a898));const pos=g.attributes.position;for(let i=0;i<pos.count;i++)pos.setY(i,groundHeight(x+pos.getX(i),z+pos.getZ(i))+.041);g.computeVertexNormals();m.position.set(x,0,z);m.receiveShadow=true;group.add(m);}
+  for(const route of ROUTES.slice(3))for(const [x,z] of route.points){if(Math.abs(x)<7)continue;const g=new THREE.CircleGeometry(route.width/2,24);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,library.material(route.surface==='wood'?'timber':route.surface==='asphalt'?'asphalt':'plaster',0xa8a898));const pos=g.attributes.position;for(let i=0;i<pos.count;i++)pos.setY(i,groundHeight(x+pos.getX(i),z+pos.getZ(i))+.041);g.computeVertexNormals();m.position.set(x,0,z);m.receiveShadow=true;group.add(m);}
   // Open-air shopping street. The former rotated transparent cylinder canopy
   // intersected the walking corridor and looked like vertical sheets of fog.
   function building({id,x,z,w=8,d=7,h=6,colour=0xbeb394,roof=0,angle=0,jp,title,frontZ=z+d/2}){

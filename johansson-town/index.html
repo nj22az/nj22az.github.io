@@ -19,6 +19,7 @@
 
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
+<link rel="stylesheet" href="living-town.css?v=1">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -36,7 +37,7 @@
 </section>
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
-  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">MENU</button>
+  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
 
 
 
@@ -89,7 +90,7 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       }
     },25000);
     try{
-      await import('./src/boot.js?ui=controls-3');
+      await import('./src/boot.js?living-town=1?ui=controls-3');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

@@ -52,3 +52,7 @@ The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `M
 - Local original: `models/props/vending-machine.glb` (249,008 bytes).
 - Runtime adaptations: normalize scale/orientation; omit transparent glass; bake source colours into one opaque mesh; add original Minato Drinks, Harbour Tea and Dockside Coffee mock branding.
 - All drink brands and campaign artwork are fictional placeholders, not endorsements. Campaign presentation is in `src/commerce/vending-catalogue.js`; saved inventory IDs and drink gameplay remain independent of branding. No advertising service is connected.
+
+## Living-town prototype · September 2026
+
+Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Yuri's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Yuri; see `docs/LIVING-TOWN.md`.

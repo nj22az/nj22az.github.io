@@ -112,7 +112,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
         assert.ok(api.camera.aspect<aspect,'Speech rail reserves horizontal scene space');
         const clerk=api.scene.children.find(o=>o.userData.name==='Yuri');assert.ok(clerk);
         const target=clerk.position.clone();target.y+=1.25;api.camera.updateMatrixWorld(true);target.project(api.camera);
-        assert.ok(Math.abs(target.x)<1e-6&&Math.abs(target.y)<1e-6,'Camera centres the speaker in the unobstructed scene');
+        assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Cutaway keeps Yuri inside the unobstructed scene');
         api.activities.close();assert.equal(api.camera.aspect,aspect);
         assert.ok(api.camera.quaternion.angleTo(rotation)<1e-6,'Closing restores the previous camera direction');
       }

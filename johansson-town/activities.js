@@ -1,3 +1,5 @@
+import {PROFILES} from './src/people/profiles.js';
+import {gossipAt} from './src/people/social.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
@@ -7,7 +9,7 @@ import {DIALOGUE} from './src/people/schedules.js';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 
-export function createActivities({say,onConversation=()=>{},onWeather,onTime,onCamera,getMinutes=()=>1002,onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
+export function createActivities({say,onConversation=()=>{},onWeather,onTime,onCamera,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -65,7 +67,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
     const replies={
       snack:'おすすめ？ 任せて！\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.',
       ribbon:'このリボン？\nThis ribbon? I tied it three times this morning. Effortlessly charming takes a surprising amount of effort.',
-      town:'夕方の港が好き。\nI like the harbour at sunset. Everyone stops rushing for a minute. Even the gulls sound as though they have somewhere nicer to be.',
+      town:'夕方の港が好き。\nAfter closing I like a walk by the harbour. Nao’s izakaya is up the eastern lane — follow the red lanterns. She always keeps a chair for a good story.',
       compliment:'もう、照れちゃう。\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.',
       challenge:'勝負しよう！\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.',
       radio:'内緒だよ。\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.',
@@ -86,15 +88,27 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
     let text=row[1];
     if(name==='Mrs Sato'&&state.shrineIntent&&row[0]==='home')text='You chose '+state.shrineIntent+'. Good. Now do one small thing about it.';
-    const buttons=[['Another subject',()=>resident(name)]];
+    const profile=PROFILES.find(p=>p.name===name);
+    const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
+    if(name==='Nao')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     if(name==='Aiko')buttons.push(['About Tama',()=>legacyResident(name)]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Keep up. These are the accurate directions.',4);}]);
     if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
     if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
     if(name==='Harbour master')buttons.push(['Sell a catch',()=>legacyResident(name)]);
-    buttons.push(['Goodbye',close]);show(name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
+    buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
+  function izakayaMenu(){
+    show('Minato · Tonight’s little pleasures','Nao: Choose something you like. The stories are on the house.',[
+      ...[['Yakitori plate',180,'Sweet soy glaze, three little skewers, and a very satisfied silence.'],['Edamame & barley tea',120,'Warm beans and cold barley tea. Nao settles a tiny saucer beside your cup.'],['Oden supper',260,'Daikon, egg and tofu, simmered until the day feels a little kinder.'],['Small beer',180,'A little glass of harbour lager. Someone at the next table starts a story.']].map(([name,cost,detail])=>[name+' · ¥'+cost,()=>{if(!spend(cost))return;onTime(8);note('Supper at Minato: '+name+'.');show('Supper at Minato',detail,[['Listen to the table',izakayaGossip],['Something else?',izakayaMenu],['Enjoy the room',close]]);}]),
+      ['Just looking, thank you',close]
+    ]);
+  }
+  function izakayaGossip(){
+    const social=getSocialContext(),gossip=gossipAt(getMinutes(),social.names||[]);note(gossip.clue);
+    show('Overheard at Minato',gossip.line+'\n\n'+gossip.clue,[['Stay a little longer',()=>{onTime(7);izakayaGossip();}],['Back to the evening',close]]);
+  }
   function vending(){show('MINATO DRINKS · 自動販売機','A harbour break. Choose a chilled drink · ¥120.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
   function buyDrink(product){if(!spend(product.price))return;const name=product.inventoryName;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${product.brand} — ${name} is in your bag.`);}
 
@@ -188,6 +202,8 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,onC
       case 'store-catalogue':show('Yuri’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Yuri is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'vending':vending();break;
       case 'resident':resident(name);break;
+      case 'izakaya-menu':izakayaMenu();break;
+      case 'izakaya-gossip':izakayaGossip();break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;
       case 'arcade':arcade();break;

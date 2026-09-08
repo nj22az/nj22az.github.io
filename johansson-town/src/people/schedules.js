@@ -1,3 +1,4 @@
+import {residentPlan,IZAKAYA_DOOR} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js';
 import {groundHeight} from '../world/layout.js';
@@ -13,12 +14,10 @@ export const DIALOGUE={
  'Cold-storage kid':[['ice','Ice. Twenty yen. Briefly solid.'],['books','The Swedish books weigh more than the fish.'],['paper','The Bligh paper is dry. That is already a good voyage.','bligh'],['key','That blank could label the freezer key. We have lost the label twice.','keychain'],['shift','Night shift. The fish keep very unsociable hours.'],['home','Go home before you smell like your work.']]
 };
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
-for(const p of PROFILES)if(!DIALOGUE[p.name])DIALOGUE[p.name]=[
- ['hello','こんにちは。\n'+p.name+' · '+p.role+'. The afternoon deliveries have arrived.'],
- ['work','お疲れさまです。\n'+({'policeman':'The last bus is at 18:20. The driver will not see you waving from the pier.','bathhouse keeper':'A damp page dries best on the warm rack. Never put it against the stove.','radio repairer':'The little dial is the tuning control. The big dial makes your neighbours regret it.','school pupil':'Practice finished early. We lost the ball and won an afternoon.'}[p.role]||'I finish before supper. There is always one more small job.')] ,
- ['town','そうですね。\nThe bathhouse is on the western lane. The new roof has finally stopped leaking.'],
- ['weather','いい夕方ですね。\nSalt finds every hinge in this town. Give the doors a little patience.']
-];
+for(const p of PROFILES){
+ const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home','I live in '+(p.home[0]>0?'Shiomi Apartments, above the eastern lane.':'the houses along the western lane.')+' '+p.personality+'. That is what '+p.friend+' calls me, anyway.']];
+ DIALOGUE[p.name]=[...personal,...(DIALOGUE[p.name]||[])];
+}
 export function createCastAI({world,player,state,paused,collides}){
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map();
  for(const person of world.people)person.g.userData.scheduled=true;
@@ -45,10 +44,11 @@ export function createCastAI({world,player,state,paused,collides}){
  }
  return {update(dt,minutes,rain){if(paused())return;const minute=minutes%1440;
   const visible=world.people.filter(p=>{const v=p.profile;return !v||minute>=v.start-30&&minute<v.retire;}).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position)).slice(0,8);
-  for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;g.visible=visible.includes(p);let target=minute<v.close?v.work:minute<v.retire-30?v.evening:v.home;let tag=minute<v.close?'work':minute<v.retire-30?'evening':'home';
+  for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;const plan=residentPlan(v,minutes,rain);g.userData.place=plan.place;g.visible=visible.includes(p);let target=minute<v.close?v.work:minute<v.retire-30?v.evening:v.home;let tag=minute<v.close?'work':minute<v.retire-30?'evening':'home';
    if(rain&&tag!=='work'){target=v.home;tag='shelter';}g.userData.activity=tag==='work'?v.role:tag==='evening'?'walking to supper':tag==='home'?'going home':'sheltering from rain';
    if(v.name==='Aiko'&&minute>=v.close)g.userData.activity='bookshop closed · on the way to supper';
    if(v.name==='Kenji'&&state().kenjiEscort==='walking'){target=[-4,20.5];tag='escort';if(g.position.distanceTo(player.position)>6)continue;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1){state().kenjiEscort='done';g.userData.activity='showing the workshop';}}
+   if(plan.place==='izakaya'){target=IZAKAYA_DOOR;tag='izakaya';g.userData.activity=plan.activity;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1.2){g.visible=false;routes.delete(g);continue;}}
    target=destination(p,target,tag);
    if(!g.visible){if(!collides(...target,.32))g.position.set(target[0],groundHeight(...target),target[1]);routes.delete(g);continue;}if(g.userData.facePlayerUntil>performance.now())continue;move(p,target,dt,tag);
   }

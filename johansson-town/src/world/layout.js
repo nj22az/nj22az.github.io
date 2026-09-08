@@ -10,6 +10,7 @@ export const ROUTES = [
  {id:'river-walk',width:4,surface:'stone',points:[[-42,-5],[-64,-14],[-71,-37],[-58,-56],[-17,-58]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-58,-56],[-58,-80],[-42,-80]]},
  {id:'home-door',width:4,surface:'stone',points:[[42,62],[46,62]]},
+ {id:'izakaya-door',width:4,surface:'asphalt',points:[[24,18],[24,20.5]]},
  {id:'ramen-door',width:4,surface:'stone',points:[[24,18],[24,14]]},
  {id:'bus-door',width:4,surface:'stone',points:[[-26,50],[-26,46]]},
  {id:'school-route',width:6,surface:'asphalt',points:[[65.44,25.05],[73,36],[73,48],[67,48],[67,64.35]]},
