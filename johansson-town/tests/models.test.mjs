@@ -113,5 +113,23 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
     actor.entity.userData.socialPose=undefined;
    }
   }
+  // Seat contact is measured on each actual skinned body, not inferred from height.
+  for(const actor of actors.filter(a=>a.neighbour)){
+   actor.entity.visible=true;actor.entity.parent.visible=true;
+   for(const seatHeight of [.71,.565])for(const pose of ['Sit','Eat','Drink']){
+    actor.entity.userData.seatHeight=seatHeight;actor.entity.userData.socialPose=pose;
+    models.update(.4);scene.updateMatrixWorld(true);
+    const hip=actor.entity.worldToLocal(actor.model.getObjectByName('J_Bip_C_Hips').getWorldPosition(new THREE.Vector3()));let bottom=Infinity;
+    actor.model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();
+     for(let i=0;i<mesh.geometry.attributes.position.count;i++){
+      mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld);actor.entity.worldToLocal(point);
+      if(Math.hypot(point.x,point.z)<.25&&point.y>hip.y-.24&&point.y<hip.y)bottom=Math.min(bottom,point.y);
+     }
+    });
+    assert.ok(Math.abs(bottom-seatHeight)<.012,actor.entity.userData.name+' '+pose+' seat contact '+bottom+' / '+seatHeight);
+   }
+   delete actor.entity.userData.seatHeight;delete actor.entity.userData.socialPose;models.update(.4);
+   assert.equal(actor.model.position.y,actor.floorOffset,'Leaving a seat restores outdoor grounding');
+  }
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

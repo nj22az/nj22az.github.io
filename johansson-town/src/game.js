@@ -20,7 +20,7 @@ import { createActivities } from '../activities.js?exploration-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?vroid-3';
+import { createCharacters } from './people/characters.js?vroid-4';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js';
 
 const $=s=>document.querySelector(s);

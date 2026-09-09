@@ -59,7 +59,12 @@ test('all exported Blender residents retain finite grounded poses and a single b
 });
 
 test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
- for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene);assert.ok(box.getSize(new THREE.Vector3()).x<=13.1);}
+ for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene);assert.ok(box.getSize(new THREE.Vector3()).x<=13.1);
+  if(kind==='interior'){gltf.scene.updateMatrixWorld(true);IZAKAYA_SEATS.forEach(([x,z],i)=>{
+   const hits=new THREE.Raycaster(new THREE.Vector3(x,1.5,z),new THREE.Vector3(0,-1,0)).intersectObject(gltf.scene,true);
+   assert.ok(hits.length);assert.ok(Math.abs(hits[0].point.y-(i<5?.71:.565))<.015,'Runtime seat height matches the actual furniture');
+  });}
+}
 });
 
 test('izakaya hours and late guests cross midnight and close exactly at 03:00',()=>{

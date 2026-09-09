@@ -73,6 +73,21 @@ export function createLocalCharacters({shadows=false}={}){
     if(neighbour){const hand=model.getObjectByName('J_Bip_R_Hand');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.035,.027,.07,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(.06,0,-.035);cup.visible=false;hand.add(cup);}}
     const motion=asset.parser.json.extras||{};
     const actor={cup,faces,look:vroidLook(profile),expressionTime:(actors.length*.731)+.3,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',neighbour,moving:false,wasVisible:true,height:height||profile?.height||1.75,eyeCentres:motion.eyeCentres};
+    // Measure the support surface of this rig's seated pelvis, in entity space.
+    // Standing height alone cannot predict where different VRoid bodies sit.
+    actor.floorOffset=model.position.y;actor.seatSupport=null;
+    if(neighbour&&actions.has('Sit')){
+      actions.get('Sit').play();mixer.update(0);entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);
+      const hip=entity.worldToLocal(model.getObjectByName('J_Bip_C_Hips').getWorldPosition(new THREE.Vector3()));
+      let bottom=hip.y;const point=new THREE.Vector3(),support=[];
+      model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();
+        for(let i=0;i<mesh.geometry.attributes.position.count;i++){
+          mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(point);
+          if(Math.hypot(point.x-hip.x,point.z-hip.z)<.25&&point.y>hip.y-.24&&point.y<hip.y){bottom=Math.min(bottom,point.y);support.push({mesh,index:i,y:point.y});}
+        }
+      });
+      actor.seatSupport={x:hip.x,y:bottom,z:hip.z};actor.seatVertices=support.sort((a,b)=>a.y-b.y).slice(0,16);actor.seatPoint=new THREE.Vector3();mixer.stopAllAction();
+    }
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
     if(neighbour)updateVroidExpression(actor,0);
     byEntity.set(entity,actor);actors.push(actor);return actor;
@@ -94,6 +109,9 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       if(actor.cup)actor.cup.visible=entity.userData.socialPose==='Drink';
       if(actions.size===0)continue;
+      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Sit','Eat','Drink'].includes(entity.userData.socialPose);
+      if(!!seated!==!!actor.seated){mixer.stopAllAction();actor.current=null;actor.seated=!!seated;}
+      actor.model.position.set(seated?-actor.seatSupport.x:0,actor.floorOffset+(seated?entity.userData.seatHeight-actor.seatSupport.y:0),seated?-actor.seatSupport.z:0);
       const requested=entity.userData.socialPose|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
@@ -102,6 +120,12 @@ export function createLocalCharacters({shadows=false}={}){
       const walkSpeed=actor.neighbour?actor.walkSpeed:1.25,runSpeed=actor.neighbour?actor.runSpeed:4;
       if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
+      if(seated){
+        entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);let bottom=Infinity;
+        for(const mesh of new Set(actor.seatVertices.map(v=>v.mesh)))mesh.skeleton.update();
+        for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
+        if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
+      }
       if(actor.neighbour)updateVroidExpression(actor,dt);
     }
   }
