@@ -1,3 +1,4 @@
+import {buildRamenRestaurant} from './supplied-rooms.js';
 import {buildTeaHouse} from './tea-house.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,groundHeight,nearestOnSegment} from './layout.js';
@@ -49,7 +50,11 @@ export function buildDistricts(world,options){
   building({id:'sento',x:-34,z:34,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
   box([1.15,17,1.15],[-37,8.5,30],'concrete',0x8d8b7a);
   buildTeaHouse(world,options);
-  building({id:'ramen',x:24,z:10,w:7,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
+  if(buildRamenRestaurant(world,options)){
+    box([5.1,.18,7.45],[24,3.21,10],'roof',0x6d6960);
+    box([4.9,.46,.16],[24,2.99,13.64],'timber',0x783d2f);
+    sign('中華そば 佐藤','SATO RAMEN · 09:00–21:00',[24,3.0,13.735],3.9,.40);
+  }else building({id:'ramen',x:24,z:10,w:7,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
   building({id:'bus-hut',x:-26,z:43,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
   // River mouth, flood walls and an accessible timber jetty form the western loop.
   const water=new THREE.Mesh(new THREE.PlaneGeometry(12,72,4,24),new THREE.MeshStandardMaterial({color:0x537c79,roughness:.26,metalness:.23}));water.rotation.x=-Math.PI/2;water.position.set(-78,-.18,-24);group.add(water);

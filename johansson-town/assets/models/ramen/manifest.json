@@ -1,0 +1,40 @@
+{
+  "file": "ramen-restaurant.glb",
+  "sourceFile": "shenmue_-_ramen_restaurant.glb",
+  "sourceSHA256": "50d3b047317db89944b52142251de61b13e06ce45433d1966d2de901205c797a",
+  "sourceMetadata": {
+    "author": "Kiklox (https://sketchfab.com/kiklox)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/shenmue-ramen-restaurant-a005cf77086246a6a192658c5574519a",
+    "title": "Shenmue - Ramen Restaurant"
+  },
+  "sha256": "94650f00ce70622d6568f0294ede2a2315c5f5c68584cec29b2bb9c3afd44144",
+  "bytes": 887732,
+  "triangles": 7765,
+  "draws": 56,
+  "removedDuplicatePrimitives": 0,
+  "bounds": {
+    "min": [
+      -2.3543341159820557,
+      -6.184399535413831e-05,
+      -3.545179605484009
+    ],
+    "max": [
+      2.3578360080718994,
+      3.1130974292755127,
+      4.373376846313477
+    ]
+  },
+  "fit": {
+    "scale": 5,
+    "rotationY": 1.5707963267948966,
+    "floorOffset": 0.0045
+  },
+  "changes": [
+    "Baked source hierarchy and room orientation into vertices",
+    "Merged primitives sharing material and vertex attributes",
+    "Preserved embedded textures, UV transforms and vertex colours",
+    "Unlit materials preserve baked lighting; vertex alpha restores office shadow overlays",
+    "Converted legacy specular/glossiness diffuse textures to core glTF base colour"
+  ]
+}

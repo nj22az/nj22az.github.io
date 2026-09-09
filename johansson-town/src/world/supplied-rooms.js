@@ -1,0 +1,120 @@
+import * as THREE from '../../vendor/three.module.js';
+import {GLTFLoader} from '../../vendor/GLTFLoader.js';
+import {assetURL} from '../assets.js';
+
+const assets=new Map();
+let pending;
+const files={office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb'};
+
+// Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
+// Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
+export const SUPPLIED_ROOM_LAYOUTS={
+  office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
+    colliders:[
+      {x:0,z:-2.78,w:6.27,d:1.23,height:1.72},
+      {x:0,z:-2.0,w:.11,d:.45,height:1.7},
+      {x:-3.08,z:-2.02,w:.12,d:.48,height:1.7},
+      {x:3.08,z:-2.02,w:.12,d:.48,height:1.7},
+      {x:-2.52,z:-1.82,w:.59,d:.68,height:.94},
+      {x:1.14,z:-2.22,w:.65,d:.72,height:.94},
+      {x:2.91,z:-1.39,w:.43,d:.46,height:.46},
+      {x:3.1,z:1.58,w:.6,d:2.72,height:1.87},
+      {x:-2.98,z:.17,w:.7,d:2.28,height:2.05},
+      {x:-2.54,z:2.51,w:.61,d:.62,height:1.62},
+    ]},
+  ramen:{bounds:{minX:-2.30,maxX:2.30,minZ:-3.46,maxZ:3.44},spawn:[.42,0,2.65],exit:[.42,1.2,3.42],
+    colliders:[
+      // Counter and staff kitchen, then the six stools and perimeter furniture.
+      {x:-.875,z:-1.16,w:2.93,d:4.68,height:1.31},
+      {x:.775,z:0,w:.39,d:.39,height:.59},
+      {x:-.39,z:1.36,w:.39,d:.39,height:.59},
+      {x:-1.485,z:1.36,w:.39,d:.39,height:.59},
+      {x:.97,z:-1.36,w:.39,d:.39,height:.59},
+      {x:2.08,z:-1.68,w:.39,d:.39,height:.59},
+      {x:2.08,z:-2.14,w:.39,d:.39,height:.59},
+      {x:-2.06,z:1.68,w:.45,d:.45,height:1.16},
+      {x:-1.84,z:2.32,w:.96,d:.72,height:.8},
+      {x:-1.94,z:3.10,w:.79,d:.79,height:1.45},
+      {x:2.12,z:2.98,w:.44,d:1.04,height:1.45},
+      {x:1.86,z:-3.08,w:.88,d:.94,height:1.02},
+    ]},
+};
+
+export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
+  const b=layout.bounds;
+  return x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r;
+}
+
+export function preloadSuppliedRooms(){
+  if(pending)return pending;
+  pending=Promise.all(Object.entries(files).map(async([id,file])=>{
+    const controller=new AbortController();let timer;
+    try{
+      const load=fetch(assetURL('models/'+file),{signal:controller.signal}).then(response=>{
+        if(!response.ok)throw Error('HTTP '+response.status);
+        return response.arrayBuffer();
+      }).then(bytes=>new GLTFLoader().parseAsync(bytes,''));
+      const gltf=await Promise.race([load,new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('load timed out'));},15000);})]);
+      let meshes=0;
+      gltf.scene.traverse(o=>{if(!o.isMesh)return;meshes++;
+        for(const material of Array.isArray(o.material)?o.material:[o.material]){
+          // Vertex-alpha shadow decals must not occlude the floor behind them.
+          if(material.transparent){material.depthWrite=false;material.forceSinglePass=true;}
+          if(material.map){material.map.magFilter=THREE.LinearFilter;material.map.anisotropy=2;}
+        }
+      });
+      if(!meshes)throw Error('empty scene');
+      assets.set(id,gltf.scene);return true;
+    }catch(error){console.warn('Supplied '+id+' unavailable:',error.message);return false;}
+    finally{clearTimeout(timer);}
+  }));
+  return pending;
+}
+
+function addAsset(id,parent){
+  const source=assets.get(id);if(!source)return false;
+  const model=source.clone(true);model.name='Supplied '+id;model.userData.sharedAsset=true;
+  model.userData.suppliedRoom=id;parent.add(model);return model;
+}
+
+export function buildRamenRestaurant(world,options){
+  if(!assets.has('ramen'))return false;
+  const site={id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24,z:10,
+    color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',door:[24.65,0,14.7],opens:'09:00'};
+  options.sites.push(site);
+  const building=new THREE.Group();building.name='Sato Ramen restaurant';building.position.set(site.x,0,site.z);world.group.add(building);
+  addAsset('ramen',building);
+  const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(24.65,1.2,14.15);world.group.add(entrance);
+  options.register(entrance,'Enter Sato Ramen',()=>options.enter(site));
+  world.colliders.push({x:24,z:10,w:4.72,d:7.1,height:3.12},
+    {x:24,z:13.92,w:.78,d:.94,height:2.75});
+  return site;
+}
+
+export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
+  const layout=SUPPLIED_ROOM_LAYOUTS[site.id];
+  if(!layout||!addAsset(site.id,room))return null;
+  for(const c of layout.colliders)collider(c.x,c.z,c.w,c.d,c.height);
+  const anchor=(position,label,kind,title,text)=>{
+    const object=new THREE.Object3D();object.name=label;object.position.set(...position);room.add(object);
+    reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
+  };
+  anchor(layout.exit,'Exit to street','exit');
+  if(site.id==='office'){
+    anchor([-1.40,1.15,-2.74],'Use office computer','machine','Office computer','Service records, calibration certificates and travel plans are open on the workstation.');
+    anchor([1.70,.93,-2.75],'Read the ledger','read','Johansson Marine Office ledger',site.line+'\n14 September 1988. Evening deliveries are written in blue pencil.');
+    anchor([-2.45,.93,-2.64],'Inspect field-service desk','inspect','Field-service desk','Route sheets, reference books and handwritten travel notes lie beside the keyboard.');
+    anchor([3.0,1.25,1.25],'Open drawing cabinet','inspect','Drawing cabinet','Folders contain electrical drawings, calibration sheets and old ship-engine notes.');
+    anchor([-2.94,1.05,.05],'Browse service files','read','Service files','A row of labelled binders keeps each vessel’s service history in order.');
+    anchor([-2.52,.7,-1.82],'Sit at the desk','seat','Office chair','A blue swivel chair faces the service desk.');
+    anchor([1.14,.7,-2.05],'Sit down','seat','Office chair','The desk is ready for the next round of paperwork.');
+  }else{
+    anchor([.15,1.02,.86],'Order ramen · ¥300','ramen','Sato Ramen');
+    anchor([-.4,.59,1.36],'Sit at the ramen counter','seat','Counter stool','A worn green stool beside the lacquered counter.');
+    anchor([.97,.59,-1.36],'Take a counter seat','seat','Counter stool','The kitchen is busy on the other side of the counter.');
+    anchor([-1.36,1.05,.86],'Inspect broth kettle','inspect','Broth kettle','The simmering broth has been tended since morning.');
+    anchor([.2,1.01,.5],'Read the counter newspaper','read','Counter newspaper','The paper is folded open at the harbour notices. A delivery for the morning ferry is circled in pencil.');
+    anchor([2.25,1.7,-1.25],'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Take a seat at the counter and order a hot bowl.');
+  }
+  return layout;
+}
