@@ -16,9 +16,14 @@ import {circleHitsRect} from '../../physics.js';
 let source=null,pending,clearance;
 export function preloadFullTown(){return pending??=(async()=>{
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
- try{const [asset,data,cleanup]=await Promise.all(['overworld.glb','navigation.json','street-clearance.json'].map(file=>fetch(assetURL('models/full-town/'+file),{signal:controller.signal})));if(!asset.ok||!data.ok||!cleanup.ok)throw Error('Town assets unavailable');const navigation=await data.json();const loaded=await new GLTFLoader().parseAsync(await asset.arrayBuffer(),'');
-  if(loaded.scene.children.length!==4||navigation.grid.heights.length!==navigation.grid.nx*navigation.grid.nz)throw Error('Invalid complete town');
-  clearance=applyStreetClearance(loaded.scene,navigation,await cleanup.json());source=loaded.scene;FULL_TOWN.grid=navigation.grid;FULL_TOWN.colliders=CITY_SECTIONS.flatMap(section=>clearance.colliders.map(c=>({...c,x:c.x+section.x,z:c.z+section.z})));FULL_TOWN.active=true;return true;
+ try{
+  const load=(async()=>{
+   const [asset,data,cleanup]=await Promise.all(['overworld.glb','navigation.json','street-clearance.json'].map(file=>fetch(assetURL('models/full-town/'+file),{signal:controller.signal})));if(!asset.ok||!data.ok||!cleanup.ok)throw Error('Town assets unavailable');const navigation=await data.json();const loaded=await new GLTFLoader().parseAsync(await asset.arrayBuffer(),'');
+   if(loaded.scene.children.length!==4||navigation.grid.heights.length!==navigation.grid.nx*navigation.grid.nz)throw Error('Invalid complete town');
+   clearance=applyStreetClearance(loaded.scene,navigation,await cleanup.json());source=loaded.scene;FULL_TOWN.grid=navigation.grid;FULL_TOWN.colliders=CITY_SECTIONS.flatMap(section=>clearance.colliders.map(c=>({...c,x:c.x+section.x,z:c.z+section.z})));FULL_TOWN.active=true;return true;
+  })();
+  const timed=new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(Error('Complete town timed out')),{once:true}));
+  return await Promise.race([load,timed]);
  }catch(error){console.warn('Complete overworld unavailable; keeping the previous town',error);return false;}finally{clearTimeout(timer);}
 })();}
 const LOCATIONS=[
@@ -41,14 +46,23 @@ export function buildFullTown(options){
   const p=nearest(x+nx*1.1,z+nz*1.1);site.x=x;site.z=z;site.door=[p[0],groundHeight(...p),p[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-nx,-nz);FULL_TOWN.sites.set(id,site);
   if(!LANDMARK_IDS.has(id)){anchor(p,'Enter '+site.title,()=>options.enter(site));sign(site.jp,x+nx*.18,2.55,z+nz*.18,Math.atan2(nx,nz));}
  }
- // Restore the recognizable Sakura storefront instead of a generic building marker.
- const market=FULL_TOWN.sites.get('market');market.side=1;market.z=10.78;market.x=16.68;market.title='Sakura Shōten';market.jp='桜商店';
- const sakura=buildStorefront({parent:group,site:market,register:options.register,enter:options.enter,label:(jp,en,pos,w,h,angle,bg,fg)=>{
+ // Place the actual Sakura storefront on the canal-quarter map, not the harbour fallback coordinates.
+ const market=FULL_TOWN.sites.get('market');
+ market.title='Sakura Shōten';market.jp='桜商店';market.x=16.68;market.z=10.78;market.side=-1;market.frontX=16.68;market.yaw=Math.PI/2;
+ const sakura=buildStorefront({parent:group,site:market,register:null,enter:options.enter,colliders,label:(jp,en,pos,w,h,angle,bg,fg)=>{
   const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg||'#f6e8bb';ctx.fillRect(0,0,768,256);ctx.fillStyle=fg||'#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 92px sans-serif';ctx.fillText(jp,384,102,700);ctx.font='700 28px sans-serif';ctx.fillText(en,384,202,700);const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));mesh.position.set(...pos);mesh.rotation.y=angle;group.add(mesh);return mesh;
- }});sakura.name='Sakura Konbini landmark';market.door=[6.8,0,13.28];market.exitPosition=[...market.door];market.entryFacing=-Math.PI/2;FULL_TOWN.sites.set('market',market);
- // Restore the actual supplied Shenmue ramen model as a street landmark.
- const oldRamen=FULL_TOWN.sites.get('ramen'),oldIndex=options.sites.indexOf(oldRamen);if(oldIndex>=0)options.sites.splice(oldIndex,1);
- const ramen=buildRamenRestaurant(world,options)||oldRamen;if(ramen){ramen.exitPosition=[...ramen.door];ramen.entryFacing=Math.PI;FULL_TOWN.sites.set('ramen',ramen);}
+ }});sakura.name='Sakura Konbini landmark';
+ const marketDoor=nearest(market.x+1.25,market.z,[],4);
+ market.door=[marketDoor[0],groundHeight(...marketDoor),marketDoor[1]];market.exitPosition=[...market.door];market.entryFacing=-Math.PI;FULL_TOWN.sites.set('market',market);
+ anchor(marketDoor,'Enter '+market.title,()=>options.enter(market));
+ // Place the supplied ramen restaurant on the same map coordinates as its walkable door.
+ const ramenSite=FULL_TOWN.sites.get('ramen');
+ const ramen=buildRamenRestaurant(world,options,{x:ramenSite.x,z:ramenSite.z,yaw:Math.PI/2,align:'facade',site:ramenSite,keepDoor:true})||ramenSite;
+ const ramenDoor=nearest(ramenSite.x+1.25,ramenSite.z,[],4);
+ ramen.door=[ramenDoor[0],groundHeight(...ramenDoor),ramenDoor[1]];ramen.exitPosition=[...ramen.door];ramen.entryFacing=-Math.PI;FULL_TOWN.sites.set('ramen',ramen);
+ const ramenEntrance=world.group.getObjectByName('Sato Ramen entrance');
+ if(ramenEntrance)ramenEntrance.position.set(ramen.door[0],ramen.door[1]+1.2,ramen.door[2]);
+ else anchor(ramenDoor,'Enter '+ramen.title,()=>options.enter(ramen));
  const pair=id=>{const p=FULL_TOWN.sites.get(id).door;return [p[0],p[2]];};IZAKAYA_DOOR.splice(0,2,...pair('izakaya'));RAMEN_DOOR.splice(0,2,...pair('ramen'));FULL_TOWN.escort=pair('form3d');
  const workIds=['frontrow','form3d','career','ramen','market','office','tea-house','frontrow','journal','career','frontrow','frontrow','office','electronics','tea-house','stepwise','journal','market','tea-house','form3d','izakaya','market'],occupied=[];
  RESIDENTS.forEach((profile,i)=>{
