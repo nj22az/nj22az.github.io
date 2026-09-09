@@ -52,11 +52,13 @@ export function makeContentObject(item){
   g.userData.reader={setPage,next:d=>{setPage(current+d);flip=.22;},open:()=>hinge.rotation.y=-Math.PI*.92,flip:()=>{if(item.kind==='folio'){setPage(1-current);flip=.22;}else if(item.kind==='book'){hinge.rotation.y=hinge.rotation.y?0:-Math.PI*.92;}else {g.rotation.y+=Math.PI;}},update:dt=>{flip=Math.max(0,flip-dt);page.rotation.y=Math.sin(flip/.22*Math.PI)*.65;},get page(){return current+1;}};
   return g;
 }
-export function createContentItems({group,register,colliders,onInspect,onRead}){
+export function createContentItems({group,register,colliders,onInspect,onRead,placements}){
+  const items=placements?ITEMS.map(item=>({...item,pos:placements.get(item.id),place:"Canal quarter · harbour reading tables"})):ITEMS;
   const objects=new Map();
-  for(const item of ITEMS){const object=makeContentObject(item);object.position.set(...item.pos);object.rotation.x=-Math.PI/2+.23;object.scale.setScalar(.72);group.add(object);objects.set(item.id,object);register(object,'Lift '+item.title,()=>onInspect(item));
-    if(!/^book[2-6]$/.test(item.id)){cube(group,[.88,.10,1.05],[item.pos[0],item.pos[1]-.12,item.pos[2]],0x735b41);for(const dx of [-.34,.34])cube(group,[.08,item.pos[1]-.18,.08],[item.pos[0]+dx,(item.pos[1]-.18)/2,item.pos[2]+.35],0x4e4538);colliders.push({x:item.pos[0],z:item.pos[2],w:.88,d:1.05});}
+  for(const item of items){const object=makeContentObject(item);object.position.set(...item.pos);object.rotation.x=-Math.PI/2+.23;object.scale.setScalar(.72);group.add(object);objects.set(item.id,object);register(object,'Lift '+item.title,()=>onInspect(item));
+    if(placements||!/^book[2-6]$/.test(item.id)){cube(group,[.88,.10,1.05],[item.pos[0],item.pos[1]-.12,item.pos[2]],0x735b41);for(const dx of [-.34,.34])cube(group,[.08,item.pos[1]-.18,.08],[item.pos[0]+dx,(item.pos[1]-.18)/2,item.pos[2]+.35],0x4e4538);colliders.push({x:item.pos[0],z:item.pos[2],w:.88,d:1.05});}
   }
+  if(placements)return {items,objects};
   const cv=ITEMS.find(i=>i.id==='cv');for(const x of [-.45,.45])cube(group,[.025,.18,1.04],[cv.pos[0]+x,cv.pos[1]-.04,cv.pos[2]],0x647170);
   const chair=new THREE.Group();chair.position.set(4.9,0,39);group.add(chair);cube(chair,[.7,.12,.7],[0,.5,0],0x5a6357);cube(chair,[.7,.72,.09],[0,.85,.32],0x5a6357);register(chair,'Read in the window chair',onRead);colliders.push({x:4.9,z:39,w:.72,d:.72});
   // Calipers and vice occupy the workshop edge; they are never attached to a character.

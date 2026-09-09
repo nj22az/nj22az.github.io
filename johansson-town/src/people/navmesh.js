@@ -1,8 +1,9 @@
+import {FULL_TOWN} from '../world/full-town-state.js';
 import {MAP_BOUNDS,groundHeight} from '../world/layout.js';
 
 // A conservative walkability raster. It shares the player's radius-aware collision
 // predicate; diagonal edges may never cut a blocked corner.
-export function createNavigation(blocked,{step=1,bounds=MAP_BOUNDS,heightAt=groundHeight}={}){
+export function createNavigation(blocked,{step=FULL_TOWN.active?.5:1,bounds=FULL_TOWN.active?FULL_TOWN.bounds:MAP_BOUNDS,heightAt=groundHeight}={}){
   const cache=new Map(),edges=new Map(),key=(x,z)=>x+','+z;
   const clear=(x,z)=>{const k=key(x,z);if(!cache.has(k))cache.set(k,!blocked(x*step,z*step,.32));return cache.get(k);};
   const edgeClear=(a,b)=>{const k=key(...a)+'>'+key(...b);if(!edges.has(k)){

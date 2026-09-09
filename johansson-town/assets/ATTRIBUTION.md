@@ -107,3 +107,7 @@ The active 21 town residents now use `characters/vroid/`. Five CC0 sample models
 | `vroid-long.glb` | Sendagaya Shino | [CC0](https://vroid.pixiv.help/hc/en-us/articles/360013482714) |
 
 The original VRMs were obtained from the public [madjin/vrm-samples mirror](https://github.com/madjin/vrm-samples/tree/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta). `characters/vroid/manifest.json` records the exact input and output hashes. Changes: 512–1024px local texture atlases, four or five skinned draws per base, shared geometry, individual hair/clothes colours, head-bound glasses, retained eyelid/smile/mouth morphs, seven original humanoid animations, seated skirt fitting, fitted dark shorts beneath skirts, sole grounding and orientation conversion. The runtime uses portable GLB and illustrated unlit materials, without a VRoid Hub account or remote asset service. See `../docs/VROID-CAST.md` for reproduction.
+
+## Complete canal overworld
+
+Japanese Town by Nazareno_rojas, CC BY 4.0. All original buildings, streets, bridge and canal retained. Texture compression, static batching and gameplay adaptation: Johansson Town. See [source, licence and changes](models/full-town/CREDITS.md).

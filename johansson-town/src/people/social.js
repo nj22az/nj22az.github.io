@@ -1,3 +1,4 @@
+import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 export const IZAKAYA_DOOR=[24,20];
 export const RAMEN_DOOR=[24.65,14.7];
@@ -19,7 +20,7 @@ export function supperGuests(minutes){
 }
 export function residentPlan(profile,minutes,rain=false){
  const m=minuteOfDay(minutes);
- if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
+ if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Yuri'&&yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
  if(supperGuests(minutes).some(p=>p.name===profile.name))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with the neighbours'};
