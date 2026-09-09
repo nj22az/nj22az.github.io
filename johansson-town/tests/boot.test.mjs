@@ -197,18 +197,21 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       entered++;
     }
     assert.ok(entered>=8,'All existing interiors remain registered');
-    const yuri=api.scene.children.find(o=>o.userData.name==='Yuri'),yuriScale=yuri.scale.clone();
+    const yuri=api.world.people.find(p=>p.profile.name==='Yuri').g,yuriScale=yuri.scale.clone();
     api.reviewSetMinutes(1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
     assert.equal(yuri.visible,true,'Yuri visits after Sakura closes');
     assert.equal(yuri.userData.inIzakaya,true);assert.ok(yuri.scale.equals(yuriScale));
     assert.equal(api.scene.children.filter(o=>o.userData.name==='Yuri').length,1,'Reuse the existing Yuri');
     yuri.userData.hit.fn();assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · After hours');api.activities.close();
-    api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.equal(yuri.visible,false,'Yuri leaves when her visit ends');
+    api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.equal(yuri.parent,api.world.group,'Yuri resumes walking outside when her visit ends');assert.equal(yuri.userData.inIzakaya,undefined);
     api.leaveRoom();api.reviewSetMinutes(1440+1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
-    assert.equal(yuri.visible,false,'She does not visit every evening');api.leaveRoom();
+    assert.equal(yuri.parent,api.world.group,'She stays outside the restaurant on alternate evenings');api.leaveRoom();
     api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
     assert.equal(yuri.visible,true,'Yuri returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
     assert.equal(yuri.position.x,3.35);assert.equal(yuri.position.z,-1.95);api.leaveRoom();
+    api.reviewSetMinutes(1619.99);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
+    assert.equal(api.reviewRoomState().townVisible,true,'03:00 closing returns the player to the street');
+    assert.equal(api.world.people.find(p=>p.profile.name==='Nao').g.parent,api.world.group,'Nao leaves her counter at closing');
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

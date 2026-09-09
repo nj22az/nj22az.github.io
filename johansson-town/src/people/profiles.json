@@ -14,13 +14,13 @@
       18
     ],
     "home": [
-      46,
-      62
+      2.0,
+      66.1
     ],
     "top": "#967a99",
     "start": 540,
     "close": 1110,
-    "retire": 1170,
+    "retire": 1210,
     "personality": "Quiet mischief",
     "friend": "Emi",
     "look": "Plum vest, long dark hair and round spectacles",
@@ -32,7 +32,13 @@
     "model": "resident-00",
     "build": 0.88,
     "supperStart": 1110,
-    "supperEnd": 1210
+    "supperEnd": 1210,
+    "house": {
+      "x": 2.0,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "1 Hill Lane"
   },
   {
     "name": "Kenji",
@@ -49,8 +55,8 @@
       21
     ],
     "home": [
-      36,
-      30
+      5.5,
+      66.1
     ],
     "top": "#527d99",
     "start": 540,
@@ -67,7 +73,13 @@
     "model": "resident-01",
     "build": 0.965,
     "supperStart": 1092,
-    "supperEnd": 1207
+    "supperEnd": 1207,
+    "house": {
+      "x": 5.5,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "2 Hill Lane"
   },
   {
     "name": "Mrs Sato",
@@ -84,8 +96,8 @@
       46
     ],
     "home": [
-      -34,
-      39
+      9.0,
+      66.1
     ],
     "top": "#ad6178",
     "start": 540,
@@ -102,7 +114,13 @@
     "model": "resident-02",
     "build": 1.05,
     "supperStart": 1104,
-    "supperEnd": 1234
+    "supperEnd": 1234,
+    "house": {
+      "x": 9.0,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "3 Hill Lane"
   },
   {
     "name": "Harbour master",
@@ -119,8 +137,8 @@
       -48
     ],
     "home": [
-      -26,
-      46
+      12.5,
+      66.1
     ],
     "top": "#405d7e",
     "start": 300,
@@ -137,7 +155,13 @@
     "model": "resident-03",
     "build": 1.135,
     "supperStart": 1020,
-    "supperEnd": 1120
+    "supperEnd": 1120,
+    "house": {
+      "x": 12.5,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "4 Hill Lane"
   },
   {
     "name": "Bus driver",
@@ -154,8 +178,8 @@
       46
     ],
     "home": [
-      0,
-      50
+      16.0,
+      66.1
     ],
     "top": "#498d8b",
     "start": 540,
@@ -172,7 +196,13 @@
     "model": "resident-04",
     "build": 0.88,
     "supperStart": 1092,
-    "supperEnd": 1207
+    "supperEnd": 1207,
+    "house": {
+      "x": 16.0,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "5 Hill Lane"
   },
   {
     "name": "Cold-storage kid",
@@ -189,8 +219,8 @@
       -55
     ],
     "home": [
-      24,
-      18
+      19.5,
+      66.1
     ],
     "top": "#6eaa9b",
     "start": 540,
@@ -207,7 +237,13 @@
     "model": "resident-05",
     "build": 0.965,
     "supperStart": null,
-    "supperEnd": 130
+    "supperEnd": 130,
+    "house": {
+      "x": 19.5,
+      "z": 68.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "6 Hill Lane"
   },
   {
     "name": "Officer Mori",
@@ -224,13 +260,13 @@
       46
     ],
     "home": [
-      46,
-      62
+      -5.0,
+      52.1
     ],
     "top": "#4b6e9c",
-    "start": 540,
-    "close": 1080,
-    "retire": 1260,
+    "start": 1320,
+    "close": 1800,
+    "retire": 1800,
     "personality": "Earnest and easily teased",
     "friend": "Reiko",
     "look": "Blue vest and softly greying hair",
@@ -241,8 +277,14 @@
     "clue": "The river path circles back to the harbour. Keep an eye out for the heron.",
     "model": "resident-06",
     "build": 1.05,
-    "supperStart": 1080,
-    "supperEnd": 1180
+    "supperStart": null,
+    "supperEnd": null,
+    "house": {
+      "x": -5,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "7 West Lane"
   },
   {
     "name": "Hana",
@@ -259,8 +301,8 @@
       30
     ],
     "home": [
-      46,
-      62
+      -9.0,
+      52.1
     ],
     "top": "#d17b78",
     "start": 540,
@@ -277,7 +319,13 @@
     "model": "resident-07",
     "build": 1.135,
     "supperStart": null,
-    "supperEnd": 115
+    "supperEnd": 115,
+    "house": {
+      "x": -9,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "8 West Lane"
   },
   {
     "name": "Daichi",
@@ -294,8 +342,8 @@
       62
     ],
     "home": [
-      46,
-      62
+      -13.0,
+      52.1
     ],
     "top": "#cda04f",
     "start": 540,
@@ -312,7 +360,13 @@
     "model": "resident-08",
     "build": 0.88,
     "supperStart": null,
-    "supperEnd": 130
+    "supperEnd": 130,
+    "house": {
+      "x": -13,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "9 West Lane"
   },
   {
     "name": "Mr Fujita",
@@ -329,8 +383,8 @@
       39
     ],
     "home": [
-      -29,
-      50
+      -17.0,
+      52.1
     ],
     "top": "#73988a",
     "start": 540,
@@ -347,7 +401,13 @@
     "model": "resident-09",
     "build": 0.965,
     "supperStart": 1080,
-    "supperEnd": 1180
+    "supperEnd": 1180,
+    "house": {
+      "x": -17,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "10 West Lane"
   },
   {
     "name": "Masaru",
@@ -364,13 +424,13 @@
       18
     ],
     "home": [
-      0,
-      50
+      -21.0,
+      52.1
     ],
     "top": "#bd7959",
     "start": 540,
     "close": 1080,
-    "retire": 1260,
+    "retire": 1560,
     "personality": "Boisterous cook-at-heart",
     "friend": "Nao",
     "look": "Rust hoodie and brown hair",
@@ -381,8 +441,14 @@
     "clue": "Try the grilled skewers at Minato. The last one is always the best one.",
     "model": "resident-10",
     "build": 1.05,
-    "supperStart": 1092,
-    "supperEnd": 1207
+    "supperStart": 1380,
+    "supperEnd": 1560,
+    "house": {
+      "x": -21,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "11 West Lane"
   },
   {
     "name": "Yoshiko",
@@ -399,8 +465,8 @@
       39
     ],
     "home": [
-      -29,
-      50
+      -25.0,
+      52.1
     ],
     "top": "#9ea66c",
     "start": 540,
@@ -417,7 +483,13 @@
     "model": "resident-11",
     "build": 1.135,
     "supperStart": 1284,
-    "supperEnd": 1380
+    "supperEnd": 1380,
+    "house": {
+      "x": -25,
+      "z": 54.7,
+      "angle": 3.141592653589793
+    },
+    "homeAddress": "12 West Lane"
   },
   {
     "name": "Reiko",
@@ -434,8 +506,8 @@
       -2
     ],
     "home": [
-      42,
-      62
+      37.5,
+      27.8
     ],
     "top": "#a96883",
     "start": 540,
@@ -452,7 +524,13 @@
     "model": "resident-12",
     "build": 0.88,
     "supperStart": 1080,
-    "supperEnd": 1180
+    "supperEnd": 1180,
+    "house": {
+      "x": 37.5,
+      "z": 25.2,
+      "angle": 0
+    },
+    "homeAddress": "13 East Lane"
   },
   {
     "name": "Tetsuo",
@@ -469,13 +547,13 @@
       18
     ],
     "home": [
-      46,
-      62
+      41.0,
+      27.8
     ],
     "top": "#807398",
     "start": 540,
     "close": 1080,
-    "retire": 1260,
+    "retire": 1605,
     "personality": "Deadpan music lover",
     "friend": "Kenji",
     "look": "Aubergine vest, dark hair and round spectacles",
@@ -486,8 +564,14 @@
     "clue": "There are three radio stations. Each claims it has the most reliable weather.",
     "model": "resident-13",
     "build": 0.965,
-    "supperStart": 1092,
-    "supperEnd": 1207
+    "supperStart": 1440,
+    "supperEnd": 1605,
+    "house": {
+      "x": 41.0,
+      "z": 25.2,
+      "angle": 0
+    },
+    "homeAddress": "14 East Lane"
   },
   {
     "name": "Emi",
@@ -504,8 +588,8 @@
       62
     ],
     "home": [
-      46,
-      62
+      44.5,
+      27.8
     ],
     "top": "#d797a2",
     "start": 540,
@@ -522,7 +606,13 @@
     "model": "resident-14",
     "build": 1.05,
     "supperStart": 1104,
-    "supperEnd": 1234
+    "supperEnd": 1234,
+    "house": {
+      "x": 44.5,
+      "z": 25.2,
+      "angle": 0
+    },
+    "homeAddress": "15 East Lane"
   },
   {
     "name": "Mr Tanabe",
@@ -539,8 +629,8 @@
       69
     ],
     "home": [
-      46,
-      62
+      48.0,
+      27.8
     ],
     "top": "#bbaa85",
     "start": 540,
@@ -557,7 +647,13 @@
     "model": "resident-15",
     "build": 1.135,
     "supperStart": 1080,
-    "supperEnd": 1180
+    "supperEnd": 1180,
+    "house": {
+      "x": 48.0,
+      "z": 25.2,
+      "angle": 0
+    },
+    "homeAddress": "16 East Lane"
   },
   {
     "name": "Naoko",
@@ -574,8 +670,8 @@
       46
     ],
     "home": [
-      46,
-      62
+      51.5,
+      27.8
     ],
     "top": "#c77465",
     "start": 540,
@@ -592,7 +688,13 @@
     "model": "resident-16",
     "build": 0.88,
     "supperStart": 1092,
-    "supperEnd": 1207
+    "supperEnd": 1207,
+    "house": {
+      "x": 51.5,
+      "z": 25.2,
+      "angle": 0
+    },
+    "homeAddress": "17 East Lane"
   },
   {
     "name": "Hiroshi",
@@ -609,8 +711,8 @@
       18
     ],
     "home": [
-      -29,
-      50
+      60.1,
+      41.0
     ],
     "top": "#7c9959",
     "start": 540,
@@ -627,7 +729,13 @@
     "model": "resident-17",
     "build": 0.965,
     "supperStart": 1104,
-    "supperEnd": 1234
+    "supperEnd": 1234,
+    "house": {
+      "x": 62.7,
+      "z": 41.0,
+      "angle": -1.5707963267948966
+    },
+    "homeAddress": "18 Shiomi Lane"
   },
   {
     "name": "Fumiko",
@@ -644,8 +752,8 @@
       39
     ],
     "home": [
-      -29,
-      50
+      60.1,
+      45.5
     ],
     "top": "#aa90b4",
     "start": 540,
@@ -662,7 +770,13 @@
     "model": "resident-18",
     "build": 1.05,
     "supperStart": 1080,
-    "supperEnd": 1180
+    "supperEnd": 1180,
+    "house": {
+      "x": 62.7,
+      "z": 45.5,
+      "angle": -1.5707963267948966
+    },
+    "homeAddress": "19 Shiomi Lane"
   },
   {
     "name": "Kenta",
@@ -679,8 +793,8 @@
       18
     ],
     "home": [
-      46,
-      62
+      60.1,
+      50.0
     ],
     "top": "#77a5b7",
     "start": 540,
@@ -697,7 +811,13 @@
     "model": "resident-19",
     "build": 1.135,
     "supperStart": 1092,
-    "supperEnd": 1207
+    "supperEnd": 1207,
+    "house": {
+      "x": 62.7,
+      "z": 50.0,
+      "angle": -1.5707963267948966
+    },
+    "homeAddress": "20 Shiomi Lane"
   },
   {
     "name": "Nao",
@@ -714,12 +834,12 @@
       20
     ],
     "home": [
-      46,
-      62
+      60.1,
+      54.5
     ],
     "start": 960,
-    "close": 1410,
-    "retire": 1435,
+    "close": 1620,
+    "retire": 1620,
     "top": "#c87d65",
     "personality": "Generous host, wicked timing",
     "friend": "Masaru",
@@ -732,6 +852,12 @@
     "model": "resident-20",
     "build": 0.88,
     "supperStart": 960,
-    "supperEnd": 1410
+    "supperEnd": 1620,
+    "house": {
+      "x": 62.7,
+      "z": 54.5,
+      "angle": -1.5707963267948966
+    },
+    "homeAddress": "21 Shiomi Lane"
   }
 ]

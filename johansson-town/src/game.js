@@ -1,3 +1,4 @@
+import {createIndoorResidents} from './people/indoor-residents.js';
 import {buildSuppliedRoom,suppliedRoomBoundsBlocked} from './world/supplied-rooms.js';
 import {travelProgress} from './progression/travel.js';
 import {buildIzakayaRoom} from './world/izakaya.js';
@@ -68,7 +69,7 @@ const move2=new THREE.Vector2(),fwVec=new THREE.Vector3(),rtVec=new THREE.Vector
 const player=new THREE.Group();scene.add(player);player.position.set(0,0,46);
 player.visible=false;
 
-const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};interactables.push(o)};
+const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};if(!interactables.includes(o))interactables.push(o)};
 function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on');subtitleTimer=sec}
 
 const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:enterRoom,getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person){person.g.userData.facePlayerUntil=performance.now()+1600;person.g.lookAt(player.position.x,person.g.position.y,player.position.z);person.g.rotateY(Math.PI);characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
@@ -76,11 +77,11 @@ SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.
 activities=createActivities({say,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,names:current?.id==='izakaya'?izakayaGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p?.g.position.z<-63){characters.gesture(p.g);activities.close();say('The harbour master waves from the pier.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{activities.close();seated=true;resetInput();say(name+' · E to stand · R to drink',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
-characters=createCharacters({mobile,shadows,canJump:()=>!seated,isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name));
+characters=createCharacters({mobile,shadows,canJump:()=>!seated,isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 
 inspector=createInspector({scene,camera,renderer,canvas,resetInput,onReturn:item=>{const o=content?.objects.get(item.id);if(o)o.visible=true;},onInspect:item=>{const o=content?.objects.get(item.id);if(o)o.visible=false;activities.inspectItem(item);if(item.id==='model')say(item.note,4);},onLink:()=>{},onContact:()=>{}});
 content=createContentItems({group:world.group,colliders:world.colliders,register:reg,onInspect:item=>inspector.open(item),onRead:()=>activities.quietRead()});
-castAI=createCastAI({world,player,state:()=>activities.state,paused:()=>activities.paused||inspector.active,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
+castAI=createCastAI({world,player,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>activities.paused||inspector.active,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
 function roomHit(object,label,kind,title,text){reg(object,label,()=>activities.action(kind,title,text),true);return object;}
 function roomCollider(x,z,w,d,height=2.8,minY=0){roomColliders.push({x,z,w,d,height,minY});}
 function furnitureBox(size,pos,color,label,title,text,kind='inspect',collide=true){const m=box(size,pos,color,room);if(collide)roomCollider(pos[0],pos[2],size[0]+.08,size[2]+.08,pos[1]+size[1]/2,Math.max(0,pos[1]-size[1]/2));return roomHit(m,label,kind,title,text);}
@@ -96,10 +97,11 @@ function addCrates(x,z,title='Delivery crates',text='Wooden crates are stacked w
 function addLamp(x,z){const stem=box([.08,1.45,.08],[x,.73,z],0x4b4f4a,room,false);const shade=mesh(new THREE.CylinderGeometry(.28,.42,.28,12),[x,1.55,z],0xb99a69,room,false);shade.rotation.x=Math.PI;roomHit(stem,'Switch lamp','inspect','Desk lamp','A compact late-1980s lamp with a warm tungsten bulb.');}
 
 const izakayaGuests=createIzakayaGuests({world,parent:scene,getYuri:()=>{const g=ensureYuri();if(!interactables.includes(g))reg(g,'Catch up with Yuri',()=>activities.action('resident','Yuri'),true);return g;}});
-let storeClerk=null,storeWelcomed=false;
-function ensureYuri(){if(!storeClerk){storeClerk=new THREE.Group();storeClerk.userData.name='Yuri';storeClerk.visible=false;scene.add(storeClerk);characters.attach(storeClerk,'Yuri',1.88);}return storeClerk;}
+const ramenGuests=createIndoorResidents({world,parent:scene,place:'ramen'}),marketClerk=createIndoorResidents({world,parent:scene,place:'market'});
+let storeClerk=world.people.find(p=>p.profile.name==='Yuri').g,storeWelcomed=false;
+function ensureYuri(){return storeClerk;}
 function addRoomProps(s){
-  if(activeRoomLayout)return;
+  if(activeRoomLayout){if(s.id==='ramen')ramenGuests.sync(minutes);return;}
   if(s.id==='izakaya'){buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex});izakayaGuests.sync(minutes);const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
   const warm=new THREE.PointLight(0xffcf91,highTier?2.0:1.35,14,2);warm.position.set(0,3.45,-.5);warm.castShadow=false;room.add(warm);
   box([12.4,.12,12.4],[0,4.25,0],s.id==='market'?0xf2eedf:0x6f7168,room,false);box([12.1,.035,12.1],[0,.04,0],s.id==='market'?0xe0ded2:0x706b5e,room,false);for(const x of [-5.7,5.7])box([.08,3.7,12],[x,2.1,0],0x4b4339,room,false);
@@ -140,7 +142,7 @@ function addRoomProps(s){
     wallPanel('電子工作所','TEST BENCH',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.8,-1.85,'Electronics bench','Solder, test leads, small circuit boards and handwritten schematics cover the bench.');addScreen(-2.8,-1.9,'Development terminal','A green-on-black terminal is connected to a compact development board.');addMachine(2.55,-1.85,1.45,1.05,1.15,0x43575d,'Oscilloscope','The trace settles into a clean repeating waveform after a short test.');addCabinet(3.65,1.25,'Parts drawers','Resistors, capacitors, connectors and spare ICs are sorted into dozens of small drawers.');furnitureBox([1.0,.52,.55],[-3.7,.26,1.25],0x6e5843,'Tune workshop radio','Workshop radio','A small radio carries weather, baseball scores and harbour traffic reports.','machine');
   } else if(s.id==='market'){
     storeWelcomed=false;
-    ensureYuri();
+    marketClerk.sync(minutes);
     buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});
   } else if(s.id==='career'){
     wallPanel('潮汐表','TIDES · 14 SEPTEMBER',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.7,-1.8,'Harbour log desk','The tide chart, berth allocation sheet and morning weather bulletin lie beneath a brass paperweight.');addScreen(-2.7,-1.85,'Harbour radio console','A green lamp marks channel 16. The microphone is returned to its hook after each call.');addCabinet(3.45,-2.3,'Ice ledger','The cold store supplied twenty blocks before dawn. Each boat’s order is written in blue pencil.');addCabinet(3.45,.45,'Berth records','Tonnage, draught and departure times, filed by vessel name. Yesterday’s entries have been checked twice.');addChair(-.55,-1.55,'Skipper’s chair','A canvas cushion softens the chair where captains wait for their clearance.');
@@ -148,10 +150,10 @@ function addRoomProps(s){
   }
 }
 
-function clearRoom(){activeRoomLayout=null;izakayaGuests.restore();if(storeClerk)storeClerk.visible=false;roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside)interactables.splice(i,1);}
+function clearRoom(){activeRoomLayout=null;izakayaGuests.restore();ramenGuests.restore();marketClerk.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside)interactables.splice(i,1);}
 function roomShell(s){clearRoom();town.visible=false;room.visible=true;activeRoomLayout=buildSuppliedRoom({site:s,room,reg,collider:roomCollider,action:activities.action,exit:leaveRoom});if(activeRoomLayout)return;if(s.id==='izakaya')return;if(s.id==='market'){buildStoreShell({room,box,reg,exit:leaveRoom});return;}box([13,.18,13],[0,-.08,0],0x9e957f,room,false);box([13,4.4,.24],[0,2.2,-6.45],s.color,room);box([.24,4.4,13],[-6.45,2.2,0],s.color,room);box([.24,4.4,13],[6.45,2.2,0],s.color,room);box([5,4.4,.24],[-4,2.2,6.45],s.color,room);box([5,4.4,.24],[4,2.2,6.45],s.color,room);box([3,1.4,.24],[0,3.7,6.45],s.color,room);const back=new THREE.Mesh(new THREE.PlaneGeometry(5.8,1.35),new THREE.MeshStandardMaterial({map:signTex(s.jp,s.title,s.accent),roughness:.85}));back.position.set(0,3.35,-6.28);room.add(back);const notice=new THREE.Mesh(new THREE.PlaneGeometry(3.7,1.7),new THREE.MeshStandardMaterial({map:signTex(s.title,s.line,s.accent),roughness:.85}));notice.position.set(-3.2,1.9,-6.27);room.add(notice);reg(notice,'Read wall notice',()=>activities.action('inspect',`${s.title} notice`,s.line),true);const terminal=box([2.3,2.55,.18],[.4,1.28,-5.95],0x2e3b3a,room);roomColliders.push({x:.4,z:-5.95,w:2.4,d:.32});reg(terminal,'Read the ledger',()=>activities.action('read',s.title+' ledger',s.line+'\n14 September 1988. Evening deliveries are written in blue pencil.'),true);const terminalLabel=new THREE.Mesh(new THREE.PlaneGeometry(1.95,.65),new THREE.MeshBasicMaterial({map:signTex('記録','DAILY LEDGER',s.accent)}));terminalLabel.position.set(.4,1.7,-5.83);room.add(terminalLabel);const exit=new THREE.Mesh(new THREE.PlaneGeometry(2.45,2.7),toon(0x8c684d));exit.position.set(0,1.35,6.31);exit.rotation.y=Math.PI;room.add(exit);reg(exit,'Exit to street',leaveRoom,true);}
 function enterRoom(s){seated=false;if(world.isOpen&&!world.isOpen(s,minutes)){say('準備中 · Closed. Opens at '+(s.opens||'09:00')+'.',4);return;}activities.close();activities.visit(s.id);current=s;roomShell(s);addRoomProps(s);room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});player.position.set(...(activeRoomLayout?.spawn||[0,0,4.3]));yaw=0;$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(`${s.title} · Explore the room. Tap objects nearby to examine them.`,3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();if(storeClerk)storeClerk.visible=false;seated=false;active=null;const s=current;current=null;syncView();room.visible=false;town.visible=true;if(s){player.position.copy(doors.get(s.id));player.position.z+=.6}$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
+function leaveRoom(){if(!current)return;inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();ramenGuests.restore();marketClerk.restore();seated=false;active=null;const s=current;current=null;syncView();room.visible=false;town.visible=true;if(s){player.position.copy(doors.get(s.id));player.position.z+=.6}$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
 
 function welcomeAtCounter(forward){
   if(storeWelcomed||!storeClerk?.visible||current?.id!=='market')return;
@@ -241,7 +243,12 @@ function simulate(frameDt){
   while(accumulator>=SIM_STEP){
     const dt=SIM_STEP;minutes+=dt;elapsed+=dt;
     if((saveTick+=dt)>=15){activities.save();saveTick=0;}characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);
-    if(current?.id==='izakaya')izakayaGuests.sync(minutes);if(!current){world.update(dt,elapsed,daylight(minutes),minutes);castAI?.update(dt,minutes,weather);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
+    if(current&&['izakaya','market','ramen'].includes(current.id)&&!world.isOpen(current,minutes)){const name=current.title;leaveRoom();say(name+' is closing. Time to head home.',4);}
+    if(current?.id==='izakaya')izakayaGuests.sync(minutes);
+    if(current?.id==='market')marketClerk.sync(minutes);
+    if(current?.id==='ramen')ramenGuests.sync(minutes);
+    castAI?.update(dt,minutes,weather);
+    if(!current){world.update(dt,elapsed,daylight(minutes),minutes);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
     accumulator-=SIM_STEP;
   }
 }

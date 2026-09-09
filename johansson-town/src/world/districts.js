@@ -1,3 +1,4 @@
+import {buildHomes} from './homes.js';
 import {buildRamenRestaurant} from './supplied-rooms.js';
 import {buildTeaHouse} from './tea-house.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -64,6 +65,7 @@ export function buildDistricts(world,options){
   // Shrine stair/approach culminates in a real raised landing.
   box([8,.4,8],[49,5.8,82],'concrete',0xa2a18c);for(const x of [46,52])box([.25,4,.25],[x,8,80],'timber',0x9b4833);box([8,.28,.45],[49,10,80],'timber',0x943d2a);verb([49,7.3,82],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
   for(const [x,z] of [[46,84],[49,84],[52,84]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
+  buildHomes(world,options,box);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};
 }

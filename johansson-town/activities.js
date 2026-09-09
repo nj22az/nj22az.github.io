@@ -1,6 +1,6 @@
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {PROFILES} from './src/people/profiles.js';
-import {gossipAt} from './src/people/social.js';
+import {gossipAt,izakayaOpen} from './src/people/social.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
@@ -110,12 +110,14 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,get
   }
 
   function izakayaMenu(){
+    if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Nao is locking up.');return;}
     show('Minato · Tonight’s little pleasures','Nao: Choose something you like. The stories are on the house.',[
-      ...[['Yakitori plate',180,'Sweet soy glaze, three little skewers, and a very satisfied silence.'],['Edamame & barley tea',120,'Warm beans and cold barley tea. Nao settles a tiny saucer beside your cup.'],['Oden supper',260,'Daikon, egg and tofu, simmered until the day feels a little kinder.'],['Small beer',180,'A little glass of harbour lager. Someone at the next table starts a story.']].map(([name,cost,detail])=>[name+' · ¥'+cost,()=>{if(!spend(cost))return;onTime(8);note('Supper at Minato: '+name+'.');show('Supper at Minato',detail,[['Listen to the table',izakayaGossip],['Something else?',izakayaMenu],['Enjoy the room',close]]);}]),
+      ...[['Yakitori plate',180,'Sweet soy glaze, three little skewers, and a very satisfied silence.'],['Edamame & barley tea',120,'Warm beans and cold barley tea. Nao settles a tiny saucer beside your cup.'],['Oden supper',260,'Daikon, egg and tofu, simmered until the day feels a little kinder.'],['Small beer',180,'A little glass of harbour lager. Someone at the next table starts a story.']].map(([name,cost,detail])=>[name+' · ¥'+cost,()=>{if(!izakayaOpen(getMinutes())){izakayaMenu();return;}if(!spend(cost))return;onTime(8);note('Supper at Minato: '+name+'.');show('Supper at Minato',detail,[['Listen to the table',izakayaGossip],['Something else?',izakayaMenu],['Enjoy the room',close]]);}]),
       ['Just looking, thank you',close]
     ]);
   }
   function izakayaGossip(){
+    if(!izakayaOpen(getMinutes())){izakayaMenu();return;}
     const social=getSocialContext(),gossip=gossipAt(getMinutes(),social.names||[]);note(gossip.clue);
     show('Overheard at Minato',gossip.line+'\n\n'+gossip.clue,[['Stay a little longer',()=>{onTime(7);izakayaGossip();}],['Back to the evening',close]]);
   }
