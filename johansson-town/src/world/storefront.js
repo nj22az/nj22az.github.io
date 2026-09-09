@@ -22,7 +22,6 @@ export function buildStorefront({parent,site,register,enter,label,placement}){
  const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[5.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  hangNoren(group,-2.5,1.85,.07);
- lantern(group,-3.55,2.48,.24);lantern(group,4.55,2.48,.24);
  const [ax,az]=localToWorld(x,z,yaw,scale,0,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  return group;
@@ -40,9 +39,3 @@ function hangNoren(group,x,y,z){
  mesh.position.set(x,y,z);mesh.userData.banner=true;group.add(mesh);
 }
 
-function lantern(group,x,y,z){
- const paper=new THREE.MeshStandardMaterial({color:0xff8d4a,emissive:0xff6a22,emissiveIntensity:.7,roughness:.45});
- const lamp=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.32,10),paper);lamp.position.set(x,y,z);group.add(lamp);
- const cap=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.04,10),new THREE.MeshStandardMaterial({color:0x3b2a22,roughness:.9}));
- cap.position.set(x,y+.18,z);group.add(cap);
-}

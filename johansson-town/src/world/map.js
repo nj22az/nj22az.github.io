@@ -1,6 +1,6 @@
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
 import {RESIDENTS} from '../people/residents.js';
-import {PARK} from './park-layout.js';
+import {PARK,activePark} from './park-layout.js';
 import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
@@ -18,7 +18,8 @@ export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,v
     }
     ctx.fillStyle='#6c6656';for(const c of FULL_TOWN.colliders)ctx.fillRect(px(c.x-c.w/2),pz(c.z+c.d/2),Math.max(1,c.w*scale),Math.max(1,c.d*scale));
   }
-  ctx.fillStyle='#91a776';ctx.fillRect(px(PARK.x-14),pz(PARK.z+14),28*scale,28*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('HARBOUR PARK',px(PARK.x-13),pz(PARK.z));}
+  const park=FULL_TOWN.active?activePark():PARK,pw=park.halfX||park.half,pd=park.halfZ||park.half;
+  ctx.fillStyle='#91a776';ctx.fillRect(px(park.x-pw),pz(park.z+pd),pw*2*scale,pd*2*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('PARK',px(park.x-pw+0.4),pz(park.z));}
   ctx.lineJoin='round';ctx.lineCap='round';
   for(const route of (FULL_TOWN.active?FULL_PATHS:ROUTES)){
     ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';

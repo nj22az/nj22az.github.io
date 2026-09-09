@@ -30,13 +30,13 @@ function pathSegments(path){
  return segs;
 }
 
-function waterSide(path,seg){
+function waterSide(path){
  if(path.id.includes('canal-west'))return {x:1,z:0};
  if(path.id.includes('canal-east'))return {x:-1,z:0};
- if(path.id==='coast-west')return {x:-1,z:0};
- if(path.id==='coast-east')return {x:1,z:0};
+ if(path.id==='coast-west'||path.id==='park-west')return {x:-1,z:0};
+ if(path.id==='coast-east'||path.id==='park-east')return {x:1,z:0};
  if(path.id==='coast-north')return {x:0,z:1};
- if(path.id==='coast-south'||path.id==='port-walk'||path.id==='pier')return {x:0,z:-1};
+ if(path.id==='coast-south'||path.id==='park-south')return {x:0,z:-1};
  return null;
 }
 
@@ -44,27 +44,21 @@ export function buildPromenade(parent,options={}){
  const group=new THREE.Group();group.name='Canal boardwalk and harbour water';parent.add(group);
  const library=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy||4});
  const deckMat=timber(library),edgeMat=new THREE.MeshStandardMaterial({color:0x6d5840,roughness:.9});
- const postMat=new THREE.MeshStandardMaterial({color:0x5c4a36,roughness:.92});
  const waterMat=new THREE.MeshStandardMaterial({color:0x3e7480,roughness:.22,metalness:.18});
- const water=new THREE.Mesh(new THREE.PlaneGeometry(96,92),waterMat);
- water.name='canal-harbour-water';water.rotation.x=-Math.PI/2;water.position.set(8,-.48,-14);water.receiveShadow=true;group.add(water);
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(64,52),waterMat);
+ water.name='canal-harbour-water';water.rotation.x=-Math.PI/2;water.position.set(-1,-.48,-4);water.receiveShadow=true;group.add(water);
  const quays=FULL_PATHS.filter(path=>path.surface==='wood');
- const dummy=new THREE.Object3D(),postMarks=[],edgeMarks=[],jointMarks=[];
+ const dummy=new THREE.Object3D(),edgeMarks=[],jointMarks=[];
  for(const path of quays){
   for(const seg of pathSegments(path)){
    const deck=addDeck(group,deckMat,seg.x,.04,seg.z,seg.width,.1,seg.len+.08);
    deck.rotation.y=seg.angle;deck.name=path.id+'-deck';
-   const side=waterSide(path,seg);
-   if(path.surface==='wood'&&side){
+   const side=waterSide(path);
+   if(side){
     const ex=seg.x+side.x*(seg.width/2+.12),ez=seg.z+side.z*(seg.width/2+.12);
     edgeMarks.push({x:ex,z:ez,len:seg.len,angle:seg.angle});
-    const count=Math.max(2,Math.round(seg.len/2.2));
-    for(let i=0;i<count;i++){
-     const t=(i+.5)/count-.5;
-     postMarks.push({x:ex+Math.sin(seg.angle)*seg.len*t,z:ez+Math.cos(seg.angle)*seg.len*t});
-    }
    }
-   const joints=Math.max(1,Math.round(seg.len/.38));
+   const joints=Math.max(1,Math.round(seg.len/1.4));
    for(let i=0;i<joints;i++){
     const t=(i+.5)/joints-.5;
     jointMarks.push({x:seg.x+Math.sin(seg.angle)*seg.len*t,z:seg.z+Math.cos(seg.angle)*seg.len*t,angle:seg.angle,width:seg.width-.12});
@@ -78,12 +72,6 @@ export function buildPromenade(parent,options={}){
   const [x,z]=doorApproach(door,1.05);
   const apron=addDeck(group,deckMat,x+section.x,.055,z+section.z,door.nx?1.7:1.15,.09,door.nz?1.7:1.15);
   apron.name='door-apron-'+door.id;
- }
- if(postMarks.length){
-  const posts=new THREE.InstancedMesh(new THREE.CylinderGeometry(.07,.09,1.15,8),postMat,postMarks.length);
-  posts.name='quay-posts';posts.castShadow=!!options.shadows;posts.receiveShadow=true;
-  postMarks.forEach((p,i)=>{dummy.position.set(p.x,-.35,p.z);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();posts.setMatrixAt(i,dummy.matrix);});
-  posts.instanceMatrix.needsUpdate=true;posts.computeBoundingSphere();group.add(posts);
  }
  if(edgeMarks.length){
   const edges=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),edgeMat,edgeMarks.length);

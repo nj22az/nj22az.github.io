@@ -94,8 +94,12 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.equal(api.world.quality.canalPromenade,true);
     assert.equal(api.world.quality.streetLandmarks,true);
     assert.equal(api.world.quality.streetDoors,15);
-    assert.equal(api.world.quality.uniqueCity,true);
-    assert.equal(api.world.quality.peninsula,true);
+    assert.equal(api.world.quality.compactGrid,true);
+    assert.equal(api.world.quality.streetLevelPark,true);
+    assert.equal(api.world.quality.noHarbourPier,true);
+    assert.equal(api.world.quality.noQuayLanterns,true);
+    assert.equal(api.world.group.getObjectByName('quay-posts'),undefined);
+    assert.equal(api.world.group.getObjectByName('Yuri house lantern'),undefined);
     assert.ok(api.world.group.getObjectByName('canal-harbour-water'));
     assert.ok(api.world.group.getObjectByName('Sakura Konbini landmark'));
     assert.ok(api.world.group.getObjectByName('Sato Ramen restaurant'));
@@ -139,7 +143,8 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
       const p=person.profile.work;
       for(const site of shopDoors)assert.ok(Math.hypot(p[0]-site.door[0],p[1]-site.door[2])>=1.35,person.profile.name+' work stands off the '+site.id+' door');
     }
-    const {STREET_DOORS,doorApproach}=await import('../src/world/full-town-state.js');
+    const {STREET_DOORS,doorApproach,FULL_PATHS}=await import('../src/world/full-town-state.js');
+    assert.equal(FULL_PATHS.some(p=>/pier|apron|port-walk|causeway/.test(p.id)),false,'No back docks, pier or causeway');
     for(const door of STREET_DOORS){
       const [x,z]=doorApproach(door);
       assert.equal(blocked(x,z),false,'Original entrance clear: '+door.id);
@@ -148,8 +153,12 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     for(const person of api.world.people)for(const tag of ['work','home','evening']){
       const p=person.profile[tag];assert.ok(nav.path(spawn,{x:p[0],z:p[1]}).length,person.profile.name+' '+tag+' reachable');
     }
-    for(const [x,z] of [[35.7,-38],[0,-27],[-5,-18],[17,0],[-5,-24]])assert.ok(nav.path(spawn,{x,z}).length,'Park or port reachable '+[x,z]);
-    assert.equal(blocked(8,-18.9),false,'South harbour quay is walkable');
+    for(const [x,z] of [[14.2,-17.5],[14.2,-13],[2.5,-12.4],[-12,-12.4],[17,0],[-22.2,0]])assert.ok(nav.path(spawn,{x,z}).length,'Park or quay reachable '+[x,z]);
+    assert.equal(blocked(8,-12.4),false,'South quay is walkable');
+    assert.equal(blocked(14.2,-17.5),false,'Compact park is walkable');
+    assert.equal(blocked(14.2,-13),false,'Park entrance from the south boardwalk is open');
+    assert.equal(blocked(-5,-22),true,'The old south pier is gone');
+    assert.equal(blocked(-5,-28),true,'The outer dock is gone');
     assert.equal(blocked(44,-6),true,'There is no cloned east canal');
     assert.equal(blocked(44,0),true,'There is no cloned east street');
     assert.equal(blocked(0,-6),true,'Canal water is not walkable');

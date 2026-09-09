@@ -38,7 +38,6 @@ export function buildYuriHome(world,options,placement){
   fallback.position.set(0,3.2,0);building.add(fallback);
  }
  hangNoren(building);
- hangLanterns(building);
  if(place.label){
   const [lx,lz]=localToWorld(place.x,place.z,yaw,scale,0,3.02);
   place.label('ゆりの家','YURI · 22 WILLOW ALLEY',[lx,3.45*sy,lz],3.4*sx,.52*sy,yaw,'#f3e4d0','#6b3a48');
@@ -61,14 +60,4 @@ function hangNoren(building){
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const noren=new THREE.Mesh(new THREE.PlaneGeometry(1.55,1.55),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
  noren.name='Yuri house noren';noren.position.set(.08,1.72,3.42);building.add(noren);
-}
-
-function hangLanterns(building){
- const paper=new THREE.MeshStandardMaterial({color:0xf3c56b,emissive:0xd4893a,emissiveIntensity:.85,roughness:.55});
- for(const [x,y,z] of [[-1.15,2.35,3.35],[1.25,2.35,3.35]]){
-  const lamp=new THREE.Mesh(new THREE.CylinderGeometry(.18,.2,.42,10),paper);
-  lamp.name='Yuri house lantern';lamp.position.set(x,y,z);building.add(lamp);
-  const cap=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.05,10),new THREE.MeshStandardMaterial({color:0x5c4030,roughness:.8}));
-  cap.position.set(x,y+.24,z);building.add(cap);
- }
 }

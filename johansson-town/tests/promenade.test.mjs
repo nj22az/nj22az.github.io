@@ -50,6 +50,17 @@ test('Every original doorway has a footpath from the walking street',()=>{
  }
 });
 
+test('Peninsula is a compact rectangle with a south-east park cell and no back docks',()=>{
+ assert.equal(FULL_PATHS.some(p=>/pier|apron|port-walk|causeway/.test(p.id)),false);
+ assert.ok(FULL_PATHS.some(p=>p.id==='park-south'));
+ assert.equal(blocked(14.2,-17.5),false,'Park lawn is walkable');
+ assert.equal(blocked(14.2,-13),false,'Park meets the south boardwalk');
+ assert.ok(reachable(-5,-1,14.2,-16.4),'Walk from spawn onto the park');
+ assert.equal(blocked(-5,-22),true,'Harbour apron is gone');
+ assert.equal(blocked(-5,-28),true,'Outer pier is gone');
+ assert.equal(blocked(21,-23.4),true,'Old park causeway is gone');
+});
+
 test('Visitor map treats empty ground as water and draws one unique city',()=>{
  const ground=[],water=[],ctx=new Proxy({fillStyle:'',fillRect(x,y,w,h){
   if(this.fillStyle==='#a8997a')ground.push([x,y,w,h]);
