@@ -1,3 +1,4 @@
+import {FULL_TOWN} from './src/world/full-town-state.js';
 import {routeAt} from './src/world/layout.js';
 // Deterministic 2D collision helpers used by Johansson Town.
 // Kept independent of Three.js so the core movement rules can be regression-tested.
@@ -17,6 +18,7 @@ export function roomBoundsBlocked(x,z,r=0){
 // Town envelope follows the actual playable ground instead of a single rectangle:
 // narrow shopping street -> broad harbour apron -> central working pier.
 export function townBoundsBlocked(x,z,r=0){
+  if(FULL_TOWN.active)return !routeAt(x,z,r);
   if(z<-79+r&&Math.abs(x)<5)return true;
   if(routeAt(x,z,r))return false;
   if(z>58.2-r||z<-79+r)return true;

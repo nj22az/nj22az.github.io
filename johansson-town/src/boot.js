@@ -1,3 +1,4 @@
+import {preloadFullTown} from './world/full-town.js';
 import {preloadJapaneseTown} from './world/japanese-town.js';
 import {preloadPark} from './world/park.js';
 import {preloadSuppliedRooms} from './world/supplied-rooms.js';
@@ -9,8 +10,8 @@ import {preloadVending} from './world/vending.js';
 import {preloadCharacters} from './people/characters.js?vroid-3';
 await preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus').textContent='OPENING · '+Math.round(value*100)+'%';}});
 const {preloadStreetPlants}=await import('./world/street-plants.js');
-await Promise.all([preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock()),preloadStreetPlants(),preloadSuppliedRooms()]);
+await Promise.all([preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadFullTown().then(ok=>ok||preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock())),preloadStreetPlants(),preloadSuppliedRooms()]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=22');
+await import('./game.js?living-town=23');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

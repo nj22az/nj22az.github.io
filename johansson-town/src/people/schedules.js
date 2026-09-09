@@ -1,3 +1,4 @@
+import {FULL_TOWN} from '../world/full-town-state.js';
 import {residentPlan,NIGHT_PATROL} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js';
@@ -21,6 +22,7 @@ for(const p of PROFILES){
 }
 DIALOGUE.Yuri.push(['home','My home is at '+YURI_PROFILE.homeAddress+'. The plants by the shop stay here overnight.']);
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position}){
+ const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();
  for(const person of world.people)person.g.userData.scheduled=true;
  function destination(person,target,tag){
@@ -62,11 +64,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    g.userData.place=plan.place;g.userData.activity=plan.activity;
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
-    if(Math.hypot(g.position.x-NIGHT_PATROL[index][0],g.position.z-NIGHT_PATROL[index][1])<.85)index=(index+1)%NIGHT_PATROL.length;
-    patrols.set(g,index);target=NIGHT_PATROL[index];tag='patrol-'+index;
+    if(Math.hypot(g.position.x-patrol[index][0],g.position.z-patrol[index][1])<.85)index=(index+1)%patrol.length;
+    patrols.set(g,index);target=patrol[index];tag='patrol-'+index;
    }
    if(v.name==='Kenji'&&state().kenjiEscort==='walking'){
-    target=[-4,20.5];tag='escort';g.userData.activity='showing the workshop';
+    target=FULL_TOWN.active?FULL_TOWN.escort:[-4,20.5];tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Unique home thresholds must not be displaced by generic crowd spacing.
@@ -89,6 +91,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // Rendering is capped, but every resident continues walking off camera.
   const observer=getObserverPosition();outside.sort((a,b)=>a.g.position.distanceToSquared(observer)-b.g.position.distanceToSquared(observer));
   outside.forEach((p,i)=>{p.g.visible=i<8;});world.updateHomes?.(minutes);
-  if(world.cat){const s=state();let target=minute<600?[4,34]:minute<1080?[-4,-18]:[-1.6,-76];if(s.quest===3)target=[4,34];else if(s.quest===1)target=[-4,-18];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
+  if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[[4,34],[-4,-18],[-1.6,-76]];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
  },pose(){}};
 }

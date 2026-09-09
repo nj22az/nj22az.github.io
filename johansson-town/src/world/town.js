@@ -1,3 +1,4 @@
+import {buildFullTown} from './full-town.js';
 import {buildPark} from './park.js';
 import {buildIzakaya} from './izakaya.js';
 import {batchStaticProps} from '../render/static-props.js';
@@ -158,6 +159,7 @@ function addStreetLife(world,options,factory){
 function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
 
 export function createTown(options){
+  const full=buildFullTown(options);if(full)return full;
   const world=createBaseTown(options);
   for(const [name,x,z] of [['Bus driver',-4.5,44],['Cold-storage kid',-8,-55]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
