@@ -1,3 +1,4 @@
+import {buildPark} from './park.js';
 import {buildIzakaya} from './izakaya.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
@@ -169,7 +170,7 @@ export function createTown(options){
   const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
-  buildIzakaya(world,options);
+  buildIzakaya(world,options);buildPark(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});

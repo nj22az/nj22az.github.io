@@ -27,7 +27,7 @@ test('supplied models retain textures, correct material support and reachable ro
   globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
   globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true]);
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true]);
     for(const id of ['office','ramen']){
       const folder=new URL('../assets/models/'+id+'/',import.meta.url);
       const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
@@ -105,8 +105,22 @@ test('missing supplied models preserve the existing procedural buildings and roo
   const mod=await import('../src/world/supplied-rooms.js?failed-load');
   const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
   try{
-    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false]);
+    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false]);
     assert.equal(mod.buildRamenRestaurant({},{}),false);
     for(const id of ['office','ramen'])assert.equal(mod.buildSuppliedRoom({site:{id},room:new THREE.Group()}),null);
   }finally{globalThis.fetch=originalFetch;console.warn=originalWarn;}
+});
+
+test('crystal room is a connected surprise inside StepWise with a reliable exit',async()=>{
+ installDOM();const originalFetch=fetch;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
+ globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
+ try{
+  const module=await import('../src/world/supplied-rooms.js?crystal-review');await module.preloadSuppliedRooms();
+  const room=new THREE.Group(),actions=[];let left=false;
+  const layout=module.buildSuppliedRoom({site:{id:'stepwise'},room,reg:(o,label,fn)=>actions.push({o,label,fn}),collider(){},action(){},exit:()=>left=true});
+  const points=reachableFloor(layout);assert.ok(points.length>500);
+  for(const a of actions)assert.ok(points.some(p=>Math.hypot(p.x-a.o.position.x,p.z-a.o.position.z)<1.65),a.label+' reachable');
+  actions.find(a=>a.label==='Exit to street').fn();assert.equal(left,true);
+  let meshes=0;room.traverse(o=>{if(o.isMesh){meshes++;assert.ok(o.material.map,'Crystal illustration retained');}});assert.equal(meshes,16);
+ }finally{globalThis.fetch=originalFetch;}
 });

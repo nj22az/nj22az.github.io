@@ -4,11 +4,20 @@ import {assetURL} from '../assets.js';
 
 const assets=new Map();
 let pending;
-const files={office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb'};
+const files={stepwise:'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb'};
 
 // Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
 export const SUPPLIED_ROOM_LAYOUTS={
+  stepwise:{bounds:{minX:-3.32,maxX:3.32,minZ:-3.32,maxZ:3.32},spawn:[0,0,2.45],exit:[0,1.1,3.28],
+    colliders:[
+      {x:2.75,z:2,w:1.35,d:2.8,height:1.9},
+      {x:2.6,z:-.48,w:1.6,d:1.8,height:.9},
+      {x:2.25,z:-2.5,w:2.3,d:1.8,height:1.95},
+      {x:-.5,z:-2.8,w:2.75,d:1.2,height:2.45},
+      {x:-2.5,z:-2.2,w:1.8,d:2.2,height:1.7},
+      {x:-2.85,z:2.1,w:1.05,d:2.15,height:1.6},
+    ]},
   office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
     colliders:[
       {x:0,z:-2.78,w:6.27,d:1.23,height:1.72},
@@ -130,7 +139,12 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
   };
   anchor(layout.exit,'Exit to street','exit');
-  if(site.id==='office'){
+  if(site.id==='stepwise'){
+    anchor([0,1.1,.6],'Listen to the room','inspect','A room that should not be here','The street sounds have faded. A clear, sustained note seems to come from the walls. There are no speakers.');
+    anchor([1.55,1.2,1.8],'Examine the crystal formation','inspect','The crystal formation','Light gathers inside the stone, though the room has no windows. A tiny ruler rests against it. Every mark reads zero.');
+    anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1988.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
+    anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
+  }else if(site.id==='office'){
     anchor([-1.40,1.15,-2.74],'Use office computer','machine','Office computer','Service records, calibration certificates and travel plans are open on the workstation.');
     anchor([1.70,.93,-2.75],'Read the ledger','read','Johansson Marine Office ledger',site.line+'\n14 September 1988. Evening deliveries are written in blue pencil.');
     anchor([-2.45,.93,-2.64],'Inspect field-service desk','inspect','Field-service desk','Route sheets, reference books and handwritten travel notes lie beside the keyboard.');
