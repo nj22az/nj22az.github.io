@@ -8,6 +8,14 @@ Runtime: `assets/models/izakaya/minato-benmaher-exterior.glb`. Reproduction: `py
 
 The source door faces the east lane at Minato's existing entrance `(24,20)`. New collision rectangles follow the asymmetric building and crates. The closed door opens the existing room through its entrance action. Street-exit stability checks use Minato's actual northward exit direction. CPU tests load the real exterior and interior, verify cutout/PBR materials and geometry, and exercise entry, exit and guest visits. Blender CPU renders inspect the fitted exterior and doorway; browser rendering and frame rate are not measured by these checks.
 
+## Yuri’s house — September 9 canal replacement
+
+Yuri’s canal-bank house now uses the owner’s `japanese_residential_home_02.glb`: Morrissey Alexander’s **Japanese Residential Home 02**. The two-storey timber house, porch and tiled roof replace the generic kit building at `house-west-canal`. The packed model is 1,996 triangles in one draw. Re-encoded PBR atlases reduce the 12,260,696-byte upload to 1,422,240 bytes. The existing bedroom interior, night visits and nameplate remain active.
+
+Runtime: `assets/models/yuri-home/yuri-home-exterior.glb`. Reproduction: `python tools/pack-yuri-home.py /path/to/japanese_residential_home_02.glb`. Metadata: `assets/models/yuri-home/exterior-manifest.json`. Credits: `assets/ATTRIBUTION.md`.
+
+The source door faces local +Z after packing. Town yaw `π/2` turns it toward the west-bank boardwalk at `(-5.11, 11.53)`. Collision covers the house body and leaves the stoop walkable. Noren and a `ゆりの家` sign mark the enterable house.
+
 ## Earlier Meshy intake
 
 The owner previously supplied two Meshy GLBs through Drive. Originals stay in Drive; source hashes and runtime hashes are recorded in each optimisation report. The Lantern Izakaya exterior is now inactive; Corner Tea House remains active.

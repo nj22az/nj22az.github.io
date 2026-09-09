@@ -1,6 +1,7 @@
 import {buildStorefront} from './storefront.js';
 import {buildRamenRestaurant} from './supplied-rooms.js';
 import {applyStreetClearance} from './street-clearance.js';
+import {buildYuriHome} from './yuri-home.js';
 import {buildPromenade} from './promenade.js';
 import {LANDMARK_LOTS,hideLandmarkLots,colliderInLandmarkLot,landmarkLotColliders} from './landmark-lots.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -41,7 +42,7 @@ export function buildFullTown(options){
  const group=new THREE.Group();group.name='Complete supplied Japanese Town';options.scene.add(group);
  for(const section of CITY_SECTIONS){const model=source.clone(true);model.position.set(section.x,0,section.z);model.userData.sharedAsset=true;model.name='Original canal, bridge, buildings and streets';model.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=true;for(const map of [o.material.map,o.material.normalMap,o.material.roughnessMap])if(map)map.anisotropy=Math.min(options.maxAnisotropy||1,4);});group.add(model);}
  const promenade=buildPromenade(group,{mobile:options.mobile,shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
- const colliders=FULL_TOWN.colliders.map(c=>({...c})),world={group,colliders,people:[],homes:new Map(),harbourShops:[],plantSites:[],quality:{completeSuppliedOverworld:true,streetInteractions:18,localRuntimeAssets:true,sourceTriangles:96308,citySections:CITY_SECTIONS.length,removedStreetColliders:clearance.removedColliders,removedStreetTriangles:clearance.removedTriangles,restoredLandmarks:['market','ramen'],streetLandmarks:true,canalPromenade:true,streetDoors:STREET_DOORS.length},isOpen(site,minutes){const m=((minutes%1440)+1440)%1440;return site.id==='izakaya'?izakayaOpen(m):site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||m>=540&&m<(site.id==='market'?1200:site.id==='ramen'?1260:1140);},updateHours(){},updateHomes(){},setRain(value){rain.visible=value;promenade.setRain(value);},update(dt,time){if(rain.visible){rain.rotation.y=time*.01;rain.position.y=-(time*7)%6;}}};
+ const colliders=FULL_TOWN.colliders.map(c=>({...c})),world={group,colliders,people:[],homes:new Map(),harbourShops:[],plantSites:[],quality:{completeSuppliedOverworld:true,streetInteractions:18,localRuntimeAssets:true,sourceTriangles:96308,citySections:CITY_SECTIONS.length,removedStreetColliders:clearance.removedColliders,removedStreetTriangles:clearance.removedTriangles,restoredLandmarks:['market','ramen','yuri-home'],streetLandmarks:true,canalPromenade:true,streetDoors:STREET_DOORS.length},isOpen(site,minutes){const m=((minutes%1440)+1440)%1440;return site.id==='izakaya'?izakayaOpen(m):site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||m>=540&&m<(site.id==='market'?1200:site.id==='ramen'?1260:1140);},updateHours(){},updateHomes(){},setRain(value){rain.visible=value;promenade.setRain(value);},update(dt,time){if(rain.visible){rain.rotation.y=time*.01;rain.position.y=-(time*7)%6;}}};
  const blocked=(x,z,r=.32)=>!fullContains(x,z,r,parkHeight)||colliders.some(c=>circleHitsRect(x,z,r,c));
  const doorPoints=[];
  const nearest=(x,z,used=[],range=3,offDoors=false)=>{for(let radius=0;radius<=range;radius+=.2)for(let i=0;i<(radius?32:1);i++){const a=i/32*Math.PI*2,p=[x+Math.cos(a)*radius,z+Math.sin(a)*radius];if(blocked(...p))continue;if(offDoors&&doorPoints.some(([dx,dz])=>Math.hypot(p[0]-dx,p[1]-dz)<1.4))continue;if(used.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<=.65))continue;return p;}throw Error('No safe town position near '+[x,z]);};
@@ -53,7 +54,7 @@ export function buildFullTown(options){
   if(!LANDMARK_IDS.has(id)){anchor(p,'Enter '+site.title,()=>options.enter(site));sign(site.jp,x+nx*.18,2.55,z+nz*.18,Math.atan2(nx,nz));}
  }
  const market=FULL_TOWN.sites.get('market');market.side=1;market.title='Sakura Shōten';market.jp='桜商店';
- const sakuraLot=LANDMARK_LOTS.find(l=>l.id==='sakura'),ramenLot=LANDMARK_LOTS.find(l=>l.id==='ramen');
+ const sakuraLot=LANDMARK_LOTS.find(l=>l.id==='sakura'),ramenLot=LANDMARK_LOTS.find(l=>l.id==='ramen'),yuriLot=LANDMARK_LOTS.find(l=>l.id==='yuri-home');
  for(const section of CITY_SECTIONS){
   const sakura=buildStorefront({parent:group,site:market,register:options.register,enter:options.enter,placement:{x:sakuraLot.x+section.x,z:sakuraLot.z+section.z,yaw:sakuraLot.yaw,scale:sakuraLot.scale},label:(jp,en,pos,w,h,angle,bg,fg)=>shopLabel(group,jp,en,pos,w,h,angle,bg,fg)});
   sakura.name=section.x?'Sakura Konbini landmark east':'Sakura Konbini landmark';
@@ -70,6 +71,12 @@ export function buildFullTown(options){
  if(ramen){
   const p=nearest(-9.15,2.7,[],4);ramen.door=[p[0],groundHeight(...p),p[1]];ramen.exitPosition=[...ramen.door];ramen.entryFacing=Math.PI;FULL_TOWN.sites.set('ramen',ramen);doorPoints.push([p[0],p[1]]);
  }
+ let yuriHome=null;
+ for(const section of CITY_SECTIONS){
+  const placed=buildYuriHome(world,options,{x:yuriLot.x+section.x,z:yuriLot.z+section.z,yaw:yuriLot.yaw,scale:yuriLot.scale,skipSite:!!yuriHome,site:yuriHome||undefined,name:section.x?'Yuri canal house east':'Yuri canal house',label:(jp,en,pos,w,h,angle,bg,fg)=>shopLabel(group,jp,en,pos,w,h,angle,bg,fg)});
+  if(placed&&!yuriHome)yuriHome=placed;
+ }
+ if(yuriHome)doorPoints.push([yuriHome.door[0],yuriHome.door[2]]);
  const pair=id=>{const p=FULL_TOWN.sites.get(id).door;return [p[0],p[2]];};IZAKAYA_DOOR.splice(0,2,...pair('izakaya'));RAMEN_DOOR.splice(0,2,...pair('ramen'));FULL_TOWN.escort=pair('form3d');
  const workIds=['electronics','form3d','career','ramen','market','office','tea-house','electronics','journal','career','stepwise','journal','office','electronics','tea-house','stepwise','journal','market','tea-house','form3d','izakaya','market'],occupied=[];
  RESIDENTS.forEach((profile,i)=>{
@@ -85,13 +92,11 @@ export function buildFullTown(options){
   const home=nearest(...doorApproach(house),[],4);
   yuri.profile.home=home;yuri.profile.homeAddress='22 Willow Alley';
   YURI_HOME_DOOR.splice(0,2,...home);
-  let site=options.sites.find(s=>s.id==='yuri-home');
-  if(!site){site={id:'yuri-home',title:'Yuri’s room',jp:'ゆりの部屋',sub:'WILLOW ALLEY',color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};options.sites.push(site);}
+  let site=yuriHome||options.sites.find(s=>s.id==='yuri-home');
+  if(!site){site={id:'yuri-home',title:'Yuri’s room',jp:'ゆりの家',sub:'WILLOW ALLEY',color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};options.sites.push(site);}
   site.door=[home[0],groundHeight(...home),home[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-house.nx,-house.nz);site.x=house.x;site.z=house.z;
   FULL_TOWN.sites.set('yuri-home',site);doorPoints.push(home);
   const entry=world.homes.get('Yuri');entry.door=home;entry.address=yuri.profile.homeAddress;
-  anchor(home,'Enter Yuri’s room',()=>options.enter(site));
-  sign('ゆりの部屋',house.x+house.nx*.18,2.55,house.z+house.nz*.18,Math.atan2(house.nx,house.nz));
  }
  FULL_TOWN.patrol=[[-5,-1],[-5,-5],[-11,-6],[-11,1],[4,0],[10,1],[17,0],[26,0],[39,0],[48,0],[39,0],[26,0],[17,0],[4,0]].map(p=>nearest(...p));
  FULL_TOWN.catTargets=[pair('frontrow'),nearest(-11,-1),[-.1,-30]];
@@ -104,7 +109,7 @@ export function buildFullTown(options){
  const box=(size,pos,color,parent=group)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color,roughness:.85}));m.position.set(...pos);parent.add(m);return m;};
  for(const [i,kind,title] of [[0,'phone','Harbour payphone'],[1,'vending','Buy a cold drink'],[2,'arcade','Star Port arcade'],[3,'radio','Neighbourhood radio']]){const x=3+i*3,z=-22.25,g=new THREE.Group();g.position.set(x,0,z);group.add(g);if(kind==='vending')g.add(createVendingMachine({shadows:options.shadows}));else{box([.8,kind==='radio'?1:1.6,.6],[0,kind==='radio'?.5:.8,0],kind==='phone'?0x536b58:0x655547,g);box([.58,.42,.04],[0,1.15,.32],0x304d4a,g);}colliders.push({x,z,w:1.1,d:.65});anchor([x,-20],title,()=>options.onAction(kind,title));}
  const bench=box([1.8,.15,.65],[15,.55,-22.25],0x795d43);box([1.8,.65,.12],[15,.9,-22.53],0x795d43);for(const x of [14.3,15.7])box([.12,.55,.5],[x,.275,-22.25],0x4d453a);colliders.push({x:15,z:-22.25,w:1.8,d:.65});const seat=anchor([15,-20],'Sit beside the harbour',()=>options.onAction('seat','Harbour bench'));seat.userData.seat={position:[15,0,-22.25],stand:[15,0,-20],eyeY:1.3,yaw:0,pitch:0};
- for(const [title,ideal,text] of [['SAKURA KONBINI',pair('market'),'桜商店 · daily goods · Yuri'],['SATO RAMEN',pair('ramen'),'中華そば 佐藤 · ramen · ¥300'],['East quarter',[39,0],'Residential east quarter'],['Canal crossing',[0,0],'Bridge to the opposite bank'],['Harbour',[ -5,-19],'Quay, park and pier']])anchor(nearest(...ideal),title,()=>options.onAction('read',title,text));
+ for(const [title,ideal,text] of [['SAKURA KONBINI',pair('market'),'桜商店 · daily goods · Yuri'],['SATO RAMEN',pair('ramen'),'中華そば 佐藤 · ramen · ¥300'],['YURI’S HOUSE',pair('yuri-home'),'ゆりの家 · 22 Willow Alley'],['East quarter',[39,0],'Residential east quarter'],['Canal crossing',[0,0],'Bridge to the opposite bank'],['Harbour',[ -5,-19],'Quay, park and pier']])anchor(nearest(...ideal),title,()=>options.onAction('read',title,text));
  const cat=new THREE.Group();cat.userData.name='Tama';const body=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),new THREE.MeshStandardMaterial({color:0xc88947}));body.scale.set(1.7,.8,.8);body.position.y=.25;cat.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.14,10,8),body.material);head.position.set(.26,.38,0);cat.add(head);const cp=FULL_TOWN.catTargets[0];cat.position.set(cp[0],groundHeight(...cp),cp[1]);group.add(cat);options.register(cat,'Greet Tama',()=>options.onAction('cat'));world.cat=cat;
  const positions=new Float32Array(180*3);for(let i=0;i<positions.length;i+=3){positions[i]=Math.sin(i*19)*20;positions[i+1]=6+(i%12);positions[i+2]=Math.cos(i*11)*14;}const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));const rain=new THREE.Points(rg,new THREE.PointsMaterial({color:0xbad2de,size:.04,transparent:true,opacity:.55}));rain.visible=false;group.add(rain);
  world.contentPositions=new Map(ITEMS.map((item,i)=>[item.id,[-7.8+(i%2)*5.6,1.1,-18.5-Math.floor(i/2)*1.05]]));world.findSafe=nearest;world.promenade=promenade;return world;

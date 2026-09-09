@@ -92,6 +92,12 @@ Both models use unlit materials to preserve their baked texture/vertex lighting.
 
 Adaptations: bake the source hierarchy into vertices; scale the 1.33 m dollhouse interior to a 2.72 m ceiling; rotate the south doorway to +Z; downsample embedded JPEGs to 1024px; merge primitives that share a material; unlit materials keep the baked lighting. 74,874 triangles; 24 draws. Source/output hashes, furniture bounds and transforms: `models/yuri-home/manifest.json`. Reproduction: `python tools/pack-yuri-bedroom.py /path/to/bedroom.glb` (NumPy and Pillow). No CC0 licence is asserted for this supplied interior.
 
+## Yuri’s house — Japanese Residential Home 02 (2026-09-09)
+
+`models/yuri-home/yuri-home-exterior.glb` is the owner-supplied **Japanese Residential Home 02** by [Morrissey Alexander](https://sketchfab.com/reckzilla), [model page](https://sketchfab.com/3d-models/japanese-residential-home-02-c31697f09152453cb3ed215482e7a810). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
+
+Adaptations: bake the Sketchfab hierarchy into one mesh; convert centimetres to metres; rotate the east door to local +Z; ground the floor at Y=0; re-encode the base-colour atlas at 2048px JPEG and packed metallic-roughness/normal maps at 1024px; opaque front-facing materials. 1,996 triangles; one draw; 1,422,240 bytes. Source/output hashes, bounds and door centre: `models/yuri-home/exterior-manifest.json`. Reproduction: `python tools/pack-yuri-home.py /path/to/japanese_residential_home_02.glb` (NumPy and Pillow). The house replaces the generic canal-bank shell at 22 Willow Alley; the existing bedroom interior remains.
+
 ## Minato Izakaya — BenMaher exterior (2026-09-09)
 
 The active exterior is now `models/izakaya/minato-benmaher-exterior.glb`, derived from the owner's supplied **Izakaya - Low Poly Building** by [BenMaher](https://sketchfab.com/BenMaher). The GLB identifies this [source model](https://sketchfab.com/3d-models/izakaya-low-poly-building-3f43e5429171408e9bd19553ea813364) and [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence. These credits are preserved from the upload's embedded metadata. No endorsement by the creator is implied.

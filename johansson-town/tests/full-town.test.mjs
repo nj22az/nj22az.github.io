@@ -82,6 +82,8 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
+    const {preloadYuriHome}=await import('../src/world/yuri-home.js');
+    assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
     const {preloadFullTown}=await import('../src/world/full-town.js');
     assert.equal(await preloadFullTown(),true);
     const api=await import(dataModule(source));
@@ -95,6 +97,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.ok(api.world.group.getObjectByName('canal-harbour-water'));
     assert.ok(api.world.group.getObjectByName('Sakura Konbini landmark'));
     assert.ok(api.world.group.getObjectByName('Sato Ramen restaurant'));
+    assert.ok(api.world.group.getObjectByName('Yuri canal house'));
     const sakura=api.world.group.getObjectByName('Sakura Konbini landmark');
     assert.ok(Math.abs(sakura.position.x-7.02)<.2,'Konbini sits on the north side of the walking street');
     assert.ok(sakura.position.z<3.2,'Konbini faces the canal street, not the back lots');
@@ -103,6 +106,11 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.ok(ramenShop.position.x<-8,'Ramen replaces the west street building');
     assert.ok(ramenShop.position.z<7,'Ramen faces the walking street');
     assert.ok(ramenShop.scale.y>.9,'Ramen is a full-height shop');
+    const yuriHouse=api.world.group.getObjectByName('Yuri canal house');
+    assert.ok(yuriHouse.position.x<-6.5&&yuriHouse.position.x>-7.3,'Yuri’s house sits on the west canal bank');
+    assert.ok(yuriHouse.position.z>11&&yuriHouse.position.z<12,'Yuri’s house faces the north canal boardwalk');
+    assert.ok(yuriHouse.scale.y>.9,'Yuri’s house keeps a two-storey height');
+    assert.ok(yuriHouse.getObjectByName('Yuri house exterior')||yuriHouse.getObjectByName('Yuri house noren'));
     const sections=api.world.group.children.filter(g=>g.name==='Original canal, bridge, buildings and streets');
     assert.equal(sections.length,2);assert.equal(sections[1].position.x,44);
     assert.equal(sections[0].children[0].geometry,sections[1].children[0].geometry,'Repeat shares cleaned GPU geometry');
@@ -124,7 +132,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
       const stuck=api.world.people.filter(p=>p.g.visible&&Math.hypot(api.player.position.x-p.g.position.x,api.player.position.z-p.g.position.z)<.62);
       assert.equal(stuck.length,0,'Exit from '+site.id+' must not land inside '+(stuck[0]?.g.userData.name||'a neighbour'));
     }
-    const shopDoors=['market','ramen'].map(id=>api.SITES.find(s=>s.id===id)).filter(Boolean);
+    const shopDoors=['market','ramen','yuri-home'].map(id=>api.SITES.find(s=>s.id===id)).filter(Boolean);
     for(const person of api.world.people){
       const p=person.profile.work;
       for(const site of shopDoors)assert.ok(Math.hypot(p[0]-site.door[0],p[1]-site.door[2])>=1.35,person.profile.name+' work stands off the '+site.id+' door');

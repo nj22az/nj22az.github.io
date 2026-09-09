@@ -1,0 +1,68 @@
+{
+  "file": "yuri-home-exterior.glb",
+  "sourceFile": "japanese_residential_home_02.glb",
+  "sourceSHA256": "a23b6b235f8cf765019b245209aa40c0f0d06287957d94c798f9e6a04f9149a2",
+  "sourceBytes": 12260696,
+  "sourceMetadata": {
+    "author": "Morrissey Alexander (https://sketchfab.com/reckzilla)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/japanese-residential-home-02-c31697f09152453cb3ed215482e7a810",
+    "title": "Japanese Residential Home 02"
+  },
+  "sha256": "a65cb1f526cd5d3822463e264f3b85c5ff2d4c3fea3a3f560bf94ce1e219b2dd",
+  "bytes": 1422240,
+  "triangles": 1996,
+  "draws": 1,
+  "bounds": {
+    "min": [
+      -3.005293607711792,
+      0.0,
+      -4.082038879394531
+    ],
+    "max": [
+      3.005293607711792,
+      7.0294599533081055,
+      4.082038879394531
+    ]
+  },
+  "fit": {
+    "scale": 0.01,
+    "rotationY": -1.5707963267948966,
+    "doorCentre": [
+      0.07743522524833679,
+      1.2763270139694214,
+      3.3744864463806152
+    ]
+  },
+  "changes": [
+    "Baked the Sketchfab hierarchy into one mesh",
+    "Converted centimetres to metres",
+    "Rotated the east door to local +Z",
+    "Grounded the floor at Y=0",
+    "Re-encoded base colour at 2048px JPEG and PBR maps at 1024px",
+    "Opaque front-facing materials for the lit canal street"
+  ],
+  "sourceImages": [
+    {
+      "sourceSHA256": "75f3b23d222b7864e723067f07a33f51300a587df80ebd4015a3fb26d0f4fd13",
+      "sourceSize": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "sourceSHA256": "00c06fe379f19de97e948e13680c76aaf48efb191f268eeee4b5b7d8ee47e2a0",
+      "sourceSize": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "sourceSHA256": "bf1ba9765595571092a087058c3797fc4e6486ee1d3bc385e6a659dc78db2e0b",
+      "sourceSize": [
+        2048,
+        2048
+      ]
+    }
+  ]
+}

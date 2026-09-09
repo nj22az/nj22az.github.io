@@ -50,5 +50,19 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   buildTeaHouse(world,{sites,register:(o,label,fn)=>actions.push({o,label,fn}),enter:site=>assert.equal(site.id,'tea-house')});
   assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[28,1,48]);
   assert.ok(!world.colliders.some(c=>Math.abs(c.x-28)<c.w/2+.3&&Math.abs(c.z-48)<c.d/2+.3),'Entrance is clear');
+  const homeManifest=JSON.parse(await readFile(new URL('../assets/models/yuri-home/exterior-manifest.json',import.meta.url),'utf8'));
+  const homeBytes=await readFile(new URL('../assets/models/yuri-home/yuri-home-exterior.glb',import.meta.url));
+  assert.equal(createHash('sha256').update(homeBytes).digest('hex'),homeManifest.sha256);
+  assert.ok(homeBytes.length<2_000_000,'Yuri house web texture budget');
+  assert.equal(homeManifest.triangles,1996);assert.equal(homeManifest.draws,1);
+  const {preloadYuriHome,buildYuriHome,YURI_HOME_DOOR_LOCAL}=await import('../src/world/yuri-home.js');
+  assert.equal(await preloadYuriHome(),true);
+  const canal={group:new THREE.Group(),colliders:[]},homeSites=[],homeDoors=[];
+  const home=buildYuriHome(canal,{sites:homeSites,register:(o,label,fn)=>homeDoors.push({o,label,fn}),enter:site=>assert.equal(site.id,'yuri-home')});
+  assert.equal(homeSites[0].id,'yuri-home');homeDoors[0].fn();
+  assert.ok(canal.group.getObjectByName('Yuri canal house'));
+  assert.ok(Math.abs(home.door[0]-(-5.11))<.15,'Packed door sits on the canal entrance');
+  assert.ok(Math.abs(home.door[2]-11.53)<.15);
+  assert.ok(YURI_HOME_DOOR_LOCAL[2]>3,'Door is on the +Z facade before town yaw');
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });
