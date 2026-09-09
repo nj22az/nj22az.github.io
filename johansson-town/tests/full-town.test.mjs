@@ -89,6 +89,9 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.equal(api.world.quality.completeSuppliedOverworld,true);
     assert.equal(api.world.quality.citySections,2);
     assert.equal(api.world.quality.removedStreetColliders,40);
+    assert.equal(api.world.quality.canalPromenade,true);
+    assert.equal(api.world.quality.streetDoors,15);
+    assert.ok(api.world.group.getObjectByName('canal-harbour-water'));
     const sections=api.world.group.children.filter(g=>g.name==='Original canal, bridge, buildings and streets');
     assert.equal(sections.length,2);assert.equal(sections[1].position.x,44);
     assert.equal(sections[0].children[0].geometry,sections[1].children[0].geometry,'Repeat shares cleaned GPU geometry');
@@ -107,6 +110,12 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
       assertFiniteTransforms(api,'inside '+site.id);api.leaveRoom();
       assert.deepEqual(api.player.position.toArray(),site.exitPosition,'Safe exit: '+site.id);
       assert.equal(blocked(api.player.position.x,api.player.position.z),false);
+    }
+    const {STREET_DOORS,doorApproach}=await import('../src/world/full-town-state.js');
+    for(const door of STREET_DOORS){
+      const [x,z]=doorApproach(door);
+      assert.equal(blocked(x,z),false,'Original entrance clear: '+door.id);
+      assert.ok(nav.path(spawn,{x,z}).length,'Original entrance reachable: '+door.id);
     }
     for(const person of api.world.people)for(const tag of ['work','home','evening']){
       const p=person.profile[tag];assert.ok(nav.path(spawn,{x:p[0],z:p[1]}).length,person.profile.name+' '+tag+' reachable');
