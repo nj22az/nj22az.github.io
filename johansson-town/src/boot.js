@@ -10,6 +10,6 @@ await preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus'
 const {preloadStreetPlants}=await import('./world/street-plants.js');
 await Promise.all([preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadHarbourBlock(),preloadStreetPlants(),preloadSuppliedRooms()]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=20');
+await import('./game.js?living-town=21');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

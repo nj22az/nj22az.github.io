@@ -69,7 +69,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -95,13 +95,15 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(api.player.visible,false);assert.equal(api.player.children.length,0,'No protagonist mesh is attached to the controller');
     assert.equal(api.player.userData.visualSource,'First-person controller');assert.equal(api.camera.fov,65);
     assert.equal('cameraMode' in api.activities.state,false,'Legacy camera preference is discarded');
+    const {ROUTES}=await import('../src/world/layout.js'),{circleHitsRect}=await import('../physics.js');
+    for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i],x=a[0]*(1-t)+b[0]*t,z=a[1]*(1-t)+b[1]*t;assert.equal(api.world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,route.id+' clears the supplied shopfronts');}
     const runningStart=api.player.position.clone();
-    api.keys.KeyW=true;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
-    api.player.position.copy(runningStart);document.querySelector('#run').onclick();api.simulate(.1);
+    api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
+    api.player.position.copy(runningStart);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});document.querySelector('#run').onclick({detail:1});api.simulate(.1);
     const ran=api.player.position.distanceTo(runningStart);assert.ok(ran>walked*1.6&&ran<walked*1.9,'Touch Run increases movement speed');
-    document.querySelector('#run').onclick();api.player.position.copy(runningStart);api.keys.ShiftRight=true;api.simulate(.1);
+    document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});api.player.position.copy(runningStart);api.keys.ShiftRight=true;api.simulate(.1);
     assert.ok(api.player.position.distanceTo(runningStart)>walked*1.6,'Right Shift also runs');
-    api.keys.ShiftRight=false;api.keys.KeyW=false;api.player.position.copy(runningStart);
+    api.keys.ShiftRight=false;api.keys.KeyW=false;api.moveTouch.id=null;api.player.position.copy(runningStart);
 
     const startX=api.player.position.x;
     api.keys.KeyA=true;api.simulate(.1);api.keys.KeyA=false;assert.ok(api.player.position.x<startX,'A moves left in first person');
@@ -120,7 +122,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
     assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Unlocked shortcut faces the usable entrance');
-    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,46);assert.equal(api.player.position.z,62.7);
+    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,28);assert.equal(api.player.position.z,48.7);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Corner Tea House/);
     const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();
