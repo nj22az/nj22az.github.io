@@ -5,7 +5,7 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
-import {VROID_BASES,vroidLook,styleVroid,updateVroidExpression} from './vroid.js?vroid-2';
+import {VROID_BASES,vroidLook,styleVroid,updateVroidExpression} from './vroid.js?vroid-3';
 
 const SOURCES=['suit','yui','yuri-playful',...VROID_BASES];
 const loaded=new Map(),sharedTextures=new Map();let pending=null;
@@ -112,7 +112,7 @@ export function createLocalCharacters({shadows=false}={}){
       const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Sit','Eat','Drink'].includes(entity.userData.socialPose);
       if(!!seated!==!!actor.seated){mixer.stopAllAction();actor.current=null;actor.seated=!!seated;}
       actor.model.position.set(seated?-actor.seatSupport.x:0,actor.floorOffset+(seated?entity.userData.seatHeight-actor.seatSupport.y:0),seated?-actor.seatSupport.z:0);
-      const requested=entity.userData.socialPose|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
+      const requested=entity.userData.socialPose|| (entity.userData.chat?.greeting?'Wave':null)|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
@@ -126,7 +126,15 @@ export function createLocalCharacters({shadows=false}={}){
         for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
         if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
       }
-      if(actor.neighbour)updateVroidExpression(actor,dt);
+      if(actor.neighbour){
+        updateVroidExpression(actor,dt);
+        const chat=entity.userData.chat,head=actor.model.getObjectByName('J_Bip_C_Head');
+        if(chat&&head){const partner=chat.partner.getWorldPosition(new THREE.Vector3());entity.worldToLocal(partner);
+          const yaw=THREE.MathUtils.clamp(Math.atan2(-partner.x,-partner.z),-.35,.35);
+          const nod=Math.sin(chat.time*(chat.speaking?2.3:3.1))*(chat.speaking?.025:.055);
+          head.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(nod,yaw,0)));
+        }
+      }
     }
   }
   function conversationTarget(entity,target=new THREE.Vector3()){

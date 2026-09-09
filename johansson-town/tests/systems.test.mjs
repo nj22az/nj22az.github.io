@@ -1,3 +1,4 @@
+import {createNeighbourChats,clearChatLine} from '../src/people/neighbour-chats.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir,access} from 'node:fs/promises';
@@ -112,12 +113,13 @@ test('every resident has a distinct built home with a clear walking route to its
 test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{
  const {world}=build(),player=new THREE.Group(),state={inventory:[],quest:0};player.position.set(0,0,18);
  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
+ const chats=createNeighbourChats({world,observer:()=>player.position,state:()=>state,blocked:(a,b)=>!clearChatLine(a,b,world.colliders)});let chatted=false;
  ai.update(.1,1100,false);const mori=world.people.find(p=>p.profile.name==='Officer Mori');let nightMovement=0;
- for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);
+ for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);chats.update(.2,t,false);chatted ||= !!chats.current;
   world.people.forEach((p,i)=>assert.ok(p.g.position.distanceTo(before[i])<.3,p.profile.name+' teleported at '+t+' from '+before[i].toArray()+' to '+p.g.position.toArray()));
   if(t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
   assert.ok(world.people.filter(p=>p.g.visible).length<=8);
  }
- assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
+ assert.ok(chatted,'The actual moving cast has conversations during the evening');assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
  for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');
 });

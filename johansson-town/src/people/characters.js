@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?vroid-4';
+import {createLocalCharacters,preloadModels} from './models.js?vroid-5';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
