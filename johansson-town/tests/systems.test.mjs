@@ -27,7 +27,7 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(49,82)>5.9);
 });
 test('world construction, original route and new door reachability',()=>{
- const {world,all}=build();assert.equal(world.people.length,21);assert.ok(world.quality.streetInteractions>=8);
+ const {world,all}=build();assert.equal(world.people.length,22);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  for(let z=57.5;z>=-76;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
  for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}
@@ -94,4 +94,30 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
  for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Kenji reaches his workshop without stopping against Kenta');
  player.position.set(0,0,46);for(let i=0;i<120;i++)ai.update(1/60,1115,false);player.position.set(24,0,18);for(let i=0;i<120;i++)ai.update(1/60,1115,false);
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
+});
+
+test('every resident has a distinct built home with a clear walking route to its doorstep',()=>{
+ const {world,anchors}=build();assert.equal(world.homes.size,22);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,22);
+ const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
+ for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
+  assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'));
+  assert.equal(blocked(...home.door),false,p.profile.name+' doorstep');
+  const path=nav.path({x:0,z:46},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
+  for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
+ }
+ const homes=world.colliders.filter(c=>c.home);
+ for(let i=0;i<homes.length;i++)for(const c of world.colliders){if(c===homes[i])continue;const a=homes[i];assert.ok(Math.abs(a.x-c.x)>=(a.w+c.w)/2||Math.abs(a.z-c.z)>=(a.d+c.d)/2,a.home+' overlaps '+JSON.stringify(c));}
+});
+
+test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{
+ const {world}=build(),player=new THREE.Group(),state={inventory:[],quest:0};player.position.set(0,0,18);
+ const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
+ ai.update(.1,1100,false);const mori=world.people.find(p=>p.profile.name==='Officer Mori');let nightMovement=0;
+ for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);
+  world.people.forEach((p,i)=>assert.ok(p.g.position.distanceTo(before[i])<.3,p.profile.name+' teleported at '+t+' from '+before[i].toArray()+' to '+p.g.position.toArray()));
+  if(t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
+  assert.ok(world.people.filter(p=>p.g.visible).length<=8);
+ }
+ assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
+ for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');
 });

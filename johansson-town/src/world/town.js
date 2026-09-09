@@ -1,6 +1,7 @@
 import {buildIzakaya} from './izakaya.js';
 import {batchStaticProps} from '../render/static-props.js';
-import {PROFILES} from '../people/profiles.js';
+import {RESIDENTS} from '../people/residents.js';
+import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,groundHeight} from './layout.js';
 import {buildDistricts} from './districts.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -165,8 +166,8 @@ export function createTown(options){
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return h>=960&&h<1410;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
-  for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
+  const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
+  for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildIzakaya(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
