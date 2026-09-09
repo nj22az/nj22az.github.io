@@ -43,12 +43,13 @@ export function buildFullTown(options){
  const promenade=buildPromenade(group,{mobile:options.mobile,shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
  const colliders=FULL_TOWN.colliders.map(c=>({...c})),world={group,colliders,people:[],homes:new Map(),harbourShops:[],plantSites:[],quality:{completeSuppliedOverworld:true,streetInteractions:18,localRuntimeAssets:true,sourceTriangles:96308,citySections:CITY_SECTIONS.length,removedStreetColliders:clearance.removedColliders,removedStreetTriangles:clearance.removedTriangles,restoredLandmarks:['market','ramen'],streetLandmarks:true,canalPromenade:true,streetDoors:STREET_DOORS.length},isOpen(site,minutes){const m=((minutes%1440)+1440)%1440;return site.id==='izakaya'?izakayaOpen(m):site.id==='home'||site.id==='bus-hut'||m>=540&&m<(site.id==='market'?1200:site.id==='ramen'?1260:1140);},updateHours(){},updateHomes(){},setRain(value){rain.visible=value;promenade.setRain(value);},update(dt,time){if(rain.visible){rain.rotation.y=time*.01;rain.position.y=-(time*7)%6;}}};
  const blocked=(x,z,r=.32)=>!fullContains(x,z,r,parkHeight)||colliders.some(c=>circleHitsRect(x,z,r,c));
- const nearest=(x,z,used=[],range=3)=>{for(let radius=0;radius<=range;radius+=.2)for(let i=0;i<(radius?32:1);i++){const a=i/32*Math.PI*2,p=[x+Math.cos(a)*radius,z+Math.sin(a)*radius];if(!blocked(...p)&&used.every(q=>Math.hypot(q[0]-p[0],q[1]-p[1])>.65))return p;}throw Error('No safe town position near '+[x,z]);};
+ const doorPoints=[];
+ const nearest=(x,z,used=[],range=3,offDoors=false)=>{for(let radius=0;radius<=range;radius+=.2)for(let i=0;i<(radius?32:1);i++){const a=i/32*Math.PI*2,p=[x+Math.cos(a)*radius,z+Math.sin(a)*radius];if(blocked(...p))continue;if(offDoors&&doorPoints.some(([dx,dz])=>Math.hypot(p[0]-dx,p[1]-dz)<1.4))continue;if(used.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<=.65))continue;return p;}throw Error('No safe town position near '+[x,z]);};
  const anchor=(point,label,fn)=>{const a=new THREE.Object3D();a.position.set(point[0],groundHeight(...point)+1.2,point[1]);group.add(a);options.register(a,label,fn);return a;};
  const sign=(text,x,y,z,angle)=>{const canvas=document.createElement('canvas');canvas.width=512;canvas.height=96;const ctx=canvas.getContext('2d');ctx.fillStyle='#e8dbc0';ctx.fillRect(0,0,512,96);ctx.fillStyle='#3e463e';ctx.textAlign='center';ctx.font='bold 34px sans-serif';ctx.fillText(text,256,60,490);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(1.8,.34),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=angle;group.add(m);};
  for(const [id,x,z,nx,nz] of LOCATIONS){
   let site=options.sites.find(s=>s.id===id);if(!site){site={id,title:id==='izakaya'?'Minato Izakaya':id==='ramen'?'Sato Ramen':'Corner Tea House',jp:id==='izakaya'?'湊居酒屋':id==='ramen'?'中華そば':'角の茶屋',sub:'CANAL QUARTER',color:0x897859,accent:'#68513c',line:'The canal neighbourhood · 14 September 1988'};options.sites.push(site);}
-  const p=nearest(x+nx*1.1,z+nz*1.1);site.x=x;site.z=z;site.door=[p[0],groundHeight(...p),p[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-nx,-nz);FULL_TOWN.sites.set(id,site);
+  const p=nearest(x+nx*1.1,z+nz*1.1);site.x=x;site.z=z;site.door=[p[0],groundHeight(...p),p[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-nx,-nz);FULL_TOWN.sites.set(id,site);doorPoints.push([p[0],p[1]]);
   if(!LANDMARK_IDS.has(id)){anchor(p,'Enter '+site.title,()=>options.enter(site));sign(site.jp,x+nx*.18,2.55,z+nz*.18,Math.atan2(nx,nz));}
  }
  const market=FULL_TOWN.sites.get('market');market.side=1;market.title='Sakura Shōten';market.jp='桜商店';
@@ -58,7 +59,7 @@ export function buildFullTown(options){
   sakura.name=section.x?'Sakura Konbini landmark east':'Sakura Konbini landmark';
  }
  {
-  const p=nearest(market.x,market.z-1.15,[],4);market.door=[p[0],groundHeight(...p),p[1]];market.exitPosition=[...market.door];market.entryFacing=Math.PI;FULL_TOWN.sites.set('market',market);
+  const p=nearest(market.x,market.z-1.15,[],4);market.door=[p[0],groundHeight(...p),p[1]];market.exitPosition=[...market.door];market.entryFacing=Math.PI;FULL_TOWN.sites.set('market',market);doorPoints.push([p[0],p[1]]);
  }
  const oldRamen=FULL_TOWN.sites.get('ramen'),oldIndex=options.sites.indexOf(oldRamen);if(oldIndex>=0)options.sites.splice(oldIndex,1);
  let ramen=null;
@@ -67,12 +68,12 @@ export function buildFullTown(options){
   if(placed&&!ramen)ramen=placed;
  }
  if(ramen){
-  const p=nearest(-9.15,2.7,[],4);ramen.door=[p[0],groundHeight(...p),p[1]];ramen.exitPosition=[...ramen.door];ramen.entryFacing=Math.PI;FULL_TOWN.sites.set('ramen',ramen);
+  const p=nearest(-9.15,2.7,[],4);ramen.door=[p[0],groundHeight(...p),p[1]];ramen.exitPosition=[...ramen.door];ramen.entryFacing=Math.PI;FULL_TOWN.sites.set('ramen',ramen);doorPoints.push([p[0],p[1]]);
  }
  const pair=id=>{const p=FULL_TOWN.sites.get(id).door;return [p[0],p[2]];};IZAKAYA_DOOR.splice(0,2,...pair('izakaya'));RAMEN_DOOR.splice(0,2,...pair('ramen'));FULL_TOWN.escort=pair('form3d');
  const workIds=['electronics','form3d','career','ramen','market','office','tea-house','electronics','journal','career','stepwise','journal','office','electronics','tea-house','stepwise','journal','market','tea-house','form3d','izakaya','market'],occupied=[];
  RESIDENTS.forEach((profile,i)=>{
-  const work=nearest(...pair(workIds[i]),occupied,4);occupied.push(work);const homeSite=LOCATIONS[Math.floor(i/2)%LOCATIONS.length][0],homeBase=pair(homeSite),home=nearest(homeBase[0]+(i%2?.16:-.16),homeBase[1]);
+  const work=nearest(...pair(workIds[i]),occupied,4,true);occupied.push(work);const homeSite=LOCATIONS[Math.floor(i/2)%LOCATIONS.length][0],homeBase=pair(homeSite),home=nearest(homeBase[0]+(i%2?.16:-.16),homeBase[1]);
   profile.work=work;profile.evening=nearest((i%2?-5:4)+(i%4===0?44:0),i%3===0?-1:3);profile.home=home;profile.homeAddress=(i%2?'2':'1')+'F · '+FULL_TOWN.sites.get(homeSite).title;
   const g=new THREE.Group();g.userData.name=profile.name;g.position.set(work[0],groundHeight(...work),work[1]);group.add(g);world.people.push({g,profile,x:work[0],z:work[1],index:i,legs:[],arms:[]});options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));
   const entry={owner:profile.name,address:profile.homeAddress,door:home,occupied:false};world.homes.set(profile.name,entry);anchor(home,'Read '+profile.name+'’s nameplate',()=>options.onAction('read',profile.homeAddress,profile.name+' lives upstairs. '+(entry.occupied?'The resident is home.':'The resident is out.')));

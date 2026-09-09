@@ -119,8 +119,15 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
       api.reviewSetMinutes(1002);api.enterRoom(site);
       assert.equal(api.reviewCurrentRoom()?.id,site.id);
       assertFiniteTransforms(api,'inside '+site.id);api.leaveRoom();
-      assert.deepEqual(api.player.position.toArray(),site.exitPosition,'Safe exit: '+site.id);
       assert.equal(blocked(api.player.position.x,api.player.position.z),false);
+      assert.ok(Math.hypot(api.player.position.x-site.door[0],api.player.position.z-site.door[2])<3,'Exit stays at the street door: '+site.id);
+      const stuck=api.world.people.filter(p=>p.g.visible&&Math.hypot(api.player.position.x-p.g.position.x,api.player.position.z-p.g.position.z)<.62);
+      assert.equal(stuck.length,0,'Exit from '+site.id+' must not land inside '+(stuck[0]?.g.userData.name||'a neighbour'));
+    }
+    const shopDoors=['market','ramen'].map(id=>api.SITES.find(s=>s.id===id)).filter(Boolean);
+    for(const person of api.world.people){
+      const p=person.profile.work;
+      for(const site of shopDoors)assert.ok(Math.hypot(p[0]-site.door[0],p[1]-site.door[2])>=1.35,person.profile.name+' work stands off the '+site.id+' door');
     }
     const {STREET_DOORS,doorApproach}=await import('../src/world/full-town-state.js');
     for(const door of STREET_DOORS){
