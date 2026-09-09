@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?vroid-2';
+import {createLocalCharacters,preloadModels} from './models.js?vroid-3';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
@@ -103,5 +103,9 @@ export function createCharacters(options={}){
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }
 
-  return {attach,gesture,jump,update,physics:updateJump,actors,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  function conversationTarget(entity){
+    const target=models.conversationTarget(entity);if(target)return target;
+    const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
+  }
+  return {attach,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }
