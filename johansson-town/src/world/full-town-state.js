@@ -1,12 +1,18 @@
+// Two compact, adjoining copies of the supplied city. Gameplay addresses remain
+// in the original quarter; geometry, ground sampling and colliders use the same offsets.
+export const CITY_SECTIONS=Object.freeze([{id:'canal-quarter',x:0,z:0},{id:'east-quarter',x:44,z:0}].map(Object.freeze));
 // Runtime selection is set only after the complete asset and its navigation load.
-export const FULL_TOWN={active:false,grid:null,colliders:[],bounds:{minX:-23,maxX:51,minZ:-54,maxZ:18},spawn:[-5,0,-1],sites:new Map(),patrol:[],catTargets:[],escort:null};
-export function sourceHeight(x,z){
+export const FULL_TOWN={active:false,grid:null,colliders:[],bounds:{minX:-23,maxX:66,minZ:-54,maxZ:18},spawn:[-5,0,-1],sites:new Map(),patrol:[],catTargets:[],escort:null};
+function gridHeight(x,z){
  const g=FULL_TOWN.grid;if(!g)return null;const fx=(x-g.minX)/g.step,fz=(z-g.minZ)/g.step,ix=Math.floor(fx),iz=Math.floor(fz);
  if(ix<0||iz<0||ix>=g.nx-1||iz>=g.nz-1)return null;
  const h=[g.heights[iz*g.nx+ix],g.heights[iz*g.nx+ix+1],g.heights[(iz+1)*g.nx+ix],g.heights[(iz+1)*g.nx+ix+1]];if(h.some(v=>v===null))return null;
  const u=fx-ix,v=fz-iz;return (h[0]*(1-u)+h[1]*u)*(1-v)+(h[2]*(1-u)+h[3]*u)*v;
 }
-export const FULL_PATHS=[{id:'port-walk',width:3,points:[[20,-20],[-5,-20],[-5,-22],[0,-22],[0,-33]]},{id:'harbour-apron',width:8,points:[[-5,-18],[-5,-29]]},{id:'park-link',width:3,points:[[17,0],[20,0],[20,-20],[27,-24]]}];
+export function sourceHeight(x,z){
+ for(const section of CITY_SECTIONS){const h=gridHeight(x-section.x,z-section.z);if(h!==null)return h;}return null;
+}
+export const FULL_PATHS=[{id:'city-link',width:4.5,points:[[17,0],[26,0]]},{id:'port-walk',width:4.5,points:[[20,-20],[-5,-20],[-5,-22],[0,-22],[0,-33]]},{id:'harbour-apron',width:8,points:[[-5,-18],[-5,-29]]},{id:'park-link',width:3,points:[[17,0],[20,0],[20,-20],[27,-24]]}];
 function segment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return {t,d:Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz)};}
 export function extensionHeight(x,z,parkHeight,r=0){
  const park=parkHeight(x,z);if(park!==null)return park;let closest=null;
