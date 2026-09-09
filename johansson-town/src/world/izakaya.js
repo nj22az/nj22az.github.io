@@ -41,8 +41,15 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  if(!asset('interior',room)){
   box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,1,1],[-.8,.5,-2.6],0x965332,room,false);
  }
+ // Complete the cutaway asset for first-person viewing. Keep the exit opening.
+ box([13,.16,13],[0,3.88,0],0x574638,room,false);
+ box([.2,1.02,13],[-6.4,3.3,0],0xe8c894,room,false);
+ box([.2,3.15,13],[6.4,2.225,0],0xe8c894,room,false);
+ for(const x of [-4.15,4.15])box([4.7,3.8,.2],[x,1.9,6.4],0xe8c894,room,false);
+ box([3.6,1.1,.2],[0,3.25,6.4],0xe8c894,room,false);
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture('おかえりなさい','WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
+ for(const x of [-3.8,-2.3,-.8,.7,2.2])collider(x,-1.42,.6,.6,.71);
  collider(-.8,-2.6,8.3,1.15,1.15);collider(-1,-5.9,7.1,.6,2.7);collider(4.65,-4.7,2.2,1.0,1.3);
  for(const [x,z] of [[-3.5,2.2],[2.6,2]]){collider(x,z,2.5,1.35,1);for(const dz of [-1.08,1.08])collider(x,z+dz,2.5,.50,.6);}
  anchor([0,1,5.5],'Step outside',exit);
