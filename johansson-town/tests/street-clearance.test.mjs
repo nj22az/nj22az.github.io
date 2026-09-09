@@ -53,20 +53,19 @@ test('Mismatched clearance manifests fail atomically without altering any geomet
  scene.children.forEach((m,i)=>assert.equal(m.geometry.index,indices[i]));
 });
 
-test('Repeated ground uses translated source heights and preserves both canal voids',()=>{
+test('The unique city keeps source heights and does not clone an east quarter',()=>{
  FULL_TOWN.grid=navigation.grid;
- for(const [x,z] of [[-18,0],[-5,-1],[0,0],[10,1],[17,0],[-5,-5]])assert.equal(sourceHeight(x,z),sourceHeight(x+CITY_SECTIONS[1].x,z));
+ for(const [x,z] of [[-18,0],[-5,-1],[0,0],[10,1],[17,0],[-5,-5]])assert.notEqual(sourceHeight(x,z),null);
  assert.equal(sourceHeight(0,-6),null);assert.equal(sourceHeight(44,-6),null);
- assert.notEqual(sourceHeight(44,0),null);assert.equal(sourceHeight(21,0),null,'Gap is filled by the explicit city-link, not stretched source geometry');
+ assert.equal(sourceHeight(44,0),null);assert.equal(sourceHeight(21,0),null,'No stretched source beyond the original east edge');
+ assert.equal(CITY_SECTIONS.length,1);
 });
 
-test('Visitor map draws the ground in both city sections',()=>{
+test('Visitor map draws the unique city once',()=>{
  FULL_TOWN.active=true;FULL_TOWN.grid=navigation.grid;
  const ground=[],ctx=new Proxy({fillStyle:'',fillRect(x,y,w,h){if(this.fillStyle==='#a8997a')ground.push([x,y,w,h]);}},{get:(o,key)=>key in o?o[key]:(()=>{})});
  drawTownMap(ctx,680,640);
  const count=navigation.grid.heights.filter(h=>h!==null).length;
- assert.equal(ground.length,count*2);
- const scale=Math.min(660/(FULL_TOWN.bounds.maxX-FULL_TOWN.bounds.minX),620/(FULL_TOWN.bounds.maxZ-FULL_TOWN.bounds.minZ));
- assert.ok(Math.abs(ground[count][0]-ground[0][0]-44*scale)<1e-6,'Map repeat matches world translation');
+ assert.equal(ground.length,count);
  FULL_TOWN.active=false;
 });

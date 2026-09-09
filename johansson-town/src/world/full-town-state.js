@@ -1,8 +1,8 @@
-// Two compact, adjoining copies of the supplied city. Gameplay addresses remain
-// in the original quarter; geometry, ground sampling and colliders use the same offsets.
-export const CITY_SECTIONS=Object.freeze([{id:'canal-quarter',x:0,z:0},{id:'east-quarter',x:44,z:0}].map(Object.freeze));
+// One unique copy of the supplied city. The east clone is gone: the walking
+// street is already long enough, and every building should be itself.
+export const CITY_SECTIONS=Object.freeze([{id:'canal-quarter',x:0,z:0}].map(Object.freeze));
 // Runtime selection is set only after the complete asset and its navigation load.
-export const FULL_TOWN={active:false,grid:null,colliders:[],bounds:{minX:-23,maxX:66,minZ:-54,maxZ:18},spawn:[-5,0,-1],sites:new Map(),patrol:[],catTargets:[],escort:null};
+export const FULL_TOWN={active:false,grid:null,colliders:[],bounds:{minX:-28,maxX:52,minZ:-56,maxZ:22},spawn:[-5,0,-1],sites:new Map(),patrol:[],catTargets:[],escort:null};
 function gridHeight(x,z){
  const g=FULL_TOWN.grid;if(!g)return null;const fx=(x-g.minX)/g.step,fz=(z-g.minZ)/g.step,ix=Math.floor(fx),iz=Math.floor(fz);
  if(ix<0||iz<0||ix>=g.nx-1||iz>=g.nz-1)return null;
@@ -12,8 +12,20 @@ function gridHeight(x,z){
 export function sourceHeight(x,z){
  for(const section of CITY_SECTIONS){const h=gridHeight(x-section.x,z-section.z);if(h!==null)return h;}return null;
 }
-// Canal-bank quays are authored in source space and repeated with each city copy so
-// every original doorway that faces the water has a walkable timber approach.
+// The supplied canal is a north-south void around x=0, except the bridge at z≈0.
+export function canalWater(x,z){
+ if(Math.abs(x)>2.35)return false;
+ if(z>-1.8&&z<2.8)return false;
+ return sourceHeight(x,z)===null;
+}
+// Town grid plus a tight coastal margin, a south harbour apron and a short pier.
+export function peninsulaContains(x,z){
+ if(canalWater(x,z))return false;
+ if(x>=-23.4&&x<=20.6&&z>=-13.6&&z<=16.6)return true;
+ if(x>=-9.5&&x<=16.5&&z>=-19.5&&z<=-11.5)return true;
+ if(x>=-7.2&&x<=2.4&&z>=-29.2&&z<=-18.5)return true;
+ return false;
+}
 const CANAL_QUAYS=Object.freeze([
  {id:'canal-east-n',width:2.3,points:[[2.35,2.05],[2.35,15.1]]},
  {id:'canal-east-s',width:2.3,points:[[1.95,-2.15],[1.95,-11.1]]},
@@ -21,11 +33,14 @@ const CANAL_QUAYS=Object.freeze([
  {id:'canal-west-n',width:2.0,points:[[-4.55,2.05],[-4.55,7.5],[-3.7,8.2],[-4.5,9.2],[-4.5,15.1]]},
 ]);
 export const FULL_PATHS=Object.freeze([
- {id:'city-link',width:4.5,surface:'wood',points:[[17,0],[26,0]]},
- {id:'port-walk',width:4.5,surface:'wood',points:[[20,-20],[-5,-20],[-5,-22],[0,-22],[0,-33]]},
- {id:'harbour-apron',width:8,surface:'wood',points:[[-5,-18],[-5,-29]]},
- {id:'park-link',width:3,points:[[17,0],[20,0],[20,-20],[27,-24]]},
- {id:'ramen-quay',width:3.2,surface:'wood',points:[[20.5,0],[20.5,15.5],[24.65,15.5],[24.65,14.95]]},
+ {id:'coast-west',width:2.6,surface:'wood',points:[[-22.4,15.4],[-22.4,-12.2]]},
+ {id:'coast-south',width:2.8,surface:'wood',points:[[-22.4,-12.2],[-8,-12.2],[-8,-18],[16,-18],[19.6,-12.2]]},
+ {id:'coast-east',width:2.6,surface:'wood',points:[[19.6,-12.2],[19.6,15.4]]},
+ {id:'coast-north',width:2.6,surface:'wood',points:[[19.6,15.4],[-22.4,15.4]]},
+ {id:'harbour-apron',width:6,surface:'wood',points:[[-5,-12],[-5,-22]]},
+ {id:'port-walk',width:4.2,surface:'wood',points:[[-8,-18],[16,-18]]},
+ {id:'pier',width:3.6,surface:'wood',points:[[-5,-22],[-5,-28],[0,-28]]},
+ {id:'park-causeway',width:3.4,surface:'wood',points:[[19.6,-12.2],[21,-18],[21,-23.4]]},
  ...CITY_SECTIONS.flatMap(section=>CANAL_QUAYS.map(path=>({id:path.id+'-'+section.id,width:path.width,surface:'wood',points:path.points.map(([x,z])=>[x+section.x,z+section.z])}))),
 ].map(path=>Object.freeze({...path,points:path.points.map(p=>Object.freeze(p))})));
 export const STREET_DOORS=Object.freeze([
@@ -45,13 +60,24 @@ export const STREET_DOORS=Object.freeze([
  {id:'house-west-mid',x:-6.5,z:7.18,nx:1,nz:0},
  {id:'house-west-canal',x:-5.11,z:11.53,nx:1,nz:0},
 ].map(Object.freeze));
+function parkApproachHeight(x,z,parkFn){
+ const park=parkFn(x,z);if(park===null)return null;
+ const dx=x-21,dz=-24-z;
+ if(dx<0||dz<0)return park;
+ const t=Math.max(0,Math.min(1,Math.hypot(dx,dz)/12));
+ return park*t;
+}
 function segment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return {t,d:Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz)};}
 export function extensionHeight(x,z,parkHeight,r=0){
- const park=parkHeight(x,z);if(park!==null)return park;let closest=null;
+ const park=parkApproachHeight(x,z,parkHeight);let closest=null;
  for(const path of FULL_PATHS)for(let i=1;i<path.points.length;i++){const a=path.points[i-1],b=path.points[i],s=segment(x,z,a,b);if(s.d>path.width/2-r)continue;
   const deck=path.surface==='wood'?0:null;
   const ha=deck??sourceHeight(...a)??parkHeight(...a)??0,hb=deck??sourceHeight(...b)??parkHeight(...b)??0;if(!closest||s.d<closest.d)closest={d:s.d,h:ha*(1-s.t)+hb*s.t};
- }return closest?.h??null;
+ }
+ if(park!==null)return park;
+ if(closest)return closest.h;
+ if(peninsulaContains(x,z))return 0;
+ return null;
 }
 export function fullHeight(x,z,parkHeight){
  const src=sourceHeight(x,z),ext=extensionHeight(x,z,parkHeight);

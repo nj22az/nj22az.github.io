@@ -30,23 +30,33 @@ function pathSegments(path){
  return segs;
 }
 
+function waterSide(path,seg){
+ if(path.id.includes('canal-west'))return {x:1,z:0};
+ if(path.id.includes('canal-east'))return {x:-1,z:0};
+ if(path.id==='coast-west')return {x:-1,z:0};
+ if(path.id==='coast-east')return {x:1,z:0};
+ if(path.id==='coast-north')return {x:0,z:1};
+ if(path.id==='coast-south'||path.id==='port-walk'||path.id==='pier')return {x:0,z:-1};
+ return null;
+}
+
 export function buildPromenade(parent,options={}){
  const group=new THREE.Group();group.name='Canal boardwalk and harbour water';parent.add(group);
  const library=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy||4});
  const deckMat=timber(library),edgeMat=new THREE.MeshStandardMaterial({color:0x6d5840,roughness:.9});
  const postMat=new THREE.MeshStandardMaterial({color:0x5c4a36,roughness:.92});
  const waterMat=new THREE.MeshStandardMaterial({color:0x3e7480,roughness:.22,metalness:.18});
- const water=new THREE.Mesh(new THREE.PlaneGeometry(120,90),waterMat);
- water.name='canal-harbour-water';water.rotation.x=-Math.PI/2;water.position.set(21.5,-.48,-18);water.receiveShadow=true;group.add(water);
- const quays=FULL_PATHS.filter(path=>path.surface==='wood'||/^(city-link|port-walk|harbour-apron|ramen-quay)$/.test(path.id));
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(96,92),waterMat);
+ water.name='canal-harbour-water';water.rotation.x=-Math.PI/2;water.position.set(8,-.48,-14);water.receiveShadow=true;group.add(water);
+ const quays=FULL_PATHS.filter(path=>path.surface==='wood');
  const dummy=new THREE.Object3D(),postMarks=[],edgeMarks=[],jointMarks=[];
  for(const path of quays){
   for(const seg of pathSegments(path)){
    const deck=addDeck(group,deckMat,seg.x,.04,seg.z,seg.width,.1,seg.len+.08);
    deck.rotation.y=seg.angle;deck.name=path.id+'-deck';
-   const towardWater=path.id.includes('canal-west')?1:path.id.includes('canal-east')?-1:0;
-   if(path.surface==='wood'&&towardWater){
-    const ex=seg.x+towardWater*(seg.width/2+.12),ez=seg.z;
+   const side=waterSide(path,seg);
+   if(path.surface==='wood'&&side){
+    const ex=seg.x+side.x*(seg.width/2+.12),ez=seg.z+side.z*(seg.width/2+.12);
     edgeMarks.push({x:ex,z:ez,len:seg.len,angle:seg.angle});
     const count=Math.max(2,Math.round(seg.len/2.2));
     for(let i=0;i<count;i++){

@@ -29,15 +29,16 @@ function reachable(sx,sz,tx,tz){
  return false;
 }
 
-test('Canal stays water while the bank boardwalks are walkable in both quarters',()=>{
+test('Canal stays water while the bank boardwalks are walkable on the peninsula',()=>{
  assert.equal(fullContains(0,-6,.32,parkHeight),false);
  assert.equal(fullContains(44,-6,.32,parkHeight),false);
  assert.equal(blocked(2.35,6),false,'East canal quay');
- assert.equal(blocked(46.35,6),false,'East-quarter canal quay');
+ assert.equal(blocked(46.35,6),true,'No cloned east-quarter canal');
  assert.equal(blocked(-2.5,-6),false,'West south quay');
  assert.equal(blocked(0,0),false,'Bridge remains a walking street');
  assert.ok(Math.abs(fullHeight(2.35,6,parkHeight))<.05,'Quay stays at street height');
  assert.ok(FULL_PATHS.some(p=>p.id==='canal-west-n-canal-quarter'&&p.surface==='wood'));
+ assert.ok(FULL_PATHS.some(p=>p.id==='coast-west'&&p.surface==='wood'));
 });
 
 test('Every original doorway has a footpath from the walking street',()=>{
@@ -49,16 +50,14 @@ test('Every original doorway has a footpath from the walking street',()=>{
  }
 });
 
-test('Visitor map treats empty ground as water and still draws both city sections',()=>{
+test('Visitor map treats empty ground as water and draws one unique city',()=>{
  const ground=[],water=[],ctx=new Proxy({fillStyle:'',fillRect(x,y,w,h){
   if(this.fillStyle==='#a8997a')ground.push([x,y,w,h]);
   if(this.fillStyle==='#7ea3a8')water.push([x,y,w,h]);
  }},{get:(o,key)=>key in o?o[key]:(()=>{})});
  drawTownMap(ctx,680,640);
  const count=navigation.grid.heights.filter(h=>h!==null).length;
- assert.equal(ground.length,count*2);
+ assert.equal(ground.length,count);
  assert.ok(water.length>=1,'Harbour and canal water are the map base');
- const scale=Math.min(660/(FULL_TOWN.bounds.maxX-FULL_TOWN.bounds.minX),620/(FULL_TOWN.bounds.maxZ-FULL_TOWN.bounds.minZ));
- assert.ok(Math.abs(ground[count][0]-ground[0][0]-44*scale)<1e-6);
  FULL_TOWN.active=false;
 });

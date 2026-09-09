@@ -89,11 +89,13 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     const api=await import(dataModule(source));
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,JSON.stringify(window.__JOHANSSON_STABILITY__));
     assert.equal(api.world.quality.completeSuppliedOverworld,true);
-    assert.equal(api.world.quality.citySections,2);
+    assert.equal(api.world.quality.citySections,1);
     assert.equal(api.world.quality.removedStreetColliders,40);
     assert.equal(api.world.quality.canalPromenade,true);
     assert.equal(api.world.quality.streetLandmarks,true);
     assert.equal(api.world.quality.streetDoors,15);
+    assert.equal(api.world.quality.uniqueCity,true);
+    assert.equal(api.world.quality.peninsula,true);
     assert.ok(api.world.group.getObjectByName('canal-harbour-water'));
     assert.ok(api.world.group.getObjectByName('Sakura Konbini landmark'));
     assert.ok(api.world.group.getObjectByName('Sato Ramen restaurant'));
@@ -112,11 +114,11 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.ok(yuriHouse.scale.y>.9,'Yuri’s house keeps a two-storey height');
     assert.ok(yuriHouse.getObjectByName('Yuri house exterior')||yuriHouse.getObjectByName('Yuri house noren'));
     const sections=api.world.group.children.filter(g=>g.name==='Original canal, bridge, buildings and streets');
-    assert.equal(sections.length,2);assert.equal(sections[1].position.x,44);
-    assert.equal(sections[0].children[0].geometry,sections[1].children[0].geometry,'Repeat shares cleaned GPU geometry');
-    assert.equal(sections[0].children[0].material,sections[1].children[0].material,'Repeat shares textures/materials');
-    assert.equal(api.world.people.length,22);
-    assert.equal(api.world.homes.size,22);
+    assert.equal(sections.length,1);assert.equal(sections[0].position.x,0);
+    assert.equal(api.world.group.getObjectByName('Sakura Konbini landmark east'),undefined);
+    assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant east'),undefined);
+    assert.equal(api.world.people.length,9);
+    assert.equal(api.world.homes.size,9);
     const {createNavigation}=await import('../src/people/navmesh.js');
     const {townBoundsBlocked,circleHitsRect}=await import('../physics.js');
     const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||api.world.colliders.some(c=>circleHitsRect(x,z,r,c));
@@ -146,13 +148,14 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     for(const person of api.world.people)for(const tag of ['work','home','evening']){
       const p=person.profile[tag];assert.ok(nav.path(spawn,{x:p[0],z:p[1]}).length,person.profile.name+' '+tag+' reachable');
     }
-    for(const [x,z] of [[35.7,-38],[0,-31],[-5,-24],[26,0],[39,0],[44,0],[59,0]])assert.ok(nav.path(spawn,{x,z}).length,'Park or port reachable '+[x,z]);
-    for(let x=17;x<=27;x+=.1)for(const z of [-.75,0,.75])assert.equal(blocked(x,z),false,'Clear two-way city connection '+[x,z]);
-    for(let x=0;x<=18;x+=.2)for(const z of [-20.75,-20,-19.25])assert.equal(blocked(x,z),false,'Clear quay lane '+[x,z]);
-    assert.equal(blocked(44,-6),true,'Repeated canal water is not walkable');
-    assert.equal(blocked(44,0),false,'Repeated bridge is walkable');
+    for(const [x,z] of [[35.7,-38],[0,-27],[-5,-18],[17,0],[-5,-24]])assert.ok(nav.path(spawn,{x,z}).length,'Park or port reachable '+[x,z]);
+    assert.equal(blocked(8,-18.9),false,'South harbour quay is walkable');
+    assert.equal(blocked(44,-6),true,'There is no cloned east canal');
+    assert.equal(blocked(44,0),true,'There is no cloned east street');
     assert.equal(blocked(0,-6),true,'Canal water is not walkable');
     assert.equal(blocked(0,0),false,'Original bridge is walkable');
+    assert.equal(blocked(-22.4,0),false,'West coastal boardwalk is walkable');
+    assert.equal(blocked(19.6,0),false,'East coastal boardwalk is walkable');
     api.player.position.copy(spawn);api.reviewSetYaw(0);api.activities.close();
     api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;
     api.simulate(.1);const walked=api.player.position.distanceTo(spawn);

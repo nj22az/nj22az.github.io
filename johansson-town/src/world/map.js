@@ -1,4 +1,4 @@
-import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS} from './full-town-state.js';
+import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
 import {RESIDENTS} from '../people/residents.js';
 import {PARK} from './park-layout.js';
 import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js';
@@ -10,6 +10,8 @@ export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,v
   if(!FULL_TOWN.active){ctx.fillStyle='#a1b9b3';ctx.fillRect(0,pz(-62),w,h-pz(-62));}
   if(FULL_TOWN.active){
     const g=FULL_TOWN.grid;
+    ctx.fillStyle='#c4b496';
+    for(let z=-30;z<18;z+=g.step)for(let x=-24;x<22;x+=g.step)if(peninsulaContains(x,z))ctx.fillRect(px(x),pz(z+g.step),Math.max(1,g.step*scale),Math.max(1,g.step*scale));
     for(const section of CITY_SECTIONS){
       ctx.fillStyle='#a8997a';
       for(let iz=0;iz<g.nz;iz++)for(let ix=0;ix<g.nx;ix++)if(g.heights[iz*g.nx+ix]!==null)ctx.fillRect(px(section.x+g.minX+ix*g.step),pz(section.z+g.minZ+iz*g.step),Math.max(1,g.step*scale),Math.max(1,g.step*scale));
@@ -19,7 +21,7 @@ export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,v
   ctx.fillStyle='#91a776';ctx.fillRect(px(PARK.x-14),pz(PARK.z+14),28*scale,28*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('HARBOUR PARK',px(PARK.x-13),pz(PARK.z));}
   ctx.lineJoin='round';ctx.lineCap='round';
   for(const route of (FULL_TOWN.active?FULL_PATHS:ROUTES)){
-    ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|city-link/.test(route.id)?'#a28459':'#766c50';
+    ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
   if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(0),pz(BOARDWALK.minZ));ctx.lineTo(px(0),pz(BOARDWALK.maxZ));ctx.stroke();
@@ -28,6 +30,7 @@ export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,v
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}
     if(w>=300&&site.id==='market'){ctx.fillStyle='#a6333c';ctx.font='bold 12px sans-serif';ctx.fillText('SAKURA',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='ramen'){ctx.fillStyle='#a34e3d';ctx.font='bold 12px sans-serif';ctx.fillText('SATO RAMEN',px(x)+7,pz(site.z)+4);}
+    if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('YURI’S HOUSE',px(x)+7,pz(site.z)+4);}
   }
   if(target){const x=target.x??target.side*11.8;ctx.strokeStyle='#c45766';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px(x),pz(target.z),7,0,Math.PI*2);ctx.stroke();if(w>=300){ctx.fillStyle='#723b49';ctx.font='bold 12px sans-serif';ctx.fillText(target.title,px(x)+9,pz(target.z)-7);}}
   ctx.fillStyle='#9c4b34';for(const p of people.filter(p=>p.g.visible)){ctx.beginPath();ctx.arc(px(p.g.position.x),pz(p.g.position.z),1.5,0,Math.PI*2);ctx.fill();}
