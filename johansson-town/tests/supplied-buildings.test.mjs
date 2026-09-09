@@ -48,7 +48,7 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   const {preloadTeaHouse,buildTeaHouse}=await import('../src/world/tea-house.js');assert.equal(await preloadTeaHouse(),true);
   const world={group:new THREE.Group(),colliders:[]},sites=[],actions=[];
   buildTeaHouse(world,{sites,register:(o,label,fn)=>actions.push({o,label,fn}),enter:site=>assert.equal(site.id,'tea-house')});
-  assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[46,1,62]);
-  assert.ok(!world.colliders.some(c=>Math.abs(c.x-46)<c.w/2+.3&&Math.abs(c.z-62)<c.d/2+.3),'Entrance is clear');
+  assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[28,1,48]);
+  assert.ok(!world.colliders.some(c=>Math.abs(c.x-28)<c.w/2+.3&&Math.abs(c.z-48)<c.d/2+.3),'Entrance is clear');
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

@@ -14,8 +14,8 @@
       18
     ],
     "home": [
-      2.0,
-      66.1
+      -25.0,
+      -47
     ],
     "top": "#967a99",
     "start": 540,
@@ -34,11 +34,11 @@
     "supperStart": 1110,
     "supperEnd": 1210,
     "house": {
-      "x": 2.0,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -47,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "1 Hill Lane"
+    "homeAddress": "1 Willow Alley"
   },
   {
     "name": "Kenji",
@@ -55,8 +55,8 @@
       21
     ],
     "home": [
-      5.5,
-      66.1
+      -29.0,
+      -47
     ],
     "top": "#527d99",
     "start": 540,
@@ -75,11 +75,11 @@
     "supperStart": 1092,
     "supperEnd": 1207,
     "house": {
-      "x": 5.5,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -47,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "2 Hill Lane"
+    "homeAddress": "2 Willow Alley"
   },
   {
     "name": "Mrs Sato",
@@ -96,8 +96,8 @@
       46
     ],
     "home": [
-      9.0,
-      66.1
+      -25.0,
+      -39
     ],
     "top": "#ad6178",
     "start": 540,
@@ -116,11 +116,11 @@
     "supperStart": 1104,
     "supperEnd": 1234,
     "house": {
-      "x": 9.0,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -39,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "3 Hill Lane"
+    "homeAddress": "3 Willow Alley"
   },
   {
     "name": "Harbour master",
@@ -137,8 +137,8 @@
       -48
     ],
     "home": [
-      12.5,
-      66.1
+      -29.0,
+      -39
     ],
     "top": "#405d7e",
     "start": 300,
@@ -157,11 +157,11 @@
     "supperStart": 1020,
     "supperEnd": 1120,
     "house": {
-      "x": 12.5,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -39,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "4 Hill Lane"
+    "homeAddress": "4 Willow Alley"
   },
   {
     "name": "Bus driver",
@@ -178,8 +178,8 @@
       46
     ],
     "home": [
-      16.0,
-      66.1
+      -25.0,
+      -32
     ],
     "top": "#498d8b",
     "start": 540,
@@ -198,11 +198,11 @@
     "supperStart": 1092,
     "supperEnd": 1207,
     "house": {
-      "x": 16.0,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -32,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "5 Hill Lane"
+    "homeAddress": "5 Willow Alley"
   },
   {
     "name": "Cold-storage kid",
@@ -219,8 +219,8 @@
       -55
     ],
     "home": [
-      19.5,
-      66.1
+      -29.0,
+      -32
     ],
     "top": "#6eaa9b",
     "start": 540,
@@ -239,11 +239,11 @@
     "supperStart": null,
     "supperEnd": 130,
     "house": {
-      "x": 19.5,
-      "z": 68.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -32,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "6 Hill Lane"
+    "homeAddress": "6 Willow Alley"
   },
   {
     "name": "Officer Mori",
@@ -260,8 +260,8 @@
       46
     ],
     "home": [
-      -5.0,
-      52.1
+      -25.0,
+      -25
     ],
     "top": "#4b6e9c",
     "start": 1320,
@@ -280,11 +280,11 @@
     "supperStart": null,
     "supperEnd": null,
     "house": {
-      "x": -5,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -25,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "7 West Lane"
+    "homeAddress": "7 Willow Alley"
   },
   {
     "name": "Hana",
@@ -293,16 +293,16 @@
     "female": true,
     "height": 1.57,
     "work": [
-      53,
-      42
+      43,
+      36
     ],
     "evening": [
       36,
       30
     ],
     "home": [
-      -9.0,
-      52.1
+      -29.0,
+      -25
     ],
     "top": "#d17b78",
     "start": 540,
@@ -321,11 +321,11 @@
     "supperStart": null,
     "supperEnd": 115,
     "house": {
-      "x": -9,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -25,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "8 West Lane"
+    "homeAddress": "8 Willow Alley"
   },
   {
     "name": "Daichi",
@@ -334,16 +334,16 @@
     "female": false,
     "height": 1.7,
     "work": [
-      55,
-      42
+      45,
+      36
     ],
     "evening": [
-      42,
-      62
+      28,
+      50
     ],
     "home": [
-      -13.0,
-      52.1
+      -25.0,
+      -20
     ],
     "top": "#cda04f",
     "start": 540,
@@ -362,11 +362,11 @@
     "supperStart": null,
     "supperEnd": 130,
     "house": {
-      "x": -13,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -20,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "9 West Lane"
+    "homeAddress": "9 Willow Alley"
   },
   {
     "name": "Mr Fujita",
@@ -383,8 +383,8 @@
       39
     ],
     "home": [
-      -17.0,
-      52.1
+      -29.0,
+      -20
     ],
     "top": "#73988a",
     "start": 540,
@@ -403,11 +403,11 @@
     "supperStart": 1080,
     "supperEnd": 1180,
     "house": {
-      "x": -17,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -20,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "10 West Lane"
+    "homeAddress": "10 Willow Alley"
   },
   {
     "name": "Masaru",
@@ -424,8 +424,8 @@
       18
     ],
     "home": [
-      -21.0,
-      52.1
+      -25.0,
+      -12
     ],
     "top": "#bd7959",
     "start": 540,
@@ -444,11 +444,11 @@
     "supperStart": 1380,
     "supperEnd": 1560,
     "house": {
-      "x": -21,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -22.4,
+      "z": -12,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "11 West Lane"
+    "homeAddress": "11 Willow Alley"
   },
   {
     "name": "Yoshiko",
@@ -465,8 +465,8 @@
       39
     ],
     "home": [
-      -25.0,
-      52.1
+      -29.0,
+      -12
     ],
     "top": "#9ea66c",
     "start": 540,
@@ -485,11 +485,11 @@
     "supperStart": 1284,
     "supperEnd": 1380,
     "house": {
-      "x": -25,
-      "z": 54.7,
-      "angle": 3.141592653589793
+      "x": -31.6,
+      "z": -12,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "12 West Lane"
+    "homeAddress": "12 Willow Alley"
   },
   {
     "name": "Reiko",
@@ -506,8 +506,8 @@
       -2
     ],
     "home": [
-      37.5,
-      27.8
+      -25.0,
+      -5
     ],
     "top": "#a96883",
     "start": 540,
@@ -526,11 +526,11 @@
     "supperStart": 1080,
     "supperEnd": 1180,
     "house": {
-      "x": 37.5,
-      "z": 25.2,
-      "angle": 0
+      "x": -22.4,
+      "z": -5,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "13 East Lane"
+    "homeAddress": "13 Willow Alley"
   },
   {
     "name": "Tetsuo",
@@ -547,8 +547,8 @@
       18
     ],
     "home": [
-      41.0,
-      27.8
+      -29.0,
+      -5
     ],
     "top": "#807398",
     "start": 540,
@@ -567,11 +567,11 @@
     "supperStart": 1440,
     "supperEnd": 1605,
     "house": {
-      "x": 41.0,
-      "z": 25.2,
-      "angle": 0
+      "x": -31.6,
+      "z": -5,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "14 East Lane"
+    "homeAddress": "14 Willow Alley"
   },
   {
     "name": "Emi",
@@ -584,12 +584,12 @@
       34
     ],
     "evening": [
-      42,
-      62
+      28,
+      50
     ],
     "home": [
-      44.5,
-      27.8
+      -25.0,
+      2
     ],
     "top": "#d797a2",
     "start": 540,
@@ -608,11 +608,11 @@
     "supperStart": 1104,
     "supperEnd": 1234,
     "house": {
-      "x": 44.5,
-      "z": 25.2,
-      "angle": 0
+      "x": -22.4,
+      "z": 2,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "15 East Lane"
+    "homeAddress": "15 Willow Alley"
   },
   {
     "name": "Mr Tanabe",
@@ -621,16 +621,16 @@
     "female": false,
     "height": 1.66,
     "work": [
-      25,
-      64
+      20,
+      50
     ],
     "evening": [
-      34,
-      69
+      20,
+      56
     ],
     "home": [
-      48.0,
-      27.8
+      -29.0,
+      2
     ],
     "top": "#bbaa85",
     "start": 540,
@@ -649,11 +649,11 @@
     "supperStart": 1080,
     "supperEnd": 1180,
     "house": {
-      "x": 48.0,
-      "z": 25.2,
-      "angle": 0
+      "x": -31.6,
+      "z": 2,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "16 East Lane"
+    "homeAddress": "16 Willow Alley"
   },
   {
     "name": "Naoko",
@@ -670,8 +670,8 @@
       46
     ],
     "home": [
-      51.5,
-      27.8
+      -25.0,
+      12
     ],
     "top": "#c77465",
     "start": 540,
@@ -690,11 +690,11 @@
     "supperStart": 1092,
     "supperEnd": 1207,
     "house": {
-      "x": 51.5,
-      "z": 25.2,
-      "angle": 0
+      "x": -22.4,
+      "z": 12,
+      "angle": -1.5707963267948966
     },
-    "homeAddress": "17 East Lane"
+    "homeAddress": "17 Willow Alley"
   },
   {
     "name": "Hiroshi",
@@ -711,8 +711,8 @@
       18
     ],
     "home": [
-      60.1,
-      41.0
+      -29.0,
+      12
     ],
     "top": "#7c9959",
     "start": 540,
@@ -731,11 +731,11 @@
     "supperStart": 1104,
     "supperEnd": 1234,
     "house": {
-      "x": 62.7,
-      "z": 41.0,
-      "angle": -1.5707963267948966
+      "x": -31.6,
+      "z": 12,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "18 Shiomi Lane"
+    "homeAddress": "18 Willow Alley"
   },
   {
     "name": "Fumiko",
@@ -752,8 +752,8 @@
       39
     ],
     "home": [
-      60.1,
-      45.5
+      -25.0,
+      19
     ],
     "top": "#aa90b4",
     "start": 540,
@@ -772,11 +772,11 @@
     "supperStart": 1080,
     "supperEnd": 1180,
     "house": {
-      "x": 62.7,
-      "z": 45.5,
+      "x": -22.4,
+      "z": 19,
       "angle": -1.5707963267948966
     },
-    "homeAddress": "19 Shiomi Lane"
+    "homeAddress": "19 Willow Alley"
   },
   {
     "name": "Kenta",
@@ -793,8 +793,8 @@
       18
     ],
     "home": [
-      60.1,
-      50.0
+      -29.0,
+      19
     ],
     "top": "#77a5b7",
     "start": 540,
@@ -813,11 +813,11 @@
     "supperStart": 1092,
     "supperEnd": 1207,
     "house": {
-      "x": 62.7,
-      "z": 50.0,
-      "angle": -1.5707963267948966
+      "x": -31.6,
+      "z": 19,
+      "angle": 1.5707963267948966
     },
-    "homeAddress": "20 Shiomi Lane"
+    "homeAddress": "20 Willow Alley"
   },
   {
     "name": "Nao",
@@ -834,8 +834,8 @@
       20
     ],
     "home": [
-      60.1,
-      54.5
+      -25.0,
+      25
     ],
     "start": 960,
     "close": 1620,
@@ -854,10 +854,10 @@
     "supperStart": 960,
     "supperEnd": 1620,
     "house": {
-      "x": 62.7,
-      "z": 54.5,
+      "x": -22.4,
+      "z": 25,
       "angle": -1.5707963267948966
     },
-    "homeAddress": "21 Shiomi Lane"
+    "homeAddress": "21 Willow Alley"
   }
 ]
