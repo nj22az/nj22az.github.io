@@ -78,6 +78,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
     assert.deepEqual(await preloadSuppliedRooms(),[true,true],'Both supplied rooms preloaded');
+    const {preloadIzakaya}=await import('../src/world/izakaya.js');
+    assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const api=await import(dataModule(source));
     assert.equal(api.world.harbourShops.length,4);
 
