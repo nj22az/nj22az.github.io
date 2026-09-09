@@ -1,8 +1,10 @@
 # Character assets
 
-The active 21 named residents load `neighbours/resident-00.glb` through `resident-20.glb`. They are individually fitted Blender/MPFB characters made from the MakeHuman CC0 anatomical base and system assets: skin photographs, everyday clothes, shoes, eyes, brows and hair. Ages, builds, face targets, clothes and hair vary by resident. Seven original in-place actions cover idle, walking, running, greeting, sitting, eating and drinking.
+The active 21 named residents use five locally packed **VRoid Studio beta CC0 sample models** by **pixiv Inc. / VRoid Project**: Vivi, HairSample_Male, Sakurada Fumiriya, Victoria Rubin and Sendagaya Shino. The runtime files and 512–1024px texture atlases are in `vroid/`. Each resident has a distinct wardrobe/hair palette, their existing height, independent animation, and optional round spectacles. Original VRoid face meshes retain blinking, smiling and mouth morphs. Seven original clips cover idle, walking, running, greeting, sitting, eating and drinking.
 
-Exact sources, the pinned authoring revision, original asset-pack hash, file hashes and changes are recorded in `neighbours/manifest.json` and the per-resident `.source.json` receipts. Full CC0 terms and original rights holders are included in `realistic/LICENSE-MAKEHUMAN-CC0.md` and `realistic/provenance.json`. MPFB is an authoring dependency; its add-on code is not distributed with the game. Reproduction: `../../docs/NEIGHBOURS-AND-STREET.md`.
+The creator's model-specific licence pages, pinned public mirror revision, original SHA-256 hashes and shipped file receipts are in `vroid/manifest.json`. These are the older samples explicitly released under [CC0](https://vroid.pixiv.help/hc/en-us/articles/4402614652569), not a blanket licence claim for every VRoid model. Reproduction and validation: `../../docs/VROID-CAST.md`.
+
+The previous individually fitted MakeHuman/MPFB cast in `neighbours/` is an inactive archive. Its source notices, licences and authoring receipts are preserved there and in `realistic/`.
 
 Yuri continues to use the owner's supplied `realistic/yuri-playful.glb`, with the existing original idle and greeting layered onto the supplied walking/running rig. This supplied asset is not represented as CC0. Her provenance remains in the parent asset ledger and `realistic/` receipts.
 

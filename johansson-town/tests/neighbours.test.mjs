@@ -9,38 +9,41 @@ import {preloadStreetPlants,buildStreetPlants} from '../src/world/street-plants.
 import {createMaterials} from '../src/render/materials.js';
 import {createHarbourInstances} from '../src/render/harbour-instances.js';
 
-test('all fitted residents load locally, preserve blended skinning, and plant their soles in every clip',async()=>{
+test('all VRoid bases load locally, preserve expressions and blended skinning, and plant their soles in every clip',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
-  const manifest=JSON.parse(await readFile(new URL('../assets/characters/neighbours/manifest.json',import.meta.url),'utf8'));
-  assert.equal(manifest.models.length,21);assert.ok(manifest.modelBytes+manifest.textureBytes<25_000_000);
+  const manifest=JSON.parse(await readFile(new URL('../assets/characters/vroid/manifest.json',import.meta.url),'utf8'));
+  assert.equal(manifest.bases.length,5);assert.ok(manifest.modelBytes+manifest.textureBytes<13_000_000);
   for(const [name,texture] of Object.entries(manifest.textures)){
-   const bytes=await readFile(new URL('../assets/characters/neighbours/textures/'+name,import.meta.url));
+   const bytes=await readFile(new URL('../assets/characters/vroid/textures/'+name,import.meta.url));
    assert.equal(createHash('sha256').update(bytes).digest('hex'),texture.sha256);assert.ok(Math.max(...texture.dimensions)<=1024);
   }
-  for(const entry of manifest.models){
-   const bytes=await readFile(new URL('../assets/characters/neighbours/'+entry.model+'.glb',import.meta.url));
+  for(const entry of manifest.bases){
+   const bytes=await readFile(new URL('../assets/characters/vroid/'+entry.base+'.glb',import.meta.url));
    assert.equal(createHash('sha256').update(bytes).digest('hex'),entry.sha256);
-   const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'https://nj22az.github.io/johansson-town/assets/characters/neighbours/');
+   const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'https://nj22az.github.io/johansson-town/assets/characters/vroid/');
    const meshes=[];gltf.scene.traverse(o=>{if(o.isMesh)meshes.push(o);});
-   assert.ok(meshes.length>=6&&meshes.length<=7,entry.name);assert.ok(entry.triangles<22_000);
+   assert.ok(meshes.length>=4&&meshes.length<=5,entry.base);assert.ok(entry.triangles<40_000);
    let blended=0;for(const mesh of meshes){assert.ok(mesh.isSkinnedMesh);const weights=mesh.geometry.attributes.skinWeight;
     for(let i=0;i<weights.count;i++){const sum=weights.getX(i)+weights.getY(i)+weights.getZ(i)+weights.getW(i);assert.ok(Math.abs(sum-1)<.002);if(weights.getY(i)>.02)blended++;}
     if(mesh.material.map)assert.ok(mesh.material.map.image);assert.equal(mesh.material.transparent,false,'Hair uses alpha testing');
    }
-   assert.ok(blended>100,entry.name+' needs blended joints');
+   assert.ok(blended>100,entry.base+' needs blended joints');
+   const face=meshes.find(m=>m.morphTargetDictionary?.Blink!==undefined);assert.ok(face,'Blinkable anime face');
+   for(const name of ['Blink','Smile','MouthOpen']){const i=face.morphTargetDictionary[name];assert.ok(Number.isInteger(i));assert.ok(face.geometry.morphAttributes.position[i].array.some(v=>Math.abs(v)>.001));}
+   assert.equal(meshes.filter(m=>m.material.isMeshBasicMaterial).length,meshes.length,'Preserve illustrated unlit materials');
    const mixer=new THREE.AnimationMixer(gltf.scene);let standing=0;
    for(const name of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink']){
-    const clip=gltf.animations.find(c=>c.name===name);assert.ok(clip,entry.name+' '+name);mixer.stopAllAction();mixer.clipAction(clip).play();
+    const clip=gltf.animations.find(c=>c.name===name);assert.ok(clip,entry.base+' '+name);mixer.stopAllAction();mixer.clipAction(clip).play();
     for(let sample=0;sample<=12;sample++){
      mixer.setTime(clip.duration*sample/12);gltf.scene.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(gltf.scene,true);
      assert.ok([...b.min.toArray(),...b.max.toArray()].every(Number.isFinite));
-     assert.ok(b.min.y>-.025&&b.min.y<.035,entry.name+' sole '+name+' '+b.min.y);
-     assert.ok(b.max.y<2.2&&b.max.x-b.min.x<1.7,entry.name+' bounded '+name);
+     assert.ok(b.min.y>-.025&&b.min.y<.035,entry.base+' sole '+name+' '+b.min.y);
+     assert.ok(b.max.y<2.2&&b.max.x-b.min.x<1.7,entry.base+' bounded '+name);
      if(name==='Idle_Neutral')standing=b.max.y;
-     if(name==='Sit')assert.ok(b.max.y<standing-.2,entry.name+' must sit on the stool');
+     if(name==='Sit')assert.ok(b.max.y<standing-.2,entry.base+' must sit on the stool');
     }
    }
   }

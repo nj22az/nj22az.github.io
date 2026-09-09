@@ -1,0 +1,305 @@
+{
+  "creator": "pixiv Inc. / VRoid Project",
+  "license": "CC0-1.0",
+  "mirrorRevision": "e16eb187100149a315ad92c3c9968f1d5baa6c7d",
+  "bases": [
+    {
+      "base": "vroid-bob",
+      "source": "Vivi",
+      "sourceSHA256": "eaf902e041a7a810f1423599ae75682f61184ab6ef0206da9a8ed9caa8ec3a9d",
+      "sourceURL": "https://raw.githubusercontent.com/madjin/vrm-samples/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta/Vivi.vrm",
+      "creatorLicense": "https://vroid.pixiv.help/hc/en-us/articles/360014900273",
+      "triangles": 25834,
+      "draws": 5,
+      "bytes": 1422672,
+      "sha256": "0c21cebced94b40f313844c5bd8a9f147f2875d4e368cd4359c0677bba4676d5",
+      "walkSpeed": 0.6645574569702148,
+      "runSpeed": 1.3291149139404297,
+      "eyeCentres": [
+        [
+          -0.03933053683464449,
+          0.05440890519005115,
+          -0.0720687231474211
+        ],
+        [
+          0.03933060694511015,
+          0.05440890519005115,
+          -0.07206868589451812
+        ]
+      ]
+    },
+    {
+      "base": "vroid-casual",
+      "source": "HairSample_Male",
+      "sourceSHA256": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f",
+      "sourceURL": "https://raw.githubusercontent.com/madjin/vrm-samples/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta/HairSample_Male.vrm",
+      "creatorLicense": "https://vroid.pixiv.help/hc/en-us/articles/4402614652569",
+      "triangles": 24858,
+      "draws": 4,
+      "bytes": 1314364,
+      "sha256": "509929d3c52b7b2ef3ef144ec5710edc4d573a482696455ea2ca41d291611cbb",
+      "walkSpeed": 0.8502040750840131,
+      "runSpeed": 1.7004081501680262,
+      "eyeCentres": [
+        [
+          -0.04367269072595864,
+          0.05782996234223625,
+          -0.08319498512278824
+        ],
+        [
+          0.04367269333537788,
+          0.05782996234223625,
+          -0.08319496277104645
+        ]
+      ]
+    },
+    {
+      "base": "vroid-vest",
+      "source": "Sakurada_Fumiriya",
+      "sourceSHA256": "d8fb05f33e377df028cb6b9d58c441ce68326c41fa23f6c735d40c65ae3dc710",
+      "sourceURL": "https://raw.githubusercontent.com/madjin/vrm-samples/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta/Sakurada_Fumiriya.vrm",
+      "creatorLicense": "https://vroid.pixiv.help/hc/en-us/articles/360014788554",
+      "triangles": 39548,
+      "draws": 5,
+      "bytes": 2034844,
+      "sha256": "1084a75ec8c0f797eac65dddb0236d9bdb74b30cd840d03d134995cbe915fb8c",
+      "walkSpeed": 0.9042605792774874,
+      "runSpeed": 1.8085211585549745,
+      "eyeCentres": [
+        [
+          -0.04120211786276478,
+          0.055676565410583745,
+          -0.08053386046776785
+        ],
+        [
+          0.041202115652497824,
+          0.055676684619873296,
+          -0.08053381576428427
+        ]
+      ]
+    },
+    {
+      "base": "vroid-ponytail",
+      "source": "Victoria_Rubin",
+      "sourceSHA256": "b1372131bdbf233f46320146d565f342a7e4f6f4b8f2aefb301f1a283ec07e1e",
+      "sourceURL": "https://raw.githubusercontent.com/madjin/vrm-samples/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta/Victoria_Rubin.vrm",
+      "creatorLicense": "https://vroid.pixiv.help/hc/en-us/articles/360014900233",
+      "triangles": 28928,
+      "draws": 5,
+      "bytes": 1577268,
+      "sha256": "f6595ba04359dff8e170d9daa1d9cca2bdd079d4e60911eb09edc4c06fe3e627",
+      "walkSpeed": 0.8175659740672392,
+      "runSpeed": 1.6351319481344786,
+      "eyeCentres": [
+        [
+          -0.04239748176724587,
+          0.060888169572058004,
+          -0.08104043540864106
+        ],
+        [
+          0.04239756483047332,
+          0.060888288781347555,
+          -0.08104038325457688
+        ]
+      ]
+    },
+    {
+      "base": "vroid-long",
+      "source": "Sendagaya_Shino",
+      "sourceSHA256": "1e177c1a7b14f783a9c48395831db8616260d3bddd4154cb2784b779adca49b5",
+      "sourceURL": "https://raw.githubusercontent.com/madjin/vrm-samples/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta/Sendagaya_Shino.vrm",
+      "creatorLicense": "https://vroid.pixiv.help/hc/en-us/articles/360013482714",
+      "triangles": 31211,
+      "draws": 5,
+      "bytes": 1715580,
+      "sha256": "54300729e8a23bf155f4108fb2b2046808d1f3c0e4724ee94f6457d5721c64e0",
+      "walkSpeed": 0.7741857977474437,
+      "runSpeed": 1.5483715954948873,
+      "eyeCentres": [
+        [
+          -0.04159846575953429,
+          0.06144368677844225,
+          -0.0807949880263008
+        ],
+        [
+          0.041598468553047725,
+          0.06144368677844225,
+          -0.08079492097107543
+        ]
+      ]
+    }
+  ],
+  "textures": {
+    "vroid-bob-face.png": {
+      "bytes": 223924,
+      "sha256": "776c2d6dac5d8c8ec6401d02748c59d66eaf061835ac63769774f509107f033e",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-bob-body.png": {
+      "bytes": 357326,
+      "sha256": "1666e3b08edb4374cc6b584be352bdf4e56f43e2c64db7594467e16b18862bb4",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-bob-wardrobe.png": {
+      "bytes": 127173,
+      "sha256": "8f1d48c5b9c82148d5e38fb153e8fc6fab7a048634d7beb6c38bb325f6406fae",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-bob-hair.png": {
+      "bytes": 67979,
+      "sha256": "8b9d9e958f7ccb555e41afb9e2f46fb46ffbe54b0247d5987db6ff17c7562985",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-casual-face.png": {
+      "bytes": 226606,
+      "sha256": "0a73fb9cc986702356d6f858e36203167db92c1d599d058a73d4e1496c99c6e5",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-casual-body.png": {
+      "bytes": 285405,
+      "sha256": "8eff5d4514bf5b0145cbfa5a332cf0a903948649adb19255f8cf1bdc5f373c01",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-casual-wardrobe.png": {
+      "bytes": 185575,
+      "sha256": "a49e15a969aa0440142b8e3006e190e577a5604c502accfc2497c5b5062ce1af",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-casual-hair.png": {
+      "bytes": 8135,
+      "sha256": "4a860e0cf78218f91da4c298d665455b4ede73c4119305efb2cb86aec099362e",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-vest-face.png": {
+      "bytes": 227238,
+      "sha256": "c605d3bc00e83676dcd627b266f99a43b9c5053d2c2e037d6651d7eabf4e6bc0",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-vest-body.png": {
+      "bytes": 308651,
+      "sha256": "9615aa952c500c5bbff2bac31d1e1b922bce623b27745f54fb26fe88d60e6489",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-vest-wardrobe.png": {
+      "bytes": 169548,
+      "sha256": "5f4cf33c8ba002d979577104f77d2bb894ef889e1851bc79cafbfa11b1d490c3",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-vest-hair.png": {
+      "bytes": 62997,
+      "sha256": "20e1652bb2e886025cc50ee6404a40813ca1a7e5743148d0e4b073be2368cee2",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-ponytail-face.png": {
+      "bytes": 198841,
+      "sha256": "f2845b32c94d38ed3579c5a0336b774d8898b5f6135cde5db460498d00489d98",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-ponytail-body.png": {
+      "bytes": 287761,
+      "sha256": "57c809960d782321e1f8bce495079075072a987c21d03adc55bb220caa511705",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-ponytail-wardrobe.png": {
+      "bytes": 111310,
+      "sha256": "519fc206724bd9025bd8531d2d949cc40c86b8c4a78d1ac2136a9b95dfeed906",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-ponytail-hair.png": {
+      "bytes": 51110,
+      "sha256": "bec3949a8b252242198a1fbc724377c822957c7787958f7104ea7dcd8d628d31",
+      "dimensions": [
+        512,
+        512
+      ]
+    },
+    "vroid-long-face.png": {
+      "bytes": 212617,
+      "sha256": "3f95dceb7fa4e6f2da4cdcb69d90358526f0568d0b348a04b7922e2e7ca80569",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-long-body.png": {
+      "bytes": 320123,
+      "sha256": "b0d5d1a46dcd22ea776ed0e5088d6dbad5c435b76ece8ab43135085f834e1651",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-long-wardrobe.png": {
+      "bytes": 139132,
+      "sha256": "b7162f8b52ec050af6b874497b5e6441599b7cf39c4f752f86d642335562d00a",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "vroid-long-hair.png": {
+      "bytes": 58348,
+      "sha256": "7ca04a7838bc392452f9274e1db8a8500aa186d3667e712596220bcbd89b78a8",
+      "dimensions": [
+        512,
+        512
+      ]
+    }
+  },
+  "changes": [
+    "Four or five local texture-atlas draws per base",
+    "Shared geometry across the 21 named residents",
+    "Per-resident wardrobe and hair palettes",
+    "Dark fitted shorts beneath skirts and seated cloth fitting",
+    "Blink, smile and mouth morph targets",
+    "Seven original, grounded humanoid animation clips",
+    "VRoid 0.x facing converted to the town convention"
+  ],
+  "modelBytes": 8064728,
+  "textureBytes": 3629799
+}
