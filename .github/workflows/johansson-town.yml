@@ -1,0 +1,26 @@
+name: Johansson Town tests
+
+on:
+  pull_request:
+    paths:
+      - 'johansson-town/**'
+      - '.github/workflows/johansson-town.yml'
+  push:
+    paths:
+      - 'johansson-town/**'
+      - '.github/workflows/johansson-town.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: johansson-town
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run CPU gameplay and launch tests
+        run: node --test tests/*.test.mjs

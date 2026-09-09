@@ -116,17 +116,31 @@ function closeRamenExteriorDoor(model){
   model.userData.exteriorDoorClosed=true;
 }
 
-export function buildRamenRestaurant(world,options){
+export function buildRamenRestaurant(world,options,placement){
   if(!assets.has('ramen'))return false;
-  const site={id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24,z:10,
-    color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',door:[24.65,0,14.7],opens:'09:00'};
-  options.sites.push(site);
-  const building=new THREE.Group();building.name='Sato Ramen restaurant';building.position.set(site.x,0,site.z);world.group.add(building);
+  const yaw=placement?.yaw??0;
+  const addressX=placement?.x??24,addressZ=placement?.z??10;
+  const inset=placement?.align==='facade'?3.55:0;
+  const facingX=Math.sin(yaw),facingZ=Math.cos(yaw);
+  const originX=addressX-facingX*inset,originZ=addressZ-facingZ*inset;
+  const worldPoint=(lx,lz)=>[originX+lx*Math.cos(yaw)+lz*Math.sin(yaw),originZ-lx*Math.sin(yaw)+lz*Math.cos(yaw)];
+  const worldRect=(rect)=>{
+    const [x,z]=worldPoint(rect.x,rect.z);
+    const swapped=Math.abs(Math.sin(yaw))>.5;
+    return {x,z,w:swapped?rect.d:rect.w,d:swapped?rect.w:rect.d,height:rect.height};
+  };
+  const [doorX,doorZ]=worldPoint(.65,4.85);
+  const [enterX,enterZ]=worldPoint(.65,4.15);
+  const site=placement?.site||{id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:addressX,z:addressZ,
+    color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',door:[doorX,0,doorZ],opens:'09:00'};
+  if(!placement?.site)options.sites.push(site);
+  site.x=addressX;site.z=addressZ;
+  if(!placement?.keepDoor){site.door=[doorX,0,doorZ];}
+  const building=new THREE.Group();building.name='Sato Ramen restaurant';building.position.set(originX,0,originZ);building.rotation.y=yaw;world.group.add(building);
   closeRamenExteriorDoor(addAsset('ramen',building));
-  const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(24.65,1.2,14.15);world.group.add(entrance);
+  const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(enterX,1.2,enterZ);world.group.add(entrance);
   options.register(entrance,'Enter Sato Ramen',()=>options.enter(site));
-  world.colliders.push({x:24,z:10,w:4.72,d:7.1,height:3.12},
-    {x:24,z:13.92,w:.78,d:.94,height:2.75});
+  world.colliders.push(worldRect({x:0,z:0,w:4.72,d:7.1,height:3.12}),worldRect({x:0,z:3.92,w:.78,d:.94,height:2.75}));
   return site;
 }
 

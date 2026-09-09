@@ -73,8 +73,9 @@ test('supplied models retain textures, correct material support and reachable ro
     const world={group:new THREE.Group(),colliders:[]},sites=[],entries=[];
     const site=buildRamenRestaurant(world,{sites,register:(o,label,fn)=>entries.push({o,label,fn}),enter:s=>assert.equal(s.id,'ramen')});
     assert.equal(sites.length,1);assert.equal(entries.length,1);entries[0].fn();
-    const blocked=(x,z)=>townBoundsBlocked(x,z,.28)||world.colliders.some(c=>circleHitsRect(x,z,.28,c));
+    const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
     for(const z of [site.door[2],site.door[2]+.6,site.door[2]+.7])assert.equal(blocked(site.door[0],z),false,'Restaurant exit on walkable street');
+    assert.equal(blocked(site.door[0],site.door[2],.32),false,'Restaurant exit keeps player-radius clearance');
     assert.equal(sweepFraction({x:24,z:18},{x:site.door[0],z:site.door[2]},blocked),1,'Existing east-lane route reaches the restaurant');
     assert.ok(Math.hypot(site.door[0]-entries[0].o.position.x,site.door[2]-entries[0].o.position.z)<1,'Door prompt at the supplied entrance');
     const exterior=world.group.getObjectByName('Supplied ramen');

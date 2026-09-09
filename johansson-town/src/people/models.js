@@ -31,12 +31,15 @@ export function preloadModels({onProgress}={}){
   let at=0;
   async function loadOne(id){
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
+    const timed=new Promise((_,reject)=>abort.signal.addEventListener('abort',()=>reject(Error('timed out')),{once:true}));
     try{
       const neighbours=id.startsWith('vroid-');
-      const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
-      if(!response.ok)throw Error('Local character unavailable: '+id);
-      const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
+      await Promise.race([timed,(async()=>{
+        const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+        if(!response.ok)throw Error('Local character unavailable: '+id);
+        const data=await response.arrayBuffer();
+        const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
+      })()]);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
   }

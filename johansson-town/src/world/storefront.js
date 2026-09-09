@@ -1,8 +1,10 @@
 import {createMaterials} from '../render/materials.js';
 import * as THREE from '../../vendor/three.module.js';
 // Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.
-export function buildStorefront({parent,site,register,enter,label}){
- const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(site.side*7.55,0,site.z);group.rotation.y=-site.side*Math.PI/2;parent.add(group);
+export function buildStorefront({parent,site,register,enter,label,colliders}){
+ const x=Number.isFinite(site.frontX)?site.frontX:site.side*7.55;
+ const yaw=Number.isFinite(site.yaw)?site.yaw:-site.side*Math.PI/2;
+ const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(x,0,site.z);group.rotation.y=yaw;parent.add(group);
  const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
  box([10,.18,8.2],[0,.09,-4.1],0xdad9c8,'plaster');box([10,3.7,.18],[0,1.85,-8.1],0xeee7d1,'plaster');
  for(const x of [-5,5])box([.18,3.8,8.2],[x,1.9,-4.1],0xd9d7c9,'plaster');
@@ -16,6 +18,17 @@ export function buildStorefront({parent,site,register,enter,label}){
  for(const x of [-2.8,1.8]){const light=box([.45,.06,2.8],[x,3.64,-2.3],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
  box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo');box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb);
  const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
- const anchor=new THREE.Object3D();anchor.position.set(site.side*6.8,1.2,site.z+2.5);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
+ const anchor=new THREE.Object3D();
+ if(Number.isFinite(site.frontX)){
+  group.updateMatrixWorld(true);
+  const door=mat.getWorldPosition(new THREE.Vector3());
+  const outward=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
+  anchor.position.set(door.x+outward.x*.4,1.2,door.z+outward.z*.4);
+ }else anchor.position.set(site.side*6.8,1.2,site.z+2.5);
+ parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
+ if(colliders){
+  const c=Math.cos(yaw),s=Math.sin(yaw);
+  colliders.push({x:x-4.1*s,z:site.z-4.1*c,w:Math.abs(c)>.5?10:8.2,d:Math.abs(c)>.5?8.2:10,height:3.9});
+ }
  return group;
 }

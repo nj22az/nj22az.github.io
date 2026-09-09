@@ -89,6 +89,16 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.equal(api.world.quality.completeSuppliedOverworld,true);
     assert.equal(api.world.quality.citySections,2);
     assert.equal(api.world.quality.removedStreetColliders,40);
+    assert.deepEqual(api.world.quality.restoredLandmarks,['market','ramen']);
+    assert.ok(api.world.group.getObjectByName('Sakura Konbini landmark'),'Sakura storefront is placed in the overworld');
+    assert.ok(api.world.group.getObjectByName('Sato Ramen restaurant'),'Supplied ramen restaurant is placed in the overworld');
+    const market=api.SITES.find(s=>s.id==='market'),ramen=api.SITES.find(s=>s.id==='ramen');
+    assert.ok(Math.hypot(market.x-16.68,market.z-10.78)<.01,'Sakura uses the canal-quarter map coordinates');
+    assert.ok(Math.hypot(market.door[0]-16.68,market.door[2]-10.78)<4,'Sakura door stays on the canal-quarter street');
+    assert.ok(Math.hypot(market.door[0]-6.8,market.door[2]-13.28)>4,'Sakura door is not left on the harbour fallback');
+    assert.ok(Math.hypot(ramen.x-(-12.48),ramen.z-(-3.69))<.01,'Ramen uses the canal-quarter map coordinates');
+    assert.ok(Math.hypot(ramen.door[0]-(-12.48),ramen.door[2]-(-3.69))<5,'Ramen door stays on the canal-quarter street');
+    assert.ok(Math.hypot(ramen.door[0]-24.65,ramen.door[2]-14.7)>8,'Ramen door is not left on the harbour fallback');
     const sections=api.world.group.children.filter(g=>g.name==='Original canal, bridge, buildings and streets');
     assert.equal(sections.length,2);assert.equal(sections[1].position.x,44);
     assert.equal(sections[0].children[0].geometry,sections[1].children[0].geometry,'Repeat shares cleaned GPU geometry');

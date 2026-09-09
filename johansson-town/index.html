@@ -51,20 +51,23 @@
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1988</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick"><div id="knob"></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
-<div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
+<div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p id="fatalMessage">Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script type="module">
 import {unlockTownAudio} from './src/audio/town-audio.js';
+import {createLauncher} from './src/launch.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
   const fatal=document.getElementById('fatal');
+  const fatalMessage=document.getElementById('fatalMessage');
   const retry=document.getElementById('retry');
   const fsButton=document.getElementById('fullscreenButton');
   const fsHelp=document.getElementById('iosFullscreen');
   const fsClose=document.getElementById('closeFullscreenHelp');
   const isIPhone=/iPhone|iPod/.test(navigator.userAgent);
   const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const launchTown=createLauncher();
 
   async function fullscreen(){
     if(document.fullscreenElement||document.webkitFullscreenElement){
@@ -79,32 +82,9 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
   }
 
   async function launch(){
-    if(window.__JOHANSSON_BOOTING__)return;
-    window.__JOHANSSON_BOOTING__=true;
-    enter.disabled=true;
-    status.textContent='OPENING…';
     unlockTownAudio();
     if(!isIPhone||standalone())fullscreen();
-    const watchdog=setTimeout(()=>{
-      if(!window.__JOHANSSON_RUNNING__){
-        status.textContent='STARTUP TOOK TOO LONG';
-        fatal.classList.remove('hidden');
-      }
-    },25000);
-    try{
-      await import('./src/boot.js?living-town=23');
-      clearTimeout(watchdog);
-      window.__JOHANSSON_RUNNING__=true;
-      fatal.classList.add('hidden');
-    }catch(err){
-      clearTimeout(watchdog);
-      console.error(err);
-      status.textContent='START FAILED';
-      fatal.querySelector('p').textContent='Johansson Town could not start. Reload and try again.';
-      fatal.classList.remove('hidden');
-      window.__JOHANSSON_BOOTING__=false;
-      enter.disabled=false;
-    }
+    await launchTown({enter,status,fatal,fatalMessage});
   }
 
   enter.addEventListener('click',launch);
