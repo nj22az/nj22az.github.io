@@ -77,7 +77,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true],'All supplied rooms preloaded');
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true],'All supplied rooms preloaded');
     const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
     const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js');

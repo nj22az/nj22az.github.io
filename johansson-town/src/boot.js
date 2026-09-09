@@ -12,6 +12,6 @@ await preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus'
 const {preloadStreetPlants}=await import('./world/street-plants.js');
 await Promise.all([preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadFullTown().then(ok=>ok||preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock())),preloadStreetPlants(),preloadSuppliedRooms()]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=23');
+await import('./game.js?living-town=24');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

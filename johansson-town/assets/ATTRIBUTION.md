@@ -86,6 +86,12 @@ These two models were supplied by the owner and included at their express reques
 
 Both models use unlit materials to preserve their baked texture/vertex lighting. Original source metadata, input/output SHA-256 hashes, transforms and counts are recorded in each model directory's `manifest.json`. The original uploads are not modified. Reproduction: `python tools/pack-supplied-rooms.py --office /path/to/office.glb --ramen /path/to/ramen.glb` (Python with NumPy). Collision shapes, interaction anchors and the original Sato Ramen fascia/roof trim are project additions. No CC0 licence is asserted for either supplied model.
 
+## Yuri’s bedroom — Bedroom Interior (2026-09-09)
+
+`models/yuri-home/yuri-bedroom.glb` is the owner-supplied **Bedroom Interior** by [ankitk2618](https://sketchfab.com/ankitk2618), [model page](https://sketchfab.com/3d-models/bedroom-interior-082a0fa7766448b8ad68202367cb27c1). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
+
+Adaptations: bake the source hierarchy into vertices; scale the 1.33 m dollhouse interior to a 2.72 m ceiling; rotate the south doorway to +Z; downsample embedded JPEGs to 1024px; merge primitives that share a material; unlit materials keep the baked lighting. 74,874 triangles; 24 draws. Source/output hashes, furniture bounds and transforms: `models/yuri-home/manifest.json`. Reproduction: `python tools/pack-yuri-bedroom.py /path/to/bedroom.glb` (NumPy and Pillow). No CC0 licence is asserted for this supplied interior.
+
 ## Minato Izakaya — BenMaher exterior (2026-09-09)
 
 The active exterior is now `models/izakaya/minato-benmaher-exterior.glb`, derived from the owner's supplied **Izakaya - Low Poly Building** by [BenMaher](https://sketchfab.com/BenMaher). The GLB identifies this [source model](https://sketchfab.com/3d-models/izakaya-low-poly-building-3f43e5429171408e9bd19553ea813364) and [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence. These credits are preserved from the upload's embedded metadata. No endorsement by the creator is implied.

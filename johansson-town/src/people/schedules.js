@@ -38,7 +38,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
   if(route.stalled>3){
-   const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inMarket&&!p.g.userData.inRamen).map(p=>p.g.position.clone());
+   const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
    const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>Math.hypot(x-o.x,z-o.z)<r+.34));
    const points=detour.path(g.position,{x:target[0],z:target[1]});
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
@@ -46,7 +46,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.16){route.at++;return;}
   const step=Math.min(d,dt*(person.profile?.age>65?.75:1.25)),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
-   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen)return true;
+   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
    return next>=.61||(old<.61&&next>old+.00001);
   });
@@ -59,7 +59,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;const minute=((minutes%1440)+1440)%1440;
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
-   if(g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen)continue;
+   if(g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const plan=residentPlan(v,minutes,rain);let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;
    if(tag==='patrol'){

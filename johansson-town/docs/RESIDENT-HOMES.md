@@ -2,9 +2,10 @@
 
 Each of the 21 VRoid neighbours and Yuri now has a separate, named home on an
 existing compact lane. These are modest private exteriors with tiled roofs,
-timber doors, mailboxes and readable nameplates, not additional player interiors.
-An occupied home's window glows at night. Residents reach their own thresholds
-before being hidden indoors, and depart from the same locations the next day.
+timber doors, mailboxes and readable nameplates. Yuri’s house is the exception:
+the player can step into her supplied bedroom. An occupied home's window glows
+at night. Residents reach their own thresholds before being hidden indoors, and
+depart from the same locations the next day.
 
 Officer Mori patrols the shopping street and eastern junction from 22:00 until
 06:00, including rainy nights, then walks home. Patrol waypoints advance on

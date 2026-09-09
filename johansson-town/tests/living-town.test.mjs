@@ -6,7 +6,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
-import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,inTimeRange,izakayaOpen,IZAKAYA_DOOR} from '../src/people/social.js';
+import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,yuriEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createActivities} from '../activities.js';
 import {installDOM} from './fixtures.mjs';
@@ -45,6 +45,21 @@ test('Yuri visits after closing on alternate days and has off-duty conversation'
  dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Nao saved me/);
  assert.ok(acts.state.notes.includes('Caught up with Yuri after closing at Minato Izakaya.'));
  assert.equal(gossipAt(1230,['Yuri','Nao']).id,'yuri-evening');
+});
+
+test('Yuri spends evenings at Minato, ramen, the canal and her own door',()=>{
+ const yuri=RESIDENTS.find(p=>p.name==='Yuri');
+ assert.equal(yuri.retire,1410);
+ assert.equal(residentPlan(yuri,1002).place,'market');
+ assert.equal(residentPlan(yuri,1205).place,'ramen');
+ assert.equal(residentPlan(yuri,1230).place,'izakaya');
+ assert.equal(residentPlan(yuri,1290).place,'stroll');
+ assert.equal(residentPlan(yuri,1410).place,'home');
+ assert.equal(residentPlan(yuri,1440+1205).place,'evening');
+ assert.equal(residentPlan(yuri,1440+1230).place,'evening');
+ assert.equal(residentPlan(yuri,1230,true).place,'home');
+ assert.equal(yuriEveningPlace(1205),'ramen');
+ assert.equal(yuriEveningPlace(1380),'evening');
 });
 
 test('all exported Blender residents retain finite grounded poses and a single body draw',async()=>{
@@ -91,4 +106,9 @@ test('ramen and Sakura reuse their residents and release them at the street door
  ramen.restore();assert.equal(scene.children.length,1);
  assert.deepEqual(market.sync(1199),['Yuri']);const yuri=world.people.find(p=>p.profile.name==='Yuri').g;assert.equal(yuri.parent,scene);
  assert.deepEqual(market.sync(1200),[]);assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
+ const home=createIndoorResidents({world,parent:scene,place:'home'});
+ assert.deepEqual(home.sync(1420),['Yuri']);assert.equal(yuri.parent,scene);assert.equal(yuri.userData.inHome,true);
+ home.restore();assert.equal(yuri.userData.inHome,undefined);assert.equal(yuri.parent,street);
+ assert.deepEqual(ramen.sync(1205),['Yuri']);assert.equal(yuri.parent,scene);assert.equal(yuri.userData.inRamen,true);assert.equal(yuri.userData.socialPose,undefined);
+ ramen.restore();
 });

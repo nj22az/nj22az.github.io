@@ -2,6 +2,7 @@ import {buildJapaneseHome,finishJapaneseHomes} from './japanese-town.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
+import {YURI_HOME_DOOR} from '../people/social.js';
 
 // Small timber-and-plaster homes infill the existing lanes. Shared wall batches,
 // a single nameplate atlas and instanced windows avoid a light/draw per resident.
@@ -41,7 +42,13 @@ export function buildHomes(world,options,box){
   dummy.position.set(...position(-.99,1.68,1.855));dummy.updateMatrix();windows.setMatrixAt(i,dummy.matrix);windows.setColorAt(i,new THREE.Color(0x354841));
   const anchor=new THREE.Object3D();anchor.position.set(p.home[0],1.3,p.home[1]);world.group.add(anchor);
   const home={owner:p.name,address:p.homeAddress,door:p.home,occupied:false};homes.set(p.name,home);
-  options.register(anchor,'Read '+p.name+'’s nameplate',()=>options.onAction('read',p.homeAddress,p.name+' lives here. '+(home.occupied?'The door is closed; someone is at home.':'The resident is out in town.')));
+  if(p.name==='Yuri'){
+   let site=options.sites.find(s=>s.id==='yuri-home');
+   if(!site){site={id:'yuri-home',title:'Yuri’s room',jp:'ゆりの部屋',sub:'WILLOW ALLEY',color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};options.sites.push(site);}
+   site.door=[p.home[0],0,p.home[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-Math.sin(p.house.angle),-Math.cos(p.house.angle));site.x=p.house.x;site.z=p.house.z;
+   YURI_HOME_DOOR.splice(0,2,...p.home);
+   options.register(anchor,'Enter Yuri’s room',()=>options.enter(site));
+  }else options.register(anchor,'Read '+p.name+'’s nameplate',()=>options.onAction('read',p.homeAddress,p.name+' lives here. '+(home.occupied?'The door is closed; someone is at home.':'The resident is out in town.')));
  }
  finishJapaneseHomes(world.group);
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;

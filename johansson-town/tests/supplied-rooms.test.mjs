@@ -27,7 +27,7 @@ test('supplied models retain textures, correct material support and reachable ro
   globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
   globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true]);
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true]);
     for(const id of ['office','ramen']){
       const folder=new URL('../assets/models/'+id+'/',import.meta.url);
       const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
@@ -70,6 +70,38 @@ test('supplied models retain textures, correct material support and reachable ro
         assert.ok(points.some(p=>Math.hypot(p.x-pos[0],p.z-pos[1])<.15),'Main aisle connects to entry');
       }
     }
+    {
+      const id='yuri-home',folder=new URL('../assets/models/yuri-home/',import.meta.url);
+      const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
+      const bytes=await readFile(new URL(manifest.file,folder));
+      assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.sha256);
+      const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
+      assert.equal(gltf.images.length,17);assert.equal(manifest.triangles,74874);assert.equal(manifest.draws,24);
+      assert.ok(gltf.images.every(i=>Number.isInteger(i.bufferView)&&!i.uri));
+      assert.ok(gltf.materials.every(m=>m.extensions?.KHR_materials_unlit));
+      const room=new THREE.Group(),actions=[],colliders=[],calls=[];let exits=0;
+      const layout=buildSuppliedRoom({site:{id,line:'Yuri’s room'},room,
+        reg:(object,label,fn,inside)=>actions.push({object,label,fn,inside}),
+        collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action:(...args)=>calls.push(args),exit:()=>exits++});
+      assert.equal(layout,SUPPLIED_ROOM_LAYOUTS[id]);assert.deepEqual(colliders,layout.colliders);
+      const model=room.children.find(o=>o.userData.sharedAsset);assert.ok(model);
+      const bounds=new THREE.Box3().setFromObject(model);
+      assert.ok(bounds.min.y>-.006&&bounds.min.y<.006,'Floor grounded in metres');
+      assert.ok(bounds.max.y>2.65&&bounds.max.y<3.2,'Ceiling at the intended human scale');
+      let meshCount=0;
+      model.traverse(o=>{if(!o.isMesh)return;meshCount++;assert.ok(o.material.isMeshBasicMaterial,'Baked lighting retained');});
+      assert.equal(meshCount,manifest.draws);
+      const points=reachableFloor(layout);assert.ok(points.length>500,'Connected usable floor area');
+      for(const {object,label,fn,inside} of actions){
+        assert.equal(inside,true);
+        assert.ok(points.some(p=>Math.hypot(p.x-object.position.x,p.z-object.position.z)<1.65),'Walk close enough to use '+id+': '+label);
+        fn();
+      }
+      assert.equal(exits,1);assert.ok(calls.some(c=>c[0]==='read'));assert.ok(calls.some(c=>c[0]==='seat'));
+      const blocked=(x,z)=>suppliedRoomBoundsBlocked(layout,x,z,.28)||layout.colliders.some(c=>circleHitsRect(x,z,.28,c));
+      assert.equal(blocked(1.55,2.12),false,'Bedroom doorway spawn is clear');
+      assert.equal(blocked(.1,0),false,'Aisle between bed and television is clear');
+    }
     const world={group:new THREE.Group(),colliders:[]},sites=[],entries=[];
     const site=buildRamenRestaurant(world,{sites,register:(o,label,fn)=>entries.push({o,label,fn}),enter:s=>assert.equal(s.id,'ramen')});
     assert.equal(sites.length,1);assert.equal(entries.length,1);entries[0].fn();
@@ -105,7 +137,7 @@ test('missing supplied models preserve the existing procedural buildings and roo
   const mod=await import('../src/world/supplied-rooms.js?failed-load');
   const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
   try{
-    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false]);
+    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false,false]);
     assert.equal(mod.buildRamenRestaurant({},{}),false);
     for(const id of ['office','ramen'])assert.equal(mod.buildSuppliedRoom({site:{id},room:new THREE.Group()}),null);
   }finally{globalThis.fetch=originalFetch;console.warn=originalWarn;}

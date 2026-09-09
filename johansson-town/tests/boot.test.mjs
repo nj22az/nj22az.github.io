@@ -77,7 +77,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true],'All supplied rooms preloaded');
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true],'All supplied rooms preloaded');
     const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
     const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js');
@@ -213,6 +213,11 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
     assert.equal(yuri.visible,true,'Yuri returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
     assert.equal(yuri.position.x,3.35);assert.equal(yuri.position.z,-1.95);api.leaveRoom();
+    api.reviewSetMinutes(1420);api.enterRoom(api.SITES.find(s=>s.id==='yuri-home'));api.interaction();
+    assert.equal(api.reviewCurrentRoom()?.id,'yuri-home');
+    assert.equal(yuri.visible,true,'Yuri is home late at night');
+    assert.equal(yuri.userData.inHome,true);assert.equal(api.scene.children.filter(o=>o.userData.name==='Yuri').length,1);
+    api.leaveRoom();
     api.reviewSetMinutes(1619.99);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
     assert.equal(api.reviewRoomState().townVisible,true,'03:00 closing returns the player to the street');
     assert.equal(api.world.people.find(p=>p.profile.name==='Nao').g.parent,api.world.group,'Nao leaves her counter at closing');

@@ -5,7 +5,7 @@ import {localToWorld} from './landmark-lots.js';
 
 const assets=new Map();
 let pending;
-const files={stepwise:'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb'};
+const files={stepwise:'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
 
 // Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
@@ -47,6 +47,15 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:-1.94,z:3.10,w:.79,d:.79,height:1.45},
       {x:2.12,z:2.98,w:.44,d:1.04,height:1.45},
       {x:1.86,z:-3.08,w:.88,d:.94,height:1.02},
+    ]},
+  'yuri-home':{bounds:{minX:-2.20,maxX:2.20,minZ:-2.40,maxZ:2.50},spawn:[1.55,0,2.12],exit:[1.55,1.1,2.48],
+    colliders:[
+      {x:-1.46,z:.79,w:1.78,d:1.66,height:.9},
+      {x:-2.17,z:-.26,w:.42,d:.42,height:.47},
+      {x:-2.17,z:1.83,w:.42,d:.42,height:.47},
+      {x:.70,z:.80,w:.32,d:1.56,height:1.55},
+      {x:-.95,z:-2.16,w:2.16,d:.70,height:.76},
+      {x:1.64,z:-1.35,w:1.60,d:.16,height:2.4},
     ]},
 };
 
@@ -180,6 +189,12 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([-2.94,1.05,.05],'Browse service files','read','Service files','A row of labelled binders keeps each vessel’s service history in order.');
     anchor([-2.52,.7,-1.82],'Sit at the desk','seat','Office chair','A blue swivel chair faces the service desk.');
     anchor([1.14,.7,-2.05],'Sit down','seat','Office chair','The desk is ready for the next round of paperwork.');
+  }else if(site.id==='yuri-home'){
+    anchor([-1.2,.55,.8],'Sit on Yuri’s bed','seat','Yuri’s bed','The duvet is smoothed, then immediately sat on. A ribbon is tied around one bedpost.');
+    anchor([-.9,.48,-2.05],'Sit on the sofa','seat','Window sofa','The seat faces the little table. Harbour light would reach here in the morning.');
+    anchor([.7,1.1,.8],'Watch the television','inspect','Yuri’s television','A late-showa set, warm even when it is off. The channel marker sits on JOJO.');
+    anchor([-1.7,1.5,-2.45],'Look at the pictures','inspect','Wall collage','Cuttings, a harbour postcard and a Polaroid of the shop ribbon.');
+    anchor([-2.05,.55,-.26],'Read the bedside note','read','Bedside note','Lock up at eight. Water the fern. If Nao lights the lantern, it is allowed to be a late night.');
   }else{
     anchor([.15,1.02,.86],'Order ramen · ¥300','ramen','Sato Ramen');
     anchor([-.4,.59,1.36],'Sit at the ramen counter','seat','Counter stool','A worn green stool beside the lacquered counter.');

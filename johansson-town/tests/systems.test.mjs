@@ -101,7 +101,7 @@ test('every resident has a distinct built home with a clear walking route to its
  const {world,anchors}=build();assert.equal(world.homes.size,22);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,22);
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
-  assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'));
+  assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'||a.label==='Enter '+p.profile.name+'’s room'),p.profile.name+' home prompt');
   assert.equal(blocked(...home.door),false,p.profile.name+' doorstep');
   const path=nav.path({x:0,z:46},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
