@@ -72,16 +72,23 @@ export function createLocalCharacters({shadows=false}={}){
     let cup=null;
     if(neighbour){const hand=model.getObjectByName('J_Bip_R_Hand');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.035,.027,.07,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(.06,0,-.035);cup.visible=false;hand.add(cup);}}
     const motion=asset.parser.json.extras||{};
-    const actor={cup,faces,look:vroidLook(profile),expressionTime:(actors.length*.731)+.3,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',neighbour,moving:false};
+    const actor={cup,faces,look:vroidLook(profile),expressionTime:(actors.length*.731)+.3,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',neighbour,moving:false,wasVisible:true,height:height||profile?.height||1.75,eyeCentres:motion.eyeCentres};
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
     if(neighbour)updateVroidExpression(actor,0);
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
-      if(!entity.visible){actor.last.copy(entity.position);continue;}
+      let visible=true;for(let parent=entity;parent;parent=parent.parent)if(!parent.visible){visible=false;break;}
+      if(!visible){actor.last.copy(entity.position);actor.speed=0;actor.moving=false;actor.gestureTime=0;actor.wasVisible=false;continue;}
       const distance=Math.hypot(entity.position.x-actor.last.x,entity.position.z-actor.last.z);actor.last.copy(entity.position);
-      const measured=distance>1?0:distance/Math.max(dt,.001);
+      const relocated=!actor.wasVisible||distance>1;actor.wasVisible=true;
+      if(relocated){
+        // Streaming and room transfers are discontinuities, not footsteps.
+        // Stop outgoing actions so their stale pose cannot bleed into arrival.
+        mixer.stopAllAction();actor.current=null;actor.speed=0;actor.moving=false;actor.gestureTime=0;
+      }
+      const measured=relocated?0:distance/Math.max(dt,.001);
       actor.speed=THREE.MathUtils.damp(actor.speed,measured,12,dt);
       actor.moving=actor.speed>(actor.moving?.08:.18);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
@@ -98,5 +105,18 @@ export function createLocalCharacters({shadows=false}={}){
       if(actor.neighbour)updateVroidExpression(actor,dt);
     }
   }
-  return {attach,update,actors,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
+  function conversationTarget(entity,target=new THREE.Vector3()){
+    const actor=byEntity.get(entity);if(!actor)return null;
+    const head=actor.model.getObjectByName(actor.neighbour?'J_Bip_C_Head':'Head');
+    if(head){
+      if(actor.eyeCentres){const [left,right]=actor.eyeCentres;target.fromArray(left).add(new THREE.Vector3(...right)).multiplyScalar(.5);return head.localToWorld(target);}
+      head.getWorldPosition(target);
+      // Yuri's Head joint is at the base of her large head, not eye level.
+      const crown=actor.model.getObjectByName('head_end');
+      if(crown)return target.lerp(crown.getWorldPosition(new THREE.Vector3()),.65);
+      target.y+=actor.height*.045;return target;
+    }
+    entity.getWorldPosition(target);target.y+=actor.height*.9;return target;
+  }
+  return {attach,update,actors,conversationTarget,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
 }

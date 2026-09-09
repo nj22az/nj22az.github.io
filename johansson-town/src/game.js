@@ -19,7 +19,7 @@ import { createActivities } from '../activities.js?exploration-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?vroid-2';
+import { createCharacters } from './people/characters.js?vroid-3';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js';
 
 const $=s=>document.querySelector(s);
@@ -71,7 +71,7 @@ player.visible=false;
 const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};interactables.push(o)};
 function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on');subtitleTimer=sec}
 
-const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:enterRoom,getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person){person.g.userData.facePlayerUntil=performance.now()+1600;person.g.lookAt(player.position.x,0,player.position.z);person.g.rotateY(Math.PI);characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:enterRoom,getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person){person.g.userData.facePlayerUntil=performance.now()+1600;person.g.lookAt(player.position.x,person.g.position.y,player.position.z);person.g.rotateY(Math.PI);characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 activities=createActivities({say,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,names:current?.id==='izakaya'?izakayaGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p?.g.position.z<-63){characters.gesture(p.g);activities.close();say('The harbour master waves from the pier.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{activities.close();seated=true;resetInput();say(name+' · E to stand · R to drink',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;}});
 syncView();
@@ -222,7 +222,7 @@ function setConversation(name){
  conversationName=name;resizeRenderer();
  if(name){
   const speaker=name==='Yuri'?storeClerk:world.people.find(p=>p.g.userData.name===name)?.g;
-  if(speaker){const target=speaker.getWorldPosition(new THREE.Vector3());target.y+=1.25;camera.lookAt(target);}
+  if(speaker){camera.lookAt(characters.conversationTarget(speaker));}
   player.visible=false;
  }else if(conversationCamera){camera.quaternion.copy(conversationCamera.rotation);player.visible=conversationCamera.playerVisible;conversationCamera=null;}
 }addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;lookTouch.id=null;knob.style.transform='translate(0,0)';}addEventListener('blur',resetInput);document.addEventListener('visibilitychange',()=>{resetInput();if(!document.hidden)clock.getDelta();});

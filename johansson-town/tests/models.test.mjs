@@ -65,6 +65,24 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
    for(let i=0;i<track.values.length;i+=3){assert.equal(track.values[i],track.values[0]);assert.equal(track.values[i+2],track.values[2]);}
   }
   const skin=actor=>{let result;actor.model.traverse(o=>{if(o.isSkinnedMesh)result=o;});return result;};
+  // A streamed-out walker must not resume stale footsteps or a stale greeting
+  // when its parent room becomes visible again, or after an instant relocation.
+  const kenji=actors.find(a=>a.entity.userData.name==='Kenji');
+  kenji.entity.userData.socialPose=undefined;kenji.gestureTime=0;
+  for(let i=0;i<40;i++){kenji.entity.position.z-=.02;models.update(1/60);}
+  assert.equal(kenji.current,'Walk');
+  const hiddenTown=new THREE.Group();scene.add(hiddenTown);hiddenTown.add(kenji.entity);hiddenTown.visible=false;
+  const hiddenTime=kenji.mixer.time;models.update(.1);
+  assert.equal(kenji.mixer.time,hiddenTime,'Hidden ancestors suspend body animation');
+  hiddenTown.visible=true;models.update(1/60);
+  assert.equal(kenji.current,'Idle_Neutral','No stale walking on reappearance');
+  assert.equal(kenji.speed,0);
+  for(let i=0;i<40;i++){kenji.entity.position.z-=.02;models.update(1/60);}
+  kenji.entity.position.z+=20;models.update(1/60);
+  assert.equal(kenji.current,'Idle_Neutral','Teleport is not locomotion');
+  assert.equal(kenji.actions.get('Walk').isRunning(),false,'Teleport clears the previous action instead of blending a walking pose');
+  models.gesture(kenji.entity);models.update(.1);kenji.entity.visible=false;models.update(.1);
+  kenji.entity.visible=true;models.update(1/60);assert.equal(kenji.current,'Idle_Neutral','Interrupted greetings do not reappear later');
   const bobA=actors.find(a=>a.entity.userData.name==='Mrs Sato'),bobB=actors.find(a=>a.entity.userData.name==='Hana');
   assert.notEqual(skin(bobA).skeleton,skin(bobB).skeleton,'Shared bases keep independent animation skeletons');
   assert.equal(skin(bobA).geometry,skin(bobB).geometry,'Instances reuse downloaded geometry');
@@ -82,6 +100,18 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
    const profile=PROFILES.find(p=>p.name===actor.entity.userData.name);
    assert.equal(!!actor.model.getObjectByName('Town spectacles'),vroidLook(profile).glasses);
    const frames=actor.model.getObjectByName('Town spectacles');if(frames){frames.geometry.computeBoundingBox();assert.ok(frames.geometry.boundingBox.getSize(new THREE.Vector3()).x>.09,'Glasses fit the visible eyes, not the internal rotation pivots');}
+  }
+  for(const actor of actors.filter(a=>['Aiko','Kenji','Yuri'].includes(a.entity.userData.name))){
+   actor.mixer.stopAllAction();actor.current=null;actor.speed=0;actor.moving=false;actor.gestureTime=0;
+   actor.entity.userData.socialPose=undefined;models.update(0);
+   const standing=models.conversationTarget(actor.entity),base=actor.entity.getWorldPosition(new THREE.Vector3());
+   assert.ok(standing.y-base.y>actor.height*.75&&standing.y-base.y<actor.height,actor.entity.userData.name+' conversation height '+(standing.y-base.y)+' / '+actor.height);
+   if(actor.neighbour){
+    actor.entity.userData.socialPose='Sit';models.update(.4);
+    const seated=models.conversationTarget(actor.entity);
+    assert.ok(seated.y<standing.y-.2,'Conversation target follows the seated head');
+    actor.entity.userData.socialPose=undefined;
+   }
   }
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

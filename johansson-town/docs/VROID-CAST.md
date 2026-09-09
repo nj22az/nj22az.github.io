@@ -89,3 +89,11 @@ interior isolation. Browser appearance, shader execution and device frame times
 remain unverified: the review browser could not create a WebGL context because
 its graphics renderer was disabled. Compare the lighting trial in daylight,
 evening and Minato before expanding it to the rest of the cast.
+
+The follow-up glitch pass resets stale walking and greeting actions after
+visibility changes or instant relocation, and suspends mixers beneath hidden
+parents. Conversation framing uses the animated VRoid eye anchors or Yuri's
+head/crown rather than one fixed height, so seated speakers are framed correctly.
+Regression checks reproduce the previous hidden-parent animation fault and
+cover reappearance, relocation, interrupted greetings and standing/seated focus.
+All 56 tests and the build pass; the browser/device limitation above still applies.
