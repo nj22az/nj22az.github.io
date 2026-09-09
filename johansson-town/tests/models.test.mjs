@@ -113,6 +113,14 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
     actor.entity.userData.socialPose=undefined;
    }
   }
+  const speaker=actors.find(a=>a.entity.userData.name==='Kenji'),listener=actors.find(a=>a.entity.userData.name==='Tetsuo');
+  speaker.entity.userData.chat={speaking:true,time:4,partner:listener.entity,greeting:false};
+  listener.entity.userData.chat={speaking:false,time:4,partner:speaker.entity,greeting:false};
+  models.update(.1);
+  for(const face of speaker.faces)assert.ok(face.morphTargetInfluences[face.morphTargetDictionary.MouthOpen]>.07,'Ambient speaker has bounded mouth motion');
+  for(const face of listener.faces)assert.equal(face.morphTargetInfluences[face.morphTargetDictionary.MouthOpen],0,'Listener does not speak over their neighbour');
+  delete speaker.entity.userData.chat;delete listener.entity.userData.chat;models.update(.1);
+  for(const face of speaker.faces)assert.equal(face.morphTargetInfluences[face.morphTargetDictionary.MouthOpen],0,'Cancellation clears mouth motion');
   // Seat contact is measured on each actual skinned body, not inferred from height.
   for(const actor of actors.filter(a=>a.neighbour)){
    actor.entity.visible=true;actor.entity.parent.visible=true;

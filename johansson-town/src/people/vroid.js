@@ -76,11 +76,11 @@ export function updateVroidExpression(actor,dt){
   actor.expressionTime+=dt;
   const period=3.7+(actor.look.index%5)*.41,phase=actor.expressionTime%period;
   const blink=phase<.18?Math.sin(Math.PI*phase/.18)**2:0;
-  const smile=actor.gestureTime>0?.3:.12;
+  const smile=actor.entity.userData.chat?.speaking?.26:actor.gestureTime>0?.3:.12;
   for(const face of actor.faces){
     const dict=face.morphTargetDictionary,weights=face.morphTargetInfluences;
     weights[dict.Blink]=blink;weights[dict.Smile]=smile;
-    weights[dict.MouthOpen]=actor.current==='Eat'?.05+.05*Math.sin(actor.expressionTime*3):0;
+    weights[dict.MouthOpen]=actor.entity.userData.chat?.speaking?.08+.18*Math.sin(actor.expressionTime*13)**2:actor.current==='Eat'?.05+.05*Math.sin(actor.expressionTime*3):0;
   }
   if(actor.cup?.visible){
     actor.model.updateMatrixWorld(true);

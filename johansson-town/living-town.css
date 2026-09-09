@@ -24,3 +24,10 @@
 #hud #waypoint{position:fixed;pointer-events:auto;top:max(108px,calc(env(safe-area-inset-top) + 102px));left:max(14px,env(safe-area-inset-left));max-width:calc(100vw - 28px);min-height:44px;padding:10px 14px;border:2px solid #eed1ac;border-radius:15px;background:#fff2dbe8;color:#704d4e;font:700 13px system-ui;cursor:pointer}
 #hud #waypoint:focus-visible{outline:3px solid #f7cd6c;outline-offset:3px}
 #directoryGrid [data-id="travel-progress"]{grid-column:1/-1;background:#eadcbd;color:#635443;border:2px dashed #c8ae83;border-radius:16px}
+
+/* One nearby exchange; never captures touch input or competes with menus. */
+.neighbour-chat{position:fixed;z-index:12;pointer-events:none;width:210px;max-width:58vw;padding:9px 12px;background:#fff3d9;color:#3d3530;border:2px solid #b59670;border-radius:16px;box-shadow:0 3px 0 #4a342333;transform:translate(-50%,-100%);font:13px/1.35 system-ui,sans-serif;text-align:left}
+.neighbour-chat[hidden]{display:none}
+.neighbour-chat strong{display:block;font-size:11px;color:#925443;margin-bottom:3px}
+.neighbour-chat span{display:block}
+.neighbour-chat:after{content:'';position:absolute;left:50%;bottom:-7px;width:10px;height:10px;background:#fff3d9;border-right:2px solid #b59670;border-bottom:2px solid #b59670;transform:rotate(45deg)}
