@@ -15,6 +15,14 @@ function attribute(id){
 const isDoor=c=>nav.doors.some(d=>Math.abs((d.min[0]+d.max[0])/2-c.x)<.06&&Math.abs((d.min[2]+d.max[2])/2-c.z)<.06);
 const removedColliders=nav.colliders.flatMap((c,i)=>!isDoor(c)&&c.height<2&&Math.max(c.w,c.d)<2?[i]:[]);
 const volumes=removedColliders.map(i=>{const c=nav.colliders[i];return {lo:[c.x-c.w/2-.025,c.minY-.025,c.z-c.d/2-.025],hi:[c.x+c.w/2+.025,c.height+.025,c.z+c.d/2+.025]};});
+// A-frame construction barricades (yellow/black striped) sit on the walking
+// street. They were never named as collidable props, so the volume pass misses
+// them and they visually close the road.
+function isStreetBarricade(b,name){
+ if(name!=='Atlas_03')return false;
+ const w=b.hi[0]-b.lo[0],h=b.hi[1]-b.lo[1],d=b.hi[2]-b.lo[2];
+ return b.lo[1]<.2&&h>=.55&&h<=1.1&&Math.min(w,d)>=.7&&Math.max(w,d)<=2.2;
+}
 const meshes=gltf.meshes.map((mesh,meshIndex)=>{
  const primitive=mesh.primitives[0],p=attribute(primitive.attributes.POSITION),index=attribute(primitive.indices),n=p.length/3;
  const parent=Int32Array.from({length:n},(_,i)=>i),welded=new Map();
@@ -26,7 +34,7 @@ const meshes=gltf.meshes.map((mesh,meshIndex)=>{
  for(let i=0;i<n;i++){const root=find(i);if(!components.has(root))components.set(root,{lo:[Infinity,Infinity,Infinity],hi:[-Infinity,-Infinity,-Infinity]});const b=components.get(root);for(let k=0;k<3;k++){b.lo[k]=Math.min(b.lo[k],p[i*3+k]);b.hi[k]=Math.max(b.hi[k],p[i*3+k]);}}
  const removed=new Set();for(const [id,b] of components){
   if(b.hi[1]-b.lo[1]<.015&&b.lo[1]<.12)continue; // retain ground/decal surfaces
-  if(volumes.some(v=>b.lo.every((x,k)=>x>=v.lo[k])&&b.hi.every((x,k)=>x<=v.hi[k])))removed.add(id);
+  if(isStreetBarricade(b,gltf.nodes[meshIndex].name)||volumes.some(v=>b.lo.every((x,k)=>x>=v.lo[k])&&b.hi.every((x,k)=>x<=v.hi[k])))removed.add(id);
  }
  const ranges=[];let start=null;
  for(let t=0;t<=index.length/3;t++){const remove=t<index.length/3&&removed.has(find(index[t*3]));if(remove&&start===null)start=t;if(!remove&&start!==null){ranges.push([start,t-start]);start=null;}}
