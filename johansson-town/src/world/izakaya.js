@@ -5,7 +5,7 @@ const assets=new Map();
 export async function preloadIzakaya(){
  const loader=new GLTFLoader();await Promise.allSettled(['exterior','interior'].map(async kind=>{
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
-  const file=kind==='exterior'?'minato-supplied-exterior.glb':'minato-interior.glb';
+  const file=kind==='exterior'?'minato-benmaher-exterior.glb':'minato-interior.glb';
   try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);assets.set(kind,(await loader.parseAsync(await response.arrayBuffer(),'')).scene);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
  }));return {ready:assets.size,total:2};
 }
@@ -28,8 +28,13 @@ export function buildIzakaya(world,options){
  const boardTexture=new THREE.CanvasTexture(board);boardTexture.colorSpace=THREE.SRGBColorSpace;
  const wayfinder=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.94),new THREE.MeshBasicMaterial({map:boardTexture,side:THREE.DoubleSide}));wayfinder.position.set(6.6,2.15,18.5);world.group.add(wayfinder);
  const post=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.15,6),new THREE.MeshStandardMaterial({color:0x633d2a}));post.position.set(6.6,1.075,18.5);world.group.add(post);
- // The supplied building has a narrower footprint and an open central doorway.
- world.colliders.push({x:24,z:27.8,w:5.6,d:.3,height:5.2},{x:21.3,z:24.3,w:.3,d:7,height:5.2},{x:26.7,z:24.3,w:.3,d:7,height:5.2},{x:22.3,z:20.9,w:2,d:.3,height:2.5},{x:25.7,z:20.9,w:2,d:.3,height:2.5});
+ // The new facade has a recessed closed door and an asymmetric footprint.
+ // Stop at the visible step; the entrance prompt opens the existing dining room.
+ if(suppliedExterior)world.colliders.push(
+  {x:24.91,z:23.89,w:5.22,d:6.82,height:9.05},
+  {x:27.92,z:26.54,w:.85,d:.85,height:1.08},
+  {x:27.74,z:25.90,w:.50,d:.50,height:.36});
+ else world.colliders.push({x:24,z:25,w:8,d:8,height:4});
  return site;
 }
 export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}){

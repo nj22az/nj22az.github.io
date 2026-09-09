@@ -1,6 +1,16 @@
 # Supplied town buildings
 
-The owner supplied two Meshy GLBs through Drive. Originals stay in Drive; source hashes and runtime hashes are recorded in each optimisation report.
+## Active Minato exterior — September 9 replacement
+
+Minato now uses the owner's `izakaya_-_low_poly_building.glb`: BenMaher's **Izakaya - Low Poly Building**. The taller facade retains its neon sign, recessed door, pipes, rooftop canopy and boxes. The packed model removes only the presentation ground plane and retains all 2,446 building triangles in three draws. Re-encoded PBR atlases and cropped alpha textures reduce the 63,407,884-byte upload to 2,958,412 bytes. The existing dining room, menu, gossip, radio, seats and Yuri visits remain active.
+
+Runtime: `assets/models/izakaya/minato-benmaher-exterior.glb`. Reproduction: `python tools/pack-benmaher-izakaya.py /path/to/izakaya_-_low_poly_building.glb`. Metadata, hashes, geometry parts and fitting details: `assets/models/izakaya/benmaher-manifest.json`. Credits: `assets/ATTRIBUTION.md`.
+
+The source door faces the east lane at Minato's existing entrance `(24,20)`. New collision rectangles follow the asymmetric building and crates. The closed door opens the existing room through its entrance action. Street-exit stability checks use Minato's actual northward exit direction. CPU tests load the real exterior and interior, verify cutout/PBR materials and geometry, and exercise entry, exit and guest visits. Blender CPU renders inspect the fitted exterior and doorway; browser rendering and frame rate are not measured by these checks.
+
+## Earlier Meshy intake
+
+The owner previously supplied two Meshy GLBs through Drive. Originals stay in Drive; source hashes and runtime hashes are recorded in each optimisation report. The Lantern Izakaya exterior is now inactive; Corner Tea House remains active.
 
 | Asset | Source | Runtime | Triangles |
 | --- | ---: | ---: | ---: |
