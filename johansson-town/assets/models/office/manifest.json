@@ -1,0 +1,40 @@
+{
+  "file": "office-interior.glb",
+  "sourceFile": "3ds_-_tomodachi_life_-_interiors_-_065_office.glb",
+  "sourceSHA256": "40d33b4523b5d4bd18c5a3496dc0d0947df72198ce3d15789e27c0976887a4a7",
+  "sourceMetadata": {
+    "author": "Unknown Person (https://sketchfab.com/jkimmel694)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/3ds-tomodachi-life-interiors-065-office-e6d0799ea5f34c8a8ab57237a0208ff5",
+    "title": "3DS - Tomodachi Life - Interiors - 065 Office"
+  },
+  "sha256": "f61f6b4bcae9181c03616d0c7560abad4a2d73018ece38c81bd08a7a46e15b6d",
+  "bytes": 274812,
+  "triangles": 2991,
+  "draws": 28,
+  "removedDuplicatePrimitives": 40,
+  "bounds": {
+    "min": [
+      -3.4000003337860107,
+      -0.004999841563403606,
+      -3.4000003337860107
+    ],
+    "max": [
+      3.4000003337860107,
+      2.700000524520874,
+      5.067500114440918
+    ]
+  },
+  "fit": {
+    "scale": 1,
+    "rotationY": 3.141592653589793,
+    "floorOffset": 0.01
+  },
+  "changes": [
+    "Baked source hierarchy and room orientation into vertices",
+    "Merged primitives sharing material and vertex attributes",
+    "Preserved embedded textures, UV transforms and vertex colours",
+    "Unlit materials preserve baked lighting; vertex alpha restores office shadow overlays",
+    "Converted legacy specular/glossiness diffuse textures to core glTF base colour"
+  ]
+}
