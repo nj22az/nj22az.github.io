@@ -6,6 +6,7 @@ const THREE=await import(url('vendor/three.module.js'));
 const {installDOM}=await import(url('tests/fixtures.mjs'));installDOM();
 const {preloadIzakaya}=await import(url('src/world/izakaya.js'));
 const {preloadHarbourBlock}=await import(url('src/world/harbour-block.js'));
+const {preloadStreetPlants}=await import(url('src/world/street-plants.js'));
 const {createTown}=await import(url('src/world/town.js'));
 const {preloadModels,createLocalCharacters}=await import(url('src/people/models.js'));
 const {createCastAI}=await import(url('src/people/schedules.js'));
@@ -22,6 +23,7 @@ globalThis.fetch=async path=>{
  return new Response(await readFile(root+'/assets/'+pathname.split('/assets/')[1]));
 };
 const {preloadTeaHouse}=await import(url('src/world/tea-house.js'));if(!await preloadTeaHouse())throw Error('Missing tea house asset');
+if(!await preloadStreetPlants())throw Error('Missing OS3A street plant');
 if(!process.argv.includes('--without-block')&&!await preloadHarbourBlock())throw Error('Missing harbour block');
 const izakayaLoaded=await preloadIzakaya();if(izakayaLoaded.ready!==2)throw Error('Missing izakaya assets');
 const world=createTown({scene,sites,harbourBatching:!process.argv.includes('--legacy'),harbourCellSize:Number(process.argv.find(a=>a.startsWith('--cell='))?.split('=')[1]||48),mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>player.position});
@@ -62,5 +64,5 @@ for(const [state,day,minutes,rain] of [['day',1,1002,false],['rainNight',0,1200,
 console.log(JSON.stringify({
  method:'CPU frustum estimate; all local character assets must load. Images are stubbed. No shadows, Points, GPU timings, player/held objects or interiors. Fixed starting resident population across viewpoints; not a gameplay walk-through.',
  configuration:{consolidate:!process.argv.includes('--legacy'),cellSize:process.argv.find(a=>a.startsWith('--cell='))?.split('=')[1]||'48'},
- loaded,harbourBlock:world.quality.harbourBlock,staticProps:world.quality.staticProps,...initial,views
+ loaded,harbourBlock:world.quality.harbourBlock,streetPlants:world.quality.streetPlants,staticProps:world.quality.staticProps,...initial,views
 },null,2));

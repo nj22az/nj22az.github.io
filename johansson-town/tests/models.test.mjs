@@ -21,7 +21,7 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
   for(const name of ['Aiko','Kenji','Mrs Sato','Hana','Kenta','Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,4);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else assert.equal(skins,1);
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,4);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else {assert.ok(skins>=6&&skins<=7);assert.match(entity.userData.visualSource,/individually fitted/);}
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
   }
   for(let tick=0;tick<60;tick++){actors[1].entity.position.z-=.02;models.update(1/60);scene.updateMatrixWorld(true);}
@@ -33,7 +33,7 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
    kenji.mixer.stopAllAction();action.reset().play();
    for(const fraction of [0,.25,.5,.75,1]){
     kenji.mixer.setTime(action.getClip().duration*fraction);scene.updateMatrixWorld(true);
-    kenji.model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();if(kenji===actors[1])assert.ok(mesh.material.vertexColors,'Keep authored Blender palette');
+    kenji.model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();if(kenji===actors[1]&&mesh.name.includes('casualsuit'))assert.ok(mesh.material.vertexColors,'Keep individual wardrobe palette');
      for(let vertex=0;vertex<mesh.geometry.attributes.position.count;vertex+=17){mesh.getVertexPosition(vertex,point);assert.ok(point.toArray().every(Number.isFinite),'Finite deformed vertices');assert.ok(point.length()<4,'No exploded limbs');}
     });
    }

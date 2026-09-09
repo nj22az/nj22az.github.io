@@ -1,0 +1,61 @@
+{
+  "name": "Hana",
+  "model": "resident-07",
+  "age": 17,
+  "height": 1.57,
+  "macro": {
+    "age": 0.18888888888888888,
+    "gender": 0.0,
+    "height": 0.5,
+    "muscle": 0.36,
+    "weight": 0.5800000000000001,
+    "proportions": 0.485,
+    "cupsize": 0.28,
+    "firmness": 0.5,
+    "race": {
+      "asian": 1.0,
+      "caucasian": 0.0,
+      "african": 0.0
+    }
+  },
+  "faceTargets": {
+    "nose/nose-scale-depth-decr": 0.29500000000000004,
+    "chin/chin-height-decr": 0.155,
+    "mouth/mouth-upperlip-volume-decr": 0.22,
+    "mouth/mouth-lowerlip-volume-decr": 0.17,
+    "cheek/l-cheek-volume-incr": 0.11499999999999999,
+    "cheek/r-cheek-volume-incr": 0.11499999999999999,
+    "expression/units/asian/mouth-corner-puller": 0.16
+  },
+  "clothes": "female_elegantsuit01",
+  "hair": "bob01",
+  "skin": "young_asian_female",
+  "triangles": 13905,
+  "files": {
+    "data/targets/nose/nose-scale-depth-decr.target.gz": "0842aa0f4265fef85b6e708cdd0b0665e9a951c08a1c768dc285206f0ae4c7ad",
+    "data/targets/chin/chin-height-decr.target.gz": "1f4196d330b418d576e9400a754cb99d7e60b069ee8fdef645713f84db984e0c",
+    "data/targets/mouth/mouth-upperlip-volume-decr.target.gz": "b2f940f8187112ee233ddfcdfb4a025fa01ee878b17dc44c64971c96583e7caf",
+    "data/targets/mouth/mouth-lowerlip-volume-decr.target.gz": "01d4f0c2889b43d3b97e4c7c6179d1217214a7caa0073db36d09b2b4b6edcf18",
+    "data/targets/cheek/l-cheek-volume-incr.target.gz": "75bf330b96d0036c46f779ed003782c7380c77dd06c14fd80f1fa20a5093fee1",
+    "data/targets/cheek/r-cheek-volume-incr.target.gz": "4df3e61e843c2d3381ef534e90d347b6b8ea763428d69eba8ef2ed5ab0affb8c",
+    "data/targets/expression/units/asian/mouth-corner-puller.target.gz": "d881bb8feda2637bdaef2c7d7c6bed12f0be5914949e5a2cb9b06a583af412c0",
+    "skins/young_asian_female/young_asian_female.mhmat": "2baeded5fdfd31acc187e83b278f9c4e4cbb59a7ffedf50ebcffcc44e4eab220",
+    "skins/young_asian_female/young_lightskinned_female_diffuse3.png": "1d82f782b7d2da732229633bd2d14754d873fff53cdb1d088977bcf67ae19dde",
+    "clothes/female_elegantsuit01/female_elegantsuit01.mhclo": "8ed657dbc49466e6a485993cfdcfd7b6ac30a0f44408dfd38de7a649477d8928",
+    "clothes/female_elegantsuit01/female_elegantsuit01.mhmat": "a0b1708efbff3c4ad96f8e7d8cc27fb1652719549455ce94b89bcf6294cfbed0",
+    "clothes/female_elegantsuit01/female_elegantsuit01_diffuse.png": "ebe6f2afcbaadbe56d5cee6e00bab45e97ce482f0be0e34491d16ca5f98b38ac",
+    "clothes/female_elegantsuit01/female_elegantsuit01_normal.png": "ae3650bce6678cd67d025ab70e68b22683176aeaabc06d8e5b2129af99c762e9",
+    "clothes/shoes02/shoes02.mhclo": "0d447fd6b7415d6b2603e91697336ee51ac2f00ef85878d6667e9acfb45a20fe",
+    "clothes/shoes02/shoes02.mhmat": "7f2cb19506784fbe22ba3f766f94bb13d1eee1712dd29ed10b926c5905bab924",
+    "clothes/shoes02/shoes02_diffuse.png": "efef94ea34b0e0c2283095cb47a9e0389b55449c61a4f4972d0ad4d2bf06b4f0",
+    "hair/bob01/bob01.mhclo": "a295b11ab6c7808afa1e01d0c79fb595bbbd7885f65252766486c9fcf6d158c5",
+    "hair/bob01/bob01.mhmat": "9c3015044a832fb9a72a5d2f28218914ebfbdf6725cfd237cc53a3d95f054e3b",
+    "hair/bob01/bob01_diffuse.png": "2b38bc7a028e06e8e633accb7fe2dd1b2bacbb9d32463df73f39f82e63ef9009",
+    "eyes/low-poly/low-poly.mhclo": "68582e28e9176cba7cfcf35208f671b6201b8d1bc95c32decff61a3160ec34d8",
+    "eyes/materials/brown.mhmat": "4abad93ce50541c08127721e77bce035640c9f16bed16cd0f5524b1cd5908465",
+    "eyes/materials/brown_eye.png": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b",
+    "eyebrows/eyebrow001/eyebrow001.mhclo": "54c8892c2ba577f4152d779ce1f20f7cd323beb8cbd9cb701796165c221b4f5b",
+    "eyebrows/eyebrow001/eyebrow001.mhmat": "976e5f4f1d3922d7a11c6e2db233f8b4584b068d00619d5749687e81c92d61fc",
+    "eyebrows/eyebrow001/eyebrow001.png": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+  }
+}

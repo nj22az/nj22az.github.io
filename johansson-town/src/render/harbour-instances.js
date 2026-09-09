@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {applyWorldUV} from './world-uv.js';
 
 // Only the harbour shape() builder feeds this function. Moving meshes, characters,
 // interaction anchors and room geometry never enter these batches.
@@ -24,6 +25,7 @@ export function createHarbourInstances(sources,{shadows=true,cellSize=48,consoli
   }
   return [...groups.values()].map(({geo,mat,coloured,items},index)=>{
     const material=coloured?mat.clone():mat;
+    if(material.userData.worldTextureScale)applyWorldUV(material,material.userData.worldTextureScale);
     if(coloured)material.color.set(0xffffff);
     const mesh=new THREE.InstancedMesh(geo,material,items.length);
     mesh.name='harbour-instances:'+index;

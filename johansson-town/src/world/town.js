@@ -5,6 +5,8 @@ import {buildDistricts} from './districts.js';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
+import {buildStreetPlants} from './street-plants.js';
+import {createMaterials} from '../render/materials.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -89,7 +91,7 @@ function addSiteFrontage(world,options,factory,lights){
     const awn=addWithCollider(group,colliders,factory.awning(side*6.95,s.z+1.2,frontRot,i%3===0?0x65766f:i%3===1?0x7b5e54:0x596b73));
     addWithCollider(group,colliders,factory.noren(side*6.90,s.z+2.08,frontRot,i%2?0x5c6571:0x78615c));
     if(i%2===0)addWithCollider(group,colliders,factory.airConditioner(side*7.15,s.z-1.25,frontRot));
-    const px=side*6.48,pz=s.z+3.78;factory.cylinder(group,.23,.42,[px,.34,pz],0x8a6b55,10,'timber');const plant=new THREE.Mesh(new THREE.SphereGeometry(.34,9,7),factory.material(null,i%2?0x607958:0x6e815a,.9));plant.scale.set(1,.9,1);plant.position.set(px,.82,pz);group.add(plant);colliders.push({x:px,z:pz,w:.52,d:.52});
+    const px=side*6.48,pz=s.z+3.78;world.plantSites.push({x:px,z:pz,height:1.1});colliders.push({x:px,z:pz,w:.52,d:.52});
     const lantern=factory.box(group,[.24,.44,.24],[side*6.88,2.58,s.z+1.68],0xd7a45f,null,false);lantern.material=factory.material(null,0xd7a45f,.8,0,0xd7a45f,.28);
     if(options.shadows&&!options.mobile){const l=new THREE.PointLight(0xffbd77,0,5.2,2);l.position.copy(lantern.position);group.add(l);lights.push(l);}
     inspect([side*6.18,1,s.z+.72],`Inspect ${s.title} window`,`${s.title} display`,`${s.line} The display includes handwritten price cards, paper notices and period shop fittings.`);
@@ -166,6 +168,11 @@ export function createTown(options){
   for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],0,profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],0,profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildIzakaya(world,options);
+  const plants=buildStreetPlants(world.group,world.plantSites,options);
+  // The quay's upper surface receives the same detailed concrete as its walls.
+  const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
+  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(8.15,15.25),surfaces.worldMaterial('concrete',0xc0beb5,2));
+  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(0,.098,-71.3);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=!open;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
@@ -185,6 +192,7 @@ export function createTown(options){
     cableSegments,
     harbourBlock:{shops:world.harbourShops.map(s=>s.id),nearTriangles:world.harbourShops.reduce((n,s)=>n+s.nearTriangles,0),farTriangles:world.harbourShops.reduce((n,s)=>n+s.farTriangles,0),boardwalk:true},
     staticProps,
+    streetPlants:plants,
     walkableOuterPier:true,
     pierPosts:pier.posts,
     antiShimmerCables:true,
