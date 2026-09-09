@@ -143,6 +143,43 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
       const p=person.profile.work;
       for(const site of shopDoors)assert.ok(Math.hypot(p[0]-site.door[0],p[1]-site.door[2])>=1.35,person.profile.name+' work stands off the '+site.id+' door');
     }
+    const closeAt=site=>site.id==='izakaya'?1620.05:site.id==='ramen'?1260:site.id==='market'?1200:site.id==='yuri-home'||site.id==='home'||site.id==='bus-hut'?null:1140;
+    for(const site of api.SITES){
+      api.reviewSetMinutes(1002);api.enterRoom(site);
+      assert.equal(api.reviewCurrentRoom()?.id,site.id,'Can enter '+site.id+' before closing');
+      api.activities.action('seat','A chair inside '+site.title);
+      const close=closeAt(site);
+      if(close==null){
+        document.querySelector('#exitRoomButton').onclick();
+        assert.equal(api.reviewCurrentRoom(),null,site.id+' still has an exit after hours');
+        assert.equal(blocked(api.player.position.x,api.player.position.z),false,site.id+' home exit is on the street');
+        continue;
+      }
+      api.reviewSetMinutes(close);api.simulate(.2);
+      assert.equal(api.reviewCurrentRoom(),null,site.id+' returns to the street after closing');
+      assert.equal(api.reviewRoomState().townVisible,true,site.id+' town is visible after closing');
+      assert.equal(document.querySelector('#exitRoomButton').classList.contains('hidden'),true);
+      assert.equal(blocked(api.player.position.x,api.player.position.z),false,site.id+' street is walkable after closing');
+      const trapped=api.world.people.filter(p=>p.g.visible&&Math.hypot(api.player.position.x-p.g.position.x,api.player.position.z-p.g.position.z)<.62);
+      assert.equal(trapped.length,0,site.id+' closing must not dump the player into '+(trapped[0]?.g.userData.name||'a neighbour'));
+    }
+    api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='ramen'));
+    api.player.position.set(-.4,0,1.36);api.activities.action('seat','Counter stool');
+    api.doInteract();
+    const ramenStand=api.player.position.clone();
+    let walked=false;
+    for(const key of ['KeyW','KeyS','KeyA','KeyD']){
+      api.player.position.copy(ramenStand);api.keys[key]=true;api.simulate(.25);api.keys[key]=false;
+      if(api.player.position.distanceTo(ramenStand)>.05){walked=true;break;}
+    }
+    assert.ok(walked,'Standing up in ramen is not trapped in the counter');
+    api.leaveRoom();
+    api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));
+    document.querySelector('#timeButton').onclick();
+    assert.equal(api.reviewCurrentRoom()?.id,'market','Sakura is still open at 18:30');
+    document.querySelector('#timeButton').onclick();
+    assert.equal(api.reviewCurrentRoom(),null,'Skipping time past closing puts you back on the street');
+    assert.equal(blocked(api.player.position.x,api.player.position.z),false,'Time skip after closing leaves a walkable street');
     const {STREET_DOORS,doorApproach,FULL_PATHS}=await import('../src/world/full-town-state.js');
     assert.equal(FULL_PATHS.some(p=>/pier|apron|port-walk|causeway/.test(p.id)),false,'No back docks, pier or causeway');
     for(const door of STREET_DOORS){
@@ -167,9 +204,9 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.equal(blocked(19.6,0),false,'East coastal boardwalk is walkable');
     api.player.position.copy(spawn);api.reviewSetYaw(0);api.activities.close();
     api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;
-    api.simulate(.1);const walked=api.player.position.distanceTo(spawn);
+    api.simulate(.1);const touchWalked=api.player.position.distanceTo(spawn);
     api.player.position.copy(spawn);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});api.simulate(.1);
-    assert.ok(api.player.position.distanceTo(spawn)>walked*1.6,'Touch Run increases speed in the actual world');api.moveTouch.id=null;
+    assert.ok(api.player.position.distanceTo(spawn)>touchWalked*1.6,'Touch Run increases speed in the actual world');api.moveTouch.id=null;
     for(const m of [180,540,1002,1320]){api.reviewSetMinutes(m);for(let i=0;i<10;i++)api.simulate(.1);assertFiniteTransforms(api,'clock '+m);}
     assert.equal(api.world.isOpen(api.SITES.find(s=>s.id==='izakaya'),179),true);
     assert.equal(api.world.isOpen(api.SITES.find(s=>s.id==='izakaya'),180),false);

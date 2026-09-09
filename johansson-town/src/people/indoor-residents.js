@@ -4,8 +4,8 @@ export function createIndoorResidents({world,parent,place}){
  const borrowed=new Map();
  function restore(p){const saved=borrowed.get(p);if(!saved)return;const g=p.g;
   saved.parent.add(g);const door=place==='ramen'?RAMEN_DOOR:place==='home'?YURI_HOME_DOOR:p.profile.work;
-  g.position.set(door[0]+(place==='ramen'?1.2:place==='home'?1.1:0),0,door[1]);g.quaternion.copy(saved.rotation);g.visible=false;g.userData.hit.inside=saved.inside;
-  delete g.userData.inMarket;delete g.userData.inRamen;delete g.userData.inHome;delete g.userData.socialPose;delete g.userData.seatHeight;borrowed.delete(p);
+  g.position.set(door[0]+(place==='ramen'?1.6:place==='home'?1.4:0),0,door[1]);g.quaternion.copy(saved.rotation);g.visible=false;g.userData.hit.inside=saved.inside;
+  delete g.userData.inMarket;delete g.userData.inRamen;delete g.userData.inHome;delete g.userData.indoors;delete g.userData.socialPose;delete g.userData.seatHeight;borrowed.delete(p);
  }
  return {sync(minutes){
   const people=world.people.filter(p=>{

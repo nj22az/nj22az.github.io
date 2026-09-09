@@ -1,10 +1,10 @@
 import {IZAKAYA_SEATS,IZAKAYA_DOOR,izakayaOpen,supperGuests,residentPlan} from './social.js';
 import {YURI_PROFILE} from './residents.js';
-// Borrow the existing cast indoors; departures resume at the restaurant door.
+// Borrow the existing cast indoors; departures resume beside the restaurant door.
 export function createIzakayaGuests({world,parent,getYuri=()=>null}){
  const borrowed=new Map();
  let yuriPerson=null;
- function restore(person){const g=person.g,saved=borrowed.get(person);if(!saved)return;g.parent?.remove(g);saved.parent.add(g);g.position.set(IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]);g.quaternion.copy(saved.rotation);g.visible=saved.visible;g.userData.hit.inside=saved.inside;delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.inIzakaya;borrowed.delete(person);}
+ function restore(person){const g=person.g,saved=borrowed.get(person);if(!saved)return;const n=borrowed.size-1;g.parent?.remove(g);saved.parent.add(g);g.position.set(IZAKAYA_DOOR[0]+1.6+(n%3)*.45,0,IZAKAYA_DOOR[1]+(Math.floor(n/3)-1)*.55);g.quaternion.copy(saved.rotation);g.visible=saved.visible;g.userData.hit.inside=saved.inside;delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.inIzakaya;delete g.userData.indoors;borrowed.delete(person);}
  function sync(minutes){
   const guests=supperGuests(minutes),names=izakayaOpen(minutes)?['Nao',...guests.map(p=>p.name)]:[];
   if(residentPlan(YURI_PROFILE,minutes).place==='izakaya'){const g=getYuri();if(g){yuriPerson??={g};names.push('Yuri');}}

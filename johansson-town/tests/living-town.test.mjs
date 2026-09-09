@@ -26,7 +26,16 @@ test('izakaya borrows existing entities, updates guests and restores interaction
  const names=guests.sync(1135);assert.ok(names.length>1);assert.equal(new Set(world.people.map(p=>p.g.uuid)).size,PROFILES.length);
  for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose);}
  const laterNames=guests.sync(1335);guests.restore();guests.restore();assert.equal(guests.names().length,0);
- for(const {g,pos,hit} of before){assert.equal(g.parent,street);assert.ok(g.position.equals([...names,...laterNames].includes(g.userData.name)?new THREE.Vector3(...[IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]]):pos),g.userData.name+' '+g.position.toArray()+' expected '+pos.toArray());assert.equal(g.userData.hit,hit);assert.equal(hit.inside,false);assert.equal(g.userData.inIzakaya,undefined);}
+ for(const {g,pos,hit} of before){
+  assert.equal(g.parent,street);
+  const wasGuest=[...names,...laterNames].includes(g.userData.name);
+  if(wasGuest){
+   const d=Math.hypot(g.position.x-IZAKAYA_DOOR[0],g.position.z-IZAKAYA_DOOR[1]);
+   assert.ok(d>0.9,g.userData.name+' leaves beside the izakaya door, not in it');
+   assert.ok(d<3,g.userData.name+' stays near the izakaya door');
+  }else assert.ok(g.position.equals(pos),g.userData.name+' '+g.position.toArray()+' expected '+pos.toArray());
+  assert.equal(g.userData.hit,hit);assert.equal(hit.inside,false);assert.equal(g.userData.inIzakaya,undefined);
+ }
 });
 
 test('supper charges once, advances the evening, saves a memory and refuses insufficient funds',()=>{

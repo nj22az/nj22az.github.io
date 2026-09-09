@@ -55,7 +55,8 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
  anchor([0,1,0],'Listen to the table',()=>action('izakaya-gossip'));
- anchor([4.0,1,2.7],'Sit and enjoy the evening',()=>action('seat','Minato window seat','A warm table, a little conversation, and nowhere to hurry.'));
+ const windowSeat=anchor([4.0,1,2.7],'Sit and enjoy the evening',()=>action('seat','Minato window seat','A warm table, a little conversation, and nowhere to hurry.'));
+ windowSeat.userData.seat={position:[4,0,2.7],stand:[2.95,0,2.7],eyeY:1.2,yaw:Math.PI/2,pitch:0};
  anchor([4.5,1.8,-5.5],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  return {name:'Minato',cutaway:true};
 }

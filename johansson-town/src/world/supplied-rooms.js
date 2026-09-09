@@ -173,6 +173,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   for(const c of layout.colliders)collider(c.x,c.z,c.w,c.d,c.height);
   const anchor=(position,label,kind,title,text)=>{
     const object=new THREE.Object3D();object.name=label;object.position.set(...position);room.add(object);
+    if(kind==='seat'){const [x,,z]=position;object.userData.seat={position:[x,0,z],stand:[x,0,z+1.05],eyeY:1.2,yaw:0,pitch:0};}
     reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
   };
   anchor(layout.exit,'Exit to street','exit');
