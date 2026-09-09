@@ -1,3 +1,4 @@
+import {buildJapaneseHome,finishJapaneseHomes} from './japanese-town.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
@@ -14,6 +15,8 @@ export function buildHomes(world,options,box){
   const {x,z,angle}=p.house,cos=Math.cos(angle),sin=Math.sin(angle);
   const position=(lx,y,lz)=>[x+lx*cos+lz*sin,y,z-lx*sin+lz*cos];
   const part=(size,pos,kind,colour,tilt=0)=>box(size,position(...pos),kind,colour,[0,angle,tilt]);
+  const upgraded=buildJapaneseHome(world.group,p.house,i,options);
+  if(!upgraded){
   part([3.12,2.85,3.5],[0,1.425,0],'plaster',[0xbfb59c,0xa5afa1,0xc4b29f][i%3]);
   part([3.22,.22,3.6],[0,.11,0],'concrete',0x8b9086);
   for(const side of [-1,1]){
@@ -21,6 +24,7 @@ export function buildHomes(world,options,box){
    part([1.85,.16,3.85],[side*.83,3.04,0],'roof',0x626e69,-side*.25);
   }
   part([.12,.18,3.85],[0,3.28,0],'roof',0x626e69);
+  }
   part([.88,2.15,.09],[0,1.18,1.79],'timber',0x665640);
   for(const dx of [-.3,-.1,.1,.3])part([.035,1.78,.035],[dx,1.24,1.86],'bamboo',0xa49879);
   part([.07,.13,.05],[.3,1.15,1.88],'roof',0x303d39);
@@ -28,7 +32,7 @@ export function buildHomes(world,options,box){
   part([.38,.3,.16],[1.03,1.1,1.83],'roof',0x626e69);
   part([.26,.025,.04],[1.03,1.18,1.93],'timber',0x303d39);
   const sideways=Math.abs(sin)>.5;
-  world.colliders.push({x,z,w:sideways?3.5:3.12,d:sideways?3.12:3.5,height:3.3,home:p.name});
+  world.colliders.push({x,z,w:sideways?3.5:3.12,d:sideways?3.12:3.5,height:upgraded?6:3.3,home:p.name});
   const col=i%4,row=Math.floor(i/4);ctx.fillStyle='#e6dbc1';ctx.fillRect(col*256,row*128,256,128);
   ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 24px sans-serif';ctx.fillText(p.name,col*256+128,row*128+49,240);ctx.font='19px sans-serif';ctx.fillText(p.homeAddress,col*256+128,row*128+86,240);
   const geo=new THREE.PlaneGeometry(.92,.46),uv=geo.attributes.uv;
@@ -39,6 +43,7 @@ export function buildHomes(world,options,box){
   const home={owner:p.name,address:p.homeAddress,door:p.home,occupied:false};homes.set(p.name,home);
   options.register(anchor,'Read '+p.name+'’s nameplate',()=>options.onAction('read',p.homeAddress,p.name+' lives here. '+(home.occupied?'The door is closed; someone is at home.':'The resident is out in town.')));
  }
+ finishJapaneseHomes(world.group);
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
  const nameplates=new THREE.Mesh(mergeGeometries(plates,false),new THREE.MeshStandardMaterial({map:texture,roughness:.9}));nameplates.name='resident-home-nameplates';world.group.add(nameplates);plates.forEach(g=>g.dispose());
  world.homes=homes;

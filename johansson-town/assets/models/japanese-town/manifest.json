@@ -1,0 +1,40 @@
+{
+  "source": {
+    "author": "Nazareno_rojas (https://sketchfab.com/Nazareno_rojas)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/japanese-town-6f58f3bdef404321b8850aab870e110f",
+    "title": "Japanese Town"
+  },
+  "modules": [
+    {
+      "name": "hipped-shop",
+      "pieces": 39,
+      "triangles": 4106,
+      "width": 5.6,
+      "depth": 4.5
+    },
+    {
+      "name": "hipped-home",
+      "pieces": 35,
+      "triangles": 3114,
+      "width": 5.6,
+      "depth": 4.5
+    },
+    {
+      "name": "gable-shop",
+      "pieces": 40,
+      "triangles": 2864,
+      "width": 5.5,
+      "depth": 4.75
+    },
+    {
+      "name": "gable-home",
+      "pieces": 39,
+      "triangles": 2472,
+      "width": 5.5,
+      "depth": 4.75
+    }
+  ],
+  "textureSize": 1024,
+  "bytes": 1947560
+}

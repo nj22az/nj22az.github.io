@@ -1,3 +1,4 @@
+import {buildJapaneseShop} from './japanese-town.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
@@ -54,6 +55,7 @@ function detailedMaterial(original,kind,options){
 }
 
 export function buildHarbourShop({parent,site,register,enter,label,...options}){
+ const upgraded=buildJapaneseShop({parent,site,register,enter,label,...options});if(upgraded)return upgraded;
  if(!source||!HARBOUR_SHOP_IDS.includes(site.id))return null;
  const near=source.getObjectByName(site.id+'-near').clone(),far=source.getObjectByName(site.id+'-far').clone();
  const material=detailedMaterial(near.material,site.id==='journal'?'timber':'plaster',options);near.material=far.material=material;
