@@ -69,7 +69,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -77,7 +77,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true],'Both supplied rooms preloaded');
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true],'All supplied rooms preloaded');
+    const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const api=await import(dataModule(source));
@@ -212,6 +213,10 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.reviewSetMinutes(1619.99);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
     assert.equal(api.reviewRoomState().townVisible,true,'03:00 closing returns the player to the street');
     assert.equal(api.world.people.find(p=>p.profile.name==='Nao').g.parent,api.world.group,'Nao leaves her counter at closing');
+    const seat=api.world.park.seat;api.player.position.set(...seat.stand);api.reviewSetYaw(-Math.PI/2);api.simulate(1/60);api.doInteract();api.simulate(.1);
+    assert.ok(Math.abs(api.camera.position.y-seat.eyeY)<.001,'Park sitting places the eye above the actual bench');
+    const sitting=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.distanceTo(sitting)<.001,'Sitting prevents walking');
+    api.doInteract();assert.ok(api.player.position.distanceTo(api.player.position.clone().set(...seat.stand))<.001,'Standing returns to a clear point beside the bench');
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

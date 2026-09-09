@@ -1,3 +1,4 @@
+import {PARK} from './park-layout.js';
 import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
@@ -5,6 +6,7 @@ export function drawTownMap(ctx,w,h,{sites=[],people=[],player={x:0,z:0},yaw=0,v
   const px=x=>pad+(x-b.minX)*scale,pz=z=>h-pad-(z-b.minZ)*scale;
   ctx.fillStyle='#eadfbe';ctx.fillRect(0,0,w,h);
   ctx.fillStyle='#a1b9b3';ctx.fillRect(0,pz(-62),w,h-pz(-62));
+  ctx.fillStyle='#91a776';ctx.fillRect(px(PARK.x-14),pz(PARK.z+14),28*scale,28*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('HARBOUR PARK',px(PARK.x-13),pz(PARK.z));}
   ctx.strokeStyle='#766c50';ctx.lineJoin='round';ctx.lineCap='round';
   for(const route of ROUTES){ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();}
   ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(0),pz(BOARDWALK.minZ));ctx.lineTo(px(0),pz(BOARDWALK.maxZ));ctx.stroke();

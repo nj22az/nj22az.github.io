@@ -123,3 +123,11 @@ test('residents walk home without off-camera teleporting and Mori patrols past m
  assert.ok(chatted,'The actual moving cast has conversations during the evening');assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
  for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');
 });
+
+test('harbour park bench and approach connect to the quay without moving existing homes',()=>{
+ const {world}=build(),blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked),seat=world.park.seat;
+ assert.equal(blocked(seat.stand[0],seat.stand[2]),false,'Safe place to stand up');
+ const path=nav.path({x:0,z:-58},{x:seat.stand[0],z:seat.stand[2]});assert.ok(path.length,'Bench reachable from quay');
+ assert.ok(seat.eyeY>groundHeight(...[seat.position[0],seat.position[2]])+.8,'Seated eye clears the ground');
+ assert.equal(world.park.bench.userData.seat,seat);
+});
