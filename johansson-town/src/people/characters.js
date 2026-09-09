@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?fpv-1';
+import {createLocalCharacters,preloadModels} from './models.js?neighbours-1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js';
 
@@ -96,9 +96,10 @@ export function createCharacters(options={}){
   window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter});
 
   function update(dt){
-    updateAIControls(dt);stable.update(dt);models.update(dt);poseJump(dt);
+    updateAIControls(dt);
     const now=performance.now();
     for(const [entity,c] of conversations){if(c.until<=now){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
+    stable.update(dt);models.update(dt);poseJump(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }
 

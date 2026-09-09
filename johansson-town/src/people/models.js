@@ -7,20 +7,40 @@ import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 
 const SOURCES=['suit','yui','yuri-playful',...PROFILES.map(p=>p.model)];
-const loaded=new Map();let pending=null;
+const loaded=new Map(),sharedTextures=new Map();let pending=null;
+function reuseNeighbourTextures(gltf){
+  gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;
+    for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material]){
+      material.dithering=true;material.envMapIntensity=.48;
+      for(const key of ['map','normalMap','roughnessMap','metalnessMap','aoMap']){
+        const texture=material[key];if(!texture)continue;
+        const index=gltf.parser.associations.get(texture)?.textures;
+        const source=gltf.parser.json.textures[index]?.source,uri=gltf.parser.json.images[source]?.uri;
+        if(!uri)continue;
+        const signature=uri+'/'+texture.colorSpace+'/'+texture.flipY+'/'+texture.wrapS+'/'+texture.wrapT;
+        if(sharedTextures.has(signature)){material[key]=sharedTextures.get(signature);if(texture!==material[key])texture.dispose();}
+        else{texture.anisotropy=2;sharedTextures.set(signature,texture);}
+      }
+    }
+  });
+}
 export function preloadModels({onProgress}={}){
   if(pending)return pending;
   const loader=new GLTFLoader();let complete=0;
-  pending=Promise.allSettled(SOURCES.map(async id=>{
+  let at=0;
+  async function loadOne(id){
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
-      const response=await fetch(assetURL(id.startsWith('resident-')?'characters/living/'+id+'.glb':['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const neighbours=id.startsWith('resident-');
+      const response=await fetch(assetURL(neighbours?'characters/neighbours/'+id+'.glb':['kenji','yui','yuri-playful'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,'');gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!id.startsWith('resident-')&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);loaded.set(id,gltf);
+      const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/neighbours/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!['kenji','yui','yuri-playful'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
-  })).then(()=>({ready:loaded.size,total:SOURCES.length}));
+  }
+  // Limit simultaneous GLB parsing/image decoding on tablets.
+  pending=Promise.allSettled(Array.from({length:3},async()=>{while(at<SOURCES.length)await loadOne(SOURCES[at++]);})).then(()=>({ready:loaded.size,total:SOURCES.length}));
   return pending;
 }
 function sourceFor(name,profile){
@@ -39,34 +59,39 @@ export function createLocalCharacters({shadows=false}={}){
     if(!asset)return null;
     const model=clone(asset.scene),bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const scale=(height||profile?.height||1.75)/size.y;
-    model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=source.startsWith('resident-')?0:Math.PI;
+    model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!source.startsWith('resident-')&&!['kenji','yui','yuri-playful'].includes(source))dressCharacter(o,profile?.top);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualSource=source.startsWith('resident-')?'Original Blender living cast · '+name:source==='yuri-playful'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-playful'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
+    entity.add(model);entity.userData.visualSource=source.startsWith('resident-')?'MakeHuman / individually fitted neighbour · '+name:source==='yuri-playful'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-playful'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
-    if(source==='yuri-playful'){
+    {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
     }
     let cup=null;
-    if(source.startsWith('resident-')){const hand=model.getObjectByName('ForearmR');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.04,.032,.085,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(0,.25,-.025);cup.visible=false;hand.add(cup);}}
-    const actor={cup,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful'};
+    if(source.startsWith('resident-')){const hand=model.getObjectByName('hand_r');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.035,.027,.07,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(0,.055,-.025);cup.visible=false;hand.add(cup);}}
+    const actor={cup,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',neighbour:source.startsWith('resident-'),moving:false};
+    const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
       if(!entity.visible){actor.last.copy(entity.position);continue;}
-      const distance=entity.position.distanceTo(actor.last);actor.last.copy(entity.position);
-      actor.speed=THREE.MathUtils.damp(actor.speed,distance/Math.max(dt,.001),12,dt);
+      const distance=Math.hypot(entity.position.x-actor.last.x,entity.position.z-actor.last.z);actor.last.copy(entity.position);
+      const measured=distance>1?0:distance/Math.max(dt,.001);
+      actor.speed=THREE.MathUtils.damp(actor.speed,measured,12,dt);
+      actor.moving=actor.speed>(actor.moving?.08:.18);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       if(actor.cup)actor.cup.visible=entity.userData.socialPose==='Drink';
       if(actions.size===0)continue;
-      const requested=entity.userData.socialPose|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.speed>.12?'Walk':'Idle_Neutral');
+      const requested=entity.userData.socialPose|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
-      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().play();if(previous)previous.crossFadeTo(next,.22,false);actor.current=clip;}
-      const locomotion=actions.get(actor.current);if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/1.25,.55,1.45);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/4,.7,1.4);
+      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
+      const locomotion=actions.get(actor.current);
+      const walkSpeed=actor.neighbour?.56/.6:1.25,runSpeed=actor.neighbour?(.88/.6)/.75:4;
+      if(locomotion&&actor.current==='Walk')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
     }
   }
-  return {attach,update,actors,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.isYuri&&actor.gestureTime>0)return true;actor.gestureTime=actor.isYuri?(actor.actions.get('Wave')?.getClip().duration||1.2):1.2;return true;}};
+  return {attach,update,actors,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
 }

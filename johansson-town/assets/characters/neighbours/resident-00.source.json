@@ -1,0 +1,61 @@
+{
+  "name": "Aiko",
+  "model": "resident-00",
+  "age": 24,
+  "height": 1.59,
+  "macro": {
+    "age": 0.26666666666666666,
+    "gender": 0.0,
+    "height": 0.5,
+    "muscle": 0.36,
+    "weight": 0.4,
+    "proportions": 0.45,
+    "cupsize": 0.28,
+    "firmness": 0.5,
+    "race": {
+      "asian": 1.0,
+      "caucasian": 0.0,
+      "african": 0.0
+    }
+  },
+  "faceTargets": {
+    "nose/nose-scale-depth-decr": 0.16,
+    "chin/chin-height-decr": 0.1,
+    "mouth/mouth-upperlip-volume-decr": 0.22,
+    "mouth/mouth-lowerlip-volume-decr": 0.17,
+    "cheek/l-cheek-volume-incr": 0.06,
+    "cheek/r-cheek-volume-incr": 0.06,
+    "expression/units/asian/mouth-corner-puller": 0.16
+  },
+  "clothes": "male_casualsuit05",
+  "hair": "braid01",
+  "skin": "young_asian_female",
+  "triangles": 13366,
+  "files": {
+    "data/targets/nose/nose-scale-depth-decr.target.gz": "0842aa0f4265fef85b6e708cdd0b0665e9a951c08a1c768dc285206f0ae4c7ad",
+    "data/targets/chin/chin-height-decr.target.gz": "1f4196d330b418d576e9400a754cb99d7e60b069ee8fdef645713f84db984e0c",
+    "data/targets/mouth/mouth-upperlip-volume-decr.target.gz": "b2f940f8187112ee233ddfcdfb4a025fa01ee878b17dc44c64971c96583e7caf",
+    "data/targets/mouth/mouth-lowerlip-volume-decr.target.gz": "01d4f0c2889b43d3b97e4c7c6179d1217214a7caa0073db36d09b2b4b6edcf18",
+    "data/targets/cheek/l-cheek-volume-incr.target.gz": "75bf330b96d0036c46f779ed003782c7380c77dd06c14fd80f1fa20a5093fee1",
+    "data/targets/cheek/r-cheek-volume-incr.target.gz": "4df3e61e843c2d3381ef534e90d347b6b8ea763428d69eba8ef2ed5ab0affb8c",
+    "data/targets/expression/units/asian/mouth-corner-puller.target.gz": "d881bb8feda2637bdaef2c7d7c6bed12f0be5914949e5a2cb9b06a583af412c0",
+    "skins/young_asian_female/young_asian_female.mhmat": "2baeded5fdfd31acc187e83b278f9c4e4cbb59a7ffedf50ebcffcc44e4eab220",
+    "skins/young_asian_female/young_lightskinned_female_diffuse3.png": "1d82f782b7d2da732229633bd2d14754d873fff53cdb1d088977bcf67ae19dde",
+    "clothes/male_casualsuit05/male_casualsuit05.mhclo": "df41c9fba3da054e35b964706ad2f8d189e65cc00a45f4a34f65235946f647f0",
+    "clothes/male_casualsuit05/male_casualsuit05.mhmat": "e29fdf895bfc03ebf49f1fcb784cd41cfd8cf95beba4a0a54bc95c084b9b9528",
+    "clothes/male_casualsuit05/male_casualsuit05_diffuse.png": "d4345efe9332c23e9302f5a3bca8c895004be841b5ebea593c96189870e3852a",
+    "clothes/male_casualsuit05/male_casualsuit05_normal.png": "aec19a8fa1988aa178e7ead9f9c0b290fc441ed62ce47d5c4dd611a0037a796c",
+    "clothes/shoes02/shoes02.mhclo": "0d447fd6b7415d6b2603e91697336ee51ac2f00ef85878d6667e9acfb45a20fe",
+    "clothes/shoes02/shoes02.mhmat": "7f2cb19506784fbe22ba3f766f94bb13d1eee1712dd29ed10b926c5905bab924",
+    "clothes/shoes02/shoes02_diffuse.png": "efef94ea34b0e0c2283095cb47a9e0389b55449c61a4f4972d0ad4d2bf06b4f0",
+    "hair/braid01/braid01.mhclo": "e350614dab32230c47d67e7747079b89859d36e62a890ca47890f068eca4f7a9",
+    "hair/braid01/braid01.mhmat": "c8fdc8452c94715e9bf8fc194c82dc1e53124475b0665058d31b142bf0f3f762",
+    "hair/braid01/braid01_diffuse.png": "24c0d2a639f04704734c3e38af97d110777c1b203e5a10c66a5c89563643a018",
+    "eyes/low-poly/low-poly.mhclo": "68582e28e9176cba7cfcf35208f671b6201b8d1bc95c32decff61a3160ec34d8",
+    "eyes/materials/brown.mhmat": "4abad93ce50541c08127721e77bce035640c9f16bed16cd0f5524b1cd5908465",
+    "eyes/materials/brown_eye.png": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b",
+    "eyebrows/eyebrow001/eyebrow001.mhclo": "54c8892c2ba577f4152d779ce1f20f7cd323beb8cbd9cb701796165c221b4f5b",
+    "eyebrows/eyebrow001/eyebrow001.mhmat": "976e5f4f1d3922d7a11c6e2db233f8b4584b068d00619d5749687e81c92d61fc",
+    "eyebrows/eyebrow001/eyebrow001.png": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+  }
+}

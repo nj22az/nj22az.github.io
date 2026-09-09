@@ -39,8 +39,10 @@ export function createCastAI({world,player,state,paused,collides}){
    return next>=.61||(old<.61&&next>old+.00001);
   });
   const candidates=[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
+  const beforeX=g.position.x,beforeZ=g.position.z;
   for(const [x,z] of candidates)if(clearOfPeople(x,z)&&!collides(x,z,.3)){g.position.set(x,groundHeight(x,z),z);break;}
-  const heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));g.rotation.y+=delta*(1-Math.exp(-dt*7));
+  const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
+  if(Math.hypot(movedX,movedZ)>.0001){const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));g.rotation.y+=delta*(1-Math.exp(-dt*7));}
  }
  return {update(dt,minutes,rain){if(paused())return;const minute=minutes%1440;
   const visible=world.people.filter(p=>{const v=p.profile;return !v||minute>=v.start-30&&minute<v.retire;}).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position)).slice(0,8);

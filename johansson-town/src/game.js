@@ -5,7 +5,7 @@ import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
-import {atmosphere} from './render/atmosphere.js?clear-air-1';
+import {atmosphere} from './render/atmosphere.js?town-light-1';
 import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-rig-2';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-2';
@@ -18,7 +18,7 @@ import { createActivities } from '../activities.js?exploration-1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js';
 import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?fpv-1';
+import { createCharacters } from './people/characters.js?neighbours-1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js';
 
 const $=s=>document.querySelector(s);

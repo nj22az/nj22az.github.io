@@ -14,7 +14,7 @@ export function buildStorefront({parent,site,register,enter,label}){
  box([10,.1,.1],[0,2.82,.05],0x84938d);for(const x of [-2.9,-2.1])box([.035,.5,.12],[x,1.4,.12],0x465854);
  for(const y of [.5,1.0,1.5,2.0]){box([5.8,.05,.65],[1.25,y,-2.0],0xdcdcc9);for(let n=0;n<18;n++)box([.20,.30,.15],[-1.4+n*.31,y+.18,-1.76],[0x649875,0xc68660,0xd1b65e,0xb9748f][n%4]);}
  for(const x of [-2.8,1.8]){const light=box([.45,.06,2.8],[x,3.64,-2.3],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
- box([2.0,1.0,.8],[-3.0,.5,-2.6],0xb59472,'timber');box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb);
+ box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo');box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb);
  const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const anchor=new THREE.Object3D();anchor.position.set(site.side*6.8,1.2,site.z+2.5);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  return group;

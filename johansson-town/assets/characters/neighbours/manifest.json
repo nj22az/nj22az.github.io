@@ -1,0 +1,780 @@
+{
+  "source": "https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip",
+  "sourceLicense": "CC0-1.0",
+  "assetPackSHA256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+  "authoring": "Blender 4.2.23 LTS / MPFB 2.0.17",
+  "mpfbRevision": "437dd513888a92399d1d3200d2e80859fae55abc",
+  "changes": [
+    "Individual age, build and facial fitting",
+    "Fitted blended skin weights",
+    "Seven original in-place clips with analytic knee placement and measured sole grounding",
+    "Geometry reduction and hidden upper-thigh masking beneath fitted skirts",
+    "Shared 256\u20131024px textures",
+    "Neutralised clothing photographs with individual vertex-colour palettes",
+    "Grey hair for older residents",
+    "Alpha testing for hair"
+  ],
+  "models": [
+    {
+      "name": "Aiko",
+      "model": "resident-00",
+      "bytes": 859348,
+      "triangles": 13366,
+      "draws": 7,
+      "sha256": "09b84f9a83f07747384aea928ba79e60e7185dbd242ed06e79803d3783031c15",
+      "textures": [
+        "b284e902c0927e400d12.jpg",
+        "6cf623a139c4b8cb7c62.png",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "47d80a8a080e601199c2.jpg",
+        "fcb7c7d8bab15d56109f.jpg",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 24,
+      "clothes": "male_casualsuit05",
+      "hair": "braid01",
+      "skin": "young_asian_female"
+    },
+    {
+      "name": "Kenji",
+      "model": "resident-01",
+      "bytes": 896184,
+      "triangles": 15028,
+      "draws": 6,
+      "sha256": "8b63716c01abae1b8f0d406bba71bfab5c28199fcd4d38604e26400e39f1eb1d",
+      "textures": [
+        "a5353dacb9ae92fbda05.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "82d5702efd6c3eccf5ff.jpg",
+        "708d37c8ff64c81ea91e.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "5dbfa929aa967f26a670.png"
+      ],
+      "age": 32,
+      "clothes": "male_casualsuit01",
+      "hair": "short01",
+      "skin": "young_asian_male"
+    },
+    {
+      "name": "Mrs Sato",
+      "model": "resident-02",
+      "bytes": 803788,
+      "triangles": 12586,
+      "draws": 6,
+      "sha256": "93fee09b3799446332292f7e1c75f381f042078767fe6bfbd59ba0c94c6cb329",
+      "textures": [
+        "19d99759c4d712d33e32.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "69d80177f180824edbc4.png",
+        "35d4078bfd718655cdd6.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 68,
+      "clothes": "female_elegantsuit01",
+      "hair": "ponytail01",
+      "skin": "old_asian_female"
+    },
+    {
+      "name": "Harbour master",
+      "model": "resident-03",
+      "bytes": 718908,
+      "triangles": 10599,
+      "draws": 6,
+      "sha256": "5a60f7d4e2f86b9026e1bc3fbd6ce886519ab1bfe1b36a96b02371c7d380ba76",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "47d80a8a080e601199c2.jpg",
+        "fcb7c7d8bab15d56109f.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "347f82168199e5641524.png"
+      ],
+      "age": 58,
+      "clothes": "male_casualsuit05",
+      "hair": "short04",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Bus driver",
+      "model": "resident-04",
+      "bytes": 830540,
+      "triangles": 14302,
+      "draws": 6,
+      "sha256": "4cb3a8df4899dcd37acc75c8ca918c1f55ff4a3db9ebc4965e9b85183627df1a",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "b093cec5795386fada94.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "d9d2f3a0c20046e5de02.png"
+      ],
+      "age": 49,
+      "clothes": "male_elegantsuit01",
+      "hair": "short02",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Cold-storage kid",
+      "model": "resident-05",
+      "bytes": 734160,
+      "triangles": 11747,
+      "draws": 6,
+      "sha256": "ff68f7abc43170568bafb13c321dde61d2b646e1f30d764eda43c7d3ea0581bb",
+      "textures": [
+        "a5353dacb9ae92fbda05.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "fe9a3797bcef9dbab282.jpg",
+        "96af8a829ec7350ad703.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "136a8471248cf466681f.png"
+      ],
+      "age": 19,
+      "clothes": "male_worksuit01",
+      "hair": "short03",
+      "skin": "young_asian_male"
+    },
+    {
+      "name": "Officer Mori",
+      "model": "resident-06",
+      "bytes": 830064,
+      "triangles": 14299,
+      "draws": 6,
+      "sha256": "9325843dc1762d27882d420ac75ec9b5b53a4cd091532316c8fdc97d76d296fc",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "b093cec5795386fada94.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "d9d2f3a0c20046e5de02.png"
+      ],
+      "age": 45,
+      "clothes": "male_elegantsuit01",
+      "hair": "short02",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Hana",
+      "model": "resident-07",
+      "bytes": 848508,
+      "triangles": 13905,
+      "draws": 6,
+      "sha256": "0f9ed90d8a459fdfa3d6b00af7374e891eae1b188cd118af0a0728e65307a571",
+      "textures": [
+        "e3511c8888e8bfd9e8a7.png",
+        "b284e902c0927e400d12.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "65f912db7a220702d93f.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 17,
+      "clothes": "female_elegantsuit01",
+      "hair": "bob01",
+      "skin": "young_asian_female"
+    },
+    {
+      "name": "Daichi",
+      "model": "resident-08",
+      "bytes": 699472,
+      "triangles": 10278,
+      "draws": 6,
+      "sha256": "76be4cfc5302bb5d3678b316b2145914eb6fbf27a20bf82db9172445f09cfa3b",
+      "textures": [
+        "a5353dacb9ae92fbda05.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "107d24d172829176d90e.png",
+        "c9eac78b9f95e58ff33c.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "347f82168199e5641524.png"
+      ],
+      "age": 17,
+      "clothes": "male_casualsuit03",
+      "hair": "short04",
+      "skin": "young_asian_male"
+    },
+    {
+      "name": "Mr Fujita",
+      "model": "resident-09",
+      "bytes": 700968,
+      "triangles": 10248,
+      "draws": 6,
+      "sha256": "69c8c4a60d30c432d5b41661b216a23049c01d3830f0f1fce1fa1ab29c4847b9",
+      "textures": [
+        "2258733f7b95e84faf91.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "69d80177f180824edbc4.png",
+        "11f5c5da5eb9d2d6cd94.png",
+        "c9eac78b9f95e58ff33c.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "453442a83351842a2fe8.png"
+      ],
+      "age": 73,
+      "clothes": "male_casualsuit03",
+      "hair": "short04",
+      "skin": "old_asian_male"
+    },
+    {
+      "name": "Masaru",
+      "model": "resident-10",
+      "bytes": 814856,
+      "triangles": 12591,
+      "draws": 6,
+      "sha256": "80ee6f0322086c2a6b60b199b2ddcbfa2080bd3d77c57537bffff7d76ab85185",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "fe9a3797bcef9dbab282.jpg",
+        "96af8a829ec7350ad703.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "5dbfa929aa967f26a670.png"
+      ],
+      "age": 51,
+      "clothes": "male_worksuit01",
+      "hair": "short01",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Yoshiko",
+      "model": "resident-11",
+      "bytes": 805080,
+      "triangles": 12581,
+      "draws": 6,
+      "sha256": "1866df63de78026a916e5edcc855526106efda2f105f01dc41217d11da9f4f67",
+      "textures": [
+        "19d99759c4d712d33e32.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "69d80177f180824edbc4.png",
+        "35d4078bfd718655cdd6.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 61,
+      "clothes": "female_elegantsuit01",
+      "hair": "ponytail01",
+      "skin": "old_asian_female"
+    },
+    {
+      "name": "Reiko",
+      "model": "resident-12",
+      "bytes": 748068,
+      "triangles": 11609,
+      "draws": 7,
+      "sha256": "ff173911d6b9e775b624210187f8d7c331b164feb99435840e86e405b08a3af1",
+      "textures": [
+        "00aa67d9f0948f61e77f.png",
+        "b284e902c0927e400d12.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "65f912db7a220702d93f.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 36,
+      "clothes": "female_elegantsuit01",
+      "hair": "bob02",
+      "skin": "young_asian_female"
+    },
+    {
+      "name": "Tetsuo",
+      "model": "resident-13",
+      "bytes": 741308,
+      "triangles": 11213,
+      "draws": 7,
+      "sha256": "1e0ff1c32083fa9f30e78a40ef2e59402203b7a426d3a015ee1a7d94ea8a43d3",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "47d80a8a080e601199c2.jpg",
+        "fcb7c7d8bab15d56109f.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "347f82168199e5641524.png"
+      ],
+      "age": 40,
+      "clothes": "male_casualsuit05",
+      "hair": "short04",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Emi",
+      "model": "resident-14",
+      "bytes": 804900,
+      "triangles": 12580,
+      "draws": 6,
+      "sha256": "a93363a99301d95c9ef192e45c4a986ab533732da6dc8f4565e277372c826914",
+      "textures": [
+        "b284e902c0927e400d12.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "65f912db7a220702d93f.png",
+        "f966e7753b2522e1cf5e.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 29,
+      "clothes": "female_elegantsuit01",
+      "hair": "ponytail01",
+      "skin": "young_asian_female"
+    },
+    {
+      "name": "Mr Tanabe",
+      "model": "resident-15",
+      "bytes": 699648,
+      "triangles": 10243,
+      "draws": 6,
+      "sha256": "dfdf3fc2b740be220f60a194662e9e30a1216401dfaf440e576fb1487f78d251",
+      "textures": [
+        "2258733f7b95e84faf91.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "69d80177f180824edbc4.png",
+        "11f5c5da5eb9d2d6cd94.png",
+        "c9eac78b9f95e58ff33c.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "453442a83351842a2fe8.png"
+      ],
+      "age": 66,
+      "clothes": "male_casualsuit03",
+      "hair": "short04",
+      "skin": "old_asian_male"
+    },
+    {
+      "name": "Naoko",
+      "model": "resident-16",
+      "bytes": 812560,
+      "triangles": 12693,
+      "draws": 6,
+      "sha256": "cbc146b1aecd7cb85b7e9ba79f385db3bde968cdf1d07a9bf84286e9536c977d",
+      "textures": [
+        "b284e902c0927e400d12.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "47d80a8a080e601199c2.jpg",
+        "fcb7c7d8bab15d56109f.jpg",
+        "f966e7753b2522e1cf5e.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 33,
+      "clothes": "male_casualsuit05",
+      "hair": "ponytail01",
+      "skin": "young_asian_female"
+    },
+    {
+      "name": "Hiroshi",
+      "model": "resident-17",
+      "bytes": 818092,
+      "triangles": 14113,
+      "draws": 6,
+      "sha256": "c5d3e9d357e81a5927f6c068b2f9a5fd2e34ef7b2a89cff315658f4b785ec2e8",
+      "textures": [
+        "776bcd139ae20bffa4bf.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "82d5702efd6c3eccf5ff.jpg",
+        "708d37c8ff64c81ea91e.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "136a8471248cf466681f.png"
+      ],
+      "age": 54,
+      "clothes": "male_casualsuit01",
+      "hair": "short03",
+      "skin": "middleage_asian_male"
+    },
+    {
+      "name": "Fumiko",
+      "model": "resident-18",
+      "bytes": 878288,
+      "triangles": 14734,
+      "draws": 7,
+      "sha256": "2103abd49d336fff768ae5708762b2799a7f4187af071b03750f758514dc5a05",
+      "textures": [
+        "ebaea9188a81ebd519f9.png",
+        "19d99759c4d712d33e32.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "69d80177f180824edbc4.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 77,
+      "clothes": "female_elegantsuit01",
+      "hair": "bob01",
+      "skin": "old_asian_female"
+    },
+    {
+      "name": "Kenta",
+      "model": "resident-19",
+      "bytes": 817064,
+      "triangles": 14148,
+      "draws": 6,
+      "sha256": "44cb75822ec2d96c322d03de35152bfe55350d7dbc2c97cbf70ea767cae4fb8c",
+      "textures": [
+        "a5353dacb9ae92fbda05.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "65f912db7a220702d93f.png",
+        "82d5702efd6c3eccf5ff.jpg",
+        "708d37c8ff64c81ea91e.jpg",
+        "601da60e2519fff0cb49.jpg",
+        "dc81ed539f6b810cf650.jpg",
+        "136a8471248cf466681f.png"
+      ],
+      "age": 21,
+      "clothes": "male_casualsuit01",
+      "hair": "short03",
+      "skin": "young_asian_male"
+    },
+    {
+      "name": "Nao",
+      "model": "resident-20",
+      "bytes": 806640,
+      "triangles": 12578,
+      "draws": 6,
+      "sha256": "f26ce1b029a32efacb0f2a86615d3b5a7e233f1c58a11f75e17fe8a20ae4e4cc",
+      "textures": [
+        "b284e902c0927e400d12.jpg",
+        "3dd927e4548b21f9cc15.png",
+        "6830bb6c061112e61c8a.jpg",
+        "14d6d69c51416e693c89.jpg",
+        "65f912db7a220702d93f.png",
+        "f966e7753b2522e1cf5e.png",
+        "055662fc0c94d0a70e50.jpg"
+      ],
+      "age": 34,
+      "clothes": "female_elegantsuit01",
+      "hair": "ponytail01",
+      "skin": "young_asian_female"
+    }
+  ],
+  "textures": {
+    "b284e902c0927e400d12.jpg": {
+      "sha256": "b284e902c0927e400d1260f227ce08388cacf59b426d363f163cd0449b2b66e1",
+      "bytes": 113479,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "young_lightskinned_female_diffuse3"
+    },
+    "6cf623a139c4b8cb7c62.png": {
+      "sha256": "6cf623a139c4b8cb7c6249cc1235350085a903f17fdae8651412bf55385affe3",
+      "bytes": 245768,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "braid01_diffuse"
+    },
+    "3dd927e4548b21f9cc15.png": {
+      "sha256": "3dd927e4548b21f9cc15f3c1391019e4c8a6bc39841eb4e8ff7cfa77521587e8",
+      "bytes": 89884,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "eyebrow001"
+    },
+    "65f912db7a220702d93f.png": {
+      "sha256": "65f912db7a220702d93fdd8c16a4010e76d92c6ae0dcdf77d278832631ebf183",
+      "bytes": 200274,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "brown_eye"
+    },
+    "47d80a8a080e601199c2.jpg": {
+      "sha256": "47d80a8a080e601199c2ede7f105f771406c86e4fb66f97f09ca6790f646d83d",
+      "bytes": 30002,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "male_casualsuit05_normal"
+    },
+    "fcb7c7d8bab15d56109f.jpg": {
+      "sha256": "fcb7c7d8bab15d56109fdbc45ea5e2be7482276effcd3a4d65ddae21749bcd4d",
+      "bytes": 102568,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "male_casualsuit05_diffuse"
+    },
+    "055662fc0c94d0a70e50.jpg": {
+      "sha256": "055662fc0c94d0a70e50deb0007459c1c0b021445effcf6bbca50d182af87004",
+      "bytes": 17139,
+      "dimensions": [
+        256,
+        256
+      ],
+      "sourceTexture": "shoes02_diffuse"
+    },
+    "a5353dacb9ae92fbda05.jpg": {
+      "sha256": "a5353dacb9ae92fbda055d575456edd54c0b4bfde403e9f0577a40871a6d10ed",
+      "bytes": 118634,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "young_lightskinned_male_diffuse3"
+    },
+    "82d5702efd6c3eccf5ff.jpg": {
+      "sha256": "82d5702efd6c3eccf5ff2b48de1521340bc515ebadf72c960a67ab02c817dd7d",
+      "bytes": 45864,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "male_casualsuit01_normal"
+    },
+    "708d37c8ff64c81ea91e.jpg": {
+      "sha256": "708d37c8ff64c81ea91e629dfa81f6064b3feeb97ffacffe69f23b3d680b811e",
+      "bytes": 90156,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "male_casualsuit01_diffuse"
+    },
+    "601da60e2519fff0cb49.jpg": {
+      "sha256": "601da60e2519fff0cb49a08567335c6912b8d61e97e6b5eafbcb6f6dcd1716e3",
+      "bytes": 61561,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "shoes01_normal"
+    },
+    "dc81ed539f6b810cf650.jpg": {
+      "sha256": "dc81ed539f6b810cf650240d17847e6ad70599475f67f278ae95f5f1514a2f7a",
+      "bytes": 17528,
+      "dimensions": [
+        256,
+        256
+      ],
+      "sourceTexture": "shoes01_diffuse"
+    },
+    "5dbfa929aa967f26a670.png": {
+      "sha256": "5dbfa929aa967f26a67085290be0dd384b21110c441621b3ae6d1a63442315b7",
+      "bytes": 329267,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "short01_diffuse"
+    },
+    "19d99759c4d712d33e32.jpg": {
+      "sha256": "19d99759c4d712d33e32af521395aa6069dac952607ae19e5eeeba35aa16879d",
+      "bytes": 145203,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "old_lightskinned_female_diffuse2"
+    },
+    "6830bb6c061112e61c8a.jpg": {
+      "sha256": "6830bb6c061112e61c8a94aec0e2e15f313843855eb02f9d56458edea2a5d1ca",
+      "bytes": 25539,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "female_elegantsuit01_normal"
+    },
+    "14d6d69c51416e693c89.jpg": {
+      "sha256": "14d6d69c51416e693c89bb7325821bd6a45b690472f4002408a0f49866f2aaa9",
+      "bytes": 106927,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "female_elegantsuit01_diffuse"
+    },
+    "69d80177f180824edbc4.png": {
+      "sha256": "69d80177f180824edbc42c7f299c4d287274bad7eb4f4d6c388674fe6151cb65",
+      "bytes": 121670,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "brown_eye"
+    },
+    "35d4078bfd718655cdd6.png": {
+      "sha256": "35d4078bfd718655cdd60d4e656fb0b3d3eb12ea2395200ddb01d96686668ce1",
+      "bytes": 282781,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "ponytail01_diffuse"
+    },
+    "776bcd139ae20bffa4bf.jpg": {
+      "sha256": "776bcd139ae20bffa4bfea5c2c1937c6a7f49026915dc37d8f70e0a1cbcf092e",
+      "bytes": 127630,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "middleage_lightskinned_male_diffuse2"
+    },
+    "347f82168199e5641524.png": {
+      "sha256": "347f82168199e5641524daf900bb30e2d7e500b94b0bfb99de224552a8f84754",
+      "bytes": 268784,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "short04_diffuse"
+    },
+    "b093cec5795386fada94.jpg": {
+      "sha256": "b093cec5795386fada9413d44b4f4292d7b52d4f74f83789383f2508d7b8e225",
+      "bytes": 50168,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "male_elegantsuit01_diffuse"
+    },
+    "d9d2f3a0c20046e5de02.png": {
+      "sha256": "d9d2f3a0c20046e5de0223334bfc51753e4cf54660d0c22797a899e23b3ac4ac",
+      "bytes": 249992,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "short02_diffuse"
+    },
+    "fe9a3797bcef9dbab282.jpg": {
+      "sha256": "fe9a3797bcef9dbab282a6b49f03f26b6d036f5ea6c8fe3a069ddc4cd583ff0b",
+      "bytes": 33983,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "male_worksuit01_normal"
+    },
+    "96af8a829ec7350ad703.jpg": {
+      "sha256": "96af8a829ec7350ad7037233c7321168506cf12f01e5c1622b8e47bafa583bf3",
+      "bytes": 126148,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "male_worksuit01_diffuse"
+    },
+    "136a8471248cf466681f.png": {
+      "sha256": "136a8471248cf466681f3b9bcf39e1d0c5b486631a41515ab794c16100d4fc40",
+      "bytes": 241131,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "short03_diffuse"
+    },
+    "e3511c8888e8bfd9e8a7.png": {
+      "sha256": "e3511c8888e8bfd9e8a70af98c82855b1885076219e4600ecac96df33440af48",
+      "bytes": 297652,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "bob01_diffuse"
+    },
+    "107d24d172829176d90e.png": {
+      "sha256": "107d24d172829176d90e2eccf2abb9fa44d5937030f7e2c808b69b6172bfa109",
+      "bytes": 297783,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "male_casualsuit03_normal"
+    },
+    "c9eac78b9f95e58ff33c.jpg": {
+      "sha256": "c9eac78b9f95e58ff33cd199cd69cd592396d8c376c53e1f6d2539d57246117a",
+      "bytes": 165174,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "male_casualsuit03_diffuse"
+    },
+    "2258733f7b95e84faf91.jpg": {
+      "sha256": "2258733f7b95e84faf914873fd5e79df54e778ba27429c294c50a7dd67ea0ea2",
+      "bytes": 151145,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "sourceTexture": "old_lightskinned_male_diffuse2"
+    },
+    "11f5c5da5eb9d2d6cd94.png": {
+      "sha256": "11f5c5da5eb9d2d6cd941ad9988c3f1ae654fc057e830cbeade4fcfb74c0aeb6",
+      "bytes": 183074,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "male_casualsuit03_normal"
+    },
+    "453442a83351842a2fe8.png": {
+      "sha256": "453442a83351842a2fe8436d97337917d0f2c9a78853b0c028f84c16d0966d33",
+      "bytes": 244502,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "short04_diffuse"
+    },
+    "00aa67d9f0948f61e77f.png": {
+      "sha256": "00aa67d9f0948f61e77ff226dbb8438e321f30f09658cfbcd574b60dd8ca71dc",
+      "bytes": 240029,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "bob02_diffuse"
+    },
+    "f966e7753b2522e1cf5e.png": {
+      "sha256": "f966e7753b2522e1cf5e739b902b5f25f0a22602d424af860ab6adfc0acb765b",
+      "bytes": 376000,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "ponytail01_diffuse"
+    },
+    "ebaea9188a81ebd519f9.png": {
+      "sha256": "ebaea9188a81ebd519f9d62aba5a0554504ed44943d9e670ce990b656d5f55b2",
+      "bytes": 208551,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceTexture": "bob01_diffuse"
+    }
+  },
+  "modelBytes": 16668444,
+  "textureBytes": 5405990
+}

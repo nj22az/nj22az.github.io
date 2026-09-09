@@ -39,7 +39,7 @@ test('actual harbour retains anchors, colliders and weather updates across batch
  function build(harbourBatching){const scene=new THREE.Scene(),anchors=[];const world=createTown({scene,sites:[{id:'market',side:1,z:20,color:0x945060,accent:'#345678',title:'Market',jp:'店'}],mobile:false,shadows:true,harbourBatching,register:(o,label)=>anchors.push([o.position.toArray(),label]),enter(){},onAction(){}});return {world,anchors};}
  const before=build(false),after=build(true);
  assert.deepEqual(after.world.colliders,before.world.colliders);assert.deepEqual(after.anchors,before.anchors);
- const findRoad=world=>world.group.children.find(m=>m.isInstancedMesh&&m.material.map?.repeat.y===24);
+ const findRoad=world=>world.group.children.find(m=>m.isInstancedMesh&&m.material.name==='town-asphalt');
  const road=findRoad(after.world);assert.ok(road);const colour=road.material.color.clone();
  after.world.setRain(true);assert.equal(road.material.roughness,.28);
  after.world.update(1/60,1,0);assert.ok(road.material.color.equals(colour));

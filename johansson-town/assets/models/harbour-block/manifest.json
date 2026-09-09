@@ -1,0 +1,146 @@
+{
+  "source": "Meshy_AI_Quiet_City_Block_0908215843_texture.glb",
+  "sourceDriveId": "1n-K5OgB0sRO5Ve4Z82Uf-wP-nDythdoN",
+  "sourceSha256": "e17b042ff14cf77679bf10a356cfbaf3f7591e4140b3d509a1480112532d50af",
+  "sourceBytes": 103141708,
+  "sourceTriangles": 2966414,
+  "metresPerSourceUnit": 20,
+  "buildings": [
+    {
+      "id": "market",
+      "sourceTriangles": 209389,
+      "targetTriangles": 25000,
+      "bounds": {
+        "min": [
+          -4.964389801025391,
+          -0.08947998285293579,
+          -9.454119682312012
+        ],
+        "max": [
+          4.964390277862549,
+          6.01554012298584,
+          1.407420039176941
+        ]
+      },
+      "levels": [
+        {
+          "level": "near",
+          "triangles": 24999,
+          "vertices": 21760,
+          "maxSimplifierErrorMetres": 0.012716838158667088
+        },
+        {
+          "level": "far",
+          "triangles": 5998,
+          "vertices": 6290,
+          "maxSimplifierErrorMetres": 0.05705978721380234
+        }
+      ]
+    },
+    {
+      "id": "journal",
+      "sourceTriangles": 394262,
+      "targetTriangles": 40000,
+      "bounds": {
+        "min": [
+          -3.0756897926330566,
+          -0.0679999589920044,
+          -7.908760070800781
+        ],
+        "max": [
+          3.0756900310516357,
+          8.31753921508789,
+          1.3384400606155396
+        ]
+      },
+      "levels": [
+        {
+          "level": "near",
+          "triangles": 40000,
+          "vertices": 41492,
+          "maxSimplifierErrorMetres": 0.023021642118692398
+        },
+        {
+          "level": "far",
+          "triangles": 16083,
+          "vertices": 20783,
+          "maxSimplifierErrorMetres": 0.19990494847297668
+        }
+      ]
+    },
+    {
+      "id": "electronics",
+      "sourceTriangles": 171408,
+      "targetTriangles": 20000,
+      "bounds": {
+        "min": [
+          -2.784180164337158,
+          -0.07467985153198242,
+          -5.307180404663086
+        ],
+        "max": [
+          2.784180164337158,
+          10.400580406188965,
+          1.4681600332260132
+        ]
+      },
+      "levels": [
+        {
+          "level": "near",
+          "triangles": 19999,
+          "vertices": 15096,
+          "maxSimplifierErrorMetres": 0.006131566129624844
+        },
+        {
+          "level": "far",
+          "triangles": 5999,
+          "vertices": 5202,
+          "maxSimplifierErrorMetres": 0.02343760058283806
+        }
+      ]
+    },
+    {
+      "id": "career",
+      "sourceTriangles": 198949,
+      "targetTriangles": 25000,
+      "bounds": {
+        "min": [
+          -3.560490608215332,
+          -0.0829198956489563,
+          -6.828559875488281
+        ],
+        "max": [
+          3.5604894161224365,
+          8.609659194946289,
+          0.9188801050186157
+        ]
+      },
+      "levels": [
+        {
+          "level": "near",
+          "triangles": 24999,
+          "vertices": 21785,
+          "maxSimplifierErrorMetres": 0.011623013764619827
+        },
+        {
+          "level": "far",
+          "triangles": 6000,
+          "vertices": 6584,
+          "maxSimplifierErrorMetres": 0.052199818193912506
+        }
+      ]
+    }
+  ],
+  "nearTriangles": 109997,
+  "farTriangles": 34080,
+  "geometryBytes": 4763764,
+  "textureBytes": 2604719,
+  "downloadBytes": 7368483,
+  "nearTriangleReduction": 0.9629192014331108,
+  "downloadReduction": 0.9285596181905384,
+  "notes": [
+    "Four independent buildings; supplied ground, trees and poles removed.",
+    "Near/far geometry shares three original 2048px PBR textures; JPEG encoding reduced.",
+    "Geometry errors are simplifier bounds, not a GPU or visual-quality benchmark."
+  ]
+}
