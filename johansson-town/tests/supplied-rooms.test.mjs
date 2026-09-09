@@ -77,6 +77,27 @@ test('supplied models retain textures, correct material support and reachable ro
     for(const z of [site.door[2],site.door[2]+.6,site.door[2]+.7])assert.equal(blocked(site.door[0],z),false,'Restaurant exit on walkable street');
     assert.equal(sweepFraction({x:24,z:18},{x:site.door[0],z:site.door[2]},blocked),1,'Existing east-lane route reaches the restaurant');
     assert.ok(Math.hypot(site.door[0]-entries[0].o.position.x,site.door[2]-entries[0].o.position.z)<1,'Door prompt at the supplied entrance');
+    const exterior=world.group.getObjectByName('Supplied ramen');
+    assert.equal(exterior.userData.exteriorDoorClosed,true);
+    const interior=new THREE.Group();
+    buildSuppliedRoom({site:{id:'ramen'},room:interior,reg(){},collider(){},action(){},exit(){}});
+    let outsideLeaf;exterior.traverse(o=>{if(o.isMesh&&o.material.name==='mat_5f42316292cd929b')outsideLeaf=o;});
+    assert.ok(outsideLeaf,'Supplied door material batch exists');
+    const insideLeaf=interior.getObjectByName(outsideLeaf.name);
+    assert.notEqual(outsideLeaf.geometry,insideLeaf.geometry,'Exterior must not mutate shared interior geometry');
+    assert.equal(outsideLeaf.material,insideLeaf.material,'Reuse the supplied door texture');
+    const closedBounds=new THREE.Box3().setFromBufferAttribute(outsideLeaf.geometry.attributes.position);
+    const openBounds=new THREE.Box3().setFromBufferAttribute(insideLeaf.geometry.attributes.position);
+    assert.ok(closedBounds.max.z<3.54&&closedBounds.min.z>3.46,'Door leaf sits flush in the facade');
+    assert.ok(openBounds.max.z>4.3,'Interior retains the original open door');
+    world.group.updateMatrixWorld(true);
+    const ray=new THREE.Raycaster(new THREE.Vector3(24.4,1.5,15),new THREE.Vector3(0,0,-1));
+    const hits=ray.intersectObject(exterior,true);
+    assert.ok(hits.length&&hits[0].point.z>13.46&&hits[0].point.z<13.55,'The closed leaf covers the entrance from the street');
+    const outside=outsideLeaf.geometry.attributes.position,inside=insideLeaf.geometry.attributes.position;
+    for(let i=0;i<inside.count;i++)if(inside.getX(i)>=.5){
+     assert.equal(outside.getX(i),inside.getX(i));assert.equal(outside.getZ(i),inside.getZ(i));
+    }
   }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });
 

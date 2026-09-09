@@ -4,10 +4,17 @@ import * as THREE from '../vendor/three.module.js';
 import {createTown} from '../src/world/town.js';
 import {createTownSky} from '../src/render/sky.js';
 import {installDOM} from './fixtures.mjs';
+import {groundHeight,OUTER_PIER} from '../src/world/layout.js';
 
 test('street has no transparent canopy sheets and phones retain bounded night lighting',()=>{
  installDOM();const scene=new THREE.Scene();
  const world=createTown({scene,sites:[],mobile:true,shadows:false,register(){},enter(){},onAction(){}});
+ const pier=world.group.getObjectByName('pier-concrete-surface');
+ assert.equal(groundHeight(0,-70),pier.position.y,'Physics and visible pier share the same height');
+ assert.equal(world.people.find(p=>p.g.userData.name==='Harbour master').g.position.y,pier.position.y,'Initial standing resident is grounded before moving');
+ assert.equal(groundHeight(0,-52),0,'Boardwalk remains flush');
+ assert.equal(groundHeight(0,-60),0,'Approach is not raised with the pier');
+ for(const z of [-64,-70,-78])assert.equal(groundHeight(2,z),OUTER_PIER.height);
  const barriers=[],lights=[];world.group.updateMatrixWorld(true);
  world.group.traverse(o=>{
   if(o.isPointLight&&o.userData.nightIntensity)lights.push(o);

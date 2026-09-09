@@ -67,3 +67,25 @@ asset renders; browser rendering and device frame rates are not measured here.
 
 The former MakeHuman cast in `assets/characters/neighbours/` and older prototypes
 are archived for rollback and are not preloaded as active town residents.
+
+## Scene-lighting trial and surface contact
+
+Aiko and Kenji now use matte Lambert materials at runtime. Their illustrated
+atlases, palette, alpha cutouts, skinning and face morphs are retained; the
+existing sun, hemisphere and room lights and AgX exposure now affect them.
+Other neighbours retain the unlit baseline for comparison. This adds no character
+draws or textures, but the lit shader and its shadow reception still need device
+measurement. The source GLBs remain unchanged.
+
+The outer pier renderer and ground-height query share the same deck height;
+residents also start at the correct terrain elevation before their first step.
+The ramen exterior closes the supplied left door leaf, including its window and
+sign, by transforming isolated copies of its geometry. The interior source,
+entrance interaction and exit route are preserved.
+
+Validation: 56 tests and the production build pass, including real character
+loading, retained cutouts and expressions, pier height, closed-door ray hits and
+interior isolation. Browser appearance, shader execution and device frame times
+remain unverified: the review browser could not create a WebGL context because
+its graphics renderer was disabled. Compare the lighting trial in daylight,
+evening and Minato before expanding it to the rest of the cast.
