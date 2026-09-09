@@ -2,6 +2,22 @@ import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
 export const VROID_BASES=['vroid-bob','vroid-casual','vroid-vest','vroid-ponytail','vroid-long'];
+// Keep the first lighting comparison bounded to two familiar residents.
+const LIGHTING_TRIAL=new Set(['Aiko','Kenji']);
+
+function illustratedMaterial(source,lit){
+  if(!lit)return source.clone();
+  // Respond to existing sun, hemisphere and room lights without skin specular
+  // highlights, extra geometry or extra draw calls. Keep the illustrated atlas.
+  const material=new THREE.MeshLambertMaterial({
+    name:source.name,color:source.color,map:source.map,alphaMap:source.alphaMap,
+    alphaTest:source.alphaTest,side:source.side,vertexColors:source.vertexColors,
+    transparent:source.transparent,opacity:source.opacity,depthWrite:source.depthWrite,
+    dithering:source.dithering,toneMapped:true,
+  });
+  material.userData={...source.userData,sceneLitAnime:true};
+  return material;
+}
 // Profile model IDs stay stable: schedules, saved relationships and dialogue use
 // the existing people. Only their appearance is selected here.
 const looks=[
@@ -37,12 +53,13 @@ function spectacles(model,eyeCentres){
 
 export function styleVroid(model,profile,eyeCentres){
   const look=vroidLook(profile);if(!look)return [];
+  const lit=LIGHTING_TRIAL.has(profile.name);
   const faces=[];
   model.traverse(mesh=>{
     if(!mesh.isMesh)return;
     const original=mesh.material;
     const customise=source=>{
-      const material=source.clone();material.toneMapped=false;material.depthWrite=true;
+      const material=illustratedMaterial(source,lit);material.toneMapped=lit;material.depthWrite=true;
       const palette=material.userData.townPalette;
       if(palette==='hair')material.color.set(look.hair);
       if(palette==='wardrobe')material.color.set(look.top).lerp(new THREE.Color(0xffffff),.24);

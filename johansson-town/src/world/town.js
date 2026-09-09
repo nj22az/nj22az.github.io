@@ -1,6 +1,7 @@
 import {buildIzakaya} from './izakaya.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {PROFILES} from '../people/profiles.js';
+import {OUTER_PIER,groundHeight} from './layout.js';
 import {buildDistricts} from './districts.js';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js';
@@ -40,7 +41,7 @@ function addWithCollider(group,colliders,entry){
 
 function addWalkablePier(world,options,factory){
   const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
-  factory.box(group,[8.2,.38,15.3],[0,-.095,-71.3],concrete,null,options.shadows);
+  factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.003-.19,OUTER_PIER.z],concrete,null,options.shadows);
   factory.box(group,[.34,.56,15.45],[-4.02,-.18,-71.3],dark,null,options.shadows);
   factory.box(group,[.34,.56,15.45],[4.02,-.18,-71.3],dark,null,options.shadows);
   factory.box(group,[8.2,.58,.42],[0,-.18,-78.84],dark,null,options.shadows);
@@ -165,14 +166,14 @@ export function createTown(options){
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return h>=960&&h<1410;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:site.id==='home'||site.id==='bus-hut'?1440:1140;return site.id==='home'||site.id==='bus-hut'||h>=540&&h<close;};
-  for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],0,profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],0,profile.work[1]);}
+  for(const profile of PROFILES){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildIzakaya(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
-  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(8.15,15.25),surfaces.worldMaterial('concrete',0xc0beb5,2));
-  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(0,.098,-71.3);pierSurface.receiveShadow=true;world.group.add(pierSurface);
+  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.05,OUTER_PIER.length-.05),surfaces.worldMaterial('concrete',0xc0beb5,2));
+  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,OUTER_PIER.z);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=!open;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);

@@ -77,13 +77,43 @@ function addAsset(id,parent){
   model.userData.suppliedRoom=id;parent.add(model);return model;
 }
 
+function closeRamenExteriorDoor(model){
+  // The packed source bakes its open left leaf into six material batches,
+  // some shared with the fixed right leaf. Move only the left-leaf vertices;
+  // cloning their geometry leaves the separately instantiated interior intact.
+  const doorMaterials=new Set([
+    'mat_5f42316192ce94ce','mat_5f42316292cd929b','mat_5f42316192c19fd5',
+    'mat_5f42316292ce94ce','mat_5f42316192ca92a9','mat_5f42316392d1a094',
+  ]);
+  // Measured hinge, open edge direction and closed jamb in the packed GLB.
+  const hinge=new THREE.Vector3(-.3638,0,3.44815);
+  const closedHinge=new THREE.Vector3(-.395,0,3.4999);
+  const rotation=new THREE.Matrix4().makeRotationY(Math.atan2(.9089,.7358));
+  const point=new THREE.Vector3(),normal=new THREE.Vector3();
+  model.traverse(mesh=>{
+    if(!mesh.isMesh||!doorMaterials.has(mesh.material.name))return;
+    mesh.geometry=mesh.geometry.clone();
+    const positions=mesh.geometry.attributes.position,normals=mesh.geometry.attributes.normal;
+    for(let i=0;i<positions.count;i++){
+      point.fromBufferAttribute(positions,i);
+      if(point.x>=.5)continue; // The fixed right leaf shares these materials.
+      point.sub(hinge).applyMatrix4(rotation).add(closedHinge);
+      positions.setXYZ(i,point.x,point.y,point.z);
+      if(normals){normal.fromBufferAttribute(normals,i).transformDirection(rotation);normals.setXYZ(i,normal.x,normal.y,normal.z);}
+    }
+    positions.needsUpdate=true;if(normals)normals.needsUpdate=true;
+    mesh.geometry.computeBoundingBox();mesh.geometry.computeBoundingSphere();
+  });
+  model.userData.exteriorDoorClosed=true;
+}
+
 export function buildRamenRestaurant(world,options){
   if(!assets.has('ramen'))return false;
   const site={id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24,z:10,
     color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',door:[24.65,0,14.7],opens:'09:00'};
   options.sites.push(site);
   const building=new THREE.Group();building.name='Sato Ramen restaurant';building.position.set(site.x,0,site.z);world.group.add(building);
-  addAsset('ramen',building);
+  closeRamenExteriorDoor(addAsset('ramen',building));
   const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(24.65,1.2,14.15);world.group.add(entrance);
   options.register(entrance,'Enter Sato Ramen',()=>options.enter(site));
   world.colliders.push({x:24,z:10,w:4.72,d:7.1,height:3.12},

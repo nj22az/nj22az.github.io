@@ -5,7 +5,7 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
-import {VROID_BASES,vroidLook,styleVroid,updateVroidExpression} from './vroid.js?vroid-1';
+import {VROID_BASES,vroidLook,styleVroid,updateVroidExpression} from './vroid.js?vroid-2';
 
 const SOURCES=['suit','yui','yuri-playful',...VROID_BASES];
 const loaded=new Map(),sharedTextures=new Map();let pending=null;
