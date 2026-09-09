@@ -251,8 +251,8 @@
     "female": true,
     "height": 1.57,
     "work": [
-      66,
-      48
+      53,
+      42
     ],
     "evening": [
       36,
@@ -286,8 +286,8 @@
     "female": false,
     "height": 1.7,
     "work": [
-      68,
-      48
+      55,
+      42
     ],
     "evening": [
       42,
@@ -321,7 +321,7 @@
     "female": false,
     "height": 1.64,
     "work": [
-      -58,
+      -38,
       -60
     ],
     "evening": [
@@ -356,8 +356,8 @@
     "female": false,
     "height": 1.72,
     "work": [
-      -58,
-      -76
+      -38,
+      -74
     ],
     "evening": [
       24,
@@ -532,11 +532,11 @@
     "height": 1.66,
     "work": [
       25,
-      84
+      64
     ],
     "evening": [
-      43,
-      97
+      34,
+      69
     ],
     "home": [
       46,

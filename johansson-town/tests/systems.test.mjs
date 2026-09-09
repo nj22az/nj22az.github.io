@@ -24,7 +24,7 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(townBoundsBlocked(0,-76,.28),false);assert.equal(townBoundsBlocked(4.1,-76,.28),true);assert.equal(townBoundsBlocked(0,-79.2,.28),true);
  for(const route of ROUTES)for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
  for(const yaw of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const f={x:-Math.sin(yaw),z:-Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};assert.ok(Math.abs(f.x*right.x+f.z*right.z)<1e-10);assert.ok(f.x*right.z-f.z*right.x>.99);}
- assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(72,116)>5.9);
+ assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(49,82)>5.9);
 });
 test('world construction, original route and new door reachability',()=>{
  const {world,all}=build();assert.equal(world.people.length,21);assert.ok(world.quality.streetInteractions>=8);
@@ -34,6 +34,17 @@ test('world construction, original route and new door reachability',()=>{
  world.update(.016,1,1,1002);world.update(.016,2,0,1230);
  const book=all.find(s=>s.id==='frontrow');assert.equal(world.isOpen(book,1002),true);assert.equal(world.isOpen(book,1230),false);
  world.group.updateMatrixWorld(true);world.group.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite),o.name+' has invalid transforms'));
+});
+test('compact outskirts retain destinations without the long empty detours',()=>{
+ const length=id=>{const r=ROUTES.find(r=>r.id===id);return r.points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-r.points[i][0],p[1]-r.points[i][1]),0);};
+ assert.ok(length('residential')<75,'Residential circuit fits beside the shops');
+ assert.ok(length('shrine-slope')<32,'Shrine is a short climb from the neighbourhood');
+ for(const [x,z] of [[120,60],[72,117],[-58,-74]])assert.equal(townBoundsBlocked(x,z,.28),true,'Old empty outskirts are no longer playable');
+ const {world,anchors}=build();
+ const shrine=anchors.find(a=>a.label==='Visit hillside shrine');assert.ok(shrine);
+ assert.ok(Math.abs(shrine.o.position.y-groundHeight(shrine.o.position.x,shrine.o.position.z)-1.3)<1e-6,'Shrine interaction follows its raised landing');
+ const pupils=world.people.filter(p=>['Hana','Daichi'].includes(p.profile.name));
+ assert.equal(pupils.length,2);for(const p of pupils)assert.ok(p.g.position.distanceTo(new THREE.Vector3(54,0,42))<2,'Pupils move with the school');
 });
 test('navigation finds a collision-free route and cannot cut a wall corner',()=>{
  const blocked=(x,z,r=0)=>x<-1||x>8||z<-1||z>8||circleHitsRect(x,z,r,{x:3,z:3,w:2,d:5});
@@ -75,7 +86,7 @@ test('malformed current save falls back to valid legacy data without deleting it
 test('resident paths clear detailed props; evening destinations and Kenji escort do not deadlock',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(-2,0,20);const state={inventory:[],quest:0,kenjiEscort:'walking'};
  const blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
- for(const target of [[-34,39],[67,46],[72,117]]){
+ for(const target of [[-34,39],[54,42],[49,82],[-38,-60],[-38,-74]]){
   const path=nav.path({x:0,z:46},{x:target[0],z:target[1]});assert.ok(path.length,'Destination is reachable: '+target);
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.05)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,'Path edge is clear');
  }
