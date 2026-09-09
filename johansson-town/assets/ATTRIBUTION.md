@@ -63,7 +63,7 @@ Minato izakaya and the 21 resident prototypes are original scripted Blender cons
 
 ## Fitted neighbours and street surfaces (2026-09-09)
 
-The active 21 residents now use `characters/neighbours/resident-00.glb` through `resident-20.glb`, authored with Blender 4.2.23 LTS and MPFB from the MakeHuman CC0 anatomical base and system asset pack. Each has independent age/build/face fitting, fitted clothes and hair, blended skin weights, seven original in-place clips and grounded soles. Covered thighs are masked beneath skirts. Textures are shared locally and limited to 256–1024px; clothing colours and older residents' hair are adapted. Exact inputs, hashes, pinned authoring revision and modifications are in `characters/neighbours/manifest.json` and the per-resident `.source.json` files. Full CC0 terms and source rights holders remain in `characters/realistic/LICENSE-MAKEHUMAN-CC0.md` and `characters/realistic/provenance.json`. The former segmented `living/` models are now an inactive archive. Yuri's supplied asset and rights are unchanged.
+The archived fitted cast used `characters/neighbours/resident-00.glb` through `resident-20.glb`, authored with Blender 4.2.23 LTS and MPFB from the MakeHuman CC0 anatomical base and system asset pack. Each has independent age/build/face fitting, fitted clothes and hair, blended skin weights, seven original in-place clips and grounded soles. Covered thighs are masked beneath skirts. Textures are shared locally and limited to 256–1024px; clothing colours and older residents' hair are adapted. Exact inputs, hashes, pinned authoring revision and modifications are in `characters/neighbours/manifest.json` and the per-resident `.source.json` files. Full CC0 terms and source rights holders remain in `characters/realistic/LICENSE-MAKEHUMAN-CC0.md` and `characters/realistic/provenance.json`. The former segmented `living/` models are now an inactive archive. Yuri's supplied asset and rights are unchanged.
 
 The following surfaces were discovered through the owner's [GameDev Free Resources catalogue](https://github.com/teamgravitydev/gamedev-free-resources). All are CC0 1.0; exact source downloads and before/after hashes are in `materials/oga-manifest.json`.
 
@@ -93,3 +93,17 @@ The active exterior is now `models/izakaya/minato-benmaher-exterior.glb`, derive
 Adaptations: remove the separate two-triangle presentation ground plane; keep all 2,446 building triangles; merge opaque geometry; preserve wire and rooftop-cloth cutouts with small RGBA texture crops; re-encode the base-colour atlas at 2048px and normal, packed AO/roughness/metalness and emission atlases at 1024px; retain the original neon colours at 65% emission strength; fit human scale, orientation and the door to Minato's existing street entrance. The result is 2,958,412 bytes and three draws. Source/output hashes, preserved metadata and geometry bounds are in `models/izakaya/benmaher-manifest.json`. Reproduce with `python tools/pack-benmaher-izakaya.py /path/to/izakaya_-_low_poly_building.glb` (NumPy and Pillow).
 
 The previously supplied Meshy izakaya exterior is an inactive archive. Minato's existing project-authored dining room and activities remain active.
+
+## VRoid anime town cast (2026-09-09)
+
+The active 21 town residents now use `characters/vroid/`. Five CC0 sample models by **pixiv Inc. / VRoid Project** supply the actual anime geometry, humanoid skinning and facial morph targets. Sources and model-specific creator licence pages:
+
+| Packed base | Original VRoid sample | Creator licence |
+| --- | --- | --- |
+| `vroid-bob.glb` | Vivi / beta AvatarSample_2 | [CC0](https://vroid.pixiv.help/hc/en-us/articles/360014900273) |
+| `vroid-casual.glb` | HairSample_Male | [CC0 sample listing](https://vroid.pixiv.help/hc/en-us/articles/4402614652569) |
+| `vroid-vest.glb` | Sakurada Fumiriya | [CC0](https://vroid.pixiv.help/hc/en-us/articles/360014788554) |
+| `vroid-ponytail.glb` | Victoria Rubin / beta AvatarSample_4 | [CC0](https://vroid.pixiv.help/hc/en-us/articles/360014900233) |
+| `vroid-long.glb` | Sendagaya Shino | [CC0](https://vroid.pixiv.help/hc/en-us/articles/360013482714) |
+
+The original VRMs were obtained from the public [madjin/vrm-samples mirror](https://github.com/madjin/vrm-samples/tree/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta). `characters/vroid/manifest.json` records the exact input and output hashes. Changes: 512–1024px local texture atlases, four or five skinned draws per base, shared geometry, individual hair/clothes colours, head-bound glasses, retained eyelid/smile/mouth morphs, seven original humanoid animations, seated skirt fitting, fitted dark shorts beneath skirts, sole grounding and orientation conversion. The runtime uses portable GLB and illustrated unlit materials, without a VRoid Hub account or remote asset service. See `../docs/VROID-CAST.md` for reproduction.

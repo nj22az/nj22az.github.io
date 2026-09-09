@@ -1,4 +1,6 @@
-# Fitted neighbours and town surfaces
+# Fitted neighbours archive and town surfaces
+
+The character section records an earlier art pass. The active cast is now documented in [VROID-CAST.md](VROID-CAST.md); these MakeHuman assets remain archived. The street surface and plant work below remains active.
 
 The former resident prototypes had segmented limbs, simplified faces and stiff poses. The active 21 neighbours now use fitted MakeHuman anatomy, textured skin, everyday clothing, hair and blended joints. Age, build, face targets, wardrobe and colour vary by resident. Fine spectacles are bound to the heads of Aiko, Reiko, Tetsuo and Fumiko. Skirts have extra hem room and masked covered thighs to avoid walking intersections.
 
