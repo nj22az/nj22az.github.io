@@ -28,8 +28,21 @@ export function supperGuests(minutes){
  if(!izakayaOpen(minutes))return [];
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
+// Overlapping, repeatable visits by the active cast. At most two seated diners;
+// Yuri retains her separate after-work stop and her standing/greeting animation.
+export const RAMEN_VISITS=Object.freeze({
+ Nao:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
+ Kenji:[735,840], Tetsuo:[795,900], Aiko:[855,960],
+ Reiko:[915,1020], 'Bus driver':[975,1080], 'Officer Mori':[1140,1255],
+});
+export const ramenOpen=m=>inTimeRange(m,540,1260);
+export function visitsRamen(profile,minutes){
+ const visit=RAMEN_VISITS[profile.name];
+ return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
+}
 export function residentPlan(profile,minutes,rain=false){
  const m=minuteOfDay(minutes);
+ if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Yuri'){
@@ -44,9 +57,6 @@ export function residentPlan(profile,minutes,rain=false){
  }
  if(supperGuests(minutes).some(p=>p.name===profile.name))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with the neighbours'};
  if(inTimeRange(m,profile.start-30,profile.close))return {place:'work',target:profile.work,activity:profile.role};
- // Stagger noodle visits so the small counter seats only one neighbour at a time.
- const ramenStart=profile.close+(profile.name==='Hana'?5:profile.name==='Daichi'?40:75);
- if(['Hana','Daichi','Cold-storage kid'].includes(profile.name)&&inTimeRange(m,ramenStart,ramenStart+30)&&m<1260)return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen'};
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }

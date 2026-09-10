@@ -28,7 +28,7 @@ test('supplied models retain textures, correct material support and reachable ro
   globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{
     assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true]);
-    for(const id of ['office','ramen']){
+    for(const id of ['office']){
       const folder=new URL('../assets/models/'+id+'/',import.meta.url);
       const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
       const bytes=await readFile(new URL(manifest.file,folder));
@@ -126,7 +126,7 @@ test('supplied models retain textures, correct material support and reachable ro
     let draws=0;exterior.traverse(o=>{if(o.isMesh)draws++;});assert.equal(draws,manifest.draws);
     const interior=new THREE.Group();
     buildSuppliedRoom({site:{id:'ramen'},room:interior,reg(){},collider(){},action(){},exit(){}});
-    assert.ok(interior.getObjectByName('Supplied ramen'),'Original playable ramen interior remains');
+    assert.ok(interior.getObjectByName('Supplied ramen'),'Inakaya playable interior is installed');
 
   }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

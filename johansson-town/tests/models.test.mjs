@@ -1,3 +1,4 @@
+import {RAMEN_GUEST_SEATS} from '../src/world/interiors/ramen-layout.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -124,7 +125,7 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
   // Seat contact is measured on each actual skinned body, not inferred from height.
   for(const actor of actors.filter(a=>a.neighbour)){
    actor.entity.visible=true;actor.entity.parent.visible=true;
-   for(const seatHeight of [.71,.565])for(const pose of ['Sit','Eat','Drink']){
+   for(const seatHeight of [.71,.565,RAMEN_GUEST_SEATS[0].height])for(const pose of ['Sit','Eat','Drink']){
     actor.entity.userData.seatHeight=seatHeight;actor.entity.userData.socialPose=pose;
     models.update(.4);scene.updateMatrixWorld(true);
     const hip=actor.entity.worldToLocal(actor.model.getObjectByName('J_Bip_C_Hips').getWorldPosition(new THREE.Vector3()));let bottom=Infinity;
