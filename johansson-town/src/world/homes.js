@@ -12,6 +12,9 @@ export function buildHomes(world,options,box){
  const plates=[],dummy=new THREE.Object3D(),homes=new Map();
  const windows=new THREE.InstancedMesh(new THREE.PlaneGeometry(.78,.84),new THREE.MeshBasicMaterial({color:0xffffff}),RESIDENTS.length);
  windows.name='resident-home-windows';world.group.add(windows);
+ const porchMaterial=new THREE.MeshStandardMaterial({color:0xf1d9aa,emissive:0xffcc86,emissiveIntensity:.08,roughness:.65});
+ const porches=new THREE.InstancedMesh(new THREE.BoxGeometry(.18,.24,.12),porchMaterial,RESIDENTS.length);
+ porches.name='resident-porch-lamps';porches.castShadow=false;world.group.add(porches);
  for(const [i,p] of RESIDENTS.entries()){
   const {x,z,angle}=p.house,cos=Math.cos(angle),sin=Math.sin(angle);
   const position=(lx,y,lz)=>[x+lx*cos+lz*sin,y,z-lx*sin+lz*cos];
@@ -32,6 +35,18 @@ export function buildHomes(world,options,box){
   part([.88,.95,.08],[-.99,1.68,1.8],'timber',0x665640);
   part([.38,.3,.16],[1.03,1.1,1.83],'roof',0x626e69);
   part([.26,.025,.04],[1.03,1.18,1.93],'timber',0x303d39);
+  // Shallow details stay on the house side of the lane and share district batches.
+  part([1.3,.12,.65],[0,2.43,1.94],'timber',[0x6e795f,0x8b6863,0x687b7d][i%3]);
+  part([1.12,.07,.09],[0,2.33,2.23],'timber',0x665640);
+  part([.26,.34,.13],[.73,2.12,1.89],'timber',0x665640);
+  dummy.position.set(...position(.73,2.12,1.98));dummy.rotation.set(0,angle,0);dummy.scale.set(1,1,1);dummy.updateMatrix();porches.setMatrixAt(i,dummy.matrix);
+  if(i%2===0){
+   part([.88,.22,.28],[-.99,1.02,1.94],'timber',0x8e7053);
+   for(const [j,dx] of [-.28,0,.28].entries()){
+    part([.22,.18,.19],[-.99+dx,1.20,1.96],'plaster',0x637c54);
+    if(j!==1)part([.075,.07,.075],[-.99+dx,1.32,1.97],'plaster',0xcda9a0);
+   }
+  }
   const sideways=Math.abs(sin)>.5;
   world.colliders.push({x,z,w:sideways?3.5:3.12,d:sideways?3.12:3.5,height:upgraded?6:3.3,home:p.name});
   const col=i%4,row=Math.floor(i/4);ctx.fillStyle='#e6dbc1';ctx.fillRect(col*256,row*128,256,128);
@@ -57,6 +72,7 @@ export function buildHomes(world,options,box){
  let previous='';
  world.updateHomes=minutes=>{
   const m=((minutes%1440)+1440)%1440,night=m>=1080||m<420;
+  porchMaterial.emissiveIntensity=night?.8:.08;
   const key=Number(night)+':'+RESIDENTS.map(p=>Number(homes.get(p.name).occupied)).join('');if(key===previous)return;previous=key;
   RESIDENTS.forEach((p,i)=>windows.setColorAt(i,new THREE.Color(night&&homes.get(p.name).occupied?0xd6aa6b:0x354841)));windows.instanceColor.needsUpdate=true;
  };

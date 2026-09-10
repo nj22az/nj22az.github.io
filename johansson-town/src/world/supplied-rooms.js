@@ -4,7 +4,7 @@ import {assetURL} from '../assets.js';
 import {localToWorld} from './landmark-lots.js';
 
 const assets=new Map();
-let pending;
+const pending=new Map();
 const files={stepwise:'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
 
 // Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
@@ -48,7 +48,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:2.12,z:2.98,w:.44,d:1.04,height:1.45},
       {x:1.86,z:-3.08,w:.88,d:.94,height:1.02},
     ]},
-  'yuri-home':{bounds:{minX:-2.20,maxX:2.20,minZ:-2.40,maxZ:2.50},spawn:[1.55,0,2.12],exit:[1.55,1.1,2.48],
+  'yuri-home':{bounds:{minX:-2.20,maxX:2.20,minZ:-2.40,maxZ:2.50},spawn:[1.45,0,.3],yaw:Math.PI/2,exit:[1.55,1.1,2.48],
     colliders:[
       {x:-1.46,z:.79,w:1.78,d:1.66,height:.9},
       {x:-2.17,z:-.26,w:.42,d:.42,height:.47},
@@ -64,9 +64,14 @@ export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
   return x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r;
 }
 
-export function preloadSuppliedRooms(){
-  if(pending)return pending;
-  pending=Promise.all(Object.entries(files).map(async([id,file])=>{
+export function suppliedRoomReady(id){return assets.has(id);}
+export function isSuppliedRoom(id){return Object.hasOwn(files,id);}
+export function preloadSuppliedRooms(ids=Object.keys(files)){
+  return Promise.all(ids.map(id=>{
+    if(assets.has(id))return true;
+    if(pending.has(id))return pending.get(id);
+    const file=files[id];if(!file)return false;
+    const task=(async()=>{
     const controller=new AbortController();let timer;
     try{
       const load=fetch(assetURL('models/'+file),{signal:controller.signal}).then(response=>{
@@ -86,8 +91,11 @@ export function preloadSuppliedRooms(){
       assets.set(id,gltf.scene);return true;
     }catch(error){console.warn('Supplied '+id+' unavailable:',error.message);return false;}
     finally{clearTimeout(timer);}
+    })();
+    pending.set(id,task);
+    task.finally(()=>pending.delete(id));
+    return task;
   }));
-  return pending;
 }
 
 function addAsset(id,parent){
