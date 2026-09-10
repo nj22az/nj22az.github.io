@@ -143,3 +143,11 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 ## Sakura fictional advertisements
 
 `graphics/konbini/*.webp`: original AI-generated NAGI, PORT 88 and KOMOREBI poster art created for Johansson Town with OpenAI image generation. See `../art/store/advertising/README.md` for the design briefs and runtime treatment. Product brand graphics are original canvas drawings defined in the source.
+
+## Umanose (Horseback) Sea Cave
+
+- Author: [STUDIO DUCKBILL](https://sketchfab.com/DuckbillStudio).
+- Source: [Umanose(Horseback) Sea Cave](https://sketchfab.com/3d-models/umanosehorseback-sea-cave-955ca0d3f21547198f44deb4363a830a), supplied by the user through Google Drive.
+- Licence in supplied GLB metadata: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). This asset retains its non-commercial restriction; it is not covered by the repository's general licence.
+- Changes: baked transforms, texture-aware simplification, two 2048px JPEG textures, lit rough rock materials, uniform placement beyond the northern street boundary. No portion of the scan was cropped out.
+- Runtime file: `models/sea-cave/umanose.glb`. Rebuild with `node tools/pack-sea-cave.mjs /path/to/umanosehorseback_sea_cave.glb`. Source hash and geometry measurements are in `models/sea-cave/manifest.json`.

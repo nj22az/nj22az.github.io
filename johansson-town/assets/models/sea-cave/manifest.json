@@ -1,0 +1,22 @@
+{
+  "source": {
+    "author": "STUDIO DUCKBILL (https://sketchfab.com/DuckbillStudio)",
+    "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+    "source": "https://sketchfab.com/3d-models/umanosehorseback-sea-cave-955ca0d3f21547198f44deb4363a830a",
+    "title": "Umanose(Horseback) Sea Cave"
+  },
+  "sourceDriveId": "1AIIH1Sry55ovfU_zo0lpG8UKicr12V16",
+  "sourceSha256": "f283be18791a83f096488f982d7a623d72ae431ff1ab2e6e5d967e46ed6efb68",
+  "sourceBytes": 119161428,
+  "sourceTriangles": 1307955,
+  "sourceDraws": 22,
+  "bytes": 12510692,
+  "triangles": 161338,
+  "draws": 2,
+  "textureSize": 2048,
+  "relativeErrors": [
+    0.0029587838798761368,
+    0.0029868974816054106
+  ],
+  "modifications": "Baked original transforms; texture-aware simplification; two 2K JPEG textures; lit rough rock materials. Complete scan retained."
+}
