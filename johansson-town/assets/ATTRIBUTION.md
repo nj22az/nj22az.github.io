@@ -139,3 +139,7 @@ Rebuild with `python tools/pack-inakaya.py /path/to/japanese_restaurant_inakaya.
 Hashes, dimensions and texture sizes are recorded in `models/ramen/inakaya-manifest.json`.
 
 The playable ramen interior reuses this Inakaya asset. A cached geometry variant restores the source width/depth and adds 0.6 m within the customer aisle; textures and street geometry remain shared/unmodified. Floor, stools, interaction points and NPC seating are fitted to the source model.
+
+## Sakura fictional advertisements
+
+`graphics/konbini/*.webp`: original AI-generated NAGI, PORT 88 and KOMOREBI poster art created for Johansson Town with OpenAI image generation. See `../art/store/advertising/README.md` for the design briefs and runtime treatment. Product brand graphics are original canvas drawings defined in the source.

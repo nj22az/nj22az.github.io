@@ -12,6 +12,6 @@ const {preloadStreetPlants}=await import('./world/street-plants.js');
 // Inakaya is shared by street and ramen room; other supplied interiors load on entry.
 await Promise.all([charactersReady,preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock()),preloadStreetPlants(),preloadSuppliedRooms(['ramen-exterior'])]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=35');
+await import('./game.js?living-town=36');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

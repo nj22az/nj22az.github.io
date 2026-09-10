@@ -1,3 +1,4 @@
+import {createStoreAdvertising} from './store-advertising.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {STORE_ITEMS} from '../../commerce/catalogue.js';
 import {STORE_CLERK_POSITION,STOCKROOM_DOOR,STORE_COUNTER,STORE_PARTITIONS} from './store-layout.js';
@@ -5,7 +6,7 @@ import {STORE_CLERK_POSITION,STOCKROOM_DOOR,STORE_COUNTER,STORE_PARTITIONS} from
 export function buildConvenienceStore({room,box,reg,collider,action,signTexture,clerk}){
  const cream=0xf0e8d7,red=0xc73d39,steel=0x999fa3,blue=0x3566b2;
  const batches=new Map(),geometries=new Map(),dummy=new THREE.Object3D();
- const products=[],placements=[];
+ const products=[],placements=[],advertising=createStoreAdvertising({room,reg,action});
  function shape(kind,size,pos,color,rotation=0){
   if(!geometries.has(kind)){
    let g;
@@ -24,15 +25,16 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  const block=(size,pos,color)=>shape('box',size,pos,color);
  function anchor(pos,label,fn){const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;}
  function inspect(pos,label,text){return anchor(pos,'Inspect '+label,()=>action('inspect',label,text));}
- function bottle(x,y,z,color,cap=red){
+ function bottle(x,y,z,color,cap=red,brand='water'){
   shape('cylinder',[.11,.31,.11],[x,y+.155,z],color);
   shape('sphere',[.11,.09,.11],[x,y+.30,z],color);
   shape('cylinder',[.049,.13,.049],[x,y+.38,z],color);
   shape('cylinder',[.057,.05,.057],[x,y+.46,z],cap);
   shape('cylinder',[.113,.10,.113],[x,y+.17,z],0xf4e9d5);
+  advertising.label(brand,[x,y+.17,z],.23,.10,{radius:.114});
  }
- function can(x,y,z,color){shape('cylinder',[.105,.26,.105],[x,y+.13,z],color);for(const h of [.014,.25])shape('cylinder',[.107,.025,.107],[x,y+h,z],0xd0d3d0);}
- function carton(x,y,z,w=.6,h=.45,d=.5){block([w,h,d],[x,y+h/2,z],0xc4a172);block([w+.01,.025,.10],[x,y+h+.013,z],0xddbd8c);block([.10,h+.015,.015],[x,y+h/2,z+d/2+.009],0xddbd8c);}
+ function can(x,y,z,color,brand='coffee'){shape('cylinder',[.105,.26,.105],[x,y+.13,z],color);for(const h of [.014,.25])shape('cylinder',[.107,.025,.107],[x,y+h,z],0xd0d3d0);advertising.label(brand,[x,y+.13,z],.23,.20,{radius:.107});}
+ function carton(x,y,z,w=.6,h=.45,d=.5){block([w,h,d],[x,y+h/2,z],0xc4a172);block([w+.01,.025,.10],[x,y+h+.013,z],0xddbd8c);block([.10,h+.015,.015],[x,y+h/2,z+d/2+.009],0xddbd8c);advertising.label('stock',[x,y+h*.6,z+d/2+.019],w*.68,h*.36);}
  function crate(x,y,z,color){
   block([.68,.07,.52],[x,y+.035,z],color);
   for(const side of [-1,1]){block([.065,.35,.52],[x+side*.31,y+.20,z],color);block([.68,.10,.045],[x,y+.31,z+side*.24],color);for(const dx of [-.24,0,.24])block([.06,.25,.04],[x+dx,y+.17,z+side*.24],color);}
@@ -62,7 +64,11 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
   block([1.38,2.55,.85],[x,1.275,z],c);block([1.18,2.16,.08],[x,1.18,z+.43],0xdce9e8);
   for(const y of [.28,.87,1.46]){
    block([1.15,.055,.56],[x,y,z+.65],cream);
-   for(let n=0;n<3;n++){const px=x-.36+n*.36;if(i&&y>.8)can(px,y+.035,z+.65,0x719451);else bottle(px,y+.035,z+.65,i?0x91c1db:y<.5?0xe5ae54:0x343639);}
+   for(let n=0;n<3;n++){const px=x-.36+n*.36;
+    if(i&&y>.8)can(px,y+.035,z+.65,y>1?0x50342a:0xc4ac6a,y>1?'coffee':'beer');
+    else if(i)bottle(px,y+.035,z+.65,0x91c1db,0x477c9b,'water');
+    else bottle(px,y+.035,z+.65,y<.5?0x343639:0x64835b,y<.5?red:0x304c32,y<.5?'cola':'tea');
+   }
   }
   const hinge=new THREE.Group();hinge.position.set(x-.64,0,z+.95);room.add(hinge);
   const panel=box([1.28,2.18,.035],[.64,1.19,0],0xc4e4e5,hinge,false);panel.material.transparent=true;panel.material.opacity=.13;panel.material.depthWrite=false;
@@ -73,7 +79,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
   collider(x,z+.25,1.42,1.35,2.55);
   if(!i){cooler=hinge;door=panel;}
  }
- // Fewer, larger products with distinct silhouettes and no tiny printed labels.
+ // Fewer, larger products with consistent fictional packaging and shelf prices.
  rack(-1.4,2.0,2.9,1.65,.8);
  rack(-1.35,-1.87,1.8,2.05,.55);
  const positions=[[-4.95,.95,-.65],[-2.75,1.54,-.65],[-2.30,.24,2.22],[-2.35,1.35,2.22],[-1.3,.81,2.22],[-.55,.25,2.22],[-1.05,1.35,2.22],[-.40,.81,2.22]];
@@ -82,17 +88,33 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
   // Tea and coffee use the bottles/cans already in the refrigerator.
   if(i>1)for(let n=0;n<2;n++){
    const px=x+n*.32;
-   if(spec.id==='rice'){shape('rice',[1,1,1],[px,y,z],0xf3ead6);block([.15,.18,.19],[px,y+.09,z+.005],0x28372f);}
-   else if(spec.id==='biscuit'){shape('sphere',[.20,.28,.10],[px,y+.27,z],red);shape('sphere',[.065,.09,.015],[px-.045,y+.27,z+.105],0xeac35b);shape('sphere',[.065,.09,.015],[px+.05,y+.33,z+.105],0xeac35b);}
-   else if(spec.id==='battery'){for(const dx of [-.07,.07])can(px+dx,y,z,0x404442);}
-   else block([.26,spec.id==='postcard'?.24:.27,.12],[px,y+.14,z],spec.color);
+   if(spec.id==='rice'){
+    shape('rice',[1,1,1],[px,y,z],0xf3ead6);block([.15,.18,.19],[px,y+.09,z+.005],0x28372f);
+    advertising.label(spec.id,[px,y+.17,z+.106],.15,.09);
+   }else if(spec.id==='biscuit'){
+    block([.30,.42,.14],[px,y+.21,z],red);for(const h of [.02,.40])block([.31,.028,.15],[px,y+h,z],red);
+    advertising.label(spec.id,[px,y+.23,z+.076],.28,.25);
+   }else if(spec.id==='battery'){
+    for(const dx of [-.055,.055]){
+     shape('cylinder',[.045,.22,.045],[px+dx,y+.11,z],0x404442);
+     shape('cylinder',[.047,.015,.047],[px+dx,y+.215,z],0xd0d3d0);
+     advertising.label(spec.id,[px+dx,y+.11,z],.1,.17,{radius:.047});
+    }
+    advertising.label(spec.id,[px,y+.285,z+.052],.25,.10);
+   }else{
+    const depth=['notebook','postcard'].includes(spec.id)?.045:.12;
+    block([.26,spec.id==='postcard'?.24:.27,depth],[px,y+.14,z],spec.color);
+    advertising.label(spec.id,[px,y+.14,z+depth/2+.003],.245,.19);
+   }
+
   }
-  const o=anchor([x,y+.2,z],'Examine '+spec.name,()=>action('store-item',spec.name,spec));o.userData.storeItem=spec.id;products.push(o);placements.push(o);
+  advertising.label(spec.id,[x+.13,y-.045,z+.22],.30,.13,{price:true});
+  const o=anchor([x,y+.2,z],'Examine '+spec.brand+' · '+spec.name,()=>action('store-item',spec.name,spec));o.userData.storeItem=spec.id;products.push(o);placements.push(o);
  });
  for(let n=0;n<4;n++){
   const x=-2+n*.43;
-  shape('cylinder',[.15,.30,.15],[x,1.52,-1.70],0xe3bc65);shape('cylinder',[.16,.035,.16],[x,1.685,-1.70],cream);
-  block([.29,.35,.18],[x,.97,-1.70],[0x71a477,0x6d9aba,0xd7b45a,0xb97b72][n]);
+  shape('cylinder',[.15,.30,.15],[x,1.52,-1.70],0xe3bc65);shape('cylinder',[.16,.035,.16],[x,1.685,-1.70],cream);advertising.label('noodles',[x,1.52,-1.70],.32,.22,{radius:.152});
+  block([.29,.35,.18],[x,.97,-1.70],0xe8e3d5);advertising.label('milk',[x,.97,-1.605],.265,.27);
  }
  // Checkout with a clear staff aisle and an open route around its right end.
  const c=STORE_COUNTER;
@@ -106,6 +128,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  for(const y of [1.28,1.62])for(const x of [2.25,2.55,2.85])shape('sphere',[.12,.085,.105],[x,y,-.50],0xdca95a);
  const caseGlass=box([1.05,.70,.60],[2.55,1.56,-.50],0xcddedf,room,false);caseGlass.material.transparent=true;caseGlass.material.opacity=.16;caseGlass.material.depthWrite=false;
  for(const x of [2.02,3.08])block([.04,.72,.63],[x,1.54,-.50],steel);
+ advertising.label('buns',[2.55,1.20,-.185],.65,.10);
  anchor([2.45,1.3,.02],'Browse steamed buns',()=>action('inspect','Steamed buns','Warm buns are kept ready beside the register.'));
  anchor([1.25,1.2,.05],'Browse mail-order catalogue',()=>action('store-catalogue'));
  anchor([.2,1.25,.05],'Ring service bell',()=>action('resident','Yuri'));
@@ -141,7 +164,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  for(const {geometry,color,matrices} of batches.values()){
   const m=new THREE.InstancedMesh(geometry,new THREE.MeshStandardMaterial({color,roughness:.74}),matrices.length);m.name='sakura-stock-batch';matrices.forEach((matrix,i)=>m.setMatrixAt(i,matrix));m.receiveShadow=true;m.castShadow=false;m.computeBoundingSphere();room.add(m);
  }
- return {products,placements,cooler,door,stockroomDoor:STOCKROOM_DOOR};
+ return {products,placements,cooler,door,stockroomDoor:STOCKROOM_DOOR,advertising:advertising.finish()};
 }
 
 export function buildStoreShell({room,box,reg,exit}){
