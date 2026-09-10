@@ -123,3 +123,17 @@ The original VRMs were obtained from the public [madjin/vrm-samples mirror](http
 ## Complete canal overworld
 
 Japanese Town by Nazareno_rojas, CC BY 4.0. All original buildings, streets, bridge and canal retained. Texture compression, static batching and gameplay adaptation: Johansson Town. See [source, licence and changes](models/full-town/CREDITS.md).
+
+### Inakaya restaurant exterior and adjoining timber house
+
+`models/ramen/inakaya-exterior.glb`: **Japanese Restaurant “Inakaya”**, by
+[Jellepostma](https://sketchfab.com/Jellepostma),
+[original model](https://sketchfab.com/3d-models/japanese-restaurant-inakaya-97594e92c418491ab7f032ed2abbf596),
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), as embedded in the supplied file.
+Adapted for the east lane: fitted width/depth, grounded geometry, removed source
+foreground paving/poles, compacted unused vertices, reduced embedded texture sizes.
+Both buildings, their material assignments and transparent details are retained.
+The right doorway leads to the existing Sato Ramen interior; the timber doorway
+leads to the supplied crystal room, moved from StepWise Instruments.
+Rebuild with `python tools/pack-inakaya.py /path/to/japanese_restaurant_inakaya.glb`.
+Hashes, dimensions and texture sizes are recorded in `models/ramen/inakaya-manifest.json`.

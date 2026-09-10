@@ -5,12 +5,12 @@ import {localToWorld} from './landmark-lots.js';
 
 const assets=new Map();
 const pending=new Map();
-const files={stepwise:'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
+const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
 
 // Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
 export const SUPPLIED_ROOM_LAYOUTS={
-  stepwise:{bounds:{minX:-3.32,maxX:3.32,minZ:-3.32,maxZ:3.32},spawn:[0,0,2.45],exit:[0,1.1,3.28],
+  'crystal-room':{bounds:{minX:-3.32,maxX:3.32,minZ:-3.32,maxZ:3.32},spawn:[0,0,2.45],exit:[0,1.1,3.28],
     colliders:[
       {x:2.75,z:2,w:1.35,d:2.8,height:1.9},
       {x:2.6,z:-.48,w:1.6,d:1.8,height:.9},
@@ -134,7 +134,37 @@ function closeRamenExteriorDoor(model){
   model.userData.exteriorDoorClosed=true;
 }
 
+// The source contains two real doorways: the restaurant on the right and the
+// timber neighbour on the left. Both transition from the same clear east lane.
+function buildInakayaPair(world,options){
+  const building=new THREE.Group();building.name='Inakaya restaurant and neighbour';
+  building.position.set(24,0,10);world.group.add(building);
+  const model=addAsset('ramen-exterior',building);
+  model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
+  const sites=[
+    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24.65,z:10,
+      color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[24.65,0,14.7]},
+    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:21.2,z:12.2,
+      color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[21.2,0,14.7]},
+  ];
+  for(const site of sites){
+    options.sites.push(site);
+    const entrance=new THREE.Object3D();entrance.name=site.title+' entrance';
+    entrance.position.set(site.door[0],1.2,site.id==='ramen'?13.9:14.1);world.group.add(entrance);
+    options.register(entrance,'Enter '+site.title,()=>options.enter(site));
+  }
+  // Facade-aligned solids keep the source's doors and paving behind the
+  // interaction line; both exit points remain outside the walls and props.
+  world.colliders.push(
+    {x:24.05,z:9.4,w:3.7,d:7.1,height:6.3},
+    {x:21.16,z:12.19,w:2.35,d:2.9,height:4},
+    {x:22.72,z:13.7,w:6.28,d:.3,height:1},
+  );
+  return sites[0];
+}
+
 export function buildRamenRestaurant(world,options,placement){
+  if(!placement&&assets.has('ramen-exterior'))return buildInakayaPair(world,options);
   if(!assets.has('ramen'))return false;
   const place=placement||{x:24,z:10,yaw:0,scale:1};
   const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
@@ -185,7 +215,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
   };
   anchor(layout.exit,'Exit to street','exit');
-  if(site.id==='stepwise'){
+  if(site.id==='crystal-room'){
     anchor([0,1.1,.6],'Listen to the room','inspect','A room that should not be here','The street sounds have faded. A clear, sustained note seems to come from the walls. There are no speakers.');
     anchor([1.55,1.2,1.8],'Examine the crystal formation','inspect','The crystal formation','Light gathers inside the stone, though the room has no windows. A tiny ruler rests against it. Every mark reads zero.');
     anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1988.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');

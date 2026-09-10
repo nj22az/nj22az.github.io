@@ -77,7 +77,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true],'All supplied rooms preloaded');
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true],'All supplied rooms preloaded');
     const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
     const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js');
@@ -85,7 +85,10 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadYuriHome}=await import('../src/world/yuri-home.js');
     assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
     const api=await import(dataModule(source));
-    assert.equal(api.world.harbourShops.length,8);
+    assert.equal(api.world.harbourShops.length,7);
+    assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));
+    assert.ok(api.SITES.some(s=>s.id==='crystal-room'));
+    assert.ok(api.world.group.getObjectByName('Inakaya restaurant and neighbour'));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
     assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');
@@ -150,7 +153,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.deepEqual(api.reviewRoomState(),{visible:true,townVisible:false,colliders:api.reviewRoomState().colliders});
       assert.ok(api.reviewRoomState().colliders>0,'Interior has colliders: '+site.id);
       api.simulate(1/60);assert.equal(api.camera.fov,65);assert.equal(api.player.visible,false,'FPV inside '+site.id);assert.equal(api.reviewHiddenCutaways(),0,'FPV keeps the room enclosure visible: '+site.id);
-      const roomStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.z<roomStart.z,'Interior FPV walks forward');
+      const roomStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;const facing=SUPPLIED_ROOM_LAYOUTS[site.id]?.yaw??0;assert.ok((api.player.position.x-roomStart.x)*-Math.sin(facing)+(api.player.position.z-roomStart.z)*-Math.cos(facing)>0,'Interior FPV walks forward: '+site.id);
 
       api.simulate(1/60);
       assertFiniteTransforms(api,'inside '+site.id);
@@ -214,7 +217,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(yuri.parent,api.world.group,'She stays outside the restaurant on alternate evenings');api.leaveRoom();
     api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
     assert.equal(yuri.visible,true,'Yuri returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
-    assert.equal(yuri.position.x,3.35);assert.equal(yuri.position.z,-1.95);api.leaveRoom();
+    const {STORE_CLERK_POSITION}=await import('../src/world/interiors/store-layout.js');
+    assert.deepEqual(yuri.position.toArray(),[...STORE_CLERK_POSITION]);api.leaveRoom();
     api.reviewSetMinutes(1420);api.enterRoom(api.SITES.find(s=>s.id==='yuri-home'));api.interaction();
     assert.equal(api.reviewCurrentRoom()?.id,'yuri-home');
     assert.equal(yuri.visible,true,'Yuri is home late at night');

@@ -9,9 +9,9 @@ import {preloadVending} from './world/vending.js';
 import {preloadCharacters} from './people/characters.js?vroid-3';
 const charactersReady=preloadCharacters({onProgress:value=>{document.querySelector('#bootStatus').textContent='OPENING · '+Math.round(value*100)+'%';}});
 const {preloadStreetPlants}=await import('./world/street-plants.js');
-// Ramen is also an exterior; other supplied rooms load only when entered.
-await Promise.all([charactersReady,preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock()),preloadStreetPlants(),preloadSuppliedRooms(['ramen'])]);
+// Only the Inakaya exterior is needed outside; all supplied interiors load on entry.
+await Promise.all([charactersReady,preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock()),preloadStreetPlants(),preloadSuppliedRooms(['ramen-exterior'])]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=33');
+await import('./game.js?living-town=34');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

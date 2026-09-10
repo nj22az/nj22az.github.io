@@ -24,8 +24,8 @@ test('interiors load only on request, share in-flight work, cache success and re
   assert.deepEqual(results,[[true],[true]]);assert.equal(calls.length,1);assert.match(calls[0],/yuri-bedroom/);
   await preloadSuppliedRooms(['yuri-home']);assert.equal(calls.length,1);
   assert.equal(suppliedRoomReady('office'),false);
-  assert.deepEqual(await preloadSuppliedRooms(['stepwise']),[false]);fail=false;
-  assert.deepEqual(await preloadSuppliedRooms(['stepwise']),[true]);assert.equal(calls.length,3);
+  assert.deepEqual(await preloadSuppliedRooms(['crystal-room']),[false]);fail=false;
+  assert.deepEqual(await preloadSuppliedRooms(['crystal-room']),[true]);assert.equal(calls.length,3);
  }finally{globalThis.fetch=originalFetch;}
 });
 

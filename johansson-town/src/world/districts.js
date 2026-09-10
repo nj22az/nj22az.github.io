@@ -37,16 +37,16 @@ export function buildDistricts(world,options){
     verb([x+w*.42,1.4,frontZ+.8],'Read meter','read','Electricity meter','A mechanical disc turns behind the glass. The last reading was entered in pencil.');
     colliders.push({x,z:z-d/2,w,d:.35,height:h},{x:x-w/2,z,w:.35,d,height:h},{x:x+w/2,z,w:.35,d,height:h});
     const s={id,x,z,title,jp,sub:'JOHANSSON町',color:colour,accent:'#4c655a',line:title+' · 14 September 1988',door:[x,0,frontZ+1],opens:'09:00'};
-    if(id==='ramen'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
+    if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }
   building({id:'sento',x:-34,z:34,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
   box([1.15,17,1.15],[-37,8.5,30],'concrete',0x8d8b7a);
   buildTeaHouse(world,options);
-  if(buildRamenRestaurant(world,options)){
-    box([4.9,.46,.16],[24,2.99,13.64],'timber',0x783d2f);
-    sign('中華そば 佐藤','SATO RAMEN · 09:00–21:00',[24,3.0,13.735],3.9,.40);
-  }else building({id:'ramen',x:24,z:10,w:7,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
+  if(!buildRamenRestaurant(world,options)){
+    building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
+    building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
+  }
   building({id:'bus-hut',x:-26,z:43,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
   // River mouth, flood walls and an accessible timber jetty form the western loop.
   const water=new THREE.Mesh(new THREE.PlaneGeometry(12,72,4,24),new THREE.MeshStandardMaterial({color:0x537c79,roughness:.26,metalness:.23}));water.rotation.x=-Math.PI/2;water.position.set(-54,-.18,-24);group.add(water);

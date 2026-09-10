@@ -1,0 +1,65 @@
+{
+  "file": "inakaya-exterior.glb",
+  "sourceFile": "japanese_restaurant_inakaya.glb",
+  "sourceSHA256": "891c084b0831e6c3f1035411ff285aa21b872ce0d29a5986d02907c97d27258a",
+  "sourceMetadata": {
+    "author": "Jellepostma (https://sketchfab.com/Jellepostma)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/japanese-restaurant-inakaya-97594e92c418491ab7f032ed2abbf596",
+    "title": "Japanese Restaurant \"Inakaya\""
+  },
+  "sha256": "4be283b8d1daedec2632d506eefa7b255d1fa3519116cb1cceb40a98c25efdae",
+  "sourceBytes": 20465048,
+  "bytes": 8511072,
+  "triangles": 94129,
+  "draws": 6,
+  "removedTriangles": 6775,
+  "textures": [
+    [
+      2048,
+      2048
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ]
+  ],
+  "bounds": {
+    "min": [
+      -4.422838767077461,
+      0.0,
+      -4.130743445506017
+    ],
+    "max": [
+      1.8611520097914551,
+      6.151664074900893,
+      3.8794002650788575
+    ]
+  },
+  "fit": {
+    "scale": [
+      0.75,
+      1,
+      0.8
+    ],
+    "translation": [
+      0,
+      0.32778842213537507,
+      1
+    ]
+  },
+  "changes": [
+    "Retained both adjoining buildings and their original materials",
+    "Removed foreground street geometry and poles",
+    "Compacted unused vertices and capped texture sizes; preserved alpha atlas",
+    "Fitted the east lane, facing +Z; grounded the geometry"
+  ]
+}
