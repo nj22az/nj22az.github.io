@@ -82,7 +82,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const indoor=['home','izakaya','ramen','market'].includes(tag);
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
-   if(indoor&&arrived()){
+   if(indoor&&(g.userData.indoors===tag||arrived())){
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
     g.userData.activity=tag==='home'?'at home':plan.activity;
    }else outside.push(p);

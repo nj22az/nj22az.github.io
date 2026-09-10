@@ -1,11 +1,12 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
+import {INAKAYA_FIT,RAMEN_LAYOUT,RAMEN_PLAYER_SEATS,ramenPoint,ramenX} from './interiors/ramen-layout.js';
 import {localToWorld} from './landmark-lots.js';
 
 const assets=new Map();
 const pending=new Map();
-const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/ramen-restaurant.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
+const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
 
 // Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
@@ -32,22 +33,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:-2.98,z:.17,w:.7,d:2.28,height:2.05},
       {x:-2.54,z:2.51,w:.61,d:.62,height:1.62},
     ]},
-  ramen:{bounds:{minX:-2.30,maxX:2.30,minZ:-3.46,maxZ:3.44},spawn:[.42,0,2.65],exit:[.42,1.2,3.42],
-    colliders:[
-      // Counter and staff kitchen, then the six stools and perimeter furniture.
-      {x:-.875,z:-1.16,w:2.93,d:4.68,height:1.31},
-      {x:.775,z:0,w:.39,d:.39,height:.59},
-      {x:-.39,z:1.36,w:.39,d:.39,height:.59},
-      {x:-1.485,z:1.36,w:.39,d:.39,height:.59},
-      {x:.97,z:-1.36,w:.39,d:.39,height:.59},
-      {x:2.08,z:-1.68,w:.39,d:.39,height:.59},
-      {x:2.08,z:-2.14,w:.39,d:.39,height:.59},
-      {x:-2.06,z:1.68,w:.45,d:.45,height:1.16},
-      {x:-1.84,z:2.32,w:.96,d:.72,height:.8},
-      {x:-1.94,z:3.10,w:.79,d:.79,height:1.45},
-      {x:2.12,z:2.98,w:.44,d:1.04,height:1.45},
-      {x:1.86,z:-3.08,w:.88,d:.94,height:1.02},
-    ]},
+  ramen:RAMEN_LAYOUT,
   'yuri-home':{bounds:{minX:-2.20,maxX:2.20,minZ:-2.40,maxZ:2.50},spawn:[1.45,0,.3],yaw:Math.PI/2,exit:[1.55,1.1,2.48],
     colliders:[
       {x:-1.46,z:.79,w:1.78,d:1.66,height:.9},
@@ -64,10 +50,12 @@ export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
   return x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r;
 }
 
-export function suppliedRoomReady(id){return assets.has(id);}
+const assetKey=id=>id==='ramen'?'ramen-exterior':id;
+export function suppliedRoomReady(id){return assets.has(assetKey(id));}
 export function isSuppliedRoom(id){return Object.hasOwn(files,id);}
 export function preloadSuppliedRooms(ids=Object.keys(files)){
-  return Promise.all(ids.map(id=>{
+  return Promise.all(ids.map(requestedId=>{
+    const id=assetKey(requestedId);
     if(assets.has(id))return true;
     if(pending.has(id))return pending.get(id);
     const file=files[id];if(!file)return false;
@@ -98,40 +86,29 @@ export function preloadSuppliedRooms(ids=Object.keys(files)){
   }));
 }
 
-function addAsset(id,parent){
-  const source=assets.get(id);if(!source)return false;
-  const model=source.clone(true);model.name='Supplied '+id;model.userData.sharedAsset=true;
-  model.userData.suppliedRoom=id;parent.add(model);return model;
-}
-
-function closeRamenExteriorDoor(model){
-  // The packed source bakes its open left leaf into six material batches,
-  // some shared with the fixed right leaf. Move only the left-leaf vertices;
-  // cloning their geometry leaves the separately instantiated interior intact.
-  const doorMaterials=new Set([
-    'mat_5f42316192ce94ce','mat_5f42316292cd929b','mat_5f42316192c19fd5',
-    'mat_5f42316292ce94ce','mat_5f42316192ca92a9','mat_5f42316392d1a094',
-  ]);
-  // Measured hinge, open edge direction and closed jamb in the packed GLB.
-  const hinge=new THREE.Vector3(-.3638,0,3.44815);
-  const closedHinge=new THREE.Vector3(-.395,0,3.4999);
-  const rotation=new THREE.Matrix4().makeRotationY(Math.atan2(.9089,.7358));
-  const point=new THREE.Vector3(),normal=new THREE.Vector3();
+let inakayaInterior=null;
+function interiorSource(source){
+  if(inakayaInterior)return inakayaInterior;
+  const model=source.clone(true);
   model.traverse(mesh=>{
-    if(!mesh.isMesh||!doorMaterials.has(mesh.material.name))return;
+    if(!mesh.isMesh)return;
+    // One cached geometry variant; never mutate the street instance or textures.
     mesh.geometry=mesh.geometry.clone();
     const positions=mesh.geometry.attributes.position,normals=mesh.geometry.attributes.normal;
+    const normal=new THREE.Vector3();
     for(let i=0;i<positions.count;i++){
-      point.fromBufferAttribute(positions,i);
-      if(point.x>=.5)continue; // The fixed right leaf shares these materials.
-      point.sub(hinge).applyMatrix4(rotation).add(closedHinge);
-      positions.setXYZ(i,point.x,point.y,point.z);
-      if(normals){normal.fromBufferAttribute(normals,i).transformDirection(rotation);normals.setXYZ(i,normal.x,normal.y,normal.z);}
+      const x=positions.getX(i);positions.setX(i,ramenX(x));
+      if(normals){normal.fromBufferAttribute(normals,i);normal.x/=1/.75+(x>.43&&x<.73?2:0);normal.normalize();normals.setXYZ(i,...normal.toArray());}
     }
     positions.needsUpdate=true;if(normals)normals.needsUpdate=true;
     mesh.geometry.computeBoundingBox();mesh.geometry.computeBoundingSphere();
   });
-  model.userData.exteriorDoorClosed=true;
+  inakayaInterior=model;return model;
+}
+function addAsset(id,parent){
+  const source=assets.get(assetKey(id));if(!source)return false;
+  const model=(id==='ramen'?interiorSource(source):source).clone(true);model.name='Supplied '+id;model.userData.sharedAsset=true;
+  model.userData.suppliedRoom=id;parent.add(model);return model;
 }
 
 // The source contains two real doorways: the restaurant on the right and the
@@ -165,7 +142,7 @@ function buildInakayaPair(world,options){
 
 export function buildRamenRestaurant(world,options,placement){
   if(!placement&&assets.has('ramen-exterior'))return buildInakayaPair(world,options);
-  if(!assets.has('ramen'))return false;
+  if(!assets.has('ramen-exterior'))return false;
   const place=placement||{x:24,z:10,yaw:0,scale:1};
   const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
   const site=place.site||{id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
@@ -174,13 +151,12 @@ export function buildRamenRestaurant(world,options,placement){
   site.door=[dx,0,dz];site.x=place.x;site.z=place.z;
   if(!place.skipSite)options.sites.push(site);
   const building=new THREE.Group();building.name=place.name||'Sato Ramen restaurant';building.position.set(place.x,0,place.z);building.rotation.y=place.yaw||0;building.scale.set(sx,sy,sz);world.group.add(building);
-  closeRamenExteriorDoor(addAsset('ramen',building));
+  addAsset('ramen-exterior',building);
   const [ex,ez]=localToWorld(place.x,place.z,place.yaw||0,scale,.65,4.15);
   const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(ex,1.2,ez);world.group.add(entrance);
   options.register(entrance,'Enter Sato Ramen',()=>options.enter(site));
   if(placement)hangRamenNoren(building);
-  const boxes=[{x:24,z:10,w:4.72,d:7.1,height:3.12}];
-  if(!placement)boxes.push({x:24,z:13.92,w:.78,d:.94,height:2.75});
+  const boxes=[{x:24.05,z:9.4,w:3.7,d:7.1,height:6.3},{x:21.16,z:12.19,w:2.35,d:2.9,height:4}];
   for(const c of boxes)world.colliders.push(transformCollider(c,place.x,place.z,place.yaw||0,scale));
   return site;
 }
@@ -207,7 +183,14 @@ function hangRamenNoren(building){
 
 export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   const layout=SUPPLIED_ROOM_LAYOUTS[site.id];
-  if(!layout||!addAsset(site.id,room))return null;
+  if(!layout)return null;
+  const model=addAsset(site.id,room);if(!model)return null;
+  if(site.id==='ramen'){
+    model.scale.set(...INAKAYA_FIT.scale);model.position.y=-INAKAYA_FIT.floor;
+    // Shared exterior materials and buffers stay untouched, including on exit.
+    room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.65));
+    const light=new THREE.PointLight(0xffd4a0,2.2,9,2);light.position.set(.2,1.95,.6);room.add(light);
+  }
   for(const c of layout.colliders)collider(c.x,c.z,c.w,c.d,c.height);
   const anchor=(position,label,kind,title,text)=>{
     const object=new THREE.Object3D();object.name=label;object.position.set(...position);room.add(object);
@@ -235,12 +218,14 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([-1.7,1.5,-2.45],'Look at the pictures','inspect','Wall collage','Cuttings, a harbour postcard and a Polaroid of the shop ribbon.');
     anchor([-2.05,.55,-.26],'Read the bedside note','read','Bedside note','Lock up at eight. Water the fern. If Nao lights the lantern, it is allowed to be a late night.');
   }else{
-    anchor([.15,1.02,.86],'Order ramen · ¥300','ramen','Sato Ramen');
-    anchor([-.4,.59,1.36],'Sit at the ramen counter','seat','Counter stool','A worn green stool beside the lacquered counter.');
-    anchor([.97,.59,-1.36],'Take a counter seat','seat','Counter stool','The kitchen is busy on the other side of the counter.');
-    anchor([-1.36,1.05,.86],'Inspect broth kettle','inspect','Broth kettle','The simmering broth has been tended since morning.');
-    anchor([.2,1.01,.5],'Read the counter newspaper','read','Counter newspaper','The paper is folded open at the harbour notices. A delivery for the morning ferry is circled in pencil.');
-    anchor([2.25,1.7,-1.25],'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Take a seat at the counter and order a hot bowl.');
+    anchor(ramenPoint(.31,1.18,1.7),'Order ramen · ¥300','ramen','Sato Ramen');
+    RAMEN_PLAYER_SEATS.forEach((seat,i)=>{
+      const object=anchor([seat.position[0],seat.height,seat.position[2]],i?'Take a counter seat':'Sit at the ramen counter','seat','Counter stool','A patterned stool beside the wooden counter.');
+      object.userData.seat={position:[...seat.position],stand:[1.14,0,seat.position[2]],eyeY:seat.height+.85,yaw:seat.yaw,pitch:0};
+    });
+    anchor(ramenPoint(-.6,1.18,.5),'Inspect broth kettle','inspect','Broth kettle','The simmering broth has been tended since morning.');
+    anchor(ramenPoint(.27,1.18,.2),'Read the counter newspaper','read','Counter newspaper','The paper is folded open at the harbour notices. A delivery for the morning ferry is circled in pencil.');
+    anchor(ramenPoint(1,1.65,-.25),'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Take a seat at the counter and order a hot bowl.');
   }
   return layout;
 }
