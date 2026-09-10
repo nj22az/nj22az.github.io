@@ -104,8 +104,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([15,.2,4],[0,-.16,-54],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const side of [-1,1]){
-    box([4.5,.25,48],[side*9.5,0,32],0xddd7ca,[0,0,0],'paving');
-    for(let z=9;z<56;z+=1)if(![18,50].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
+    for(const [a,b] of (side<0?[[8,27.5],[30.5,47.25],[52.75,56]]:[[8,15.25],[20.75,47.25],[52.75,56]]))box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
+    for(let z=9;z<56;z+=1)if(!(side<0?[29,50]:[18,50]).some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
     for(let z=11;z<52;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
     for(let z=10;z<52;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
   }
@@ -115,6 +115,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(s.id==='market'){
+      buildStorefront({parent:group,site:s,register,enter,label});
+      s.x=s.side*11.65;s.door=[s.side*5.5,0,s.z+2.5];
+      obstacle(s.side*11.65,s.z,8.2,10);return;
+    }
     const harbourShop=buildHarbourShop({parent:group,site:s,register,enter,label,mobile,shadows,maxAnisotropy});
     if(harbourShop){harbourShops.push(harbourShop);colliders.push(harbourShop.collider);plantSites.push({x:s.side*6.75,z:s.z-3.7,height:1.15});obstacle(s.side*6.75,s.z-3.7,.5,.5);return;}
     if(s.id==='market'){buildStorefront({parent:group,site:s,register,enter,label});return;}
@@ -193,8 +198,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([1.1,2.5,1],[-5.9,1.25,31],0x457e73);box([.91,1.6,.91],[-5.9,1.55,31],0x648c87);box([.35,.65,.28],[-5.9,1.4,31.53],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,31.55],1,.28);anchor([-5.9,1,32],'Use payphone',()=>onAction('phone'));obstacle(-5.9,31,1.1,1);
   cyl(.05,2.8,[-5.9,1.4,44],0x64756d);label('バス停','HARBOUR LINE',[-5.9,2.6,44],1.1,.75);anchor([-5.8,1,44],'Read bus timetable',()=>onAction('bus'));obstacle(-5.9,44,.26,.26);
   box([1,1.8,1.1],[5.9,.9,20],0x483d50);box([.88,.7,.12],[5.9,1.4,20.57],0x294d59);label('STAR PORT','INSERT ¥100',[5.9,1.48,20.65],.77,.5,0,'#142d42','#83ded8',true);obstacle(5.9,20,1,1.1);anchor([5.9,1,21],'Play Star Port',()=>onAction('arcade'));
-  box([1.8,2.9,4],[-6.5,1.45,-15],0x61584c,[0,0,0],'wood');box([2.4,.16,4.6],[-6.3,3,-15],0xa8523b);label('中華そば','RAMEN · ¥300',[-5.53,2.4,-15],3.4,.66,Math.PI/2,'#a44131','#f5e8c9',true);box([1.1,1,3.8],[-5.3,.5,-15],0x88704c);for(let z=-16;z<=-14;z++)cyl(.26,.58,[-4.2,.29,z],0x915845);lantern(-4.9,-17);lantern(-4.9,-13);obstacle(-5.5,-15,2.5,4);anchor([-3.9,1,-15],'Order ramen',()=>onAction('ramen'));
-  for(const [x,z] of [[-6,6],[6,-6],[-6,-35]]){
+
+  for(const [x,z] of [[-6,4],[6,-6],[-6,-35]]){
     for(const dz of [-.62,.62]){const tire=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,6,20),material(0x333b3d));tire.rotation.y=Math.PI/2;tire.position.set(x,.4,z+dz);tire.castShadow=shadows;group.add(tire);}
     beam([x,.4,z-.62],[x,.9,z],.035,0x71999a);beam([x,.9,z],[x,.4,z+.62],.035,0x71999a);beam([x,.4,z-.62],[x,.4,z+.35],.035,0x71999a);beam([x,.4,z+.62],[x,1.14,z+.55],.03);beam([x-.24,1.14,z+.55],[x+.24,1.14,z+.55],.03);box([.24,.07,.32],[x,1,z-.1],0x463d32);obstacle(x,z,.65,1.55);
   }

@@ -22,7 +22,7 @@ export function buildStorefront({parent,site,register,enter,label,placement}){
  const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[5.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  hangNoren(group,-2.5,1.85,.07);
- const [ax,az]=localToWorld(x,z,yaw,scale,0,.85);
+ const [ax,az]=localToWorld(x,z,yaw,scale,-2.5,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  return group;
 }
