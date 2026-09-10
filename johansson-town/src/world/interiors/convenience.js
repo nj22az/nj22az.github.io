@@ -1,3 +1,4 @@
+import {createSteamedBunGeometry} from './steamed-bun.js';
 import {createStoreAdvertising} from './store-advertising.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {STORE_ITEMS} from '../../commerce/catalogue.js';
@@ -125,11 +126,24 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  reg(till,'Open / close till drawer',()=>{tillOpen=!tillOpen;drawer.position.z=tillOpen?.32:.10;},true);
  block([.35,.025,.23],[1.25,1.19,-.24],blue);
  block([1.05,.10,.61],[2.55,1.20,-.50],steel);
- for(const y of [1.28,1.62])for(const x of [2.25,2.55,2.85])shape('sphere',[.12,.085,.105],[x,y,-.50],0xdca95a);
- const caseGlass=box([1.05,.70,.60],[2.55,1.56,-.50],0xcddedf,room,false);caseGlass.material.transparent=true;caseGlass.material.opacity=.16;caseGlass.material.depthWrite=false;
- for(const x of [2.02,3.08])block([.04,.72,.63],[x,1.54,-.50],steel);
+ // Two real trays support six pale, pleated buns on individual paper squares.
+ const bunGeometry=createSteamedBunGeometry(),bunMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.94});
+ const buns=new THREE.InstancedMesh(bunGeometry,bunMaterial,6);buns.name='Pleated steamed buns';let bunIndex=0;
+ for(const trayY of [1.265,1.585]){
+  block([.98,.024,.53],[2.55,trayY,-.50],0xc2c7c6);
+  for(const x of [2.24,2.55,2.86]){
+   block([.282,.004,.26],[x,trayY+.014,-.50],0xf7f0df);
+   dummy.position.set(x,trayY+.016,-.50);dummy.rotation.set(0,bunIndex*.39,0);dummy.scale.set(1,1,1);dummy.updateMatrix();buns.setMatrixAt(bunIndex++,dummy.matrix);
+  }
+ }
+ buns.computeBoundingSphere();room.add(buns);
+ const caseGlass=box([1.05,.70,.60],[2.55,1.56,-.50],0xe2eeec,room,false);caseGlass.material.transparent=true;caseGlass.material.opacity=.07;caseGlass.material.depthWrite=false;
+ // Slender posts replace the solid side plates that obscured the cabinet.
+ for(const x of [2.02,3.08])for(const z of [-.80,-.20])block([.028,.72,.028],[x,1.54,z],steel);
+ block([1.10,.065,.65],[2.55,1.925,-.50],steel);
+ for(const y of [1.25,1.90])block([1.08,.026,.026],[2.55,y,-.19],steel);
  advertising.label('buns',[2.55,1.20,-.185],.65,.10);
- anchor([2.45,1.3,.02],'Browse steamed buns',()=>action('inspect','Steamed buns','Warm buns are kept ready beside the register.'));
+ anchor([2.45,1.3,.02],'Browse steamed buns',()=>action('inspect','Steamed buns','Soft steamed pork buns with hand-pinched tops rest on paper squares in the heated display.'));
  anchor([1.25,1.2,.05],'Browse mail-order catalogue',()=>action('store-catalogue'));
  anchor([.2,1.25,.05],'Ring service bell',()=>action('resident','Yuri'));
  anchor([-.35,1.3,-.45],'Tune counter radio',()=>action('radio','Yuri’s radio','A quiet radio behind the till.'));
@@ -172,6 +186,7 @@ export function buildStoreShell({room,box,reg,exit}){
  box([13,.18,13],[0,-.08,0],0xb9b2a4,room,false);
  for(const [size,pos] of [[[13,3.6,.20],[0,1.8,-6.45]],[[.20,3.6,13],[-6.45,1.8,0]],[[.20,3.6,13],[6.45,1.8,0]]])box(size,pos,cream,room,false);
  box([13,.12,13],[0,3.66,0],cream,room,false);
+ box([13,.54,.12],[0,3.33,6.3],cream,room,false);
  for(const x of [-6.32,6.32])box([.06,.20,12.8],[x,2.98,0],red,room,false);
  box([12.8,.20,.06],[0,2.98,-6.32],red,room,false);
  for(const x of [-4.0,4.0]){

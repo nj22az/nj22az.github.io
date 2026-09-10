@@ -1,0 +1,36 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {mapShopCamera,createShopStreetView} from '../src/render/shop-street-view.js';
+import {createSteamedBunGeometry} from '../src/world/interiors/steamed-bun.js';
+
+test('shop camera preserves parallax and clips the building side of the frontage',()=>{
+ const camera=new THREE.PerspectiveCamera(65,1,.07,220),mapped=new THREE.PerspectiveCamera();
+ camera.position.set(0,1.7,6.3);camera.rotation.y=Math.PI;
+ const frontage={position:[14,.12,3],yaw:-Math.PI/2};
+ const plane=mapShopCamera(camera,mapped,frontage);
+ assert.ok(mapped.position.distanceTo(new THREE.Vector3(14,1.82,3))<1e-6);
+ assert.ok(mapped.getWorldDirection(new THREE.Vector3()).distanceTo(new THREE.Vector3(-1,0,0))<1e-6);
+ assert.ok(plane.distanceToPoint(new THREE.Vector3(13,1,3))>0);
+ assert.ok(plane.distanceToPoint(new THREE.Vector3(15,1,3))<0);
+ camera.position.x=1;mapShopCamera(camera,mapped,frontage);assert.ok(Math.abs(mapped.position.z-4)<1e-6);
+});
+
+test('street renders behind the room and restores renderer state, including after failure',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group(),hands=new THREE.Group();scene.add(town,room,hands);scene.background=new THREE.Color('blue');town.visible=false;
+ const camera=new THREE.PerspectiveCamera(65,1,.07,220);camera.position.set(0,1.7,3);camera.rotation.y=Math.PI;
+ const calls=[],background=scene.background,clipping=[];
+ const renderer={autoClear:true,clippingPlanes:clipping,render(s,c){calls.push({town:town.visible,room:room.visible,hands:hands.visible,background:s.background,camera:c});},clearDepth(){calls.push('depth');}};
+ const view=createShopStreetView(),args={renderer,scene,camera,town,room,frontage:{position:[0,0,0],yaw:0}};
+ view.render(args);assert.equal(calls.length,3);assert.equal(calls[0].town,true);assert.equal(calls[0].room,false);assert.equal(calls[0].hands,false);assert.equal(calls[1],'depth');assert.equal(calls[2].background,null);assert.equal(calls[2].room,true);
+ assert.equal(scene.background,background);assert.equal(renderer.clippingPlanes,clipping);assert.equal(renderer.autoClear,true);assert.equal(town.visible,false);assert.equal(hands.visible,true);
+ calls.length=0;camera.rotation.y=0;view.render(args);assert.equal(calls.length,1,'No extra street pass when looking away from the windows');
+ camera.rotation.y=Math.PI;renderer.render=()=>{throw Error('render failure');};assert.throws(()=>view.render(args),/render failure/);assert.equal(town.visible,false);assert.equal(room.visible,true);assert.equal(hands.visible,true);assert.equal(scene.background,background);assert.equal(renderer.clippingPlanes,clipping);
+});
+
+test('steamed bun has a flat resting base, rounded belly and folded crown',()=>{
+ const g=createSteamedBunGeometry(),p=g.attributes.position;
+ assert.ok(Math.abs(g.boundingBox.min.y)<1e-6);assert.ok(g.boundingBox.max.y>.17&&g.boundingBox.max.y<.19);
+ const crown=[];for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));if(p.getY(i)>.165)crown.push(Math.hypot(p.getX(i),p.getZ(i)));}
+ assert.ok(crown.length>64);assert.ok(g.attributes.color.count===p.count);g.dispose();
+});
