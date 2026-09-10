@@ -1,3 +1,5 @@
+import {installDOM} from './fixtures.mjs';
+installDOM();
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -72,4 +74,23 @@ test('stockroom and clerk aisle connect to the entrance without crossing a count
  room.updateMatrixWorld(true);let draws=0,lights=0;
  room.traverse(o=>{assert.ok(o.matrixWorld.elements.every(Number.isFinite));if(o.isMesh)draws++;if(o.isLight)lights++;});
  assert.ok(draws<90,'Stock and fittings stay batched: '+draws);assert.equal(lights,1);
+});
+
+test('advertisements cover the catalogue and reuse textures across shop visits',async()=>{
+ const {POSTER_SPECS}=await import('../src/world/interiors/store-advertising.js');
+ const {readFile}=await import('node:fs/promises');
+ const build=()=>{const room=new THREE.Group(),hits=[];return {hits,store:buildConvenienceStore({room,clerk:new THREE.Group(),box:(size,pos,color,parent)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color}));o.position.set(...pos);parent.add(o);return o;},reg:(o,label,fn)=>hits.push({o,label,fn}),collider(){},action(){},signTexture:()=>new THREE.Texture()})};};
+ const first=build(),second=build(),a=first.store.advertising,b=second.store.advertising;
+ assert.deepEqual(a.labels.filter(l=>l.price).map(l=>l.id).sort(),STORE_ITEMS.map(i=>i.id).sort());
+ for(const item of STORE_ITEMS)assert.ok(a.labels.some(l=>l.id===item.id&&!l.price),item.id+' has packaging');
+ assert.equal(a.mesh.material,b.mesh.material);assert.equal(a.mesh.userData.preserveMaterial,true);assert.notEqual(a.mesh.geometry,b.mesh.geometry);
+ assert.ok([...a.mesh.geometry.attributes.uv.array].every(v=>Number.isFinite(v)&&v>=0&&v<=1));
+ assert.equal(a.posters.children.length,3);assert.equal(a.posters.userData.sharedAsset,true);
+ for(let i=0;i<3;i++){
+  assert.equal(a.posters.children[i].material,b.posters.children[i].material);
+  assert.equal(a.posters.children[i].geometry,b.posters.children[i].geometry);
+  assert.ok(first.hits.some(h=>h.label==='Read '+POSTER_SPECS[i].title));
+  const bytes=await readFile(new URL('../assets/graphics/konbini/'+POSTER_SPECS[i].file,import.meta.url));
+  assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(bytes.length<120000);
+ }
 });
