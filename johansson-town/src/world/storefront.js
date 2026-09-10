@@ -12,7 +12,7 @@ export function buildStorefront({parent,site,register,enter,label,placement}){
  for(const wall of [-5,5])box([.18,3.8,8.2],[wall,1.9,-4.1],0xd9d7c9,'plaster');
  box([10.5,.22,8.7],[0,3.9,-4.1],0xd5d0bd);box([10.3,.8,.45],[0,3.25,.12],0xb84e45);
  for(const y of [2.88,3.61])box([10.32,.10,.49],[0,y,.13],0xf5d791);
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS',wp.toArray(),6.0*sx,.62*sy,yaw,'#f6e8bb','#a6333c');
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS',wp.toArray(),6.0*sx,.62*sy,yaw,'#f6e8bb','#a6333c');
  const glazing=new THREE.MeshStandardMaterial({color:0xd8efeb,transparent:true,opacity:.15,roughness:.12,depthWrite:false,side:THREE.DoubleSide});
  for(const [lx,width] of [[-4.2,1.5],[-2.5,1.7],[1.15,5.4]]){const pane=new THREE.Mesh(new THREE.PlaneGeometry(width,2.55),glazing);pane.position.set(lx,1.5,.02);group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*width/2,1.47,.055],0x879692);box([width,.08,.09],[lx,.15,.055],0x879692);}
  box([10,.1,.1],[0,2.82,.05],0x84938d);for(const lx of [-2.9,-2.1])box([.035,.5,.12],[lx,1.4,.12],0x465854);
