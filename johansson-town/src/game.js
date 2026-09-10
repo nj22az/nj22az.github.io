@@ -10,7 +10,7 @@ import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?town-light-1';
-import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?yuri-rig-2';
+import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?stockroom-1';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-2';
 import {townAudio} from './audio/town-audio.js';
@@ -113,6 +113,7 @@ function addRoomProps(s){
     return;
   }
   if(s.id==='izakaya'){buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex});izakayaGuests.sync(minutes);const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
+  if(s.id==='market'){storeWelcomed=false;marketClerk.sync(minutes);buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});return;}
   const warm=new THREE.PointLight(0xffcf91,highTier?2.0:1.35,14,2);warm.position.set(0,3.45,-.5);warm.castShadow=false;room.add(warm);
   box([12.4,.12,12.4],[0,4.25,0],s.id==='market'?0xf2eedf:0x6f7168,room,false);box([12.1,.035,12.1],[0,.04,0],s.id==='market'?0xe0ded2:0x706b5e,room,false);for(const x of [-5.7,5.7])box([.08,3.7,12],[x,2.1,0],0x4b4339,room,false);
 
@@ -150,10 +151,6 @@ function addRoomProps(s){
     wallPanel('日報','PRINT ROOM',[2.7,2.75,-6.25],2.8,.9,s.accent);addMachine(2.55,-1.8,1.8,1.35,1.45,0x5a615d,'Printing press','The press smells of ink and warm paper. Its rollers turn slowly during the demonstration.');addDesk(-2.8,-1.9,'Editor desk','Marked proofs, wax pencils and clipped local stories cover the editor’s desk.');furnitureBox([1.45,.75,.95],[-3.3,.38,1.15],0xd4cab0,'Inspect paper stack','Fresh newspapers','Bundles of freshly printed sheets are tied with string for delivery around town.');roomCollider(-3.3,1.15,1.55,1.05);addCabinet(3.65,1.4,'Type cabinet','Metal drawers contain headline type, stamps and printing tools.');
   } else if(s.id==='electronics'){
     wallPanel('電子工作所','TEST BENCH',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.8,-1.85,'Electronics bench','Solder, test leads, small circuit boards and handwritten schematics cover the bench.');addScreen(-2.8,-1.9,'Development terminal','A green-on-black terminal is connected to a compact development board.');addMachine(2.55,-1.85,1.45,1.05,1.15,0x43575d,'Oscilloscope','The trace settles into a clean repeating waveform after a short test.');addCabinet(3.65,1.25,'Parts drawers','Resistors, capacitors, connectors and spare ICs are sorted into dozens of small drawers.');furnitureBox([1.0,.52,.55],[-3.7,.26,1.25],0x6e5843,'Tune workshop radio','Workshop radio','A small radio carries weather, baseball scores and harbour traffic reports.','machine');
-  } else if(s.id==='market'){
-    storeWelcomed=false;
-    marketClerk.sync(minutes);
-    buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});
   } else if(s.id==='career'){
     wallPanel('潮汐表','TIDES · 14 SEPTEMBER',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.7,-1.8,'Harbour log desk','The tide chart, berth allocation sheet and morning weather bulletin lie beneath a brass paperweight.');addScreen(-2.7,-1.85,'Harbour radio console','A green lamp marks channel 16. The microphone is returned to its hook after each call.');addCabinet(3.45,-2.3,'Ice ledger','The cold store supplied twenty blocks before dawn. Each boat’s order is written in blue pencil.');addCabinet(3.45,.45,'Berth records','Tonnage, draught and departure times, filed by vessel name. Yesterday’s entries have been checked twice.');addChair(-.55,-1.55,'Skipper’s chair','A canvas cushion softens the chair where captains wait for their clearance.');
 

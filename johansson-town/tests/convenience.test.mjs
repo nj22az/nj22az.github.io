@@ -46,7 +46,7 @@ test('stocked shop has a walkable approach to every shelf item',()=>{
  const room=new THREE.Group(),clerk=new THREE.Group(),colliders=[];
  const box=(size,pos,color,parent)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color}));o.position.set(...pos);parent.add(o);return o;};
  const store=buildConvenienceStore({room,clerk,box,reg(){},collider:(...c)=>colliders.push(c),action(){},signTexture:()=>new THREE.Texture()});
- assert.equal(store.placements.length,96);
+ assert.equal(store.placements.length,8);
  const free=(x,z)=>colliders.every(([cx,cz,w,d])=>Math.hypot(Math.max(Math.abs(x-cx)-w/2,0),Math.max(Math.abs(z-cz)-d/2,0))>.34);
  const reached=new Set(),queue=[[24,41]];while(queue.length){const [i,j]=queue.shift(),key=i+','+j;if(i<1||j<1||i>47||j>47||reached.has(key)||!free(-6+i*.25,-6+j*.25))continue;reached.add(key);for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]])queue.push([i+di,j+dj]);}
  for(const anchor of store.placements){const i=Math.round((anchor.position.x+6)/.25),j=Math.round((anchor.position.z+.85+6)/.25);assert.ok(reached.has(i+','+j),'Shelf item has a reachable approach: '+anchor.userData.storeItem);}
@@ -55,4 +55,21 @@ test('stocked shop has a walkable approach to every shelf item',()=>{
 test('looking up selects the upper shelf rather than the closest lower packet',async()=>{
  const {shelfAimScore}=await import('../src/interact/aim.js');const origin=new THREE.Vector3(0,1.7,1),upper=new THREE.Vector3(0,1.9,0),lower=new THREE.Vector3(0,1.1,0),direction=upper.clone().sub(origin).normalize();
  assert.ok(Number.isFinite(shelfAimScore(origin,direction,upper)));assert.equal(shelfAimScore(origin,direction,lower),Infinity);
+});
+
+test('stockroom and clerk aisle connect to the entrance without crossing a counter or wall',()=>{
+ const room=new THREE.Group(),clerk=new THREE.Group(),colliders=[],hits=[];
+ const box=(size,pos,color,parent)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color}));o.position.set(...pos);parent.add(o);return o;};
+ const store=buildConvenienceStore({room,clerk,box,reg:(o,label)=>hits.push({o,label}),collider:(...c)=>colliders.push(c),action(){},signTexture:()=>new THREE.Texture()});
+ const free=(x,z)=>x>=-5.25&&x<=5.25&&z>=-5.15&&z<=5.35&&colliders.every(([cx,cz,w,d])=>Math.abs(x-cx)>=w/2+.32||Math.abs(z-cz)>=d/2+.32);
+ const reached=new Set(),queue=[[0,43]];
+ for(let at=0;at<queue.length;at++){
+  const [i,j]=queue[at],key=i+','+j;if(reached.has(key)||!free(i/10,j/10))continue;reached.add(key);
+  for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]])queue.push([i+dx,j+dz]);
+ }
+ for(const [x,z] of [[store.stockroomDoor.x,store.stockroomDoor.z],[3.9,-3.5],[0,-3.5],[-4.5,-3.5],[clerk.position.x,clerk.position.z]])assert.ok(reached.has(Math.round(x*10)+','+Math.round(z*10)),[x,z]+' must be reachable');
+ assert.equal(free(0,-2.4),false,'The partition is solid outside the doorway');
+ room.updateMatrixWorld(true);let draws=0,lights=0;
+ room.traverse(o=>{assert.ok(o.matrixWorld.elements.every(Number.isFinite));if(o.isMesh)draws++;if(o.isLight)lights++;});
+ assert.ok(draws<90,'Stock and fittings stay batched: '+draws);assert.equal(lights,1);
 });

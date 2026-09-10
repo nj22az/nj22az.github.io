@@ -1,3 +1,4 @@
+import {STORE_CLERK_POSITION} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,YURI_HOME_DOOR} from './social.js';
 // Reuse the street actor in the small ramen room, behind Sakura's counter, or in Yuri's bedroom.
 export function createIndoorResidents({world,parent,place}){
@@ -20,7 +21,7 @@ export function createIndoorResidents({world,parent,place}){
     if(p.profile.name==='Yuri'){g.userData.inRamen=true;delete g.userData.socialPose;delete g.userData.seatHeight;g.position.set(.97,0,-1.36);g.rotation.set(0,Math.PI/2,0);}
     else {g.userData.inRamen=true;g.userData.socialPose='Eat';g.userData.seatHeight=.59;g.position.set(-.4,0,1.36);g.rotation.set(0,0,0);}
    }else if(place==='home'){g.userData.inHome=true;delete g.userData.socialPose;delete g.userData.seatHeight;g.position.set(.05,0,.9);g.rotation.set(0,Math.PI/2,0);}
-   else {g.userData.inMarket=true;g.position.set(3.35,0,-1.95);g.rotation.set(0,Math.PI,0);}
+   else {g.userData.inMarket=true;g.position.set(...STORE_CLERK_POSITION);g.rotation.set(0,Math.PI,0);}
    const home=world.homes?.get(p.profile.name);if(home)home.occupied=place==='home';
   }return people.map(p=>p.profile.name);
  },restore(){for(const p of [...borrowed.keys()])restore(p);}};

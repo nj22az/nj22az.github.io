@@ -28,7 +28,7 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(32,65)>5.9);
 });
 test('world construction, original route and new door reachability',()=>{
- const {world,all}=build();assert.equal(world.people.length,22);assert.ok(world.quality.streetInteractions>=8);
+ const {world,all}=build();assert.equal(world.people.length,10);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  for(let z=57.5;z>=-76;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
  for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}
@@ -45,7 +45,7 @@ test('compact outskirts retain destinations without the long empty detours',()=>
  const shrine=anchors.find(a=>a.label==='Visit hillside shrine');assert.ok(shrine);
  assert.ok(Math.abs(shrine.o.position.y-groundHeight(shrine.o.position.x,shrine.o.position.z)-1.3)<1e-6,'Shrine interaction follows its raised landing');
  const pupils=world.people.filter(p=>['Hana','Daichi'].includes(p.profile.name));
- assert.equal(pupils.length,2);for(const p of pupils)assert.ok(p.g.position.distanceTo(new THREE.Vector3(44,0,36))<2,'Pupils move with the school');
+ assert.equal(pupils.length,0);for(const p of pupils)assert.ok(p.g.position.distanceTo(new THREE.Vector3(44,0,36))<2,'Pupils move with the school');
 });
 test('navigation finds a collision-free route and cannot cut a wall corner',()=>{
  const blocked=(x,z,r=0)=>x<-1||x>8||z<-1||z>8||circleHitsRect(x,z,r,{x:3,z:3,w:2,d:5});
@@ -98,7 +98,7 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
 });
 
 test('every resident has a distinct built home with a clear walking route to its doorstep',()=>{
- const {world,anchors}=build();assert.equal(world.homes.size,22);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,22);
+ const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,10);
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
   assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'||a.label==='Enter '+p.profile.name+'’s room'),p.profile.name+' home prompt');

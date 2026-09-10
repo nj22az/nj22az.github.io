@@ -14,8 +14,8 @@ import {installDOM} from './fixtures.mjs';
 test('all residents have distinct identities, actual friendships and time-bound supper visits',()=>{
  assert.equal(new Set(PROFILES.map(p=>p.model)).size,PROFILES.length);
  for(const p of PROFILES){assert.ok(PROFILES.some(friend=>friend.name===p.friend));assert.ok(p.hello&&p.gossip&&p.clue&&p.look);}
- assert.equal(supperGuests(959).length,0);assert.ok(supperGuests(1439).length>0);assert.equal(supperGuests(180).length,0);
- for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
+ assert.equal(supperGuests(959).length,0);assert.equal(supperGuests(1439).length,0);assert.ok(supperGuests(1440).some(p=>p.name==='Tetsuo'));assert.equal(supperGuests(180).length,0);
+ for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(RESIDENTS.some(r=>r.name===p.name));assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
  assert.equal(residentPlan(PROFILES.find(p=>p.name==='Nao'),1002).place,'izakaya');
  assert.equal(gossipAt(1110,['Aiko','Emi']).id,'apron');assert.equal(gossipAt(1110,['Aiko']).id,'welcome');
 });
@@ -97,7 +97,7 @@ test('izakaya hours and late guests cross midnight and close exactly at 03:00',(
   for(const t of [180,540,959.99])assert.equal(izakayaOpen(day+t),false);
   const nao=PROFILES.find(p=>p.name==='Nao');
   assert.equal(residentPlan(nao,day+60).place,'izakaya');assert.equal(residentPlan(nao,day+180).place,'home');
-  assert.ok(supperGuests(day+60).some(p=>p.name==='Masaru'));assert.ok(supperGuests(day+60).some(p=>p.name==='Tetsuo'));
+  assert.ok(!supperGuests(day+60).some(p=>p.name==='Masaru'));assert.ok(supperGuests(day+60).some(p=>p.name==='Tetsuo'));
   assert.equal(supperGuests(day+180).length,0);
   const mori=PROFILES.find(p=>p.name==='Officer Mori');for(const t of [1320,1439,0,359])assert.equal(residentPlan(mori,day+t,true).place,'patrol');
   assert.equal(residentPlan(mori,day+360).place,'home');
@@ -108,7 +108,7 @@ test('izakaya hours and late guests cross midnight and close exactly at 03:00',(
 });
 
 test('ramen and Sakura reuse their residents and release them at the street door',()=>{
- const street=new THREE.Group(),scene=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
+ const street=new THREE.Group(),scene=new THREE.Group(),world={people:[...RESIDENTS,...PROFILES.filter(p=>['Hana','Daichi'].includes(p.name))].map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
  const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
  assert.deepEqual(ramen.sync(1090),['Hana']);const hana=world.people.find(p=>p.profile.name==='Hana').g;assert.equal(hana.parent,scene);assert.equal(hana.userData.socialPose,'Eat');
  assert.deepEqual(ramen.sync(1125),['Daichi']);assert.equal(hana.parent,street);assert.equal(hana.userData.hit.inside,false);assert.ok(Math.hypot(hana.position.x-24.65,hana.position.z-14.7)>0.9,'Ramen guests leave beside the door, not in it');assert.ok(Math.hypot(hana.position.x-24.65,hana.position.z-14.7)<2);assert.equal(hana.userData.socialPose,undefined);

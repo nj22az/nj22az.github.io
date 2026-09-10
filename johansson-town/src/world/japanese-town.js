@@ -34,7 +34,7 @@ export function buildJapaneseShop({parent,site,register,enter,label,...options})
  return {id:site.id,lod:group,entrance,shutter,collider,nearTriangles:triangles,farTriangles:triangles,source:'Japanese Town',update(open,day){openSign.visible=open;shutter.material.color.set(open?0x5b4734:0x3c3a34);shutter.material.emissiveIntensity=open?(1-day)*.14:0;}};
 }
 export function buildJapaneseHome(parent,house,index,options){
- const mesh=model(index,'home',3.12,3.5,.76,options);if(!mesh)return false;
+ const mesh=model(index,'home',3.12,3.5,[.62,.70,.66][index%3],options);if(!mesh)return false;
  mesh.name='japanese-home:'+index;mesh.rotation.y=house.angle;
  mesh.position.set(house.x+Math.sin(house.angle)*1.75,0,house.z+Math.cos(house.angle)*1.75);mesh.updateMatrix();
  let batches=homeBatches.get(parent);if(!batches){batches=new Map();homeBatches.set(parent,batches);}

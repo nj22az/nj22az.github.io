@@ -65,6 +65,14 @@ export function buildHomes(world,options,box){
    options.register(anchor,'Enter Yuri’s room',()=>options.enter(site));
   }else options.register(anchor,'Read '+p.name+'’s nameplate',()=>options.onAction('read',p.homeAddress,p.name+' lives here. '+(home.occupied?'The door is closed; someone is at home.':'The resident is out in town.')));
  }
+ // Small garden plots break the long repeated rows without obstructing the lane.
+ for(const x of [-22.4,-31.6])for(const z of [-32,-12,19]){
+  box([3.3,.07,3.1],[x,-.015,z],'plaster',0x8d9d76);
+  const outer=x<-27?x-1.35:x+1.35;
+  box([.38,.35,2.4],[outer,.175,z],'timber',0x8e7053);
+  for(let n=0;n<5;n++)box([.52,.45,.38],[outer,.54,z-.92+n*.46],'plaster',n%2?0x748b61:0x839969);
+  box([.12,1.4,2.8],[outer, .7,z],'bamboo',0x8c8167);
+ }
  finishJapaneseHomes(world.group);
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
  const nameplates=new THREE.Mesh(mergeGeometries(plates,false),new THREE.MeshStandardMaterial({map:texture,roughness:.9}));nameplates.name='resident-home-nameplates';world.group.add(nameplates);plates.forEach(g=>g.dispose());

@@ -38,7 +38,7 @@ console.log('Office checks passed: 18 mesh items, pages, v3 migration, deduplica
 const anchors=[];
 const world=createTown({scene,sites:[],mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
 const characters=createCharacters({mobile:true,shadows:false});world.people.forEach(p=>characters.attach(p.g,p.g.userData.name));
-assert.equal(world.people.length,22);assert.equal(characters.actors.length,22);
+assert.equal(world.people.length,10);assert.equal(characters.actors.length,10);
 createContentItems({group:world.group,register:(o,label,fn)=>anchors.push({o,label,fn}),colliders:world.colliders,onInspect(){},onRead(){}});
 world.update(.016,1,1);world.beats.update(.016,1,1000);characters.update(.016);
 for(const id of ['keychain','cv'])assert.ok(anchors.some(a=>a.label==='Lift '+ITEMS.find(i=>i.id===id).title),id+' stays inspectable');

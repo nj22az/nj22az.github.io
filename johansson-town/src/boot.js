@@ -12,6 +12,6 @@ const {preloadStreetPlants}=await import('./world/street-plants.js');
 // Ramen is also an exterior; other supplied rooms load only when entered.
 await Promise.all([charactersReady,preloadPark(),preloadVending(),preloadIzakaya(),preloadTeaHouse(),preloadJapaneseTown().then(ok=>ok||preloadHarbourBlock()),preloadStreetPlants(),preloadSuppliedRooms(['ramen'])]);
 await import('../touch-ui.js?ui=controls-3');
-await import('./game.js?living-town=32');
+await import('./game.js?living-town=33');
 await import('../webmcp.js');
 await import('../webmcp-characters.js');

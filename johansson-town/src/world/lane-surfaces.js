@@ -21,7 +21,7 @@ export function lanePatches(routes=ROUTES.slice(3)) {
     const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
     if(Math.abs(x)<7.5&&z>-64&&z<58)continue;
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
-    if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.surface});
+    if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
   }
   return patches;
 }
@@ -42,7 +42,7 @@ export function buildLaneSurfaces(parent,library) {
   }
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    const material=library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;
+    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:0xb9b5a5,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }

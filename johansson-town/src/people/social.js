@@ -1,5 +1,6 @@
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
+import {ACTIVE_RESIDENT_NAMES} from './residents.js';
 export const IZAKAYA_DOOR=[24,20];
 export const RAMEN_DOOR=[24.65,14.7];
 export const YURI_HOME_DOOR=[-29,25];
@@ -25,7 +26,7 @@ export const IZAKAYA_SEATS=[[-3.8,-1.42],[-2.3,-1.42],[-.8,-1.42],[.7,-1.42],[2.
 export function supperGuests(minutes){
  const minute=((minutes%1440)+1440)%1440;
  if(!izakayaOpen(minutes))return [];
- return PROFILES.filter(p=>p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
+ return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
 export function residentPlan(profile,minutes,rain=false){
  const m=minuteOfDay(minutes);

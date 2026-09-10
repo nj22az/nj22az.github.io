@@ -157,7 +157,7 @@ function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.para
 
 export function createTown(options){
   const world=createBaseTown(options);
-  for(const [name,x,z] of [['Bus driver',-4.5,44],['Cold-storage kid',-8,-55]]){
+  for(const [name,x,z] of [['Bus driver',-4.5,44]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
     options.register(g,'Talk to '+name,()=>options.onAction('resident',name));
