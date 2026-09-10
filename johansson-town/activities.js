@@ -1,3 +1,4 @@
+import {STORE_MENU} from './src/people/store-service.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {PROFILES} from './src/people/profiles.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
@@ -10,7 +11,7 @@ import {DIALOGUE} from './src/people/schedules.js';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 
-export function createActivities({say,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null}) {
+export function createActivities({say,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{}}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -186,6 +187,13 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,get
       ['Leave',close]
     ]);
   }
+  function tableService(){
+    const service=getTableService();if(!service)return;
+    const order=service.order;
+    const text=order?.delivered?'Your order is on the table.':order?'Yuri is bringing your '+order.item.name.toLowerCase()+'.':'Take your time. Yuri will bring your order to the table. Pay when it arrives.';
+    const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:STORE_MENU.map(item=>[item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
+    show('Sakura · At the table',text,[...buttons,['Keep sitting',close],['Stand up',()=>{close();onStand();}]]);
+  }
   function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
   async function realProduct(item){
     show('Mail-order catalogue','Looking up the current price…',[['Close',close]]);const revision=modalRevision;
@@ -230,6 +238,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,get
       case 'inspect':inspect(name,detail);break;
       case 'read':read(name,detail);break;
       case 'machine':operate(name,detail);break;
+      case 'store-table':tableService();break;
       case 'seat':sit(name,detail);break;
       case 'buy':buy(name,detail);break;
       case 'radio':radio(name,detail);break;
@@ -247,9 +256,9 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,get
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
-  $('#creditsButton').onclick=()=>show('Credits','Umanose(Horseback) Sea Cave: STUDIO DUCKBILL · CC BY-NC 4.0. Simplified geometry, resized textures and adapted lighting. Source and licence links: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nUmanose(Horseback) Sea Cave: STUDIO DUCKBILL · CC BY-NC 4.0. Simplified geometry, resized textures and adapted lighting. Source and licence links: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
+  return {action,inventory,close,save,spend,note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
 }

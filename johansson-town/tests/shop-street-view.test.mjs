@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {mapShopCamera,createShopStreetView} from '../src/render/shop-street-view.js';
 import {createSteamedBunGeometry} from '../src/world/interiors/steamed-bun.js';
+import {createWindowBatch} from '../src/render/shop-street-batches.js';
 
 test('shop camera preserves parallax and clips the building side of the frontage',()=>{
  const camera=new THREE.PerspectiveCamera(65,1,.07,220),mapped=new THREE.PerspectiveCamera();
@@ -33,4 +34,30 @@ test('steamed bun has a flat resting base, rounded belly and folded crown',()=>{
  assert.ok(Math.abs(g.boundingBox.min.y)<1e-6);assert.ok(g.boundingBox.max.y>.17&&g.boundingBox.max.y<.19);
  const crown=[];for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));if(p.getY(i)>.165)crown.push(Math.hypot(p.getX(i),p.getZ(i)));}
  assert.ok(crown.length>64);assert.ok(g.attributes.color.count===p.count);g.dispose();
+});
+
+test('window pass excludes geometry behind walls and restores shadows and hidden objects',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);town.visible=false;
+ const add=(x,y,z)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(.2,.2,.2),new THREE.MeshBasicMaterial());mesh.position.set(x,y,z);town.add(mesh);return mesh;};
+ const visible=add(0,1,2),behind=add(0,1,-5),above=add(0,8,2),side=add(25,1,2),alreadyHidden=add(1,1,2);alreadyHidden.visible=false;
+ const camera=new THREE.PerspectiveCamera(100,1.6,.07,220);camera.position.set(0,1.7,0);camera.rotation.y=Math.PI;
+ const renderer={shadowMap:{enabled:true},autoClear:true,clippingPlanes:[],clearDepth(){},render(s,c){if(town.visible){assert.equal(renderer.shadowMap.enabled,false);assert.equal(s.matrixWorldAutoUpdate,false);assert.ok(visible.visible);for(const o of [behind,above,side,alreadyHidden])assert.equal(o.visible,false);}}};
+ const view=createShopStreetView(),args={renderer,scene,camera,town,room,frontage:{position:[0,0,0],yaw:0}};view.render(args);
+ assert.equal(view.stats.visible,1);assert.equal(view.stats.culled,4);assert.equal(renderer.shadowMap.enabled,true);assert.equal(scene.matrixWorldAutoUpdate,true);
+ for(const o of [behind,above,side])assert.ok(o.visible);assert.equal(alreadyHidden.visible,false);
+ renderer.render=()=>{throw Error('failed');};assert.throws(()=>view.render(args));assert.equal(renderer.shadowMap.enabled,true);assert.equal(scene.matrixWorldAutoUpdate,true);assert.ok(behind.visible);assert.equal(alreadyHidden.visible,false);
+});
+
+test('large street batches submit selected cells while preserving original geometry and shared buffers',()=>{
+ const geometry=new THREE.BufferGeometry(),positions=[];
+ for(const x of [-20,0,20])for(let i=0;i<400;i++)positions.push(x,0,0,x+1,0,0,x,1,1);
+ geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+ const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial());mesh.position.x=3;mesh.updateMatrixWorld(true);
+ const batch=createWindowBatch(mesh);assert.ok(batch);assert.equal(batch.totalTriangles,1200);
+ assert.equal(batch.geometry.attributes.position,geometry.attributes.position,'No second vertex buffer');
+ assert.ok(batch.select(bounds=>bounds.min.x>0&&bounds.max.x<10));assert.equal(batch.triangles,400);
+ assert.equal(batch.geometry.drawRange.count,1200);assert.equal(mesh.geometry,geometry);assert.equal(geometry.index,null);
+ const version=batch.geometry.index.version;batch.select(bounds=>bounds.min.x>0&&bounds.max.x<10);assert.equal(batch.geometry.index.version,version,'Stationary views do not re-upload indices');
+ assert.equal(batch.select(()=>false),false);assert.equal(batch.geometry.drawRange.count,0);
+ batch.select(()=>true);assert.equal(batch.geometry.drawRange.count,positions.length/3);
 });

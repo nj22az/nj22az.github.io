@@ -18,13 +18,13 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
   return new Response(await readFile(new URL('../assets/characters/'+name,import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:8,total:8});
+  assert.deepEqual(await preloadModels(),{ready:9,total:9});
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();player.userData.name='Johansson';scene.add(player);assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,4);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else {assert.ok(skins>=4&&skins<=5);assert.match(entity.userData.visualSource,/VRoid/);assert.ok(actor.faces.length);assert.ok(actor.neighbour);assert.ok(actor.cup);for(const clip of ['Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));}
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,7);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','CarryIdle','CarryWalk'])assert.ok(actor.actions.has(clip));continue;}if(name==='Reiko'){assert.equal(skins,4);assert.ok(actor.isNozomi);assert.match(entity.userData.visualSource,/Nozomi/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else {assert.ok(skins>=4&&skins<=5);assert.match(entity.userData.visualSource,/VRoid/);assert.ok(actor.faces.length);assert.ok(actor.neighbour);assert.ok(actor.cup);for(const clip of ['Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));}
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
    if(actor.neighbour){
     scene.updateMatrixWorld(true);const p=PROFILES.find(p=>p.name===name),b=new THREE.Box3().setFromObject(actor.model,true);assert.ok(Math.abs(b.max.y-p.height)<.035,name+' retains their height');assert.ok(Math.abs(b.min.y)<.005);
@@ -140,5 +140,15 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
    delete actor.entity.userData.seatHeight;delete actor.entity.userData.socialPose;models.update(.4);
    assert.equal(actor.model.position.y,actor.floorOffset,'Leaving a seat restores outdoor grounding');
   }
+  yuri.entity.visible=true;yuri.entity.userData.seatHeight=.51;yuri.entity.userData.socialPose='Sit';models.update(.4);scene.updateMatrixWorld(true);
+  assert.equal(yuri.current,'Sit');
+  for(const name of ['LeftFoot','RightFoot']){
+   const foot=yuri.entity.worldToLocal(yuri.model.getObjectByName(name).getWorldPosition(new THREE.Vector3()));
+   assert.ok(foot.y>.06&&foot.y<.14,'Seated Yuri keeps her soles at floor level: '+foot.y);
+   assert.ok(foot.z<-.35,'Feet extend forward underneath the table');
+  }
+  delete yuri.entity.userData.seatHeight;delete yuri.entity.userData.socialPose;yuri.entity.userData.carrying=true;models.update(.4);
+  assert.equal(yuri.current,'CarryIdle');assert.equal(yuri.model.position.y,yuri.floorOffset);
+  delete yuri.entity.userData.carrying;models.update(.4);assert.equal(yuri.current,'Idle_Neutral');
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

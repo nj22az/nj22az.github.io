@@ -1,6 +1,6 @@
-import {createLocalCharacters,preloadModels} from './models.js?vroid-5';
+import {createLocalCharacters,preloadModels} from './models.js?konbini-1';
 import * as THREE from '../../vendor/three.module.js';
-import { createCharacters as createStableCharacters } from './procedural.js';
+import { createCharacters as createStableCharacters } from './procedural.js?konbini-1';
 
 // Locally vendored skinned bodies use their own compatible clips. Procedural rigs
 // preserve interaction and collision when an asset cannot load.
@@ -36,6 +36,7 @@ export function createCharacters(options={}){
 
   function stageConversation(entity){
     if(!playerEntity||!entity||entity===playerEntity)return;
+    if(entity.userData.seatHeight||entity.userData.serving)return;
     const dx=playerEntity.position.x-entity.position.x,dz=playerEntity.position.z-entity.position.z;
     let d=Math.hypot(dx,dz),nx=0,nz=1;if(d>.001){nx=dx/d;nz=dz/d;}
     const targetDistance=1.34;

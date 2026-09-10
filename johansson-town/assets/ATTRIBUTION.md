@@ -17,7 +17,7 @@ Poly Haven's [licence statement](https://polyhaven.com/license) and [CC0 1.0](ht
 
 Original town geometry, procedural fallback rigs, signs and fictional paper text are authored project content. This ledger does not relicense the entire repository.
 
-The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs and Sketchfab kits are **not included** in this revision. No commercial asset pack or franchise model is included.
+The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs and Sketchfab kits are **not included** in this revision. Later additions, including user-supplied franchise models, are recorded separately below.
 
 ## Generation pilot
 
@@ -151,3 +151,9 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 - Licence in supplied GLB metadata: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). This asset retains its non-commercial restriction; it is not covered by the repository's general licence.
 - Changes: baked transforms, texture-aware simplification, two 2048px JPEG textures, lit rough rock materials, uniform placement beyond the northern street boundary. No portion of the scan was cropped out.
 - Runtime file: `models/sea-cave/umanose.glb`. Rebuild with `node tools/pack-sea-cave.mjs /path/to/umanosehorseback_sea_cave.glb`. Source hash and geometry measurements are in `models/sea-cave/manifest.json`.
+
+## Nozomi model for Reiko (2026-09-10)
+
+`characters/realistic/nozomi.glb` is adapted from the user-supplied `shenmue_-_nozomi.glb`. The embedded source metadata credits [Kiklox](https://sketchfab.com/kiklox), links to [Shenmue — Nozomi](https://sketchfab.com/3d-models/shenmue-nozomi-0ac87fba37dd45af9286d440eee1d753), and declares [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Nozomi character and original Shenmue artwork are associated with SEGA; the uploader's metadata is retained as provenance, not a separate grant from the original rights holder. Included at the user's request.
+
+Changes: 57 skinned pieces combined into four material draws; unused second skeleton removed; legacy specular/glossiness textures converted to supported PBR materials; original geometry, skin weights, UVs and four embedded PNGs preserved. Seven original idle, walking, running, greeting, sitting, eating and drinking clips are baked onto the supplied skeleton. Reiko retains her existing name, role, conversations and schedule. Source hash and preparation details are embedded in the GLB. Reproduce with `tools/pack-nozomi.py` followed by `tools/animate-nozomi.mjs`.

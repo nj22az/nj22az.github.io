@@ -100,11 +100,17 @@ export function createCharacters({mobile,onError,shadows=!mobile}){
   function update(dt){
     for(const a of actors){
       if(!a.entity.visible){a.lastPosition.copy(a.entity.position);continue;}
+      const seated=Number.isFinite(a.entity.userData.seatHeight)&&['Sit','Eat','Drink'].includes(a.entity.userData.socialPose);
+      a.rig.root.position.y=THREE.MathUtils.damp(a.rig.root.position.y,seated?a.entity.userData.seatHeight-.80*a.rig.root.scale.y:0,10,dt);
       const dx=a.entity.position.x-a.lastPosition.x,dz=a.entity.position.z-a.lastPosition.z,raw=Math.hypot(dx,dz)/Math.max(dt,.001);a.lastPosition.copy(a.entity.position);a.speed=THREE.MathUtils.damp(a.speed,Math.min(raw,5.5),7,dt);
       const walking=a.speed>.09,run=a.speed>3.45,stride=a.profile.stride||1;a.phase+=dt*(walking?THREE.MathUtils.clamp(a.speed*2.15*stride,3.0,run?8.2:6.2):.55);const g=Math.sin(a.phase),amp=walking?(run?.46:.28)*stride:0;
       a.rig.legs.forEach((leg,i)=>{const sign=i?-1:1,swing=g*amp*sign;leg.hip.rotation.x=THREE.MathUtils.damp(leg.hip.rotation.x,swing,12,dt);leg.hip.rotation.z=THREE.MathUtils.damp(leg.hip.rotation.z,walking?sign*.012:0,10,dt);leg.knee.rotation.x=THREE.MathUtils.damp(leg.knee.rotation.x,Math.max(0,-swing)*.46,12,dt);leg.ankle.rotation.x=THREE.MathUtils.damp(leg.ankle.rotation.x,walking?-swing*.13:0,12,dt);});
       a.rig.arms.forEach((arm,i)=>{const sign=i?-1:1,walkTarget=-g*amp*.55*sign,gestureTarget=a.gesture>0&&i===1?-.28:walkTarget;arm.shoulder.rotation.x=THREE.MathUtils.damp(arm.shoulder.rotation.x,gestureTarget,10,dt);arm.shoulder.rotation.z=THREE.MathUtils.damp(arm.shoulder.rotation.z,sign*.045,10,dt);arm.elbow.rotation.x=THREE.MathUtils.damp(arm.elbow.rotation.x,a.gesture>0&&i===1?-.32:.06,10,dt);});
       const breathe=Math.sin(a.phase*.35)*.0025;a.rig.torso.position.y=1.07+breathe+(walking?Math.abs(g)*.006:0);a.rig.torso.rotation.y=THREE.MathUtils.damp(a.rig.torso.rotation.y,walking?g*.020:0,8,dt);a.rig.hips.rotation.y=THREE.MathUtils.damp(a.rig.hips.rotation.y,walking?-g*.025:0,8,dt);
+      if(seated){
+       a.rig.legs.forEach(leg=>{leg.hip.rotation.x=Math.PI/2;leg.knee.rotation.x=-Math.PI/2;leg.ankle.rotation.x=0;});
+       a.rig.arms.forEach(arm=>{arm.shoulder.rotation.x=.25;arm.elbow.rotation.x=.8;});
+      }
       const nod=a.gesture>0?-.035*Math.sin((.65-a.gesture)/.65*Math.PI):0;a.rig.head.rotation.x=THREE.MathUtils.damp(a.rig.head.rotation.x,nod,10,dt);a.rig.head.rotation.y=THREE.MathUtils.damp(a.rig.head.rotation.y,walking?-a.rig.torso.rotation.y*.25:Math.sin(a.phase*.11)*.014,7,dt);a.rig.head.rotation.z=THREE.MathUtils.damp(a.rig.head.rotation.z,0,8,dt);
       a.nextBlink-=dt;if(a.nextBlink<=0&&a.blink<=0){a.blink=.10;a.nextBlink=2.3+(a.phase%1.8);}if(a.blink>0)a.blink=Math.max(0,a.blink-dt);const lidScale=a.blink>0?2.1:1;a.rig.eyelids.forEach(l=>l.scale.y=THREE.MathUtils.damp(l.scale.y,lidScale,35,dt));if(a.gesture>0)a.gesture=Math.max(0,a.gesture-dt);
     }

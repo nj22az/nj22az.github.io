@@ -1,6 +1,6 @@
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
-import {ACTIVE_RESIDENT_NAMES} from './residents.js';
+import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 export const IZAKAYA_DOOR=[24,20];
 export const RAMEN_DOOR=[24.65,14.7];
 export const YURI_HOME_DOOR=[-29,25];
@@ -35,6 +35,14 @@ export const RAMEN_VISITS=Object.freeze({
  Kenji:[735,840], Tetsuo:[795,900], Aiko:[855,960],
  Reiko:[915,1020], 'Bus driver':[975,1080], 'Officer Mori':[1140,1255],
 });
+export const MARKET_VISITS=Object.freeze({
+ 'Mrs Sato':[570,625],Aiko:[660,715],Kenji:[870,925],Tetsuo:[930,985],
+ Reiko:[1025,1080],'Harbour master':[1085,1140],'Bus driver':[1140,1190],
+});
+export function visitsMarket(profile,minutes){
+ const visit=MARKET_VISITS[profile.name];
+ return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&!!visit&&inTimeRange(minutes,...visit);
+}
 export const ramenOpen=m=>inTimeRange(m,540,1260);
 export function visitsRamen(profile,minutes){
  const visit=RAMEN_VISITS[profile.name];
@@ -56,6 +64,7 @@ export function residentPlan(profile,minutes,rain=false){
   return {place:'evening',target:profile.evening,activity:'walking the canal'};
  }
  if(supperGuests(minutes).some(p=>p.name===profile.name))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with the neighbours'};
+ if(visitsMarket(profile,minutes))return {place:'market',target:RESIDENTS.find(p=>p.name==='Yuri').work,activity:'a snack at Sakura'};
  if(inTimeRange(m,profile.start-30,profile.close))return {place:'work',target:profile.work,activity:profile.role};
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};

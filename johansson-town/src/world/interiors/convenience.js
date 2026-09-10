@@ -2,7 +2,7 @@ import {createSteamedBunGeometry} from './steamed-bun.js';
 import {createStoreAdvertising} from './store-advertising.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {STORE_ITEMS} from '../../commerce/catalogue.js';
-import {STORE_CLERK_POSITION,STOCKROOM_DOOR,STORE_COUNTER,STORE_PARTITIONS} from './store-layout.js';
+import {STORE_CLERK_POSITION,STOCKROOM_DOOR,STORE_COUNTER,STORE_PARTITIONS,STORE_TABLES,STORE_SEATS} from './store-layout.js';
 
 export function buildConvenienceStore({room,box,reg,collider,action,signTexture,clerk}){
  const cream=0xf0e8d7,red=0xc73d39,steel=0x999fa3,blue=0x3566b2;
@@ -150,13 +150,17 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  // Compact cash machine and two seats beside the front window.
  block([.88,1.55,.65],[5.05,.775,.10],0x80858b);block([.60,.46,.035],[5.05,1.23,.44],0x78aed0);block([.55,.08,.12],[5.05,.80,.45],0x41484f);collider(5.05,.10,.95,.72,1.55);
  inspect([4.9,1.2,.70],'cash machine','The local bank services this terminal on weekday mornings.');
- block([1.3,.10,.85],[3.8,.76,3.3],red);block([1.24,.04,.79],[3.8,.83,3.3],cream);shape('cylinder',[.10,.7,.10],[3.8,.35,3.3],steel);collider(3.8,3.3,1.35,.9,.86);
- for(const z of [2.3,4.3]){
-  block([.58,.12,.58],[3.8,.45,z],red);block([.58,.58,.09],[3.8,.77,z+(z<3?- .28:.28)],red);
-  for(const dx of [-.23,.23])for(const dz of [-.23,.23])block([.07,.4,.07],[3.8+dx,.2,z+dz],0xc6a170);
-  collider(3.8,z,.65,.67,1.1);
-  const seat=anchor([2.8,1,z],'Sit by the shop window',()=>action('seat','Sakura window seat','Watch the street with a drink.'));
-  seat.userData.seat={position:[3.8,0,z],stand:[2.8,0,z],eyeY:1.2,yaw:z<3?Math.PI:0,pitch:0};
+ for(const t of STORE_TABLES){
+  block([1.3,.10,.85],[t.x,.76,t.z],red);block([1.24,.04,.79],[t.x,.83,t.z],cream);
+  shape('cylinder',[.10,.7,.10],[t.x,.35,t.z],steel);collider(t.x,t.z,1.35,.9,.86);
+ }
+ for(const spec of STORE_SEATS){
+  const [x,,z]=spec.position;
+  block([.58,.12,.58],[x,.45,z],red);block([.58,.58,.09],[x,.77,z+(spec.yaw?-.28:.28)],red);
+  for(const dx of [-.23,.23])for(const dz of [-.23,.23])block([.07,.4,.07],[x+dx,.2,z+dz],0xc6a170);
+  collider(x,z,.65,.67,1.1);
+  const seat=anchor([spec.stand[0],1,spec.stand[2]],'Sit at the table',()=>action('seat','Sakura table','Order something warm and watch the street.'));
+  seat.userData.seat={...spec,pitch:0,storeSeatId:spec.id};
  }
  // Stockroom: steel racking, spare drinks, cardboard cartons and cleaning supplies.
  rack(-3.6,-5.00,2.8,2.25,.7,true);rack(.05,-5.00,2.4,2.25,.7,true);
