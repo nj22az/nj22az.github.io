@@ -1,4 +1,3 @@
-import {buildFullTown} from './full-town.js';
 import {buildPark} from './park.js';
 import {buildIzakaya} from './izakaya.js';
 import {batchStaticProps} from '../render/static-props.js';
@@ -137,8 +136,6 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.convexMirror(-6.15,16.2,.02));
   inspect([-5.7,1,15.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
 
-  addWithCollider(group,colliders,factory.menuBoard(-4.25,-16.9,.03));
-  read([-3.9,1,-16.45],'Read ramen menu','Ramen menu','Shoyu ramen ¥300 · extra egg ¥60 · rice ¥100. A handwritten note says the broth is sold out after 21:00.');
 
   addWithCollider(group,colliders,factory.crateStack(5.75,-7.4,.05));
   inspect([5.35,1,-6.75],'Inspect shop crates','Shop deliveries','Tea tins, paper goods and wrapped household stock are waiting to be carried inside.');
@@ -150,8 +147,8 @@ function addStreetLife(world,options,factory){
   for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:6,z:-23.6,w:1.1,d:.65});
   inspect([5.5,1,-23.1],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
-  const pump=factory.box(group,[.65,.85,.55],[-5.95,.52,-43.4],0x536568);factory.cylinder(group,.16,.45,[-5.95,1.12,-43.4],0x3d4c4e,12);colliders.push({x:-5.95,z:-43.4,w:.72,d:.62});
-  machine([-5.55,1,-42.9],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
+  const pump=factory.box(group,[.65,.85,.55],[-5.95,.52,-45.5],0x536568);factory.cylinder(group,.16,.45,[-5.95,1.12,-45.5],0x3d4c4e,12);colliders.push({x:-5.95,z:-45.5,w:.72,d:.62});
+  machine([-5.55,1,-45.0],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
 
   return {interactions,lights};
 }
@@ -159,7 +156,6 @@ function addStreetLife(world,options,factory){
 function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
 
 export function createTown(options){
-  const full=buildFullTown(options);if(full)return full;
   const world=createBaseTown(options);
   for(const [name,x,z] of [['Bus driver',-4.5,44],['Cold-storage kid',-8,-55]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);

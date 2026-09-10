@@ -38,9 +38,9 @@ function buildPlaza(world,options,p){
  const patch=new THREE.Mesh(new THREE.BoxGeometry(3.4,.04,2.2),new THREE.MeshStandardMaterial({color:0x8aa56a,roughness:1}));
  patch.position.set(-1.4,.07,-1.1);group.add(patch);
  const path=new THREE.Mesh(new THREE.BoxGeometry(1.8,.06,hz*2-.2),new THREE.MeshStandardMaterial({color:0xc4b496,roughness:.94}));
- path.position.set(0,.05,0);path.receiveShadow=true;group.add(path);
+ path.position.set(0,.09,0);path.receiveShadow=true;group.add(path);
  const curbMat=new THREE.MeshStandardMaterial({color:0x8a8370,roughness:.95});
- for(const [w,d,x,z] of [[hx*2,.12,.1,0,-hz],[hx*2,.12,.1,0,hz],[.12,.1,hz*2,-hx,0],[.12,.1,hz*2,hx,0]]){
+ for(const [w,d,x,z] of [[hx*2,.12,0,-hz],[hx*2,.12,0,hz],[.12,hz*2,-hx,0],[.12,hz*2,hx,0]]){
   const curb=new THREE.Mesh(new THREE.BoxGeometry(w,.16,d),curbMat);curb.position.set(x,.08,z);group.add(curb);
  }
  const trunkMat=new THREE.MeshStandardMaterial({color:0x5a4634,roughness:.9});

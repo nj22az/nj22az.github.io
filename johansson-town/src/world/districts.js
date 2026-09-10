@@ -1,3 +1,4 @@
+import {buildLaneSurfaces} from './lane-surfaces.js';
 import {buildHomes} from './homes.js';
 import {buildRamenRestaurant} from './supplied-rooms.js';
 import {buildTeaHouse} from './tea-house.js';
@@ -12,16 +13,7 @@ export function buildDistricts(world,options){
   function box(size,pos,kind='concrete',colour=0xffffff,rotation=[0,0,0]){const mat=library.worldMaterial(kind,colour);const key=mat.uuid;if(!batches.has(key))batches.set(key,{mat,items:[]});dummy.position.set(...pos);dummy.rotation.set(...rotation);dummy.scale.set(...size);dummy.updateMatrix();batches.get(key).items.push(dummy.matrix.clone());}
   function verb(pos,label,kind,title,text){const a=new THREE.Object3D();a.position.set(...pos);group.add(a);options.register(a,label,()=>options.onAction(kind,title,text));return a;}
   function sign(text,sub,pos,w=2,h=.6,angle=0){const c=document.createElement('canvas');c.width=512;c.height=160;const x=c.getContext('2d');x.fillStyle='#dfd7bb';x.fillRect(0,0,512,160);x.fillStyle='#344e4a';x.textAlign='center';x.font='bold 64px serif';x.fillText(text,256,76,490);x.font='22px serif';x.fillText(sub,256,129,490);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.8,side:THREE.DoubleSide}));m.position.set(...pos);m.rotation.y=angle;group.add(m);return m;}
-  for(const route of ROUTES.slice(3))for(let i=1;i<route.points.length;i++){
-    const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz),ha=groundHeight(...a),hb=groundHeight(...b);
-    const nx=dz/length*route.width/2,nz=-dx/length*route.width/2,positions=[];
-    for(let j=0;j<=8;j++){const t=j/8,x=a[0]+dx*t,z=a[1]+dz*t,height=ha*(1-t)+hb*t+.04;positions.push(x-nx,height,z-nz,x+nx,height,z+nz);}
-    const indices=[];for(let j=0;j<8;j++){const n=j*2;indices.push(n,n+1,n+2,n+1,n+3,n+2);}
-    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setIndex(indices);const uv=[];for(let j=0;j<=8;j++)uv.push(0,j*length/8/4,route.width/4,j*length/8/4);geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,library.worldMaterial(route.surface==='wood'?'timber':route.surface==='asphalt'?'asphalt':'paving',0xd6d0c3));mesh.material.side=THREE.DoubleSide;mesh.receiveShadow=true;group.add(mesh);
-
-    if(route.surface==='wood')for(let j=0;j<length;j+=3){const t=j/length;box([route.width+.25,.2,.16],[a[0]+dx*t,.0,a[1]+dz*t],'timber',0x74654a,[0,Math.atan2(dx,dz),0]);}
-  }
-  for(const route of ROUTES.slice(3))for(const [x,z] of route.points){if(Math.abs(x)<7)continue;const g=new THREE.CircleGeometry(route.width/2,24);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,library.worldMaterial(route.surface==='wood'?'timber':route.surface==='asphalt'?'asphalt':'paving',0xd6d0c3));const pos=g.attributes.position;for(let i=0;i<pos.count;i++)pos.setY(i,groundHeight(x+pos.getX(i),z+pos.getZ(i))+.041);g.computeVertexNormals();m.position.set(x,0,z);m.receiveShadow=true;group.add(m);}
+  buildLaneSurfaces(group,library);
   // Open-air shopping street. The former rotated transparent cylinder canopy
   // intersected the walking corridor and looked like vertical sheets of fog.
   function building({id,x,z,w=8,d=7,h=6,colour=0xbeb394,roof=0,angle=0,jp,title,frontZ=z+d/2}){
@@ -52,7 +44,6 @@ export function buildDistricts(world,options){
   box([1.15,17,1.15],[-37,8.5,30],'concrete',0x8d8b7a);
   buildTeaHouse(world,options);
   if(buildRamenRestaurant(world,options)){
-    box([5.1,.18,7.45],[24,3.21,10],'roof',0x6d6960);
     box([4.9,.46,.16],[24,2.99,13.64],'timber',0x783d2f);
     sign('中華そば 佐藤','SATO RAMEN · 09:00–21:00',[24,3.0,13.735],3.9,.40);
   }else building({id:'ramen',x:24,z:10,w:7,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
@@ -61,10 +52,15 @@ export function buildDistricts(world,options){
   const water=new THREE.Mesh(new THREE.PlaneGeometry(12,72,4,24),new THREE.MeshStandardMaterial({color:0x537c79,roughness:.26,metalness:.23}));water.rotation.x=-Math.PI/2;water.position.set(-54,-.18,-24);group.add(water);
   for(const x of [-60,-48])box([.6,2,74],[x,-.7,-24],'concrete',0x808f83);
   for(const [x,z] of [[-51,-40],[-56,-22]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);for(const dx of [-.08,.08])box([.025,.45,.025],[x+dx,.1,z],'timber',0x4e4d40);group.add(bird);verb([-45,1,-37],'Watch the heron','inspect','Grey heron','It waits for a fish to come to it. An admirable working arrangement.');}
-  sign('小学校','GATE CLOSES AT 16:00',[44,2.2,33],3,.8);box([8,1.6,.12],[44,.8,32.5],'timber',0x687566);colliders.push({x:44,z:32.5,w:8,d:.12,height:1.6});verb([44,1,34],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
+  sign('小学校','GATE CLOSES AT 16:00',[44,2.2,33],3,.8);box([7,1.6,.12],[44,.8,32.5],'timber',0x687566);colliders.push({x:44,z:32.5,w:7,d:.12,height:1.6});verb([44,1,34],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
   // Shrine stair/approach culminates in a real raised landing.
   box([8,.4,8],[32,5.8,65],'concrete',0xa2a18c);for(const x of [29,35])box([.25,4,.25],[x,8,63],'timber',0x9b4833);box([8,.28,.45],[32,10,63],'timber',0x943d2a);verb([32,7.3,65],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
   for(const [x,z] of [[29,67],[32,67],[35,67]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
+  // Sparse bilingual junction signs, above eye level and outside the walking lane.
+  for(const [x,z,jp,en] of [[5.9,18,'食堂通り','EAST → RAMEN · IZAKAYA'],[-5.9,29,'柳小路','WEST → HOMES · BATHHOUSE'],[5.9,-28,'桜商店','SAKURA ← · HARBOUR AHEAD'],[5.9,50,'北通り','TEA HOUSE → · BUS STOP ←']]){
+    sign(jp,en,[x,2.7,z],3.1,.72);
+    box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
+  }
   buildHomes(world,options,box);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};
