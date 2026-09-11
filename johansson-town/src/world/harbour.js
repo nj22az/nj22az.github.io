@@ -1,6 +1,7 @@
 import {createVendingMachine} from './vending.js';
 import {buildHarbourShop} from './harbour-block.js';
 import {buildBoardwalk} from './boardwalk.js';
+import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
@@ -224,7 +225,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     box([.55,.95,.45],[front-side*.25,.55,z-1.9],0x5a6a65);box([.34,.2,.12],[front-side*.5,.78,z-1.9],0xc9b36c);
     obstacle(x,z,6.4,6.0);
   }
-  warehouse(-1);warehouse(1);
+  const warehouseWorld={group,colliders};
+  const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,label});
+  warehouse(1);
+  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-49],3.2,.72);
+  cyl(.045,2.3,[-5.9,1.15,-49],0x655444);obstacle(-5.9,-49,.12,.12);
 
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
@@ -255,9 +260,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([.3,.13,.08],[5.75,.62,-54.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-54.72],0xe5cf8c);obstacle(6.2,-56.3,1.8,3.2);
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[-10.0,.88,-54.15],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[-10,1.85,-53.70],.78,.5,0,'#dde1d7','#37636a');obstacle(-10,-54.15,1.2,.9);
+  directBox([1.15,1.55,.85],[-9.8,.88,-52.1],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[-9.8,1.85,-51.65],.78,.5,0,'#dde1d7','#37636a');obstacle(-9.8,-52.1,1.2,.9);
   for(const [x,z,c] of [[10.3,-54.2,0x4b6870],[11.0,-54.3,0x8b634e],[10.7,-55.0,0x66704e]]){directCyl(.3,.72,[x,.48,z],c,group,[0,0,0],true);obstacle(x,z,.6,.6);}
-  for(const x of [-16.3,16.3]){cyl(.11,4,[x,2.1,-61.2],0x4b5655);box([1.1,.1,.18],[x,3.8,-61.2],0x4b5655);lantern(x,-61.2);}
+  for(const [x,z] of [[-17.1,-62],[16.3,-61.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
   // Tyre fenders on the quay wall — broad black shapes, not thin white lines.
   for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-63.76],[0,0,0]);tire.scale.set(1,.78,1);}
@@ -301,7 +306,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
 
   return {
-    group,colliders,people,cat,
+    group,colliders,people,cat,warehouse:harbourWarehouse,landmarks:[harbourWarehouse.place],
     harbourShops,boardwalk,plantSites,
     setRain(value){
       boardwalk.setRain(value);

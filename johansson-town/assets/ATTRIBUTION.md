@@ -152,6 +152,12 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 - Changes: baked transforms, texture-aware simplification, two 2048px JPEG textures, lit rough rock materials, uniform placement beyond the northern street boundary. No portion of the scan was cropped out.
 - Runtime file: `models/sea-cave/umanose.glb`. Rebuild with `node tools/pack-sea-cave.mjs /path/to/umanosehorseback_sea_cave.glb`. Source hash and geometry measurements are in `models/sea-cave/manifest.json`.
 
+## Old Warehouse (2026-09-11)
+
+`models/warehouse/old-warehouse.glb` replaces the western harbour shed with the user-supplied **Old Warehouse** by [aswin.baskaran](https://sketchfab.com/aswin4550). [Source model](https://sketchfab.com/3d-models/old-warehouse-5ca553c34c524a85b3d72ce64da95e41); licence recorded in the supplied file: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+Changes: removed the detached presentation ground plane; merged static geometry by material; capped textures at 1024 pixels and recompressed photographic maps. The warehouse, awning, ladder, pipes, windows and loading props are retained. Source metadata and hashes are preserved in the GLB and `models/warehouse/manifest.json`. Rebuild with `python tools/pack-warehouse.py /path/to/old_warehouse.glb`.
+
 ## Nozomi model for Reiko (2026-09-10)
 
 `characters/realistic/nozomi.glb` is adapted from the user-supplied `shenmue_-_nozomi.glb`. The embedded source metadata credits [Kiklox](https://sketchfab.com/kiklox), links to [Shenmue — Nozomi](https://sketchfab.com/3d-models/shenmue-nozomi-0ac87fba37dd45af9286d440eee1d753), and declares [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Nozomi character and original Shenmue artwork are associated with SEGA; the uploader's metadata is retained as provenance, not a separate grant from the original rights holder. Included at the user's request.

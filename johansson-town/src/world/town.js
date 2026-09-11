@@ -7,7 +7,7 @@ import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,groundHeight} from './layout.js';
 import {buildDistricts} from './districts.js';
 import * as THREE from '../../vendor/three.module.js';
-import { createTown as createBaseTown } from './harbour.js';
+import { createTown as createBaseTown } from './harbour.js?warehouse=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js';

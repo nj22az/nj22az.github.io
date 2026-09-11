@@ -123,8 +123,16 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const walkingStart=api.player.position.clone();
     for(const site of api.SITES){document.querySelector('#directoryButton').onclick();assert.equal(find(site.id).dataset.travel,'locked');find(site.id).onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Locked destination only marks directions: '+site.id);}
     assert.match(document.querySelector('#waypoint').textContent,/Corner Tea House|Minato Izakaya/);
+    document.querySelector('#directoryButton').onclick();assert.equal(find('warehouse').dataset.travel,'locked');find('warehouse').onclick();
+    assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Warehouse directions respect the shortcut unlock');
+    assert.match(document.querySelector('#waypoint').textContent,/Harbour Warehouse/);
+    assert.match(document.querySelector('#subtitle').textContent,/past Sakura Konbini/);
     api.activities.state.quest=3;document.querySelector('#directoryButton').onclick();find('izakaya').onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'One completed quest does not unlock shortcuts');
     api.activities.state.kenjiEscort='done';api.activities.save();document.querySelector('#directoryButton').onclick();
+    assert.equal(find('warehouse').dataset.travel,'ready');find('warehouse').onclick();
+    assert.deepEqual(api.player.position.toArray(),[-6.8,0,-55.7],'Warehouse shortcut lands on the clear quay approach');
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Harbour Warehouse/);
+    document.querySelector('#directoryButton').onclick();
     const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
     assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Unlocked shortcut faces the usable entrance');

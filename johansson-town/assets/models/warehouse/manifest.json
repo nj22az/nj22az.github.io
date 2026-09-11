@@ -1,0 +1,97 @@
+{
+  "file": "old-warehouse.glb",
+  "sourceFile": "old_warehouse.glb",
+  "sourceSHA256": "dda18971f635ac24be1adad40a4671d1d2a05f0c0d9004902833b0ca53ddf7de",
+  "sourceMetadata": {
+    "author": "aswin.baskaran (https://sketchfab.com/aswin4550)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/old-warehouse-5ca553c34c524a85b3d72ce64da95e41",
+    "title": "Old Warehouse"
+  },
+  "sha256": "383433725f27e150a9a4ba9af3df92ada656874b7a096682b66de4ddd70d6088",
+  "sourceBytes": 8851188,
+  "bytes": 2527108,
+  "triangles": 4822,
+  "draws": 12,
+  "sourceDraws": 24,
+  "textures": [
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      1024
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      1024,
+      512
+    ],
+    [
+      1024,
+      512
+    ],
+    [
+      1024,
+      256
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      128,
+      128
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ]
+  ],
+  "bounds": {
+    "min": [
+      -10.432586669921875,
+      -0.022709667682646116,
+      -10.74835205078125
+    ],
+    "max": [
+      10.618020057678223,
+      10.5850191116333,
+      5.715132236480714
+    ]
+  },
+  "changes": [
+    "Removed only the detached presentation ground plane",
+    "Retained the warehouse, awning, ladder, pipes, windows and loading props",
+    "Merged static geometry by original material",
+    "Capped textures at 1024px; retained packed material channels losslessly"
+  ]
+}

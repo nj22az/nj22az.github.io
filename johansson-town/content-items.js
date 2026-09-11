@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {ITEMS} from './content-data.js';
+import {ITEMS} from './content-data.js?warehouse=1';
 
 export function textTexture(title,body){
   const c=document.createElement('canvas');c.width=1024;c.height=1440;
@@ -62,9 +62,9 @@ export function createContentItems({group,register,colliders,onInspect,onRead,pl
   const cv=ITEMS.find(i=>i.id==='cv');for(const x of [-.45,.45])cube(group,[.025,.18,1.04],[cv.pos[0]+x,cv.pos[1]-.04,cv.pos[2]],0x647170);
   const chair=new THREE.Group();chair.position.set(4.9,0,39);group.add(chair);cube(chair,[.7,.12,.7],[0,.5,0],0x5a6357);cube(chair,[.7,.72,.09],[0,.85,.32],0x5a6357);register(chair,'Read in the window chair',onRead);colliders.push({x:4.9,z:39,w:.72,d:.72});
   // Calipers and vice occupy the workshop edge; they are never attached to a character.
-  cube(group,[.34,.25,.35],[-9.3,1.17,-56.8],0x4e5c5e);cube(group,[.5,.05,.05],[-9.1,1.24,-56.5],0xaab4b0);cube(group,[.035,.05,.25],[-9.25,1.25,-56.5],0xaab4b0);
+  cube(group,[.34,.25,.35],[-6.5,1.17,21],0x4e5c5e);cube(group,[.5,.05,.05],[-6.4,1.24,21.3],0xaab4b0);cube(group,[.035,.05,.25],[-6.5,1.25,21.3],0xaab4b0);
   const label=(title,body,pos)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.75),new THREE.MeshBasicMaterial({map:textTexture(title,body),side:THREE.DoubleSide}));p.position.set(...pos);group.add(p);};
-  label('PATTERN WORKSHOP','BRASS · TIMBER · HAND TOOLS',[-8.7,1.85,-57.6]);
+  label('PATTERN WORKSHOP','BRASS · TIMBER · HAND TOOLS',[-6.2,1.85,21.7]);
   label('HARBOUR OFFICE','FIELD SERVICE · MARINE SYSTEMS',[-8.1,1.85,-53.6]);
   label('SIX BOOKS','Five centuries. Read in the chair by the window.',[5.25,1.85,35.9]);
   return {items:ITEMS,objects};
