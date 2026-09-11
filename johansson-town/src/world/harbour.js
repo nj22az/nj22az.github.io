@@ -226,7 +226,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     obstacle(x,z,6.4,6.0);
   }
   const warehouseWorld={group,colliders};
-  const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,label});
+  const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   warehouse(1);
   label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-49],3.2,.72);
   cyl(.045,2.3,[-5.9,1.15,-49],0x655444);obstacle(-5.9,-49,.12,.12);

@@ -7,7 +7,9 @@ import {assetURL} from '../assets.js';
 export const WAREHOUSE=Object.freeze({x:-13.6,z:-56.4,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
 export const WAREHOUSE_PLACE=Object.freeze({
  id:'warehouse',title:'Harbour Warehouse',jp:'港の倉庫',sub:'WESTERN QUAY',
- x:WAREHOUSE.x,z:WAREHOUSE.z,exitPosition:Object.freeze([-6.8,0,-55.7]),entryFacing:Math.PI/2,
+ x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',
+ line:'Fishing gear, ice and quay stores · open at all hours.',
+ door:Object.freeze([-6.8,0,-55.7]),exitPosition:Object.freeze([-6.8,0,-55.7]),entryFacing:Math.PI/2,
  directions:'Walk past Sakura Konbini towards the water. At the end of the main street, look left for the white timber building marked HARBOUR WAREHOUSE.',
 });
 export function warehouseColliders(){
@@ -37,6 +39,21 @@ export async function fetchWarehouse(){
   })(),deadline]);
  }finally{clearTimeout(timer);}
 }
+function addStreetDoor(group){
+ const door=new THREE.Group();door.name='warehouse-street-door';
+ door.position.set(-10.48,0,-55.7);door.rotation.y=Math.PI/2;
+ const timber=new THREE.MeshStandardMaterial({color:0x6e5844,roughness:.9});
+ const leafMat=new THREE.MeshStandardMaterial({color:0x8a6e4e,roughness:.86});
+ const iron=new THREE.MeshStandardMaterial({color:0x3a4144,roughness:.45,metalness:.35});
+ const pad=new THREE.MeshStandardMaterial({color:0x8e8c84,roughness:.95});
+ const post=(x)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.12,2.28,.14),timber);m.position.set(x,1.2,0);door.add(m);};
+ post(-.52);post(.52);
+ const lintel=new THREE.Mesh(new THREE.BoxGeometry(1.16,.12,.16),timber);lintel.position.set(0,2.34,0);door.add(lintel);
+ const leaf=new THREE.Mesh(new THREE.BoxGeometry(.96,2.12,.06),leafMat);leaf.position.set(-.06,1.14,.04);leaf.rotation.y=-.22;door.add(leaf);
+ const handle=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.16,8),iron);handle.rotation.z=Math.PI/2;handle.position.set(.28,1.05,.1);door.add(handle);
+ const step=new THREE.Mesh(new THREE.BoxGeometry(1.2,.08,.42),pad);step.position.set(0,.04,.18);door.add(step);
+ group.add(door);return door;
+}
 export function buildWarehouse(world,options={}){
  const group=new THREE.Group();group.name='Harbour Warehouse';world.group.add(group);
  world.colliders.push(...warehouseColliders());
@@ -47,8 +64,9 @@ export function buildWarehouse(world,options={}){
  const wall=new THREE.Mesh(new THREE.BoxGeometry(6.08,4.1,10.97),wallMat);wall.position.set(WAREHOUSE.x,2.15,WAREHOUSE.z);fallback.add(wall);
  const roof=new THREE.Mesh(new THREE.BoxGeometry(6.3,.24,11.5),roofMat);roof.position.set(WAREHOUSE.x,4.32,WAREHOUSE.z);fallback.add(roof);
  options.label?.('港の倉庫','HARBOUR WAREHOUSE',[-10.48,2.2,-60.35],2.75,.88,Math.PI/2,'#e0dac2','#314d51');
- const marker=new THREE.Object3D();marker.position.set(-9.2,1.25,-55.7);group.add(marker);
- options.register?.(marker,'Inspect Harbour Warehouse',()=>options.onAction?.('inspect','Harbour Warehouse','The old fishing-gear warehouse on the western quay. Weathered timber walls, high windows and a corrugated loading awning face the main street. The loading doors are closed.'));
+ addStreetDoor(group);
+ const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.2,1.25,-55.7);group.add(marker);
+ options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));
  let pending;
  const state={group,place:WAREHOUSE_PLACE,loaded:false,status:'idle',load(loader=fetchWarehouse){
   if(pending)return pending;state.status='loading';

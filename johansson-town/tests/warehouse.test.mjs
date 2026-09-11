@@ -39,12 +39,15 @@ test('warehouse replaces only the western shed and keeps its approach reachable'
  for(let i=1;i<path.length;i++)assert.equal(sweepFraction({x:path[i-1][0],z:path[i-1][1]},{x:path[i][0],z:path[i][1]},blocked),1,'Walk from main street to warehouse');
  for(let z=-62;z<=-49;z+=.2)assert.equal(world.colliders.some(c=>circleHitsRect(-18,z,.32,c)),false,'No collision intrudes into the western approach');
  assert.ok(world.colliders.some(c=>circleHitsRect(WAREHOUSE.x,WAREHOUSE.z,.32,c)),'Warehouse walls block movement');
- assert.ok(registered.find(a=>a.label==='Inspect Harbour Warehouse'));
+ assert.ok(registered.find(a=>a.label==='Enter Harbour Warehouse'));
+ assert.ok(world.group.getObjectByName('warehouse-street-door'));
+ assert.ok(world.group.getObjectByName('warehouse-entrance'));
  const before=JSON.stringify(world.colliders);let requests=0;
  await Promise.all([world.warehouse.load(()=>{requests++;return load();}),world.warehouse.load(()=>{throw Error('Duplicate load');})]);
  assert.equal(requests,1);assert.equal(world.warehouse.status,'ready');assert.equal(JSON.stringify(world.colliders),before);
  assert.equal(world.group.getObjectByName('Warehouse loading fallback'),undefined);
  assert.ok(world.group.getObjectByName('Old Warehouse supplied exterior'));
+ assert.ok(world.group.getObjectByName('warehouse-street-door'),'Person door remains after the supplied exterior loads');
 });
 test('failed loading retains a named, solid warehouse; visitor map names the landmark',async()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]};const state=buildWarehouse(world);const original=console.warn;

@@ -175,6 +175,16 @@ function addRoomProps(s){
   } else if(s.id==='career'){
     wallPanel('潮汐表','TIDES · 14 SEPTEMBER',[2.7,2.75,-6.25],3.0,.9,s.accent);addDesk(-2.7,-1.8,'Harbour log desk','The tide chart, berth allocation sheet and morning weather bulletin lie beneath a brass paperweight.');addScreen(-2.7,-1.85,'Harbour radio console','A green lamp marks channel 16. The microphone is returned to its hook after each call.');addCabinet(3.45,-2.3,'Ice ledger','The cold store supplied twenty blocks before dawn. Each boat’s order is written in blue pencil.');addCabinet(3.45,.45,'Berth records','Tonnage, draught and departure times, filed by vessel name. Yesterday’s entries have been checked twice.');addChair(-.55,-1.55,'Skipper’s chair','A canvas cushion softens the chair where captains wait for their clearance.');
 
+  } else if(s.id==='warehouse'){
+    wallPanel('漁具倉庫','FISHING GEAR · QUAY STORES',[0,2.7,-6.25],4.4,.9,s.accent);
+    addCrates(-3.4,-2.8,'Ice and bait crates','Sawdust, crushed ice and bait tins wait for the evening boats.');
+    addCrates(3.2,-1.6,'Net floats','Glass floats and corks are packed in labelled wooden crates.');
+    addCabinet(-4.3,1.4,'Spare fittings','Shackles, thimbles and spare blocks hang from numbered hooks.');
+    addCabinet(4.0,1.8,'Oilskins','Yellow coats and sou’westers dry on a high rail.');
+    addDesk(2.2,-3.4,'Quay ledger','The harbour master’s carbon book lists ice, rope and lamp oil issued at every hour.');
+    furnitureBox([1.6,.9,.7],[-2.4,.48,1.6],0x6a5844,'Inspect spare rope','Mooring rope','Heavy natural-fibre coils, still salt-stiff from last week’s boats.');
+    addChair(-.2,-3.2,'Watchman’s chair','A canvas chair facing the loading doors. Someone has left a thermos.');
+    addLamp(2.8,-2.6);
   }
 }
 
@@ -216,7 +226,7 @@ function indoorNpc(g){return g.userData.inIzakaya||g.userData.inRamen||g.userDat
 function overlapsResident(x,z){return world.people.some(p=>p.g.visible&&(!current||indoorNpc(p.g))&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
 function residentBlocked(x,z){if(current&&storeClerk?.visible&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;return world.people.some(p=>{if(!p.g.visible||(current&&!indoorNpc(p.g)))return false;if(!current&&inEntrance(p.g.position.x,p.g.position.z))return false;return circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS);});}
 function collides(x,z){return environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);}
-function staysOpen(site){return !site||site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut';}
+function staysOpen(site){return !site||site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||site.id==='warehouse';}
 function occupiedByPerson(x,z){
  if(current&&storeClerk&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;
  return world.people.some(p=>{

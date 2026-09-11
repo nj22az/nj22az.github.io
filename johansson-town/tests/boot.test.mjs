@@ -153,7 +153,13 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.activities.state.kenjiEscort='done';api.activities.save();document.querySelector('#directoryButton').onclick();
     assert.equal(find('warehouse').dataset.travel,'ready');find('warehouse').onclick();
     assert.deepEqual(api.player.position.toArray(),[-6.8,0,-55.7],'Warehouse shortcut lands on the clear quay approach');
-    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Harbour Warehouse/);
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Enter Harbour Warehouse/);
+    api.doInteract();assert.equal(api.reviewCurrentRoom()?.id,'warehouse','Street door opens the warehouse');
+    assert.ok(api.reviewRoomState().colliders>0);
+    api.leaveRoom();assert.equal(api.reviewCurrentRoom(),null);
+    api.reviewSetMinutes(180);api.enterRoom(api.world.landmarks.find(s=>s.id==='warehouse'));
+    assert.equal(api.reviewCurrentRoom()?.id,'warehouse','Warehouse stays open overnight');
+    api.leaveRoom();api.reviewSetMinutes(1002);
     document.querySelector('#directoryButton').onclick();
     const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
     assert.equal(api.player.position.x,24);assert.equal(api.player.position.z,18.8);
