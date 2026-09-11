@@ -17,6 +17,8 @@ Poly Haven's [licence statement](https://polyhaven.com/license) and [CC0 1.0](ht
 
 Original town geometry, procedural fallback rigs, signs and fictional paper text are authored project content. This ledger does not relicense the entire repository.
 
+All named residents now use the five Quaternius low-poly bases, including Aya and Nozomi in Reiko's existing role. Each identity has a stable individual palette, build and bone-mounted accessories; shared base geometry and animation clips are retained. New ponytails, hairbands, scarves and satchels are original project geometry. The earlier Aya and Nozomi models remain archived and are not requested by the character loader. Yuri's original soft model is loaded only for the static figurine inside Sakura.
+
 The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs and Sketchfab kits are **not included** in this revision. Later additions, including user-supplied franchise models, are recorded separately below.
 
 ## Generation pilot

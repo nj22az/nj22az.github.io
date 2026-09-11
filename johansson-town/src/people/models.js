@@ -1,5 +1,4 @@
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
-import {prepareAyaAnimations} from './aya-animation.js?aya-1';
 import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
 import {addResidentAccessories} from './resident-wardrobe.js';
@@ -11,8 +10,7 @@ import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
-const RETAINED=new Set(['yuri-playful','nozomi','aya']);
-const SOURCES=[...LOW_POLY,'nozomi','aya'];
+const SOURCES=LOW_POLY;
 const loaded=new Map();let pending=null;
 const modelPending=new Map();
 export function preloadModel(id){
@@ -21,15 +19,14 @@ export function preloadModel(id){
   if(modelPending.has(id))return modelPending.get(id);
   const task=(async()=>{
     const loader=new GLTFLoader();
-    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),id==='aya'?45000:15000);
+    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
-      const retained=RETAINED.has(id);
-      const response=await fetch(assetURL(retained?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':id==='aya'?'?aya-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const figurine=id==='yuri-playful';
+      const response=await fetch(assetURL(figurine?'characters/realistic/yuri-playful.glb?yuri-rig-2':'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const gltf=await loader.parseAsync(await response.arrayBuffer(),'');
       if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);
-      else if(id==='aya')gltf.animations=prepareAyaAnimations(gltf);
-      else if(!retained){
+      else{
         gltf.animations=prepareResidentAnimations(gltf);
         gltf.scene.traverse(o=>{if(o.isSkinnedMesh){o.material.flatShading=true;o.material.roughness=.9;o.material.dithering=true;}});
       }
@@ -47,8 +44,6 @@ export function preloadModels({onProgress}={}){
 }
 export function characterSource(name){
   if(name==='player'||name==='Johansson')return null;
-  if(name==='Aya'||name==='Aiko')return 'aya';
-  if(name==='Reiko'||name==='Nozomi')return 'nozomi';
   if(residentPersonality(name).source)return residentPersonality(name).source;
   const profile=PROFILES.find(p=>p.name===name);
   if(name==='Yui'||profile?.female)return profile?.age>=50?'female_formal':'female_casual';
@@ -86,10 +81,6 @@ export function createLocalCharacters({shadows=false}={}){
     const profile=PROFILES.find(p=>p.name===name),source=characterSource(name),asset=loaded.get(source);
     if(!asset)return null;
     const model=clone(asset.scene);
-    if(source==='aya'){
-      const drop=[];model.traverse(o=>{if(['PoseCube','Ramune','StudioFloor','PreviewCam','Cam','Key','Fill','Rim'].includes(o.name))drop.push(o);});
-      for(const o of drop)o.removeFromParent();
-    }
     const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
     if(lowPoly)addResidentAccessories(model,style);
     const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
@@ -98,19 +89,19 @@ export function createLocalCharacters({shadows=false}={}){
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='nozomi'?'User-supplied Shenmue · Nozomi as Reiko':source==='aya'?'Studio likeness · Aya':source==='yuri-playful'?'User-supplied Meshy · Yuri':'PSX low-poly · '+source;
+    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource='PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
     }
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,hands,lowPoly,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:source==='aya',isNozomi:source==='nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
     try{
-    if((lowPoly||actor.isYuri||actor.isAya||actor.isNozomi)&&actions.has('Sit')){
+    if(actions.has('Sit')){
       actions.get('Sit').play();mixer.update(0);entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);
       const hips=model.getObjectByName('Hips');
       if(hips){
@@ -157,7 +148,7 @@ export function createLocalCharacters({shadows=false}={}){
       if(!clip)continue;
       if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
       const locomotion=actions.get(actor.current);
-      const walkSpeed=actor.isNozomi?actor.walkSpeed:1.25,runSpeed=actor.isNozomi?actor.runSpeed:4;
+      const {walkSpeed,runSpeed}=actor;
       if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
       if(seated&&actor.seatBlend===1){

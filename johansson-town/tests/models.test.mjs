@@ -6,7 +6,7 @@ import {preloadModels,createLocalCharacters,characterSource} from '../src/people
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 
-test('low-poly residents retain independent motion and seating; Yuri joins them while Aya and Nozomi keep their models',async()=>{
+test('every resident, including Aya and Nozomi, uses low-poly geometry with independent motion and seating',async()=>{
  installDOM();const previous={fetch:globalThis.fetch,bitmap:globalThis.createImageBitmap,self:globalThis.self},requests=[];
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{
@@ -15,9 +15,9 @@ test('low-poly residents retain independent motion and seating; Yuri joins them 
   return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:7,total:7});assert.equal(requests.length,7);
-  assert.ok(requests.every(url=>!url.includes('yuri-playful')&&!url.includes('vroid')&&!url.includes('/yui.glb')),'No superseded character or VRoid textures requested');
-  assert.equal(characterSource('Yuri'),'female_casual');assert.equal(characterSource('Aya'),'aya');assert.equal(characterSource('Reiko'),'nozomi');assert.equal(characterSource('Nozomi'),'nozomi');
+  assert.deepEqual(await preloadModels(),{ready:5,total:5});assert.equal(requests.length,5);
+  assert.ok(requests.every(url=>!url.includes('/realistic/')&&!url.includes('vroid')),'No superseded character or VRoid textures requested');
+  assert.equal(characterSource('Yuri'),'female_casual');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
@@ -25,9 +25,8 @@ test('low-poly residents retain independent motion and seating; Yuri joins them 
    const actor=models.attach(entity,name,name==='Yuri'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
    assert.equal(entity.userData.visualReady,true);const skins=[];actor.model.traverse(o=>{if(o.isSkinnedMesh)skins.push(o);});
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit'])assert.ok(actor.actions.has(clip),name+' '+clip);
-   if(['Aya','Reiko'].includes(name)){
-    assert.equal(actor.lowPoly,false);assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
-   }else{
+   assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
+   {
     assert.equal(actor.lowPoly,true);assert.equal(skins.length,1,'One body draw per low-poly resident');assert.match(entity.userData.visualSource,/PSX low-poly/);
     const skin=skins[0];assert.equal(skin.geometry.groups.length,0);assert.equal(skin.material.map,null);assert.equal(skin.material.flatShading,true);
     assert.ok(skin.geometry.attributes.position.count<14000);assert.ok(actor.seatSupport);assert.ok(actor.cup);

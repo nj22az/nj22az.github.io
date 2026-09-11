@@ -32,6 +32,16 @@ export function addResidentAccessories(model,style){
   bone.updateWorldMatrix(true,false);geometry.applyMatrix4(bone.matrixWorld.clone().invert());bone.add(mesh);
  }
  const type=style.accessory,front=bounds.max.z+.006,eyeY=bounds.min.y+size.y*.53;
+ if(type.includes('ponytail')){
+  const hair=new THREE.SphereGeometry(1,7,5).scale(size.x*.21,size.y*.47,size.z*.25).rotateX(-.22).translate(centre.x,bounds.max.y-size.y*.42,bounds.min.z-size.z*.18);
+  coloured(hair,style.hair);
+  box(size.x*.23,size.y*.09,size.z*.15,centre.x,bounds.max.y-size.y*.20,bounds.min.z-size.z*.08,style.accent);
+ }
+ if(type.includes('bun'))coloured(new THREE.SphereGeometry(1,7,5).scale(size.x*.24,size.y*.22,size.z*.25).translate(centre.x,bounds.max.y-size.y*.15,bounds.min.z),style.hair);
+ if(type.includes('headband')){
+  for(const side of [-1,1])box(size.x*.055,size.y*.29,size.z*.16,centre.x+side*size.x*.44,bounds.max.y-size.y*.17,centre.z,style.accent);
+  box(size.x*.90,size.y*.055,size.z*.16,centre.x,bounds.max.y-size.y*.035,centre.z,style.accent);
+ }
  if(type==='ribbon-apron'){
   for(const side of [-1,1])box(size.x*.20,size.y*.13,.035,centre.x+size.x*.39+side*size.x*.085,bounds.max.y-size.y*.22,centre.z,0xe7acc2);
   box(size.x*.065,size.y*.09,.043,centre.x+size.x*.39,bounds.max.y-size.y*.22,centre.z,0xf6d9dc);
@@ -50,12 +60,21 @@ export function addResidentAccessories(model,style){
   if(type!=='police')box(size.x*.32,size.y*.065,.016,centre.x,bounds.min.y+size.y*.28,front,style.hair);
  }
  mount(head,type);
- if(chest&&(type==='police'||type.includes('apron')||type==='tool-pouch')){
+ if(chest&&(type==='police'||type.includes('apron')||type==='tool-pouch'||type.includes('satchel')||type.includes('scarf'))){
   const chestPoint=chest.getWorldPosition(new THREE.Vector3()),h=size.y;
   if(type.includes('apron')){
    const front=torsoBounds.max.z+.014,top=torsoBounds.max.y-.055,bottom=torsoBounds.min.y+.06;
    box(size.x*.95,(top-bottom)*.8,.018,chestPoint.x,(top+bottom)/2,front,0xe4d1a3);
    for(const side of [-1,1])box(.025,.15,.020,chestPoint.x+side*size.x*.34,top+.02,front,0xe4d1a3);
+  }else if(type.includes('scarf')){
+   const front=torsoBounds.max.z+.022,top=torsoBounds.max.y;
+   box(size.x*.65,.048,.045,chestPoint.x,top-.035,front,style.accent);
+   box(.045,.16,.035,chestPoint.x-size.x*.16,top-.12,front,style.accent);
+  }else if(type.includes('satchel')){
+   const front=torsoBounds.max.z+.025,top=torsoBounds.max.y-.02,bottom=torsoBounds.min.y+.02;
+   coloured(new THREE.BoxGeometry(.025,top-bottom,.018).rotateZ(-.23).translate(chestPoint.x,(top+bottom)/2,front),style.accent);
+   box(.13,.13,.07,chestPoint.x-size.x*.46,bottom,front,style.accent);
+   box(.025,.025,.012,chestPoint.x-size.x*.46,bottom,front+.04,0xc1ac73);
   }else if(type==='police')box(.045,.062,.026,chestPoint.x+size.x*.35,chestPoint.y,centre.z+size.z*.36,0xd5b865);
   else box(.085,.11,.055,chestPoint.x-size.x*.58,chestPoint.y-h*.65,centre.z+size.z*.24,0x84674c);
   mount(chest,type+'-uniform');

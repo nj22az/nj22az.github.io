@@ -46,7 +46,7 @@ export function createCharacters(options={}){
   function streamDetails(stream,onChange,getPosition){
     for(const [entity,entry] of upgrades){
       entry.onChange=onChange;
-      stream.add({id:'resident:'+entry.file,priority:0,radius:52,timeoutMs:entry.file==='Aya'?46000:16000,distance:position=>{
+      stream.add({id:'resident:'+entry.file,priority:0,radius:52,timeoutMs:16000,distance:position=>{
         for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
         if(entity.userData.inWorkplace||entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inHome)position=getPosition?.()||position;
         const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
