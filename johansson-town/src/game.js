@@ -1,3 +1,4 @@
+import {createTownSections} from './render/town-sections.js';
 import {createStoreService} from './people/store-service.js';
 import {STORE_SEATS} from './world/interiors/store-layout.js';
 import {createShopStreetView} from './render/shop-street-view.js?konbini-1';
@@ -44,6 +45,7 @@ function box(size,pos,color,parent,outline=true){const g=boxGeo(size),m=new THRE
 function mesh(geo,pos,color,parent,outline=true){const m=new THREE.Mesh(geo,toon(color));m.position.set(...pos);m.castShadow=shadows;m.receiveShadow=shadows;parent.add(m);if(false&&outline){const o=new THREE.Mesh(geo,outlineMat);o.position.copy(m.position);o.scale.set(1.022,1.022,1.022);parent.add(o)}return m}
 function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');x.fillStyle='#efe3c7';x.fillRect(0,0,512,128);x.fillStyle=accent;x.fillRect(0,0,14,128);x.strokeStyle='#252821';x.lineWidth=5;x.strokeRect(5,5,502,118);x.fillStyle='#252821';x.textAlign='center';x.textBaseline='middle';x.font='700 43px Yu Gothic,system-ui';x.fillText(a,256,50);x.font='800 15px system-ui';x.fillText(b.toUpperCase(),256,99);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
 
+const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
 loadTownEnvironment(scene,renderer);
@@ -332,10 +334,18 @@ function updateContextControls(){
  const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:performance.now()<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!active});
  for(const [id,visible] of Object.entries(state)){const element=$('#'+id);if(element.classList.contains('hidden')===visible)element.classList.toggle('hidden',!visible);}
 }
-function loop(){requestAnimationFrame(loop);updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');if(!paused){const before=player.position.clone();simulate(frameDt);if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();accumulator=0;resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage});else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderer.render(scene,camera);loop();
+let portRequested=false;
+function loop(){requestAnimationFrame(loop);updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');if(!paused){const before=player.position.clone();simulate(frameDt);if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();accumulator=0;resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
-// Optional scenery streams only after the first town frame, outside the boot gate.
-setTimeout(()=>{
- void world.seaCave?.load().then(()=>shopStreetView.invalidate());
- void world.warehouse?.load().then(()=>shopStreetView.invalidate());
-},0);
+// Download the detailed port scenery only when approaching the port.
+function renderOutdoor(){
+  townSections.render({renderer,scene,camera,town,position:player.position});
+  if(!portRequested&&player.position.z < -24){
+    portRequested=true;
+    setTimeout(()=>{
+      for(const asset of [world.seaCave,world.warehouse]){
+        void asset?.load().then(()=>{shopStreetView.invalidate();townSections.invalidate();});
+      }
+    },0);
+  }
+}

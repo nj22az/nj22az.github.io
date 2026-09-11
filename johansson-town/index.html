@@ -83,16 +83,15 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
     window.__JOHANSSON_BOOTING__=true;
     enter.disabled=true;
     status.textContent='OPENING…';
-    unlockTownAudio();
+    try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
     if(!isIPhone||standalone())fullscreen();
     const watchdog=setTimeout(()=>{
       if(!window.__JOHANSSON_RUNNING__){
-        status.textContent='STARTUP TOOK TOO LONG';
-        fatal.classList.remove('hidden');
+        status.textContent='STILL LOADING · PLEASE WAIT';
       }
     },25000);
     try{
-      await import('./src/boot.js?living-town=40');
+      await import('./src/boot.js?living-town=41');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
@@ -100,7 +99,9 @@ import {unlockTownAudio} from './src/audio/town-audio.js';
       clearTimeout(watchdog);
       console.error(err);
       status.textContent='START FAILED';
-      fatal.querySelector('p').textContent='Johansson Town could not start. Reload and try again.';
+      fatal.querySelector('p').textContent=/WebGL|graphics context/i.test(err.message||'')
+        ? 'Safari could not start the 3D graphics engine. Close other tabs, then reload this page.'
+        : 'Johansson Town could not start: '+(err.message||'Unknown startup error')+'. Reload and try again.';
       fatal.classList.remove('hidden');
       window.__JOHANSSON_BOOTING__=false;
       enter.disabled=false;

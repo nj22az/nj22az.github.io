@@ -1,0 +1,37 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {createTownSections,districtAt} from '../src/render/town-sections.js';
+test('shopping, port and homes render independently and restore visibility',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group();scene.add(town);
+ const make=(x,z)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(3,3,3),new THREE.MeshBasicMaterial());mesh.position.set(x,1,z);town.add(mesh);return mesh;};
+ const shopping=make(0,38),port=make(0,-65),home=make(-30,12),hidden=make(0,40);hidden.visible=false;
+ const view=createTownSections({mobile:true}),camera=new THREE.PerspectiveCamera(),position=new THREE.Vector3(0,0,38);let seen;
+ const renderer={render(){seen=[shopping.visible,port.visible,home.visible,hidden.visible];}};
+ const render=()=>view.render({renderer,scene,camera,town,position});
+ render();assert.deepEqual(seen,[true,false,false,false]);assert.equal(view.stats.district,'Shopping');assert.ok(view.stats.culled>0);
+ position.set(0,0,-65);render();assert.deepEqual(seen,[false,true,false,false]);assert.equal(view.stats.district,'Port');
+ position.set(-30,0,12);render();assert.equal(view.stats.district,'Residential');assert.equal(seen[2],true);
+ assert.equal(port.visible,true);assert.equal(shopping.visible,true);assert.equal(hidden.visible,false);
+ renderer.render=()=>{throw Error('context lost');};assert.throws(render);assert.equal(shopping.visible,true);assert.equal(hidden.visible,false);
+});
+test('boundaries retain nearby buildings and moving residents follow their section',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group();scene.add(town);
+ const actor=new THREE.Group();actor.userData.name='Resident';town.add(actor);
+ const person=new THREE.Mesh(new THREE.BoxGeometry(1,2,1),new THREE.MeshBasicMaterial());actor.add(person);
+ const view=createTownSections({mobile:true}),position=new THREE.Vector3(0,0,-44),camera=new THREE.PerspectiveCamera();let visible;
+ const renderer={render(){visible=person.visible;}};
+ actor.position.set(0,0,-49);view.render({renderer,scene,camera,town,position});assert.equal(visible,true);
+ actor.position.set(0,0,50);view.render({renderer,scene,camera,town,position});assert.equal(visible,false);
+ assert.equal(districtAt(0,-49),'Port');assert.equal(districtAt(30,-35),'Park');
+});
+test('town-wide instance batches submit only nearby instances and restore buffers',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group();scene.add(town);
+ const batch=new THREE.InstancedMesh(new THREE.BoxGeometry(2,2,2),new THREE.MeshBasicMaterial(),3);
+ const matrix=new THREE.Matrix4();[38,-65,-75].forEach((z,i)=>{matrix.makeTranslation(0,1,z);batch.setMatrixAt(i,matrix);});town.add(batch);
+ const original=batch.instanceMatrix,view=createTownSections({mobile:true}),position=new THREE.Vector3(0,0,38),camera=new THREE.PerspectiveCamera();let count;
+ const renderer={render(){count=batch.count;}};
+ const render=()=>view.render({renderer,scene,camera,town,position});
+ render();assert.equal(count,1);assert.equal(batch.count,3);assert.equal(batch.instanceMatrix,original);
+ position.z=-65;render();assert.equal(count,2);assert.equal(batch.count,3);assert.equal(batch.instanceMatrix,original);
+});

@@ -51,3 +51,25 @@ Kenji’s editable Blender source, actual model renders and reproducible export 
 Sakura Shōten now has Yui, an adult Blender-authored clerk, eight selectable goods, a hinged cooler, till, radio and service bell. A disabled Shopify Storefront adapter supports future approved product mappings and explicit real-money checkout. See `docs/SAKURA_STORE.md`. No live Shopify store or payment flow has been activated.
 
 The Sakura visual revision clears the daytime fog, revises Yuri’s face and outfit, and rebuilds her shop frontage and stocked interior. See `docs/SAKURA_VISUAL_REVIEW.md` for actual geometry renders and remaining visual limits. This is not a completed whole-town AAA upgrade.
+
+
+### Outdoor sections and startup recovery
+
+The outdoor renderer selects nearby 24-metre cells in the Shopping, Port,
+Residential and Park districts. Mobile devices retain the current cell and its
+neighbours; desktop retains a wider view. Large merged meshes and static instance
+batches submit only nearby cells/instances. Visibility and buffers are restored
+after every render, including errors, so the Konbini window renderer, interactions,
+collisions and resident schedules retain their existing behaviour.
+
+Warehouse and sea-cave downloads begin on approach to the port (z < -24), after
+the first outdoor frame. Other model caches remain resident: this change reduces
+render submissions and defers port assets; it does not unload all district textures.
+The startup asset gate has a 20-second deadline covering downloads and texture
+decoding, after which missing assets use existing procedural fallbacks. A late
+asset does not replace live street geometry or alter its colliders.
+
+Validation: startup timeout/failure, district transitions, moving residents,
+instance selection and state restoration tests; CPU game boot and all interior
+transitions; Konbini window tests; Vite build. Safari GPU performance still needs
+verification on a physical device.
