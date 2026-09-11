@@ -21,7 +21,7 @@ for(const p of PROFILES){
  DIALOGUE[p.name]=[...personal,...(DIALOGUE[p.name]||[])];
 }
 DIALOGUE.Yuri.push(['home','My home is at '+YURI_PROFILE.homeAddress+'. The plants by the shop stay here overnight.']);
-export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position}){
+export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();
  for(const person of world.people)person.g.userData.scheduled=true;
@@ -46,7 +46,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.16){route.at++;return;}
   const step=Math.min(d,dt*(person.profile?.age>65?.75:1.25)),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
-   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome)return true;
+   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
    return next>=.61||(old<.61&&next>old+.00001);
   });
@@ -59,8 +59,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;const minute=((minutes%1440)+1440)%1440;
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
-   if(g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const plan=residentPlan(v,minutes,rain);let target=plan.target,tag=plan.place;
+   if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
+   const scheduled=residentPlan(v,minutes,rain),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
@@ -72,7 +72,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Unique home thresholds must not be displaced by generic crowd spacing.
-   if(!['home','izakaya','ramen','market'].includes(tag)&&!tag.startsWith('patrol'))target=destination(p,target,tag);
+   if(!['home','izakaya','ramen','market'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
     const spawn=tag==='home'?v.home:destination(p,v.work,'work');
@@ -81,7 +81,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
    const indoor=['home','izakaya','ramen','market'].includes(tag);
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
-   if(!g.userData.indoors&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
+   if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
    if(indoor&&(g.userData.indoors===tag||arrived())){
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
     g.userData.activity=tag==='home'?'at home':plan.activity;

@@ -1,6 +1,9 @@
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {prepareAyaAnimations} from './aya-animation.js?aya-1';
 import {dressCharacter} from './surface.js';
+import {residentPersonality} from './resident-personalities.js';
+import {addResidentAccessories} from './resident-wardrobe.js';
+import {createResidentHands} from './resident-props.js';
 import {prepareResidentAnimations} from './resident-animation.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -9,11 +12,11 @@ import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
 const RETAINED=new Set(['yuri-playful','nozomi','aya']);
-const SOURCES=['yuri-playful',...LOW_POLY,'nozomi','aya'];
+const SOURCES=[...LOW_POLY,'nozomi','aya'];
 const loaded=new Map();let pending=null;
 const modelPending=new Map();
 export function preloadModel(id){
-  if(!SOURCES.includes(id))return Promise.resolve(false);
+  if(!SOURCES.includes(id)&&id!=='yuri-playful')return Promise.resolve(false);
   if(loaded.has(id))return Promise.resolve(true);
   if(modelPending.has(id))return modelPending.get(id);
   const task=(async()=>{
@@ -39,14 +42,14 @@ export function preloadModel(id){
 }
 export function preloadModels({onProgress}={}){
   if(pending)return pending;
-  pending=(async()=>{let complete=0;for(const id of SOURCES){await preloadModel(id);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}return {ready:loaded.size,total:SOURCES.length};})();
+  pending=(async()=>{let complete=0;for(const id of SOURCES){await preloadModel(id);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}return {ready:SOURCES.filter(id=>loaded.has(id)).length,total:SOURCES.length};})();
   return pending;
 }
 export function characterSource(name){
   if(name==='player'||name==='Johansson')return null;
   if(name==='Aya'||name==='Aiko')return 'aya';
   if(name==='Reiko'||name==='Nozomi')return 'nozomi';
-  if(name==='Yuri')return 'yuri-playful';
+  if(residentPersonality(name).source)return residentPersonality(name).source;
   const profile=PROFILES.find(p=>p.name===name);
   if(name==='Yui'||profile?.female)return profile?.age>=50?'female_formal':'female_casual';
   if(name==='Harbour master'||profile?.role==='policeman'||profile?.role==='bus driver')return 'suit';
@@ -54,6 +57,29 @@ export function characterSource(name){
 }
 export const preloadCharacter=name=>preloadModel(characterSource(name));
 export const characterReady=name=>loaded.has(characterSource(name));
+let figurineTemplate=null;
+// The former shopkeeper is now a static collectible, requested only inside Sakura.
+// Bake the original soft model's idle pose once, without keeping a second NPC/mixer.
+export async function createYuriFigurine(){
+ if(!await preloadModel('yuri-playful'))return null;
+ if(!figurineTemplate){
+  const asset=loaded.get('yuri-playful'),posed=clone(asset.scene),mixer=new THREE.AnimationMixer(posed);
+  const idle=asset.animations.find(c=>c.name==='Idle_Neutral');if(idle){mixer.clipAction(idle).play();mixer.update(0);}
+  posed.updateMatrixWorld(true);const group=new THREE.Group(),point=new THREE.Vector3();
+  posed.traverse(mesh=>{if(!mesh.isMesh)return;const geometry=mesh.geometry.clone();
+   if(mesh.isSkinnedMesh){mesh.skeleton.update();const positions=geometry.attributes.position;
+    for(let i=0;i<positions.count;i++){mesh.getVertexPosition(i,point);positions.setXYZ(i,point.x,point.y,point.z);}
+    geometry.deleteAttribute('skinIndex');geometry.deleteAttribute('skinWeight');geometry.computeVertexNormals();
+   }
+   geometry.applyMatrix4(mesh.matrixWorld);group.add(new THREE.Mesh(geometry,mesh.material));
+  });
+  mixer.stopAllAction();mixer.uncacheRoot(posed);
+  const bounds=new THREE.Box3().setFromObject(group),centre=bounds.getCenter(new THREE.Vector3()),scale=.30/(bounds.max.y-bounds.min.y);
+  group.scale.setScalar(scale);group.position.set(-centre.x*scale,-bounds.min.y*scale,-centre.z*scale);
+  const root=new THREE.Group();root.add(group);root.name='Yuri soft figurine';root.userData.sharedAsset=true;root.userData.figurine=true;figurineTemplate=root;
+ }
+ return figurineTemplate.clone(true);
+}
 export function createLocalCharacters({shadows=false}={}){
   const actors=[],byEntity=new Map();
   function attach(entity,name,height){
@@ -64,21 +90,22 @@ export function createLocalCharacters({shadows=false}={}){
       const drop=[];model.traverse(o=>{if(['PoseCube','Ramune','StudioFloor','PreviewCam','Cam','Key','Fill','Rim'].includes(o.name))drop.push(o);});
       for(const o of drop)o.removeFromParent();
     }
+    const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
+    if(lowPoly)addResidentAccessories(model,style);
     const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
-    const scale=(height||profile?.height||1.75)/size.y;
+    const targetHeight=height||style.height||profile?.height||1.75,scale=targetHeight/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
-    const lowPoly=LOW_POLY.includes(source);
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly)dressCharacter(o,profile?.top);}});
+    if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
     entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='nozomi'?'User-supplied Shenmue · Nozomi as Reiko':source==='aya'?'Studio likeness · Aya':source==='yuri-playful'?'User-supplied Meshy · Yuri':'PSX low-poly · '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
     }
-    let cup=null;
-    if(lowPoly||source==='nozomi'){const hand=model.getObjectByName(lowPoly?'WristR':'RightHand');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.035,.027,.07,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(0,.06,.025);cup.visible=false;hand.add(cup);}}
+    const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,lowPoly,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',isAya:source==='aya',isNozomi:source==='nozomi',moving:false,wasVisible:true,height:height||profile?.height||1.75,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:source==='aya',isNozomi:source==='nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -118,7 +145,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.speed=THREE.MathUtils.damp(actor.speed,measured,12,dt);
       actor.moving=actor.speed>(actor.moving?.08:.18);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
-      if(actor.cup)actor.cup.visible=entity.userData.socialPose==='Drink';
+      actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
       const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Sit','Eat','Drink'].includes(entity.userData.socialPose);
       actor.seatBlend=THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
@@ -126,7 +153,7 @@ export function createLocalCharacters({shadows=false}={}){
       const blend=actor.seatBlend,support=actor.seatSupport;
       actor.model.position.set(support?-support.x*blend:0,actor.floorOffset+(support?(actor.lastSeatHeight-support.y)*blend||0:0),support?-support.z*blend:0);
       const requested=(actor.isYuri&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||entity.userData.socialPose|| (entity.userData.chat?.greeting?'Wave':null)|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
-      const clip=[requested,'Idle_Neutral','Idle'].find(name=>actions.has(name));
+      const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
       const locomotion=actions.get(actor.current);
@@ -139,7 +166,7 @@ export function createLocalCharacters({shadows=false}={}){
         for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
         if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
       }
-      if(actor.cup?.visible){actor.model.updateWorldMatrix(true,true);actor.cup.quaternion.copy(actor.cup.parent.getWorldQuaternion(new THREE.Quaternion()).invert());}
+      actor.hands?.align();
       if(actor.lowPoly){
         const chat=entity.userData.chat,head=actor.model.getObjectByName('Head');
         if(chat&&head){const partner=chat.partner.getWorldPosition(new THREE.Vector3());entity.worldToLocal(partner);

@@ -6,7 +6,7 @@ import {preloadModels,createLocalCharacters,characterSource} from '../src/people
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 
-test('low-poly residents retain independent motion and seating; Yuri, Aya and Nozomi keep their models',async()=>{
+test('low-poly residents retain independent motion and seating; Yuri joins them while Aya and Nozomi keep their models',async()=>{
  installDOM();const previous={fetch:globalThis.fetch,bitmap:globalThis.createImageBitmap,self:globalThis.self},requests=[];
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{
@@ -15,17 +15,17 @@ test('low-poly residents retain independent motion and seating; Yuri, Aya and No
   return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:8,total:8});assert.equal(requests.length,8);
-  assert.ok(requests.every(url=>!url.includes('vroid')&&!url.includes('/yui.glb')),'No superseded character or VRoid textures requested');
-  assert.equal(characterSource('Yuri'),'yuri-playful');assert.equal(characterSource('Aya'),'aya');assert.equal(characterSource('Reiko'),'nozomi');assert.equal(characterSource('Nozomi'),'nozomi');
+  assert.deepEqual(await preloadModels(),{ready:7,total:7});assert.equal(requests.length,7);
+  assert.ok(requests.every(url=>!url.includes('yuri-playful')&&!url.includes('vroid')&&!url.includes('/yui.glb')),'No superseded character or VRoid textures requested');
+  assert.equal(characterSource('Yuri'),'female_casual');assert.equal(characterSource('Aya'),'aya');assert.equal(characterSource('Reiko'),'nozomi');assert.equal(characterSource('Nozomi'),'nozomi');
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
-   const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name);actors.push(actor);
+   const actor=models.attach(entity,name,name==='Yuri'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
    assert.equal(entity.userData.visualReady,true);const skins=[];actor.model.traverse(o=>{if(o.isSkinnedMesh)skins.push(o);});
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit'])assert.ok(actor.actions.has(clip),name+' '+clip);
-   if(['Aya','Yuri','Reiko'].includes(name)){
+   if(['Aya','Reiko'].includes(name)){
     assert.equal(actor.lowPoly,false);assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
    }else{
     assert.equal(actor.lowPoly,true);assert.equal(skins.length,1,'One body draw per low-poly resident');assert.match(entity.userData.visualSource,/PSX low-poly/);
@@ -38,14 +38,14 @@ test('low-poly residents retain independent motion and seating; Yuri, Aya and No
   }
   const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Yuri');
   const skin=actor=>{let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});return mesh;};
-  assert.notEqual(skin(kenji).skeleton,skin(tetsuo).skeleton);assert.equal(skin(kenji).geometry.attributes.position,skin(tetsuo).geometry.attributes.position);
+  assert.notEqual(skin(kenji).skeleton,skin(tetsuo).skeleton);assert.equal(skin(byName('Harbour master')).geometry.attributes.position,skin(byName('Bus driver')).geometry.attributes.position);
   assert.notEqual(skin(kenji).geometry.attributes.color,skin(tetsuo).geometry.attributes.color,'Wardrobe colours remain independent');
   for(let i=0;i<50;i++){kenji.entity.position.z-=.02;models.update(1/60);}assert.equal(kenji.current,'Walk');
   const hidden=new THREE.Group();scene.add(hidden);hidden.add(kenji.entity);hidden.visible=false;const time=kenji.mixer.time;models.update(.1);assert.equal(kenji.mixer.time,time);
   hidden.visible=true;models.update(1/60);assert.equal(kenji.current,'Idle_Neutral');assert.equal(kenji.speed,0);
   for(let i=0;i<30;i++){kenji.entity.position.z-=.02;models.update(1/60);}kenji.entity.position.z+=20;models.update(1/60);assert.equal(kenji.current,'Idle_Neutral');assert.equal(kenji.actions.get('Walk').isRunning(),false);
   models.gesture(yuri.entity);models.update(1/60);assert.equal(yuri.current,'Wave');assert.equal(yuri.actions.get('Wave').loop,THREE.LoopOnce);
-  const remaining=yuri.gestureTime;models.gesture(yuri.entity);assert.equal(yuri.gestureTime,remaining);for(let i=0;i<100;i++)models.update(1/60);assert.equal(yuri.current,'Idle_Neutral');
+  const remaining=yuri.gestureTime;models.gesture(yuri.entity);assert.equal(yuri.gestureTime,remaining);for(let i=0;i<Math.ceil((remaining+1)*60);i++)models.update(1/60);assert.equal(yuri.current,'Idle_Neutral');
   const point=new THREE.Vector3();
   for(const actor of actors.filter(a=>a.lowPoly)){
    actor.entity.visible=true;actor.entity.parent.visible=true;actor.gestureTime=0;actor.speed=0;actor.moving=false;

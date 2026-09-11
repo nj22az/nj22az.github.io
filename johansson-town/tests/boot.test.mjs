@@ -87,7 +87,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
     const {preloadModels}=await import('../src/people/models.js?snappy=1');
-    assert.deepEqual(await preloadModels(),{ready:8,total:8},'Actual selected character rigs preloaded');
+    assert.deepEqual(await preloadModels(),{ready:7,total:7},'Actual selected character rigs preloaded');
     const api=await import(dataModule(source));
     assert.equal(api.world.harbourShops.length,7);
     assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));

@@ -20,7 +20,7 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   for(const m of doc.materials){assert.ok(m.pbrMetallicRoughness.baseColorTexture);assert.equal(m.pbrMetallicRoughness.metallicFactor,0);}
   for(const image of doc.images){assert.ok(Number.isInteger(image.bufferView));assert.equal(image.uri,undefined);}
   const {preloadModels,createLocalCharacters}=await import('../src/people/models.js?snappy=1');
-  assert.deepEqual(await preloadModels(),{ready:8,total:8});const models=createLocalCharacters(),scene=new THREE.Scene();
+  assert.deepEqual(await preloadModels(),{ready:7,total:7});const models=createLocalCharacters(),scene=new THREE.Scene();
   const attach=name=>{const e=new THREE.Group();e.userData.name=name;scene.add(e);return models.attach(e,name);};
   const reiko=attach('Reiko'),sato=attach('Mrs Sato'),yuri=attach('Yuri');
   assert.ok(reiko.isNozomi);assert.equal(reiko.entity.userData.name,'Reiko');assert.ok(sato.lowPoly);assert.ok(yuri.isYuri);
@@ -50,7 +50,7 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   delete reiko.entity.userData.seatHeight;delete reiko.entity.userData.socialPose;models.update(.4);assert.equal(reiko.model.position.y,reiko.floorOffset);
   // A failed Nozomi load waits for her own model; never substitute a different face.
   const fetchReady=globalThis.fetch;globalThis.fetch=url=>String(url).includes('nozomi.glb')?Promise.resolve(new Response('',{status:503})):fetchReady(url);
-  const fallback=await import('../src/people/models.js?fallback-nozomi=1');assert.deepEqual(await fallback.preloadModels(),{ready:7,total:8});
+  const fallback=await import('../src/people/models.js?fallback-nozomi=1');assert.deepEqual(await fallback.preloadModels(),{ready:6,total:7});
   const e=new THREE.Group();e.userData.name='Reiko';assert.equal(fallback.createLocalCharacters().attach(e,'Reiko'),null);
   globalThis.fetch=fetchReady;assert.equal(await fallback.preloadCharacter('Reiko'),true);assert.ok(fallback.createLocalCharacters().attach(e,'Reiko').isNozomi);
  }finally{globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;}

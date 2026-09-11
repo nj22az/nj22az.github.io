@@ -29,6 +29,6 @@ test('cold street needs only two models; streamed facades preserve every door an
  characters.attach(yuri,'Yuri',1.6);const old=[...yuri.children],entries=[];
  characters.streamDetails({add:entry=>entries.push(entry)},()=>{});
  const requestsBefore=requests.length;assert.equal(await entries[0].load(),true);assert.equal(requests.length,requestsBefore+1,'Only Yuri is fetched');
- assert.ok(requests.at(-1).startsWith('characters/realistic/yuri-playful.glb'));assert.ok(old.every(child=>child.parent===null));assert.equal(characters.actors.length,1);assert.ok(characters.actors[0].mixer);
+ assert.ok(requests.at(-1).startsWith('characters/residents/town-female_casual.glb'));assert.ok(old.every(child=>child.parent===null));assert.equal(characters.actors.length,1);assert.ok(characters.actors[0].mixer);
  globalThis.fetch=nativeFetch;
 });

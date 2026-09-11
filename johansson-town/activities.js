@@ -1,4 +1,5 @@
 import {STORE_MENU} from './src/people/store-service.js';
+import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {PROFILES} from './src/people/profiles.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
@@ -20,6 +21,7 @@ export function createActivities({say,onConversation=()=>{},onWeather,onTime,get
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){
+      state.residentLife=restoreResidentLife(saved.residentLife);
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);

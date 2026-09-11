@@ -112,7 +112,7 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[-5.9,0,24.92],stand:[-5.9,0,24.0],eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
   const buy=(pos,label,title,detail)=>{anchor(group,pos,label,()=>options.onAction?.('buy',title,detail),options.register);interactions++;};
 
