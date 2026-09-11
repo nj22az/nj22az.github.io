@@ -84,6 +84,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const {preloadYuriHome}=await import('../src/world/yuri-home.js');
     assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
+    const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
+    assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
     const api=await import(dataModule(source));
     assert.equal(api.world.harbourShops.length,7);
     assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));
@@ -94,10 +96,23 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     const market=api.SITES.find(s=>s.id==='market');
-    const opening=market.door||[market.side*4,0,market.z+2.5];
-    assert.deepEqual(api.player.position.toArray(),opening,'Spawn outside Sakura Konbini');
-    assert.ok(api.camera.getWorldDirection(new (await import(threeUrl)).Vector3()).x<-.99,'Face the Konbini entrance');
-    assert.ok(api.world.colliders.every(c=>Math.abs(c.x-api.player.position.x)>c.w/2+.28||Math.abs(c.z-api.player.position.z)>c.d/2+.28),'Spawn is clear of walls');
+    const bench=api.world.sakuraBench;
+    assert.ok(bench,'Sakura viewing bench is on the street');
+    assert.ok(api.world.group.getObjectByName('sakura-viewing-bench'));
+    assert.equal(bench.source,'blender');
+    assert.deepEqual(api.player.position.toArray(),bench.seat.position,'Spawn seated on the viewing bench');
+    const {Vector3}=await import(threeUrl);
+    const look=api.camera.getWorldDirection(new Vector3());look.y=0;look.normalize();
+    const toShop=new Vector3(market.side*7.55-api.player.position.x,0,market.z-api.player.position.z).normalize();
+    assert.ok(look.dot(toShop)>.92,'Opening view faces Sakura Shōten across the street');
+    assert.ok(Math.hypot(api.player.position.x-market.side*7.55,api.player.position.z-market.z)>12,'Konbini is seen from a distance');
+    const openingSit=api.player.position.clone();
+    api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;
+    assert.ok(api.player.position.distanceTo(openingSit)<.001,'Opening sit prevents walking');
+    assert.ok(api.world.colliders.every(c=>Math.abs(c.x-bench.seat.stand[0])>c.w/2+.28||Math.abs(c.z-bench.seat.stand[2])>c.d/2+.28),'Stand-up point is clear of walls');
+    api.doInteract();
+    assert.ok(Math.hypot(api.player.position.x-bench.seat.stand[0],api.player.position.z-bench.seat.stand[2])<.2,'E stands in front of the bench');
+    assert.match(document.querySelector('#subtitle').textContent,/You stand up|Across the street/);
     // Movement speed checks use the unobstructed central street.
     api.player.position.set(0,0,46);api.reviewSetYaw(0);
     api.simulate(1/60);

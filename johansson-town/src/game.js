@@ -84,10 +84,16 @@ function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on
 const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:enterRoom,getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person){person.g.userData.facePlayerUntil=performance.now()+1600;if(!Number.isFinite(person.g.userData.seatHeight)){person.g.lookAt(player.position.x,person.g.position.y,player.position.z);person.g.rotateY(Math.PI);characters?.gesture(person.g);}}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])doors.set(place.id,new THREE.Vector3(...place.exitPosition));
-// Start on the clear street outside Sakura, looking towards its front door.
+// Start seated on the east sidewalk, looking across at Sakura Shōten.
 const konbini=SITES.find(site=>site.id==='market');
 const konbiniDoor=doors.get('market');
-if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
+const benchSeat=(!FULL_TOWN.active&&world.sakuraBench?.seat)||null;
+if(benchSeat){
+  player.position.set(...benchSeat.position);
+  yaw=benchSeat.yaw;pitch=benchSeat.pitch;
+  parkSeat={position:benchSeat.position,stand:benchSeat.stand,eyeY:benchSeat.eyeY,yaw:benchSeat.yaw,pitch:benchSeat.pitch};
+  seated=true;world.spawn=benchSeat.stand;
+}else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
 activities=createActivities({say,getTableService:()=>current?.id==='market'&&parkSeat?.storeSeatId?storeService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-63)){characters.gesture(p.g);activities.close();say('The harbour master waves from the pier.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(parkSeat.storeSeatId?'Sakura table · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;evictIfClosed();}});
 syncView();
@@ -240,6 +246,7 @@ function evictIfClosed(){
  const name=current.title;leaveRoom();say(name+' is closing. The door opens onto the street.',4);return true;
 }
 function placeAtEntrance(s,leave=false){
+ storeService?.cancel();parkSeat=null;seated=false;
  const mapped=doors.get(s.id);
  let x0,z0;
  if(s.exitPosition){x0=s.exitPosition[0];z0=s.exitPosition[2];}
@@ -290,7 +297,7 @@ function updateDirectory(){
 }
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(160,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<8)failures.push('street interaction coverage');for(const [id,p] of doors)if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(!FULL_TOWN.active&&environmentBlocked(p.x,p.z+(id==='izakaya'?-.7:.7),PLAYER_RADIUS)))failures.push(`door spawn ${id}`);window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
-started=true;$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say('Sakura Konbini · Step up to the entrance to meet Yuri.',5);runStabilityChecks();
+started=true;$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Yuri.',5);runStabilityChecks();
 canvas.addEventListener('click',event=>{
  if(!current||activities.paused||inspector?.active)return;
  if(seated){doInteract();return;}

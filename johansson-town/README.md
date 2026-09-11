@@ -91,8 +91,8 @@ with the source changes. Older hashed files are retained on subsequent builds so
 cached pages can still load their matching code. The title screen preloads the
 compiled boot graph without executing it.
 
-The opening position is the clear street entrance point outside Sakura Konbini,
-facing its frontage. Startup measurements are available in
+The opening position is a cedar street bench on the east sidewalk, seated and
+looking across at Sakura Konbini. Press E to stand. Startup measurements are available in
 `window.__JOHANSSON_STARTUP__`: code download/evaluation, the model gate, and elapsed
 time to the first rendered frame. These are diagnostic timings, not an assertion
 of a particular Safari loading time. The three-second model timeout is only the
