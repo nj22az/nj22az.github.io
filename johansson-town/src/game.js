@@ -27,7 +27,7 @@ import { createActivities } from '../activities.js?snappy=1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js?warehouse=1';
 import { createCastAI } from './people/schedules.js?snappy=1';
-import { createCharacters } from './people/characters.js?snappy=1';
+import { createCharacters, preloadCharacter } from './people/characters.js?snappy=1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
 
 const $=s=>document.querySelector(s);
@@ -93,6 +93,9 @@ activities=createActivities({say,getTableService:()=>current?.id==='market'&&par
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
 characters=createCharacters({mobile,shadows,canJump:()=>!seated,isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+// Aya stands at Front-Row Books, ~60 m from the Sakura spawn. Start her likeness
+// download on the title screen so the mesh is ready before the player walks there.
+void preloadCharacter('Aya');
 
 inspector=createInspector({scene,camera,renderer,canvas,resetInput,onReturn:item=>{const o=content?.objects.get(item.id);if(o)o.visible=true;},onInspect:item=>{const o=content?.objects.get(item.id);if(o)o.visible=false;activities.inspectItem(item);if(item.id==='model')say(item.note,4);},onLink:()=>{},onContact:()=>{}});
 content=createContentItems({placements:world.contentPositions,group:world.group,colliders:world.colliders,register:reg,onInspect:item=>inspector.open(item),onRead:()=>activities.quietRead()});

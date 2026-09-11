@@ -34,11 +34,11 @@ export function preloadModel(id){
   if(modelPending.has(id))return modelPending.get(id);
   const task=(async()=>{
     const loader=new GLTFLoader();
-    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
+    const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),id==='aya'?45000:15000);
     try{
       const neighbours=id.startsWith('vroid-');
       const realistic=REALISTIC.has(id);
-      const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':realistic?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':id==='aya'?'?aya-1':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':realistic?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':id==='aya'?'?aya-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
       const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!REALISTIC.has(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(id==='aya')gltf.animations=prepareAyaAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
@@ -103,18 +103,24 @@ export function createLocalCharacters({shadows=false}={}){
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different VRoid bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
+    try{
     if((neighbour||actor.isYuri||actor.isAya||actor.isNozomi)&&actions.has('Sit')){
       actions.get('Sit').play();mixer.update(0);entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);
-      const hip=entity.worldToLocal(model.getObjectByName(neighbour?'J_Bip_C_Hips':'Hips').getWorldPosition(new THREE.Vector3()));
+      const hips=model.getObjectByName(neighbour?'J_Bip_C_Hips':'Hips');
+      if(hips){
+      const hip=entity.worldToLocal(hips.getWorldPosition(new THREE.Vector3()));
       let bottom=hip.y;const point=new THREE.Vector3(),support=[];
       model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();
+        const read=mesh.getVertexPosition?mesh.getVertexPosition.bind(mesh):(i,t)=>{t.fromBufferAttribute(mesh.geometry.attributes.position,i);};
         for(let i=0;i<mesh.geometry.attributes.position.count;i++){
-          mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(point);
+          read(i,point).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(point);
           if(Math.hypot(point.x-hip.x,point.z-hip.z)<.25&&point.y>hip.y-.24&&point.y<hip.y){bottom=Math.min(bottom,point.y);support.push({mesh,index:i,y:point.y});}
         }
       });
       actor.seatSupport={x:hip.x,y:bottom,z:hip.z};actor.seatVertices=support.sort((a,b)=>a.y-b.y).slice(0,16);actor.seatPoint=new THREE.Vector3();mixer.stopAllAction();
+      }
     }
+    }catch{mixer.stopAllAction();}
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
     if(neighbour)updateVroidExpression(actor,0);
     byEntity.set(entity,actor);actors.push(actor);return actor;

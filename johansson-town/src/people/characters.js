@@ -13,6 +13,7 @@ const CAST=Object.freeze({
 });
 
 export const preloadCharacters=preloadModels;
+export {preloadCharacter};
 
 export function createCharacters(options={}){
   const stable=createStableCharacters(options),models=createLocalCharacters(options),actors=[],conversations=new Map(),entities=new Map(),aiControls=new Map();
@@ -40,12 +41,15 @@ export function createCharacters(options={}){
         for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
         position=getPosition?.()||position;const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
       },load:async()=>{
+        try{
         if(!await preloadCharacter(entry.file))return false;
         const old=[...entity.children],actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
         for(const child of old)child.removeFromParent();
         const index=stable.actors.indexOf(entry.actor);if(index>=0)stable.actors.splice(index,1);
         const all=actors.indexOf(entry.actor);if(all>=0)actors.splice(all,1);actors.push(actor);entity.userData.character=actor;
+        upgrades.delete(entity);
         onChange();return true;
+        }catch(error){console.warn('Resident mesh attach failed:',entry.file,error.message);return false;}
       }});
     }
   }
