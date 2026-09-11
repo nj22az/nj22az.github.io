@@ -93,6 +93,13 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
     assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
+    const market=api.SITES.find(s=>s.id==='market');
+    const opening=market.door||[market.side*4,0,market.z+2.5];
+    assert.deepEqual(api.player.position.toArray(),opening,'Spawn outside Sakura Konbini');
+    assert.ok(api.camera.getWorldDirection(new (await import(threeUrl)).Vector3()).x<-.99,'Face the Konbini entrance');
+    assert.ok(api.world.colliders.every(c=>Math.abs(c.x-api.player.position.x)>c.w/2+.28||Math.abs(c.z-api.player.position.z)>c.d/2+.28),'Spawn is clear of walls');
+    // Movement speed checks use the unobstructed central street.
+    api.player.position.set(0,0,46);api.reviewSetYaw(0);
     api.simulate(1/60);
     api.setTime();
     assert.equal(api.scene.fog,null,'Scene fog is disabled');

@@ -64,7 +64,7 @@ The opening gate requests only the shared street kit and the starting vending
 machine: 2.20 MB of GLBs, compared with 38.29 MB across 17 GLBs previously (94%
 less required model data). These figures exclude JavaScript, surface textures,
 external character textures and audio; they are not measured Safari load times.
-The gate allows eight seconds before using the existing fallback street.
+The gate allows three seconds before using the existing fallback street.
 
 After the first frame, a nearby-detail queue loads one model at a time. It loads
 individual resident rigs, the tea house, ramen facade, izakaya exterior, park,
@@ -80,3 +80,20 @@ facades without changing colliders/doors, upgrading Yuri without duplicate actor
 serial/nearby queue behaviour, timeout recovery, route clearance, CPU game boot and
 interior transitions, Konbini window rendering, and Vite build. Actual Safari frame
 rate and time to first playable frame require a physical-device check.
+
+
+### Published runtime
+
+The live page starts from `runtime/` bundles, rather than importing the raw source
+module graph. Run `npm run build:runtime` after changing game code; this updates the
+hashed boot/audio references in `index.html`. Commit the generated runtime files
+with the source changes. Older hashed files are retained on subsequent builds so
+cached pages can still load their matching code. The title screen preloads the
+compiled boot graph without executing it.
+
+The opening position is the clear street entrance point outside Sakura Konbini,
+facing its frontage. Startup measurements are available in
+`window.__JOHANSSON_STARTUP__`: code download/evaluation, the model gate, and elapsed
+time to the first rendered frame. These are diagnostic timings, not an assertion
+of a particular Safari loading time. The three-second model timeout is only the
+asset gate; it does not bound JavaScript compilation or GPU rendering.

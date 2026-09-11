@@ -1,0 +1,67 @@
+{
+  "_assets-DNfyrzgA.js": {
+    "file": "assets-DNfyrzgA.js",
+    "name": "assets"
+  },
+  "_vending-DddYAEKF.js": {
+    "file": "vending-DddYAEKF.js",
+    "name": "vending",
+    "imports": [
+      "_assets-DNfyrzgA.js"
+    ]
+  },
+  "src/audio/town-audio.js?snappy=1": {
+    "file": "audio-CUe5Kk3n.js",
+    "name": "audio",
+    "src": "src/audio/town-audio.js?snappy=1",
+    "isEntry": true,
+    "imports": [
+      "_assets-DNfyrzgA.js"
+    ]
+  },
+  "src/boot.js": {
+    "file": "boot-DAEwtbf8.js",
+    "name": "boot",
+    "src": "src/boot.js",
+    "isEntry": true,
+    "imports": [
+      "_vending-DddYAEKF.js",
+      "_assets-DNfyrzgA.js"
+    ],
+    "dynamicImports": [
+      "touch-ui.js?ui=controls-3",
+      "src/game.js?snappy=1",
+      "webmcp.js",
+      "webmcp-characters.js"
+    ]
+  },
+  "src/game.js?snappy=1": {
+    "file": "game-D_BIuiAy.js",
+    "name": "game",
+    "src": "src/game.js?snappy=1",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vending-DddYAEKF.js",
+      "_assets-DNfyrzgA.js",
+      "src/audio/town-audio.js?snappy=1"
+    ]
+  },
+  "touch-ui.js?ui=controls-3": {
+    "file": "touch-ui-NJcydPoP.js",
+    "name": "touch-ui",
+    "src": "touch-ui.js?ui=controls-3",
+    "isDynamicEntry": true
+  },
+  "webmcp-characters.js": {
+    "file": "webmcp-characters-Bw4cMje-.js",
+    "name": "webmcp-characters",
+    "src": "webmcp-characters.js",
+    "isDynamicEntry": true
+  },
+  "webmcp.js": {
+    "file": "webmcp-Caj8m7xi.js",
+    "name": "webmcp",
+    "src": "webmcp.js",
+    "isDynamicEntry": true
+  }
+}
