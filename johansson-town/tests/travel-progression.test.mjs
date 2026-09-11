@@ -8,10 +8,10 @@ const make=()=>createActivities({say(){},onWeather(){},onTime(){}});
 
 test('Tama quest and completed workshop escort unlock travel and survive reload',()=>{
  const dom=installDOM();const acts=make();assert.equal(travelProgress(acts.state).unlocked,false);
- acts.action('resident','Aiko');dom.button('About Tama');dom.button('I will look for Tama');assert.equal(acts.state.quest,1);
+ acts.action('resident','Aya');dom.button('About Tama');dom.button('I will look for Tama');assert.equal(acts.state.quest,1);
  // A catch uses the real inventory consumed by Tama's quest; fishing has its own timer test.
  acts.state.inventory.push('Sea bream');acts.action('cat');dom.button('Give Tama a fish');assert.equal(acts.state.quest,2);
- acts.action('resident','Aiko');dom.button('About Tama');assert.equal(acts.state.quest,3);assert.equal(travelProgress(acts.state).completed,1);
+ acts.action('resident','Aya');dom.button('About Tama');assert.equal(acts.state.quest,3);assert.equal(travelProgress(acts.state).completed,1);
  for(const phase of [false,true,'walking']){acts.state.kenjiEscort=phase;acts.save();assert.equal(travelProgress(acts.state).unlocked,false,'An accepted or in-progress escort is insufficient');}
  acts.state.kenjiEscort='done';acts.save();assert.equal(travelProgress(acts.state).unlocked,true);assert.equal(acts.state.quickTravelNotified,true);
  const count=acts.state.notes.length;acts.save();assert.equal(acts.state.notes.length,count,'Unlock is recorded once');

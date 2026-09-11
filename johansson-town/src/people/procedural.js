@@ -11,7 +11,7 @@ export function createCharacters({mobile,onError,shadows=!mobile}){
 
   const profiles={
     player:{height:1.82,skin:0xb98264,hair:0x211c19,hairStyle:'sidepart',top:0xd8d0bd,outer:0x4f514a,bottom:0x282c2d,shoe:0x201b18,build:1.08,shoulders:1.18,waist:.99,head:[.93,1.08,.94],jaw:1.07,age:43,brow:.045,openJacket:true,hero:true,stride:1.02},
-    Aiko:{height:1.59,skin:0xd3a184,hair:0x1b1716,hairStyle:'ponytail',top:0xe9e1d1,outer:0x9b6f72,bottom:0x3b3b43,shoe:0x3c2b27,build:.82,shoulders:.84,waist:.76,head:[.91,1.12,.90],jaw:.88,age:24,brow:.018,blouse:true,skirt:true,stride:.88},
+    Aya:{height:1.62,skin:0xd6a68e,hair:0x1a1410,hairStyle:'ponytail',top:0x1a1a1c,outer:0x1a1a1c,bottom:0x6b6e5a,shoe:0x2a2420,build:.82,shoulders:.84,waist:.76,head:[.91,1.12,.90],jaw:.88,age:24,brow:.018,stride:.88},
     Kenji:{height:1.76,skin:0xc68f6e,hair:0x171717,hairStyle:'crop',top:0xc6c0ad,outer:0x355468,bottom:0x273a45,shoe:0x242829,build:1.11,shoulders:1.13,waist:1.05,head:[.98,1.02,.96],jaw:1.12,age:32,brow:.06,workwear:true,stride:1.08},
     'Mrs Sato':{height:1.55,skin:0xc79a7c,hair:0x716c67,hairStyle:'bun',top:0xdcd1c1,outer:0x796879,bottom:0x4d4a4d,shoe:0x312c2a,build:.98,shoulders:.91,waist:1.06,head:[.96,1.00,.95],jaw:1.02,age:68,brow:.02,cardigan:true,skirt:true,apron:true,stoop:.045,stride:.72},
     'Harbour master':{height:1.74,skin:0xb77f61,hair:0x39332f,hairStyle:'receding',top:0xcfc5b3,outer:0x293e4a,bottom:0x273137,shoe:0x1c2021,build:1.20,shoulders:1.22,waist:1.15,head:[1.00,.98,.98],jaw:1.16,age:58,brow:.07,coat:true,peakedCap:true,moustache:true,stride:.92}
@@ -91,7 +91,7 @@ export function createCharacters({mobile,onError,shadows=!mobile}){
   profiles['Bus driver']={...profiles['Harbour master'],height:1.71,outer:0x324c59,top:0x9daea7};
   profiles['Cold-storage kid']={...profiles.Kenji,height:1.68,outer:0x74774c,top:0xb5b7a1,build:.92};
   for(const [index,data] of PROFILES.entries())if(!profiles[data.name]){
-    const template=data.female?(data.age>60?profiles['Mrs Sato']:profiles.Aiko):data.age>60?profiles['Harbour master']:profiles.Kenji;
+    const template=data.female?(data.age>60?profiles['Mrs Sato']:profiles.Aya):data.age>60?profiles['Harbour master']:profiles.Kenji;
     profiles[data.name]={...template,height:data.height,age:data.age,outer:Number(data.top.replace('#','0x')),build:.83+(index%5)*.08,shoulders:.88+(index%4)*.075,waist:.83+(index%5)*.07,head:[.9+(index%3)*.045,1+(index%4)*.03,.94],hair:data.age>60?0x777169:0x211c19,stoop:data.age>65?.06:0,stride:data.age>65?.7:.9+(index%3)*.05,hero:false,peakedCap:data.role==='policeman'||data.role==='bus driver',apron:data.role==='bathhouse keeper'||data.role==='grocer'};
   }
   function attach(entity,file,height=1.8){try{const name=entity.userData.name||'player',profile=profiles[name]||profiles.player;const old=[...entity.children],rig=build(entity,profile,name==='player'?(height||profile.height):profile.height);old.forEach(o=>o.visible=false);const actor={entity,profile,rig,gesture:0,lastPosition:entity.position.clone(),phase:actors.length*.93,speed:0,blink:0,nextBlink:1.5+actors.length*.42};actors.push(actor);entity.userData.character=actor;return actor;}catch(error){onError?.(file,error);return null;}}

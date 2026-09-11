@@ -21,7 +21,7 @@ Phase D expansion is held at the requested gate: a stranger must walk shrine →
 | Cold/cached load under 4 seconds, offline play | Local imports/assets are checked. Optional production build succeeds. Timing and offline reload are **not verified**; no service-worker offline guarantee is implemented. |
 | Shrine → shopping street → ramen → quay → outer pier | CPU routes include detailed content colliders; pier boundaries, school, bathhouse route and raised shrine landing are checked. Visual mesh/collision agreement remains **unverified**. |
 | A/D, mouse, jump, vending can | Coordinate convention, fixed simulation, can animation/one-time consumption and purchase save checks pass. Physical keyboard/pointer-lock/touch input needs browser play. |
-| Afternoon → night closure | Bookshop opening rules and Aiko's departure are tested; shutters and emissive windows are wired to town minutes. Night appearance and radio audibility unverified. |
+| Afternoon → night closure | Bookshop opening rules and Aya's departure are tested; shutters and emissive windows are wired to town minutes. Night appearance and radio audibility unverified. |
 | Five residents, dialogue, Tama | Twenty named profiles have at least three topics. Five GLBs parse and animate with independent skeletons. Tama reward and no duplicate payout tested. Silhouette quality unverified. |
 | Bench, coffee, harbour/train audio | Seated camera and can consumption wired; local positional loops and train intervals implemented. Listening/seat alignment still required. |
 | Paper notebook map | Notebook and HUD share a paper map renderer and route data. CPU wiring passes; rendered legibility unverified. |

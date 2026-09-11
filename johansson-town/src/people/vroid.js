@@ -3,7 +3,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
 export const VROID_BASES=['vroid-bob','vroid-casual','vroid-vest','vroid-ponytail','vroid-long'];
 // Keep the first lighting comparison bounded to two familiar residents.
-const LIGHTING_TRIAL=new Set(['Aiko','Kenji']);
+const LIGHTING_TRIAL=new Set(['Aya','Kenji']);
 
 function illustratedMaterial(source,lit){
   if(!lit)return source.clone();

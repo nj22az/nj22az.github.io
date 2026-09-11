@@ -32,11 +32,11 @@ export function supperGuests(minutes){
 // Yuri retains her separate after-work stop and her standing/greeting animation.
 export const RAMEN_VISITS=Object.freeze({
  Nao:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
- Kenji:[735,840], Tetsuo:[795,900], Aiko:[855,960],
+ Kenji:[735,840], Tetsuo:[795,900], Aya:[855,960],
  Reiko:[915,1020], 'Bus driver':[975,1080], 'Officer Mori':[1140,1255],
 });
 export const MARKET_VISITS=Object.freeze({
- 'Mrs Sato':[570,625],Aiko:[660,715],Kenji:[870,925],Tetsuo:[930,985],
+ 'Mrs Sato':[570,625],Aya:[660,715],Kenji:[870,925],Tetsuo:[930,985],
  Reiko:[1025,1080],'Harbour master':[1085,1140],'Bus driver':[1140,1190],
 });
 export function visitsMarket(profile,minutes){
@@ -71,7 +71,7 @@ export function residentPlan(profile,minutes,rain=false){
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Yuri',b:'Nao',line:'Yuri: I told the assistant manager I would be home early.\nNao: The plant?\nYuri: He looked very disappointed. I watered him twice.',clue:'Yuri sometimes stops at Minato after locking Sakura. Look for her after 20:20, or around her room on the canal.'},
- {id:'apron',a:'Aiko',b:'Emi',line:'Aiko: The cat apron needs bigger pockets.\nEmi: For what?\nAiko: His responsibilities.',clue:'Aiko is worried about Tama. Ask her by the bookshop.'},
+ {id:'apron',a:'Aya',b:'Emi',line:'Aya: The cat apron needs bigger pockets.\nEmi: For what?\nAya: His responsibilities.',clue:'Aya is worried about Tama. Ask her by the bookshop.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: I fixed the crackling.\nTetsuo: That was the music.\nKenji: Then I have improved it.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Mr Fujita',line:'Fujita: This big!\nHarbour master: Yesterday it was smaller.\nFujita: Yesterday you were sitting further away.',clue:'The outer pier has a bait station and a working winch.'},
  {id:'special',a:'Nao',b:'Masaru',line:'Masaru: Is my fish on the menu?\nNao: In very small writing.\nMasaru: Exclusive, then.',clue:'Try Nao’s supper special at the counter.'}

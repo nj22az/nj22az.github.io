@@ -3,7 +3,7 @@
 export const VOICE_LINES=[
   {
     "id": "aiko-greeting",
-    "resident": "Aiko",
+    "resident": "Aya",
     "topic": "books",
     "ja": "いらっしゃいませ。ゆっくり本を見ていってください。",
     "en": "Welcome. Take your time looking through the books.",
@@ -12,7 +12,7 @@ export const VOICE_LINES=[
   },
   {
     "id": "aiko-cat",
-    "resident": "Aiko",
+    "resident": "Aya",
     "topic": "cat",
     "ja": "タマを見かけませんでしたか。ラーメン屋さんの辺りが好きなんです。",
     "en": "Have you seen Tama? He likes to linger near the ramen stall.",
@@ -21,7 +21,7 @@ export const VOICE_LINES=[
   },
   {
     "id": "aiko-chair",
-    "resident": "Aiko",
+    "resident": "Aya",
     "topic": "chair",
     "ja": "窓際の椅子は空いていますよ。少し休んでいきませんか。",
     "en": "The window chair is free. Would you like to rest a little?",

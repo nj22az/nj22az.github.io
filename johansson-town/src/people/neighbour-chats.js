@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {residentPlan} from './social.js';
 
 const EXCHANGES=[
- ['Aiko','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
+ ['Aya','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
  ['Kenji','Tetsuo',['I fixed the crackling on your radio.','That was the music, Kenji.','Then I have improved it.']],
  ['Mrs Sato','Fumiko',['You said you were only coming for tea.','I am. The rice ball is keeping it company.','I shall fetch a second cup.']],
  ['Harbour master','Mr Fujita',['How large was the fish today?','Larger than yesterday.','Your hands say that every day.']],

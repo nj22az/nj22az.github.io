@@ -6,7 +6,7 @@ import { createCharacters as createStableCharacters } from './procedural.js?konb
 // preserve interaction and collision when an asset cannot load.
 const CAST=Object.freeze({
   player:{source:'first-person-controller',height:1.82,identity:'Johansson'},
-  Aiko:{source:'local-authored',height:1.59,identity:'Aiko'},
+  Aya:{source:'local-authored',height:1.62,identity:'Aya'},
   Kenji:{source:'local-authored',height:1.76,identity:'Kenji'},
   'Mrs Sato':{source:'local-authored',height:1.55,identity:'Mrs Sato'},
   'Harbour master':{source:'local-authored',height:1.74,identity:'Harbour master'}

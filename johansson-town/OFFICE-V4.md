@@ -5,7 +5,7 @@ quest, fishing and arcade remain. New objects sit on the existing street and qua
 
 ## Route
 
-From the southern entrance: Aiko and the six-volume display on the right;
+From the southern entrance: Aya and the six-volume display on the right;
 the window chair beside it; outbound kiosk and StepWise further north;
 Field Notes beside the Journal Press; Vietnam and journal cards near the harbour
 notice board; blue-taped CV tray at the left of the quay; Form 3D and the miniature

@@ -20,7 +20,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-DAEwtbf8.js",
+    "file": "boot-CqncOVG9.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -36,7 +36,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-D_BIuiAy.js",
+    "file": "game-Dak8gIJo.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -53,7 +53,7 @@
     "isDynamicEntry": true
   },
   "webmcp-characters.js": {
-    "file": "webmcp-characters-Bw4cMje-.js",
+    "file": "webmcp-characters-C4M5elhJ.js",
     "name": "webmcp-characters",
     "src": "webmcp-characters.js",
     "isDynamicEntry": true

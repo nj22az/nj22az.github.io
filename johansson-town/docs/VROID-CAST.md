@@ -70,7 +70,7 @@ are archived for rollback and are not preloaded as active town residents.
 
 ## Scene-lighting trial and surface contact
 
-Aiko and Kenji now use matte Lambert materials at runtime. Their illustrated
+Aya and Kenji now use matte Lambert materials at runtime. Their illustrated
 atlases, palette, alpha cutouts, skinning and face morphs are retained; the
 existing sun, hemisphere and room lights and AgX exposure now affect them.
 Other neighbours retain the unlit baseline for comparison. This adds no character

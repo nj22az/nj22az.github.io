@@ -17,7 +17,7 @@ test('all residents have distinct identities, actual friendships and time-bound 
  assert.equal(supperGuests(959).length,0);assert.equal(supperGuests(1439).length,0);assert.ok(supperGuests(1440).some(p=>p.name==='Tetsuo'));assert.equal(supperGuests(180).length,0);
  for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(RESIDENTS.some(r=>r.name===p.name));assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
  assert.equal(residentPlan(PROFILES.find(p=>p.name==='Nao'),1002).place,'izakaya');
- assert.equal(gossipAt(1110,['Aiko','Emi']).id,'apron');assert.equal(gossipAt(1110,['Aiko']).id,'welcome');
+ assert.equal(gossipAt(1110,['Aya','Emi']).id,'apron');assert.equal(gossipAt(1110,['Aya']).id,'welcome');
 });
 
 test('izakaya borrows existing entities, updates guests and restores interaction ownership without duplicates',()=>{
@@ -39,7 +39,7 @@ test('izakaya borrows existing entities, updates guests and restores interaction
 });
 
 test('supper charges once, advances the evening, saves a memory and refuses insufficient funds',()=>{
- const dom=installDOM();let minutes=1100;const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aiko','Emi']})});
+ const dom=installDOM();let minutes=1100;const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Emi']})});
  acts.action('izakaya-menu');dom.button('Yakitori plate · ¥180');assert.equal(acts.state.yen,1020);assert.equal(minutes,1108);assert.ok(acts.state.notes.includes('Supper at Minato: Yakitori plate.'));
  dom.button('Listen to the table');assert.match(document.querySelector('#activityBody').firstChild.textContent,/cat apron/);
  acts.state.yen=0;acts.action('izakaya-menu');dom.button('Oden supper · ¥260');assert.equal(acts.state.yen,0);assert.equal(minutes,1108);

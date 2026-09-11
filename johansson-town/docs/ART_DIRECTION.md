@@ -20,6 +20,6 @@ The player's target is the grounded human scale, ordinary shop life and material
 
 ## Visual acceptance gate
 
-Capture the actual running game at eye level: the starting street, close views of Aiko and Mrs Sato, the bookshop threshold and the quay, in afternoon and night. Review head/hand proportions, material scale, shadow contact, sign legibility, silhouette repetition and moving feet. A 30-second walking clip is needed to judge motion and frame pacing. Keep the PR draft until those views are reviewed; the supplied browser has WebGL disabled, so this session cannot certify them.
+Capture the actual running game at eye level: the starting street, close views of Aya and Mrs Sato, the bookshop threshold and the quay, in afternoon and night. Review head/hand proportions, material scale, shadow contact, sign legibility, silhouette repetition and moving feet. A 30-second walking clip is needed to judge motion and frame pacing. Keep the PR draft until those views are reviewed; the supplied browser has WebGL disabled, so this session cannot certify them.
 
 The five prop reference PNGs are authoring inputs only. Do not insert them as flat scenery or call them 3D assets. Their intended TRELLIS conversion remains pending. Nothing from Shenmue or Yakuza is extracted or redistributed.

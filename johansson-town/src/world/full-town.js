@@ -34,9 +34,9 @@ const LOCATIONS=[
  ['ramen',-9.15,3.92,0,-1],['izakaya',-14.63,6.26,1,0],['tea-house',-15.67,2.83,0,-1],
 ];
 const LANDMARK_IDS=new Set(['market','ramen']);
-const WORK_SITE={Yuri:'market',Nao:'izakaya','Mrs Sato':'ramen',Kenji:'form3d',Aiko:'journal',Reiko:'office',Tetsuo:'electronics','Officer Mori':'career'};
-const HOME_SITE={Nao:'tea-house','Mrs Sato':'ramen',Kenji:'form3d',Aiko:'journal','Harbour master':'career',Reiko:'office',Tetsuo:'electronics','Officer Mori':'house-east-north'};
-const EVENING={Yuri:[-4.5,11.2],Nao:[-14.2,6.1],'Mrs Sato':[-9.2,2.8],Kenji:[-8,-7.1],Aiko:[4.5,-6.2],'Harbour master':[-12,-12.4],Reiko:[-12.2,-3.5],Tetsuo:[14.5,2.2],'Officer Mori':[4,0]};
+const WORK_SITE={Yuri:'market',Nao:'izakaya','Mrs Sato':'ramen',Kenji:'form3d',Aya:'journal',Reiko:'office',Tetsuo:'electronics','Officer Mori':'career'};
+const HOME_SITE={Nao:'tea-house','Mrs Sato':'ramen',Kenji:'form3d',Aya:'journal','Harbour master':'career',Reiko:'office',Tetsuo:'electronics','Officer Mori':'house-east-north'};
+const EVENING={Yuri:[-4.5,11.2],Nao:[-14.2,6.1],'Mrs Sato':[-9.2,2.8],Kenji:[-8,-7.1],Aya:[4.5,-6.2],'Harbour master':[-12,-12.4],Reiko:[-12.2,-3.5],Tetsuo:[14.5,2.2],'Officer Mori':[4,0]};
 function shopLabel(parent,jp,en,pos,w,h,angle,bg,fg){
  const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg||'#f6e8bb';ctx.fillRect(0,0,768,256);ctx.fillStyle=fg||'#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 92px sans-serif';ctx.fillText(jp,384,102,700);ctx.font='700 28px sans-serif';ctx.fillText(en,384,202,700);const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));mesh.position.set(...pos);mesh.rotation.y=angle;parent.add(mesh);return mesh;
 }

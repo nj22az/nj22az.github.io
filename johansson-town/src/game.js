@@ -57,7 +57,7 @@ if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);su
 
 const SITES=[
   {id:'office',title:'Johansson Marine Office',jp:'事務所',sub:'MARINE ENGINEERING',side:-1,z:38,color:0x62776e,accent:'#49675d',line:'Charts, travel notes and engineering papers.'},
-  {id:'frontrow',title:'Front-Row Books',jp:'前列書房',sub:'THE FRONT-ROW SEAT',side:1,z:30,color:0x735849,accent:'#8b3f36',line:'Aiko closes the bookshop at 18:30.'},
+  {id:'frontrow',title:'Front-Row Books',jp:'前列書房',sub:'THE FRONT-ROW SEAT',side:1,z:30,color:0x735849,accent:'#8b3f36',line:'Aya closes the bookshop at 18:30.'},
   {id:'form3d',title:'Kenji’s Workshop',jp:'立体工房',sub:'PATTERN SHOP',side:-1,z:18,color:0x566b73,accent:'#385f6e',line:'Small parts, prototypes and fabrication work.'},
   {id:'stepwise',title:'StepWise Instruments',jp:'計算器店',sub:'MEASUREMENT & REPAIR',side:1,z:8,color:0x6b6753,accent:'#6c633d',line:'Measuring tools and calculation instruments.'},
   {id:'journal',title:'Harbour Evening Press',jp:'日報印刷所',sub:'JOURNAL',side:-1,z:-4,color:0x78615c,accent:'#8f433d',line:'Fresh copy stacked beside the press.'},

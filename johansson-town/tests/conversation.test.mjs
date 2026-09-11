@@ -20,7 +20,7 @@ test('Yuri topics and resident quest replies retain bubbles; notebook and close 
  acts.action('resident','Yuri');assert.equal(speakers.at(-1),'Yuri');assert.ok(modal.classList.contains('conversation'));
  dom.button('I like your ribbon');assert.equal(speakers.at(-1),'Yuri');
  acts.close();assert.equal(speakers.at(-1),null);assert.ok(!document.body.classList.contains('conversation-open'));
- acts.action('resident','Aiko');dom.button('About Tama');assert.equal(speakers.at(-1),'Aiko');
+ acts.action('resident','Aya');dom.button('About Tama');assert.equal(speakers.at(-1),'Aya');
  assert.ok(modal.classList.contains('conversation'));
  acts.inventory();assert.equal(speakers.at(-1),null);assert.ok(!modal.classList.contains('conversation'));acts.close();
 });

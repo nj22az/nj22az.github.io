@@ -3,7 +3,7 @@
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const result=(ok,data={})=>JSON.stringify({ok,...data});
-const allowed=new Set(['Aiko','Kenji','Mrs Sato','Harbour master']);
+const allowed=new Set(['Aya','Kenji','Mrs Sato','Harbour master']);
 
 function controller(){return window.__JOHANSSON_CHARACTER_CONTROL__||null;}
 function list(){const c=controller();return c?c.list():[];}
@@ -46,12 +46,12 @@ const tools=[
     inputSchema:{
       type:'object',
       properties:{
-        name:{type:'string',enum:['Aiko','Kenji','Mrs Sato','Harbour master']},
+        name:{type:'string',enum:['Aya','Kenji','Mrs Sato','Harbour master']},
         action:{type:'string',enum:['move','face','gesture','release']},
         direction:{type:'string',enum:['north','south','east','west','harbour','inland']},
         distance:{type:'number',minimum:.1,maximum:4},
         seconds:{type:'number',minimum:.5,maximum:15},
-        target:{type:'string',enum:['Johansson','Aiko','Kenji','Mrs Sato','Harbour master']}
+        target:{type:'string',enum:['Johansson','Aya','Kenji','Mrs Sato','Harbour master']}
       },
       required:['name','action'],
       additionalProperties:false

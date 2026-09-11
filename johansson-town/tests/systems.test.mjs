@@ -57,7 +57,7 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
  const initial=JSON.stringify({yen:888,quest:2,inventory:['Sea bream'],visited:['office'],kenjiEscort:'walking'}),dom=installDOM({'johansson-town-1988-v4':initial});let minutes=1002;
  const acts=createActivities({say(){},onWeather(){},onTime:value=>{if(value?.restore)minutes=value.restore;},getMinutes:()=>minutes});
  assert.equal(acts.state.yen,888);assert.equal(dom.storage.get('johansson-town-1988-v4'),initial);assert.equal(acts.state.kenjiEscort,'walking');
- acts.action('resident','Aiko');dom.button('About Tama');assert.equal(acts.state.yen,1388);assert.equal(acts.state.quest,3);acts.action('resident','Aiko');dom.button('About Tama');assert.equal(acts.state.yen,1388);
+ acts.action('resident','Aya');dom.button('About Tama');assert.equal(acts.state.yen,1388);assert.equal(acts.state.quest,3);acts.action('resident','Aya');dom.button('About Tama');assert.equal(acts.state.yen,1388);
  acts.action('vending');dom.button('Dockside Coffee · ¥120');assert.equal(acts.state.yen,1268);assert.ok(acts.state.inventory.includes('Canned coffee'));
  const restored=JSON.parse(dom.storage.get('johansson-town-1988-v5'));assert.equal(restored.quest,3);assert.equal(restored.yen,1268);assert.ok(restored.visited.includes('office'));
  acts.state.yen=0;acts.action('vending');dom.button('Harbour Tea · Green tea · ¥120');assert.equal(acts.state.yen,0);assert.ok(!acts.state.inventory.includes('Green tea'));
@@ -65,7 +65,7 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
 test('every resident has several authored subjects and schedules stream at most eight',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(0,0,30);const state={inventory:[],quest:0};const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
  for(const p of world.people){assert.ok(DIALOGUE[p.g.userData.name].length>=3,p.g.userData.name);assert.ok(p.profile.age>0);}
- ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=8);const aiko=world.people.find(p=>p.g.userData.name==='Aiko');assert.equal(aiko.g.visible,false);
+ ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=8);const aiko=world.people.find(p=>p.g.userData.name==='Aya');assert.equal(aiko.g.visible,false);
 });
 test('runtime assets, PBR maps and sound files exist locally',async()=>{
  for(const name of ['asphalt','timber','plaster','roof'])for(const suffix of ['nor_gl','arm'])assert.ok((await readFile(resolve(root,'assets/materials/'+name+'-'+suffix+'.jpg'))).length>1000);

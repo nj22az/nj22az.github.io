@@ -1,4 +1,5 @@
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
+import {prepareAyaAnimations} from './aya-animation.js?aya-1';
 import {smoothCharacterNormals,dressCharacter} from './surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -7,7 +8,8 @@ import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 import {VROID_BASES,vroidLook,styleVroid,updateVroidExpression} from './vroid.js?vroid-3';
 
-const SOURCES=['suit','yui','yuri-playful','nozomi',...VROID_BASES];
+const SOURCES=['suit','yui','yuri-playful','nozomi','aya',...VROID_BASES];
+const REALISTIC=new Set(['kenji','yui','yuri-playful','nozomi','aya']);
 const loaded=new Map(),sharedTextures=new Map();let pending=null;
 function reuseNeighbourTextures(gltf){
   gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;
@@ -35,10 +37,11 @@ export function preloadModel(id){
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
       const neighbours=id.startsWith('vroid-');
-      const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':['kenji','yui','yuri-playful','nozomi'].includes(id)?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
+      const realistic=REALISTIC.has(id);
+      const response=await fetch(assetURL(neighbours?'characters/vroid/'+id+'.glb':realistic?'characters/realistic/'+id+'.glb'+(id==='yuri-playful'?'?yuri-rig-2':id==='aya'?'?aya-1':''):'characters/residents/town-'+id+'.glb'),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const data=await response.arrayBuffer();
-      const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!['kenji','yui','yuri-playful','nozomi'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
+      const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!REALISTIC.has(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(id==='aya')gltf.animations=prepareAyaAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
     finally{clearTimeout(timeout);}
     return loaded.has(id);
@@ -52,6 +55,7 @@ export function preloadModels({onProgress}={}){
 }
 export function characterSource(name){
   if(name==='player'||name==='Johansson')return null;
+  if(name==='Aya'||name==='Aiko')return 'aya';
   if(name==='Reiko')return 'nozomi';
   if(name==='Yuri')return 'yuri-playful';
   if(name==='Yui')return 'yui';
@@ -61,6 +65,7 @@ export function characterSource(name){
 }
 export const preloadCharacter=name=>preloadModel(characterSource(name));
 function sourceFor(name,profile){
+  if((name==='Aya'||name==='Aiko')&&loaded.has('aya'))return 'aya';
   if(name==='Reiko'&&loaded.has('nozomi'))return 'nozomi';
   if(name==='Yuri'&&loaded.has('yuri-playful'))return 'yuri-playful';
   if(name==='player'||name==='Johansson')return null;
@@ -75,13 +80,18 @@ export function createLocalCharacters({shadows=false}={}){
   function attach(entity,name,height){
     const profile=PROFILES.find(p=>p.name===name),source=sourceFor(name,profile),asset=loaded.get(source);
     if(!asset)return null;
-    const model=clone(asset.scene),bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+    const model=clone(asset.scene);
+    if(source==='aya'){
+      const drop=[];model.traverse(o=>{if(['PoseCube','Ramune','StudioFloor','PreviewCam','Cam','Key','Fill','Rim'].includes(o.name))drop.push(o);});
+      for(const o of drop)o.removeFromParent();
+    }
+    const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const scale=(height||profile?.height||1.75)/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
     const neighbour=source.startsWith('vroid-'),faces=neighbour?styleVroid(model,profile,asset.parser.json.extras.eyeCentres):[];
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!neighbour&&!['kenji','yui','yuri-playful','nozomi'].includes(source))dressCharacter(o,profile?.top);}});
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(!neighbour&&!REALISTIC.has(source))dressCharacter(o,profile?.top);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualSource=source==='nozomi'?'User-supplied Shenmue · Nozomi as Reiko':neighbour?'VRoid / anime neighbour · '+name:source==='yuri-playful'?'User-supplied Meshy · Yuri':['kenji','yui','yuri-playful','nozomi'].includes(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
+    entity.add(model);entity.userData.visualSource=source==='nozomi'?'User-supplied Shenmue · Nozomi as Reiko':source==='aya'?'Studio likeness · Aya':neighbour?'VRoid / anime neighbour · '+name:source==='yuri-playful'?'User-supplied Meshy · Yuri':REALISTIC.has(source)?'Blender / MakeHuman · '+name:'Quaternius / '+source;
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
@@ -89,11 +99,11 @@ export function createLocalCharacters({shadows=false}={}){
     let cup=null;
     if(neighbour||source==='nozomi'){const hand=model.getObjectByName(neighbour?'J_Bip_R_Hand':'RightHand');if(hand){cup=new THREE.Mesh(new THREE.CylinderGeometry(.035,.027,.07,12),new THREE.MeshStandardMaterial({color:0xe8c79c,roughness:.42}));cup.position.set(...(neighbour?[.06,0,-.035]:[0,.06,.025]));cup.visible=false;hand.add(cup);}}
     const motion=asset.parser.json.extras||{};
-    const actor={cup,faces,look:vroidLook(profile),expressionTime:(actors.length*.731)+.3,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',isNozomi:source==='nozomi',neighbour,moving:false,wasVisible:true,height:height||profile?.height||1.75,eyeCentres:motion.eyeCentres};
+    const actor={cup,faces,look:vroidLook(profile),expressionTime:(actors.length*.731)+.3,walkSpeed:(motion.walkSpeed||1.25)*scale,runSpeed:(motion.runSpeed||4)*scale,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:source==='yuri-playful',isAya:source==='aya',isNozomi:source==='nozomi',neighbour,moving:false,wasVisible:true,height:height||profile?.height||1.75,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different VRoid bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
-    if((neighbour||actor.isYuri||actor.isNozomi)&&actions.has('Sit')){
+    if((neighbour||actor.isYuri||actor.isAya||actor.isNozomi)&&actions.has('Sit')){
       actions.get('Sit').play();mixer.update(0);entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);
       const hip=entity.worldToLocal(model.getObjectByName(neighbour?'J_Bip_C_Hips':'Hips').getWorldPosition(new THREE.Vector3()));
       let bottom=hip.y;const point=new THREE.Vector3(),support=[];

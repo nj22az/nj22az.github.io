@@ -18,19 +18,19 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
   return new Response(await readFile(new URL('../assets/characters/'+name,import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:9,total:9});
+  assert.deepEqual(await preloadModels(),{ready:10,total:10});
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();player.userData.name='Johansson';scene.add(player);assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name,name==='Yuri'?1.88:undefined);assert.ok(actor,name+' needs a skinned model');actors.push(actor);
-   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,7);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','CarryIdle','CarryWalk'])assert.ok(actor.actions.has(clip));continue;}if(name==='Reiko'){assert.equal(skins,4);assert.ok(actor.isNozomi);assert.match(entity.userData.visualSource,/Nozomi/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else {assert.ok(skins>=4&&skins<=5);assert.match(entity.userData.visualSource,/VRoid/);assert.ok(actor.faces.length);assert.ok(actor.neighbour);assert.ok(actor.cup);for(const clip of ['Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));}
+   let skins=0;actor.model.traverse(o=>{if(o.isSkinnedMesh){skins++;assert.equal(Array.isArray(o.material),false);assert.equal(o.geometry.groups.length,0);assert.ok(o.skeleton.bones.length>=11);}});if(name==='Aya'){assert.ok(actor.isAya);assert.match(entity.userData.visualSource,/Studio likeness/);assert.ok(skins>=1);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.62)<.05);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yuri'){assert.equal(skins,1);assert.equal(actor.actions.size,7);assert.ok(Math.abs(new THREE.Box3().setFromObject(actor.model).getSize(new THREE.Vector3()).y-1.88)<.001);assert.match(entity.userData.visualSource,/Meshy/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','CarryIdle','CarryWalk'])assert.ok(actor.actions.has(clip));continue;}if(name==='Reiko'){assert.equal(skins,4);assert.ok(actor.isNozomi);assert.match(entity.userData.visualSource,/Nozomi/);for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));continue;}if(name==='Yui')assert.ok(skins>=6);else {assert.ok(skins>=4&&skins<=5);assert.match(entity.userData.visualSource,/VRoid/);assert.ok(actor.faces.length);assert.ok(actor.neighbour);assert.ok(actor.cup);for(const clip of ['Sit','Eat','Drink'])assert.ok(actor.actions.has(clip));}
    for(const clip of ['Idle_Neutral','Walk','Run','Wave'])assert.ok(actor.actions.has(clip));
    if(actor.neighbour){
     scene.updateMatrixWorld(true);const p=PROFILES.find(p=>p.name===name),b=new THREE.Box3().setFromObject(actor.model,true);assert.ok(Math.abs(b.max.y-p.height)<.035,name+' retains their height');assert.ok(Math.abs(b.min.y)<.005);
     actor.model.traverse(mesh=>{
      if(!mesh.isSkinnedMesh)return;
-     const material=mesh.material,lit=['Aiko','Kenji'].includes(name);
+     const material=mesh.material,lit=['Aya','Kenji'].includes(name);
      assert.equal(!!material.isMeshLambertMaterial,lit,'Only the trial residents receive scene lighting');
      assert.equal(material.toneMapped,lit);
      assert.ok(material.map,'Illustrated atlas survives lighting conversion');
@@ -102,7 +102,7 @@ test('resident cast and Yuri load with bounded animation while the FPV player ha
    assert.equal(!!actor.model.getObjectByName('Town spectacles'),vroidLook(profile).glasses);
    const frames=actor.model.getObjectByName('Town spectacles');if(frames){frames.geometry.computeBoundingBox();assert.ok(frames.geometry.boundingBox.getSize(new THREE.Vector3()).x>.09,'Glasses fit the visible eyes, not the internal rotation pivots');}
   }
-  for(const actor of actors.filter(a=>['Aiko','Kenji','Yuri'].includes(a.entity.userData.name))){
+  for(const actor of actors.filter(a=>['Aya','Kenji','Yuri'].includes(a.entity.userData.name))){
    actor.mixer.stopAllAction();actor.current=null;actor.speed=0;actor.moving=false;actor.gestureTime=0;
    actor.entity.userData.socialPose=undefined;models.update(0);
    const standing=models.conversationTarget(actor.entity),base=actor.entity.getWorldPosition(new THREE.Vector3());
