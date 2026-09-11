@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
-import {buildShopDoor,buildBookWindow} from './shop-door.js';
+import {buildShopDoor,buildBookshopFrontage} from './shop-door.js';
 let source=null,pending;
 const homeBatches=new WeakMap();
 const IDS=['office','frontrow','form3d','stepwise','journal','electronics','market','career'];
@@ -34,7 +34,7 @@ export function buildJapaneseShop({parent,site,register,enter,label,...options})
  }
  // Entry panels sit on the existing facade; the whole room remains behind the door transition.
  const door=buildShopDoor(group,{name:site.id+'-street-door',shadows:options.shadows});
- if(site.id==='frontrow')buildBookWindow(group,options);
+ if(site.id==='frontrow')buildBookshopFrontage(group,options);
  // Keep the sign and door fixed even when the kit arrives after startup.
  const signX=7.10;
  label(site.jp,site.title.toUpperCase(),[site.side*signX,3.28,site.z],5.5,.64,group.rotation.y,site.id==='market'?'#984945':'#e7dcc0',site.id==='market'?'#fff1d3':'#3e463f',true);

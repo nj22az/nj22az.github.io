@@ -69,7 +69,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -86,10 +86,20 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
+    const {preloadModels}=await import('../src/people/models.js?snappy=1');
+    assert.deepEqual(await preloadModels(),{ready:8,total:8},'Actual selected character rigs preloaded');
     const api=await import(dataModule(source));
     assert.equal(api.world.harbourShops.length,7);
     assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));
     assert.ok(api.SITES.some(s=>s.id==='crystal-room'));
+    const waiting=api.world.people.find(p=>p.g.userData.name==='Kenji').g;
+    const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
+    waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;
+    assert.equal(api.residentBlocked(0,10),false,'Pending characters cannot create invisible player collisions');
+    assert.equal(api.occupiedByPerson(0,10),false,'Pending characters do not displace the player');
+    waiting.userData.visualReady=true;assert.equal(api.residentBlocked(0,10),true,'The completed character regains normal collision');
+    waiting.position.copy(savedPosition);waiting.visible=savedVisibility;
+
     assert.ok(api.world.group.getObjectByName('Inakaya restaurant and neighbour'));
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');

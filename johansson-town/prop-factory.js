@@ -5,10 +5,6 @@ export function createLivingProps(world,factory){
   const bird=new THREE.Group();world.group.add(bird);
   factory.box(bird,[.12,.10,.36],[0,0,0],0xe3ded0);
   const wings=[-1,1].map(s=>factory.box(bird,[.48,.025,.17],[s*.26,0,0],0xcbd1cb));
-  const bike=new THREE.Group();bike.position.set(5.6,0,31.7);world.group.add(bike);
-  for(const z of [-.55,.55]){const m=new THREE.Mesh(new THREE.TorusGeometry(.32,.032,8,24),factory.material(null,0x252f31));m.rotation.y=Math.PI/2;m.position.set(0,.35,z);bike.add(m);}
-  for(const [a,b] of [[[0,.35,-.55],[0,.76,-.1]],[[0,.76,-.1],[0,.35,.55]],[[0,.35,.55],[0,.35,-.55]],[[0,.35,-.55],[0,.9,-.5]]])factory.beam(bike,a,b,.025,0x53696a);
-  factory.box(bike,[.24,.06,.25],[0,.81,.06],0x343e3e);factory.beam(bike,[-.22,.91,-.5],[.22,.91,-.5],.025,0x84908a);
   const reflection=world.cat.clone();reflection.scale.setScalar(.35);reflection.position.set(-6.15,2.4,16.07);reflection.rotation.y=Math.PI;reflection.visible=false;world.group.add(reflection);
   let mirrorUntil=0;
   const trolley=world.group.getObjectByName('prop:delivery-trolley');
@@ -17,7 +13,6 @@ export function createLivingProps(world,factory){
     reflection.visible=performance.now()<mirrorUntil;
     const kenji=world.people.find(p=>p.g.userData.name==='Kenji')?.g;
     const h=minutes/60%24;
-    if(kenji&&h>=17&&h<19&&kenji.position.z>28){bike.position.set(kenji.position.x+.55,0,kenji.position.z);bike.rotation.y=kenji.rotation.y;}
     if(trolley&&kenji&&h<11){trolley.position.set(kenji.position.x+.6,0,kenji.position.z);trolley.rotation.y=kenji.rotation.y;}
   }};
 }
@@ -52,7 +47,7 @@ export function createPropFactory({shadows=true,maxAnisotropy=4}={}){
   function deliveryTrolley(x,z,rotation=0){const g=make('delivery-trolley',x,z,rotation);box(g,[1.05,.09,.62],[0,.34,0],0x465251);for(const dx of [-.42,.42])cylinder(g,.09,.12,[dx,.16,0],0x252b2c,10);beam(g,[.45,.38,.22],[.45,1.08,.22],.035,0x465251);beam(g,[.45,1.08,.22],[.45,1.08,-.18],.035,0x465251);box(g,[.62,.50,.48],[-.12,.66,.02],0x9b7651,'timber');box(g,[.44,.33,.38],[.28,.57,-.04],0x806344,'timber');return {object:g,collider:{x,z,w:1.2,d:.78}};}
   function noticeBoard(x,z,rotation=0){const g=make('notice-board',x,z,rotation);for(const dx of [-.62,.62])cylinder(g,.055,2.15,[dx,1.08,0],0x59615b,8);box(g,[1.48,1.10,.10],[0,1.55,0],0xcac0a5);for(const [px,py,c] of [[-.32,1.72,0xd6c8a6],[.28,1.68,0xc9d6cf],[-.28,1.39,0xe0d0c2],[.32,1.36,0xd7c991]])box(g,[.48,.24,.015],[px,py,-.06],c,null,false);return {object:g,collider:{x,z,w:1.55,d:.26}};}
   function utilityCabinet(x,z,rotation=0){const g=make('utility-cabinet',x,z,rotation);box(g,[.88,1.36,.56],[0,.76,0],0x52666a);box(g,[.72,.03,.42],[0,1.12,-.30],0x3b4c50);box(g,[.12,.24,.025],[.27,.73,-.30],0xa94f42,null,false);for(let y=.34;y<.95;y+=.16)box(g,[.52,.025,.025],[-.06,y,-.30],0x768183,null,false);return {object:g,collider:{x,z,w:.96,d:.66}};}
-  function bicycleRack(x,z,rotation=0){const g=make('bicycle-rack',x,z,rotation);for(const dx of [-.62,0,.62]){beam(g,[dx,0,0],[dx,.72,0],.035,0x586363);const hoop=add(g,geometry('rack-hoop',()=>new THREE.TorusGeometry(.28,.035,7,18,Math.PI)),material(null,0x586363),[dx,.70,0],[0,Math.PI/2,0]);hoop.scale.y=1.35;}return {object:g,collider:{x,z,w:1.65,d:.52}};}
+  function bicycleRack(x,z,rotation=0){const g=make('bicycle-rack',x,z,rotation);for(const dz of [-.17,.17])beam(g,[0,.02,dz],[0,.43,dz],.022,0x79827b);add(g,geometry('single-cycle-stand',()=>new THREE.TorusGeometry(.17,.022,6,16,Math.PI)),material(null,0x79827b),[0,.43,0],[0,Math.PI/2,0]);return {object:g,collider:{x,z,w:.10,d:.40}};}
   function convexMirror(x,z,rotation=0){const g=make('convex-mirror',x,z,rotation);cylinder(g,.06,2.8,[0,1.4,0],0x5b625d,9);const ring=add(g,geometry('convex-ring',()=>new THREE.CylinderGeometry(.43,.43,.08,24)),material(null,0xe7ded0),[0,2.62,0],[Math.PI/2,0,0]);add(g,geometry('convex-face',()=>new THREE.SphereGeometry(.39,18,10,0,Math.PI*2,0,Math.PI*.42)),material(null,0x9fb8be,.35,.18),[0,2.59,-.03],[Math.PI/2,0,0],[1,.35,1],false);return {object:g,collider:{x,z,w:.28,d:.28}};}
   function airConditioner(x,z,rotation=0){const g=make('air-conditioner',x,z,rotation);box(g,[1.10,.70,.44],[0,1.35,0],0xd3d1c7);for(let y=1.14;y<1.52;y+=.09)box(g,[.76,.025,.03],[0,y,-.235],0x777d79,null,false);const fan=add(g,geometry('ac-fan',()=>new THREE.TorusGeometry(.19,.035,8,18)),material(null,0x6d7470),[.30,1.36,-.24],[Math.PI/2,0,0],undefined,false);return {object:g,collider:{x,z,w:1.18,d:.50}};}
   function noren(x,z,rotation=0,color=0x5e6575){const g=make('noren',x,z,rotation);beam(g,[-.75,2.35,0],[.75,2.35,0],.025,0x493f35);for(const dx of [-.50,0,.50])box(g,[.46,.72,.025],[dx,1.95,0],color,null,false);return {object:g,collider:null};}

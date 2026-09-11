@@ -40,3 +40,14 @@ export function buildBookWindow(parent,{shadows=false}={}){
  }
  return group;
 }
+
+export function buildBookshopFrontage(parent,options={}){
+ const plaster=createMaterials().material('plaster');
+ const wall=new THREE.Mesh(new THREE.BoxGeometry(2.82,2.66,.24),new THREE.MeshStandardMaterial({color:0xc9c4b5,normalMap:plaster.normalMap,normalScale:new THREE.Vector2(.12,.12),roughness:.96}));
+ wall.name='frontrow-facade-infill';wall.position.set(2.27,1.33,.26);wall.receiveShadow=true;wall.userData.staticProp=true;parent.add(wall);
+ // The source kit includes a second sliding panel. Close that entire opening,
+ // including its frame, so the timber entrance is the only visible doorway.
+ const trim=new THREE.Mesh(new THREE.BoxGeometry(2.84,.15,.28),createMaterials().material('timber',0x74563b));
+ trim.name='frontrow-wall-plinth';trim.position.set(2.27,.075,.29);trim.userData.staticProp=true;parent.add(trim);
+ return buildBookWindow(parent,options);
+}

@@ -1,9 +1,8 @@
 import {createLocalCharacters,preloadModels,preloadCharacter,characterReady} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import { createCharacters as createStableCharacters } from './procedural.js?konbini-1';
 
-// Locally vendored skinned bodies use their own compatible clips. Procedural rigs
-// preserve interaction and collision when an asset cannot load.
+// Each resident has one appearance. Keep the logical entity while its chosen
+// model loads; never render an obsolete body or borrow another resident’s face.
 const CAST=Object.freeze({
   player:{source:'first-person-controller',height:1.82,identity:'Johansson'},
   Aya:{source:'local-authored',height:1.62,identity:'Aya'},
@@ -16,9 +15,9 @@ export const preloadCharacters=preloadModels;
 export {preloadCharacter};
 
 export function createCharacters(options={}){
-  const stable=createStableCharacters(options),models=createLocalCharacters(options),actors=[],conversations=new Map(),entities=new Map(),aiControls=new Map();
+  const models=createLocalCharacters(options),actors=[],conversations=new Map(),entities=new Map(),aiControls=new Map();
   const upgrades=new Map();
-  let playerEntity=null,playerActor=null,groundY=0,jumpVelocity=0,jumping=false;
+  let playerEntity=null,groundY=0,jumpVelocity=0,jumping=false;
 
   function attach(entity,file,height){
     const isPlayer=file==='player'||!entity.userData.name;
@@ -26,31 +25,36 @@ export function createCharacters(options={}){
     const identity=isPlayer?'Johansson':entity.userData.name;
     if(identity)entities.set(identity,entity);
     if(isPlayer){
-      playerEntity=entity;playerActor=null;groundY=entity.position.y;entity.visible=false;
+      playerEntity=entity;groundY=entity.position.y;entity.visible=false;
       entity.userData.visualSource='First-person controller';
       return null;
     }
-    const detailed=models.attach(entity,file,targetHeight),actor=detailed||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
-    if(!detailed||!characterReady(file))upgrades.set(entity,{file,height:targetHeight,actor});
+    // Discard legacy world placeholders before the first rendered frame.
+    for(const child of [...entity.children])child.removeFromParent();
+    const actor=models.attach(entity,file,targetHeight);
+    entity.userData.visualReady=!!actor;entity.userData.character=actor;
+    if(actor)actors.push(actor);else upgrades.set(entity,{file,height:targetHeight});
     return actor;
+  }
+
+  function mount(entity,entry){
+    if(!upgrades.has(entity))return true;
+    const actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
+    actors.push(actor);entity.userData.character=actor;upgrades.delete(entity);return true;
   }
 
   function streamDetails(stream,onChange,getPosition){
     for(const [entity,entry] of upgrades){
-      stream.add({id:'resident:'+entry.file,priority:0,radius:42,timeoutMs:16000,distance:position=>{
+      entry.onChange=onChange;
+      stream.add({id:'resident:'+entry.file,priority:0,radius:52,timeoutMs:entry.file==='Aya'?46000:16000,distance:position=>{
         for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
         if(entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inHome)position=getPosition?.()||position;
         const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
       },load:async()=>{
         try{
-        if(!await preloadCharacter(entry.file))return false;
-        const old=[...entity.children],actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
-        for(const child of old)child.removeFromParent();
-        const index=stable.actors.indexOf(entry.actor);if(index>=0)stable.actors.splice(index,1);
-        const modelIndex=models.actors.indexOf(entry.actor);if(modelIndex>=0)models.actors.splice(modelIndex,1);
-        const all=actors.indexOf(entry.actor);if(all>=0)actors.splice(all,1);actors.push(actor);entity.userData.character=actor;
-        upgrades.delete(entity);
-        onChange();return true;
+          if(!upgrades.has(entity))return true;
+          if(!await preloadCharacter(entry.file))return false;
+          const ready=mount(entity,entry);if(ready)onChange();return ready;
         }catch(error){console.warn('Resident mesh attach failed:',entry.file,error.message);return false;}
       }});
     }
@@ -66,7 +70,7 @@ export function createCharacters(options={}){
     const targetDistance=1.34;
     // Facing never moves the player through a wall or prop.
     const hold=1900,now=performance.now();conversations.set(entity,{until:now+hold,x:entity.position.x,z:entity.position.z});
-    face(entity,playerEntity,true);face(playerEntity,entity,false);if(!models.gesture(entity))stable.gesture?.(entity);
+    face(entity,playerEntity,true);face(playerEntity,entity,false);models.gesture(entity);
   }
 
   function gesture(entity){stageConversation(entity);}
@@ -81,13 +85,6 @@ export function createCharacters(options={}){
   window.__JOHANSSON_JUMP__=jump;
 
   function updateJump(dt,terrainY=0){if(!playerEntity)return;if(!jumping){groundY=terrainY;playerEntity.position.y=terrainY;return;}groundY=terrainY;jumpVelocity-=11.2*dt;playerEntity.position.y+=jumpVelocity*dt;if(playerEntity.position.y<=groundY){playerEntity.position.y=groundY;jumpVelocity=0;jumping=false;}}
-
-  function poseJump(dt){
-    if(!jumping||!playerActor?.rig)return;
-    const lift=THREE.MathUtils.clamp((playerEntity.position.y-groundY)/.62,0,1),rig=playerActor.rig;
-    rig.legs.forEach((leg,i)=>{leg.hip.rotation.x=THREE.MathUtils.damp(leg.hip.rotation.x,(i?-.22:-.14)*lift,12,dt);leg.knee.rotation.x=THREE.MathUtils.damp(leg.knee.rotation.x,.34*lift,12,dt);});
-    rig.arms.forEach((arm,i)=>{arm.shoulder.rotation.x=THREE.MathUtils.damp(arm.shoulder.rotation.x,.11*lift,10,dt);arm.shoulder.rotation.z=THREE.MathUtils.damp(arm.shoulder.rotation.z,(i?-.07:.07),10,dt);});
-  }
 
   // Bounded AI/NPC control. This deliberately operates on the same local actor entities
   // that the player sees; it does not spawn hidden duplicate avatars or bypass the cast pipeline.
@@ -106,7 +103,7 @@ export function createCharacters(options={}){
     aiControls.set(e,{...current,until:performance.now()+THREE.MathUtils.clamp(Number(seconds)||4,.5,15)*1000,faceName:targetName});
     return true;
   }
-  function commandGesture(name){const e=entities.get(name);if(!e||e===playerEntity)return false;if(name==='Yuri'){stageConversation(e);return true;}if(!models.gesture(e))stable.gesture?.(e);return true;}
+  function commandGesture(name){const e=entities.get(name);if(!e||e===playerEntity)return false;if(name==='Yuri'){stageConversation(e);return true;}models.gesture(e);return true;}
   function releaseCharacter(name){const e=entities.get(name);if(!e||e===playerEntity)return false;aiControls.delete(e);return true;}
   function updateAIControls(dt){
     const now=performance.now();
@@ -124,7 +121,8 @@ export function createCharacters(options={}){
     updateAIControls(dt);
     const now=performance.now();
     for(const [entity,c] of conversations){if(c.until<=now){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
-    stable.update(dt);models.update(dt);poseJump(dt);
+    for(const [entity,entry] of upgrades)if(characterReady(entry.file)&&mount(entity,entry))entry.onChange?.();
+    models.update(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }
 
@@ -132,5 +130,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

@@ -24,7 +24,7 @@ export function clearChatLine(a,b,boxes){
   }return hi>.02&&lo<.98;
  });
 }
-const visible=g=>{for(let p=g;p;p=p.parent)if(!p.visible)return false;return true;};
+const visible=g=>{if(g.userData.visualReady===false)return false;for(let p=g;p;p=p.parent)if(!p.visible)return false;return true;};
 const place=p=>p.g.userData.inIzakaya?'izakaya':p.g.userData.inMarket?'market':p.g.userData.inRamen?'ramen':p.g.userData.inHome?'home':'street';
 
 // One brief, local exchange at a time. No generated dialogue, network or new actors.

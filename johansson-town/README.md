@@ -119,3 +119,14 @@ check rejects a source change shipped with an older compiled game.
 Validation includes the CPU game flow, model recovery, all room transitions and
 route checks. WebGL is disabled in the available browser; Safari frame pacing and
 GPU rendering still require a device check.
+
+
+## Direct character appearances and bookshop frontage
+
+Ordinary residents now use the five local, palette-coloured Quaternius low-poly bodies. Each body is one skinned mesh with no texture downloads; residents retain independent clothing colours and animation. Yuri keeps the supplied Meshy rig, Aya keeps her authored model, and Reiko keeps the supplied Nozomi model. No VRoid model or VRoid texture is requested by the active character pipeline.
+
+The opening gate starts Yuri’s download alongside the street assets without increasing the three-second gate. Residents mount only their selected appearance. Until that appearance is ready, the logical character retains its schedule but has no visible substitute, interaction target or player collision. Shared models download once; successful late loads mount promptly, and failed requests remain eligible for bounded retries. The low-poly rigs retain their native walk, run and greeting clips and have seated, eating and drinking clips fitted to their own skeletons.
+
+Front-Row Books has one visible timber doorway; the redundant source-model sliding panel is enclosed by a plaster wall. The bookshop bicycle is parked beside the frontage, clear of the entrance. Bicycles now have a complete frame, spokes, fork, pedals, mudguards, basket and rear carrier, merged into one render mesh. The oversized triple rack is replaced by a single modest stand.
+
+Character delay/recovery, model selection, independent animation, seating, entry clearance and the real CPU game scene are checked. CPU geometry previews were inspected. The available browser has WebGL disabled, so Safari rendering and frame timing remain unmeasured.

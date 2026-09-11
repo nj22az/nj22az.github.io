@@ -1,3 +1,4 @@
+import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
 import {buildSeaCave} from './sea-cave.js';
 import {buildPark} from './park.js?snappy=1';
@@ -134,8 +135,9 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.utilityCabinet(-6.05,41.5,0));
   inspect([-5.6,1,40.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
-  addWithCollider(group,colliders,factory.bicycleRack(5.95,31.7,0));
-  inspect([5.55,1,31.1],'Inspect bicycle rack','Bicycle rack','Two empty loops are polished smooth by daily use. A bicycle pump has been chained to the end post.');
+  addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
+  addWithCollider(group,colliders,factory.bicycleRack(7.20,33.84,0));
+  inspect([6.1,.9,33.3],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked beside the bookshop, clear of the doorway.');
 
   addWithCollider(group,colliders,factory.convexMirror(-6.15,16.2,.02));
   inspect([-5.7,1,15.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');

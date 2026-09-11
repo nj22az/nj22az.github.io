@@ -20,10 +20,10 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   for(const m of doc.materials){assert.ok(m.pbrMetallicRoughness.baseColorTexture);assert.equal(m.pbrMetallicRoughness.metallicFactor,0);}
   for(const image of doc.images){assert.ok(Number.isInteger(image.bufferView));assert.equal(image.uri,undefined);}
   const {preloadModels,createLocalCharacters}=await import('../src/people/models.js?snappy=1');
-  assert.deepEqual(await preloadModels(),{ready:10,total:10});const models=createLocalCharacters(),scene=new THREE.Scene();
+  assert.deepEqual(await preloadModels(),{ready:8,total:8});const models=createLocalCharacters(),scene=new THREE.Scene();
   const attach=name=>{const e=new THREE.Group();e.userData.name=name;scene.add(e);return models.attach(e,name);};
   const reiko=attach('Reiko'),sato=attach('Mrs Sato'),yuri=attach('Yuri');
-  assert.ok(reiko.isNozomi);assert.equal(reiko.entity.userData.name,'Reiko');assert.ok(sato.neighbour);assert.ok(yuri.isYuri);
+  assert.ok(reiko.isNozomi);assert.equal(reiko.entity.userData.name,'Reiko');assert.ok(sato.lowPoly);assert.ok(yuri.isYuri);
   assert.match(reiko.entity.userData.visualSource,/Nozomi/);assert.ok(reiko.cup);assert.ok(reiko.seatSupport);
   const point=new THREE.Vector3();
   for(const name of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink']){
@@ -48,9 +48,10 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   reiko.entity.userData.socialPose='Drink';models.update(.4);assert.ok(reiko.cup.visible);
   assert.ok(reiko.cup.getWorldQuaternion(new THREE.Quaternion()).angleTo(new THREE.Quaternion())<.001);
   delete reiko.entity.userData.seatHeight;delete reiko.entity.userData.socialPose;models.update(.4);assert.equal(reiko.model.position.y,reiko.floorOffset);
-  // An unavailable optional appearance must preserve the established actor.
+  // A failed Nozomi load waits for her own model; never substitute a different face.
   const fetchReady=globalThis.fetch;globalThis.fetch=url=>String(url).includes('nozomi.glb')?Promise.resolve(new Response('',{status:503})):fetchReady(url);
-  const fallback=await import('../src/people/models.js?fallback-nozomi=1');assert.deepEqual(await fallback.preloadModels(),{ready:9,total:10});
-  const e=new THREE.Group();e.userData.name='Reiko';assert.ok(fallback.createLocalCharacters().attach(e,'Reiko').neighbour);
+  const fallback=await import('../src/people/models.js?fallback-nozomi=1');assert.deepEqual(await fallback.preloadModels(),{ready:7,total:8});
+  const e=new THREE.Group();e.userData.name='Reiko';assert.equal(fallback.createLocalCharacters().attach(e,'Reiko'),null);
+  globalThis.fetch=fetchReady;assert.equal(await fallback.preloadCharacter('Reiko'),true);assert.ok(fallback.createLocalCharacters().attach(e,'Reiko').isNozomi);
  }finally{globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;}
 });

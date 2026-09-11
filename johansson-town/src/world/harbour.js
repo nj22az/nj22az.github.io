@@ -1,3 +1,4 @@
+import {buildBicycle} from './bicycle.js';
 import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildHarbourShop} from './harbour-block.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
@@ -202,8 +203,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([1,1.8,1.1],[6.7,.9,23],0x483d50);box([.88,.7,.12],[6.7,1.4,23.57],0x294d59);label('STAR PORT','INSERT ¥100',[6.7,1.48,23.65],.77,.5,0,'#142d42','#83ded8',true);obstacle(6.7,23,1,1.1);anchor([5.8,1,23.7],'Play Star Port',()=>onAction('arcade'));
 
   for(const [x,z] of [[-6,4],[6,-6],[-6,-35]]){
-    for(const dz of [-.62,.62]){const tire=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,6,20),material(0x333b3d));tire.rotation.y=Math.PI/2;tire.position.set(x,.4,z+dz);tire.castShadow=shadows;group.add(tire);}
-    beam([x,.4,z-.62],[x,.9,z],.035,0x71999a);beam([x,.9,z],[x,.4,z+.62],.035,0x71999a);beam([x,.4,z-.62],[x,.4,z+.35],.035,0x71999a);beam([x,.4,z+.62],[x,1.14,z+.55],.03);beam([x-.24,1.14,z+.55],[x+.24,1.14,z+.55],.03);box([.24,.07,.32],[x,1,z-.1],0x463d32);obstacle(x,z,.65,1.55);
+    const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
   }
 
   // ----- Working harbour district -----
