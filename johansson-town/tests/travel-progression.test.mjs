@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createActivities} from '../activities.js';
+import {createActivities} from '../activities.js?snappy=1';
 import {travelProgress} from '../src/progression/travel.js';
 import {SAVE_KEY} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';

@@ -4,8 +4,8 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {buildSeaCave,placeSeaCave} from '../src/world/sea-cave.js';
-import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
-import {ROUTES,LANDINGS} from '../src/world/layout.js';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
+import {ROUTES,LANDINGS} from '../src/world/layout.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 const make=()=>{installDOM();const world={group:new THREE.Group(),colliders:[]};buildSeaCave(world,{register(){}});return world;};
 async function source(){globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});const b=await readFile(new URL('../assets/models/sea-cave/umanose.glb',import.meta.url));return (await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'')).scene;}

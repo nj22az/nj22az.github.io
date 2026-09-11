@@ -1,5 +1,5 @@
 import {FULL_TOWN} from '../world/full-town-state.js';
-import {MAP_BOUNDS,groundHeight} from '../world/layout.js';
+import {MAP_BOUNDS,groundHeight} from '../world/layout.js?snappy=1';
 
 // A conservative walkability raster. It shares the player's radius-aware collision
 // predicate; diagonal edges may never cut a blocked corner.

@@ -1,3 +1,4 @@
+import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
@@ -117,7 +118,19 @@ function buildInakayaPair(world,options){
   const building=new THREE.Group();building.name='Inakaya restaurant and neighbour';
   building.position.set(24,0,10);world.group.add(building);
   const model=addAsset('ramen-exterior',building);
-  model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
+  const prepare=model=>model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
+  if(model)prepare(model);
+  else{
+    const fallback=new THREE.Group();building.add(fallback);
+    for(const [x,z,w,d,h] of [[.05,-.6,3.7,7.1,6.3],[-2.84,2.19,2.35,2.9,4]]){
+      const box=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:0xb6a98a,roughness:.9}));box.position.set(x,h/2,z);fallback.add(box);
+    }
+    hangRamenNoren(fallback);
+    registerDetail(world,{id:'ramen-exterior',x:24,z:10,radius:30,load:async()=>{
+      const [ready]=await preloadSuppliedRooms(['ramen-exterior']);if(!ready)return false;
+      const detailed=addAsset('ramen-exterior',building);prepare(detailed);fallback.removeFromParent();return true;
+    }});
+  }
   const sites=[
     {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24.65,z:10,
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[24.65,0,14.7]},
@@ -141,7 +154,7 @@ function buildInakayaPair(world,options){
 }
 
 export function buildRamenRestaurant(world,options,placement){
-  if(!placement&&assets.has('ramen-exterior'))return buildInakayaPair(world,options);
+  if(!placement)return buildInakayaPair(world,options);
   if(!assets.has('ramen-exterior'))return false;
   const place=placement||{x:24,z:10,yaw:0,scale:1};
   const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;

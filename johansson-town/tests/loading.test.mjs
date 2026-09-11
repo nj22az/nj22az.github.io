@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {installDOM} from './fixtures.mjs';
-import {preloadSuppliedRooms,suppliedRoomReady,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
-import {circleHitsRect} from '../physics.js';
+import {preloadSuppliedRooms,suppliedRoomReady,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
+import {circleHitsRect} from '../physics.js?snappy=1';
 
 // A texture-free triangle isolates the request/cache behaviour from large assets.
 const positions=new Float32Array([0,0,0,1,0,0,0,1,0]);

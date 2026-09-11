@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import {ITEMS} from '../content-data.js';
-import {DIALOGUE} from '../src/people/schedules.js';
+import {DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {makeContentObject} from '../content-items.js';
 import {createContentItems} from '../content-items.js';
-import {createTown} from '../src/world/town.js';
-import {createCharacters} from '../src/people/characters.js';
-import {createActivities} from '../activities.js';
+import {createTown} from '../src/world/town.js?snappy=1';
+import {createCharacters} from '../src/people/characters.js?snappy=1';
+import {createActivities} from '../activities.js?snappy=1';
 import {createInspector} from '../inspect-3d.js';
 import * as THREE from '../vendor/three.module.js';
 class Element{

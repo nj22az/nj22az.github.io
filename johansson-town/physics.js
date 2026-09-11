@@ -1,5 +1,5 @@
 import {FULL_TOWN} from './src/world/full-town-state.js';
-import {routeAt} from './src/world/layout.js';
+import {routeAt} from './src/world/layout.js?snappy=1';
 // Deterministic 2D collision helpers used by Johansson Town.
 // Kept independent of Three.js so the core movement rules can be regression-tested.
 export function circleHitsRect(x,z,r,c){

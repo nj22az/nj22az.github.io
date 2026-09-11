@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
-import {createMaterials} from '../render/materials.js';
-import {BOARDWALK} from './layout.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
+import {BOARDWALK} from './layout.js?snappy=1';
 
 export function buildBoardwalk(parent,options={}){
  const library=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy||4});

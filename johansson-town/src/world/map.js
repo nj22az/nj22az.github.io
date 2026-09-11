@@ -1,7 +1,7 @@
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
 import {RESIDENTS} from '../people/residents.js';
 import {PARK,activePark} from './park-layout.js';
-import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js';
+import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
   sites=[...sites,...landmarks];

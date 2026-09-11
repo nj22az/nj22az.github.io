@@ -1,13 +1,13 @@
 import {createVendingMachine} from './vending.js';
 import {buildHarbourShop} from './harbour-block.js';
-import {buildBoardwalk} from './boardwalk.js';
+import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
-import {BOARDWALK} from './layout.js';
+import {BOARDWALK} from './layout.js?snappy=1';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
-import {buildStorefront} from './storefront.js';
+import {buildStorefront} from './storefront.js?snappy=1';
 import {MERCHANT_FRONTAGES,merchantRoofGeometry} from './merchant-roofs.js';
-import {createMaterials} from '../render/materials.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 
 // Johansson Town original harbour geometry, using the shared PBR surface maps.

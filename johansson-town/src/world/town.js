@@ -1,16 +1,17 @@
+import {registerDetail} from './detail-stream.js';
 import {buildSeaCave} from './sea-cave.js';
-import {buildPark} from './park.js';
-import {buildIzakaya} from './izakaya.js';
+import {buildPark} from './park.js?snappy=1';
+import {buildIzakaya} from './izakaya.js?snappy=1';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
-import {OUTER_PIER,groundHeight} from './layout.js';
-import {buildDistricts} from './districts.js';
+import {OUTER_PIER,groundHeight} from './layout.js?snappy=1';
+import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import { createTown as createBaseTown } from './harbour.js?warehouse=1';
+import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
-import {buildStreetPlants} from './street-plants.js';
-import {createMaterials} from '../render/materials.js';
+import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -171,6 +172,9 @@ export function createTown(options){
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildIzakaya(world,options);buildPark(world,options);buildSeaCave(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
+  if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
+    if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
+  }});
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
   const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.05,OUTER_PIER.length-.05),surfaces.worldMaterial('concrete',0xc0beb5,2));

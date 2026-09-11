@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,groundHeight} from './layout.js';
+import {ROUTES,groundHeight} from './layout.js?snappy=1';
 
 // Partition the union of rectangular streets. Each patch belongs to exactly one
 // route: crossing lanes never produce coplanar, overlapping road meshes.

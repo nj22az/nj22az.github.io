@@ -76,11 +76,11 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
     const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
     assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
-    const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js');
+    const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
     assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true],'All supplied rooms preloaded');
     const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
-    const {preloadPark}=await import('../src/world/park.js');assert.equal(await preloadPark(),true);
-    const {preloadIzakaya}=await import('../src/world/izakaya.js');
+    const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
+    const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const {preloadYuriHome}=await import('../src/world/yuri-home.js');
     assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
@@ -101,7 +101,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal(api.player.visible,false);assert.equal(api.player.children.length,0,'No protagonist mesh is attached to the controller');
     assert.equal(api.player.userData.visualSource,'First-person controller');assert.equal(api.camera.fov,65);
     assert.equal('cameraMode' in api.activities.state,false,'Legacy camera preference is discarded');
-    const {ROUTES}=await import('../src/world/layout.js'),{circleHitsRect}=await import('../physics.js');
+    const {ROUTES}=await import('../src/world/layout.js?snappy=1'),{circleHitsRect}=await import('../physics.js?snappy=1');
     for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i],x=a[0]*(1-t)+b[0]*t,z=a[1]*(1-t)+b[1]*t;assert.equal(api.world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,route.id+' clears the supplied shopfronts');}
     const runningStart=api.player.position.clone();
     api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);

@@ -5,10 +5,10 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {preloadJapaneseTown,buildJapaneseShop,buildJapaneseHome,finishJapaneseHomes} from '../src/world/japanese-town.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {ROUTES} from '../src/world/layout.js';
-import {createTown} from '../src/world/town.js';
-import {createNavigation} from '../src/people/navmesh.js';
-import {circleHitsRect,townBoundsBlocked} from '../physics.js';
+import {ROUTES} from '../src/world/layout.js?snappy=1';
+import {createTown} from '../src/world/town.js?snappy=1';
+import {createNavigation} from '../src/people/navmesh.js?snappy=1';
+import {circleHitsRect,townBoundsBlocked} from '../physics.js?snappy=1';
 
 test('Japanese Town kit replaces all shops and homes with bounded shared geometry and clear routes',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});

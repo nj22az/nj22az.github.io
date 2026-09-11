@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
+import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
 import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_YURI_SPOT,ramenPoint} from '../src/world/interiors/ramen-layout.js';
-import {circleHitsRect,circleHitsCircle,sweepFraction} from '../physics.js';
+import {circleHitsRect,circleHitsCircle,sweepFraction} from '../physics.js?snappy=1';
 import {RESIDENTS,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {residentPlan,ramenOpen,RAMEN_VISITS} from '../src/people/social.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
-import {createCastAI} from '../src/people/schedules.js';
+import {createCastAI} from '../src/people/schedules.js?snappy=1';
 
 test('Inakaya shares the street asset, aligns to real stools and leaves a passable furnished aisle',async()=>{
  installDOM();const originalFetch=fetch;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
@@ -76,7 +76,7 @@ test('diners keep their seats during turnover and resume their schedules outside
 });
 
 test('Kenji keeps an active escort and Yuri recognises her ramen break',async()=>{
- const dom=installDOM();const {createActivities}=await import('../activities.js');
+ const dom=installDOM();const {createActivities}=await import('../activities.js?snappy=1');
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1205,getSocialContext:()=>({inside:'ramen',names:['Yuri']})});
  acts.action('resident','Yuri');assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · Ramen break');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/bowl of ramen/);

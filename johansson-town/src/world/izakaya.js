@@ -1,14 +1,16 @@
+import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 const assets=new Map();
-export async function preloadIzakaya(){
- const loader=new GLTFLoader();await Promise.allSettled(['exterior','interior'].map(async kind=>{
+export async function preloadIzakaya(kinds=['exterior','interior']){
+ const loader=new GLTFLoader();await Promise.allSettled(kinds.filter(kind=>!assets.has(kind)).map(async kind=>{
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   const file=kind==='exterior'?'minato-benmaher-exterior.glb':'minato-interior.glb';
   try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);assets.set(kind,(await loader.parseAsync(await response.arrayBuffer(),'')).scene);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
  }));return {ready:assets.size,total:2};
 }
+export const izakayaReady=kind=>assets.has(kind);
 function asset(kind,parent){
  const source=assets.get(kind);if(!source)return false;
  const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});parent.add(model);return true;
@@ -30,11 +32,15 @@ export function buildIzakaya(world,options){
  const post=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,2.15,6),new THREE.MeshStandardMaterial({color:0x633d2a}));post.position.set(6.6,1.075,18.5);world.group.add(post);
  // The new facade has a recessed closed door and an asymmetric footprint.
  // Stop at the visible step; the entrance prompt opens the existing dining room.
- if(suppliedExterior)world.colliders.push(
+ world.colliders.push(
   {x:24.91,z:23.89,w:5.22,d:6.82,height:9.05},
   {x:27.92,z:26.54,w:.85,d:.85,height:1.08},
   {x:27.74,z:25.90,w:.50,d:.50,height:.36});
- else world.colliders.push({x:24,z:25,w:8,d:8,height:4});
+
+ if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',x:24,z:25,radius:30,load:async()=>{
+  await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;
+  const fallback=exterior.children[0];asset('exterior',exterior);fallback.removeFromParent();sign.visible=false;return true;
+ }});
  return site;
 }
 export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}){

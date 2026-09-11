@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {installDOM} from './fixtures.mjs';
-import {createActivities} from '../activities.js';
+import {createActivities} from '../activities.js?snappy=1';
 
 test('Yuri offers selectable topics, remembers an introduction and never charges for conversation',()=>{
  const dom=installDOM(),options={say(){},onWeather(){},onTime(){},getMinutes:()=>1002};

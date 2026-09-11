@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
-import {preloadPark,buildPark} from '../src/world/park.js';
+import {preloadPark,buildPark} from '../src/world/park.js?snappy=1';
 import {PARK_BENCH,parkHeight} from '../src/world/park-layout.js';
 import {installDOM} from './fixtures.mjs';
 test('supplied park is static, compact and matches its bench and walkable ground',async()=>{

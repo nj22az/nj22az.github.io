@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels} from './models.js?konbini-1';
+import {createLocalCharacters,preloadModels,preloadCharacter} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js?konbini-1';
 
@@ -16,6 +16,7 @@ export const preloadCharacters=preloadModels;
 
 export function createCharacters(options={}){
   const stable=createStableCharacters(options),models=createLocalCharacters(options),actors=[],conversations=new Map(),entities=new Map(),aiControls=new Map();
+  const upgrades=new Map();
   let playerEntity=null,playerActor=null,groundY=0,jumpVelocity=0,jumping=false;
 
   function attach(entity,file,height){
@@ -28,8 +29,25 @@ export function createCharacters(options={}){
       entity.userData.visualSource='First-person controller';
       return null;
     }
-    const actor=models.attach(entity,file,targetHeight)||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
+    const detailed=models.attach(entity,file,targetHeight),actor=detailed||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
+    if(!detailed)upgrades.set(entity,{file,height:targetHeight,actor});
     return actor;
+  }
+
+  function streamDetails(stream,onChange,getPosition){
+    for(const [entity,entry] of upgrades){
+      stream.add({id:'resident:'+entry.file,radius:30,distance:position=>{
+        for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
+        position=getPosition?.()||position;const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
+      },load:async()=>{
+        if(!await preloadCharacter(entry.file))return false;
+        const old=[...entity.children],actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
+        for(const child of old)child.removeFromParent();
+        const index=stable.actors.indexOf(entry.actor);if(index>=0)stable.actors.splice(index,1);
+        const all=actors.indexOf(entry.actor);if(all>=0)actors.splice(all,1);actors.push(actor);entity.userData.character=actor;
+        onChange();return true;
+      }});
+    }
   }
 
   function face(entity,target,flip=false){if(!entity||!target)return;entity.lookAt(target.position.x,entity.position.y,target.position.z);if(flip)entity.rotateY(Math.PI);}
@@ -108,5 +126,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {attach,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>7,profiles:CAST,mode:'local-skinned-with-procedural-fallback',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

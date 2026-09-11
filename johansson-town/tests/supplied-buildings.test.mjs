@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {createHash} from 'node:crypto';
-import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 
 test('supplied buildings load with portable maps and bounded geometry',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
@@ -33,7 +33,7 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   assert.equal(triangles,2446,'All building triangles retained; presentation floor removed');assert.equal(draws,3);assert.equal(cutouts,2);
   const bounds=new THREE.Box3().setFromObject(model);assert.ok(Math.abs(bounds.min.y)<.001);assert.ok(bounds.max.y>9&&bounds.max.y<9.1);
   const door=manifest.parts.find(p=>p.name==='Door Window__0');assert.ok(Math.abs((door.min[0]+door.max[0])/2)<.001,'Door centred on the existing entrance');assert.ok(Math.abs((door.min[2]+door.max[2])/2-4.05)<.001);
-  const {preloadIzakaya,buildIzakaya}=await import('../src/world/izakaya.js');assert.deepEqual(await preloadIzakaya(),{ready:2,total:2});
+  const {preloadIzakaya,buildIzakaya}=await import('../src/world/izakaya.js?snappy=1');assert.deepEqual(await preloadIzakaya(),{ready:2,total:2});
   const minato={group:new THREE.Group(),colliders:[]},minatoSites=[],entrances=[];
   buildIzakaya(minato,{sites:minatoSites,register:(o,label,fn)=>entrances.push({o,label,fn}),enter:site=>assert.equal(site.id,'izakaya')});
   assert.equal(entrances.length,1);entrances[0].fn();
@@ -45,7 +45,7 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   minato.group.updateMatrixWorld(true);
   const transformedDoor=new THREE.Vector3(0,1.66,4.05).applyMatrix4(minato.group.children[0].matrixWorld);
   assert.ok(transformedDoor.distanceTo(entrances[0].o.position)<1.1,'Prompt aligned with the supplied door');
-  const {preloadTeaHouse,buildTeaHouse}=await import('../src/world/tea-house.js');assert.equal(await preloadTeaHouse(),true);
+  const {preloadTeaHouse,buildTeaHouse}=await import('../src/world/tea-house.js?snappy=1');assert.equal(await preloadTeaHouse(),true);
   const world={group:new THREE.Group(),colliders:[]},sites=[],actions=[];
   buildTeaHouse(world,{sites,register:(o,label,fn)=>actions.push({o,label,fn}),enter:site=>assert.equal(site.id,'tea-house')});
   assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[28,1,48]);

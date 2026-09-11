@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createTown} from '../src/world/town.js';
+import {createTown} from '../src/world/town.js?snappy=1';
 import {createTownSky} from '../src/render/sky.js';
 import {installDOM} from './fixtures.mjs';
-import {groundHeight,OUTER_PIER} from '../src/world/layout.js';
+import {groundHeight,OUTER_PIER} from '../src/world/layout.js?snappy=1';
 
 test('street has no transparent canopy sheets and phones retain bounded night lighting',()=>{
  installDOM();const scene=new THREE.Scene();

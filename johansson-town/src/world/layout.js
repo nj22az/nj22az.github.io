@@ -16,7 +16,7 @@ export const ROUTES = [
  {id:'river-walk',width:4,surface:'stone',points:[[-40,-16],[-45,-16],[-45,-61],[-18,-61]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-38,-56],[-38,-76],[-26,-76]]},
  {id:'home-door',width:4,surface:'stone',points:[[28,50],[28,48]]},
- {id:'izakaya-door',width:4,surface:'asphalt',points:[[24,18],[24,20.5]]},
+ {id:'izakaya-door',width:4,surface:'asphalt',points:[[24,18],[24,20]]},
  {id:'ramen-door',width:4,surface:'stone',points:[[24.65,18],[24.65,14.7]]},
  {id:'crystal-door',width:2.4,surface:'stone',points:[[21.2,18],[21.2,14.5]]},
  {id:'bus-door',width:4,surface:'stone',points:[[-26,50],[-26,46]]},

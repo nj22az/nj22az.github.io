@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createTown} from '../src/world/town.js';
+import {createTown} from '../src/world/town.js?snappy=1';
 import {preloadHarbourBlock,HARBOUR_SHOP_IDS} from '../src/world/harbour-block.js';
-import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
-import {routeAt,groundHeight,BOARDWALK} from '../src/world/layout.js';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
+import {routeAt,groundHeight,BOARDWALK} from '../src/world/layout.js?snappy=1';
 
 test('harbour replacement loads real geometry, retains reachable entrances and switches LOD',async()=>{
  installDOM();const originalFetch=globalThis.fetch,originalBitmap=globalThis.createImageBitmap,originalSelf=globalThis.self;
- const game=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ const game=await readFile(new URL('../src/game.js?snappy=1',import.meta.url),'utf8');
  const sites=()=>Function('return '+game.match(/const SITES=(\[[\s\S]*?\n\]);/)[1])();
  const failed=createTown({scene:new THREE.Scene(),sites:sites(),mobile:true,shadows:false,register(){},enter(){},onAction(){}});
  assert.equal(failed.harbourShops.length,0,'Without the asset the original shops remain');

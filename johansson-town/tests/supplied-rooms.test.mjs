@@ -4,8 +4,8 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
-import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
+import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 
 function reachableFloor(layout){
   const radius=.28,step=.1,blocked=(x,z)=>suppliedRoomBoundsBlocked(layout,x,z,radius)||layout.colliders.some(c=>circleHitsRect(x,z,radius,c));
@@ -132,7 +132,7 @@ test('supplied models retain textures, correct material support and reachable ro
 });
 
 test('missing supplied models preserve the existing procedural buildings and rooms',async()=>{
-  const mod=await import('../src/world/supplied-rooms.js?failed-load');
+  const mod=await import('../src/world/supplied-rooms.js?snappy=1');
   const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
   try{
     assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false,false,false]);
@@ -145,7 +145,7 @@ test('crystal room is a connected surprise beside Sato Ramen with a reliable exi
  installDOM();const originalFetch=fetch;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
  globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
-  const module=await import('../src/world/supplied-rooms.js?crystal-review');await module.preloadSuppliedRooms();
+  const module=await import('../src/world/supplied-rooms.js?snappy=1');await module.preloadSuppliedRooms();
   const room=new THREE.Group(),actions=[];let left=false;
   const layout=module.buildSuppliedRoom({site:{id:'crystal-room'},room,reg:(o,label,fn)=>actions.push({o,label,fn}),collider(){},action(){},exit:()=>left=true});
   const points=reachableFloor(layout);assert.ok(points.length>500);

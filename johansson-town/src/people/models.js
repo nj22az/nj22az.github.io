@@ -25,11 +25,13 @@ function reuseNeighbourTextures(gltf){
     }
   });
 }
-export function preloadModels({onProgress}={}){
-  if(pending)return pending;
-  const loader=new GLTFLoader();let complete=0;
-  let at=0;
-  async function loadOne(id){
+const modelPending=new Map();
+export function preloadModel(id){
+  if(!id)return Promise.resolve(false);
+  if(loaded.has(id))return Promise.resolve(true);
+  if(modelPending.has(id))return modelPending.get(id);
+  const task=(async()=>{
+    const loader=new GLTFLoader();
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
       const neighbours=id.startsWith('vroid-');
@@ -38,12 +40,26 @@ export function preloadModels({onProgress}={}){
       const data=await response.arrayBuffer();
       const gltf=await loader.parseAsync(data,neighbours?assetURL('characters/vroid/'):'' );gltf.scene.traverse(o=>{if(o.isSkinnedMesh&&!neighbours&&!['kenji','yui','yuri-playful','nozomi'].includes(id)){smoothCharacterNormals(o.geometry);o.material.flatShading=false;o.material.roughness=.78;o.material.dithering=true;}});if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);if(neighbours)reuseNeighbourTextures(gltf);loaded.set(id,gltf);
     }catch(error){console.warn('Using procedural character fallback for '+id,error.message);}
-    finally{clearTimeout(timeout);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}
-  }
-  // Limit simultaneous GLB parsing/image decoding on tablets.
-  pending=Promise.allSettled(Array.from({length:3},async()=>{while(at<SOURCES.length)await loadOne(SOURCES[at++]);})).then(()=>({ready:loaded.size,total:SOURCES.length}));
+    finally{clearTimeout(timeout);}
+    return loaded.has(id);
+  })();
+  modelPending.set(id,task);return task;
+}
+export function preloadModels({onProgress}={}){
+  if(pending)return pending;
+  pending=(async()=>{let complete=0;for(const id of SOURCES){await preloadModel(id);onProgress?.(++complete/SOURCES.length,id,loaded.has(id));}return {ready:loaded.size,total:SOURCES.length};})();
   return pending;
 }
+export function characterSource(name){
+  if(name==='player'||name==='Johansson')return null;
+  if(name==='Reiko')return 'nozomi';
+  if(name==='Yuri')return 'yuri-playful';
+  if(name==='Yui')return 'yui';
+  const profile=PROFILES.find(p=>p.name===name),look=vroidLook(profile);
+  if(look)return look.base;
+  return 'suit';
+}
+export const preloadCharacter=name=>preloadModel(characterSource(name));
 function sourceFor(name,profile){
   if(name==='Reiko'&&loaded.has('nozomi'))return 'nozomi';
   if(name==='Yuri'&&loaded.has('yuri-playful'))return 'yuri-playful';

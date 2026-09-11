@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createTown} from '../src/world/town.js';
-import {ROUTES,routeAt} from '../src/world/layout.js';
-import {lanePatches} from '../src/world/lane-surfaces.js';
-import {circleHitsRect} from '../physics.js';
+import {createTown} from '../src/world/town.js?snappy=1';
+import {ROUTES,routeAt} from '../src/world/layout.js?snappy=1';
+import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
+import {circleHitsRect} from '../physics.js?snappy=1';
 import {RESIDENTS} from '../src/people/residents.js';
 import {FULL_TOWN} from '../src/world/full-town-state.js';
-import {buildPark} from '../src/world/park.js';
+import {buildPark} from '../src/world/park.js?snappy=1';
 
 const make=()=>{
  installDOM();

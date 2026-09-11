@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {FULL_TOWN,CITY_SECTIONS,STREET_DOORS,FULL_PATHS,doorApproach,fullContains,fullHeight} from '../src/world/full-town-state.js';
 import {parkHeight} from '../src/world/park-layout.js';
-import {circleHitsRect} from '../physics.js';
-import {drawTownMap} from '../src/world/map.js';
+import {circleHitsRect} from '../physics.js?snappy=1';
+import {drawTownMap} from '../src/world/map.js?snappy=1';
 
 const navigation=JSON.parse(await readFile(new URL('../assets/models/full-town/navigation.json',import.meta.url)));
 const clearance=JSON.parse(await readFile(new URL('../assets/models/full-town/street-clearance.json',import.meta.url)));

@@ -19,7 +19,7 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   assert.equal(doc.asset.extras.author,'Kiklox (https://sketchfab.com/kiklox)');assert.match(doc.extras.sourceSHA256,/^[a-f0-9]{64}$/);
   for(const m of doc.materials){assert.ok(m.pbrMetallicRoughness.baseColorTexture);assert.equal(m.pbrMetallicRoughness.metallicFactor,0);}
   for(const image of doc.images){assert.ok(Number.isInteger(image.bufferView));assert.equal(image.uri,undefined);}
-  const {preloadModels,createLocalCharacters}=await import('../src/people/models.js?nozomi-check');
+  const {preloadModels,createLocalCharacters}=await import('../src/people/models.js?snappy=1');
   assert.deepEqual(await preloadModels(),{ready:9,total:9});const models=createLocalCharacters(),scene=new THREE.Scene();
   const attach=name=>{const e=new THREE.Group();e.userData.name=name;scene.add(e);return models.attach(e,name);};
   const reiko=attach('Reiko'),aiko=attach('Aiko'),yuri=attach('Yuri');
@@ -50,7 +50,7 @@ test('Nozomi replaces only Reiko and remains grounded and seated through every c
   delete reiko.entity.userData.seatHeight;delete reiko.entity.userData.socialPose;models.update(.4);assert.equal(reiko.model.position.y,reiko.floorOffset);
   // An unavailable optional appearance must preserve the established actor.
   const fetchReady=globalThis.fetch;globalThis.fetch=url=>String(url).includes('nozomi.glb')?Promise.resolve(new Response('',{status:503})):fetchReady(url);
-  const fallback=await import('../src/people/models.js?nozomi-offline');assert.deepEqual(await fallback.preloadModels(),{ready:8,total:9});
+  const fallback=await import('../src/people/models.js?snappy=1');assert.deepEqual(await fallback.preloadModels(),{ready:8,total:9});
   const e=new THREE.Group();e.userData.name='Reiko';assert.ok(fallback.createLocalCharacters().attach(e,'Reiko').neighbour);
  }finally{globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;}
 });

@@ -6,8 +6,8 @@ import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
-import {townAudio} from './src/audio/town-audio.js';
-import {DIALOGUE} from './src/people/schedules.js';
+import {townAudio} from './src/audio/town-audio.js?snappy=1';
+import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 

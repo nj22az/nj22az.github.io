@@ -56,20 +56,27 @@ The Sakura visual revision clears the daytime fog, revises Yuri’s face and out
 ### Outdoor sections and startup recovery
 
 The outdoor renderer selects nearby 24-metre cells in the Shopping, Port,
-Residential and Park districts. Mobile devices retain the current cell and its
-neighbours; desktop retains a wider view. Large merged meshes and static instance
-batches submit only nearby cells/instances. Visibility and buffers are restored
-after every render, including errors, so the Konbini window renderer, interactions,
-collisions and resident schedules retain their existing behaviour.
+Residential and Park districts. Large merged meshes and instance batches submit
+nearby cells/instances only. Visibility and buffers are restored after each render,
+so the Konbini window view keeps its own clipping and selection.
 
-Warehouse and sea-cave downloads begin on approach to the port (z < -24), after
-the first outdoor frame. Other model caches remain resident: this change reduces
-render submissions and defers port assets; it does not unload all district textures.
-The startup asset gate has a 20-second deadline covering downloads and texture
-decoding, after which missing assets use existing procedural fallbacks. A late
-asset does not replace live street geometry or alter its colliders.
+The opening gate requests only the shared street kit and the starting vending
+machine: 2.20 MB of GLBs, compared with 38.29 MB across 17 GLBs previously (94%
+less required model data). These figures exclude JavaScript, surface textures,
+external character textures and audio; they are not measured Safari load times.
+The gate allows eight seconds before using the existing fallback street.
 
-Validation: startup timeout/failure, district transitions, moving residents,
-instance selection and state restoration tests; CPU game boot and all interior
-transitions; Konbini window tests; Vite build. Safari GPU performance still needs
-verification on a physical device.
+After the first frame, a nearby-detail queue loads one model at a time. It loads
+individual resident rigs, the tea house, ramen facade, izakaya exterior, park,
+plants, warehouse and sea cave on approach. Existing placeholders, door positions
+and colliders are established first; detail upgrades do not move the entrances or
+collision geometry. The izakaya interior now loads at its door, like the other
+supplied interiors. Sound files load when needed, and repeated district surface
+materials share textures. Already-loaded models remain cached for return visits;
+this is demand loading rather than a complete district memory eviction system.
+
+Validation includes cold model-request counts and byte budget, loading all deferred
+facades without changing colliders/doors, upgrading Yuri without duplicate actors,
+serial/nearby queue behaviour, timeout recovery, route clearance, CPU game boot and
+interior transitions, Konbini window rendering, and Vite build. Actual Safari frame
+rate and time to first playable frame require a physical-device check.

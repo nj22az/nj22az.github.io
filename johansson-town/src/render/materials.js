@@ -2,6 +2,7 @@ import {assetURL} from '../assets.js';
 import * as THREE from '../../vendor/three.module.js';
 import {applyWorldUV} from './world-uv.js';
 
+const sharedTextures=new Map();
 const EXTRA_SURFACES={
   concrete:{map:'materials/oga-concrete.jpg',roughness:.95,bump:.022},
   paving:{map:'materials/oga-paving.jpg',roughness:.93,bump:.035},
@@ -9,7 +10,7 @@ const EXTRA_SURFACES={
 };
 
 export function createMaterials({mobile=false,anisotropy=4}={}) {
-  const textures=new Map(),materials=new Map(),loader=new THREE.TextureLoader();
+  const textures=sharedTextures,materials=new Map(),loader=new THREE.TextureLoader();
   function texture(path,colour=false){if(textures.has(path))return textures.get(path);const t=loader.load(assetURL(path),undefined,undefined,()=>{});t.colorSpace=colour?THREE.SRGBColorSpace:THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(anisotropy,mobile?2:8);textures.set(path,t);return t;}
   function material(kind='plaster',colour=0xffffff){
     const id=kind+'/'+colour;if(materials.has(id))return materials.get(id);

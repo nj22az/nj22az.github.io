@@ -1,21 +1,21 @@
-import {buildStorefront} from './storefront.js';
-import {buildRamenRestaurant} from './supplied-rooms.js';
+import {buildStorefront} from './storefront.js?snappy=1';
+import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
 import {applyStreetClearance} from './street-clearance.js';
 import {buildYuriHome} from './yuri-home.js';
-import {buildPromenade} from './promenade.js';
+import {buildPromenade} from './promenade.js?snappy=1';
 import {LANDMARK_LOTS,hideLandmarkLots,colliderInLandmarkLot,landmarkLotColliders} from './landmark-lots.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {CITY_SECTIONS,FULL_TOWN,STREET_DOORS,sourceHeight,fullContains,doorApproach,peninsulaContains} from './full-town-state.js';
-import {groundHeight} from './layout.js';
+import {groundHeight} from './layout.js?snappy=1';
 import {parkHeight,parkBench} from './park-layout.js';
-import {buildPark} from './park.js';
+import {buildPark} from './park.js?snappy=1';
 import {createVendingMachine} from './vending.js';
 import {ITEMS} from '../../content-data.js';
 import {STREET_CAST} from '../people/residents.js';
 import {IZAKAYA_DOOR,RAMEN_DOOR,YURI_HOME_DOOR,izakayaOpen} from '../people/social.js';
-import {circleHitsRect} from '../../physics.js';
+import {circleHitsRect} from '../../physics.js?snappy=1';
 let source=null,pending,clearance;
 export function preloadFullTown(){return pending??=(async()=>{
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);

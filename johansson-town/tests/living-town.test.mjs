@@ -8,7 +8,7 @@ import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,yuriEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
-import {createActivities} from '../activities.js';
+import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 test('all residents have distinct identities, actual friendships and time-bound supper visits',()=>{

@@ -5,10 +5,10 @@ import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {buildWarehouse,placeWarehouse,WAREHOUSE,WAREHOUSE_PLACE} from '../src/world/warehouse.js';
-import {createTown} from '../src/world/harbour.js';
-import {drawTownMap} from '../src/world/map.js';
-import {routeAt} from '../src/world/layout.js';
-import {circleHitsRect,sweepFraction} from '../physics.js';
+import {createTown} from '../src/world/harbour.js?snappy=1';
+import {drawTownMap} from '../src/world/map.js?snappy=1';
+import {routeAt} from '../src/world/layout.js?snappy=1';
+import {circleHitsRect,sweepFraction} from '../physics.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 const folder=new URL('../assets/models/warehouse/',import.meta.url);
 async function load(){

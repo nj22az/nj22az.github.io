@@ -1,10 +1,10 @@
-import {buildLaneSurfaces} from './lane-surfaces.js';
+import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildHomes} from './homes.js';
-import {buildRamenRestaurant} from './supplied-rooms.js';
-import {buildTeaHouse} from './tea-house.js';
+import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
+import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,groundHeight,nearestOnSegment} from './layout.js';
-import {createMaterials} from '../render/materials.js';
+import {ROUTES,groundHeight,nearestOnSegment} from './layout.js?snappy=1';
+import {createMaterials} from '../render/materials.js?snappy=1';
 
 // Modular timber, tiled roofs and open thresholds. Ground and collision share ROUTES.
 export function buildDistricts(world,options){

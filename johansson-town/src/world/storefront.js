@@ -1,4 +1,4 @@
-import {createMaterials} from '../render/materials.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {localToWorld} from './landmark-lots.js';
 // Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.

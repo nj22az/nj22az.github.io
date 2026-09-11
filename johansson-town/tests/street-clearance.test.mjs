@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {applyStreetClearance} from '../src/world/street-clearance.js';
 import {FULL_TOWN,CITY_SECTIONS,sourceHeight} from '../src/world/full-town-state.js';
-import {drawTownMap} from '../src/world/map.js';
+import {drawTownMap} from '../src/world/map.js?snappy=1';
 const folder=new URL('../assets/models/full-town/',import.meta.url);
 const bytes=await readFile(new URL('overworld.glb',folder));
 const navigation=JSON.parse(await readFile(new URL('navigation.json',folder)));

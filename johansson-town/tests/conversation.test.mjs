@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {conversationViewport} from '../src/conversation-layout.js';
-import {createActivities} from '../activities.js';
+import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 test('conversation reserves a separate scene area on phones, tablets and desktop',()=>{

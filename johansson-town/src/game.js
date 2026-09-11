@@ -1,13 +1,14 @@
+import {createDetailStream} from './world/detail-stream.js';
 import {createTownSections} from './render/town-sections.js';
 import {createStoreService} from './people/store-service.js';
 import {STORE_SEATS} from './world/interiors/store-layout.js';
 import {createShopStreetView} from './render/shop-street-view.js?konbini-1';
 import {createNeighbourChats,createChatBubble,clearChatLine} from './people/neighbour-chats.js?konbini-1';
 import {createIndoorResidents} from './people/indoor-residents.js?konbini-1';
-import {buildSuppliedRoom,suppliedRoomBoundsBlocked,preloadSuppliedRooms,suppliedRoomReady,isSuppliedRoom} from './world/supplied-rooms.js';
+import {buildSuppliedRoom,suppliedRoomBoundsBlocked,preloadSuppliedRooms,suppliedRoomReady,isSuppliedRoom} from './world/supplied-rooms.js?snappy=1';
 import {FULL_TOWN} from './world/full-town-state.js';
 import {travelProgress} from './progression/travel.js';
-import {buildIzakayaRoom} from './world/izakaya.js';
+import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
 import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
@@ -17,17 +18,17 @@ import {atmosphere} from './render/atmosphere.js?town-light-1';
 import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?konbini-1';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-2';
-import {townAudio} from './audio/town-audio.js';
-import {routeAt,groundHeight} from './world/layout.js';
-import {drawTownMap} from './world/map.js?warehouse=1';
+import {townAudio} from './audio/town-audio.js?snappy=1';
+import {routeAt,groundHeight} from './world/layout.js?snappy=1';
+import {drawTownMap} from './world/map.js?snappy=1';
 import * as THREE from '../vendor/three.module.js';
-import { createTown } from './world/town.js?warehouse=1';
-import { createActivities } from '../activities.js?konbini-1';
+import { createTown } from './world/town.js?snappy=1';
+import { createActivities } from '../activities.js?snappy=1';
 import { createInspector } from '../inspect-3d.js';
 import { createContentItems } from '../content-items.js?warehouse=1';
-import { createCastAI } from './people/schedules.js';
-import { createCharacters } from './people/characters.js?konbini-1';
-import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js';
+import { createCastAI } from './people/schedules.js?snappy=1';
+import { createCharacters } from './people/characters.js?snappy=1';
+import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -170,6 +171,11 @@ let roomLoading=false;
 async function enterRoom(s){
  if(roomLoading)return;
  if(world.isOpen&&!world.isOpen(s,minutes)){say('準備中 · Closed. Opens at '+(s.opens||'09:00')+'.',4);return;}
+ if(s.id==='izakaya'&&!izakayaReady('interior')){
+  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
+  try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
+  if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+ }
  if(isSuppliedRoom(s.id)&&!suppliedRoomReady(s.id)){
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
   let ready=false;
@@ -334,18 +340,18 @@ function updateContextControls(){
  const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:performance.now()<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!active});
  for(const [id,visible] of Object.entries(state)){const element=$('#'+id);if(element.classList.contains('hidden')===visible)element.classList.toggle('hidden',!visible);}
 }
-let portRequested=false;
-function loop(){requestAnimationFrame(loop);updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');if(!paused){const before=player.position.clone();simulate(frameDt);if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();accumulator=0;resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
+const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;
+for(const detail of world.details||[])detailStream.add(detail);
+characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
+detailStream.add({id:'warehouse',x:-13.6,z:-56.4,radius:40,load:()=>world.warehouse?.load()});
+detailStream.add({id:'sea-cave',x:0,z:-78,radius:42,load:()=>world.seaCave?.load()});
+let detailsStarted=false;
 
-// Download the detailed port scenery only when approaching the port.
+function loop(){requestAnimationFrame(loop);if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position);updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');if(!paused){const before=player.position.clone();simulate(frameDt);if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();accumulator=0;resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+
 function renderOutdoor(){
   townSections.render({renderer,scene,camera,town,position:player.position});
-  if(!portRequested&&player.position.z < -24){
-    portRequested=true;
-    setTimeout(()=>{
-      for(const asset of [world.seaCave,world.warehouse]){
-        void asset?.load().then(()=>{shopStreetView.invalidate();townSections.invalidate();});
-      }
-    },0);
-  }
 }
+// Allow the opening frame to paint before starting any district downloads.
+setTimeout(()=>{detailsStarted=true;},0);

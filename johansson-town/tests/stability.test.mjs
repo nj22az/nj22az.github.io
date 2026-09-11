@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 
 const here=dirname(fileURLToPath(import.meta.url));
 const root=resolve(here,'..');
-const {circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction}=await import('../physics.js');
+const {circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked,sweepFraction}=await import('../physics.js?snappy=1');
 
 assert.equal(circleHitsRect(0,0,.28,{x:1,z:0,w:1,d:1}),false,'clear space must remain clear');
 assert.equal(circleHitsRect(.3,0,.28,{x:1,z:0,w:1,d:1}),true,'inflated prop collision must stop the player');

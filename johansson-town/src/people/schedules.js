@@ -1,8 +1,8 @@
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {residentPlan,NIGHT_PATROL} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
-import {createNavigation} from './navmesh.js';
-import {groundHeight} from '../world/layout.js';
+import {createNavigation} from './navmesh.js?snappy=1';
+import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {YURI_PROFILE} from './residents.js';
 import * as THREE from '../../vendor/three.module.js';

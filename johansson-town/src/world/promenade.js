@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {createMaterials} from '../render/materials.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
 import {CITY_SECTIONS,FULL_PATHS,STREET_DOORS,doorApproach} from './full-town-state.js';
 
 const STREET_SHOULDERS=Object.freeze([

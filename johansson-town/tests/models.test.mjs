@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
-import {preloadModels,createLocalCharacters} from '../src/people/models.js';
+import {preloadModels,createLocalCharacters} from '../src/people/models.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 import {vroidLook} from '../src/people/vroid.js';

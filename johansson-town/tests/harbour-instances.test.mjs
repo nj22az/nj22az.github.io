@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createHarbourInstances} from '../src/render/harbour-instances.js';
-import {createTown} from '../src/world/harbour.js';
+import {createTown} from '../src/world/harbour.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 function records(meshes){

@@ -6,7 +6,7 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {preloadStreetPlants,buildStreetPlants} from '../src/world/street-plants.js';
-import {createMaterials} from '../src/render/materials.js';
+import {createMaterials} from '../src/render/materials.js?snappy=1';
 import {createHarbourInstances} from '../src/render/harbour-instances.js';
 
 test('all VRoid bases load locally, preserve expressions and blended skinning, and plant their soles in every clip',async()=>{

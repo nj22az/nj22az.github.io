@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {VOICE_LINES} from '../src/people/voice-lines.js';
-import {DIALOGUE} from '../src/people/schedules.js';
+import {DIALOGUE} from '../src/people/schedules.js?snappy=1';
 
 test('published voice topics have matching subtitles and real local WAVs',async()=>{
  assert.equal(VOICE_LINES.length,4);
@@ -31,7 +31,7 @@ test('delayed speech cannot play after close, replacement, mute or hidden page',
   if(url.includes('/voices/'))return new Promise(resolve=>pending.set(url.split('/').at(-1).replace('.wav',''),resolve));
   return Promise.resolve({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)});
  };
- const {townAudio,unlockTownAudio}=await import('../src/audio/town-audio.js?voice-test');unlockTownAudio();
+ const {townAudio,unlockTownAudio}=await import('../src/audio/town-audio.js?snappy=1');unlockTownAudio();
  const finish=id=>pending.get(id)({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)});
  let waiting=townAudio.speak('aiko-greeting');townAudio.stopSpeech();finish('aiko-greeting');await waiting;assert.equal(started.length,0);
  const old=townAudio.speak('aiko-cat'),current=townAudio.speak('kenji-game');finish('kenji-game');await current;finish('aiko-cat');await old;assert.equal(started.length,1);

@@ -6,7 +6,7 @@ import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-lay
 import {RESIDENTS} from '../src/people/residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildConvenienceStore} from '../src/world/interiors/convenience.js';
-import {circleHitsRect} from '../physics.js';
+import {circleHitsRect} from '../physics.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 function setup(){
@@ -55,7 +55,7 @@ test('market borrowing preserves Yuri movement, reserves the player chair and re
  guests.restore();for(const g of [yuri,mrs]){assert.equal(g.parent,street);assert.equal(g.userData.hit.inside,false);assert.equal(g.userData.storeSeatId,undefined);assert.equal(g.userData.seatHeight,undefined);}
 });
 test('seated menu supports ordering, eating and standing on touch and keyboard actions',async()=>{
- const dom=installDOM(),t=setup();const {createActivities}=await import('../activities.js');let stood=false;
+ const dom=installDOM(),t=setup();const {createActivities}=await import('../activities.js?snappy=1');let stood=false;
  const activities=createActivities({say(){},onWeather(){},onTime(){},getTableService:()=>t.service,onStand:()=>stood=true});
  activities.action('store-table');dom.button('Steamed pork bun · ¥150');assert.equal(activities.paused,false);
  t.step(35);activities.action('store-table');dom.button('Eat Steamed pork bun');assert.equal(t.service.order,null);
