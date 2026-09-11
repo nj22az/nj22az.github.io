@@ -1,6 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,access} from 'node:fs/promises';
+import {runtimeSourceHash} from '../scripts/runtime-source.mjs';
+
+test('published runtime matches the current source rather than an older build',async()=>{
+ const root=new URL('../',import.meta.url).pathname;
+ const recorded=JSON.parse(await readFile(new URL('../runtime/source.json',import.meta.url),'utf8'));
+ assert.equal(recorded.sha256,await runtimeSourceHash(root),'Run npm run build:runtime with every source change');
+});
 
 test('published page uses one compiled audio/boot graph with local hashed dependencies',async()=>{
  const base=new URL('../runtime/',import.meta.url),manifest=JSON.parse(await readFile(new URL('.vite/manifest.json',base),'utf8'));

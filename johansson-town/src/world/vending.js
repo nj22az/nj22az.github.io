@@ -4,7 +4,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {assetURL} from '../assets.js';
 import {VENDING_AD,VENDING_PRODUCTS} from '../commerce/vending-catalogue.js';
 
-let template;
+let template,pending;
 // Source colours are baked into one opaque mesh. Omit the source glass so the
 // small display stays clear on phones and adds no transparency sorting cost.
 export function prepareVendingModel(source){
@@ -29,9 +29,14 @@ export function prepareVendingModel(source){
   return new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.68,metalness:.16}));
 }
 export async function preloadVending(){
-  try{const gltf=await new GLTFLoader().loadAsync(assetURL('models/props/vending-machine.glb'));template=prepareVendingModel(gltf.scene);gltf.scene.traverse(node=>{if(node.isMesh){node.geometry.dispose();node.material.dispose();}});}
-  catch(error){console.warn('Vending model unavailable; using local fallback.',error);}
+  if(template)return true;if(pending)return pending;
+  pending=(async()=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+  try{const response=await fetch(assetURL('models/props/vending-machine.glb'),{signal:controller.signal});if(!response.ok)throw Error(response.status);const gltf=await new GLTFLoader().parseAsync(await response.arrayBuffer(),'');template=prepareVendingModel(gltf.scene);gltf.scene.traverse(node=>{if(node.isMesh){node.geometry.dispose();node.material.dispose();}});return true;}
+  catch(error){console.warn('Vending model unavailable; using local fallback.',error);return false;}finally{clearTimeout(timer);}
+  })();const task=pending;task.finally(()=>{pending=null;});return task;
 }
+export const vendingReady=()=>!!template;
+export async function hydrateVending(group,{shadows=false}={}){if(!await preloadVending())return false;const old=group.children[0],machine=template.clone();machine.castShadow=shadows;machine.receiveShadow=true;group.add(machine);old.removeFromParent();old.geometry.dispose();old.material.dispose();return true;}
 function panel(width,height,position,paint){
   const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;
   const ctx=canvas.getContext('2d');paint(ctx,canvas.width,canvas.height);

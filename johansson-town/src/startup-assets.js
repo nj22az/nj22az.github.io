@@ -1,5 +1,5 @@
-// All callers have procedural fallbacks. Late assets may populate their caches,
-// but are not inserted into the live street or its collision geometry.
+// Bound the entry gate. The detail stream mounts late assets into stable shells;
+// doors, collision and saved progress do not change when an asset arrives.
 export async function settleStartupAssets(jobs,{timeoutMs=20000}={}){
   const pending=new Set(Object.keys(jobs)),failed=[];
   let timer;

@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
+import {buildShopDoor} from './shop-door.js';
 
 // Replaces the western fishing-gear shed. Source frontage is -Z; rotate it
 // towards the main street (+X), with its roof clear of the west service lane.
@@ -9,7 +10,7 @@ export const WAREHOUSE_PLACE=Object.freeze({
  id:'warehouse',title:'Harbour Warehouse',jp:'港の倉庫',sub:'WESTERN QUAY',
  x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',
  line:'Fishing gear, ice and quay stores · open at all hours.',
- door:Object.freeze([-6.8,0,-55.7]),exitPosition:Object.freeze([-6.8,0,-55.7]),entryFacing:Math.PI/2,
+ door:Object.freeze([-8.6,0,-52.65]),exitPosition:Object.freeze([-8.6,0,-52.65]),entryFacing:Math.PI/2,
  directions:'Walk past Sakura Konbini towards the water. At the end of the main street, look left for the white timber building marked HARBOUR WAREHOUSE.',
 });
 export function warehouseColliders(){
@@ -40,20 +41,10 @@ export async function fetchWarehouse(){
  }finally{clearTimeout(timer);}
 }
 function addStreetDoor(group){
- const door=new THREE.Group();door.name='warehouse-street-door';
- door.position.set(-10.48,0,-55.7);door.rotation.y=Math.PI/2;
- const timber=new THREE.MeshStandardMaterial({color:0x6e5844,roughness:.9});
- const leafMat=new THREE.MeshStandardMaterial({color:0x8a6e4e,roughness:.86});
- const iron=new THREE.MeshStandardMaterial({color:0x3a4144,roughness:.45,metalness:.35});
- const pad=new THREE.MeshStandardMaterial({color:0x8e8c84,roughness:.95});
- const post=(x)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.12,2.28,.14),timber);m.position.set(x,1.2,0);door.add(m);};
- post(-.52);post(.52);
- const lintel=new THREE.Mesh(new THREE.BoxGeometry(1.16,.12,.16),timber);lintel.position.set(0,2.34,0);door.add(lintel);
- const leaf=new THREE.Mesh(new THREE.BoxGeometry(.96,2.12,.06),leafMat);leaf.position.set(-.06,1.14,.04);leaf.rotation.y=-.22;door.add(leaf);
- const handle=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.16,8),iron);handle.rotation.z=Math.PI/2;handle.position.set(.28,1.05,.1);door.add(handle);
- const step=new THREE.Mesh(new THREE.BoxGeometry(1.2,.08,.42),pad);step.position.set(0,.04,.18);door.add(step);
- group.add(door);return door;
+ const {group:door}=buildShopDoor(group,{name:'warehouse-street-door',width:1.05,glass:false});
+ door.position.set(-10.48,0,WAREHOUSE_PLACE.door[2]);door.rotation.y=Math.PI/2;return door;
 }
+
 export function buildWarehouse(world,options={}){
  const group=new THREE.Group();group.name='Harbour Warehouse';world.group.add(group);
  world.colliders.push(...warehouseColliders());
@@ -65,11 +56,11 @@ export function buildWarehouse(world,options={}){
  const roof=new THREE.Mesh(new THREE.BoxGeometry(6.3,.24,11.5),roofMat);roof.position.set(WAREHOUSE.x,4.32,WAREHOUSE.z);fallback.add(roof);
  options.label?.('港の倉庫','HARBOUR WAREHOUSE',[-10.48,2.2,-60.35],2.75,.88,Math.PI/2,'#e0dac2','#314d51');
  addStreetDoor(group);
- const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.2,1.25,-55.7);group.add(marker);
+ const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.45,1.25,WAREHOUSE_PLACE.door[2]);group.add(marker);
  options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));
  let pending;
  const state={group,place:WAREHOUSE_PLACE,loaded:false,status:'idle',load(loader=fetchWarehouse){
-  if(pending)return pending;state.status='loading';
+  if(state.loaded)return Promise.resolve(true);if(pending)return pending;state.status='loading';
   pending=Promise.resolve().then(loader).then(model=>{
    const placed=placeWarehouse(model);
    placed.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=true;
@@ -80,7 +71,7 @@ export function buildWarehouse(world,options={}){
    });
    group.add(placed);fallback.removeFromParent();wall.geometry.dispose();roof.geometry.dispose();wallMat.dispose();roofMat.dispose();
    state.loaded=true;state.status='ready';return true;
-  }).catch(error=>{state.status='fallback';console.warn('Warehouse unavailable; signed fallback retained',error);return false;});
+  }).catch(error=>{state.status='fallback';console.warn('Warehouse unavailable; signed fallback retained',error);return false;}).finally(()=>{pending=null;});
   return pending;
  }};
  world.warehouse=state;return state;

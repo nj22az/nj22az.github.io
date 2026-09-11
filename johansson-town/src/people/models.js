@@ -46,7 +46,7 @@ export function preloadModel(id){
     finally{clearTimeout(timeout);}
     return loaded.has(id);
   })();
-  modelPending.set(id,task);return task;
+  modelPending.set(id,task);task.then(()=>modelPending.delete(id));return task;
 }
 export function preloadModels({onProgress}={}){
   if(pending)return pending;
@@ -64,6 +64,7 @@ export function characterSource(name){
   return 'suit';
 }
 export const preloadCharacter=name=>preloadModel(characterSource(name));
+export const characterReady=name=>loaded.has(characterSource(name));
 function sourceFor(name,profile){
   if((name==='Aya'||name==='Aiko')&&loaded.has('aya'))return 'aya';
   if(name==='Reiko'&&loaded.has('nozomi'))return 'nozomi';

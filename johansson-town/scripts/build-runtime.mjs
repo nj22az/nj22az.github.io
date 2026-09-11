@@ -1,6 +1,7 @@
 import {build} from 'vite';
 import {readFile,writeFile,readdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {runtimeSourceHash} from './runtime-source.mjs';
 const root=resolve(new URL('..',import.meta.url).pathname);
 await build({configFile:false,root,publicDir:false,build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1'},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
 const manifest=JSON.parse(await readFile(resolve(root,'runtime/.vite/manifest.json'),'utf8'));
@@ -13,4 +14,5 @@ html=html.replace(/import\(['"]\.\/(?:src\/boot\.js(?:\?[^'"]*)?|runtime\/boot-[
 html=html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'');
 html=html.replace('</head>',`<link rel="modulepreload" data-town-runtime href="./runtime/${boot}">\n</head>`);
 await writeFile(resolve(root,'index.html'),html);
+await writeFile(resolve(root,'runtime/source.json'),JSON.stringify({sha256:await runtimeSourceHash(root)},null,2)+'\n');
 console.log('Published runtime entry points:',boot,audio,'files:',(await readdir(resolve(root,'runtime'))).filter(f=>f.endsWith('.js')).length);

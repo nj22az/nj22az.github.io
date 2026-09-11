@@ -43,11 +43,11 @@ export function buildSeaCave(world,options={}){
  options.register?.(marker,'Inspect the sea-cave boundary',()=>options.onAction?.('inspect','Northern sea cave','Waves have hollowed the coastal rock beyond the end of the street. The guardrail closes the unstable coast path. The harbour and shrine remain accessible from the town.'));
  let pending;
  const state={group,loaded:false,status:'idle',barrier,load(loader=fetchSeaCave){
-  if(pending)return pending;state.status='loading';
+  if(state.loaded)return Promise.resolve(true);if(pending)return pending;state.status='loading';
   pending=Promise.resolve().then(loader).then(source=>{
    const placed=placeSeaCave(source.clone(true));placed.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;if(o.material.map)o.material.map.anisotropy=Math.min(options.maxAnisotropy||1,4);}});
    group.add(placed);fallback.removeFromParent();rockGeo.dispose();rockMat.dispose();state.loaded=true;state.status='ready';return true;
-  }).catch(error=>{state.status='fallback';console.warn('Sea cave unavailable; boundary retained',error);return false;});
+  }).catch(error=>{state.status='fallback';console.warn('Sea cave unavailable; boundary retained',error);return false;}).finally(()=>{pending=null;});
   return pending;
  }};
  world.seaCave=state;return state;

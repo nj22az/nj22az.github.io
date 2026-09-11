@@ -57,8 +57,8 @@ export function buildDistricts(world,options){
   box([8,.4,8],[32,5.8,65],'concrete',0xa2a18c);for(const x of [29,35])box([.25,4,.25],[x,8,63],'timber',0x9b4833);box([8,.28,.45],[32,10,63],'timber',0x943d2a);verb([32,7.3,65],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
   for(const [x,z] of [[29,67],[32,67],[35,67]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  for(const [x,z,jp,en] of [[5.9,18,'食堂通り','EAST → RAMEN · IZAKAYA'],[-5.9,29,'柳小路','WEST → HOMES · BATHHOUSE'],[5.9,-28,'桜商店','SAKURA ← · HARBOUR AHEAD'],[5.9,50,'北通り','TEA HOUSE → · BUS STOP ←']]){
-    sign(jp,en,[x,2.7,z],3.1,.72);
+  for(const [x,z,jp,en] of [[7.1,22,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,29,'柳小路','WEST → HOMES · BATHHOUSE'],[5.9,-28,'桜商店','SAKURA ← · HARBOUR AHEAD'],[5.9,50,'北通り','TEA HOUSE → · BUS STOP ←']]){
+    const marker=sign(jp,en,[x,2.7,z],x===7.1?2.4:3.1,.6,x===7.1?-Math.PI/2:0);marker.name=x===7.1?'Dining lane direction':'District direction';
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }
   buildHomes(world,options,box);

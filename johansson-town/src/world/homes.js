@@ -1,4 +1,6 @@
-import {buildJapaneseHome,finishJapaneseHomes} from './japanese-town.js';
+import {buildJapaneseHome,finishJapaneseHomes,preloadJapaneseTown} from './japanese-town.js';
+import {createMaterials} from '../render/materials.js?snappy=1';
+import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
@@ -21,13 +23,20 @@ export function buildHomes(world,options,box){
   const part=(size,pos,kind,colour,tilt=0)=>box(size,position(...pos),kind,colour,[0,angle,tilt]);
   const upgraded=buildJapaneseHome(world.group,p.house,i,options);
   if(!upgraded){
-  part([3.12,2.85,3.5],[0,1.425,0],'plaster',[0xbfb59c,0xa5afa1,0xc4b29f][i%3]);
-  part([3.22,.22,3.6],[0,.11,0],'concrete',0x8b9086);
+  const fallback=new THREE.Group(),surfaces=createMaterials();fallback.name='home-placeholder:'+p.name;world.group.add(fallback);
+  const shell=(size,pos,kind,colour,tilt=0)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),surfaces.worldMaterial(kind,colour));m.position.set(...position(...pos));m.rotation.set(0,angle,tilt);m.castShadow=!!options.shadows;m.receiveShadow=true;fallback.add(m);};
+  shell([3.12,2.85,3.5],[0,1.425,0],'plaster',[0xbfb59c,0xa5afa1,0xc4b29f][i%3]);
+  shell([3.22,.22,3.6],[0,.11,0],'concrete',0x8b9086);
   for(const side of [-1,1]){
-   part([.12,2.85,.12],[side*1.48,1.45,1.79],'timber',0x665640);
-   part([1.85,.16,3.85],[side*.83,3.04,0],'roof',0x626e69,-side*.25);
+   shell([.12,2.85,.12],[side*1.48,1.45,1.79],'timber',0x665640);
+   shell([1.85,.16,3.85],[side*.83,3.04,0],'roof',0x626e69,-side*.25);
   }
-  part([.12,.18,3.85],[0,3.28,0],'roof',0x626e69);
+  shell([.12,.18,3.85],[0,3.28,0],'roof',0x626e69);
+  registerDetail(world,{id:'home:'+p.name,x,z,radius:38,load:async()=>{
+   if(!await preloadJapaneseTown())return false;
+   if(!buildJapaneseHome(world.group,p.house,i,options))return false;
+   finishJapaneseHomes(world.group);fallback.removeFromParent();fallback.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});return true;
+  }});
   }
   part([.88,2.15,.09],[0,1.18,1.79],'timber',0x665640);
   for(const dx of [-.3,-.1,.1,.3])part([.035,1.78,.035],[dx,1.24,1.86],'bamboo',0xa49879);
@@ -48,7 +57,7 @@ export function buildHomes(world,options,box){
    }
   }
   const sideways=Math.abs(sin)>.5;
-  world.colliders.push({x,z,w:sideways?3.5:3.12,d:sideways?3.12:3.5,height:upgraded?6:3.3,home:p.name});
+  world.colliders.push({x,z,w:sideways?3.5:3.12,d:sideways?3.12:3.5,height:6,home:p.name});
   const col=i%4,row=Math.floor(i/4);ctx.fillStyle='#e6dbc1';ctx.fillRect(col*256,row*128,256,128);
   ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 24px sans-serif';ctx.fillText(p.name,col*256+128,row*128+49,240);ctx.font='19px sans-serif';ctx.fillText(p.homeAddress,col*256+128,row*128+86,240);
   const geo=new THREE.PlaneGeometry(.92,.46),uv=geo.attributes.uv;

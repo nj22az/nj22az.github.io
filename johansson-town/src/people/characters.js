@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels,preloadCharacter} from './models.js?snappy=1';
+import {createLocalCharacters,preloadModels,preloadCharacter,characterReady} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createCharacters as createStableCharacters } from './procedural.js?konbini-1';
 
@@ -31,21 +31,23 @@ export function createCharacters(options={}){
       return null;
     }
     const detailed=models.attach(entity,file,targetHeight),actor=detailed||stable.attach(entity,file,targetHeight);if(actor)actors.push(actor);
-    if(!detailed)upgrades.set(entity,{file,height:targetHeight,actor});
+    if(!detailed||!characterReady(file))upgrades.set(entity,{file,height:targetHeight,actor});
     return actor;
   }
 
   function streamDetails(stream,onChange,getPosition){
     for(const [entity,entry] of upgrades){
-      stream.add({id:'resident:'+entry.file,radius:30,distance:position=>{
+      stream.add({id:'resident:'+entry.file,priority:0,radius:42,timeoutMs:16000,distance:position=>{
         for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
-        position=getPosition?.()||position;const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
+        if(entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inHome)position=getPosition?.()||position;
+        const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
       },load:async()=>{
         try{
         if(!await preloadCharacter(entry.file))return false;
         const old=[...entity.children],actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
         for(const child of old)child.removeFromParent();
         const index=stable.actors.indexOf(entry.actor);if(index>=0)stable.actors.splice(index,1);
+        const modelIndex=models.actors.indexOf(entry.actor);if(modelIndex>=0)models.actors.splice(modelIndex,1);
         const all=actors.indexOf(entry.actor);if(all>=0)actors.splice(all,1);actors.push(actor);entity.userData.character=actor;
         upgrades.delete(entity);
         onChange();return true;

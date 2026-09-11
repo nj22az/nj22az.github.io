@@ -9,7 +9,7 @@ test('shopping, port and homes render independently and restore visibility',()=>
  const view=createTownSections({mobile:true}),camera=new THREE.PerspectiveCamera(),position=new THREE.Vector3(0,0,38);let seen;
  const renderer={render(){seen=[shopping.visible,port.visible,home.visible,hidden.visible];}};
  const render=()=>view.render({renderer,scene,camera,town,position});
- render();assert.deepEqual(seen,[true,false,false,false]);assert.equal(view.stats.district,'Shopping');assert.ok(view.stats.culled>0);
+ render();assert.deepEqual(seen,[true,false,true,false]);assert.equal(view.stats.district,'Shopping');assert.ok(view.stats.culled>0);
  position.set(0,0,-65);render();assert.deepEqual(seen,[false,true,false,false]);assert.equal(view.stats.district,'Port');
  position.set(-30,0,12);render();assert.equal(view.stats.district,'Residential');assert.equal(seen[2],true);
  assert.equal(port.visible,true);assert.equal(shopping.visible,true);assert.equal(hidden.visible,false);
@@ -34,4 +34,12 @@ test('town-wide instance batches submit only nearby instances and restore buffer
  const render=()=>view.render({renderer,scene,camera,town,position});
  render();assert.equal(count,1);assert.equal(batch.count,3);assert.equal(batch.instanceMatrix,original);
  position.z=-65;render();assert.equal(count,2);assert.equal(batch.count,3);assert.equal(batch.instanceMatrix,original);
+});
+
+test('crossing the old 24 metre boundary does not drop the adjoining street',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group();scene.add(town);
+ const shop=new THREE.Mesh(new THREE.BoxGeometry(4,5,4),new THREE.MeshBasicMaterial());shop.position.set(0,2.5,-27);town.add(shop);
+ const view=createTownSections({mobile:true}),camera=new THREE.PerspectiveCamera(),position=new THREE.Vector3(0,0,23.9),seen=[];
+ const renderer={render(){seen.push(shop.visible);}};
+ view.render({renderer,scene,camera,town,position});position.z=24.1;view.render({renderer,scene,camera,town,position});assert.deepEqual(seen,[true,true]);
 });

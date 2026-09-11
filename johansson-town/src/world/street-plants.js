@@ -4,7 +4,7 @@ import {assetURL} from '../assets.js';
 
 let parts=null,pending=null;
 export function preloadStreetPlants(){
-  if(pending)return pending;
+  if(parts)return Promise.resolve(true);if(pending)return pending;
   const controller=new AbortController();let timer;
   const load=fetch(assetURL('models/street/potted-plant.glb'),{signal:controller.signal}).then(response=>{
     if(!response.ok)throw Error('Plant asset HTTP '+response.status);
@@ -22,7 +22,7 @@ export function preloadStreetPlants(){
       result.push({geometry,material:mesh.material});
     });
     if(!result.length)throw Error('Empty plant asset');parts=result;return true;
-  }).catch(error=>{console.warn('Street plant unavailable:',error.message);return false;}).finally(()=>clearTimeout(timer));
+  }).catch(error=>{console.warn('Street plant unavailable:',error.message);return false;}).finally(()=>{clearTimeout(timer);pending=null;});
   return pending;
 }
 

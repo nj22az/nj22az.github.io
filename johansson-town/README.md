@@ -97,3 +97,25 @@ looking across at Sakura Konbini. Press E to stand. Startup measurements are ava
 time to the first rendered frame. These are diagnostic timings, not an assertion
 of a particular Safari loading time. The three-second model timeout is only the
 asset gate; it does not bound JavaScript compilation or GPU rendering.
+
+## September 11 entrance and streaming corrections
+
+Late street-kit, home, vending and bench models now replace their temporary shells
+without changing collision or doorway positions. Nearby residents are prioritised;
+failed requests retry at most three times with a delay. A completed slow request
+can still replace its placeholder after the queue timeout. Rendering follows the
+player continuously with a forward margin instead of jumping at 24 m boundaries.
+
+The warehouse street entrance is on the northern frontage, clear of the loading
+props. It opens a dedicated fishing-gear storeroom at all hours and exits through
+the same quay door. The ice cabinet and folio stand are clear of this approach.
+Front-Row Books has framed joinery, a handle, threshold and book display.
+The dining junction has one direction sign, one wall delivery shelf and an arcade
+cabinet away from the crossing. Minato moves 6 m closer and Sato Ramen 2 m closer;
+entrances, service-lane collision, map positions and resident destinations agree.
+
+`npm run build:runtime` also records a source fingerprint. The runtime-package
+check rejects a source change shipped with an older compiled game.
+Validation includes the CPU game flow, model recovery, all room transitions and
+route checks. WebGL is disabled in the available browser; Safari frame pacing and
+GPU rendering still require a device check.

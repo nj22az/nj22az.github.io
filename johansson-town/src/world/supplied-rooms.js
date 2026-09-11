@@ -116,7 +116,7 @@ function addAsset(id,parent){
 // timber neighbour on the left. Both transition from the same clear east lane.
 function buildInakayaPair(world,options){
   const building=new THREE.Group();building.name='Inakaya restaurant and neighbour';
-  building.position.set(24,0,10);world.group.add(building);
+  building.position.set(22,0,10);world.group.add(building);
   const model=addAsset('ramen-exterior',building);
   const prepare=model=>model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
   if(model)prepare(model);
@@ -126,16 +126,16 @@ function buildInakayaPair(world,options){
       const box=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:0xb6a98a,roughness:.9}));box.position.set(x,h/2,z);fallback.add(box);
     }
     hangRamenNoren(fallback);
-    registerDetail(world,{id:'ramen-exterior',x:24,z:10,radius:30,load:async()=>{
+    registerDetail(world,{id:'ramen-exterior',priority:1,x:22,z:10,radius:48,load:async()=>{
       const [ready]=await preloadSuppliedRooms(['ramen-exterior']);if(!ready)return false;
       const detailed=addAsset('ramen-exterior',building);prepare(detailed);fallback.removeFromParent();return true;
     }});
   }
   const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:24.65,z:10,
-      color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[24.65,0,14.7]},
-    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:21.2,z:12.2,
-      color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[21.2,0,14.7]},
+    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:22.65,z:10,
+      color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[22.65,0,14.7]},
+    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:19.2,z:12.2,
+      color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[19.2,0,14.7]},
   ];
   for(const site of sites){
     options.sites.push(site);
@@ -146,9 +146,9 @@ function buildInakayaPair(world,options){
   // Facade-aligned solids keep the source's doors and paving behind the
   // interaction line; both exit points remain outside the walls and props.
   world.colliders.push(
-    {x:24.05,z:9.4,w:3.7,d:7.1,height:6.3},
-    {x:21.16,z:12.19,w:2.35,d:2.9,height:4},
-    {x:22.72,z:13.7,w:6.28,d:.3,height:1},
+    {x:22.05,z:9.4,w:3.7,d:7.1,height:6.3},
+    {x:19.16,z:12.19,w:2.35,d:2.9,height:4},
+    {x:20.72,z:13.7,w:6.28,d:.3,height:1},
   );
   return sites[0];
 }

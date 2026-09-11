@@ -19,7 +19,7 @@ test('Japanese Town kit replaces all shops and homes with bounded shared geometr
   const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)));assert.equal(gltf.meshes.length,4);assert.equal(gltf.materials.length,1);assert.equal(gltf.images.length,3);assert.ok(gltf.images.every(i=>i.bufferView!==undefined&&!i.uri));
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
-  assert.equal(world.harbourShops.length,8);assert.ok(world.harbourShops.every(s=>s.source==='Japanese Town'));
+  assert.equal(world.harbourShops.length,7);assert.ok(world.group.getObjectByName('Sakura glass storefront'));assert.ok(world.harbourShops.every(s=>s.source==='Japanese Town'));
   const batches=[];world.group.traverse(o=>{if(o.name==='japanese-homes')batches.push(o);});assert.equal(batches.reduce((n,o)=>n+o.count,0),10);assert.ok(batches.length<=8,'Homes share geometry and are batched by nearby blocks');assert.ok(batches.every(o=>o.material===batches[0].material));
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
   for(const p of RESIDENTS){assert.equal(blocked(...p.home),false,p.name+' doorstep');assert.ok(nav.path({x:0,z:46},{x:p.home[0],z:p.home[1]}).length,p.name+' route');}

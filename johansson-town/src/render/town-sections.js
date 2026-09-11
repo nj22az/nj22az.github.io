@@ -13,8 +13,8 @@ function near(bounds,x,z,reach){
   return bounds.max.x>=x-reach&&bounds.min.x<=x+reach&&bounds.max.z>=z-reach&&bounds.min.z<=z+reach;
 }
 
-// Render only nearby 24 m sections. Keep a full neighbouring section around the
-// player, so crossing a district boundary does not remove the adjoining street.
+// Geometry stays batched in 24 m cells, but the viewing window follows the player
+// continuously. Look ahead and retain the margin when crossing a cell boundary.
 // Collisions, schedules and interaction anchors remain in the shared town.
 export function createTownSections({mobile=false}={}){
   let cached=null,entries=[];
@@ -46,8 +46,9 @@ export function createTownSections({mobile=false}={}){
   }
   return {stats,invalidate(){cached=null;},render({renderer,scene,camera,town,position}){
     if(cached!==town)cache(town);
-    const x=(Math.floor(position.x/CELL)+.5)*CELL,z=(Math.floor(position.z/CELL)+.5)*CELL;
-    const reach=mobile?CELL*1.5:CELL*2.5;
+    const direction=camera.getWorldDirection(new THREE.Vector3());
+    const x=position.x,z=position.z,reach=mobile?36:54;
+    const ax=x+direction.x*16,az=z+direction.z*16;
     const hidden=[],swapped=[],instanceSwaps=[],sections=new Set(),point=new THREE.Vector3();
     stats.district=districtAt(position.x,position.z);stats.visible=0;stats.batchTriangles=0;stats.submittedBatchTriangles=0;
     try{
@@ -55,9 +56,11 @@ export function createTownSections({mobile=false}={}){
         const {object,bounds,actor,batch,instances}=entry;
         if(!object.visible)continue;
         if(actor){actor.getWorldPosition(point);bounds.min.copy(point).addScalar(-4);bounds.max.copy(point).addScalar(4);}
-        let visible=near(bounds,x,z,reach);
-        if(batch){stats.batchTriangles+=batch.totalTriangles;if(visible){visible=batch.select(box=>near(box,x,z,reach));if(visible){swapped.push([object,object.geometry]);object.geometry=batch.geometry;stats.submittedBatchTriangles+=batch.triangles;}}}
-        if(visible&&instances){const selected=instances.select(box=>near(box,x,z,reach));visible=selected.count>0;if(visible){instanceSwaps.push([object,object.instanceMatrix,object.instanceColor,object.count]);object.instanceMatrix=selected.matrix;object.instanceColor=selected.color;object.count=selected.count;}}
+        const margin=entry.wasNear?6:0;
+        const inView=box=>near(box,x,z,reach+margin)||near(box,ax,az,reach);
+        let visible=inView(bounds);entry.wasNear=visible;
+        if(batch){stats.batchTriangles+=batch.totalTriangles;if(visible){visible=batch.select(inView);if(visible){swapped.push([object,object.geometry]);object.geometry=batch.geometry;stats.submittedBatchTriangles+=batch.triangles;}}}
+        if(visible&&instances){const selected=instances.select(inView);visible=selected.count>0;if(visible){instanceSwaps.push([object,object.instanceMatrix,object.instanceColor,object.count]);object.instanceMatrix=selected.matrix;object.instanceColor=selected.color;object.count=selected.count;}}
         if(!visible){hidden.push(object);object.visible=false;}
         else{stats.visible++;const centre=bounds.getCenter(point);sections.add(districtAt(centre.x,centre.z));}
       }

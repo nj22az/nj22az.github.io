@@ -37,7 +37,7 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   const minato={group:new THREE.Group(),colliders:[]},minatoSites=[],entrances=[];
   buildIzakaya(minato,{sites:minatoSites,register:(o,label,fn)=>entrances.push({o,label,fn}),enter:site=>assert.equal(site.id,'izakaya')});
   assert.equal(entrances.length,1);entrances[0].fn();
-  assert.deepEqual(minatoSites[0].door,[24,0,20]);
+  assert.deepEqual(minatoSites[0].door,[18,0,20]);
   const blocked=(x,z)=>townBoundsBlocked(x,z,.28)||minato.colliders.some(c=>circleHitsRect(x,z,.28,c));
   assert.equal(sweepFraction({x:24,z:18},{x:24,z:20},blocked),1,'Lane reaches the new door');
   assert.equal(blocked(24,19.4),false,'Returning to the street is clear');

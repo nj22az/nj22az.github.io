@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
+import {registerDetail} from './detail-stream.js';
 
 // Cedar bench on the east sidewalk, looking across the street at Sakura Shōten.
 export const SAKURA_SHOP=Object.freeze({x:-7.55,z:-28});
@@ -24,11 +25,11 @@ export function preloadSakuraBench(){
     fetch(assetURL('models/street/sakura-bench.glb?bench-1'),{signal:controller.signal})
       .then(response=>{if(!response.ok)throw Error('Bench HTTP '+response.status);return response.arrayBuffer();})
       .then(data=>new GLTFLoader().parseAsync(data,'')),
-    new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Bench asset timeout')),8000);})
+    new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('Bench asset timeout'));},8000);})
   ]).then(gltf=>{
     source=gltf.scene;source.updateMatrixWorld(true);return true;
   }).catch(error=>{console.warn('Sakura bench unavailable; using a local stand-in.',error.message);return false;})
-    .finally(()=>clearTimeout(timer));
+    .finally(()=>{clearTimeout(timer);pending=null;});
   return pending;
 }
 
@@ -67,6 +68,13 @@ export function buildSakuraBench(world,{shadows=false,register,onAction,factory}
     group.add(model);world.group.add(group);object=group;
   }else{
     const built=fallbackBench(factory);world.group.add(built.object);object=built.object;
+    // Keep a temporary bench out of static batches so a late model can replace it.
+    object.traverse(mesh=>{if(mesh.isMesh)mesh.userData.staticProp=false;});
+    registerDetail(world,{id:'sakura-bench',x,z,radius:28,load:async()=>{
+      if(!await preloadSakuraBench())return false;
+      const group=new THREE.Group();group.name='sakura-viewing-bench';group.position.set(x,0,z);group.rotation.y=yaw;
+      const model=source.clone(true);model.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=shadows;mesh.receiveShadow=true;}});group.add(model);world.group.add(group);object.removeFromParent();world.sakuraBench.object=group;world.sakuraBench.source='blender';return true;
+    }});
   }
   // Axis-aligned footprint, not the rotated mesh AABB, so the stand-up point stays clear.
   world.colliders.push({x,z,w:1.6,d:1.0,height:.95,minY:0});
