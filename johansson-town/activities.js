@@ -3,6 +3,7 @@ import {STORE_MENU} from './src/people/store-service.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {PROFILES} from './src/people/profiles.js';
+import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
@@ -77,7 +78,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const replies={
       snack:'おすすめ？ 任せて！\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.',
       ribbon:'このリボン？\nThis ribbon? I tied it three times this morning. Effortlessly charming takes a surprising amount of effort.',
-      town:'夕方の港が好き。\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is up the eastern lane — follow the red lanterns. She always keeps a chair for a good story.',
+      town:'夕方の港が好き。\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.',
+      home:residentHomeDescription('Yuri'),
       compliment:'もう、照れちゃう。\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.',
       challenge:'勝負しよう！\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.',
       radio:'内緒だよ。\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.',
@@ -98,7 +100,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ ゆりです。\nWelcome! I am Yuri. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Yuri · Ramen break':offDuty?'Yuri · After hours':'Yuri · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Yuri',close]]);return;}
-    show(title,greeting,[['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
+    show(title,greeting,[['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
   }
   function resident(name){
     if(name==='Yuri'){yuriConversation();return;}
@@ -109,9 +111,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     // Newly discovered callbacks take precedence, then cycle through authored topics.
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
     let text=row[1];
-    if(name==='Mrs Sato'&&state.shrineIntent&&row[0]==='home')text='You chose '+state.shrineIntent+'. Good. Now do one small thing about it.';
-    const profile=PROFILES.find(p=>p.name===name);
+    const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
+    if(residentHomeDescription(name))buttons.push(['Where do you live?',()=>show(name+' · Home',residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);

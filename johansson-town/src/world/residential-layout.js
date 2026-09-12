@@ -27,9 +27,11 @@ export const RESIDENTIAL_ENTRIES=Object.freeze({
  plum:entry('DomekRdy_3',-1.15,5.4,-2.70),
 });
 export const RESIDENTIAL_ASSIGNMENTS=Object.freeze({Aya:'plum',Kenji:'peach','Mrs Sato':'florist','Harbour master':'garage',Reiko:'plum',Tetsuo:'florist','Officer Mori':'peach','Bus driver':'books',Nao:'north',Yuri:'north'});
+// Six street doors; letters identify the separate flats behind a shared entrance.
+const HOME_NUMBERS=Object.freeze({Nao:'1A',Yuri:'1B',Aya:'2A',Reiko:'2B','Mrs Sato':'3A',Tetsuo:'3B',Kenji:'4A','Officer Mori':'4B','Harbour master':'5','Bus driver':'6'});
 export function residentialHome(name){
  const key=RESIDENTIAL_ASSIGNMENTS[name],entrance=RESIDENTIAL_ENTRIES[key],building=RESIDENTIAL_BUILDINGS.find(b=>b.id===entrance.buildingId);
- return {home:[...entrance.door],house:{...building,angle:entrance.angle},homeEntry:key};
+ return {home:[...entrance.door],house:{...building,angle:entrance.angle},homeEntry:key,homeAddress:HOME_NUMBERS[name]+' Willow Alley'};
 }
 export function inResidential(x,z){return x>=RESIDENTIAL.minX&&x<=RESIDENTIAL.maxX&&z>=RESIDENTIAL.minZ&&z<=RESIDENTIAL.maxZ;}
 export function residentialContains(x,z,r=0){

@@ -24,13 +24,13 @@ export function buildHomes(world,options){
   const anchor=new THREE.Object3D();anchor.name='home entrance:'+p.name;anchor.position.set(p.home[0],groundHeight(...p.home)+1.3,p.home[1]);world.group.add(anchor);
   let site=options.sites.find(s=>s.id===homeSiteId(p.name));
   if(!site){site={id:homeSiteId(p.name),title:p.name+'’s home',jp:'住まい',sub:'WILLOW ALLEY',color:0xd4c6ad,accent:'#776953',line:p.homeAddress};options.sites.push(site);}
-  site.homeOwner=p.name;site.door=[p.home[0],groundHeight(...p.home),p.home[1]];site.exitPosition=[...site.door];site.entryFacing=entry.angle;site.x=p.house.x;site.z=p.house.z;
+  site.line=p.homeAddress;site.homeOwner=p.name;site.door=[p.home[0],groundHeight(...p.home),p.home[1]];site.exitPosition=[...site.door];site.entryFacing=entry.angle;site.x=p.house.x;site.z=p.house.z;
   if(p.name==='Yuri')YURI_HOME_DOOR.splice(0,2,...p.home);
   // Shared street entrances open a choice of apartments, never overlapping hit targets.
   if(slot===0)options.register(anchor,'Visit homes',()=>{
    const neighbours=RESIDENTS.filter(n=>n.homeEntry===p.homeEntry).map(n=>options.sites.find(s=>s.id===homeSiteId(n.name)));
    if(neighbours.length===1)options.enter(neighbours[0]);
-   else options.onAction('visit-home','Willow Alley',neighbours.map(site=>({name:site.title,enter:()=>options.enter(site)})));
+   else options.onAction('visit-home','Willow Alley',neighbours.map(site=>({name:site.title+' · '+site.line,enter:()=>options.enter(site)})));
   });
  }
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
