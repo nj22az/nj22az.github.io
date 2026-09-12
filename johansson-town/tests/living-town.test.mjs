@@ -17,7 +17,7 @@ test('all residents have distinct identities, actual friendships and time-bound 
  assert.equal(supperGuests(959).length,0);assert.equal(supperGuests(1439).length,0);assert.ok(supperGuests(1440).some(p=>p.name==='Tetsuo'));assert.equal(supperGuests(180).length,0);
  for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(RESIDENTS.some(r=>r.name===p.name));assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
  assert.equal(residentPlan(PROFILES.find(p=>p.name==='Nao'),1002).place,'izakaya');
- assert.equal(gossipAt(1110,['Aya','Emi']).id,'apron');assert.equal(gossipAt(1110,['Aya']).id,'welcome');
+ assert.equal(gossipAt(1110,['Aya','Reiko']).id,'apron');assert.equal(gossipAt(1110,['Aya']).id,'welcome');
 });
 
 test('izakaya borrows existing entities, updates guests and restores interaction ownership without duplicates',()=>{
@@ -40,9 +40,9 @@ test('izakaya borrows existing entities, updates guests and restores interaction
 });
 
 test('supper charges once, advances the evening, saves a memory and refuses insufficient funds',()=>{
- const dom=installDOM();let minutes=1100;const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Emi']})});
+ const dom=installDOM();let minutes=1100;const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Reiko']})});
  acts.action('izakaya-menu');dom.button('Yakitori plate · ¥180');assert.equal(acts.state.yen,1020);assert.equal(minutes,1108);assert.ok(acts.state.notes.includes('Supper at Minato: Yakitori plate.'));
- dom.button('Listen to the table');assert.match(document.querySelector('#activityBody').firstChild.textContent,/cat apron/);
+ dom.button('Listen to the table');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Tama needs his own column/);
  acts.state.yen=0;acts.action('izakaya-menu');dom.button('Oden supper · ¥260');assert.equal(acts.state.yen,0);assert.equal(minutes,1108);
 });
 
@@ -112,7 +112,7 @@ test('ramen and Sakura reuse their residents and release them at the street door
  const street=new THREE.Group(),scene=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
  const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
  const nao=world.people.find(p=>p.profile.name==='Nao').g;nao.position.set(...[RAMEN_DOOR[0],0,RAMEN_DOOR[1]]);nao.userData.indoors='ramen';
- assert.deepEqual(ramen.sync(580),['Nao']);assert.equal(nao.parent,scene);ramen.restore();assert.equal(nao.parent,street);assert.equal(nao.userData.indoors,'ramen');
+ assert.deepEqual(ramen.sync(800),['Nao']);assert.equal(nao.parent,scene);ramen.restore();assert.equal(nao.parent,street);assert.equal(nao.userData.indoors,'ramen');
  const yuri=world.people.find(p=>p.profile.name==='Yuri').g;yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';
  assert.deepEqual(market.sync(1199),['Yuri']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
  for(let i=0;i<600;i++)market.sync(1200+i/30,1/30);

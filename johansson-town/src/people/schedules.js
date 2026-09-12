@@ -7,7 +7,7 @@ import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
-import {YURI_PROFILE} from './residents.js';
+import {RESIDENTS,YURI_PROFILE,residentHomeDescription} from './residents.js';
 import * as THREE from '../../vendor/three.module.js';
 export const DIALOGUE={
  Yuri:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
@@ -19,8 +19,9 @@ export const DIALOGUE={
  'Cold-storage kid':[['ice','Ice. Twenty yen. Briefly solid.'],['books','The Swedish books weigh more than the fish.'],['paper','The Bligh paper is dry. That is already a good voyage.','bligh'],['key','That blank could label the freezer key. We have lost the label twice.','keychain'],['shift','Night shift. The fish keep very unsociable hours.'],['home','Go home before you smell like your work.']]
 };
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
-for(const p of PROFILES){
- const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home','I live in '+(p.homeAddress+'.')+' '+p.personality+'. That is what '+p.friend+' calls me, anyway.']];
+for(const archived of PROFILES){
+ const p=RESIDENTS.find(p=>p.name===archived.name)||archived;
+ const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home',residentHomeDescription(p.name)||'I live at '+p.homeAddress+'.']];
  DIALOGUE[p.name]=[...personal,...(DIALOGUE[p.name]||[])];
 }
 // Kenji's own voice: friendly 1980s American slang, still grounded in his job.
@@ -36,13 +37,14 @@ DIALOGUE.Kenji=[
  ['model','Easy, bro. That prototype took all afternoon.'],
  ['friends','Tetsuo’s got the electronics covered. Me? I handle the parts that need a proper wrench.'],
  ['discovery','Hey, bro, ask the harbour master about that waterlogged folder.'],
- ['home','My place is on Willow Alley, bro. After supper I put the tools away and kick back.']
+ ['home',residentHomeDescription('Kenji')+' After supper I put the tools away and kick back.']
 ];
-DIALOGUE.Yuri.push(['home','My home is at '+YURI_PROFILE.homeAddress+'. The plants by the shop stay here overnight.']);
+DIALOGUE.Yuri.push(['home',residentHomeDescription('Yuri')+' The plants by the shop stay here overnight.']);
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();
  for(const person of world.people)person.g.userData.scheduled=true;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Yuri')?.profile.work||YURI_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -94,8 +96,13 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
-    const spawn=valid&&!(remembered.indoors==='work'&&v.workSite)&&!collides(...remembered.position,.32)?remembered.position:target;
-    if((!valid||remembered.indoors===tag)&&(['home','market','ramen','izakaya'].includes(tag)||tag==='work'&&v.workSite))g.userData.indoors=tag;
+    // Indoor saves name a place, whose threshold may have moved since saving.
+    // If its schedule has changed, the resident leaves that door and walks onward.
+    const rememberedDoor=indoorDoor(v,remembered?.indoors),savedWalk=valid&&!collides(...remembered.position,.32);
+    const spawn=rememberedDoor||(savedWalk?remembered.position:target);
+    delete g.userData.indoors;
+    if(rememberedDoor)g.userData.indoors=remembered.indoors;
+    else if(!savedWalk&&indoorDoor(v,tag))g.userData.indoors=tag;
     g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
@@ -112,5 +119,5 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{p.g.visible=true;});world.updateHomes?.(minutes);
   if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors;const target=inside==='home'?p.profile.home:inside==='market'?world.people.find(p=>p.profile.name==='Yuri').profile.work:inside==='ramen'?RAMEN_DOOR:inside==='izakaya'?IZAKAYA_DOOR:p.profile.work;return [p.profile.name,{position:inside?[...target]:[g.position.x,g.position.z],indoors:inside||null}];}));},pose(){}};
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,target=indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target?inside:null}];}));},pose(){}};
 }

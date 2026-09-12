@@ -12,7 +12,8 @@ export function homeRoutine(profile,minutes){
  if(sinceWake<40)return {id:'breakfast',activity:'having breakfast',pose:'Eat',item:'rice'};
  if(sinceWake<60)return {id:'prepare',activity:'getting ready for the day',pose:'Read',item:'paper'};
  if(minute(sleep-m)<20)return {id:'bedtime',activity:'settling down for bed',pose:'Sit'};
- return profile.name.length%2?{id:'read',activity:'reading at home',pose:'Read',item:'paper'}:{id:'tea',activity:'having tea at home',pose:'Drink',item:'tea'};
+ const leisure=[{id:'read',activity:'reading',pose:'Read',item:'paper'},{id:'tea',activity:'having tea',pose:'Drink',item:'tea'},{id:'plan',activity:'planning tomorrow’s errands',pose:'Read',item:'paper'}];
+ return leisure[(Math.floor(m/30)+profile.name.length)%leisure.length];
 }
 export const homeSiteId=name=>name==='Yuri'?'yuri-home':'resident-home-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
 export const homeOwner=site=>site?.homeOwner||(site?.id==='yuri-home'?'Yuri':null);

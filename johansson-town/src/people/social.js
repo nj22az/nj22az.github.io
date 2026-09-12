@@ -30,8 +30,8 @@ export function supperGuests(minutes){
 // Overlapping, repeatable visits by the active cast. At most two seated diners;
 // Yuri retains her separate after-work stop and her standing/greeting animation.
 export const RAMEN_VISITS=Object.freeze({
- Nao:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
- Kenji:[735,840], Tetsuo:[795,900], Aya:[855,960],
+ Kenji:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
+ Nao:[780,840], Tetsuo:[795,900], Aya:[855,960],
  Reiko:[915,1020], 'Bus driver':[975,1080], 'Officer Mori':[1140,1255],
 });
 export const MARKET_VISITS=Object.freeze({
@@ -71,9 +71,9 @@ export function residentPlan(profile,minutes,rain=false){
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Yuri',b:'Nao',line:'Yuri: I told the assistant manager I would be home early.\nNao: The plant?\nYuri: He looked very disappointed. I watered him twice.',clue:'Yuri sometimes stops at Minato after locking Sakura. Look for her after 20:20, or around her room on the canal.'},
- {id:'apron',a:'Aya',b:'Emi',line:'Aya: The cat apron needs bigger pockets.\nEmi: For what?\nAya: His responsibilities.',clue:'Aya is worried about Tama. Ask her by the bookshop.'},
+ {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and the entrance at 2 Willow Alley.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
- {id:'fish',a:'Harbour master',b:'Mr Fujita',line:'Fujita: This big!\nHarbour master: Yesterday it was smaller.\nFujita: Yesterday you were sitting further away.',clue:'The outer pier has a bait station and a working winch.'},
- {id:'special',a:'Nao',b:'Masaru',line:'Masaru: Is my fish on the menu?\nNao: In very small writing.\nMasaru: Exclusive, then.',clue:'Try Nao’s supper special at the counter.'}
+ {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the Main Street stop.'},
+ {id:'special',a:'Nao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nNao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Nao’s supper special at the counter.'}
 ];
 export function gossipAt(minutes,names){return GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b))[Math.floor(minutes/7)%Math.max(1,GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b)).length)]||{id:'welcome',line:'Nao: Pull up a chair. Nobody leaves this table a stranger.\nA gull outside offers a surprisingly firm objection.',clue:'Neighbours arrive after their shifts. Visit again later for different conversations.'};}

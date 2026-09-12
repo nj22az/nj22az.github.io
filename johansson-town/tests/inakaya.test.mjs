@@ -7,7 +7,7 @@ import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,suppliedRoom
 import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_YURI_SPOT,ramenPoint} from '../src/world/interiors/ramen-layout.js';
 import {circleHitsRect,circleHitsCircle,sweepFraction} from '../physics.js?snappy=1';
 import {RESIDENTS,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
-import {residentPlan,ramenOpen,RAMEN_VISITS} from '../src/people/social.js';
+import {residentPlan,ramenOpen,RAMEN_VISITS,RAMEN_DOOR} from '../src/people/social.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {createCastAI} from '../src/people/schedules.js?snappy=1';
 
@@ -66,12 +66,14 @@ test('current residents visit throughout the day, with two seats, closing and ni
 test('diners keep their seats during turnover and resume their schedules outside on departure',()=>{
  const street=new THREE.Group(),scene=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
  const guests=createIndoorResidents({world,parent:scene,place:'ramen'}),ai=createCastAI({world,player:new THREE.Group(),state:()=>({inventory:[]}),paused:()=>false,collides:()=>false});
- ai.update(.01,680,false);assert.deepEqual(guests.sync(680),['Mrs Sato','Harbour master']);
- const mrs=world.people.find(p=>p.profile.name==='Mrs Sato').g,seat=mrs.position.clone();
- assert.deepEqual(guests.sync(740),['Mrs Sato','Kenji']);assert.ok(mrs.position.equals(seat),'Existing diner does not jump seats');
+ ai.update(.01,800,false);assert.deepEqual(guests.sync(800),['Tetsuo','Nao']);
+ const nao=world.people.find(p=>p.profile.name==='Nao').g,tetsuo=world.people.find(p=>p.profile.name==='Tetsuo').g,seat=tetsuo.position.clone();
+ guests.sync(840,1/30);assert.equal(nao.parent,scene,'The departing diner first stands and walks to the door');
+ for(let i=0;i<1500;i++){const minutes=840+i/30;guests.sync(minutes,1/30);ai.update(1/30,minutes,false);}
+ assert.deepEqual(guests.names().sort(),['Aya','Tetsuo']);assert.ok(tetsuo.position.equals(seat),'Existing diner does not jump seats');
  const occupied=world.people.filter(p=>p.g.userData.inRamen);assert.equal(new Set(occupied.map(p=>p.g.userData.ramenSeat)).size,2);
- guests.restore();ai.update(.01,740,false);assert.equal(mrs.visible,false,'Leaving the room does not interrupt the meal');assert.equal(mrs.userData.indoors,'ramen');
- ai.update(.01,781,false);assert.equal(mrs.userData.indoors,undefined,'Finished meal releases the resident to her next destination');assert.equal(mrs.parent,street);assert.equal(mrs.userData.hit.inside,false);assert.equal(mrs.userData.seatHeight,undefined);
+ guests.restore();ai.update(.01,890,false);assert.equal(tetsuo.visible,false,'Leaving the room does not interrupt the meal');assert.equal(tetsuo.userData.indoors,'ramen');
+ ai.update(.01,901,false);assert.equal(tetsuo.userData.indoors,undefined,'Finished meal releases the resident to his next destination');assert.equal(tetsuo.parent,street);assert.equal(tetsuo.userData.hit.inside,false);assert.equal(tetsuo.userData.seatHeight,undefined);
  assert.deepEqual(guests.sync(1260),[]);
 });
 
@@ -81,9 +83,13 @@ test('Kenji keeps an active escort and Yuri recognises her ramen break',async()=
  acts.action('resident','Yuri');assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · Ramen break');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/bowl of ramen/);
  dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/shoyu ramen/);acts.close();
- const street=new THREE.Group(),parent=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Kenji'),g=new THREE.Group();g.userData.hit={inside:false};street.add(g);
+ const street=new THREE.Group(),parent=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Kenji'),g=new THREE.Group();g.userData.hit={inside:false};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);
  const state={kenjiEscort:'walking'},guests=createIndoorResidents({world:{people:[{g,profile}]},parent,place:'ramen',getState:()=>state});
- assert.deepEqual(guests.sync(750),[]);assert.equal(g.parent,street);
- state.kenjiEscort='done';assert.deepEqual(guests.sync(750),['Kenji']);
- state.kenjiEscort='walking';assert.deepEqual(guests.sync(750),[]);assert.equal(g.parent,street);assert.equal(g.userData.indoors,undefined);
+ const lunch=RAMEN_VISITS.Kenji[0]+20;
+ assert.deepEqual(guests.sync(lunch),[]);assert.equal(g.parent,street);
+ state.kenjiEscort='done';assert.deepEqual(guests.sync(lunch),['Kenji']);
+ for(let i=0;i<600;i++)guests.sync(lunch+i/30,1/30);
+ state.kenjiEscort='walking';guests.sync(lunch+20,1/30);assert.equal(g.parent,parent,'Kenji walks out before resuming his escort');
+ for(let i=0;i<600;i++)guests.sync(lunch+20+i/30,1/30);
+ assert.deepEqual(guests.names(),[]);assert.equal(g.parent,street);assert.equal(g.userData.indoors,undefined);
 });
