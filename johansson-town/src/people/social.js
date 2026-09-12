@@ -8,7 +8,7 @@ export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Yuri').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
 export const izakayaOpen=m=>inTimeRange(m,960,1620);
-export const NIGHT_PATROL=[[0,46],[0,18],[0,-10],[0,-46],[0,-50],[0,-46],[0,-10],[0,18],[DINING.izakayaX,18],[0,18]];
+export const NIGHT_PATROL=[[0,28],[0,4],[0,-16],[0,-36],[0,-44],[0,-36],[0,-16],[0,4],[DINING.izakayaX,4],[0,4]];
 // A repeatable visit on alternate town days, with time to lock up and walk over.
 // Keep the unwrapped saved clock so revisiting or reloading never rerolls her.
 export function yuriVisitsIzakaya(minutes){

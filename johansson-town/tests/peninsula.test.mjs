@@ -9,7 +9,7 @@ import {laneEdges,buildLaneSurfaces} from '../src/world/lane-surfaces.js';
 test('peninsula ground leaves the surrounding sea and residential canal uncovered',()=>{
  const group=new THREE.Group(),ground=buildPeninsula(group);group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),hit=(x,z)=>{ray.set(new THREE.Vector3(x,10,z),new THREE.Vector3(0,-1,0));return ray.intersectObject(ground).length>0;};
- assert.ok(hit(0,0));assert.ok(hit(0,100),'Northern neck joins the mainland');
+ assert.ok(hit(0,0));assert.equal(hit(0,100),false,'Sea separates the northern coast from the distant islands');
  for(const p of [[-55,0],[57,0],[0,-70],[30,95]])assert.equal(hit(...p),false,'Sea is exposed');
  const c=RESIDENTIAL_CANAL;assert.equal(hit((c.minX+c.maxX)/2,(c.minZ+c.maxZ)/2),false,'Canal remains open');
 });
@@ -17,8 +17,8 @@ test('peninsula ground leaves the surrounding sea and residential canal uncovere
 test('park shortcut has continuous walkable ground matching its visible ramp',()=>{
  const group=new THREE.Group();buildLaneSurfaces(group,{worldMaterial:()=>new THREE.MeshStandardMaterial()});group.updateMatrixWorld(true);
  const paving=group.children.filter(o=>o.name.startsWith('grid-lanes:')),ray=new THREE.Raycaster();
- for(let x=16;x<=21;x+=.1){assert.ok(routeAt(x,-38,.28));ray.set(new THREE.Vector3(x,10,-38),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(paving)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-groundHeight(x,-38)-.04)<.06,'Ramp matches walking height at '+x);}
- assert.equal(groundHeight(17.5,-38),0);assert.ok(Math.abs(groundHeight(20.999,-38)-groundHeight(21,-38))<.002);
+ for(let x=16;x<=22.2;x+=.1){assert.ok(routeAt(x,-27,.28));ray.set(new THREE.Vector3(x,10,-27),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(paving)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-groundHeight(x,-27)-.04)<.06,'Ramp matches walking height at '+x);}
+ assert.equal(groundHeight(17.5,-27),0);assert.ok(Math.abs(groundHeight(22.199,-27)-groundHeight(22.2,-27))<.002);
 });
 
 test('lane boundaries leave walking routes and junctions open',()=>{

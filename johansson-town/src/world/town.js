@@ -16,6 +16,7 @@ import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
+import {applyShopAddresses} from './town-grid.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -50,43 +51,43 @@ function addWithCollider(group,colliders,entry){
 function addWalkablePier(world,options,factory){
   const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
   factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.003-.19,OUTER_PIER.z],concrete,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[-4.02,-.18,-71.3],dark,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[4.02,-.18,-71.3],dark,null,options.shadows);
-  factory.box(group,[8.2,.58,.42],[0,-.18,-78.84],dark,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[-4.02,-.18,-57.3],dark,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[4.02,-.18,-57.3],dark,null,options.shadows);
+  factory.box(group,[8.2,.58,.42],[0,-.18,-64.84],dark,null,options.shadows);
   const posts=[];
   for(const side of [-1,1]){
-    for(const z of [-65.1,-67.7,-76.2,-78.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
-    factory.beam(group,[side*3.92,1.06,-65.1],[side*3.92,1.06,-67.7],.045,steel);
-    factory.beam(group,[side*3.92,1.06,-76.2],[side*3.92,1.06,-78.1],.045,steel);
+    for(const z of [-51.1,-53.7,-62.2,-64.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
+    factory.beam(group,[side*3.92,1.06,-51.1],[side*3.92,1.06,-53.7],.045,steel);
+    factory.beam(group,[side*3.92,1.06,-62.2],[side*3.92,1.06,-64.1],.045,steel);
   }
-  for(const x of [-3.92,-1.3,1.3,3.92])factory.cylinder(group,.065,1,[x,.62,-78.18],steel,10);
-  for(const x of [-3.92,-1.3,1.3])factory.beam(group,[x,1.06,-78.18],[x+2.62,1.06,-78.18],.045,steel);
-  for(const [x,z] of [[-2.75,-69],[2.75,-69],[-2.75,-75],[2.75,-75]]){
+  for(const x of [-3.92,-1.3,1.3,3.92])factory.cylinder(group,.065,1,[x,.62,-64.18],steel,10);
+  for(const x of [-3.92,-1.3,1.3])factory.beam(group,[x,1.06,-64.18],[x+2.62,1.06,-64.18],.045,steel);
+  for(const [x,z] of [[-2.75,-55],[2.75,-55],[-2.75,-61],[2.75,-61]]){
     factory.cylinder(group,.20,.43,[x,.32,z],dark,12);factory.cylinder(group,.29,.11,[x,.57,z],dark,12);colliders.push({x,z,w:.46,d:.46});
   }
-  factory.beam(group,[3.86,.72,-72.1],[3.86,-.75,-72.1],.035,warning,8,null,false);
-  factory.beam(group,[3.86,.72,-72.7],[3.86,-.75,-72.7],.035,warning,8,null,false);
-  for(let y=.55;y>-.65;y-=.23)factory.beam(group,[3.86,y,-72.1],[3.86,y,-72.7],.028,warning,8,null,false);
+  factory.beam(group,[3.86,.72,-58.1],[3.86,-.75,-58.1],.035,warning,8,null,false);
+  factory.beam(group,[3.86,.72,-58.7],[3.86,-.75,-58.7],.035,warning,8,null,false);
+  for(let y=.55;y>-.65;y-=.23)factory.beam(group,[3.86,y,-58.1],[3.86,y,-58.7],.028,warning,8,null,false);
 
-  addWithCollider(group,colliders,factory.baitStation(-2.45,-76.55,.03));
-  addWithCollider(group,colliders,factory.pierWinch(2.35,-75.25,-.08));
-  addWithCollider(group,colliders,factory.crateStack(-2.35,-72.8,.06));
+  addWithCollider(group,colliders,factory.baitStation(-2.45,-62.55,.03));
+  addWithCollider(group,colliders,factory.pierWinch(2.35,-61.25,-.08));
+  addWithCollider(group,colliders,factory.crateStack(-2.35,-58.8,.06));
 
   const ropeMat=factory.material(null,0x9b825e,.92,0);
   for(let i=0;i<3;i++){
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.34+i*.06,.04,6,18),ropeMat);ring.rotation.x=Math.PI/2;ring.rotation.z=i*.17;ring.position.set(2.45,.16+i*.03,-76.6);ring.castShadow=false;group.add(ring);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.34+i*.06,.04,6,18),ropeMat);ring.rotation.x=Math.PI/2;ring.rotation.z=i*.17;ring.position.set(2.45,.16+i*.03,-62.6);ring.castShadow=false;group.add(ring);
   }
 
-  factory.cylinder(group,.07,3.1,[0,1.65,-77.25],steel,10);
-  factory.box(group,[.68,.12,.24],[0,3.05,-77.25],steel);
-  const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,-77.25);lamp.castShadow=false;group.add(lamp);
-  factory.beam(group,[3.55,.43,-69.1],[7.45,.12,-68.7],.022,0x6f6049,6,null,false);
-  factory.beam(group,[3.55,.43,-74.8],[7.45,.12,-73.5],.022,0x6f6049,6,null,false);
+  factory.cylinder(group,.07,3.1,[0,1.65,-63.25],steel,10);
+  factory.box(group,[.68,.12,.24],[0,3.05,-63.25],steel);
+  const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,-63.25);lamp.castShadow=false;group.add(lamp);
+  factory.beam(group,[3.55,.43,-55.1],[7.45,.12,-54.7],.022,0x6f6049,6,null,false);
+  factory.beam(group,[3.55,.43,-60.8],[7.45,.12,-59.5],.022,0x6f6049,6,null,false);
 
-  anchor(group,[0,1,-76.4],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
-  anchor(group,[-2.45,1.1,-75.8],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
-  anchor(group,[2.3,1,-74.6],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch used to haul baskets and light gear from the quay. The guarded drum turns slowly during a test cycle.'),options.register);
-  anchor(group,[2.45,.8,-76.0],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
+  anchor(group,[0,1,-62.4],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
+  anchor(group,[-2.45,1.1,-61.8],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
+  anchor(group,[2.3,1,-60.6],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch used to haul baskets and light gear from the quay. The guarded drum turns slowly during a test cycle.'),options.register);
+  anchor(group,[2.45,.8,-62],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
   return {posts:posts.length,collidersAdded:7};
 }
 
@@ -113,15 +114,15 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[-5.9,0,24.92],stand:[-5.9,0,24.0],eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[-5.9,0,26.92],stand:[-5.9,0,26.0],eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
   const buy=(pos,label,title,detail)=>{anchor(group,pos,label,()=>options.onAction?.('buy',title,detail),options.register);interactions++;};
 
-  addWithCollider(group,colliders,factory.bench(-5.9,25,0));
-  seat([-5.45,1,25.15],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
+  addWithCollider(group,colliders,factory.bench(-5.9,27,0));
+  seat([-5.45,1,27.15],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
-  addWithCollider(group,colliders,factory.postbox(6.05,11.2,0));
-  inspect([5.65,1,11.0],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
+  addWithCollider(group,colliders,factory.postbox(6.05,9.5,0));
+  inspect([5.65,1,9.3],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
 
   addWithCollider(group,colliders,factory.newspaperRack(-6.05,-1.8,0));
   read([-5.65,1,-1.55],'Read evening papers','Evening papers','Local headlines mention harbour maintenance, a school baseball result and tomorrow’s weather.');
@@ -130,32 +131,32 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.deliveryTrolley(-6,-34.5,.02));
   inspect([-5.52,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
 
-  addWithCollider(group,colliders,factory.noticeBoard(6.15,-49.5,0));
-  read([5.75,1,-48.8],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
+  addWithCollider(group,colliders,factory.noticeBoard(6.15,-37.3,0));
+  read([5.75,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
 
-  addWithCollider(group,colliders,factory.utilityCabinet(-6.05,41.5,0));
-  inspect([-5.6,1,40.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
+  addWithCollider(group,colliders,factory.utilityCabinet(-6.05,16.5,0));
+  inspect([-5.6,1,15.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
-  addWithCollider(group,colliders,factory.bicycleRack(7.20,33.84,0));
-  inspect([6.1,.9,33.3],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked beside the bookshop, clear of the doorway.');
+  addWithCollider(group,colliders,factory.bicycleRack(7.20,17.84,0));
+  inspect([6.1,.9,17.3],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked beside the bookshop, clear of the doorway.');
 
-  addWithCollider(group,colliders,factory.convexMirror(-6.15,16.2,.02));
-  inspect([-5.7,1,15.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
+  addWithCollider(group,colliders,factory.convexMirror(-6.15,6.2,.02));
+  inspect([-5.7,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
 
 
-  addWithCollider(group,colliders,factory.crateStack(5.75,-7.4,.05));
-  inspect([5.35,1,-6.75],'Inspect shop crates','Shop deliveries','Tea tins, paper goods and wrapped household stock are waiting to be carried inside.');
+  addWithCollider(group,colliders,factory.crateStack(5.75,-12.4,.05));
+  inspect([5.35,1,-11.75],'Inspect shop crates','Shop deliveries','Tea tins, paper goods and wrapped household stock are waiting to be carried inside.');
 
-  const radio=factory.box(group,[.58,.34,.24],[5.9,.72,4.1],0x3e4b4c);factory.box(group,[.34,.12,.025],[5.9,.77,3.96],0xb6aa83,null,false);colliders.push({x:5.9,z:4.1,w:.65,d:.34});
-  anchor(group,[5.55,1,4.0],'Tune street radio',()=>options.onAction?.('radio','Workshop radio','A small transistor radio on the sill carries harbour weather, baseball scores and light music.'),options.register);interactions++;
+  const radio=factory.box(group,[.58,.34,.24],[5.9,.72,-5.9],0x3e4b4c);factory.box(group,[.34,.12,.025],[5.9,.77,-6.04],0xb6aa83,null,false);colliders.push({x:5.9,z:-5.9,w:.65,d:.34});
+  anchor(group,[5.55,1,-6.0],'Tune street radio',()=>options.onAction?.('radio','Workshop radio','A small transistor radio on the sill carries harbour weather, baseball scores and light music.'),options.register);interactions++;
 
   const recycleGroup=new THREE.Group();recycleGroup.position.set(6,0,-23.6);group.add(recycleGroup);
   for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:6,z:-23.6,w:1.1,d:.65});
   inspect([5.5,1,-23.1],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
-  const pump=factory.box(group,[.65,.85,.55],[-5.95,.52,-45.5],0x536568);factory.cylinder(group,.16,.45,[-5.95,1.12,-45.5],0x3d4c4e,12);colliders.push({x:-5.95,z:-45.5,w:.72,d:.62});
-  machine([-5.55,1,-45.0],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
+  const pump=factory.box(group,[.65,.85,.55],[-5.95,.52,-34.5],0x536568);factory.cylinder(group,.16,.45,[-5.95,1.12,-34.5],0x3d4c4e,12);colliders.push({x:-5.95,z:-34.5,w:.72,d:.62});
+  machine([-5.55,1,-34.0],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
 
   return {interactions,lights};
 }
@@ -163,8 +164,9 @@ function addStreetLife(world,options,factory){
 function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
 
 export function createTown(options){
+  applyShopAddresses(options.sites);
   const world=createBaseTown(options);
-  for(const [name,x,z] of [['Bus driver',-4.5,44]]){
+  for(const [name,x,z] of [['Bus driver',-14,30]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
     options.register(g,'Talk to '+name,()=>options.onAction('resident',name));

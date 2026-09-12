@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
-export const BOOKSHOP_BICYCLE=Object.freeze({x:6.85,z:33.3});
+export const BOOKSHOP_BICYCLE=Object.freeze({x:6.85,z:17.3});
 
 // One ordinary commuter bicycle, built at metre scale and merged to one draw.
 export function buildBicycle({x=0,z=0,rotation=0,colour=0x426969,shadows=false}={}){

@@ -125,7 +125,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.ok(Math.hypot(api.player.position.x-bench.seat.stand[0],api.player.position.z-bench.seat.stand[2])<.2,'E stands in front of the bench');
     assert.match(document.querySelector('#subtitle').textContent,/You stand up|Across the street/);
     // Movement speed checks use the unobstructed central street.
-    api.player.position.set(0,0,46);api.reviewSetYaw(0);
+    api.player.position.set(0,0,26);api.reviewSetYaw(0);
     api.simulate(1/60);
     api.setTime();
     assert.equal(api.scene.fog,null,'Scene fog is disabled');
@@ -163,7 +163,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.activities.state.quest=3;document.querySelector('#directoryButton').onclick();find('izakaya').onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'One completed quest does not unlock shortcuts');
     api.activities.state.kenjiEscort='done';api.activities.save();document.querySelector('#directoryButton').onclick();
     assert.equal(find('warehouse').dataset.travel,'ready');find('warehouse').onclick();
-    assert.deepEqual(api.player.position.toArray(),[-8.6,0,-52.65],'Warehouse shortcut lands on the clear quay approach');
+    assert.deepEqual(api.player.position.toArray(),[-8.6,0,-38.65],'Warehouse shortcut lands on the clear quay approach');
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Enter Harbour Warehouse/);
     api.doInteract();assert.equal(api.reviewCurrentRoom()?.id,'warehouse','Street door opens the warehouse');
     assert.ok(api.reviewRoomState().colliders>0);
@@ -171,16 +171,16 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.ok(api.reviewRoom().getObjectByName('warehouse-ledger-bench'));
     const warehouseExit=api.reviewRoom().getObjectByName('warehouse-room-exit');
     warehouseExit.userData.hit.fn();
-    assert.ok(Math.hypot(api.player.position.x+8.0,api.player.position.z+52.65)<.01,'Warehouse exit returns outside the same door');
+    assert.ok(Math.hypot(api.player.position.x+8.0,api.player.position.z+38.65)<.01,'Warehouse exit returns outside the same door');
     api.leaveRoom();assert.equal(api.reviewCurrentRoom(),null);
     api.reviewSetMinutes(180);api.enterRoom(api.world.landmarks.find(s=>s.id==='warehouse'));
     assert.equal(api.reviewCurrentRoom()?.id,'warehouse','Warehouse stays open overnight');
     api.leaveRoom();api.reviewSetMinutes(1002);
     document.querySelector('#directoryButton').onclick();
     const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
-    assert.equal(api.player.position.x,DINING.izakayaDoor[0]);assert.equal(api.player.position.z,18.8);
+    assert.equal(api.player.position.x,DINING.izakayaDoor[0]);assert.equal(api.player.position.z,DINING.izakayaDoor[1]-1.2);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Unlocked shortcut faces the usable entrance');
-    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,28);assert.equal(api.player.position.z,48.7);
+    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,28);assert.equal(api.player.position.z,30.7);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Corner Tea House/);
     const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();

@@ -107,28 +107,22 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Leave room below the supplied canal, so the town's base cannot cover its water.
   buildPeninsula(group);
   box([RESIDENTIAL_CANAL.maxX-RESIDENTIAL_CANAL.minX,.2,RESIDENTIAL_CANAL.maxZ-RESIDENTIAL_CANAL.minZ],[(RESIDENTIAL_CANAL.minX+RESIDENTIAL_CANAL.maxX)/2,-1.15,(RESIDENTIAL_CANAL.minZ+RESIDENTIAL_CANAL.maxZ)/2],0x606b61);
-  box([15,.2,48],[0,-.16,32],0xb8b8af,[0,0,0],'road');
-  box([15,.2,4],[0,-.16,-54],0xb8b8af,[0,0,0],'road');
+  box([15,.2,26.4],[0,-.16,21.2],0xb8b8af,[0,0,0],'road');
+  box([15,.2,4],[0,-.16,-40],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const side of [-1,1]){
-    for(const [a,b] of (side<0?[[8,27.5],[30.5,47.25],[52.75,56]]:[[8,15.25],[20.75,47.25],[52.75,56]]))box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
-    for(let z=9;z<56;z+=1)if(!(side<0?[29,50]:[18,50]).some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
-    for(let z=11;z<52;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
-    for(let z=10;z<52;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
+    for(const [a,b] of [[8,21.5],[26.5,31]])box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
+    for(let z=9;z<31;z+=1)if(![24].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
+    for(let z=11;z<31;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
+    for(let z=10;z<31;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
   }
-  for(let z=11;z<47;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
-  for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,43,0xbeb79a);
-  [[-2.1,36,1.15,.45,.2],[2.7,25,.8,.35,-.3]].forEach(v=>puddle(...v));
+  for(let z=11;z<29;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
+  for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,24,0xbeb79a);
+  [[-2.1,20,1.15,.45,.2],[2.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(ALLEY_SHOPS[s.id]){
-      // Enclosed service courts replace the two retired shells. Their rear and
-      // side walls maintain the street edge without adding another building.
-      const x=s.side*11.0,z=s.z;
-      box([6.8,.10,7.4],[x,.04,z],0x9c9c90,[0,0,0],'wall');
-      for(const dz of [-3.6,3.6]){box([6.8,1.6,.18],[x,.8,z+dz],0xa8a391,[0,0,0],'wall');obstacle(x,z+dz,6.8,.18);}
-      box([.18,2.1,7.4],[s.side*14.3,1.05,z],0xa8a391,[0,0,0],'wall');obstacle(s.side*14.3,z,.18,7.4);
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
@@ -189,7 +183,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   });
 
   // Utility poles and overhead cables.
-  for(const side of [-1,1])for(const z of [-48,-32,-16,0,24,40,56]){
+  for(const side of [-1,1])for(const z of [-32,12,28]){
     if(z<=BOARDWALK.maxZ){
       if(z===-32){
         // Low deck lights replace the southern overhead power poles.
@@ -201,38 +195,37 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     cyl(.13,8,[side*6.7,4,z],0x574f49);obstacle(side*6.7,z,.38,.38);box([2.4,.14,.18],[side*6.7,7.3,z],0x4b534e);
     for(const dx of [-.8,0,.8]){
       cyl(.08,.26,[side*6.7+dx,7.52,z],0xc6cac1);
-      if(z<56){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
+      if(z<28){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
     }
     beam([side*6.7,5.7,z],[side*5.6,5.7,z],.06);box([.6,.12,.26],[side*5.5,5.65,z],0xdac08d);
-    if(z===-32||z===40){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
+    if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7,7])cyl(.17,6.8,[x,3.4,48],0x416568);beam([-7,6.4,48],[7,6.4,48],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[0,6.3,48],7.2,1.15,0,'#d8d5b9','#31565d');
+  for(const x of [-7,7])cyl(.17,6.8,[x,3.4,29],0x416568);beam([-7,6.4,29],[7,6.4,29],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[0,6.3,29],7.2,1.15,0,'#d8d5b9','#31565d');
 
-  // Street interactions.
-  const vending=createVendingMachine({shadows});vending.position.set(5.95,0,38);group.add(vending);
-  if(!vendingReady())details.push({id:'street-vending',x:5.95,z:38,radius:42,load:()=>hydrateVending(vending,{shadows})});
-  obstacle(5.95,38,1.3,1);anchor([5.95,1,39],'Buy a drink',()=>onAction('vending'));
-  box([1.1,2.5,1],[-5.9,1.25,31],0x457e73);box([.91,1.6,.91],[-5.9,1.55,31],0x648c87);box([.35,.65,.28],[-5.9,1.4,31.53],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,31.55],1,.28);anchor([-5.9,1,32],'Use payphone',()=>onAction('phone'));obstacle(-5.9,31,1.1,1);
-  cyl(.05,2.8,[-5.9,1.4,44],0x64756d);label('バス停','HARBOUR LINE',[-5.9,2.6,44],1.1,.75);anchor([-5.8,1,44],'Read bus timetable',()=>onAction('bus'));obstacle(-5.9,44,.26,.26);
-  box([1,1.8,1.1],[6.7,.9,23],0x483d50);box([.88,.7,.12],[6.7,1.4,23.57],0x294d59);label('STAR PORT','INSERT ¥100',[6.7,1.48,23.65],.77,.5,0,'#142d42','#83ded8',true);obstacle(6.7,23,1,1.1);anchor([5.8,1,23.7],'Play Star Port',()=>onAction('arcade'));
-
-  for(const [x,z] of [[-6,4],[6,-6],[-6,-35]]){
+  // Useful street furniture sits in the block recesses, clear of junctions.
+  const vending=createVendingMachine({shadows});vending.position.set(5.95,0,20);group.add(vending);
+  if(!vendingReady())details.push({id:'street-vending',x:5.95,z:20,radius:42,load:()=>hydrateVending(vending,{shadows})});
+  obstacle(5.95,20,1.3,1);anchor([5.95,1,21],'Buy a drink',()=>onAction('vending'));
+  box([1.1,2.5,1],[-5.9,1.25,19.5],0x457e73);box([.91,1.6,.91],[-5.9,1.55,19.5],0x648c87);box([.35,.65,.28],[-5.9,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,20.05],1,.28);anchor([-5.9,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-5.9,19.5,1.1,1);
+  cyl(.05,2.8,[-17,1.4,29],0x64756d);label('バス停','HARBOUR LINE',[-17,2.6,29],1.1,.75);anchor([-16.3,1,30],'Read bus timetable',()=>onAction('bus'));obstacle(-17,29,.26,.26);
+  box([1,1.8,1.1],[-6.1,.9,-1],0x483d50);box([.88,.7,.12],[-6.1,1.4,-.43],0x294d59);label('STAR PORT','INSERT ¥100',[-6.1,1.48,-.35],.77,.5,0,'#142d42','#83ded8',true);obstacle(-6.1,-1,1,1.1);anchor([-5.2,1,-.3],'Play Star Port',()=>onAction('arcade'));
+  for(const [x,z] of [[-6,10],[6,-15],[-6,-34.5]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
   }
 
   // ----- Working harbour district -----
   // Quay is deliberately built as one elevated slab with chunky edge geometry; no coplanar white strips.
-  box([38,.4,12],[0,-.105,-58],0x999b94,[0,0,0],'wall');
-  box([38,.6,.65],[0,-.12,-63.65],0x596568);
-  box([38,.18,.55],[0,.19,-63.28],0x343f41);
+  box([38,.4,12],[0,-.105,-44],0x999b94,[0,0,0],'wall');
+  box([38,.6,.65],[0,-.12,-49.65],0x596568);
+  box([38,.18,.55],[0,.19,-49.28],0x343f41);
 
   const seaGeo=new THREE.PlaneGeometry(160,86,42,28);
   const seaMat=new THREE.MeshStandardMaterial({color:0x426f79,transparent:false,dithering:true});
-  const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.50,-106.5);sea.receiveShadow=false;group.add(sea);water.push(sea);
+  const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.50,-92.5);sea.receiveShadow=false;group.add(sea);water.push(sea);
   const seaPos=seaGeo.attributes.position;
 
   function warehouse(side){
-    const x=side*13.7,z=-56.4,front=side*10.55,angle=-side*Math.PI/2;
+    const x=side*13.7,z=-42.4,front=side*10.55,angle=-side*Math.PI/2;
     box([6.2,3.7,5.8],[x,1.85,z],side<0?0x707a78:0x76776e);box([6.8,.24,6.25],[x,3.86,z],0x4f5f61,[0,0,side*.04],'roof');
     box([.16,2.75,3.4],[front,1.5,z],0x556466);for(let y=.45;y<2.65;y+=.43)box([.20,.055,3.46],[front-side*.09,y,z],0x303b3d);
     for(let dz=-2.25;dz<=2.25;dz+=.5)box([.09,3.25,.07],[front-side*.13,1.75,z+dz],0x8b8d82);
@@ -243,54 +236,54 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const warehouseWorld={group,colliders};
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   warehouse(1);
-  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-49],3.2,.72);
-  cyl(.045,2.3,[-5.9,1.15,-49],0x655444);obstacle(-5.9,-49,.12,.12);
+  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-35],3.2,.72);
+  cyl(.045,2.3,[-5.9,1.15,-35],0x655444);obstacle(-5.9,-35,.12,.12);
 
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
   }
-  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-62.45));
+  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-48.45));
 
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.3,-61.1,.9);ropeCoil(8.9,-61.2,.75);
+  ropeCoil(-8.3,-47.1,.9);ropeCoil(8.9,-47.2,.75);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
     for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const px=x+(c-(cols-1)/2)*.72,pz=z+(r%2)*.12;box([.62,.45,.72],[px,.32+r*.48,pz],colors[(r+c)%colors.length]);for(const sx of [-.25,.25])box([.04,.28,.76],[px+sx,.34+r*.48,pz],0x263537);}
     obstacle(x,z,cols*.78,.9);
   }
-  crateStack(-7.3,-58.0,2,3);crateStack(7.2,-60.2,3,2);
+  crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);
 
   // Fishing-net drying rack.
-  for(const x of [-10.2,-7.9])cyl(.06,2.4,[x,1.3,-60.4],0x655747);beam([-10.2,2.45,-60.4],[-7.9,2.45,-60.4],.055,0x655747);
-  for(let x=-9.95;x<-8.1;x+=.22)beam([x,.5,-60.38],[x,2.32,-60.38],.012,0x65736f);obstacle(-9.05,-60.4,2.5,.5);
+  for(const x of [-10.2,-7.9])cyl(.06,2.4,[x,1.3,-46.4],0x655747);beam([-10.2,2.45,-46.4],[-7.9,2.45,-46.4],.055,0x655747);
+  for(let x=-9.95;x<-8.1;x+=.22)beam([x,.5,-46.38],[x,2.32,-46.38],.012,0x65736f);obstacle(-9.05,-46.4,2.5,.5);
 
   // Period service kei-truck — original procedural model, not a branded vehicle.
-  const truck=new THREE.Group();truck.position.set(6.2,.12,-56.3);truck.rotation.y=.06;group.add(truck);
+  const truck=new THREE.Group();truck.position.set(6.2,.12,-42.3);truck.rotation.y=.06;group.add(truck);
   directBox([1.55,.52,2.8],[0,.47,.15],0xd7d4c6,truck,[0,0,0],true);directBox([1.5,1.25,1.18],[0,1.15,-.73],0xdedbcf,truck,[0,0,0],true);directBox([1.28,.52,.055],[0,1.35,-1.335],0x385965,truck);
   directBox([1.42,.12,1.35],[0,.84,.92],0x8c918b,truck);directBox([1.36,.28,.06],[0,.52,1.57],0xd6d1b9,truck);
   for(const x of [-.69,.69])for(const z of [-.88,1.03]){const wheel=directMesh(new THREE.TorusGeometry(.25,.09,7,16),material(0x252b2c),truck,[x,.38,z],[0,Math.PI/2,0]);wheel.castShadow=shadows;}
-  box([.3,.13,.08],[5.75,.62,-54.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-54.72],0xe5cf8c);obstacle(6.2,-56.3,1.8,3.2);
+  box([.3,.13,.08],[5.75,.62,-40.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-40.72],0xe5cf8c);obstacle(6.2,-42.3,1.8,3.2);
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[9.8,.88,-52.1],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[9.8,1.85,-51.65],.78,.5,0,'#dde1d7','#37636a');obstacle(9.8,-52.1,1.2,.9);
-  for(const [x,z,c] of [[10.3,-54.2,0x4b6870],[11.0,-54.3,0x8b634e],[10.7,-55.0,0x66704e]]){directCyl(.3,.72,[x,.48,z],c,group,[0,0,0],true);obstacle(x,z,.6,.6);}
-  for(const [x,z] of [[-17.1,-62],[16.3,-61.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
+  directBox([1.15,1.55,.85],[9.8,.88,-38.1],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[9.8,1.85,-37.65],.78,.5,0,'#dde1d7','#37636a');obstacle(9.8,-38.1,1.2,.9);
+  for(const [x,z,c] of [[10.3,-40.2,0x4b6870],[11.0,-40.3,0x8b634e],[10.7,-41,0x66704e]]){directCyl(.3,.72,[x,.48,z],c,group,[0,0,0],true);obstacle(x,z,.6,.6);}
+  for(const [x,z] of [[-17.1,-48],[16.3,-47.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
   // Tyre fenders on the quay wall — broad black shapes, not thin white lines.
-  for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-63.76],[0,0,0]);tire.scale.set(1,.78,1);}
+  for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
 
   // Rail only on far sides so the fishing position remains open and readable.
-  for(const start of [-17,8])for(let x=start;x<start+9;x+=2.25){cyl(.06,1,[x,.63,-63.05],0x4b5c60);if(x<start+7)beam([x,1.02,-63.05],[x+2.25,1.02,-63.05],.045,0x4b5c60);}
-  label('港町','HARBOUR · FISHING PIER',[0,2.5,-58.15],3.8,.75);anchor([0,1,-61.1],'Cast a fishing line',()=>onAction('fishing'));
+  for(const start of [-17,8])for(let x=start;x<start+9;x+=2.25){cyl(.06,1,[x,.63,-49.05],0x4b5c60);if(x<start+7)beam([x,1.02,-49.05],[x+2.25,1.02,-49.05],.045,0x4b5c60);}
+  label('港町','HARBOUR · FISHING PIER',[0,2.5,-44.15],3.8,.75);anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // A couple of benches moved away from warehouse geometry.
-  for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-57.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-57.2],0x465355);obstacle(x,-57.2,1.9,.7);}
+  for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
-  const boat=new THREE.Group();boat.position.set(9,-.18,-70);boat.rotation.y=-.07;group.add(boat);
+  const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);
   directMesh(new THREE.CylinderGeometry(1.45,1.02,6.3,6,1,false),material(0x2f5360),boat,[0,0,0],[Math.PI/2,0,0],[1,1,.45],true);
   directBox([2.25,1.55,2.25],[0,1.05,.2],0xd4cfb8,boat,[0,0,0],true);directBox([2.3,.58,2.3],[0,1.48,.2],0x365b66,boat);directBox([2.45,.12,2.55],[0,1.86,.2],0x394b50,boat);
   directCyl(.06,3.0,[0,3.25,.55],0x454b49,boat);directBox([1.2,.06,.06],[0,4.05,.55],0x454b49,boat);directBeam(boat,[0,3.72,.56],[.72,4.45,.98],.018,0x30383a);
@@ -298,12 +291,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   directBox([.5,.14,.16],[-.65,2.05,-.88],0xd7b75f,boat);directBox([.5,.14,.16],[.65,2.05,-.88],0xd7b75f,boat);
 
   // Distant breakwater, beacons and industrial silhouettes to give the harbour scale.
-  box([68,2.1,4],[0,.18,-97],0x727f7e);for(const x of [-27,27]){cyl(1,7,[x,3.5,-97],0xc2c1b2);box([2.3,.7,2.3],[x,7,-97],x<0?0xa0493f:0xd1cdbb);}
-  for(const [x,z,h] of [[-31,-112,13],[32,-116,16],[-45,-125,10]]){cyl(.24,h,[x,h/2,z],0x455054);beam([x,h*.8,z],[x+7,h*.8,z],.17,0x455054);beam([x+6.8,h*.8,z],[x+9,h*.55,z-3],.09,0x455054);}
-  for(const [x,z,w,h] of [[-24,-119,15,7],[20,-121,18,8],[-3,-128,22,6]])box([w,h,10],[x,h/2-1,z],0x66706f);
-
-  // Shrine at the far end of town.
-  for(const x of [-3,3]){cyl(.16,4,[x,2,55],0xa34531);obstacle(x,55,.38,.38);}box([7.3,.24,.36],[0,4.1,55],0x973f30);box([6.7,.18,.32],[0,3.45,55],0x973f30);box([3,2.6,2],[0,1.3,60],0x8b7050,[0,0,0],'wood');obstacle(0,60,3,2);box([3.8,.22,2.8],[0,2.8,60],0x4e6061);anchor([0,1,57.8],'Visit the shrine',()=>onAction('shrine'));
+  box([68,2.1,4],[0,.18,-83],0x727f7e);for(const x of [-27,27]){cyl(1,7,[x,3.5,-83],0xc2c1b2);box([2.3,.7,2.3],[x,7,-83],x<0?0xa0493f:0xd1cdbb);}
+  for(const [x,z,h] of [[-31,-98,13],[32,-102,16],[-45,-111,10]]){cyl(.24,h,[x,h/2,z],0x455054);beam([x,h*.8,z],[x+7,h*.8,z],.17,0x455054);beam([x+6.8,h*.8,z],[x+9,h*.55,z-3],.09,0x455054);}
+  for(const [x,z,w,h] of [[-24,-105,15,7],[20,-107,18,8],[-3,-114,22,6]])box([w,h,10],[x,h/2-1,z],0x66706f);
 
   const residents=[['Aya',-4,34,0x9b5347],['Kenji',4,13,0x51717d],['Mrs Sato',-3,-23,0x766484],['Harbour master',3,-54,0x465965]];
   residents.forEach(([name,x,z,color],index)=>{

@@ -28,8 +28,8 @@ test('supplied night lane opens onto both existing restaurant façades, with sha
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
   for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor],['crystal-room',DINING.crystalDoor]]){
    const site=sites.find(s=>s.id===id);assert.deepEqual([site.door[0],site.door[2]],door);assert.equal(blocked(...door),false);
-   assert.ok(nav.path({x:0,z:18},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
-   assert.equal(sweepFraction({x:0,z:18},{x:door[0],z:18},blocked),1,'Clear approach to '+id);assert.equal(sweepFraction({x:door[0],z:18},{x:door[0],z:door[1]},blocked),1,'Clear doorstep to '+id);
+   assert.ok(nav.path({x:0,z:NIGHT_LANE.z},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
+   assert.equal(sweepFraction({x:0,z:NIGHT_LANE.z},{x:door[0],z:NIGHT_LANE.z},blocked),1,'Clear approach to '+id);assert.equal(sweepFraction({x:door[0],z:NIGHT_LANE.z},{x:door[0],z:door[1]},blocked),1,'Clear doorstep to '+id);
   }
   actions.find(a=>a.label==='Come into Minato Izakaya').fn();actions.find(a=>a.label==='Enter Sato Ramen').fn();assert.deepEqual(entered.map(s=>s.id),['izakaya','ramen']);
   assert.deepEqual(IZAKAYA_DOOR,DINING.izakayaDoor);assert.deepEqual(RAMEN_DOOR,DINING.ramenDoor);
@@ -42,9 +42,9 @@ test('supplied night lane opens onto both existing restaurant façades, with sha
 test('real model ground and clear headroom support the whole dining approach without overlapping old paving',()=>{
  const {world}=make(),group=world.diningStreet.group;assert.equal(world.diningStreet.ready,true);group.updateMatrixWorld(true);const ray=new THREE.Raycaster();let floors=0;
  for(let x=7.7;x<23.5;x+=.15){
-  ray.set(new THREE.Vector3(x,.7,18),new THREE.Vector3(0,-1,0));ray.far=1;const h=ray.intersectObjects(group.children,true)[0];assert.ok(h&&Math.abs(h.point.y-groundHeight(x,18))<.08,'Visible supporting ground at '+x);floors++;
-  for(const y of [.4,1.2,1.75])for(const dir of [[0,0,1],[0,0,-1],[1,0,0],[-1,0,0]]){ray.set(new THREE.Vector3(x,y,18),new THREE.Vector3(...dir));ray.far=.32;assert.equal(ray.intersectObjects(group.children,true).length,0,'Body clearance at '+x);}
-  assert.ok(routeAt(x,18,.32));
+  ray.set(new THREE.Vector3(x,.7,NIGHT_LANE.z),new THREE.Vector3(0,-1,0));ray.far=1;const h=ray.intersectObjects(group.children,true)[0];assert.ok(h&&Math.abs(h.point.y-groundHeight(x,NIGHT_LANE.z))<.08,'Visible supporting ground at '+x);floors++;
+  for(const y of [.4,1.2,1.75])for(const dir of [[0,0,1],[0,0,-1],[1,0,0],[-1,0,0]]){ray.set(new THREE.Vector3(x,y,NIGHT_LANE.z),new THREE.Vector3(...dir));ray.far=.32;assert.equal(ray.intersectObjects(group.children,true).length,0,'Body clearance at '+x);}
+  assert.ok(routeAt(x,NIGHT_LANE.z,.32));
  }
  assert.ok(floors>90);assert.equal(lanePatches().filter(p=>p.x0<NIGHT_LANE.maxX&&p.x1>NIGHT_LANE.minX&&p.z0<NIGHT_LANE.maxZ&&p.z1>NIGHT_LANE.minZ).length,0);
  for(const c of DINING_COLLIDERS)assert.ok(world.colliders.some(r=>r.id===c.id));

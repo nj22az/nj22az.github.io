@@ -22,7 +22,7 @@ test('Japanese Town kit retains the shopfronts alongside the supplied residentia
   assert.equal(world.harbourShops.length,7);assert.ok(world.group.getObjectByName('Sakura glass storefront'));assert.ok(world.harbourShops.every(s=>s.source===(['journal','electronics'].includes(s.id)?'Japanese street at night':'Japanese Town')));
   const batches=[];world.group.traverse(o=>{if(o.name==='japanese-homes')batches.push(o);});assert.equal(batches.length,0,'Old kit homes are no longer used in Willow Alley');assert.equal(world.homes.size,10);assert.ok(world.residential);
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
-  for(const p of RESIDENTS){assert.equal(blocked(...p.home),false,p.name+' doorstep');assert.ok(nav.path({x:0,z:46},{x:p.home[0],z:p.home[1]}).length,p.name+' route');}
+  for(const p of RESIDENTS){assert.equal(blocked(...p.home),false,p.name+' doorstep');assert.ok(nav.path({x:0,z:26},{x:p.home[0],z:p.home[1]}).length,p.name+' route');}
   for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.05){const a=route.points[i-1],b=route.points[i];assert.equal(blocked(a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t),false,route.id);}
   for(const shop of world.harbourShops){assert.equal(blocked(shop.entrance.position.x,shop.entrance.position.z),false);shop.update(false,0);assert.equal(shop.shutter.material.emissiveIntensity,0);shop.update(true,0);assert.ok(shop.shutter.material.emissiveIntensity>0);}
   // Grounded residential modules retain a full-height doorway and no low eaves over the walking lane.

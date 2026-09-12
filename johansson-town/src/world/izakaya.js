@@ -30,9 +30,9 @@ export function buildIzakaya(world,options){
  // The new facade has a recessed closed door and an asymmetric footprint.
  // Stop at the visible step; the entrance prompt opens the existing dining room.
  world.colliders.push(
-  {x:DINING.izakayaX+.91,z:23.89,w:5.22,d:6.82,height:9.05},
-  {x:DINING.izakayaX+3.92,z:26.54,w:.85,d:.85,height:1.08},
-  {x:DINING.izakayaX+3.74,z:25.90,w:.50,d:.50,height:.36});
+  {x:DINING.izakayaX+.91,z:DINING.izakayaZ-1.11,w:5.22,d:6.82,height:9.05},
+  {x:DINING.izakayaX+3.92,z:DINING.izakayaZ+1.54,w:.85,d:.85,height:1.08},
+  {x:DINING.izakayaX+3.74,z:DINING.izakayaZ+.90,w:.50,d:.50,height:.36});
 
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:DINING.izakayaX,z:DINING.izakayaZ,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;

@@ -109,14 +109,14 @@ test('supplied models retain textures, correct material support and reachable ro
     assert.equal(sites.length,2);assert.equal(entries.length,2);entries[0].fn();
     const blocked=(x,z)=>townBoundsBlocked(x,z,.28)||world.colliders.some(c=>circleHitsRect(x,z,.28,c));
     for(const z of [site.door[2],site.door[2]+.6,site.door[2]+.7])assert.equal(blocked(site.door[0],z),false,'Restaurant exit on walkable street');
-    assert.equal(sweepFraction({x:24,z:18},{x:site.door[0],z:site.door[2]},blocked),1,'Existing east-lane route reaches the restaurant');
+    assert.equal(sweepFraction({x:24,z:4},{x:site.door[0],z:site.door[2]},blocked),1,'Existing east-lane route reaches the restaurant');
     assert.ok(Math.hypot(site.door[0]-entries[0].o.position.x,site.door[2]-entries[0].o.position.z)<1,'Door prompt at the supplied entrance');
     const exterior=world.group.getObjectByName('Supplied ramen-exterior');
     assert.ok(exterior,'The Inakaya exterior replaces the old restaurant');
     const neighbour=sites.find(s=>s.id==='crystal-room');
     assert.ok(neighbour&&Math.abs(neighbour.door[0]-site.door[0])<4,'Crystal room is in the adjoining building');
     assert.equal(blocked(neighbour.door[0],neighbour.door[2]),false,'Neighbour exit is clear');
-    assert.equal(sweepFraction({x:21.2,z:18},{x:neighbour.door[0],z:neighbour.door[2]},blocked),1);
+    assert.equal(sweepFraction({x:21.2,z:4},{x:neighbour.door[0],z:neighbour.door[2]},blocked),1);
     const manifest=JSON.parse(await readFile(new URL('../assets/models/ramen/inakaya-manifest.json',import.meta.url)));
     const bytes=await readFile(new URL('../assets/models/ramen/'+manifest.file,import.meta.url));
     assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.sha256);

@@ -61,16 +61,16 @@ export function createContentItems({group,register,colliders,onInspect,onRead,pl
   if(placements)return {items,objects};
   // One wall-side delivery shelf replaces the row of freestanding tables.
   const shelf=new THREE.Group();shelf.name='East lane delivery shelf';group.add(shelf);
-  for(const y of [.90,1.55])cube(shelf,[.64,.065,1.95],[6.65,y,12.8],0x735b41);
-  for(const z of [11.9,13.7])cube(shelf,[.10,1.70,.10],[6.85,.85,z],0x4e4538);
-  colliders.push({x:6.65,z:12.8,w:.65,d:2,height:1.85});
+  for(const y of [.90,1.55])cube(shelf,[.64,.065,1.95],[6.65,y,10.8],0x735b41);
+  for(const z of [9.9,11.7])cube(shelf,[.10,1.70,.10],[6.85,.85,z],0x4e4538);
+  colliders.push({x:6.65,z:10.8,w:.65,d:2,height:1.85});
   const cv=ITEMS.find(i=>i.id==='cv');for(const x of [-.45,.45])cube(group,[.025,.18,1.04],[cv.pos[0]+x,cv.pos[1]-.04,cv.pos[2]],0x647170);
-  const chair=new THREE.Group();chair.position.set(4.9,0,39);group.add(chair);cube(chair,[.7,.12,.7],[0,.5,0],0x5a6357);cube(chair,[.7,.72,.09],[0,.85,.32],0x5a6357);register(chair,'Read in the window chair',onRead);colliders.push({x:4.9,z:39,w:.72,d:.72});
+  const chair=new THREE.Group();chair.position.set(4.9,0,22);group.add(chair);cube(chair,[.7,.12,.7],[0,.5,0],0x5a6357);cube(chair,[.7,.72,.09],[0,.85,.32],0x5a6357);register(chair,'Read in the window chair',onRead);colliders.push({x:4.9,z:22,w:.72,d:.72});
   // Calipers and vice occupy the workshop edge; they are never attached to a character.
-  cube(group,[.34,.25,.35],[-6.5,1.17,21],0x4e5c5e);cube(group,[.5,.05,.05],[-6.4,1.24,21.3],0xaab4b0);cube(group,[.035,.05,.25],[-6.5,1.25,21.3],0xaab4b0);
+  cube(group,[.34,.25,.35],[-6.5,1.17,-5],0x4e5c5e);cube(group,[.5,.05,.05],[-6.4,1.24,-4.7],0xaab4b0);cube(group,[.035,.05,.25],[-6.5,1.25,-4.7],0xaab4b0);
   const label=(title,body,pos)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.75),new THREE.MeshBasicMaterial({map:textTexture(title,body),side:THREE.DoubleSide}));p.position.set(...pos);group.add(p);};
-  label('PATTERN WORKSHOP','BRASS · TIMBER · HAND TOOLS',[-6.2,1.85,21.7]);
-  label('HARBOUR OFFICE','FIELD SERVICE · MARINE SYSTEMS',[-6.05,1.85,-47.9]);
-  label('SIX BOOKS','Five centuries. Read in the chair by the window.',[5.25,1.85,35.9]);
+  label('PATTERN WORKSHOP','BRASS · TIMBER · HAND TOOLS',[-6.2,1.85,-4.3]);
+  label('HARBOUR OFFICE','FIELD SERVICE · MARINE SYSTEMS',[-6.05,1.85,-35.4]);
+  label('SIX BOOKS','Five centuries. Read in the chair by the window.',[5.25,1.85,19.9]);
   return {items:ITEMS,objects};
 }

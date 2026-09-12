@@ -65,14 +65,14 @@ test('all appropriate public interaction classes are available without executing
 });
 
 test('residents walk to objects, reserve them, use them, yield to the player and preserve schedules and escort quests',()=>{
- const root=new THREE.Group(),kenji=person('Kenji',root),tetsuo=person('Tetsuo',root),paper=marker(root,'Read workshop notice',-5.4,17),state={inventory:[],yen:1000};
+ const root=new THREE.Group(),kenji=person('Kenji',root),tetsuo=person('Tetsuo',root),paper=marker(root,'Read workshop notice',-5.9,-5.5),state={inventory:[],yen:1000};
  tetsuo.g.position.copy(kenji.g.position);const player=new THREE.Group();player.position.set(20,0,20);
  const activity=createTownActivities({getTargets:()=>[paper],collides:()=>false,getPlayerPosition:()=>player.position,getState:()=>state,ledger:createResidentLedger(()=>state)});
  const world={people:[kenji],homes:new Map()},ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:()=>false,activities:activity});
  let sawWalking=false,sawReading=false;
  for(let i=0;i<22*60;i++){ai.update(1/60,1002+i/60,false);sawWalking||=activity.stateFor(kenji)?.phase==='walking';sawReading||=kenji.g.userData.socialPose==='Read';}
  assert.ok(sawWalking&&sawReading);assert.equal(state.yen,1000);assert.ok(state.residentLife.Kenji.activities.length);
- const base={place:'work',target:[-3.5,17],activity:'working'};kenji.g.position.set(-4.4,0,17);
+ const base={place:'work',target:[-4,-5.5],activity:'working'};kenji.g.position.set(-4.4,0,-5.5);
  activity.plan(kenji,base,1040,false,.1);activity.plan(kenji,base,1060,false,.1);
  activity.plan(tetsuo,base,1040,false,.1);activity.plan(tetsuo,base,1060,false,.1);
  assert.notEqual(!!activity.stateFor(kenji),!!activity.stateFor(tetsuo),'A single object cannot have two owners');
@@ -82,7 +82,7 @@ test('residents walk to objects, reserve them, use them, yield to the player and
 });
 
 test('inaccessible objects time out and never hold a reservation or bill indefinitely',()=>{
- const root=new THREE.Group(),p=person('Kenji',root),object=marker(root,'Buy canned tea · ¥120',-5.5,17),state={};
+ const root=new THREE.Group(),p=person('Kenji',root),object=marker(root,'Buy canned tea · ¥120',-6.5,-5.5),state={};
  const activity=createTownActivities({getTargets:()=>[object],collides:()=>false,ledger:createResidentLedger(()=>state)}),base={place:'work',target:p.profile.work,activity:'working'};
  activity.plan(p,base,1000,false,.1);activity.plan(p,base,1010,false,.1);assert.ok(activity.stateFor(p));
  activity.plan(p,base,1050,false,.1);assert.equal(activity.stateFor(p),undefined);assert.equal(state.residentLife.Kenji.purchases.length,0);assert.equal(object.userData.reservedBy,undefined);

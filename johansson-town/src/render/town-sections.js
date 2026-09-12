@@ -3,9 +3,9 @@ import {createSectionInstances} from './section-instances.js';
 import {createWindowBatch} from './shop-street-batches.js';
 
 export function districtAt(x,z){
-  if(z < -46)return 'Port';
-  if(x < -18 || (x > 20 && z > 24))return 'Residential';
-  if(x > 20 && z < -20)return 'Park';
+  if(z < -36)return 'Port';
+  if(x < -18 || (x > 20 && z > 20))return 'Residential';
+  if(x > 20 && z < -16)return 'Park';
   return 'Shopping';
 }
 const CELL=24;

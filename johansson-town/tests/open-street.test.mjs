@@ -10,11 +10,11 @@ test('street has no transparent canopy sheets and phones retain bounded night li
  installDOM();const scene=new THREE.Scene();
  const world=createTown({scene,sites:[],mobile:true,shadows:false,register(){},enter(){},onAction(){}});
  const pier=world.group.getObjectByName('pier-concrete-surface');
- assert.equal(groundHeight(0,-70),pier.position.y,'Physics and visible pier share the same height');
- assert.equal(world.people.find(p=>p.g.userData.name==='Harbour master').g.position.y,pier.position.y,'Initial standing resident is grounded before moving');
- assert.equal(groundHeight(0,-52),0,'Boardwalk remains flush');
- assert.equal(groundHeight(0,-60),0,'Approach is not raised with the pier');
- for(const z of [-64,-70,-78])assert.equal(groundHeight(2,z),OUTER_PIER.height);
+ assert.equal(groundHeight(0,-56),pier.position.y,'Physics and visible pier share the same height');
+ const master=world.people.find(p=>p.g.userData.name==='Harbour master');assert.equal(master.g.position.y,groundHeight(master.g.position.x,master.g.position.z),'Initial resident is grounded at the relocated workplace');
+ assert.equal(groundHeight(0,-38),0,'Boardwalk remains flush');
+ assert.equal(groundHeight(0,-46),0,'Approach is not raised with the pier');
+ for(const z of [-50,-56,-64])assert.equal(groundHeight(2,z),OUTER_PIER.height);
  const barriers=[],lights=[];world.group.updateMatrixWorld(true);
  world.group.traverse(o=>{
   if(o.isPointLight&&o.userData.nightIntensity)lights.push(o);

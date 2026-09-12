@@ -15,11 +15,11 @@ assert.equal(roomBoundsBlocked(0,0,.28),false);
 assert.equal(roomBoundsBlocked(5.5,0,.28),true,'room wall radius must be respected');
 assert.equal(townBoundsBlocked(0,0,.28),false);
 assert.equal(townBoundsBlocked(6.9,0,.28),true,'shopping-street edge must be solid');
-assert.equal(townBoundsBlocked(10,-56,.28),false,'harbour apron must remain accessible');
-assert.equal(townBoundsBlocked(0,-75,.28),false,'outer harbour pier must be walkable');
-assert.equal(townBoundsBlocked(3.7,-75,.28),false,'pier usable width must remain accessible');
-assert.equal(townBoundsBlocked(4.0,-75,.28),true,'pier side must stop the player before the water');
-assert.equal(townBoundsBlocked(0,-79,.28),true,'pier end must stop the player before open water');
+assert.equal(townBoundsBlocked(10,-42,.28),false,'harbour apron must remain accessible');
+assert.equal(townBoundsBlocked(0,-61,.28),false,'outer harbour pier must be walkable');
+assert.equal(townBoundsBlocked(3.7,-61,.28),false,'pier usable width must remain accessible');
+assert.equal(townBoundsBlocked(4.0,-61,.28),true,'pier side must stop the player before the water');
+assert.equal(townBoundsBlocked(0,-65,.28),true,'pier end must stop the player before open water');
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 

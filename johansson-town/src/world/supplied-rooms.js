@@ -133,23 +133,23 @@ function buildInakayaPair(world,options){
     }});
   }
   const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:DINING.ramenDoor[0],z:10,
+    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:DINING.ramenDoor[0],z:DINING.ramenZ,
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
-    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:DINING.crystalDoor[0],z:12.2,
+    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:DINING.crystalDoor[0],z:DINING.ramenZ+2.2,
       color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[DINING.crystalDoor[0],0,DINING.crystalDoor[1]]},
   ];
   for(const site of sites){
     options.sites.push(site);
     const entrance=new THREE.Object3D();entrance.name=site.title+' entrance';
-    entrance.position.set(site.door[0],1.2,site.id==='ramen'?13.9:14.1);world.group.add(entrance);
+    entrance.position.set(site.door[0],1.2,DINING.ramenZ+(site.id==='ramen'?3.9:4.1));world.group.add(entrance);
     options.register(entrance,'Enter '+site.title,()=>options.enter(site));
   }
   // Facade-aligned solids keep the source's doors and paving behind the
   // interaction line; both exit points remain outside the walls and props.
   world.colliders.push(
-    {x:DINING.ramenX+.05,z:9.4,w:3.7,d:7.1,height:6.3},
-    {x:DINING.ramenX-2.84,z:12.19,w:2.35,d:2.9,height:4},
-    {x:DINING.ramenX-1.28,z:13.7,w:6.28,d:.3,height:1},
+    {x:DINING.ramenX+.05,z:DINING.ramenZ-.6,w:3.7,d:7.1,height:6.3},
+    {x:DINING.ramenX-2.84,z:DINING.ramenZ+2.19,w:2.35,d:2.9,height:4},
+    {x:DINING.ramenX-1.28,z:DINING.ramenZ+3.7,w:6.28,d:.3,height:1},
   );
   return sites[0];
 }

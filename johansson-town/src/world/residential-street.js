@@ -36,7 +36,7 @@ export function buildResidentialStreet(world,options={}){
   });
   group.add(scene);mounted=true;return true;
  }
- if(!mount())registerDetail(world,{id:'residential-street',x:RESIDENTIAL.laneX,z:-4,priority:0,radius:90,timeoutMs:32000,load:async()=>await preloadResidentialStreet()&&mount()});
+ if(!mount())registerDetail(world,{id:'residential-street',x:RESIDENTIAL.laneX,z:RESIDENTIAL.z,priority:0,radius:90,timeoutMs:32000,load:async()=>await preloadResidentialStreet()&&mount()});
  world.residential={group,get ready(){return mounted;},source:'Stylized Little Japanese Town Street'};
  return group;
 }
