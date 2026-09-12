@@ -3,12 +3,13 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {NIGHT_LANE,DINING_COLLIDERS} from './dining-layout.js';
+import {closeDiningBacks} from './building-backs.js';
 let source=null,pending=null;
 export function preloadDiningStreet(){
  if(source)return Promise.resolve(true);if(pending)return pending;
  pending=(async()=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);
   try{const response=await fetch(assetURL('models/dining-street/night-lane.glb'),{signal:controller.signal});if(!response.ok)throw Error(response.status);
-   const loaded=await new GLTFLoader().parseAsync(await response.arrayBuffer(),'');if(!loaded.scene.children.length)throw Error('Empty dining street');source=loaded.scene;return true;
+   const loaded=await new GLTFLoader().parseAsync(await response.arrayBuffer(),'');if(!loaded.scene.children.length)throw Error('Empty dining street');closeDiningBacks(loaded.scene);source=loaded.scene;return true;
   }catch(error){console.warn('Dining street unavailable; will retry',error);return false;}finally{clearTimeout(timer);}
  })();pending.finally(()=>{pending=null;});return pending;
 }
