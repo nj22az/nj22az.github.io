@@ -26,14 +26,14 @@ test('late street, home, bench and vending assets replace placeholders without m
   const shop=world.harbourShops.find(s=>s.id==='frontrow');assert.equal(shop.source,'Japanese Town');assert.equal(shop.lod.getObjectByName('street-kit-placeholder'),undefined);
   assert.ok(shop.lod.getObjectByName('door-handle'));assert.ok(shop.lod.getObjectByName('door-threshold'));assert.ok(shop.lod.getObjectByName('Front-Row book display'));
   world.group.updateMatrixWorld(true);
-  const ray=new THREE.Raycaster(new THREE.Vector3(5.5,1.7,30),new THREE.Vector3(1,0,0));
+  const ray=new THREE.Raycaster(new THREE.Vector3(5.5,1.7,14),new THREE.Vector3(1,0,0));
   const first=ray.intersectObjects(shop.lod.children,true)[0];
   let visibleDoor=false;for(let p=first?.object;p;p=p.parent)if(p.name==='frontrow-street-door')visibleDoor=true;
   assert.ok(visibleDoor,'The physical door is in front of the source wall');
   shop.entrance.userData.hit.fn();assert.deepEqual(entered,['frontrow']);
   createContentItems({group:world.group,colliders:world.colliders,register(){},onInspect(){},onRead(){}});
   const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
-  for(const [a,b] of [[[0,18],[DINING.ramenDoor[0],18]],[[DINING.izakayaX,18],DINING.izakayaDoor],[[DINING.ramenDoor[0],18],DINING.ramenDoor]])assert.equal(sweepFraction({x:a[0],z:a[1]},{x:b[0],z:b[1]},blocked),1,'Dining junction and doors are clear');
+  for(const [a,b] of [[[0,4],[DINING.ramenDoor[0],4]],[[DINING.izakayaX,4],DINING.izakayaDoor],[[DINING.ramenDoor[0],4],DINING.ramenDoor]])assert.equal(sweepFraction({x:a[0],z:a[1]},{x:b[0],z:b[1]},blocked),1,'Dining junction and doors are clear');
   assert.equal(world.group.children.filter(o=>o.name==='East lane delivery shelf').length,1);
   assert.equal(await preloadCharacter('Yuri'),false);failYuri=false;assert.equal(await preloadCharacter('Yuri'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
  }finally{globalThis.fetch=native;}

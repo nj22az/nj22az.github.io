@@ -5,23 +5,23 @@ import {buildShopDoor} from './shop-door.js';
 
 // Replaces the western fishing-gear shed. Source frontage is -Z; rotate it
 // towards the main street (+X), with its roof clear of the west service lane.
-export const WAREHOUSE=Object.freeze({x:-13.6,z:-56.4,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
+export const WAREHOUSE=Object.freeze({x:-13.6,z:-42.4,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
 export const WAREHOUSE_PLACE=Object.freeze({
  id:'warehouse',title:'Harbour Warehouse',jp:'港の倉庫',sub:'WESTERN QUAY',
  x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',
  line:'Fishing gear, ice and quay stores · open at all hours.',
- door:Object.freeze([-8.6,0,-52.65]),exitPosition:Object.freeze([-8.6,0,-52.65]),entryFacing:Math.PI/2,
+ door:Object.freeze([-8.6,0,-38.65]),exitPosition:Object.freeze([-8.6,0,-38.65]),entryFacing:Math.PI/2,
  directions:'Walk past Sakura Konbini towards the water. At the end of the main street, look left for the white timber building marked HARBOUR WAREHOUSE.',
 });
 export function warehouseColliders(){
  // Stable before and after streaming. Leave the main street, quay approach
  // and western service lane clear; match the loose source props separately.
  return [
-  {x:-13.64,z:-56.44,w:6.14,d:11.03,height:5.9},
-  {x:-8.30,z:-56.4,w:1.24,d:1.05,height:2.3}, // ladder
-  {x:-9.28,z:-58.05,w:2.2,d:2.2,height:1.9}, // timber stack
-  {x:-9.9,z:-55.0,w:.82,d:1.14,height:.68}, // cylinders
-  ...[-59.04,-53.58].map(z=>({x:-8.82,z,w:.16,d:.16,height:2.3})),
+  {x:-13.64,z:-42.44,w:6.14,d:11.03,height:5.9},
+  {x:-8.30,z:-42.4,w:1.24,d:1.05,height:2.3}, // ladder
+  {x:-9.28,z:-44.05,w:2.2,d:2.2,height:1.9}, // timber stack
+  {x:-9.9,z:-41,w:.82,d:1.14,height:.68}, // cylinders
+  ...[-45.04,-39.58].map(z=>({x:-8.82,z,w:.16,d:.16,height:2.3})),
  ].map(c=>({...c,warehouse:true}));
 }
 export function placeWarehouse(model){
@@ -54,7 +54,7 @@ export function buildWarehouse(world,options={}){
  const wallMat=new THREE.MeshStandardMaterial({color:0xbfbdb1,roughness:.94}),roofMat=new THREE.MeshStandardMaterial({color:0x65594c,roughness:.9});
  const wall=new THREE.Mesh(new THREE.BoxGeometry(6.08,4.1,10.97),wallMat);wall.position.set(WAREHOUSE.x,2.15,WAREHOUSE.z);fallback.add(wall);
  const roof=new THREE.Mesh(new THREE.BoxGeometry(6.3,.24,11.5),roofMat);roof.position.set(WAREHOUSE.x,4.32,WAREHOUSE.z);fallback.add(roof);
- options.label?.('港の倉庫','HARBOUR WAREHOUSE',[-10.48,2.2,-60.35],2.75,.88,Math.PI/2,'#e0dac2','#314d51');
+ options.label?.('港の倉庫','HARBOUR WAREHOUSE',[-10.48,2.2,-46.35],2.75,.88,Math.PI/2,'#e0dac2','#314d51');
  addStreetDoor(group);
  const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.45,1.25,WAREHOUSE_PLACE.door[2]);group.add(marker);
  options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));

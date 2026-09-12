@@ -22,15 +22,15 @@ const sites=()=>['office','frontrow','form3d','stepwise','journal','electronics'
 const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({scene:new THREE.Scene(),sites:all,mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});createContentItems({group:world.group,colliders:world.colliders,register:(o,label,fn)=>anchors.push({o,label,fn}),onInspect(){},onRead(){}});return {world,anchors,all};};
 
 test('ground, pier edges and A/D coordinate convention',()=>{
- assert.equal(townBoundsBlocked(0,-76,.28),false);assert.equal(townBoundsBlocked(4.1,-76,.28),true);assert.equal(townBoundsBlocked(0,-79.2,.28),true);
+ assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-65.2,.28),true);
  for(const route of ROUTES)for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
  for(const yaw of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const f={x:-Math.sin(yaw),z:-Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};assert.ok(Math.abs(f.x*right.x+f.z*right.z)<1e-10);assert.ok(f.x*right.z-f.z*right.x>.99);}
- assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(32,65)>5.9);
+ assert.equal(groundHeight(0,0),0);assert.ok(groundHeight(32,47)>5.9);
 });
 test('world construction, original route and new door reachability',()=>{
  const {world,all}=build();assert.equal(world.people.length,10);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
- for(let z=57.5;z>=-76;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
+ for(let z=32;z>=-62;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
  for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}
  world.update(.016,1,1,1002);world.update(.016,2,0,1230);
  const book=all.find(s=>s.id==='frontrow');assert.equal(world.isOpen(book,1002),true);assert.equal(world.isOpen(book,1230),false);
@@ -85,15 +85,15 @@ test('malformed current save falls back to valid legacy data without deleting it
 
 
 test('resident paths clear detailed props; evening destinations and Kenji escort do not deadlock',()=>{
- const {world}=build(),player=new THREE.Group();player.position.set(-2,0,20);const state={inventory:[],quest:0,kenjiEscort:'walking'};
+ const {world}=build(),player=new THREE.Group();player.position.set(-2,0,-5.5);const state={inventory:[],quest:0,kenjiEscort:'walking'};
  const blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
- for(const target of [[-34,39],[44,36],[32,65],[-38,-60],[-38,-74]]){
-  const path=nav.path({x:0,z:46},{x:target[0],z:target[1]});assert.ok(path.length,'Destination is reachable: '+target);
+ for(const target of [[-28,28],[40,24],[32,47],[-36,-46],[-36,-60]]){
+  const path=nav.path({x:0,z:26},{x:target[0],z:target[1]});assert.ok(path.length,'Destination is reachable: '+target);
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.05)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,'Path edge is clear');
  }
  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:blocked});
  for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Kenji reaches his workshop without stopping against Kenta');
- player.position.set(0,0,46);for(let i=0;i<120;i++)ai.update(1/60,1115,false);player.position.set(24,0,18);for(let i=0;i<120;i++)ai.update(1/60,1115,false);
+ player.position.set(0,0,26);for(let i=0;i<120;i++)ai.update(1/60,1115,false);player.position.set(25,0,4);for(let i=0;i<120;i++)ai.update(1/60,1115,false);
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
 });
 
@@ -103,7 +103,7 @@ test('every resident retains a named home and a clear route through the supplied
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
   assert.ok(anchors.some(a=>a.label==='Visit homes'&&a.o.position.x===home.door[0]&&a.o.position.z===home.door[1]),p.profile.name+' home prompt');
   assert.equal(blocked(...home.door),false,p.profile.name+' doorstep');
-  const path=nav.path({x:0,z:46},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
+  const path=nav.path({x:0,z:26},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
  }
  const homes=world.colliders.filter(c=>c.id?.startsWith('DomekRdy'));assert.equal(homes.length,7);
@@ -111,7 +111,7 @@ test('every resident retains a named home and a clear route through the supplied
 });
 
 test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{
- const {world}=build(),player=new THREE.Group(),state={inventory:[],quest:0};player.position.set(0,0,18);
+ const {world}=build(),player=new THREE.Group(),state={inventory:[],quest:0};player.position.set(0,0,4);
  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
  const chats=createNeighbourChats({world,observer:()=>player.position,state:()=>state,blocked:(a,b)=>!clearChatLine(a,b,world.colliders)});let chatted=false;
  ai.update(.1,1100,false);const mori=world.people.find(p=>p.profile.name==='Officer Mori');let nightMovement=0;
@@ -127,7 +127,7 @@ test('residents walk home without off-camera teleporting and Mori patrols past m
 test('harbour park bench and approach connect to the quay without moving existing homes',()=>{
  const {world}=build(),blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked),seat=world.park.seat;
  assert.equal(blocked(seat.stand[0],seat.stand[2]),false,'Safe place to stand up');
- const path=nav.path({x:0,z:-58},{x:seat.stand[0],z:seat.stand[2]});assert.ok(path.length,'Bench reachable from quay');
+ const path=nav.path({x:0,z:-44},{x:seat.stand[0],z:seat.stand[2]});assert.ok(path.length,'Bench reachable from quay');
  assert.ok(seat.eyeY>groundHeight(...[seat.position[0],seat.position[2]])+.8,'Seated eye clears the ground');
  assert.equal(world.park.bench.userData.seat,seat);
 });
@@ -140,8 +140,8 @@ test('cross-alleys shorten trips through the housing blocks and northern destina
   const a=route.points[0],b=route.points.at(-1),path=nav.path({x:a[0],z:a[1]},{x:b[0],z:b[1]});assert.ok(path.length);
   const length=path.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);assert.ok(length<50,route.id+' must avoid the old perimeter detour');
  }
- for(let x=0;x<=38;x+=.25)assert.equal(groundHeight(x,50),0,'Shrine elevation must not lift the street');
- const tea=all.find(s=>s.id==='tea-house');const teaPath=nav.path({x:0,z:46},{x:tea.door[0],z:tea.door[2]});assert.ok(teaPath.length,'Tea house approach must remain connected at street level');assert.ok(Math.hypot(tea.door[0],tea.door[2]-46)<30,'Tea house is close to the north street');
- const shrine=nav.path({x:0,z:46},{x:32,z:65});assert.ok(shrine.length,'Shortened shrine climb remains walkable');
+ for(let x=0;x<=38;x+=.25)assert.equal(groundHeight(x,31),0,'Shrine elevation must not lift the street');
+ const tea=all.find(s=>s.id==='tea-house');const teaPath=nav.path({x:0,z:26},{x:tea.door[0],z:tea.door[2]});assert.ok(teaPath.length,'Tea house approach must remain connected at street level');assert.ok(Math.hypot(tea.door[0],tea.door[2]-26)<30,'Tea house is close to the north street');
+ const shrine=nav.path({x:0,z:26},{x:32,z:47});assert.ok(shrine.length,'Shortened shrine climb remains walkable');
  assert.ok(shrine.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-shrine[i][0],p[1]-shrine[i][1]),0)<55);
 });

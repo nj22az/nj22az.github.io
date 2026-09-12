@@ -34,7 +34,7 @@ test('supplied residential street streams once without old houses, and keeps all
   assert.equal(world.homes.size,10);assert.equal(world.colliders.filter(c=>c.id?.startsWith('DomekRdy')).length,7);
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
   for(const p of RESIDENTS){
-   assert.equal(blocked(...p.home),false,p.name+' doorstep');const path=nav.path({x:0,z:46},{x:p.home[0],z:p.home[1]});assert.ok(path.length,p.name+' can walk home');assert.deepEqual(path.at(-1),p.home,'The route reaches the authored threshold, including the bus driver’s fractional doorstep');
+   assert.equal(blocked(...p.home),false,p.name+' doorstep');const path=nav.path({x:0,z:26},{x:p.home[0],z:p.home[1]});assert.ok(path.length,p.name+' can walk home');assert.deepEqual(path.at(-1),p.home,'The route reaches the authored threshold, including the bus driver’s fractional doorstep');
    assert.equal(world.homes.get(p.name).building,RESIDENTIAL_ENTRIES[p.homeEntry].buildingId);
   }
   const site=sites.find(s=>s.id==='yuri-home');assert.deepEqual([site.door[0],site.door[2]],YURI_PROFILE.home);assert.deepEqual(YURI_HOME_DOOR,YURI_PROFILE.home);
@@ -47,17 +47,17 @@ test('supplied residential street streams once without old houses, and keeps all
 test('walking height follows the actual arched deck and never admits the canal or façades',async()=>{
  const {world}=make();fetchAssets();try{assert.equal(await preloadResidentialStreet(),true);}finally{globalThis.fetch=nativeFetch;}
  const group=world.residential.group;group.updateMatrixWorld(true);const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
- let compared=0,previous=groundHeight(RESIDENTIAL.laneX,-10);
- for(let z=-10;z< -2.7;z+=.1){
+ let compared=0,previous=groundHeight(RESIDENTIAL.laneX,-14);
+ for(let z=-14;z< -6.7;z+=.1){
   const h=groundHeight(RESIDENTIAL.laneX,z);assert.ok(Math.abs(h-previous)<.15,'No abrupt step through the bridge');previous=h;
   ray.set(new THREE.Vector3(RESIDENTIAL.laneX,.9,z),down);ray.far=1;
   const hit=ray.intersectObjects(group.children,true).find(h=>h.point.y>.10&&h.point.y<.85);
   if(hit){assert.ok(Math.abs(h-hit.point.y)<.10,'Height follows the rendered bridge at '+z);compared++;}
   assert.ok(routeAt(RESIDENTIAL.laneX,z,.32));
  }
- for(const z of [-15,-14.8,-14.5,5.6,6,6.4]){ray.set(new THREE.Vector3(RESIDENTIAL.laneX,.9,z),down);ray.far=1;assert.ok(ray.intersectObjects(group.children,true).length,'Both lane ends have visible supporting paving');}
- assert.ok(compared>40);assert.ok(groundHeight(RESIDENTIAL.laneX,-6)>.5);
- for(const side of [-1,1])assert.equal(routeAt(RESIDENTIAL.laneX+side*2,-6,.32),null,'Water is not walkable');
+ for(const z of [-19,-18.8,-18.5,1.6,2,2.4]){ray.set(new THREE.Vector3(RESIDENTIAL.laneX,.9,z),down);ray.far=1;assert.ok(ray.intersectObjects(group.children,true).length,'Both lane ends have visible supporting paving');}
+ assert.ok(compared>40);assert.ok(groundHeight(RESIDENTIAL.laneX,-10)>.5);
+ for(const side of [-1,1])assert.equal(routeAt(RESIDENTIAL.laneX+side*2,-10,.32),null,'Water is not walkable');
  for(const p of RESIDENTS){
   const h=groundHeight(...p.home);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
    ray.set(new THREE.Vector3(p.home[0],h+1.2,p.home[1]),new THREE.Vector3(dx,0,dz));ray.far=.32;

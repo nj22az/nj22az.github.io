@@ -7,8 +7,8 @@ import {registerDetail} from './detail-stream.js';
 export const SAKURA_SHOP=Object.freeze({x:-7.55,z:-28});
 export const SAKURA_BENCH_PLACE=Object.freeze({
   x:4.42,
-  z:-20.35,
-  yaw:Math.atan2(4.42-SAKURA_SHOP.x,-20.35-SAKURA_SHOP.z),
+  z:-17.3,
+  yaw:Math.atan2(4.42-SAKURA_SHOP.x,-17.3-SAKURA_SHOP.z),
   pitch:-.08,
   eyeY:1.16,
   sitLocal:[0,0,-.08],

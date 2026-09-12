@@ -1,3 +1,4 @@
+import {DINING} from './dining-layout.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildHomes} from './homes.js';
 import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
@@ -40,24 +41,27 @@ export function buildDistricts(world,options){
     if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }
-  building({id:'sento',x:-34,z:34,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
-  box([1.15,17,1.15],[-37,8.5,30],'concrete',0x8d8b7a);
+  building({id:'sento',x:-28,z:23,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
+  box([1.15,17,1.15],[-31,8.5,19],'concrete',0x8d8b7a);
   buildTeaHouse(world,options);
   if(!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
     building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
   }
-  building({id:'bus-hut',x:-26,z:43,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
-  // River mouth, flood walls and an accessible timber jetty form the western loop.
-  box([.6,1.2,74],[-48,-.1,-24],'concrete',0x808f83);
-  for(const [x,z] of [[-51,-40],[-56,-22]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);for(const dx of [-.08,.08])box([.025,.45,.025],[x+dx,.1,z],'timber',0x4e4d40);group.add(bird);verb([-45,1,-37],'Watch the heron','inspect','Grey heron','It waits for a fish to come to it. An admirable working arrangement.');}
-  sign('小学校','GATE CLOSES AT 16:00',[44,2.2,33],3,.8);box([7,1.6,.12],[44,.8,32.5],'timber',0x687566);colliders.push({x:44,z:32.5,w:7,d:.12,height:1.6});verb([44,1,34],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
+  building({id:'bus-hut',x:-14,z:27,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
+  // The western lane is the seafront, directly behind the residential block.
+  box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
+  for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
+  verb([-36,1,-22],'Watch the heron','inspect','Grey heron','It waits for a fish along the seawall.');
+  sign('小学校','HARBOUR SCHOOL',[41.5,2.2,24],3,.8,-Math.PI/2);
+  box([.12,1.6,8],[41.5,.8,24],'timber',0x687566);colliders.push({x:41.5,z:24,w:.12,d:8,height:1.6});
+  verb([40,1,24],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
   // Shrine stair/approach culminates in a real raised landing.
-  box([8,.4,8],[32,5.8,65],'concrete',0xa2a18c);for(const x of [29,35])box([.25,4,.25],[x,8,63],'timber',0x9b4833);box([8,.28,.45],[32,10,63],'timber',0x943d2a);verb([32,7.3,65],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
-  for(const [x,z] of [[29,67],[32,67],[35,67]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
+  box([8,.4,8],[32,5.8,47],'concrete',0xa2a18c);for(const x of [29,35])box([.25,4,.25],[x,8,45],'timber',0x9b4833);box([8,.28,.45],[32,10,45],'timber',0x943d2a);verb([32,7.3,47],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
+  for(const [x,z] of [[29,49],[32,49],[35,49]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  for(const [x,z,jp,en] of [[7.1,22,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,29,'柳小路','WEST → HOMES · BATHHOUSE'],[5.9,-28,'桜商店','SAKURA ← · HARBOUR AHEAD'],[5.9,50,'北通り','TEA HOUSE → · BUS STOP ←']]){
-    const marker=sign(jp,en,[x,2.7,z],x===7.1?2.4:3.1,.6,x===7.1?-Math.PI/2:0);marker.name=x===7.1?'Dining lane direction':'District direction';
+  for(const [x,z,jp,en] of [[6.0,7.8,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,6.5,'柳小路','← HOMES · BATHHOUSE'],[5.9,-34,'港通り','PORT · WAREHOUSE AHEAD'],[5.9,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
+    const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }
   buildHomes(world,options,box);

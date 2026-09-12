@@ -24,8 +24,8 @@ export function buildDiningStreet(world,options={}){
    o.material=materials.get(o.material);
   });group.add(model);mounted=true;world.updateDiningStreet(lastDay);return true;
  }
- for(const x of [12.5,18.2]){const light=new THREE.PointLight(0xffc58a,0,7,2);light.position.set(x,2.65,18);light.castShadow=false;world.group.add(light);lights.push(light);}
+ for(const x of [12.5,18.2]){const light=new THREE.PointLight(0xffc58a,0,7,2);light.position.set(x,2.65,NIGHT_LANE.z);light.castShadow=false;world.group.add(light);lights.push(light);}
  world.updateDiningStreet=day=>{lastDay=day;const night=1-THREE.MathUtils.clamp(day,0,1);for(const {material,strength} of glow)material.emissiveIntensity=strength*(.08+.72*night);for(const light of lights)light.intensity=mounted?night*14:0;};
- if(!mount())registerDetail(world,{id:'dining-street',priority:0,x:15,z:18,radius:72,timeoutMs:27000,load:async()=>await preloadDiningStreet()&&mount()});
+ if(!mount())registerDetail(world,{id:'dining-street',priority:0,x:15,z:NIGHT_LANE.z,radius:72,timeoutMs:27000,load:async()=>await preloadDiningStreet()&&mount()});
  world.diningStreet={group,lights,get ready(){return mounted;}};return group;
 }

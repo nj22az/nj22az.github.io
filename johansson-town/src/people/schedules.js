@@ -1,3 +1,4 @@
+import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
@@ -85,7 +86,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     patrols.set(g,index);target=patrol[index];tag='patrol-'+index;
    }
    if(v.name==='Kenji'&&state().kenjiEscort==='walking'){
-    target=FULL_TOWN.active?FULL_TOWN.escort:[-4,20.5];tag='escort';g.userData.activity='showing the workshop';
+    target=FULL_TOWN.active?FULL_TOWN.escort:TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Unique home thresholds must not be displaced by generic crowd spacing.
@@ -110,6 +111,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{p.g.visible=true;});world.updateHomes?.(minutes);
-  if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[[4,34],[-4,-18],[-1.6,-76]];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
+  if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
  },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors;const target=inside==='home'?p.profile.home:inside==='market'?world.people.find(p=>p.profile.name==='Yuri').profile.work:inside==='ramen'?RAMEN_DOOR:inside==='izakaya'?IZAKAYA_DOOR:p.profile.work;return [p.profile.name,{position:inside?[...target]:[g.position.x,g.position.z],indoors:inside||null}];}));},pose(){}};
 }

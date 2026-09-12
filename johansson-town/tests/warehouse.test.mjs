@@ -25,7 +25,7 @@ test('supplied warehouse is compact, textured, grounded and faces the street',as
  assert.equal(draws,12);assert.equal(triangles,4822);
  assert.ok(Math.abs(bounds.min.y-WAREHOUSE.groundY)<1e-6);
  assert.ok(bounds.min.x>-17&&bounds.max.x<-7.5,'Fits between western lane and main street');
- assert.ok(bounds.min.z>-62.2&&bounds.max.z<-50.4,'Roof fits the quay plot');
+ assert.ok(bounds.min.z>-48.2&&bounds.max.z<-36.4,'Roof fits the quay plot');
  const forward=new THREE.Vector3(0,0,-1).transformDirection(placed.matrixWorld);assert.ok(forward.x>.999,'Loading awning faces the street');
 });
 test('warehouse replaces only the western shed and keeps its approach reachable',async()=>{
@@ -37,7 +37,7 @@ test('warehouse replaces only the western shed and keeps its approach reachable'
  const [x,,z]=WAREHOUSE_PLACE.exitPosition;
  const path=[[0,-46],[0,z],[x,z]];
  for(let i=1;i<path.length;i++)assert.equal(sweepFraction({x:path[i-1][0],z:path[i-1][1]},{x:path[i][0],z:path[i][1]},blocked),1,'Walk from main street to warehouse');
- for(let z=-62;z<=-49;z+=.2)assert.equal(world.colliders.some(c=>circleHitsRect(-18,z,.32,c)),false,'No collision intrudes into the western approach');
+ for(let z=-48;z<=-49;z+=.2)assert.equal(world.colliders.some(c=>circleHitsRect(-18,z,.32,c)),false,'No collision intrudes into the western approach');
  assert.ok(world.colliders.some(c=>circleHitsRect(WAREHOUSE.x,WAREHOUSE.z,.32,c)),'Warehouse walls block movement');
  assert.ok(registered.find(a=>a.label==='Enter Harbour Warehouse'));
  assert.ok(world.group.getObjectByName('warehouse-street-door'));

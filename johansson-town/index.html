@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?v=7">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-MsPyRAQ-.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DWTTNZHB.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -55,7 +55,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-CUe5Kk3n.js';
+import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -93,7 +93,7 @@ import {unlockTownAudio} from './runtime/audio-CUe5Kk3n.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-MsPyRAQ-.js');
+      await import('./runtime/boot-DWTTNZHB.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
