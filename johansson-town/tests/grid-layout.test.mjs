@@ -21,7 +21,6 @@ test('rectangular lanes have clear centres and all homes face a reachable lane',
  const {world,sites}=make();
  const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
  for(const route of ROUTES.slice(3)){
-  if(route.id==='shrine-slope')continue;
   for(let i=1;i<route.points.length;i++){
    const a=route.points[i-1],b=route.points[i];assert.ok(a[0]===b[0]||a[1]===b[1],route.id);
    const steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])*4);

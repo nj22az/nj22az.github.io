@@ -29,7 +29,7 @@ test('supplied night lane opens onto both existing restaurant façades, with sha
   for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor],['crystal-room',DINING.crystalDoor]]){
    const site=sites.find(s=>s.id===id);assert.deepEqual([site.door[0],site.door[2]],door);assert.equal(blocked(...door),false);
    assert.ok(nav.path({x:0,z:NIGHT_LANE.z},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
-   assert.equal(sweepFraction({x:0,z:NIGHT_LANE.z},{x:door[0],z:NIGHT_LANE.z},blocked),1,'Clear approach to '+id);assert.equal(sweepFraction({x:door[0],z:NIGHT_LANE.z},{x:door[0],z:door[1]},blocked),1,'Clear doorstep to '+id);
+   assert.equal(sweepFraction({x:0,z:door[1]},{x:door[0],z:door[1]},blocked),1,'Direct Main Street approach to '+id);assert.ok(door[0]<15,'Dining is close to Main Street');
   }
   actions.find(a=>a.label==='Come into Minato Izakaya').fn();actions.find(a=>a.label==='Enter Sato Ramen').fn();assert.deepEqual(entered.map(s=>s.id),['izakaya','ramen']);
   assert.deepEqual(IZAKAYA_DOOR,DINING.izakayaDoor);assert.deepEqual(RAMEN_DOOR,DINING.ramenDoor);

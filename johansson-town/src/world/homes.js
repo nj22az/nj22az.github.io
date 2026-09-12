@@ -19,7 +19,7 @@ export function buildHomes(world,options){
   const col=i%4,row=Math.floor(i/4);ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 25px sans-serif';ctx.fillText(p.name,col*256+128,row*128+49,240);ctx.font='19px sans-serif';ctx.fillText(p.homeAddress,col*256+128,row*128+86,240);
   const geometry=new THREE.PlaneGeometry(.58,.25),uv=geometry.attributes.uv;
   for(let n=0;n<uv.count;n++)uv.setXY(n,(col+uv.getX(n))/4,1-(row+1-uv.getY(n))/4);
-  dummy.position.set(entry.facade[0]+Math.sin(entry.angle)*.045,1.55+slot*.29,entry.facade[1]+.62);dummy.rotation.set(0,entry.angle,0);dummy.updateMatrix();geometry.applyMatrix4(dummy.matrix);plates.push(geometry);
+  dummy.position.set(entry.plate[0]+Math.sin(entry.angle)*.045,1.55+slot*.29,entry.plate[1]+Math.cos(entry.angle)*.045);dummy.rotation.set(0,entry.angle,0);dummy.updateMatrix();geometry.applyMatrix4(dummy.matrix);plates.push(geometry);
   const home={owner:p.name,address:p.homeAddress,door:p.home,building:entry.buildingId,occupied:false};homes.set(p.name,home);
   const anchor=new THREE.Object3D();anchor.name='home entrance:'+p.name;anchor.position.set(p.home[0],groundHeight(...p.home)+1.3,p.home[1]);world.group.add(anchor);
   let site=options.sites.find(s=>s.id===homeSiteId(p.name));

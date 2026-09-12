@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js?snappy=1';
 import {preloadResidentialStreet} from '../src/world/residential-street.js';
-import {RESIDENTIAL,RESIDENTIAL_BUILDINGS,RESIDENTIAL_ENTRIES} from '../src/world/residential-layout.js';
+import {RESIDENTIAL,RESIDENTIAL_BUILDINGS,RESIDENTIAL_ENTRIES,residentialPoint} from '../src/world/residential-layout.js';
 import {RESIDENTS,YURI_PROFILE} from '../src/people/residents.js';
 import {YURI_HOME_DOOR} from '../src/people/social.js';
 import {routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
@@ -39,7 +39,7 @@ test('supplied residential street streams once without old houses, and keeps all
   }
   const site=sites.find(s=>s.id==='yuri-home');assert.deepEqual([site.door[0],site.door[2]],YURI_PROFILE.home);assert.deepEqual(YURI_HOME_DOOR,YURI_PROFILE.home);
   actions.find(a=>a.label==='Visit homes'&&a.anchor.position.x===YURI_PROFILE.home[0]&&a.anchor.position.z===YURI_PROFILE.home[1]).fn();assert.equal(entered[0],site);
-  assert.equal(blocked(site.exitPosition[0]+Math.sin(RESIDENTS.at(-1).house.angle)*.6,site.exitPosition[2]),false,'Yuri exit faces the clear lane');
+  assert.equal(blocked(site.exitPosition[0]+Math.sin(RESIDENTS.at(-1).house.angle)*.6,site.exitPosition[2]+Math.cos(RESIDENTS.at(-1).house.angle)*.6),false,'Yuri exit faces the clear lane');
   world.homes.get('Yuri').occupied=true;world.updateHomes(1420);assert.equal(world.homes.get('Yuri').occupied,true);assert.equal(world.group.getObjectByName('resident-home-nameplates').visible,true);
  }finally{globalThis.fetch=nativeFetch;}
 });
@@ -47,17 +47,17 @@ test('supplied residential street streams once without old houses, and keeps all
 test('walking height follows the actual arched deck and never admits the canal or façades',async()=>{
  const {world}=make();fetchAssets();try{assert.equal(await preloadResidentialStreet(),true);}finally{globalThis.fetch=nativeFetch;}
  const group=world.residential.group;group.updateMatrixWorld(true);const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
- let compared=0,previous=groundHeight(RESIDENTIAL.laneX,-14);
- for(let z=-14;z< -6.7;z+=.1){
-  const h=groundHeight(RESIDENTIAL.laneX,z);assert.ok(Math.abs(h-previous)<.15,'No abrupt step through the bridge');previous=h;
-  ray.set(new THREE.Vector3(RESIDENTIAL.laneX,.9,z),down);ray.far=1;
+ let compared=0,previous=groundHeight(...residentialPoint(-.25,-6));
+ for(let localZ=-6;localZ<1.3;localZ+=.1){
+  const [x,z]=residentialPoint(-.25,localZ),h=groundHeight(x,z);assert.ok(Math.abs(h-previous)<.15,'No abrupt step through the rotated bridge');previous=h;
+  ray.set(new THREE.Vector3(x,.9,z),down);ray.far=1;
   const hit=ray.intersectObjects(group.children,true).find(h=>h.point.y>.10&&h.point.y<.85);
-  if(hit){assert.ok(Math.abs(h-hit.point.y)<.10,'Height follows the rendered bridge at '+z);compared++;}
-  assert.ok(routeAt(RESIDENTIAL.laneX,z,.32));
+  if(hit){assert.ok(Math.abs(h-hit.point.y)<.10,'Height follows the rendered bridge at '+localZ);compared++;}
+  assert.ok(routeAt(x,z,.32));assert.equal(z,RESIDENTIAL.laneZ,'The bridge stays on the straight Main Street crossing');
  }
- for(const z of [-19,-18.8,-18.5,1.6,2,2.4]){ray.set(new THREE.Vector3(RESIDENTIAL.laneX,.9,z),down);ray.far=1;assert.ok(ray.intersectObjects(group.children,true).length,'Both lane ends have visible supporting paving');}
- assert.ok(compared>40);assert.ok(groundHeight(RESIDENTIAL.laneX,-10)>.5);
- for(const side of [-1,1])assert.equal(routeAt(RESIDENTIAL.laneX+side*2,-10,.32),null,'Water is not walkable');
+ for(const localZ of [-11,-10.8,-10.5,9.6,10,10.4]){const [x,z]=residentialPoint(-.25,localZ);ray.set(new THREE.Vector3(x,.9,z),down);ray.far=1;assert.ok(ray.intersectObjects(group.children,true).length,'Both lane ends have visible supporting paving');}
+ assert.ok(compared>40);assert.ok(groundHeight(...residentialPoint(-.25,-2))>.5);
+ for(const side of [-1,1]){const [x,z]=residentialPoint(-.25+side*2,-2);assert.equal(routeAt(x,z,.32),null,'Water is not walkable');}
  for(const p of RESIDENTS){
   const h=groundHeight(...p.home);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
    ray.set(new THREE.Vector3(p.home[0],h+1.2,p.home[1]),new THREE.Vector3(dx,0,dz));ray.far=.32;

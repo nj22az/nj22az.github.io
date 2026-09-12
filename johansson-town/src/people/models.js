@@ -128,7 +128,7 @@ export function createLocalCharacters({shadows=false}={}){
       const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
       if(eyesClosed&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
       if(actor.sleepEyes)actor.sleepEyes.visible=eyesClosed;
-      for(const accessory of actor.bedAccessories)accessory.visible=!eyesClosed;
+      for(const accessory of actor.bedAccessories)accessory.visible=!eyesClosed&&!(entity.userData.inWorkplace==='office'&&accessory.name==='resident-captain');
       if(!eyesClosed&&actor.sleepEyes){actor.sleepEyes.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});actor.sleepEyes.removeFromParent();actor.sleepEyes=null;}
       let visible=true;for(let parent=entity;parent;parent=parent.parent)if(!parent.visible){visible=false;break;}
       if(!visible){actor.last.copy(entity.position);actor.speed=0;actor.moving=false;actor.gestureTime=0;actor.wasVisible=false;continue;}
@@ -145,7 +145,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
-      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Eat','Drink'].includes(entity.userData.socialPose);
+      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink'].includes(entity.userData.socialPose);
       actor.seatBlend=THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
       if(seated)actor.lastSeatHeight=entity.userData.seatHeight;
       const blend=actor.seatBlend,support=actor.seatSupport;

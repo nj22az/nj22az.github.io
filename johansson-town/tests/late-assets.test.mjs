@@ -32,7 +32,7 @@ test('late street, home, bench and vending assets replace placeholders without m
   assert.ok(visibleDoor,'The physical door is in front of the source wall');
   shop.entrance.userData.hit.fn();assert.deepEqual(entered,['frontrow']);
   const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
-  for(const [a,b] of [[[0,4],[DINING.ramenDoor[0],4]],[[DINING.izakayaX,4],DINING.izakayaDoor],[[DINING.ramenDoor[0],4],DINING.ramenDoor]])assert.equal(sweepFraction({x:a[0],z:a[1]},{x:b[0],z:b[1]},blocked),1,'Dining junction and doors are clear');
+  for(const door of [DINING.izakayaDoor,DINING.ramenDoor,DINING.crystalDoor])assert.equal(sweepFraction({x:0,z:door[1]},{x:door[0],z:door[1]},blocked),1,'Dining junction and doors remain clear after streaming');
   assert.equal(world.group.children.filter(o=>o.name==='East lane delivery shelf').length,0,'Retired outdoor content furniture cannot reappear after streaming');
   assert.equal(await preloadCharacter('Yuri'),false);failYuri=false;assert.equal(await preloadCharacter('Yuri'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
  }finally{globalThis.fetch=native;}

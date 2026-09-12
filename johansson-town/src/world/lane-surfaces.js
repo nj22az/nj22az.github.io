@@ -24,7 +24,6 @@ export function laneEdges(){
 export function lanePatches(routes=ROUTES.slice(3)) {
   const rects=[];
   for(const route of routes) {
-    if(route.id==='shrine-slope')continue;
     const half=route.width/2;
     for(let i=1;i<route.points.length;i++) {
       const a=route.points[i-1],b=route.points[i];
@@ -57,11 +56,6 @@ export function buildLaneSurfaces(parent,library) {
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
   for(const p of lanePatches())quad(p.surface,[[p.x0,p.z0],[p.x1,p.z0],[p.x0,p.z1],[p.x1,p.z1]]);
-  const slope=ROUTES.find(r=>r.id==='shrine-slope');
-  for(let i=1;i<slope.points.length;i++){
-    const a=slope.points[i-1],b=slope.points[i],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),nx=dz/len*slope.width/2,nz=-dx/len*slope.width/2;
-    quad('stone',[[a[0]-nx,a[1]-nz],[a[0]+nx,a[1]+nz],[b[0]-nx,b[1]-nz],[b[0]+nx,b[1]+nz]]);
-  }
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
     const material=surface==='residential'?new THREE.MeshStandardMaterial({color:0xb9b5a5,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;

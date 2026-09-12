@@ -120,8 +120,8 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.bench(-5.9,27,0));
   seat([-5.45,1,27.15],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
-  addWithCollider(group,colliders,factory.postbox(6.05,9.5,0));
-  inspect([5.65,1,9.3],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
+  addWithCollider(group,colliders,factory.postbox(6.05,11.3,0));
+  inspect([5.65,1,11.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.deliveryTrolley(-6,-34.5,.02));
   inspect([-5.52,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
 
@@ -132,8 +132,8 @@ function addStreetLife(world,options,factory){
   inspect([-5.6,1,15.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
-  addWithCollider(group,colliders,factory.bicycleRack(7.42,9.74,0));
-  inspect([6.4,.9,9.2],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
+  addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
+  inspect([BOOKSHOP_BICYCLE.x-.8,.9,BOOKSHOP_BICYCLE.z],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
 
   addWithCollider(group,colliders,factory.convexMirror(-6.15,6.2,.02));
   inspect([-5.7,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
@@ -161,7 +161,7 @@ export function createTown(options){
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||site.id==='warehouse')return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(site.id==='home'||site.id==='yuri-home'||site.id==='warehouse')return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   buildDiningStreet(world,options);buildIzakaya(world,options);buildPark(world,options);buildSeaCave(world,options);

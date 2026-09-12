@@ -1,3 +1,4 @@
+import {buildOfficeWorkplace,OFFICE_STAFF} from './interiors/office-workplace.js';
 import {YURI_APARTMENT_LAYOUT} from './interiors/yuri-apartment-layout.js';
 import {DINING} from './dining-layout.js';
 import {registerDetail} from './detail-stream.js';
@@ -23,7 +24,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:-2.5,z:-2.2,w:1.8,d:2.2,height:1.7},
       {x:-2.85,z:2.1,w:1.05,d:2.15,height:1.6},
     ]},
-  office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
+  office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],staff:OFFICE_STAFF,
     colliders:[
       {x:0,z:-2.78,w:6.27,d:1.23,height:1.72},
       {x:0,z:-2.0,w:.11,d:.45,height:1.7},
@@ -218,13 +219,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1988.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
     anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
   }else if(site.id==='office'){
-    anchor([-1.40,1.15,-2.74],'Use office computer','machine','Office computer','Service records, calibration certificates and travel plans are open on the workstation.');
-    anchor([1.70,.93,-2.75],'Read the ledger','read','Harbour records and service ledger',site.line+'\n14 September 1988. Evening deliveries are written in blue pencil.');
-    anchor([-2.45,.93,-2.64],'Inspect field-service desk','inspect','Field-service desk','Route sheets, reference books and handwritten travel notes lie beside the keyboard.');
-    anchor([3.0,1.25,1.25],'Open drawing cabinet','inspect','Drawing cabinet','Berth records, vessel draughts, departure times and electrical drawings share this cabinet.');
-    anchor([-2.94,1.05,.05],'Browse service files','read','Service files','A row of binders keeps each vessel’s service history, tide tables and cold-store orders in order.');
-    anchor([-2.52,.7,-1.82],'Sit at the desk','seat','Office chair','A blue swivel chair faces the service desk.');
-    anchor([1.14,.7,-2.05],'Sit down','seat','Office chair','The desk is ready for the next round of paperwork.');
+    buildOfficeWorkplace({room,reg,action});
   }else if(site.id==='yuri-home'){
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
     const sofa=anchor([-2.4,.48,2.2],'Sit on the sofa','seat','Yuri’s sofa','A broad sofa faces the coffee table. Yuri rests here after closing the shop.');

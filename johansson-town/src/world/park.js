@@ -1,3 +1,4 @@
+import {prepareParkScenery} from './park-scenery.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -6,7 +7,7 @@ import {PARK,PARK_BENCH,parkHeight,activePark,parkBench} from './park-layout.js'
 let source=null;
 export async function preloadPark(){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
- try{const r=await fetch(assetURL('models/park/park-spring.glb'),{signal:controller.signal});if(!r.ok)throw Error(r.status);source=(await new GLTFLoader().parseAsync(await r.arrayBuffer(),'')).scene;return true;}
+ try{const r=await fetch(assetURL('models/park/park-spring.glb'),{signal:controller.signal});if(!r.ok)throw Error(r.status);source=prepareParkScenery((await new GLTFLoader().parseAsync(await r.arrayBuffer(),'')).scene);return true;}
  catch(e){console.warn('Park asset unavailable',e);return false;}finally{clearTimeout(timer);}
 }
 export function buildPark(world,options){

@@ -48,7 +48,6 @@ export function buildDistricts(world,options){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
     building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
   }
-  building({id:'bus-hut',x:-14,z:27,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
   // The western lane is the seafront, directly behind the residential block.
   box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
   for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
@@ -56,9 +55,6 @@ export function buildDistricts(world,options){
   sign('小学校','HARBOUR SCHOOL',[41.5,2.2,24],3,.8,-Math.PI/2);
   box([.12,1.6,8],[41.5,.8,24],'timber',0x687566);colliders.push({x:41.5,z:24,w:.12,d:8,height:1.6});
   verb([40,1,24],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
-  // Shrine stair/approach culminates in a real raised landing.
-  box([8,.4,8],[32,5.8,47],'concrete',0xa2a18c);for(const x of [29,35])box([.25,4,.25],[x,8,45],'timber',0x9b4833);box([8,.28,.45],[32,10,45],'timber',0x943d2a);verb([32,7.3,47],'Visit hillside shrine','shrine','Hillside shrine','The bay lies below the roofs.');
-  for(const [x,z] of [[29,49],[32,49],[35,49]]){box([.65,1.4,.65],[x,6.7,z],'concrete',0x7f877a);colliders.push({x,z,w:.65,d:.65,minY:6,height:7.4});verb([x,7,z],'Read memorial stone','read','Family memorial','Fresh water, incense and a small bunch of autumn flowers.');}
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   for(const [x,z,jp,en] of [[6.0,7.8,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,6.5,'柳小路','← HOMES · BATHHOUSE'],[5.9,-34,'港通り','PORT · WAREHOUSE AHEAD'],[5.9,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
     const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';

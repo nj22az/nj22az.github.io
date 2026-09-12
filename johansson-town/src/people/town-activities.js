@@ -8,7 +8,8 @@ export function townAffordance(object){
  const label=object.userData.hit?.label||'',lower=label.toLowerCase();
  if(!label||object.userData.npcInteraction===false||object.userData.name||/^(talk|catch up|say hello|enter|exit|step outside|travel|board|return|take|pick up|ring service)/i.test(label))return null;
  let kind;
- if(/fish from|fishing/.test(lower))kind='fish';
+ if(object.userData.officeTask)kind='office';
+ else if(/fish from|fishing/.test(lower))kind='fish';
  else if(/phone|telephone|call/.test(lower))kind='phone';
  else if(/arcade|star port|play/.test(lower))kind='arcade';
  else if(/radio|music|tune/.test(lower))kind='radio';
@@ -35,7 +36,7 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
  function release(person,minutes,delay=25){
   const use=active.get(person);if(!use)return;
   reservations.delete(use.object);if(use.object.userData.reservedBy===person.profile.name)delete use.object.userData.reservedBy;
-  if(use.kind==='seat'&&use.phase==='using')person.g.position.set(use.target[0],inside?0:groundHeight(...use.target),use.target[1]);
+  if(use.object.userData.seat&&use.phase==='using')person.g.position.set(use.target[0],inside?0:groundHeight(...use.target),use.target[1]);
   for(const key of ['usingTownObject','heldItem','socialPose','seatHeight'])delete person.g.userData[key];
   recent.set(person,use.id);active.delete(person);nextScan.set(person,minutes+delay);
  }
@@ -87,7 +88,7 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   if(use.phase==='walking'&&arrived){
    if(!ledger.purchase(person.profile.name,minutes,use.transaction,use.label,use.cost)){release(person,minutes);return base;}
    use.paid=true;use.phase='using';use.deadline=minutes+use.remaining+2;g.userData.usingTownObject=true;
-   if(use.kind==='seat'){
+   if(use.kind==='seat'||use.kind==='office'&&use.object.userData.seat){
     const seat=use.object.userData.seat;
     if(seat?.position)g.position.set(...seat.position);
     g.userData.seatHeight=seat?Math.max(.35,(seat.eyeY||1.15)-.64):.51;
@@ -96,13 +97,14 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   }
   if(use.phase==='using'){
    use.remaining-=dt;
-   if(use.kind!=='seat')g.rotation.y=Math.atan2(g.position.x-use.location.x,g.position.z-use.location.z);
+   if(!use.object.userData.seat)g.rotation.y=Math.atan2(g.position.x-use.location.x,g.position.z-use.location.z);
    const shopping=use.kind==='shop'&&use.remaining<7;
-   g.userData.socialPose=shopping?(use.item==='paper'?'Read':['rice','bun'].includes(use.item)?'EatStanding':'DrinkStanding'):POSE[use.kind];
-   g.userData.heldItem=shopping?use.item:use.kind==='phone'?'phone':use.kind==='fish'?'rod':use.kind==='read'?'paper':null;
-   if(use.remaining<=0){ledger.record(person.profile.name,minutes,VERB[use.kind]+' '+use.label);release(person,minutes,35);return base;}
+   const office=use.object.userData.officeTask;
+   g.userData.socialPose=office?office.pose:shopping?(use.item==='paper'?'Read':['rice','bun'].includes(use.item)?'EatStanding':'DrinkStanding'):POSE[use.kind];
+   g.userData.heldItem=office?office.heldItem||null:shopping?use.item:use.kind==='phone'?'phone':use.kind==='fish'?'rod':use.kind==='read'?'paper':null;
+   if(use.remaining<=0){ledger.record(person.profile.name,minutes,office?.activity||VERB[use.kind]+' '+use.label);release(person,minutes,35);return base;}
   }
-  return {place:'town-activity-'+use.id,target:use.target,activity:(use.phase==='walking'?'going to ':VERB[use.kind]+' ')+use.label};
+  return {place:'town-activity-'+use.id,target:use.target,activity:use.phase==='walking'?'going to '+use.label:use.object.userData.officeTask?.activity||VERB[use.kind]+' '+use.label};
  }
  return {plan,release,stateFor:person=>active.get(person),dispose(){for(const person of [...active.keys()])release(person,0);nextScan.clear();recent.clear();}};
 }

@@ -54,7 +54,7 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
   for(const actor of actors.filter(a=>a.lowPoly)){
    actor.entity.visible=true;actor.entity.parent.visible=true;actor.gestureTime=0;actor.speed=0;actor.moving=false;
    const standing=models.conversationTarget(actor.entity);
-   for(const height of [.71,.565])for(const pose of ['Sit','Eat','Drink']){
+   for(const height of [.71,.565])for(const pose of ['Sit','Eat','Drink','Type']){
     actor.entity.userData.seatHeight=height;actor.entity.userData.socialPose=pose;models.update(.4);scene.updateMatrixWorld(true);
     assert.equal(actor.current,pose);assert.equal(actor.cup.visible,pose==='Drink');if(height===.565)assert.ok(models.conversationTarget(actor.entity).y<standing.y-.025,actor.entity.userData.name+' conversation target follows the seated head');
     if(pose==='Drink')assert.ok(actor.cup.getWorldQuaternion(new THREE.Quaternion()).angleTo(new THREE.Quaternion())<.001);

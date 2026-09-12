@@ -186,7 +186,7 @@ function indoorNpc(g){return g.userData.inWorkplace||g.userData.inIzakaya||g.use
 function overlapsResident(x,z){return world.people.some(p=>p.g.visible&&p.g.userData.visualReady!==false&&(!current||indoorNpc(p.g))&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
 function residentBlocked(x,z){if(current&&storeClerk?.visible&&storeClerk.userData.visualReady!==false&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;return world.people.some(p=>{if(p.g.userData.visualReady===false||!p.g.visible||(current&&!indoorNpc(p.g)))return false;if(!current&&inEntrance(p.g.position.x,p.g.position.z))return false;return circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS);});}
 function collides(x,z){return environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);}
-function staysOpen(site){return !site||site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||site.id==='warehouse';}
+function staysOpen(site){return !site||site.id==='home'||site.id==='yuri-home'||site.id==='warehouse';}
 function occupiedByPerson(x,z){
  if(current&&storeClerk&&storeClerk.userData.visualReady!==false&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;
  return world.people.some(p=>{
@@ -218,7 +218,8 @@ function placeAtEntrance(s,leave=false){
  storeService?.cancel();parkSeat=null;seated=false;
  const mapped=doors.get(s.id);
  let x0,z0;
- if(s.exitPosition){x0=s.exitPosition[0];z0=s.exitPosition[2];}
+ if(!leave&&s.approachPosition){x0=s.approachPosition[0];z0=s.approachPosition[2];}
+ else if(s.exitPosition){x0=s.exitPosition[0];z0=s.exitPosition[2];}
  else if(mapped){x0=mapped.x;z0=mapped.z+(leave?.6:s.id==='izakaya'?-1.2:.7);}
  else return;
  yaw=leave?(s.entryFacing!=null?s.entryFacing+Math.PI:0):(s.entryFacing??(s.id==='izakaya'?Math.PI:s.side?-s.side*Math.PI/2:0));
