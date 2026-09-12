@@ -36,6 +36,9 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
   p.g.userData.indoors='home';const residents=createHomeResidents({world,parent,collides:room.collides});
   residents.enter({id:homeSiteId(profile.name),homeOwner:profile.name},beforeWake-2);
   assert.equal(p.g.parent,parent,profile.name);assert.equal(p.g.userData.sleeping,true,profile.name);
+  const cover=parent.getObjectByName('animated sleep cover');assert.ok(cover?.visible,profile.name+' has a blanket');assert.equal(cover.userData.animatedCover,true);
+  const coverBefore=cover.geometry.attributes.position.array.slice();residents.update(1/30,beforeWake-2);
+  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=profile.name==='Yuri'?.68:.57,profile.name+' rests on the mattress');
   tick((dt,m)=>residents.update(dt,m),beforeWake-2,4);
   assert.equal(p.g.parent,parent);assert.equal(p.g.userData.waking,true,profile.name);assert.equal(p.g.userData.sleeping,false);
   tick((dt,m)=>residents.update(dt,m),beforeWake+16,12);
@@ -44,6 +47,7 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
   residents.update(1/30,departure);assert.equal(p.g.parent,parent,profile.name+' must not vanish at schedule change');
   tick((dt,m)=>residents.update(dt,m),departure,20);
   assert.equal(p.g.parent,street,profile.name+' reaches exit');assert.equal(p.g.userData.inHome,undefined);assert.ok(Math.hypot(p.g.position.x-profile.home[0],p.g.position.z-profile.home[1])<.01);
+  assert.equal(parent.getObjectByName('animated sleep cover'),undefined,profile.name+' blanket is room-local');
   residents.restore();
  }
 });

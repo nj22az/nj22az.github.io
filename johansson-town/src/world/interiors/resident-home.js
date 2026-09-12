@@ -10,7 +10,7 @@ export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
  part([6,2.8,.12],[0,1.4,-3],0xe2d7bd);part([3.8,2.8,.12],[-1.1,1.4,3],0xe2d7bd);part([.8,2.8,.12],[2.6,1.4,3],0xe2d7bd);
  for(const x of [-2,-1,0,1,2])part([.025,.012,6],[x,.006,0],0x8d9270);
  const bed=part([1.2,.18,2.15],[-1.75,.36,-.3],0xe9dfc8,true);bed.name=profile.name+' futon';
- part([1.1,.13,1.3],[-1.75,.50,.1],colour);part([.8,.13,.35],[-1.75,.50,-1.05],0xf3e8d2);
+ part([1.1,.055,1.62],[-1.75,.48,-.02],colour);part([.92,.16,.48],[-1.75,.57,-.82],0xf3e8d2);
  part([1.1,.16,.65],[1.1,.66,-1.9],0x94714f,true);part([.65,.1,.6],[1.1,.36,-1.2],colour);
  part([.9,1.7,.5],[2.4,.85,-2.45],0x846749,true);
  for(let i=0;i<5;i++)part([.1,.3,.24],[2.1+i*.13,1.3,-2.15],i%2?colour:0xc7b77a);

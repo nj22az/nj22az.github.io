@@ -8,12 +8,11 @@ export function prepareResidentAnimations(asset){
  const pose=clone(asset.scene);
  const point=name=>pose.getObjectByName(name).getWorldPosition(new THREE.Vector3());
  const rotate=(name,delta)=>{const bone=pose.getObjectByName(name),parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(delta).multiply(parent)).normalize();bone.updateWorldMatrix(false,true);};
- const sleep=idle.clone();sleep.name='Sleep';
- const result=[...asset.animations,sleep],duration=4,times=Array.from({length:25},(_,i)=>i*duration/24);
- for(const name of ['Wake','Sit','Eat','Drink','Read','Use','Phone','Fish','DrinkStanding','EatStanding','CarryIdle','CarryWalk']){
-  const seated=['Wake','Sit','Eat','Drink'].includes(name),base=name==='CarryWalk'?(asset.animations.find(c=>c.name==='Walk')||idle):idle;
+ const result=[...asset.animations],duration=4,times=Array.from({length:25},(_,i)=>i*duration/24);
+ for(const name of ['Sleep','Wake','Sit','Eat','Drink','Read','Use','Phone','Fish','DrinkStanding','EatStanding','CarryIdle','CarryWalk']){
+  const sleeping=name==='Sleep',seated=['Wake','Sit','Eat','Drink'].includes(name),base=name==='CarryWalk'?(asset.animations.find(c=>c.name==='Walk')||idle):idle;
   const samples=base.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
-  const names=['UpperArmL','LowerArmL','UpperArmR','LowerArmR',...(seated?['UpperLegL','LowerLegL','FootL','UpperLegR','LowerLegR','FootR']:[])];
+  const names=['UpperArmL','LowerArmL','UpperArmR','LowerArmR',...((seated||sleeping)?['UpperLegL','LowerLegL','UpperLegR','LowerLegR']:[]),...(seated?['FootL','FootR']:[]),...(sleeping?['Head','Chest']:[])];
   const tracks=new Map(names.map(n=>[n+'.quaternion',[]]));if(seated)for(const side of ['L','R'])tracks.set('Foot'+side+'.position',[]);
   for(const t of times){
    for(const {sample,binding} of samples)binding.setValue(sample.evaluate(t/duration*base.duration),0);pose.updateMatrixWorld(true);
@@ -30,12 +29,21 @@ export function prepareResidentAnimations(asset){
     footBone.position.copy(footBone.parent.worldToLocal(targetFoot));
     footBone.quaternion.copy(footBone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(footRotation));footBone.updateWorldMatrix(false,true);
     }
-    const lift=side==='R'&&name!=='Sit'?(1-Math.cos(t/duration*Math.PI*2))*.5:0;
-    const carry=name.startsWith('Carry'),phone=name==='Phone'&&side==='R',read=['Read','Fish'].includes(name);
-    const upper=name==='Wake'?-.4-.7*Math.sin(Math.PI*t/duration)**2:carry?-.55:phone?-.6:read?-.4:-.25-.25*lift,lower=carry?-1.0:phone?-1.8:read?-1.1:-.75-.80*lift;
-    rotate('UpperArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(upper,0,0)));
-    rotate('LowerArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(lower,0,0)));
+    if(sleeping){
+     const breath=Math.sin(t/duration*Math.PI*2),sign=side==='L'?-1:1;
+     rotate('UpperArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(.34+.012*breath,0,sign*.10)));
+     rotate('LowerArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(.62+.018*breath,0,-sign*.035)));
+     rotate('UpperLeg'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(side==='R'?.07:.025,0,sign*.018)));
+     rotate('LowerLeg'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(side==='R'?.13:.055,0,0)));
+    }else{
+     const lift=side==='R'&&name!=='Sit'?(1-Math.cos(t/duration*Math.PI*2))*.5:0;
+     const carry=name.startsWith('Carry'),phone=name==='Phone'&&side==='R',read=['Read','Fish'].includes(name);
+     const upper=name==='Wake'?-.4-.7*Math.sin(Math.PI*t/duration)**2:carry?-.55:phone?-.6:read?-.4:-.25-.25*lift,lower=carry?-1.0:phone?-1.8:read?-1.1:-.75-.80*lift;
+     rotate('UpperArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(upper,0,0)));
+     rotate('LowerArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(lower,0,0)));
+    }
    }
+   if(sleeping){const breath=Math.sin(t/duration*Math.PI*2);rotate('Head',new THREE.Quaternion().setFromEuler(new THREE.Euler(.015*breath,.055,0)));rotate('Chest',new THREE.Quaternion().setFromEuler(new THREE.Euler(.012*breath,0,0)));}
    for(const [key,values] of tracks){const split=key.lastIndexOf('.'),bone=pose.getObjectByName(key.slice(0,split));values.push(...bone[key.slice(split+1)].toArray());}
   }
   const clip=base.clone();clip.name=name;for(const track of clip.tracks)for(let i=0;i<track.times.length;i++)track.times[i]*=duration/base.duration;

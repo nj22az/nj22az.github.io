@@ -80,3 +80,30 @@ export function addResidentAccessories(model,style){
   mount(chest,type+'-uniform');
  }
 }
+
+// The supplied PSX faces have no morph targets. These fitted lids cover the
+// painted open eyes only during sleep, using the resident's own skin tone.
+export function addSleepEyes(model,style){
+ model.updateMatrixWorld(true);
+ const head=model.getObjectByName('Head');if(!head)return null;
+ const bounds=new THREE.Box3(),point=new THREE.Vector3();
+ model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;const a=mesh.geometry.attributes;
+  for(let i=0;i<a.position.count;i++){
+   let weight=0;for(let j=0;j<4;j++)if(mesh.skeleton.bones[a.skinIndex.getComponent(i,j)]===head)weight+=a.skinWeight.getComponent(i,j);
+   if(weight>.5){point.fromBufferAttribute(a.position,i).applyMatrix4(mesh.matrixWorld);bounds.expandByPoint(point);}
+  }
+ });
+ if(bounds.isEmpty())return null;
+ const size=bounds.getSize(new THREE.Vector3()),centre=bounds.getCenter(new THREE.Vector3()),front=bounds.max.z+.009,eyeY=bounds.min.y+size.y*.53;
+ const parts=[];
+ const coloured=(geometry,colour)=>{const c=new THREE.Color(colour),rgb=new Float32Array(geometry.attributes.position.count*3);for(let i=0;i<rgb.length;i+=3)rgb.set([c.r,c.g,c.b],i);geometry.setAttribute('color',new THREE.BufferAttribute(rgb,3));parts.push(geometry);};
+ for(const side of [-1,1]){
+  const x=centre.x+side*size.x*.22;
+  coloured(new THREE.BoxGeometry(size.x*.32,size.y*.135,.012).translate(x,eyeY,front),style?.skin||0xcba27e);
+  coloured(new THREE.BoxGeometry(size.x*.25,size.y*.014,.010).rotateZ(-side*.055).translate(x,eyeY-size.y*.004,front+.009),style?.hair||0x302820);
+ }
+ const inverse=head.matrixWorld.clone().invert(),group=new THREE.Group();group.name='resident-sleep-eyes';group.userData.sleepEyes=true;
+ const geometry=mergeGeometries(parts);parts.forEach(g=>g.dispose());geometry.applyMatrix4(inverse);
+ const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.86,flatShading:true}));mesh.name='closed-eye-covers';mesh.renderOrder=4;group.add(mesh);
+ group.visible=false;head.add(group);return group;
+}

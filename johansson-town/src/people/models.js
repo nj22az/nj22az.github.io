@@ -1,7 +1,7 @@
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
-import {addResidentAccessories} from './resident-wardrobe.js';
+import {addResidentAccessories,addSleepEyes} from './resident-wardrobe.js';
 import {createResidentHands} from './resident-props.js';
 import {prepareResidentAnimations} from './resident-animation.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -83,6 +83,8 @@ export function createLocalCharacters({shadows=false}={}){
     const model=clone(asset.scene);
     const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
     if(lowPoly)addResidentAccessories(model,style);
+    const bedAccessories=[];
+    model.traverse(o=>{if(/^resident-(glasses|captain|police|driver)$/.test(o.name))bedAccessories.push(o);});
     const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const targetHeight=height||style.height||profile?.height||1.75,scale=targetHeight/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
@@ -96,7 +98,7 @@ export function createLocalCharacters({shadows=false}={}){
     }
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,hands,lowPoly,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,style,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -123,6 +125,11 @@ export function createLocalCharacters({shadows=false}={}){
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
+      const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
+      if(eyesClosed&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
+      if(actor.sleepEyes)actor.sleepEyes.visible=eyesClosed;
+      for(const accessory of actor.bedAccessories)accessory.visible=!eyesClosed;
+      if(!eyesClosed&&actor.sleepEyes){actor.sleepEyes.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});actor.sleepEyes.removeFromParent();actor.sleepEyes=null;}
       let visible=true;for(let parent=entity;parent;parent=parent.parent)if(!parent.visible){visible=false;break;}
       if(!visible){actor.last.copy(entity.position);actor.speed=0;actor.moving=false;actor.gestureTime=0;actor.wasVisible=false;continue;}
       const distance=Math.hypot(entity.position.x-actor.last.x,entity.position.z-actor.last.z);actor.last.copy(entity.position);

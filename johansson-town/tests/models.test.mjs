@@ -24,7 +24,7 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
    const actor=models.attach(entity,name,name==='Yuri'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
    assert.equal(entity.userData.visualReady,true);const skins=[];actor.model.traverse(o=>{if(o.isSkinnedMesh)skins.push(o);});
-   for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit'])assert.ok(actor.actions.has(clip),name+' '+clip);
+   for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Sleep'])assert.ok(actor.actions.has(clip),name+' '+clip);
    assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
    {
     assert.equal(actor.lowPoly,true);assert.equal(skins.length,1,'One body draw per low-poly resident');assert.match(entity.userData.visualSource,/PSX low-poly/);
@@ -35,10 +35,15 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
    scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(actor.model,true);
    assert.ok(Math.abs(bounds.max.y-actor.height)<.055,name+' retains their height');assert.ok(Math.abs(bounds.min.y)<.02,name+' is grounded');
   }
-  const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Yuri');
+  const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Yuri'),mrsSato=byName('Mrs Sato');
   const skin=actor=>{let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});return mesh;};
   assert.notEqual(skin(kenji).skeleton,skin(tetsuo).skeleton);assert.equal(skin(byName('Harbour master')).geometry.attributes.position,skin(byName('Bus driver')).geometry.attributes.position);
   assert.notEqual(skin(kenji).geometry.attributes.color,skin(tetsuo).geometry.attributes.color,'Wardrobe colours remain independent');
+  mrsSato.entity.userData.sleeping=true;mrsSato.entity.userData.roomTransition=true;models.update(.1);assert.equal(mrsSato.sleepEyes,null,'Eyes stay open while walking to bed');delete mrsSato.entity.userData.roomTransition;
+  mrsSato.entity.userData.sleepBlend=1;mrsSato.entity.userData.socialPose='Sleep';models.update(.4);
+  assert.equal(mrsSato.current,'Sleep');assert.equal(mrsSato.sleepEyes.visible,true,'Painted open eyes are covered');assert.equal(mrsSato.model.getObjectByName('resident-glasses').visible,false,'Spectacles come off in bed');
+  delete mrsSato.entity.userData.sleeping;delete mrsSato.entity.userData.sleepBlend;delete mrsSato.entity.userData.socialPose;models.update(.4);
+  assert.equal(mrsSato.sleepEyes,null);assert.equal(mrsSato.model.getObjectByName('resident-glasses').visible,true);
   for(let i=0;i<50;i++){kenji.entity.position.z-=.02;models.update(1/60);}assert.equal(kenji.current,'Walk');
   const hidden=new THREE.Group();scene.add(hidden);hidden.add(kenji.entity);hidden.visible=false;const time=kenji.mixer.time;models.update(.1);assert.equal(kenji.mixer.time,time);
   hidden.visible=true;models.update(1/60);assert.equal(kenji.current,'Idle_Neutral');assert.equal(kenji.speed,0);
