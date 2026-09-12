@@ -1,4 +1,5 @@
 import {RESIDENTIAL_CANAL} from './residential-layout.js';
+import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
 import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildHarbourShop} from './harbour-block.js';
@@ -103,7 +104,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   // Leave room below the supplied canal, so the town's base cannot cover its water.
-  for(const [x0,x1,z0,z1] of [[-75,RESIDENTIAL_CANAL.minX,-95,95],[RESIDENTIAL_CANAL.maxX,75,-95,95],[RESIDENTIAL_CANAL.minX,RESIDENTIAL_CANAL.maxX,-95,RESIDENTIAL_CANAL.minZ],[RESIDENTIAL_CANAL.minX,RESIDENTIAL_CANAL.maxX,RESIDENTIAL_CANAL.maxZ,95]])box([x1-x0,.5,z1-z0],[(x0+x1)/2,-.65,(z0+z1)/2],0x606b61);
+  buildPeninsula(group);
   box([RESIDENTIAL_CANAL.maxX-RESIDENTIAL_CANAL.minX,.2,RESIDENTIAL_CANAL.maxZ-RESIDENTIAL_CANAL.minZ],[(RESIDENTIAL_CANAL.minX+RESIDENTIAL_CANAL.maxX)/2,-1.15,(RESIDENTIAL_CANAL.minZ+RESIDENTIAL_CANAL.maxZ)/2],0x606b61);
   box([15,.2,48],[0,-.16,32],0xb8b8af,[0,0,0],'road');
   box([15,.2,4],[0,-.16,-54],0xb8b8af,[0,0,0],'road');

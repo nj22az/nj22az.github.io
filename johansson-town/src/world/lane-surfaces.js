@@ -1,7 +1,23 @@
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,groundHeight} from './layout.js?snappy=1';
+import {ROUTES,routeAt,groundHeight} from './layout.js?snappy=1';
+
+// Low garden boundaries make the authored walking network legible. Leave every
+// junction open, including routes supplied by the residential and dining models.
+export function laneEdges(){
+ const edges=[];
+ const selected=new Set(['east-alley','west-alley','residential','west-service','east-service','river-walk','park-approach']);
+ for(const route of ROUTES.filter(r=>selected.has(r.id)))for(let i=1;i<route.points.length;i++){
+  const a=route.points[i-1],b=route.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/length,dz=(b[1]-a[1])/length,count=Math.ceil(length);
+  for(let j=0;j<count;j++)for(const side of [-1,1]){
+   const t=(j+.5)/count,x=a[0]+dx*length*t-dz*side*(route.width/2+.22),z=a[1]+dz*length*t+dx*side*(route.width/2+.22),span=length/count;
+   if([-.5,0,.5].some(u=>routeAt(x+dx*span*u,z+dz*span*u)||inResidential(x+dx*span*u,z+dz*span*u)||inDiningLane(x+dx*span*u,z+dz*span*u)))continue;
+   edges.push({x,z,w:dx?span:.18,d:dz?span:.18,y:groundHeight(x+dz*side*.3,z-dx*side*.3),height:route.id==='park-approach'?.55:.7});
+  }
+ }
+ return edges;
+}
 
 // Partition the union of rectangular streets. Each patch belongs to exactly one
 // route: crossing lanes never produce coplanar, overlapping road meshes.
@@ -16,7 +32,7 @@ export function lanePatches(routes=ROUTES.slice(3)) {
       rects.push({minX:Math.min(a[0],b[0])-half,maxX:Math.max(a[0],b[0])+half,minZ:Math.min(a[1],b[1])-half,maxZ:Math.max(a[1],b[1])+half,route});
     }
   }
-  const xs=[...new Set([-7.5,7.5,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
+  const xs=[...new Set([-7.5,7.5,17.5,21,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
   const zs=[...new Set([-64,58,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
   const patches=[];
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
@@ -30,6 +46,9 @@ export function lanePatches(routes=ROUTES.slice(3)) {
 }
 
 export function buildLaneSurfaces(parent,library) {
+  const edges=laneEdges(),boundary=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:0x7d8776,roughness:1}),edges.length),dummy=new THREE.Object3D();
+  edges.forEach((e,i)=>{dummy.position.set(e.x,e.y+e.height/2,e.z);dummy.scale.set(e.w,e.height,e.d);dummy.updateMatrix();boundary.setMatrixAt(i,dummy.matrix);});
+  boundary.name='Low garden lane boundaries';boundary.receiveShadow=true;parent.add(boundary);
   const batches=new Map();
   const quad=(surface,points)=>{
     if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});

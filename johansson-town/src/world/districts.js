@@ -49,8 +49,7 @@ export function buildDistricts(world,options){
   }
   building({id:'bus-hut',x:-26,z:43,w:5,d:4,h:3.3,jp:'港線待合所',title:'Harbour Bus Hut',roof:1,colour:0x9ba69b});
   // River mouth, flood walls and an accessible timber jetty form the western loop.
-  const water=new THREE.Mesh(new THREE.PlaneGeometry(12,72,4,24),new THREE.MeshStandardMaterial({color:0x537c79,roughness:.26,metalness:.23}));water.rotation.x=-Math.PI/2;water.position.set(-54,-.18,-24);group.add(water);
-  for(const x of [-60,-48])box([.6,2,74],[x,-.7,-24],'concrete',0x808f83);
+  box([.6,1.2,74],[-48,-.1,-24],'concrete',0x808f83);
   for(const [x,z] of [[-51,-40],[-56,-22]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);for(const dx of [-.08,.08])box([.025,.45,.025],[x+dx,.1,z],'timber',0x4e4d40);group.add(bird);verb([-45,1,-37],'Watch the heron','inspect','Grey heron','It waits for a fish to come to it. An admirable working arrangement.');}
   sign('小学校','GATE CLOSES AT 16:00',[44,2.2,33],3,.8);box([7,1.6,.12],[44,.8,32.5],'timber',0x687566);colliders.push({x:44,z:32.5,w:7,d:.12,height:1.6});verb([44,1,34],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
   // Shrine stair/approach culminates in a real raised landing.

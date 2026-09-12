@@ -1,4 +1,5 @@
 import {DINING_COLLIDERS} from './dining-layout.js';
+import {COASTLINE} from './peninsula.js';
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
 import {RESIDENTIAL_BUILDINGS} from './residential-layout.js';
 import {PARK,activePark} from './park-layout.js';
@@ -10,7 +11,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   const b=FULL_TOWN.active?FULL_TOWN.bounds:MAP_BOUNDS,pad=10,scale=Math.min((mapWidth-pad*2)/(b.maxX-b.minX),(h-pad*2)/(b.maxZ-b.minZ));
   const px=x=>pad+(x-b.minX)*scale,pz=z=>h-pad-(z-b.minZ)*scale;
   ctx.fillStyle=FULL_TOWN.active?'#7ea3a8':'#eadfbe';ctx.fillRect(0,0,w,h);
-  if(!FULL_TOWN.active){ctx.fillStyle='#a1b9b3';ctx.fillRect(0,pz(-62),w,h-pz(-62));}
+  if(!FULL_TOWN.active){ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();}
   if(FULL_TOWN.active){
     const g=FULL_TOWN.grid;
     ctx.fillStyle='#c4b496';
