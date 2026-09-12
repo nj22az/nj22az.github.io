@@ -90,7 +90,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadModels}=await import('../src/people/models.js?snappy=1');
     assert.deepEqual(await preloadModels(),{ready:5,total:5},'Actual selected character rigs preloaded');
     const api=await import(dataModule(source));
-    assert.equal(api.world.harbourShops.length,7);
+    assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));
     assert.ok(api.SITES.some(s=>s.id==='crystal-room'));
     const waiting=api.world.people.find(p=>p.g.userData.name==='Kenji').g;

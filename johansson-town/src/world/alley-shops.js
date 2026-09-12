@@ -1,16 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
-import {DINING_FOOTPRINTS} from './dining-footprints.js';
-import {diningPoint,NIGHT_LANE} from './dining-layout.js';
+import {NIGHT_LANE} from './dining-layout.js';
+import {ALLEY_UNITS,alleyBusinessLayout} from './business-layout.js';
 import {buildShopDoor} from './shop-door.js';
 
 // Reuse existing site identities: room contents, saves and workplace schedules
 // continue to resolve by id. All positions are fixed before detail streaming.
-export const ALLEY_SHOPS=Object.freeze({journal:'B',electronics:'G'});
+export const ALLEY_SHOPS=Object.freeze(Object.fromEntries(Object.entries(ALLEY_UNITS).map(([id,units])=>[id,units[0]])));
 export function alleyShopPlacement(id){
- const b=DINING_FOOTPRINTS.find(b=>b.id===ALLEY_SHOPS[id]);if(!b)return null;
- const left=b.max[0]<0,front=left?b.max[0]:b.min[0],z=(b.min[2]+b.max[2])/2;
- const [x,wz]=diningPoint(front,z),[dx,dz]=diningPoint(front+(left?.44:-.44),z);
- return {building:b.id,x,z:wz,yaw:left?0:Math.PI,door:[dx,NIGHT_LANE.y,dz]};
+ return alleyBusinessLayout(id);
 }
 export function buildAlleyShop({parent,site,register,enter,label,shadows}){
  const p=alleyShopPlacement(site.id);if(!p)return null;
@@ -24,5 +21,6 @@ export function buildAlleyShop({parent,site,register,enter,label,shadows}){
  register?.(entrance,'Enter '+site.title,()=>enter(site));
  site.x=p.x;site.z=p.z;site.door=[...p.door];site.exitPosition=[...p.door];site.entryFacing=p.yaw;site.alleyBuilding=p.building;
  site.streetFrontage={position:[p.x,NIGHT_LANE.y,p.z],yaw:p.yaw};
+ site.alleyUnits=[...p.units];
  return {id:site.id,lod:group,entrance,shutter:door.pane,source:'Japanese street at night',nearTriangles:0,farTriangles:0,update:door.update};
 }

@@ -1,16 +1,15 @@
+import {buildHarbourOffice} from './harbour-office.js';
 import {RESIDENTIAL_CANAL} from './residential-layout.js';
 import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
 import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
 import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
-import {buildHarbourShop} from './harbour-block.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
-import {MERCHANT_FRONTAGES,merchantRoofGeometry} from './merchant-roofs.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 
@@ -122,6 +121,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
     if(ALLEY_SHOPS[s.id]){
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
@@ -130,56 +130,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       s.x=s.side*11.65;s.door=[s.side*5.5,0,s.z+2.5];
       obstacle(s.side*11.65,s.z,8.2,10);return;
     }
-    const harbourShop=buildHarbourShop({parent:group,site:s,register,enter,label,mobile,shadows,maxAnisotropy,defer:true});
-    if(harbourShop){harbourShops.push(harbourShop);if(harbourShop.detail)details.push(harbourShop.detail);colliders.push(harbourShop.collider);plantSites.push({x:s.side*6.75,z:s.z-3.7,height:1.15});obstacle(s.side*6.75,s.z-3.7,.5,.5);return;}
-    if(s.id==='market'){buildStorefront({parent:group,site:s,register,enter,label});return;}
-    const style=MERCHANT_FRONTAGES[i%MERCHANT_FRONTAGES.length],side=s.side,x=side*11.8,z=s.z,front=side*7.55,angle=-side*Math.PI/2,height=style.height;
-    box([8.2,height,10],[x,height/2,z],[0xe0cfaa,0xe5c8b5,0xc0d0c9,0xe4d5bb,0xd8c3ba,0xc5cfd5,0xead5b8,0xc5d0bf][i%8],[0,0,0],'wall');
-    box([.25,2.7,10.15],[side*7.65,1.4,z],s.color,[0,0,0],'wood');
-    if(style.roof==='parapet'){
-      box([8.65,.2,10.5],[x,height+.1,z],style.roofColour,[0,0,0],'wall');
-      for(const edge of [-1,1]){box([.23,.7,10.6],[x+edge*4.2,height+.46,z],style.wall,[0,0,0],'wall');box([8.65,.7,.23],[x,height+.46,z+edge*5.18],style.wall,[0,0,0],'wall');}
-    }else{
-      const roof=directMesh(merchantRoofGeometry(style.roof),material(style.roofColour,'roof'),group,[x,height+.18,z]);roof.name='merchant-roof:'+s.id+':'+style.roof;roof.material.side=THREE.DoubleSide;
-      if(style.roof!=='hipped')beam([x,height+(style.roof==='low-gable'?.82:1.74),z-5.5],[x,height+(style.roof==='low-gable'?.82:1.74),z+5.5],.105,0x4d554e);
-    }
-    // Broad painted plaster, fine joinery and stocked windows read at walking distance.
-    for(const dz of [-3,-.2,2.6]){
-      box([.42,.18,2.0],[front-side*.25,4.23,z+dz],0x875c44,[0,0,0],'wood');
-      for(let n=0;n<7;n++)box([.12,.66,.04],[front-side*.47,4.58,z+dz-.75+n*.25],0x6b493c);
-    }
-    for(let n=0;n<19;n++)box([.07,.78,.055],[front-side*.20,.42,z-4.5+n*.23],0x765342);
-    box([.38,.36,1.5],[front-side*.62,.40,z-3.2],0x9c6850);
-    for(let n=0;n<6;n++){
-      shape('sphere',[.10,10,8],[front-side*.64,.74,z-3.8+n*.23],0x66864f);
-      shape('sphere',[.045,10,8],[front-side*.65,.84,z-3.8+n*.23],[0xdb9a91,0xe4bd6a,0xd9aec0][i%3]);
-    }
-    label(['新刊','修理','手仕事','喫茶'][i%4],['NEW ARRIVALS','REPAIRS WELCOME','MADE HERE','TAKE A LITTLE BREAK'][i%4],[front-side*.36,1.65,z+4.0],.72,.98,angle,'#f8e7c3',s.accent);
-    // Deep eaves and exposed timber establish a two-storey merchant house silhouette.
-    box([.52,.2,10.7],[front-side*.2,height-.1,z],0x565549,[0,0,0],'wood');
-    if(style.timber){
-      for(const offset of [-4.65,-1.55,1.55,4.65])box([.14,2.65,.14],[front-side*.17,4.96,z+offset],0x655c49,[0,0,0],'wood');
-      for(const y of [3.9,height-.3])box([.14,.16,9.6],[front-side*.18,y,z],0x655c49,[0,0,0],'wood');
-    }
-    label(s.jp,s.title.toUpperCase(),[front-side*.09,3.43,z-.4],style.signWidth,style.signHeight,angle,'#d9ceb3',s.accent,false);
-    for(const dz of [-3,-.2,2.6]){
-      box([.07,1.45,1.7],[front-side*.1,5.12,z+dz],0x40595d);
-      shopGlass.push(glassPanel(front-side*.145,5.12,z+dz,1.62,1.34,angle));
-      for(const offset of [-.88,0,.88])box([.18,1.7,.075],[front-side*.19,5.12,z+dz+offset],0x675d4b);
-      for(const y of [4.33,5.9])box([.18,.08,1.85],[front-side*.19,y,z+dz],0x675d4b);
-      box([1,.09,2],[front-side*.38,4.24,z+dz],0x62645c);
-    }
-    box([.1,1.75,3.5],[front-side*.18,1.45,z-1.8],0x294c53);shopGlass.push(glassPanel(front-side*.245,1.47,z-1.8,3.25,1.58,angle));
-    for(const dz of [-3.5,-1.8,-.1])box([.18,2,.06],[front-side*.28,1.5,z+dz],0x745b42);
-    for(let j=0;j<6;j++)box([.09,.12,.34],[front-side*.25,.77+(j%2)*.3,z-3.2+j*.48],[0xcabb8a,0x9d6652,0x6e877b][j%3]);
-    box([1.55,.09,5.2],[front-side*.55,2.9,z-1.6],s.color,[0,0,-side*.13]);
-    for(let n=0;n<7;n++)box([.06,.35,.36],[front-side*1.28,2.72,z-3.86+n*.7],0xe1d4af);
-    box([.18,2.55,1.5],[front-side*.14,1.35,z+2.55],0x3b4440);box([.12,2.35,1.22],[front-side*.26,1.3,z+2.55],0x8b7050,[0,0,0],'wood');
-    for(let n=0;n<3;n++)box([.08,.65,.39],[front-side*.38,2.27,z+2.08+n*.47],s.color);
-    label('営業中','OPEN',[front-side*.44,1.65,z+2.5],.65,.38,angle);anchor([side*6.8,1.2,z+2.5],`Enter ${s.title}`,()=>enter(s));
-    box([.65,.18,1.8],[side*7.05,.18,z+2.5],0xb2afa3);box([.65,.65,1.1],[front-side*.32,4.05,z+4.2],0xaaa497);
-    for(let y=3.8;y<4.3;y+=.1)box([.02,.025,.85],[front-side*.66,y,z+4.2],0x5c655f);
-    cyl(.045,height,[front-side*.22,height/2,z-4.8],0x555f60);plantSites.push({x:side*6.75,z:z-4.25,height:1.05});obstacle(side*6.75,z-4.25,.65,.65);
+    throw Error('No street frontage defined for '+s.id);
   });
 
   // Utility poles and overhead cables.
@@ -208,7 +159,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   obstacle(5.95,20,1.3,1);anchor([5.95,1,21],'Buy a drink',()=>onAction('vending'));
   box([1.1,2.5,1],[-5.9,1.25,19.5],0x457e73);box([.91,1.6,.91],[-5.9,1.55,19.5],0x648c87);box([.35,.65,.28],[-5.9,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,20.05],1,.28);anchor([-5.9,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-5.9,19.5,1.1,1);
   cyl(.05,2.8,[-17,1.4,29],0x64756d);label('バス停','HARBOUR LINE',[-17,2.6,29],1.1,.75);anchor([-16.3,1,30],'Read bus timetable',()=>onAction('bus'));obstacle(-17,29,.26,.26);
-  box([1,1.8,1.1],[-6.1,.9,-1],0x483d50);box([.88,.7,.12],[-6.1,1.4,-.43],0x294d59);label('STAR PORT','INSERT ¥100',[-6.1,1.48,-.35],.77,.5,0,'#142d42','#83ded8',true);obstacle(-6.1,-1,1,1.1);anchor([-5.2,1,-.3],'Play Star Port',()=>onAction('arcade'));
+
   for(const [x,z] of [[-6,10],[6,-15],[-6,-34.5]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
   }
@@ -224,18 +175,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.50,-92.5);sea.receiveShadow=false;group.add(sea);water.push(sea);
   const seaPos=seaGeo.attributes.position;
 
-  function warehouse(side){
-    const x=side*13.7,z=-42.4,front=side*10.55,angle=-side*Math.PI/2;
-    box([6.2,3.7,5.8],[x,1.85,z],side<0?0x707a78:0x76776e);box([6.8,.24,6.25],[x,3.86,z],0x4f5f61,[0,0,side*.04],'roof');
-    box([.16,2.75,3.4],[front,1.5,z],0x556466);for(let y=.45;y<2.65;y+=.43)box([.20,.055,3.46],[front-side*.09,y,z],0x303b3d);
-    for(let dz=-2.25;dz<=2.25;dz+=.5)box([.09,3.25,.07],[front-side*.13,1.75,z+dz],0x8b8d82);
-    label(side<0?'漁具倉庫':'冷蔵倉庫',side<0?'FISHING GEAR':'COLD STORAGE',[front-side*.17,3.15,z+1.55],2.2,.55,angle,'#d5cfb7','#38494b');
-    box([.55,.95,.45],[front-side*.25,.55,z-1.9],0x5a6a65);box([.34,.2,.12],[front-side*.5,.78,z-1.9],0xc9b36c);
-    obstacle(x,z,6.4,6.0);
-  }
   const warehouseWorld={group,colliders};
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
-  warehouse(1);
   label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-35],3.2,.72);
   cyl(.045,2.3,[-5.9,1.15,-35],0x655444);obstacle(-5.9,-35,.12,.12);
 
@@ -268,8 +209,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([.3,.13,.08],[5.75,.62,-40.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-40.72],0xe5cf8c);obstacle(6.2,-42.3,1.8,3.2);
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[9.8,.88,-38.1],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[9.8,1.85,-37.65],.78,.5,0,'#dde1d7','#37636a');obstacle(9.8,-38.1,1.2,.9);
-  for(const [x,z,c] of [[10.3,-40.2,0x4b6870],[11.0,-40.3,0x8b634e],[10.7,-41,0x66704e]]){directCyl(.3,.72,[x,.48,z],c,group,[0,0,0],true);obstacle(x,z,.6,.6);}
+  directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
+
   for(const [x,z] of [[-17.1,-48],[16.3,-47.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
   // Tyre fenders on the quay wall — broad black shapes, not thin white lines.

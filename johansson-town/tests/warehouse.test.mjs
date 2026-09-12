@@ -10,6 +10,8 @@ import {drawTownMap} from '../src/world/map.js?snappy=1';
 import {routeAt} from '../src/world/layout.js?snappy=1';
 import {circleHitsRect,sweepFraction} from '../physics.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
+import {createBusinesses} from '../src/world/businesses.js';
+import {HARBOUR_OFFICE} from '../src/world/business-layout.js';
 const folder=new URL('../assets/models/warehouse/',import.meta.url);
 async function load(){
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
@@ -28,11 +30,12 @@ test('supplied warehouse is compact, textured, grounded and faces the street',as
  assert.ok(bounds.min.z>-48.2&&bounds.max.z<-36.4,'Roof fits the quay plot');
  const forward=new THREE.Vector3(0,0,-1).transformDirection(placed.matrixWorld);assert.ok(forward.x>.999,'Loading awning faces the street');
 });
-test('warehouse replaces only the western shed and keeps its approach reachable',async()=>{
+test('warehouse and consolidated office share a reachable quay',async()=>{
  installDOM();const registered=[];
- const world=createTown({scene:new THREE.Scene(),sites:[],mobile:true,register:(o,label,fn)=>registered.push({o,label,fn}),onAction(){}});
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:true,register:(o,label,fn)=>registered.push({o,label,fn}),onAction(){}});
  const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
- assert.ok(world.colliders.some(c=>c.x===13.7&&c.w===6.4),'Cold storage remains');
+ assert.equal(world.colliders.some(c=>c.x===13.7&&c.w===6.4),false,'The harbour office replaces the eastern cold store');
+ assert.ok(world.group.getObjectByName('Consolidated harbour office'));assert.ok(world.colliders.some(c=>c.x===HARBOUR_OFFICE.x&&c.w===HARBOUR_OFFICE.width));
  assert.equal(world.colliders.some(c=>c.x===-13.7&&c.w===6.4),false,'Old western shed collider removed');
  const [x,,z]=WAREHOUSE_PLACE.exitPosition;
  const path=[[0,-46],[0,z],[x,z]];

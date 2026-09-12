@@ -53,6 +53,7 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   const candidates=[];
   for(const object of getTargets()){
    const affordance=townAffordance(object);if(!affordance||!!object.userData.hit.inside!==inside||!object.parent||!object.visible||reservations.has(object))continue;
+   if(inside&&object.userData.workers&&!object.userData.workers.includes(person.profile.name))continue;
    object.getWorldPosition(point);const distance=person.g.position.distanceTo(point);if(distance>range||Math.abs(point.y-person.g.position.y)>2.8||player&&point.distanceTo(player)<1.6)continue;
    if([...reservations.values()].some(use=>Math.hypot(use.location.x-point.x,use.location.z-point.z)<1.6))continue;
    const preference=taste.interests.indexOf(affordance.kind),id=affordance.kind+':'+Math.round(point.x*10)+':'+Math.round(point.z*10);

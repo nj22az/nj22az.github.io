@@ -1,8 +1,8 @@
 import {RESIDENTIAL_BRIDGE} from './residential-surface.js';
 // The supplied street stays together: seven buildings, one lane and its canal bridge.
-export const RESIDENTIAL=Object.freeze({x:-25.5,z:-8,minX:-33.57,maxX:-18.04,minZ:-19.02,maxZ:2.44,laneX:-25.75});
+export const RESIDENTIAL=Object.freeze({x:-18,z:-8,minX:-26.07,maxX:-10.54,minZ:-19.02,maxZ:2.44,laneX:-18.25});
 // Bounds of the supplied water surface, below the town base.
-export const RESIDENTIAL_CANAL=Object.freeze({minX:-32.4,maxX:-19.3,minZ:-12.83,maxZ:-7.75});
+export const RESIDENTIAL_CANAL=Object.freeze({minX:-24.9,maxX:-11.8,minZ:-12.83,maxZ:-7.75});
 const building=(id,minX,maxX,minZ,maxZ,height)=>Object.freeze({id,x:RESIDENTIAL.x+(minX+maxX)/2,z:RESIDENTIAL.z+(minZ+maxZ)/2,w:maxX-minX,d:maxZ-minZ,height});
 export const RESIDENTIAL_BUILDINGS=Object.freeze([
  building('DomekRdy_1',1.6,7,4.85,9.35,7.6),
