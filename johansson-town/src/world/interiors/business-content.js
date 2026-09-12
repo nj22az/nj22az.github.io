@@ -7,7 +7,7 @@ const positions={
   bligh:{pos:[0,.95,-.91]},discipline:{pos:[.36,.95,-.91]},vietnam:{pos:[.72,.95,-.91]},wordpress:{pos:[1.09,.95,-.91]},journal:{pos:[-1.75,.95,.70]},
  },
  form3d:{keychain:{pos:[-1.02,.96,-1.04]},model:{pos:[-.54,1.07,-1.02],scale:.30,upright:true},stepwise:{pos:[.93,.96,-.99]},github:{pos:[1.23,.96,-1.10],scale:.18},etsy:{pos:[-1.97,.96,-1.03],scale:.18}},
- office:{cv:{pos:[1.72,.97,-2.67],scale:.32},linkedin:{pos:[-.12,.97,-2.70],scale:.28}},
+ office:{cv:{pos:[1.95,1.145,-2.64],scale:.32},linkedin:{pos:[-.12,.97,-2.70],scale:.28}},
 };
 export const BUSINESS_CONTENT=Object.freeze(positions);
 export const BUSINESS_CONTENT_CATALOGUE=ITEMS.map(item=>{

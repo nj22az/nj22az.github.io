@@ -18,6 +18,7 @@ function asset(kind,parent){
 }
 export function buildIzakaya(world,options){
  const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:DINING.izakayaX,z:DINING.izakayaZ,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]],opens:'16:00'};
+ site.exitPosition=[...site.door];site.approachPosition=[site.door[0],0,site.door[2]-.7];site.entryFacing=Math.PI;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(DINING.izakayaX,0,DINING.izakayaZ);exterior.rotation.y=Math.PI;world.group.add(exterior);
  const suppliedExterior=asset('exterior',exterior);
  if(!suppliedExterior){

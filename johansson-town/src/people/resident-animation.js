@@ -9,8 +9,8 @@ export function prepareResidentAnimations(asset){
  const point=name=>pose.getObjectByName(name).getWorldPosition(new THREE.Vector3());
  const rotate=(name,delta)=>{const bone=pose.getObjectByName(name),parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(delta).multiply(parent)).normalize();bone.updateWorldMatrix(false,true);};
  const result=[...asset.animations],duration=4,times=Array.from({length:25},(_,i)=>i*duration/24);
- for(const name of ['Sleep','Wake','Sit','Eat','Drink','Read','Use','Phone','Fish','DrinkStanding','EatStanding','CarryIdle','CarryWalk']){
-  const sleeping=name==='Sleep',seated=['Wake','Sit','Eat','Drink'].includes(name),base=name==='CarryWalk'?(asset.animations.find(c=>c.name==='Walk')||idle):idle;
+ for(const name of ['Sleep','Wake','Sit','Type','Eat','Drink','Read','Use','Phone','Fish','DrinkStanding','EatStanding','CarryIdle','CarryWalk']){
+  const sleeping=name==='Sleep',seated=['Wake','Sit','Type','Eat','Drink'].includes(name),base=name==='CarryWalk'?(asset.animations.find(c=>c.name==='Walk')||idle):idle;
   const samples=base.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
   const names=['UpperArmL','LowerArmL','UpperArmR','LowerArmR',...((seated||sleeping)?['UpperLegL','LowerLegL','UpperLegR','LowerLegR']:[]),...(seated?['FootL','FootR']:[]),...(sleeping?['Head','Chest']:[])];
   const tracks=new Map(names.map(n=>[n+'.quaternion',[]]));if(seated)for(const side of ['L','R'])tracks.set('Foot'+side+'.position',[]);
@@ -38,7 +38,8 @@ export function prepareResidentAnimations(asset){
     }else{
      const lift=side==='R'&&name!=='Sit'?(1-Math.cos(t/duration*Math.PI*2))*.5:0;
      const carry=name.startsWith('Carry'),phone=name==='Phone'&&side==='R',read=['Read','Fish'].includes(name);
-     const upper=name==='Wake'?-.4-.7*Math.sin(Math.PI*t/duration)**2:carry?-.55:phone?-.6:read?-.4:-.25-.25*lift,lower=carry?-1.0:phone?-1.8:read?-1.1:-.75-.80*lift;
+     const typing=name==='Type',tap=Math.sin(t/duration*Math.PI*12+(side==='L'?0:Math.PI))*.035;
+     const upper=typing?-.48+tap:name==='Wake'?-.4-.7*Math.sin(Math.PI*t/duration)**2:carry?-.55:phone?-.6:read?-.4:-.25-.25*lift,lower=typing?-.95-tap:carry?-1.0:phone?-1.8:read?-1.1:-.75-.80*lift;
      rotate('UpperArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(upper,0,0)));
      rotate('LowerArm'+side,new THREE.Quaternion().setFromEuler(new THREE.Euler(lower,0,0)));
     }

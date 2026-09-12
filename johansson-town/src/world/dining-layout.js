@@ -1,6 +1,6 @@
 import {DINING_FOOTPRINTS} from './dining-footprints.js';
-// A walk from the main street through the supplied lane ends at both restaurants.
-export const DINING=Object.freeze({izakayaX:25,izakayaZ:11,izakayaDoor:Object.freeze([25,6]),ramenX:26,ramenZ:-4,ramenDoor:Object.freeze([26.65,.7]),crystalDoor:Object.freeze([23.2,.7])});
+// Both restaurants frame the alley with short, direct Main Street approaches.
+export const DINING=Object.freeze({izakayaX:12.5,izakayaZ:14,izakayaDoor:Object.freeze([12.5,9]),ramenX:13.5,ramenZ:-6,ramenDoor:Object.freeze([14.15,-1.3]),crystalDoor:Object.freeze([10.7,-1.3])});
 export const NIGHT_LANE=Object.freeze({x:10.5,z:4,y:.05,angle:-Math.PI/2,minX:7.55,maxX:23.61,minZ:.54,maxZ:7.46});
 export const diningPoint=(x,z)=>[NIGHT_LANE.x-z,NIGHT_LANE.z+x];
 export function inDiningLane(x,z){return x>=NIGHT_LANE.minX&&x<=NIGHT_LANE.maxX&&z>=NIGHT_LANE.minZ&&z<=NIGHT_LANE.maxZ;}

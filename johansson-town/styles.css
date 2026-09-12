@@ -18,3 +18,24 @@ button{font-family:inherit;font-size:14px;line-height:1.2;font-weight:700;cursor
 @media(pointer:coarse){#mobile{z-index:13}#act{font-size:12px;width:82px;height:82px;bottom:85px;box-shadow:none;border:1px solid #e6dbb977}#stick{bottom:86px;width:104px;height:104px;border-color:#dedec66b;background:#142d3744}#knob{background:#d7d8ba9c}#townControls{z-index:14;bottom:max(12px,env(safe-area-inset-bottom));width:calc(100% - 30px);max-width:490px;justify-content:center}#townControls button{font-size:12px;padding:8px 6px;flex:1;min-height:40px}.map-frame{top:100px;left:15px}.map-frame canvas{width:66px;height:120px}.map-frame span{font-size:12px}.placard{max-width:64vw;padding:8px 10px}.placard small{font-size:12px;letter-spacing:0}.topbar{gap:5px}.status-stack{display:block;text-align:right}#clock{font-size:18px;padding:6px 9px}#wallet{font-size:14px;padding:5px 9px}#directoryButton{top:95px}#fullscreenButton{top:142px}#directoryButton,#fullscreenButton{right:15px;font-size:12px;min-height:36px}#subtitle{bottom:185px;font-size:15px;max-width:85vw}#prompt{bottom:30%;font-size:14px}.activity-card{padding:20px}.activity-card h2{font-size:26px}#hud{padding:max(15px,env(safe-area-inset-top)) max(15px,env(safe-area-inset-right)) 15px max(15px,env(safe-area-inset-left))}}
 @media(max-height:520px){.map-frame{display:none}.start-card h1{font-size:44px}.start-card{padding:8px 24px}.jp{font-size:16px;margin-top:10px}.scene-line{margin-top:8px}#enter{margin-top:12px;padding:12px 24px}.desktop-help{margin-top:10px}.activity-card{max-height:93dvh}.timecard{display:none}#subtitle{bottom:85px}#prompt{bottom:40%}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.office-records .activity-card{width:min(1180px,100%)}
+.office-records #activityBody{white-space:normal;font-size:14px;line-height:1.45}
+.office-workbook h3{font:700 24px Georgia,serif;margin:20px 0 6px}
+.office-workbook-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #adb6a8;padding-bottom:10px}
+.office-workbook-tabs button{font:inherit;padding:10px 14px;min-height:44px;border:1px solid #a1ac9e;background:#e8e5d8;color:#344b45;cursor:pointer}
+.office-workbook-tabs button[aria-pressed=true]{background:#42584e;color:#fff}
+.office-workbook-summary{display:flex;gap:24px;flex-wrap:wrap;margin:18px 0}
+.office-workbook-summary div{min-width:120px}.office-workbook-summary dt{font-size:12px;color:#667065}.office-workbook-summary dd{margin:3px 0 0;font-weight:700;font-size:19px}
+.office-workbook-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:18px 0 12px}
+.office-workbook-toolbar label{display:grid;gap:5px;font-size:12px}.office-workbook-toolbar input{box-sizing:border-box;min-height:44px;width:min(320px,70vw);padding:10px;border:1px solid #9eaa9b;background:#fffdf5;font:16px Arial,sans-serif;color:#29342f}
+.office-workbook-download{display:inline-block;padding:12px 16px;background:#42584e;color:#fff;text-decoration:none;font-weight:700;min-height:44px;box-sizing:border-box}
+.office-workbook-scroll{overflow:auto;max-height:42dvh;border:1px solid #a4ad9e;background:#fffdf6}
+.office-workbook table{border-collapse:separate;border-spacing:0;min-width:100%;font:13px/1.4 Arial,sans-serif;white-space:nowrap}
+.office-workbook caption{text-align:left;padding:10px 12px;background:#ebe9dd;font-weight:bold}
+.office-workbook thead th{position:sticky;top:0;background:#42584e;color:#fff;text-align:center;padding:12px;border-right:1px solid #809388;z-index:1}
+.office-workbook tbody th{color:#687167;background:#ebe9dd;font-weight:400}
+.office-workbook td,.office-workbook tbody th{padding:11px 12px;border-bottom:1px solid #d6dccf}
+.office-workbook td{color:#245579}.office-workbook td.office-calculated{background:#eef0e8;color:#29342f;text-align:right}.office-workbook td.office-number{text-align:right}
+.office-workbook :focus-visible{outline:3px solid #c18043;outline-offset:-3px}
+.office-workbook-count{font-size:12px;color:#65705f;margin:9px 0!important}.office-workbook-formula{padding:10px 12px;background:#e5e8dc;font:12px/1.5 monospace;overflow-wrap:anywhere;margin:10px 0!important}.office-workbook-note{font-size:12px;color:#65705f;margin:12px 0 20px!important}

@@ -6,7 +6,7 @@ export const SHOP_ADDRESSES=Object.freeze({
 });
 export const TEA_HOUSE=Object.freeze({x:28,z:25,door:[28,0,30]});
 export const TOWN_DESTINATIONS=Object.freeze({
- bus:[-14,30],bathhouse:[-28,28],school:[40,24],shrine:[32,47],
+ bus:[-14,30],bathhouse:[-28,28],school:[40,24],
  workshop:[ALLEY_WORKSHOP.door[0],ALLEY_WORKSHOP.door[2]],books:[ALLEY_BOOKS.door[0],ALLEY_BOOKS.door[2]],pier:[-1.6,-62],
 });
 export function applyShopAddresses(sites){
