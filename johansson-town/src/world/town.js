@@ -116,18 +116,12 @@ function addStreetLife(world,options,factory){
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
   const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[-5.9,0,26.92],stand:[-5.9,0,26.0],eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
-  const buy=(pos,label,title,detail)=>{anchor(group,pos,label,()=>options.onAction?.('buy',title,detail),options.register);interactions++;};
 
   addWithCollider(group,colliders,factory.bench(-5.9,27,0));
   seat([-5.45,1,27.15],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
   addWithCollider(group,colliders,factory.postbox(6.05,9.5,0));
   inspect([5.65,1,9.3],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-
-  addWithCollider(group,colliders,factory.newspaperRack(-6.05,-1.8,0));
-  read([-5.65,1,-1.55],'Read evening papers','Evening papers','Local headlines mention harbour maintenance, a school baseball result and tomorrow’s weather.');
-  buy([-5.65,1,-2.05],'Buy newspaper · ¥80','Evening newspaper',{cost:80,item:'Evening newspaper',text:'A folded local evening paper dated September 1988.'});
-
   addWithCollider(group,colliders,factory.deliveryTrolley(-6,-34.5,.02));
   inspect([-5.52,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
 
@@ -138,19 +132,11 @@ function addStreetLife(world,options,factory){
   inspect([-5.6,1,15.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
-  addWithCollider(group,colliders,factory.bicycleRack(7.20,17.84,0));
-  inspect([6.1,.9,17.3],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked beside the bookshop, clear of the doorway.');
+  addWithCollider(group,colliders,factory.bicycleRack(7.42,9.74,0));
+  inspect([6.4,.9,9.2],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
 
   addWithCollider(group,colliders,factory.convexMirror(-6.15,6.2,.02));
   inspect([-5.7,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
-
-
-  addWithCollider(group,colliders,factory.crateStack(5.75,-12.4,.05));
-  inspect([5.35,1,-11.75],'Inspect shop crates','Shop deliveries','Tea tins, paper goods and wrapped household stock are waiting to be carried inside.');
-
-  const radio=factory.box(group,[.58,.34,.24],[5.9,.72,-5.9],0x3e4b4c);factory.box(group,[.34,.12,.025],[5.9,.77,-6.04],0xb6aa83,null,false);colliders.push({x:5.9,z:-5.9,w:.65,d:.34});
-  anchor(group,[5.55,1,-6.0],'Tune street radio',()=>options.onAction?.('radio','Workshop radio','A small transistor radio on the sill carries harbour weather, baseball scores and light music.'),options.register);interactions++;
-
   const recycleGroup=new THREE.Group();recycleGroup.position.set(6,0,-23.6);group.add(recycleGroup);
   for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:6,z:-23.6,w:1.1,d:.65});
   inspect([5.5,1,-23.1],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');

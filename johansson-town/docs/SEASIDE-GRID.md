@@ -1,6 +1,8 @@
 # Compact seaside grid — 12 September 2026
 
 Supersedes the coordinates in GRID-TOWN.md and COMPACT-TOWN.md.
+The later consolidation in CONSOLIDATED-BUSINESSES.md supersedes the shop rows
+and moves the residential street closer to the main street.
 
 The six main-street businesses form three paired blocks. The supplied residential
 street sits immediately behind the western shops; the supplied dining lane joins

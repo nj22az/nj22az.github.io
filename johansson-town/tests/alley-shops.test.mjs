@@ -20,7 +20,7 @@ test('alley businesses retain their rooms, reachable thresholds, exits and staff
  const nav=createNavigation(blocked),before=JSON.stringify(sites.map(s=>s.door));
  assignWorkplaces(world,sites);
  for(const id of Object.keys(ALLEY_SHOPS)){
-  const site=sites.find(s=>s.id===id),p=alleyShopPlacement(id),action=actions.filter(a=>a.label==='Enter '+id);
+  const site=sites.find(s=>s.id===id),p=alleyShopPlacement(id),action=actions.filter(a=>a.label==='Enter '+site.title);
   assert.equal(action.length,1,'one entrance per business');action[0].fn();assert.equal(entered.at(-1),site,'original site object selects its existing room');
   assert.equal(world.group.getObjectByName('japanese-shop:'+id),undefined,'old exterior removed');
   assert.equal(world.details.some(d=>d.id==='street-shop:'+id),false,'old exterior cannot return on a late load');

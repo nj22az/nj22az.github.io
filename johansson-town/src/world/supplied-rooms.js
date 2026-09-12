@@ -219,10 +219,10 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
   }else if(site.id==='office'){
     anchor([-1.40,1.15,-2.74],'Use office computer','machine','Office computer','Service records, calibration certificates and travel plans are open on the workstation.');
-    anchor([1.70,.93,-2.75],'Read the ledger','read','Johansson Marine Office ledger',site.line+'\n14 September 1988. Evening deliveries are written in blue pencil.');
+    anchor([1.70,.93,-2.75],'Read the ledger','read','Harbour records and service ledger',site.line+'\n14 September 1988. Evening deliveries are written in blue pencil.');
     anchor([-2.45,.93,-2.64],'Inspect field-service desk','inspect','Field-service desk','Route sheets, reference books and handwritten travel notes lie beside the keyboard.');
-    anchor([3.0,1.25,1.25],'Open drawing cabinet','inspect','Drawing cabinet','Folders contain electrical drawings, calibration sheets and old ship-engine notes.');
-    anchor([-2.94,1.05,.05],'Browse service files','read','Service files','A row of labelled binders keeps each vessel’s service history in order.');
+    anchor([3.0,1.25,1.25],'Open drawing cabinet','inspect','Drawing cabinet','Berth records, vessel draughts, departure times and electrical drawings share this cabinet.');
+    anchor([-2.94,1.05,.05],'Browse service files','read','Service files','A row of binders keeps each vessel’s service history, tide tables and cold-store orders in order.');
     anchor([-2.52,.7,-1.82],'Sit at the desk','seat','Office chair','A blue swivel chair faces the service desk.');
     anchor([1.14,.7,-2.05],'Sit down','seat','Office chair','The desk is ready for the next round of paperwork.');
   }else if(site.id==='yuri-home'){

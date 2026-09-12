@@ -11,7 +11,7 @@ const EXTRA_SURFACES={
 
 export function createMaterials({mobile=false,anisotropy=4}={}) {
   const textures=sharedTextures,materials=new Map(),loader=new THREE.TextureLoader();
-  function texture(path,colour=false){if(textures.has(path))return textures.get(path);const t=loader.load(assetURL(path),undefined,undefined,()=>{});t.colorSpace=colour?THREE.SRGBColorSpace:THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(anisotropy,mobile?2:8);textures.set(path,t);return t;}
+  function texture(path,colour=false){if(textures.has(path))return textures.get(path);const t=loader.load(assetURL(path),undefined,undefined,()=>{});t.userData.sharedAsset=true;t.colorSpace=colour?THREE.SRGBColorSpace:THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(anisotropy,mobile?2:8);textures.set(path,t);return t;}
   function material(kind='plaster',colour=0xffffff){
     const id=kind+'/'+colour;if(materials.has(id))return materials.get(id);
     const extra=EXTRA_SURFACES[kind];let m;

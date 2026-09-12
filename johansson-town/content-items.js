@@ -1,9 +1,9 @@
 import * as THREE from './vendor/three.module.js';
 import {ITEMS} from './content-data.js?warehouse=1';
 
-export function textTexture(title,body){
-  const c=document.createElement('canvas');c.width=1024;c.height=1440;
-  const x=c.getContext('2d');x.fillStyle='#eee4cd';x.fillRect(0,0,c.width,c.height);
+export function textTexture(title,body,scale=1){
+  const c=document.createElement('canvas');c.width=1024*scale;c.height=1440*scale;
+  const x=c.getContext('2d');x.scale(scale,scale);x.fillStyle='#eee4cd';x.fillRect(0,0,1024,1440);
   x.strokeStyle='#a4916f';x.lineWidth=3;x.strokeRect(36,36,952,1368);
   let y=100;
   const wrap=(text,font,line)=>{x.font=font;for(const paragraph of text.split('\n')){let row='';for(const word of paragraph.split(' ')){const next=(row?row+' ':'')+word;if(x.measureText(next).width>840&&row){x.fillText(row,90,y);y+=line;row=word;}else row=next;}x.fillText(row,90,y);y+=line;}};
@@ -19,12 +19,12 @@ function cube(g,size,pos,color){const m=new THREE.Mesh(new THREE.BoxGeometry(...
 function ring(g,r,t,pos,color){const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,8,24),new THREE.MeshStandardMaterial({color,roughness:.4,metalness:.4}));m.position.set(...pos);g.add(m);return m;}
 
 // The same mesh builder supplies shelf objects and their temporary held copies.
-export function makeContentObject(item){
+export function makeContentObject(item,{pageScale=1}={}){
   const g=new THREE.Group();g.name='content-'+item.id;
   const page=new THREE.Mesh(new THREE.PlaneGeometry(.70,.98),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
   page.position.set(0,0,.065);g.add(page);
   let current=0,flip=0;
-  const setPage=n=>{current=Math.max(0,Math.min(item.pages.length-1,n));const old=page.material.map;page.material.map=textTexture(...item.pages[current]);page.material.needsUpdate=true;old?.dispose();};
+  const setPage=n=>{current=Math.max(0,Math.min(item.pages.length-1,n));const old=page.material.map;page.material.map=textTexture(...item.pages[current],pageScale);page.material.needsUpdate=true;old?.dispose();};
   setPage(0);
   const hinge=new THREE.Group();hinge.position.x=-.37;g.add(hinge);
   if(item.kind==='book'||item.kind==='folio'){

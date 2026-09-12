@@ -11,8 +11,8 @@ import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createWorkplaceResidents} from '../src/people/workplace-residents.js';
 import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-layout.js';
 
-function person(name,parent=new THREE.Group()){
- const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();g.userData={name,hit:{inside:false},visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);parent.add(g);return {g,profile};
+function person(name,parent=new THREE.Group(),work){
+ const source=RESIDENTS.find(p=>p.name===name),profile=work?{...source,work}:source,g=new THREE.Group();g.userData={name,hit:{inside:false},visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);parent.add(g);return {g,profile};
 }
 function marker(parent,label,x=0,z=0,inside=false){const o=new THREE.Object3D();o.position.set(x,1,z);o.userData.hit={label,inside,fn:()=>{throw Error('NPC called player action');}};parent.add(o);return o;}
 const step=(service,seconds)=>{for(let i=0;i<seconds*60;i++)service.update(1/60);};
@@ -65,7 +65,7 @@ test('all appropriate public interaction classes are available without executing
 });
 
 test('residents walk to objects, reserve them, use them, yield to the player and preserve schedules and escort quests',()=>{
- const root=new THREE.Group(),kenji=person('Kenji',root),tetsuo=person('Tetsuo',root),paper=marker(root,'Read workshop notice',-5.9,-5.5),state={inventory:[],yen:1000};
+ const root=new THREE.Group(),kenji=person('Kenji',root,[-4,-5.5]),tetsuo=person('Tetsuo',root,[-4,-5.5]),paper=marker(root,'Read workshop notice',-5.9,-5.5),state={inventory:[],yen:1000};
  tetsuo.g.position.copy(kenji.g.position);const player=new THREE.Group();player.position.set(20,0,20);
  const activity=createTownActivities({getTargets:()=>[paper],collides:()=>false,getPlayerPosition:()=>player.position,getState:()=>state,ledger:createResidentLedger(()=>state)});
  const world={people:[kenji],homes:new Map()},ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:()=>false,activities:activity});
@@ -82,7 +82,7 @@ test('residents walk to objects, reserve them, use them, yield to the player and
 });
 
 test('inaccessible objects time out and never hold a reservation or bill indefinitely',()=>{
- const root=new THREE.Group(),p=person('Kenji',root),object=marker(root,'Buy canned tea · ¥120',-6.5,-5.5),state={};
+ const root=new THREE.Group(),p=person('Kenji',root,[-4,-5.5]),object=marker(root,'Buy canned tea · ¥120',-6.5,-5.5),state={};
  const activity=createTownActivities({getTargets:()=>[object],collides:()=>false,ledger:createResidentLedger(()=>state)}),base={place:'work',target:p.profile.work,activity:'working'};
  activity.plan(p,base,1000,false,.1);activity.plan(p,base,1010,false,.1);assert.ok(activity.stateFor(p));
  activity.plan(p,base,1050,false,.1);assert.equal(activity.stateFor(p),undefined);assert.equal(state.residentLife.Kenji.purchases.length,0);assert.equal(object.userData.reservedBy,undefined);
@@ -93,8 +93,9 @@ test('izakaya arrivals keep existing chairs and workplace staff return to the sa
  const guests=createIzakayaGuests({world,parent});guests.sync(1098);const before=new Map(world.people.filter(p=>p.g.userData.inIzakaya).map(p=>[p,p.g.position.clone()]));guests.sync(1112);
  for(const [p,position] of before)if(p.g.userData.inIzakaya)assert.ok(position.equals(p.g.position),'Existing guests are not shuffled by new arrivals');guests.restore();
  const desk=marker(parent,'Read repair ledger',-2,0,true),player=new THREE.Vector3(0,0,4),state={};
+ const kenji=world.people.find(p=>p.profile.name==='Kenji');kenji.profile={...kenji.profile,workSite:'form3d'};kenji.g.userData.indoors='work';
  const workers=createWorkplaceResidents({world,parent,getEntrance:()=>[0,0,4.5],getTargets:()=>[desk],collides:(x,z,r)=>Math.abs(x)+r>5||Math.abs(z)+r>5,getPlayerPosition:()=>player,getState:()=>state,ledger:createResidentLedger(()=>state)});
- workers.enter({id:'form3d',title:'Kenji’s Workshop'},1000);const kenji=world.people.find(p=>p.profile.name==='Kenji');assert.equal(kenji.g.parent,parent);let used=false;
+ workers.enter({id:'form3d',title:'Kenji’s Workshop'},1000);assert.equal(kenji.g.parent,parent);let used=false;
  for(let i=0;i<30*60;i++){workers.update(1/60,1000+i/60,false);used||=kenji.g.userData.socialPose==='Read';assert.ok(Math.abs(kenji.g.position.x)<5&&Math.abs(kenji.g.position.z)<5);}
  assert.ok(used);workers.restore();assert.equal(kenji.g.parent,street);assert.equal(kenji.g.userData.inWorkplace,undefined);assert.equal(desk.userData.reservedBy,undefined);
 });

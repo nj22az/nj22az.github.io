@@ -10,7 +10,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked} from '../physics.js?snappy=1';
 
-test('Japanese Town kit retains the shopfronts alongside the supplied residential neighbourhood',async()=>{
+test('loading the retained Japanese Town kit cannot restore retired shops or homes',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  const originalFetch=globalThis.fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
@@ -19,7 +19,7 @@ test('Japanese Town kit retains the shopfronts alongside the supplied residentia
   const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)));assert.equal(gltf.meshes.length,4);assert.equal(gltf.materials.length,1);assert.equal(gltf.images.length,3);assert.ok(gltf.images.every(i=>i.bufferView!==undefined&&!i.uri));
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
-  assert.equal(world.harbourShops.length,7);assert.ok(world.group.getObjectByName('Sakura glass storefront'));assert.ok(world.harbourShops.every(s=>s.source===(['journal','electronics'].includes(s.id)?'Japanese street at night':'Japanese Town')));
+  assert.deepEqual(world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);assert.ok(world.group.getObjectByName('Sakura glass storefront'));assert.ok(world.harbourShops.every(s=>s.source===(s.id==='office'?'Quay office':'Japanese street at night')));
   const batches=[];world.group.traverse(o=>{if(o.name==='japanese-homes')batches.push(o);});assert.equal(batches.length,0,'Old kit homes are no longer used in Willow Alley');assert.equal(world.homes.size,10);assert.ok(world.residential);
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
   for(const p of RESIDENTS){assert.equal(blocked(...p.home),false,p.name+' doorstep');assert.ok(nav.path({x:0,z:26},{x:p.home[0],z:p.home[1]}).length,p.name+' route');}
