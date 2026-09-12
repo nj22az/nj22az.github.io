@@ -10,7 +10,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked} from '../physics.js?snappy=1';
 
-test('Japanese Town kit replaces all shops and homes with bounded shared geometry and clear routes',async()=>{
+test('Japanese Town kit retains the shopfronts alongside the supplied residential neighbourhood',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  const originalFetch=globalThis.fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
@@ -20,7 +20,7 @@ test('Japanese Town kit replaces all shops and homes with bounded shared geometr
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
   assert.equal(world.harbourShops.length,7);assert.ok(world.group.getObjectByName('Sakura glass storefront'));assert.ok(world.harbourShops.every(s=>s.source==='Japanese Town'));
-  const batches=[];world.group.traverse(o=>{if(o.name==='japanese-homes')batches.push(o);});assert.equal(batches.reduce((n,o)=>n+o.count,0),10);assert.ok(batches.length<=8,'Homes share geometry and are batched by nearby blocks');assert.ok(batches.every(o=>o.material===batches[0].material));
+  const batches=[];world.group.traverse(o=>{if(o.name==='japanese-homes')batches.push(o);});assert.equal(batches.length,0,'Old kit homes are no longer used in Willow Alley');assert.equal(world.homes.size,10);assert.ok(world.residential);
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
   for(const p of RESIDENTS){assert.equal(blocked(...p.home),false,p.name+' doorstep');assert.ok(nav.path({x:0,z:46},{x:p.home[0],z:p.home[1]}).length,p.name+' route');}
   for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.05){const a=route.points[i-1],b=route.points[i];assert.equal(blocked(a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t),false,route.id);}

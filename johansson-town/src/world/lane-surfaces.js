@@ -1,3 +1,5 @@
+import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
+import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,groundHeight} from './layout.js?snappy=1';
 
@@ -14,11 +16,12 @@ export function lanePatches(routes=ROUTES.slice(3)) {
       rects.push({minX:Math.min(a[0],b[0])-half,maxX:Math.max(a[0],b[0])+half,minZ:Math.min(a[1],b[1])-half,maxZ:Math.max(a[1],b[1])+half,route});
     }
   }
-  const xs=[...new Set([-7.5,7.5,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
-  const zs=[...new Set([-64,58,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
+  const xs=[...new Set([-7.5,7.5,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
+  const zs=[...new Set([-64,58,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
   const patches=[];
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
     const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
+    if(inResidential(x,z)||inDiningLane(x,z))continue;
     if(Math.abs(x)<7.5&&z>-64&&z<58)continue;
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
     if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});

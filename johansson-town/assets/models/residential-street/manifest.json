@@ -1,0 +1,182 @@
+{
+  "source": {
+    "author": "Michał Solarek (https://sketchfab.com/misiek13)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/stylized-little-japanese-town-street-200fc33b8a2b4da98e71590feeb255a8",
+    "title": "Stylized Little Japanese Town Street"
+  },
+  "sourceSha256": "e8fc9e2a72e9336dde3635cbdebd0867c4640b72b519dcc5066ba348daac8af5",
+  "sourceBytes": 86107272,
+  "sourceTriangles": 234744,
+  "bytes": 6715528,
+  "triangles": 87684,
+  "draws": 10,
+  "buildingCount": 7,
+  "baseColourSize": 1024,
+  "detailTextureSize": 512,
+  "scale": 0.015,
+  "groundOffset": 0.21,
+  "modules": [
+    {
+      "name": "DomekRdy_1",
+      "triangles": 9505,
+      "vertices": 15885,
+      "errorMetres": 0.01798251084983349,
+      "min": [
+        1.1487535238265991,
+        -0.14930588006973267,
+        4.411759853363037
+      ],
+      "max": [
+        7.138269424438477,
+        7.536868095397949,
+        9.462167739868164
+      ]
+    },
+    {
+      "name": "DomekRdy_2",
+      "triangles": 7682,
+      "vertices": 12496,
+      "errorMetres": 0.017996521666646004,
+      "min": [
+        1.1792289018630981,
+        0.19688692688941956,
+        0.4724060595035553
+      ],
+      "max": [
+        6.576547145843506,
+        8.237054824829102,
+        4.938699245452881
+      ]
+    },
+    {
+      "name": "DomekRdy_Ksiegarnia",
+      "triangles": 11682,
+      "vertices": 19981,
+      "errorMetres": 0.01781480573117733,
+      "min": [
+        -7.347597599029541,
+        0.08865084499120712,
+        -10.855721473693848
+      ],
+      "max": [
+        -1.576261281967163,
+        7.6947922706604,
+        -4.301826477050781
+      ]
+    },
+    {
+      "name": "DomekRdy_Kwiaciarnia",
+      "triangles": 13530,
+      "vertices": 22224,
+      "errorMetres": 0.01797521486878395,
+      "min": [
+        -7.447211742401123,
+        0.16424983739852905,
+        -1.225602149963379
+      ],
+      "max": [
+        -1.467759609222412,
+        6.304035663604736,
+        4.0355448722839355
+      ]
+    },
+    {
+      "name": "DomekRdy_Kwiaciarnia-plants",
+      "triangles": 4080,
+      "vertices": 6847,
+      "errorMetres": 0.006225710269063711,
+      "min": [
+        -4.950796127319336,
+        0.3540922999382019,
+        -1.1635103225708008
+      ],
+      "max": [
+        -1.5393977165222168,
+        1.9129528999328613,
+        0.0908411294221878
+      ]
+    },
+    {
+      "name": "DomekRdy_4",
+      "triangles": 6646,
+      "vertices": 11133,
+      "errorMetres": 0.017984716221690178,
+      "min": [
+        1.5052236318588257,
+        0.20079059898853302,
+        -7.606785297393799
+      ],
+      "max": [
+        5.391534805297852,
+        7.751668930053711,
+        -3.122696876525879
+      ]
+    },
+    {
+      "name": "DomekRdy_5",
+      "triangles": 3901,
+      "vertices": 6406,
+      "errorMetres": 0.017922915518283844,
+      "min": [
+        0.9023361802101135,
+        0.1948428601026535,
+        -10.744122505187988
+      ],
+      "max": [
+        4.745369911193848,
+        5.737490653991699,
+        -6.436033725738525
+      ]
+    },
+    {
+      "name": "DomekRdy_Podklad",
+      "triangles": 90,
+      "vertices": 102,
+      "errorMetres": 0,
+      "min": [
+        -7.405214786529541,
+        -0.00038622377905994654,
+        -10.968152046203613
+      ],
+      "max": [
+        7.271218776702881,
+        0.08438165485858917,
+        10.338801383972168
+      ]
+    },
+    {
+      "name": "DomekRdy_Ziemia",
+      "triangles": 14347,
+      "vertices": 22091,
+      "errorMetres": 0.017752772197127342,
+      "min": [
+        -8.066412925720215,
+        -0.9282504320144653,
+        -11.018702507019043
+      ],
+      "max": [
+        7.459802627563477,
+        10.511405944824219,
+        10.432068824768066
+      ]
+    },
+    {
+      "name": "DomekRdy_3",
+      "triangles": 16221,
+      "vertices": 28350,
+      "errorMetres": 0.0179176926612854,
+      "min": [
+        -7.116868495941162,
+        0.18051187694072723,
+        3.587836980819702
+      ],
+      "max": [
+        -1.6508375406265259,
+        9.652865409851074,
+        10.251753807067871
+      ]
+    }
+  ],
+  "modifications": "Complete seven-building street retained. Baked transforms at 0.015 scale with ground offset 0.21 m; UV-aware simplification with maximum 0.018 m error; 1K colour and 512px PBR JPEG textures; quantised positions and normals. No external runtime decoder."
+}

@@ -1,13 +1,14 @@
+import {DINING} from '../world/dining-layout.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
-export const IZAKAYA_DOOR=[18,20];
-export const RAMEN_DOOR=[22.65,14.7];
-export const YURI_HOME_DOOR=[-29,25];
+export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
+export const RAMEN_DOOR=[...DINING.ramenDoor];
+export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Yuri').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
 export const izakayaOpen=m=>inTimeRange(m,960,1620);
-export const NIGHT_PATROL=[[0,46],[0,18],[0,-10],[0,-46],[0,-50],[0,-46],[0,-10],[0,18],[18,18],[0,18]];
+export const NIGHT_PATROL=[[0,46],[0,18],[0,-10],[0,-46],[0,-50],[0,-46],[0,-10],[0,18],[DINING.izakayaX,18],[0,18]];
 // A repeatable visit on alternate town days, with time to lock up and walk over.
 // Keep the unwrapped saved clock so revisiting or reloading never rerolls her.
 export function yuriVisitsIzakaya(minutes){

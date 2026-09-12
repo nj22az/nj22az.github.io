@@ -1,5 +1,6 @@
+import {DINING_COLLIDERS} from './dining-layout.js';
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
-import {RESIDENTS} from '../people/residents.js';
+import {RESIDENTIAL_BUILDINGS} from './residential-layout.js';
 import {PARK,activePark} from './park-layout.js';
 import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 
@@ -28,7 +29,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
   if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(0),pz(BOARDWALK.minZ));ctx.lineTo(px(0),pz(BOARDWALK.maxZ));ctx.stroke();
-  ctx.fillStyle='#a8997a';for(const {house} of RESIDENTS)ctx.fillRect(px(house.x-1.75),pz(house.z+1.56),3.5*scale,3.12*scale);}
+  ctx.fillStyle='#a8997a';for(const house of [...RESIDENTIAL_BUILDINGS,...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=visited.includes(site.id)?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}

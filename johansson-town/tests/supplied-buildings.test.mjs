@@ -1,3 +1,4 @@
+import {DINING} from '../src/world/dining-layout.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -37,11 +38,11 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   const minato={group:new THREE.Group(),colliders:[]},minatoSites=[],entrances=[];
   buildIzakaya(minato,{sites:minatoSites,register:(o,label,fn)=>entrances.push({o,label,fn}),enter:site=>assert.equal(site.id,'izakaya')});
   assert.equal(entrances.length,1);entrances[0].fn();
-  assert.deepEqual(minatoSites[0].door,[18,0,20]);
+  assert.deepEqual(minatoSites[0].door,[DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]]);
   const blocked=(x,z)=>townBoundsBlocked(x,z,.28)||minato.colliders.some(c=>circleHitsRect(x,z,.28,c));
-  assert.equal(sweepFraction({x:24,z:18},{x:24,z:20},blocked),1,'Lane reaches the new door');
-  assert.equal(blocked(24,19.4),false,'Returning to the street is clear');
-  assert.equal(blocked(24,21),true,'The closed door and step cannot be walked through');
+  assert.equal(sweepFraction({x:DINING.izakayaX,z:18},{x:DINING.izakayaX,z:20},blocked),1,'Lane reaches the new door');
+  assert.equal(blocked(DINING.izakayaX,19.4),false,'Returning to the street is clear');
+  assert.equal(blocked(DINING.izakayaX,21),true,'The closed door and step cannot be walked through');
   minato.group.updateMatrixWorld(true);
   const transformedDoor=new THREE.Vector3(0,1.66,4.05).applyMatrix4(minato.group.children[0].matrixWorld);
   assert.ok(transformedDoor.distanceTo(entrances[0].o.position)<1.1,'Prompt aligned with the supplied door');

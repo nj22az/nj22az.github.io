@@ -6,7 +6,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
-import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,yuriEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR} from '../src/people/social.js';
+import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,yuriEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR,RAMEN_DOOR} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
@@ -111,7 +111,7 @@ test('ramen and Sakura reuse their residents and release them at the street door
  const street=new THREE.Group(),scene=new THREE.Group(),world={people:[...RESIDENTS,...PROFILES.filter(p=>['Hana','Daichi'].includes(p.name))].map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
  const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
  assert.deepEqual(ramen.sync(580),['Nao']);const hana=world.people.find(p=>p.profile.name==='Nao').g;assert.equal(hana.parent,scene);assert.ok(['Eat','Sit','Drink'].includes(hana.userData.socialPose));
- assert.deepEqual(ramen.sync(690),['Mrs Sato','Harbour master']);assert.equal(hana.parent,street);assert.equal(hana.userData.hit.inside,false);assert.ok(Math.hypot(hana.position.x-24.65,hana.position.z-14.7)>0.9,'Ramen guests leave beside the door, not in it');assert.ok(Math.hypot(hana.position.x-24.65,hana.position.z-14.7)<2);assert.equal(hana.userData.socialPose,undefined);
+ assert.deepEqual(ramen.sync(690),['Mrs Sato','Harbour master']);assert.equal(hana.parent,street);assert.equal(hana.userData.hit.inside,false);assert.ok(Math.hypot(hana.position.x-RAMEN_DOOR[0],hana.position.z-RAMEN_DOOR[1])>0.9,'Ramen guests leave beside the door, not in it');assert.ok(Math.hypot(hana.position.x-RAMEN_DOOR[0],hana.position.z-RAMEN_DOOR[1])<2);assert.equal(hana.userData.socialPose,undefined);
  ramen.restore();assert.equal(scene.children.length,1);
  assert.deepEqual(market.sync(1199),['Yuri']);const yuri=world.people.find(p=>p.profile.name==='Yuri').g;assert.equal(yuri.parent,scene);
  assert.deepEqual(market.sync(1200),[]);assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);

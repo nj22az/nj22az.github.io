@@ -1,3 +1,4 @@
+import {DINING} from '../src/world/dining-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -17,7 +18,7 @@ test('late street, home, bench and vending assets replace placeholders without m
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const entered=[],world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(o,label,fn){o.userData.hit={label,fn};},enter:site=>entered.push(site.id),onAction(){}});
   const before=JSON.stringify(world.colliders),doors=JSON.stringify(sites.map(s=>s.door));
-  for(const id of ['street-shop:frontrow','home:Yuri','sakura-bench','street-vending']){
+  for(const id of ['street-shop:frontrow','residential-street','sakura-bench','street-vending']){
    const entry=world.details.find(e=>e.id===id);assert.ok(entry,id);assert.equal(await entry.load(),true,id);
    assert.equal(JSON.stringify(world.colliders),before);assert.equal(JSON.stringify(sites.map(s=>s.door)),doors);
   }
@@ -32,7 +33,7 @@ test('late street, home, bench and vending assets replace placeholders without m
   shop.entrance.userData.hit.fn();assert.deepEqual(entered,['frontrow']);
   createContentItems({group:world.group,colliders:world.colliders,register(){},onInspect(){},onRead(){}});
   const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
-  for(const [a,b] of [[[0,18],[22.65,18]],[[18,18],[18,20]],[[22.65,18],[22.65,14.7]]])assert.equal(sweepFraction({x:a[0],z:a[1]},{x:b[0],z:b[1]},blocked),1,'Dining junction and doors are clear');
+  for(const [a,b] of [[[0,18],[DINING.ramenDoor[0],18]],[[DINING.izakayaX,18],DINING.izakayaDoor],[[DINING.ramenDoor[0],18],DINING.ramenDoor]])assert.equal(sweepFraction({x:a[0],z:a[1]},{x:b[0],z:b[1]},blocked),1,'Dining junction and doors are clear');
   assert.equal(world.group.children.filter(o=>o.name==='East lane delivery shelf').length,1);
   assert.equal(await preloadCharacter('Yuri'),false);failYuri=false;assert.equal(await preloadCharacter('Yuri'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
  }finally{globalThis.fetch=native;}

@@ -97,8 +97,8 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
 });
 
-test('every resident has a distinct built home with a clear walking route to its doorstep',()=>{
- const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,10);
+test('every resident retains a named home and a clear route through the supplied neighbourhood',()=>{
+ const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.owner)).size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,6);
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
   assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'||a.label==='Enter '+p.profile.name+'’s room'),p.profile.name+' home prompt');
@@ -106,8 +106,8 @@ test('every resident has a distinct built home with a clear walking route to its
   const path=nav.path({x:0,z:46},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
  }
- const homes=world.colliders.filter(c=>c.home);
- for(let i=0;i<homes.length;i++)for(const c of world.colliders){if(c===homes[i])continue;const a=homes[i];assert.ok(Math.abs(a.x-c.x)>=(a.w+c.w)/2||Math.abs(a.z-c.z)>=(a.d+c.d)/2,a.home+' overlaps '+JSON.stringify(c));}
+ const homes=world.colliders.filter(c=>c.id?.startsWith('DomekRdy'));assert.equal(homes.length,7);
+ for(let i=0;i<homes.length;i++)for(const c of world.colliders){if(c===homes[i]||c.residential&&!c.id)continue;const a=homes[i];assert.ok(Math.abs(a.x-c.x)>=(a.w+c.w)/2||Math.abs(a.z-c.z)>=(a.d+c.d)/2,a.home+' overlaps '+JSON.stringify(c));}
 });
 
 test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{

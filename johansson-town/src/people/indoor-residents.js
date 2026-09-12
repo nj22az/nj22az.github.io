@@ -1,3 +1,4 @@
+import {groundHeight} from '../world/layout.js?snappy=1';
 import {RAMEN_GUEST_SEATS,RAMEN_YURI_SPOT} from '../world/interiors/ramen-layout.js';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,YURI_HOME_DOOR} from './social.js';
@@ -6,7 +7,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  const borrowed=new Map();let clock=0;
  function restore(p){const saved=borrowed.get(p);if(!saved)return;const g=p.g;
   saved.parent.add(g);const door=place==='ramen'?RAMEN_DOOR:place==='home'?YURI_HOME_DOOR:place==='market'?world.people.find(p=>p.profile.name==='Yuri').profile.work:p.profile.work;
-  g.position.set(door[0]+(place==='ramen'?1.6:place==='home'?1.4:0),0,door[1]);g.quaternion.copy(saved.rotation);g.visible=false;g.userData.hit.inside=saved.inside;
+  const x=door[0]+(place==='ramen'?1.6:place==='home'?Math.sin(p.profile.house.angle)*.45:0),z=door[1]+(place==='home'?Math.cos(p.profile.house.angle)*.45:0);g.position.set(x,groundHeight(x,z),z);g.quaternion.copy(saved.rotation);g.visible=false;g.userData.hit.inside=saved.inside;
   delete g.userData.inMarket;delete g.userData.inRamen;delete g.userData.inHome;delete g.userData.indoors;delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.ramenSeat;delete g.userData.storeSeatId;delete g.userData.serving;delete g.userData.heldItem;delete g.userData.mealState;delete g.userData.residentSpeech;
   if(place==='ramen'&&residentPlan(p.profile,clock).place==='ramen'&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking'))g.userData.indoors='ramen';
   borrowed.delete(p);

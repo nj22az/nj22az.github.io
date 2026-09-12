@@ -6,7 +6,7 @@ export function createIzakayaGuests({world,parent,getYuri=()=>null,getState=()=>
  const borrowed=new Map();let yuriPerson=null;
  function restore(person){
   const g=person.g,saved=borrowed.get(person);if(!saved)return;const n=borrowed.size-1;
-  saved.parent.add(g);g.position.set(IZAKAYA_DOOR[0]+1.6+(n%3)*.45,0,IZAKAYA_DOOR[1]+(Math.floor(n/3)-1)*.55);g.quaternion.copy(saved.rotation);g.visible=saved.visible;g.userData.hit.inside=saved.inside;
+  saved.parent.add(g);g.position.set(IZAKAYA_DOOR[0]+1.6+(n%3)*.45,0,IZAKAYA_DOOR[1]-.75-Math.floor(n/3)*.5);g.quaternion.copy(saved.rotation);g.visible=saved.visible;g.userData.hit.inside=saved.inside;
   for(const key of ['socialPose','seatHeight','inIzakaya','indoors','heldItem','mealState','residentSpeech'])delete g.userData[key];borrowed.delete(person);
  }
  function sync(minutes){

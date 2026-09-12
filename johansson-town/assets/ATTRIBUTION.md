@@ -165,3 +165,15 @@ Changes: removed the detached presentation ground plane; merged static geometry 
 `characters/realistic/nozomi.glb` is adapted from the user-supplied `shenmue_-_nozomi.glb`. The embedded source metadata credits [Kiklox](https://sketchfab.com/kiklox), links to [Shenmue — Nozomi](https://sketchfab.com/3d-models/shenmue-nozomi-0ac87fba37dd45af9286d440eee1d753), and declares [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Nozomi character and original Shenmue artwork are associated with SEGA; the uploader's metadata is retained as provenance, not a separate grant from the original rights holder. Included at the user's request.
 
 Changes: 57 skinned pieces combined into four material draws; unused second skeleton removed; legacy specular/glossiness textures converted to supported PBR materials; original geometry, skin weights, UVs and four embedded PNGs preserved. Seven original idle, walking, running, greeting, sitting, eating and drinking clips are baked onto the supplied skeleton. Reiko retains her existing name, role, conversations and schedule. Source hash and preparation details are embedded in the GLB. Reproduce with `tools/pack-nozomi.py` followed by `tools/animate-nozomi.mjs`.
+
+## Willow Alley residential street (2026-09-11)
+
+`models/residential-street/willow-street.glb` is the user-supplied **Stylized Little Japanese Town Street** by [Michał Solarek](https://sketchfab.com/misiek13). [Source model](https://sketchfab.com/3d-models/stylized-little-japanese-town-street-200fc33b8a2b4da98e71590feeb255a8); licence recorded in the supplied GLB: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+The complete seven-building street, canal and bridge are retained. Changes include uniform scaling, ground alignment, UV-aware geometry simplification, quantised positions and normals, and smaller embedded JPEG textures. Source metadata, hashes and measurements are in `models/residential-street/manifest.json`; reproduction and attribution details are in that directory's `CREDITS.md`.
+
+## Dining approach — Japanese street at night (2026-09-11)
+
+`models/dining-street/night-lane.glb` adapts the user-supplied **Japanese street at night** by [AFX/CGMotion 3DModel Maker](https://sketchfab.com/afx_cgmotion). [Source model](https://sketchfab.com/3d-models/japanese-street-at-night-fb1bdcd71a5544d699379d2d13dd1171); licence recorded in its GLB: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+Eight approach buildings, signs, lights, vending machines and paving lead into the existing restaurant façades. The studio backdrop, two closing buildings and central pole/cables were removed to make the connection. Other changes: baked transforms, static material batches, compacted vertices and smaller embedded JPEG textures. Original retained geometry, UVs and authorship are preserved. See `models/dining-street/CREDITS.md`, `manifest.json` and `tools/pack-dining-street.mjs`.

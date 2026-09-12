@@ -1,3 +1,4 @@
+import {buildDiningStreet} from './dining-street.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
 import {buildSeaCave} from './sea-cave.js';
@@ -175,7 +176,7 @@ export function createTown(options){
   const isOpen=(site,minutes)=>{if(!site)return false;if(site.id==='home'||site.id==='yuri-home'||site.id==='bus-hut'||site.id==='warehouse')return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
-  buildIzakaya(world,options);buildPark(world,options);buildSeaCave(world,options);
+  buildDiningStreet(world,options);buildIzakaya(world,options);buildPark(world,options);buildSeaCave(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
@@ -191,7 +192,7 @@ export function createTown(options){
   if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
   world.update=(dt,time,day,minutes=1002)=>{
-    world.updateHours(minutes);
+    world.updateHours(minutes);world.updateDiningStreet?.(day);
     for(const shop of world.harbourShops)shop.update(isOpen(options.sites.find(s=>s.id===shop.id),minutes),day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
