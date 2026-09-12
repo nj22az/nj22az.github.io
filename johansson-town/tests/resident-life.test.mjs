@@ -18,7 +18,7 @@ function marker(parent,label,x=0,z=0,inside=false){const o=new THREE.Object3D();
 const step=(service,seconds)=>{for(let i=0;i<seconds*60;i++)service.update(1/60);};
 
 test('Sakura residents queue, receive food once, use their own money and leave the player first in the next queue',()=>{
- const room=new THREE.Group(),state={yen:900,inventory:[]},ledger=createResidentLedger(()=>state),clerk=new THREE.Group();clerk.position.set(...STORE_CLERK_POSITION);
+ const room=new THREE.Group(),state={yen:900,inventory:[]},ledger=createResidentLedger(()=>state),clerk=new THREE.Group();clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;
  const kenji=person('Kenji'),sato=person('Mrs Sato');let customers=[kenji,sato],charges=0,playerSeat=STORE_SEATS[0];
  for(const [i,p] of customers.entries()){p.g.userData.inMarket=true;p.g.userData.storeSeatId=STORE_SEATS[i+2].id;}
  const options={room,clerk,getCustomers:()=>customers,ledger,getMinutes:()=>900,getSeat:()=>playerSeat,getBalance:()=>state.yen,pay:n=>{charges++;state.yen-=n;return true;},say(){}};
@@ -37,7 +37,7 @@ test('Sakura residents queue, receive food once, use their own money and leave t
 });
 
 test('a departed, hidden, or closing-time customer cannot be charged for undelivered food',()=>{
- const room=new THREE.Group(),clerk=new THREE.Group(),customer=person('Tetsuo'),state={},ledger=createResidentLedger(()=>state);clerk.position.set(...STORE_CLERK_POSITION);
+ const room=new THREE.Group(),clerk=new THREE.Group(),customer=person('Tetsuo'),state={},ledger=createResidentLedger(()=>state);clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;
  customer.g.userData.storeSeatId=STORE_SEATS[2].id;customer.g.userData.inMarket=true;let minutes=950,customers=[customer];
  const service=createStoreService({room,clerk,getSeat:()=>null,getMinutes:()=>minutes,getBalance:()=>0,pay:()=>{throw Error('Player charged');},say(){},getCustomers:()=>customers,ledger});
  customer.g.userData.visualReady=false;step(service,2);assert.deepEqual(service.queue,[]);customer.g.userData.visualReady=true;step(service,2);assert.deepEqual(service.queue,['Tetsuo']);
@@ -48,6 +48,7 @@ test('a departed, hidden, or closing-time customer cannot be charged for undeliv
 test('Minato serves actual beer and meals; the bus driver and officer choose tea and payments survive re-entry',()=>{
  const room=new THREE.Group(),state={yen:600},ledger=createResidentLedger(()=>state),kenji=person('Kenji'),driver=person('Bus driver'),nao=person('Nao');
  for(const [i,p] of [kenji,driver].entries()){p.g.position.set(i*1.5,0,-1.42);p.g.userData.inIzakaya=true;p.g.userData.seatHeight=.71;}
+ nao.g.userData.inIzakaya=true;
  const options={room,place:'izakaya',getCustomers:()=>[kenji,driver],getStaff:()=>nao.g,getMinutes:()=>1100,ledger};
  const service=createVenueService(options);let beer=false,tea=false,eating=false;
  for(let i=0;i<55*60;i++){service.update(1/60);beer||=kenji.g.userData.heldItem==='beer';tea||=driver.g.userData.heldItem==='tea';eating||=kenji.g.userData.heldItem==='yakitori';}
@@ -92,7 +93,7 @@ test('izakaya arrivals keep existing chairs and workplace staff return to the sa
  const guests=createIzakayaGuests({world,parent});guests.sync(1098);const before=new Map(world.people.filter(p=>p.g.userData.inIzakaya).map(p=>[p,p.g.position.clone()]));guests.sync(1112);
  for(const [p,position] of before)if(p.g.userData.inIzakaya)assert.ok(position.equals(p.g.position),'Existing guests are not shuffled by new arrivals');guests.restore();
  const desk=marker(parent,'Read repair ledger',-2,0,true),player=new THREE.Vector3(0,0,4),state={};
- const workers=createWorkplaceResidents({world,parent,getTargets:()=>[desk],collides:(x,z,r)=>Math.abs(x)+r>5||Math.abs(z)+r>5,getPlayerPosition:()=>player,getState:()=>state,ledger:createResidentLedger(()=>state)});
+ const workers=createWorkplaceResidents({world,parent,getEntrance:()=>[0,0,4.5],getTargets:()=>[desk],collides:(x,z,r)=>Math.abs(x)+r>5||Math.abs(z)+r>5,getPlayerPosition:()=>player,getState:()=>state,ledger:createResidentLedger(()=>state)});
  workers.enter({id:'form3d',title:'Kenji’s Workshop'},1000);const kenji=world.people.find(p=>p.profile.name==='Kenji');assert.equal(kenji.g.parent,parent);let used=false;
  for(let i=0;i<30*60;i++){workers.update(1/60,1000+i/60,false);used||=kenji.g.userData.socialPose==='Read';assert.ok(Math.abs(kenji.g.position.x)<5&&Math.abs(kenji.g.position.z)<5);}
  assert.ok(used);workers.restore();assert.equal(kenji.g.parent,street);assert.equal(kenji.g.userData.inWorkplace,undefined);assert.equal(desk.userData.reservedBy,undefined);

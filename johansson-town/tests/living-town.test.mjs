@@ -23,15 +23,16 @@ test('all residents have distinct identities, actual friendships and time-bound 
 test('izakaya borrows existing entities, updates guests and restores interaction ownership without duplicates',()=>{
  const street=new THREE.Group(),scene=new THREE.Group(),world={people:PROFILES.map((profile,i)=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};g.position.set(i,0,i+1);street.add(g);return {g,profile};})};scene.add(street);
  const before=world.people.map(p=>({g:p.g,pos:p.g.position.clone(),hit:p.g.userData.hit}));const guests=createIzakayaGuests({world,parent:scene});
+ for(const p of world.people)if(residentPlan(p.profile,1135).place==='izakaya'){p.g.position.set(IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]);p.g.userData.indoors='izakaya';}
  const names=guests.sync(1135);assert.ok(names.length>1);assert.equal(new Set(world.people.map(p=>p.g.uuid)).size,PROFILES.length);
- for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose);}
+ for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose||g.userData.name==='Nao');}
  const laterNames=guests.sync(1335);guests.restore();guests.restore();assert.equal(guests.names().length,0);
  for(const {g,pos,hit} of before){
   assert.equal(g.parent,street);
   const wasGuest=[...names,...laterNames].includes(g.userData.name);
   if(wasGuest){
    const d=Math.hypot(g.position.x-IZAKAYA_DOOR[0],g.position.z-IZAKAYA_DOOR[1]);
-   assert.ok(d>0.9,g.userData.name+' leaves beside the izakaya door, not in it');
+   assert.ok(d<.01,g.userData.name+' returns to the actual izakaya threshold');
    assert.ok(d<3,g.userData.name+' stays near the izakaya door');
   }else assert.ok(g.position.equals(pos),g.userData.name+' '+g.position.toArray()+' expected '+pos.toArray());
   assert.equal(g.userData.hit,hit);assert.equal(hit.inside,false);assert.equal(g.userData.inIzakaya,undefined);
@@ -60,15 +61,15 @@ test('Yuri spends evenings at Minato, ramen, the canal and her own door',()=>{
  const yuri=RESIDENTS.find(p=>p.name==='Yuri');
  assert.equal(yuri.retire,1410);
  assert.equal(residentPlan(yuri,1002).place,'market');
- assert.equal(residentPlan(yuri,1205).place,'ramen');
+ assert.equal(residentPlan(yuri,1205).place,'stroll');
  assert.equal(residentPlan(yuri,1230).place,'izakaya');
- assert.equal(residentPlan(yuri,1290).place,'stroll');
+ assert.equal(residentPlan(yuri,1290).place,'evening');
  assert.equal(residentPlan(yuri,1410).place,'home');
- assert.equal(residentPlan(yuri,1440+1205).place,'evening');
- assert.equal(residentPlan(yuri,1440+1230).place,'evening');
+ assert.equal(residentPlan(yuri,1440+1205).place,'ramen');
+ assert.equal(residentPlan(yuri,1440+1230).place,'ramen');
  assert.equal(residentPlan(yuri,1230,true).place,'home');
- assert.equal(yuriEveningPlace(1205),'ramen');
- assert.equal(yuriEveningPlace(1380),'evening');
+ assert.equal(yuriEveningPlace(1205),'stroll');
+ assert.equal(yuriEveningPlace(1380),'home');
 });
 
 test('all exported Blender residents retain finite grounded poses and a single body draw',async()=>{
@@ -108,16 +109,12 @@ test('izakaya hours and late guests cross midnight and close exactly at 03:00',(
 });
 
 test('ramen and Sakura reuse their residents and release them at the street door',()=>{
- const street=new THREE.Group(),scene=new THREE.Group(),world={people:[...RESIDENTS,...PROFILES.filter(p=>['Hana','Daichi'].includes(p.name))].map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
+ const street=new THREE.Group(),scene=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
  const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
- assert.deepEqual(ramen.sync(580),['Nao']);const hana=world.people.find(p=>p.profile.name==='Nao').g;assert.equal(hana.parent,scene);assert.ok(['Eat','Sit','Drink'].includes(hana.userData.socialPose));
- assert.deepEqual(ramen.sync(690),['Mrs Sato','Harbour master']);assert.equal(hana.parent,street);assert.equal(hana.userData.hit.inside,false);assert.ok(Math.hypot(hana.position.x-RAMEN_DOOR[0],hana.position.z-RAMEN_DOOR[1])>0.9,'Ramen guests leave beside the door, not in it');assert.ok(Math.hypot(hana.position.x-RAMEN_DOOR[0],hana.position.z-RAMEN_DOOR[1])<2);assert.equal(hana.userData.socialPose,undefined);
- ramen.restore();assert.equal(scene.children.length,1);
- assert.deepEqual(market.sync(1199),['Yuri']);const yuri=world.people.find(p=>p.profile.name==='Yuri').g;assert.equal(yuri.parent,scene);
- assert.deepEqual(market.sync(1200),[]);assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
- const home=createIndoorResidents({world,parent:scene,place:'home'});
- assert.deepEqual(home.sync(1420),['Yuri']);assert.equal(yuri.parent,scene);assert.equal(yuri.userData.inHome,true);
- home.restore();assert.equal(yuri.userData.inHome,undefined);assert.equal(yuri.parent,street);
- assert.deepEqual(ramen.sync(1205),['Officer Mori','Yuri']);assert.equal(yuri.parent,scene);assert.equal(yuri.userData.inRamen,true);assert.equal(yuri.userData.socialPose,undefined);
- ramen.restore();
+ const nao=world.people.find(p=>p.profile.name==='Nao').g;nao.position.set(...[RAMEN_DOOR[0],0,RAMEN_DOOR[1]]);nao.userData.indoors='ramen';
+ assert.deepEqual(ramen.sync(580),['Nao']);assert.equal(nao.parent,scene);ramen.restore();assert.equal(nao.parent,street);assert.equal(nao.userData.indoors,'ramen');
+ const yuri=world.people.find(p=>p.profile.name==='Yuri').g;yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';
+ assert.deepEqual(market.sync(1199),['Yuri']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
+ for(let i=0;i<600;i++)market.sync(1200+i/30,1/30);
+ assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
 });

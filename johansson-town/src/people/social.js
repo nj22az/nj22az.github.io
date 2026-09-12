@@ -15,13 +15,11 @@ export function yuriVisitsIzakaya(minutes){
  const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
  return day%2===0&&minute>=1220&&minute<1290;
 }
-const YURI_EVENING=['ramen','evening','stroll','izakaya'];
 export function yuriEveningPlace(minutes){
- const m=minuteOfDay(minutes),day=Math.floor(minutes/1440);
- if(m<1200||m>=1410)return 'home';
- let place=YURI_EVENING[(Math.floor((m-1200)/45)+day)%YURI_EVENING.length];
- if(place==='ramen'&&m>=1260)place='evening';
- return place;
+ const m=minuteOfDay(minutes);
+ if(m<1200||m>=1370)return 'home';
+ if(m<1260)return Math.floor(minutes/1440)%2===0?'stroll':'ramen';
+ return m<1340?'evening':'stroll';
 }
 export const IZAKAYA_SEATS=[[-3.8,-1.42],[-2.3,-1.42],[-.8,-1.42],[.7,-1.42],[2.2,-1.42],[-4.1,1.12],[-2.9,1.12],[2,3.08]];
 export function supperGuests(minutes){
@@ -59,6 +57,7 @@ export function residentPlan(profile,minutes,rain=false){
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
   const slot=yuriEveningPlace(minutes);
+  if(slot==='home')return {place:'home',target:profile.home,activity:'settling in at home'};
   if(slot==='izakaya')return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a drink after work'};
   if(slot==='ramen')return {place:'ramen',target:RAMEN_DOOR,activity:'a late bowl of ramen'};
   if(slot==='stroll')return {place:'stroll',target:profile.home,activity:'lingering near home'};
@@ -73,7 +72,7 @@ export function residentPlan(profile,minutes,rain=false){
 export const GOSSIP=[
  {id:'yuri-evening',a:'Yuri',b:'Nao',line:'Yuri: I told the assistant manager I would be home early.\nNao: The plant?\nYuri: He looked very disappointed. I watered him twice.',clue:'Yuri sometimes stops at Minato after locking Sakura. Look for her after 20:20, or around her room on the canal.'},
  {id:'apron',a:'Aya',b:'Emi',line:'Aya: The cat apron needs bigger pockets.\nEmi: For what?\nAya: His responsibilities.',clue:'Aya is worried about Tama. Ask her by the bookshop.'},
- {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: I fixed the crackling.\nTetsuo: That was the music.\nKenji: Then I have improved it.',clue:'Find the street radio and try the other stations.'},
+ {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Mr Fujita',line:'Fujita: This big!\nHarbour master: Yesterday it was smaller.\nFujita: Yesterday you were sitting further away.',clue:'The outer pier has a bait station and a working winch.'},
  {id:'special',a:'Nao',b:'Masaru',line:'Masaru: Is my fish on the menu?\nNao: In very small writing.\nMasaru: Exclusive, then.',clue:'Try Nao’s supper special at the counter.'}
 ];

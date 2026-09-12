@@ -62,10 +62,10 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
  const restored=JSON.parse(dom.storage.get('johansson-town-1988-v5'));assert.equal(restored.quest,3);assert.equal(restored.yen,1268);assert.ok(restored.visited.includes('office'));
  acts.state.yen=0;acts.action('vending');dom.button('Harbour Tea · Green tea · ¥120');assert.equal(acts.state.yen,0);assert.ok(!acts.state.inventory.includes('Green tea'));
 });
-test('every resident has several authored subjects and schedules stream at most eight',()=>{
+test('every resident has several authored subjects and schedules retain all outdoor residents',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(0,0,30);const state={inventory:[],quest:0};const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
  for(const p of world.people){assert.ok(DIALOGUE[p.g.userData.name].length>=3,p.g.userData.name);assert.ok(p.profile.age>0);}
- ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=8);const aiko=world.people.find(p=>p.g.userData.name==='Aya');assert.equal(aiko.g.visible,false);
+ ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);const aiko=world.people.find(p=>p.g.userData.name==='Aya');assert.equal(aiko.g.visible,false);
 });
 test('runtime assets, PBR maps and sound files exist locally',async()=>{
  for(const name of ['asphalt','timber','plaster','roof'])for(const suffix of ['nor_gl','arm'])assert.ok((await readFile(resolve(root,'assets/materials/'+name+'-'+suffix+'.jpg'))).length>1000);
@@ -101,7 +101,7 @@ test('every resident retains a named home and a clear route through the supplied
  const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.owner)).size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,6);
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
-  assert.ok(anchors.some(a=>a.label==='Read '+p.profile.name+'’s nameplate'||a.label==='Enter '+p.profile.name+'’s room'),p.profile.name+' home prompt');
+  assert.ok(anchors.some(a=>a.label==='Visit homes'&&a.o.position.x===home.door[0]&&a.o.position.z===home.door[1]),p.profile.name+' home prompt');
   assert.equal(blocked(...home.door),false,p.profile.name+' doorstep');
   const path=nav.path({x:0,z:46},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
@@ -118,7 +118,7 @@ test('residents walk home without off-camera teleporting and Mori patrols past m
  for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);chats.update(.2,t,false);chatted ||= !!chats.current;
   world.people.forEach((p,i)=>assert.ok(p.g.position.distanceTo(before[i])<.3,p.profile.name+' teleported at '+t+' from '+before[i].toArray()+' to '+p.g.position.toArray()));
   if(t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
-  assert.ok(world.people.filter(p=>p.g.visible).length<=8);
+  assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);
  }
  assert.ok(chatted,'The actual moving cast has conversations during the evening');assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
  for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');

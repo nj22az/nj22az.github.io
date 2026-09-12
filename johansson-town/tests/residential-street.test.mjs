@@ -16,7 +16,7 @@ import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 function make(){
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
- const actions=[],entered=[];const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register:(anchor,label,fn)=>actions.push({anchor,label,fn}),onAction(){},enter:s=>entered.push(s),getPlayerPosition:()=>new THREE.Vector3()});
+ const actions=[],entered=[];const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register:(anchor,label,fn)=>actions.push({anchor,label,fn}),onAction:(kind,name,items)=>{if(kind==='visit-home')items.find(i=>i.name.startsWith('Yuri'))?.enter();},enter:s=>entered.push(s),getPlayerPosition:()=>new THREE.Vector3()});
  return {world,sites,actions,entered};
 }
 const nativeFetch=globalThis.fetch;
@@ -38,7 +38,7 @@ test('supplied residential street streams once without old houses, and keeps all
    assert.equal(world.homes.get(p.name).building,RESIDENTIAL_ENTRIES[p.homeEntry].buildingId);
   }
   const site=sites.find(s=>s.id==='yuri-home');assert.deepEqual([site.door[0],site.door[2]],YURI_PROFILE.home);assert.deepEqual(YURI_HOME_DOOR,YURI_PROFILE.home);
-  actions.find(a=>a.label==='Enter Yuri’s room').fn();assert.equal(entered[0],site);
+  actions.find(a=>a.label==='Visit homes'&&a.anchor.position.x===YURI_PROFILE.home[0]&&a.anchor.position.z===YURI_PROFILE.home[1]).fn();assert.equal(entered[0],site);
   assert.equal(blocked(site.exitPosition[0]+Math.sin(RESIDENTS.at(-1).house.angle)*.6,site.exitPosition[2]),false,'Yuri exit faces the clear lane');
   world.homes.get('Yuri').occupied=true;world.updateHomes(1420);assert.equal(world.homes.get('Yuri').occupied,true);assert.equal(world.group.getObjectByName('resident-home-nameplates').visible,true);
  }finally{globalThis.fetch=nativeFetch;}

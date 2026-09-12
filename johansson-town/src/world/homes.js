@@ -1,3 +1,4 @@
+import {homeSiteId} from '../people/home-life.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
@@ -21,12 +22,16 @@ export function buildHomes(world,options){
   dummy.position.set(entry.facade[0]+Math.sin(entry.angle)*.045,1.55+slot*.29,entry.facade[1]+.62);dummy.rotation.set(0,entry.angle,0);dummy.updateMatrix();geometry.applyMatrix4(dummy.matrix);plates.push(geometry);
   const home={owner:p.name,address:p.homeAddress,door:p.home,building:entry.buildingId,occupied:false};homes.set(p.name,home);
   const anchor=new THREE.Object3D();anchor.name='home entrance:'+p.name;anchor.position.set(p.home[0],groundHeight(...p.home)+1.3,p.home[1]);world.group.add(anchor);
-  if(p.name==='Yuri'){
-   let site=options.sites.find(s=>s.id==='yuri-home');
-   if(!site){site={id:'yuri-home',title:'Yuri’s room',jp:'ゆりの部屋',sub:'WILLOW ALLEY',color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};options.sites.push(site);}
-   site.door=[p.home[0],groundHeight(...p.home),p.home[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-Math.sin(entry.angle),-Math.cos(entry.angle));site.x=p.house.x;site.z=p.house.z;
-   YURI_HOME_DOOR.splice(0,2,...p.home);options.register(anchor,'Enter Yuri’s room',()=>options.enter(site));
-  }else options.register(anchor,'Read '+p.name+'’s nameplate',()=>options.onAction('read',p.homeAddress,p.name+' lives here. '+(home.occupied?'The door is closed; someone is at home.':'The resident is out in town.')));
+  let site=options.sites.find(s=>s.id===homeSiteId(p.name));
+  if(!site){site={id:homeSiteId(p.name),title:p.name+'’s home',jp:'住まい',sub:'WILLOW ALLEY',color:0xd4c6ad,accent:'#776953',line:p.homeAddress};options.sites.push(site);}
+  site.homeOwner=p.name;site.door=[p.home[0],groundHeight(...p.home),p.home[1]];site.exitPosition=[...site.door];site.entryFacing=entry.angle;site.x=p.house.x;site.z=p.house.z;
+  if(p.name==='Yuri')YURI_HOME_DOOR.splice(0,2,...p.home);
+  // Shared street entrances open a choice of apartments, never overlapping hit targets.
+  if(slot===0)options.register(anchor,'Visit homes',()=>{
+   const neighbours=RESIDENTS.filter(n=>n.homeEntry===p.homeEntry).map(n=>options.sites.find(s=>s.id===homeSiteId(n.name)));
+   if(neighbours.length===1)options.enter(neighbours[0]);
+   else options.onAction('visit-home','Willow Alley',neighbours.map(site=>({name:site.title,enter:()=>options.enter(site)})));
+  });
  }
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
  const material=new THREE.MeshStandardMaterial({map:texture,roughness:.9,emissiveMap:texture,emissive:0xffdcac,emissiveIntensity:.02});

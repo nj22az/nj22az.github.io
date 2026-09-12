@@ -1,3 +1,5 @@
+import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
+import {homeRoutine} from './home-life.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {residentPlan,NIGHT_PATROL} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
@@ -20,6 +22,21 @@ for(const p of PROFILES){
  const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home','I live in '+(p.homeAddress+'.')+' '+p.personality+'. That is what '+p.friend+' calls me, anyway.']];
  DIALOGUE[p.name]=[...personal,...(DIALOGUE[p.name]||[])];
 }
+// Kenji's own voice: friendly 1980s American slang, still grounded in his job.
+DIALOGUE.Kenji=[
+ ['hello','Yo, bro! How’s it going? Just keeping this old workshop running.'],
+ ['delivery','Hey, dude, watch your ankles. This trolley’s got a mind of its own.'],
+ ['folio','Yo, bro, try the harbour office tray. Blue tape on the folder. Can’t miss it.'],
+ ['game','One clean Star Port run? That’s totally rad. Then I’ll show you the workshop.'],
+ ['book','Dude, I hauled those books over here. My back’s still talking about it.','book'],
+ ['part','Check it out, bro. A keychain blank, ready for your own design.','keychain'],
+ ['map','Workshop’s that way, dude. I’ll walk you over if you’ve earned the tour.'],
+ ['weather','Bummer. Rain again. Good day to fix something indoors, huh?'],
+ ['model','Easy, bro. That prototype took all afternoon.'],
+ ['friends','Tetsuo’s got the electronics covered. Me? I handle the parts that need a proper wrench.'],
+ ['discovery','Hey, bro, ask the harbour master about that waterlogged folder.'],
+ ['home','My place is on Willow Alley, bro. After supper I put the tools away and kick back.']
+];
 DIALOGUE.Yuri.push(['home','My home is at '+YURI_PROFILE.homeAddress+'. The plants by the shop stay here overnight.']);
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
@@ -61,7 +78,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const scheduled=residentPlan(v,minutes,rain),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
-   g.userData.place=plan.place;g.userData.activity=plan.activity;
+   g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
     if(Math.hypot(g.position.x-patrol[index][0],g.position.z-patrol[index][1])<.85)index=(index+1)%patrol.length;
@@ -72,25 +89,27 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Unique home thresholds must not be displaced by generic crowd spacing.
-   if(!['home','izakaya','ramen','market'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
-    const spawn=tag==='home'?v.home:destination(p,v.work,'work');
+    const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
+    const spawn=valid&&!collides(...remembered.position,.32)?remembered.position:target;
+    if((!valid||remembered.indoors===tag)&&(['home','market','ramen','izakaya'].includes(tag)||tag==='work'&&v.workSite))g.userData.indoors=tag;
     g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
-   const indoor=['home','izakaya','ramen','market'].includes(tag);
+   const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
    if(indoor&&(g.userData.indoors===tag||arrived())){
+    if(!g.userData.indoors)g.userData.justArrived=true;
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
-    g.userData.activity=tag==='home'?'at home':plan.activity;
+    g.userData.activity=tag==='home'?homeRoutine(v,minutes).activity+' at home':plan.activity;
    }else outside.push(p);
    const home=world.homes?.get(v.name);if(home)home.occupied=g.userData.indoors==='home';
   }
-  // Rendering is capped, but every resident continues walking off camera.
-  const observer=getObserverPosition();outside.sort((a,b)=>a.g.position.distanceToSquared(observer)-b.g.position.distanceToSquared(observer));
-  outside.forEach((p,i)=>{p.g.visible=i<8;});world.updateHomes?.(minutes);
+  // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
+  outside.forEach(p=>{p.g.visible=true;});world.updateHomes?.(minutes);
   if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[[4,34],[-4,-18],[-1.6,-76]];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },pose(){}};
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors;const target=inside==='home'?p.profile.home:inside==='market'?world.people.find(p=>p.profile.name==='Yuri').profile.work:inside==='ramen'?RAMEN_DOOR:inside==='izakaya'?IZAKAYA_DOOR:p.profile.work;return [p.profile.name,{position:inside?[...target]:[g.position.x,g.position.z],indoors:inside||null}];}));},pose(){}};
 }

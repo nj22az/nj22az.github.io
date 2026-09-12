@@ -54,7 +54,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
  function nextOrder(){return playerOrder&&!playerOrder.delivered?playerOrder:[...tickets.values()].find(ticket=>!ticket.delivered);}
  function request(id){
   const item=STORE_MENU.find(i=>i.id===id),playerSeat=getSeat();
-  if(!item||!playerSeat||playerOrder||!clerk.visible||clerk.userData.visualReady===false||!open())return false;
+  if(!item||!playerSeat||playerOrder||!clerk.visible||clerk.userData.roomTransition||!clerk.userData.inMarket||clerk.userData.visualReady===false||!open())return false;
   if(getBalance()<item.cost){say('You do not have enough yen.',3);return false;}
   playerOrder={item,seat:playerSeat.id,delivered:false,tray:playerTray};resumeBreak=phase==='sit';
   if(!order){if(phase==='sit'){phase='stand';timer=.65;pose(null);}else if(phase==='counter')begin(playerOrder);else returnToCounter();}
@@ -64,7 +64,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
  function tablePosition(ticket){const destination=STORE_SEATS.find(s=>s.id===ticket.seat),table=STORE_TABLES[destination.table];ticket.tray.position.set(table.x,.875,table.z+(destination.yaw?-.22:.22));ticket.tray.rotation.set(0,0,0);}
  function selectFood(ticket){for(const id of ['bun','rice','tea'])ticket.tray.getObjectByName(id).visible=id===ticket.item.id;}
  function customers(dt){
-  const present=open()?getCustomers().filter(p=>p.profile.name!=='Yuri'&&p.g.visible&&p.g.userData.visualReady!==false&&STORE_SEATS.some(s=>s.id===p.g.userData.storeSeatId)):[];
+  const present=open()?getCustomers().filter(p=>p.profile.name!=='Yuri'&&p.g.visible&&!p.g.userData.roomTransition&&p.g.userData.visualReady!==false&&STORE_SEATS.some(s=>s.id===p.g.userData.storeSeatId)):[];
   for(const [customer,ticket] of tickets)if(!present.includes(customer)||customer.g.userData.storeSeatId!==ticket.seat)cancelTicket(ticket);
   for(const customer of present){
    const name=customer.profile.name,account=ledger.account(name,getMinutes());account.meals??={};
@@ -86,7 +86,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
  }
  return {request,eat,cancel,occupied,get order(){return playerOrder;},get phase(){return phase;},get queue(){return [...tickets.values()].filter(t=>!t.delivered).map(t=>t.customer.profile.name);},
   update(dt){
-   if(clerk.userData.visualReady===false){clerk.userData.carrying=false;if(order&&!order.delivered)order.tray.visible=false;return;}
+   if(!clerk.visible||!clerk.userData.inMarket||clerk.userData.roomTransition||clerk.userData.indoors&&clerk.userData.indoors!=='market'||clerk.userData.visualReady===false){clerk.userData.carrying=false;if(order&&!order.delivered)order.tray.visible=false;return;}
    elapsed+=dt;customers(dt);
    if(playerOrder&&(getSeat()?.id!==playerOrder.seat||!open()&&!playerOrder.delivered))cancel();
    clerk.userData.serving=!!nextOrder()||!!order;clerk.userData.carrying=phase==='deliver';

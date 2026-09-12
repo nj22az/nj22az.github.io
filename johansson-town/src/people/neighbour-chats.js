@@ -3,7 +3,7 @@ import {residentPlan} from './social.js';
 
 const EXCHANGES=[
  ['Aya','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
- ['Kenji','Tetsuo',['I fixed the crackling on your radio.','That was the music, Kenji.','Then I have improved it.']],
+ ['Kenji','Tetsuo',['Yo, bro! Fixed that crackling on your radio.','That was the music, Kenji.','Totally improved it, then, dude.']],
  ['Mrs Sato','Fumiko',['You said you were only coming for tea.','I am. The rice ball is keeping it company.','I shall fetch a second cup.']],
  ['Harbour master','Mr Fujita',['How large was the fish today?','Larger than yesterday.','Your hands say that every day.']],
  ['Hana','Daichi',['Hold still. I am drawing you.','Is this my heroic side?','It is your only still side.']],
@@ -33,7 +33,7 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
  const point=p=>{const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;};
  const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain).place+'/'+place(p);
  function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;cooldown.set(p.profile.name,clock+45);}active=null;}nextScan=clock+4;}
- function eligible(p){return visible(p.g)&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Kenji'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<12;}
+ function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Kenji'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<12;}
  function update(dt,minutes,rain=false){
   clock+=dt;
   if(active){

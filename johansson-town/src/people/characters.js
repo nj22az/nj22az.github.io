@@ -64,7 +64,7 @@ export function createCharacters(options={}){
 
   function stageConversation(entity){
     if(!playerEntity||!entity||entity===playerEntity)return;
-    if(entity.userData.seatHeight||entity.userData.serving)return;
+    if(entity.userData.seatHeight||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition)return;
     const dx=playerEntity.position.x-entity.position.x,dz=playerEntity.position.z-entity.position.z;
     let d=Math.hypot(dx,dz),nx=0,nz=1;if(d>.001){nx=dx/d;nz=dz/d;}
     const targetDistance=1.34;

@@ -156,7 +156,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
         continue;
       }
       api.reviewSetMinutes(close);api.simulate(.2);
-      assert.equal(api.reviewCurrentRoom(),null,site.id+' returns to the street after closing');
+      assert.equal(api.reviewCurrentRoom()?.id,site.id,site.id+' remains accessible after closing');api.leaveRoom();
       assert.equal(api.reviewRoomState().townVisible,true,site.id+' town is visible after closing');
       assert.equal(document.querySelector('#exitRoomButton').classList.contains('hidden'),true);
       assert.equal(blocked(api.player.position.x,api.player.position.z),false,site.id+' street is walkable after closing');
@@ -178,7 +178,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     document.querySelector('#timeButton').onclick();
     assert.equal(api.reviewCurrentRoom()?.id,'market','Sakura is still open at 18:30');
     document.querySelector('#timeButton').onclick();
-    assert.equal(api.reviewCurrentRoom(),null,'Skipping time past closing puts you back on the street');
+    assert.equal(api.reviewCurrentRoom()?.id,'market','Skipping time past closing keeps you indoors');api.leaveRoom();
     assert.equal(blocked(api.player.position.x,api.player.position.z),false,'Time skip after closing leaves a walkable street');
     const {STREET_DOORS,doorApproach,FULL_PATHS}=await import('../src/world/full-town-state.js');
     assert.equal(FULL_PATHS.some(p=>/pier|apron|port-walk|causeway/.test(p.id)),false,'No back docks, pier or causeway');

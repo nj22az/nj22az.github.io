@@ -15,7 +15,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   prop.position.y=place==='ramen'?1.04:g.userData.seatHeight>.65?1.16:1.01;
  }
  return {update(dt){
-  const minutes=getMinutes(),present=getCustomers().filter(p=>p.profile.name!=='Nao'&&p.g.visible&&p.g.userData.visualReady!==false);
+  const minutes=getMinutes(),present=getCustomers().filter(p=>p.profile.name!=='Nao'&&p.g.visible&&!p.g.userData.roomTransition&&p.g.userData.visualReady!==false);
   for(const p of [...settings.keys()])if(!present.includes(p))remove(p);
   for(const person of present){
    const name=person.profile.name,account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
@@ -38,12 +38,12 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     if(record.eaten>=42){record.finished=true;ledger.record(name,minutes,'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
-  const staff=getStaff();if(staff){staff.userData.serving=!!serving;staff.userData.socialPose=serving?'Use':'Idle_Neutral';staff.userData.activity=serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:'welcoming the evening guests';}
-  if(serving&&(timer-=dt)<=0){
+  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition?candidate:null;if(staff){staff.userData.serving=!!serving;staff.userData.socialPose=serving?'Use':'Idle_Neutral';staff.userData.activity=serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:'welcoming the evening guests';}
+  if(serving&&(place!=='izakaya'||staff)&&(timer-=dt)<=0){
    const {record}=settings.get(serving),cost=place==='ramen'?300:({yakitori:180,fish:260,rice:150}[record.item]||180)+(record.drink==='beer'?180:120);
    if(ledger.purchase(serving.profile.name,minutes,place+'-meal',record.item+' + '+record.drink,cost)){record.delivered=true;serving.g.userData.residentSpeech={text:place==='ramen'?'That smells wonderful.':'Thank you, Nao.',until:minutes+4};}
    else record.finished=true;
    serving=null;
   }
- },dispose(){for(const person of [...settings.keys()])remove(person);const staff=getStaff();if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
+ },dispose(){for(const person of [...settings.keys()])remove(person);const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition?candidate:null;if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
 }

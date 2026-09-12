@@ -10,7 +10,7 @@ import {circleHitsRect} from '../physics.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 function setup(){
- const clerk=new THREE.Group(),room=new THREE.Group();clerk.position.set(...STORE_CLERK_POSITION);
+ const clerk=new THREE.Group(),room=new THREE.Group();clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;
  let seat=STORE_SEATS[0],yen=1200,charges=0,minutes=1002;
  const service=createStoreService({clerk,room,getSeat:()=>seat,getMinutes:()=>minutes,getBalance:()=>yen,pay:n=>{if(yen<n)return false;yen-=n;charges++;return true;},say(){}});
  const step=(seconds,check=()=>{})=>{for(let i=0;i<seconds*60;i++){service.update(1/60);check();}};
@@ -47,6 +47,7 @@ test('both tables are served through the clear aisle, without crossing shelves, 
 });
 test('market borrowing preserves Yuri movement, reserves the player chair and restores actors',()=>{
  const street=new THREE.Group(),parent=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.hit={inside:false};street.add(g);return {g,profile};})};
+ for(const p of world.people){p.g.position.set(0,0,0);p.g.userData.indoors='market';}
  const guests=createIndoorResidents({world,parent,place:'market',getPlayerSeat:()=>STORE_SEATS[2].id});
  assert.deepEqual(guests.sync(600).sort(),['Mrs Sato','Yuri']);
  const yuri=world.people.find(p=>p.profile.name==='Yuri').g,mrs=world.people.find(p=>p.profile.name==='Mrs Sato').g;
@@ -60,4 +61,9 @@ test('seated menu supports ordering, eating and standing on touch and keyboard a
  activities.action('store-table');dom.button('Steamed pork bun · ¥150');assert.equal(activities.paused,false);
  t.step(35);activities.action('store-table');dom.button('Eat Steamed pork bun');assert.equal(t.service.order,null);
  activities.action('store-table');dom.button('Stand up');assert.ok(stood);t.service.dispose();
+});
+
+test('a clerk who leaves the market cannot be moved or serve by the old room controller',()=>{
+ const t=setup();assert.ok(t.service.request('tea'));delete t.clerk.userData.inMarket;t.clerk.position.set(12,0,24);const position=t.clerk.position.clone();
+ t.step(45);assert.ok(t.clerk.position.equals(position));assert.equal(t.charges,0);assert.equal(t.service.request('tea'),false);t.service.dispose();
 });
