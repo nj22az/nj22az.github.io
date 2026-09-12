@@ -76,7 +76,7 @@ test('supplied models retain textures, correct material support and reachable ro
       const bytes=await readFile(new URL(manifest.file,folder));
       assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.sha256);
       const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
-      assert.equal(gltf.images.length,17);assert.equal(manifest.triangles,74874);assert.equal(manifest.draws,24);
+      assert.equal(gltf.images.length,67);assert.equal(manifest.triangles,11813);assert.equal(manifest.draws,78);
       assert.ok(gltf.images.every(i=>Number.isInteger(i.bufferView)&&!i.uri));
       assert.ok(gltf.materials.every(m=>m.extensions?.KHR_materials_unlit));
       const room=new THREE.Group(),actions=[],colliders=[],calls=[];let exits=0;
@@ -86,7 +86,7 @@ test('supplied models retain textures, correct material support and reachable ro
       assert.equal(layout,SUPPLIED_ROOM_LAYOUTS[id]);assert.deepEqual(colliders,layout.colliders);
       const model=room.children.find(o=>o.userData.sharedAsset);assert.ok(model);
       const bounds=new THREE.Box3().setFromObject(model);
-      assert.ok(bounds.min.y>-.006&&bounds.min.y<.006,'Floor grounded in metres');
+      assert.ok(bounds.min.y>-.87&&bounds.min.y<0,'Exterior foundation stays below the playable floor');
       assert.ok(bounds.max.y>2.65&&bounds.max.y<3.2,'Ceiling at the intended human scale');
       let meshCount=0;
       model.traverse(o=>{if(!o.isMesh)return;meshCount++;assert.ok(o.material.isMeshBasicMaterial,'Baked lighting retained');});
@@ -99,8 +99,10 @@ test('supplied models retain textures, correct material support and reachable ro
       }
       assert.equal(exits,1);assert.ok(calls.some(c=>c[0]==='read'));assert.ok(calls.some(c=>c[0]==='seat'));
       const blocked=(x,z)=>suppliedRoomBoundsBlocked(layout,x,z,.28)||layout.colliders.some(c=>circleHitsRect(x,z,.28,c));
-      assert.equal(blocked(1.55,2.12),false,'Bedroom doorway spawn is clear');
-      assert.equal(blocked(.1,0),false,'Aisle between bed and television is clear');
+      assert.equal(blocked(-.45,.4),false,'Apartment doorway spawn is clear');
+      assert.equal(blocked(-1,2.2),false,'Sofa approach is clear');
+      for(const [x,z] of [[-1.3,-3.5],[-4,-.35],[-1,2.2]])assert.ok(points.some(p=>Math.hypot(p.x-x,p.z-z)<.2),'Apartment room connects to entry: '+[x,z]);
+      assert.equal(blocked(1.5,-1.5),true,'Neighbour corridor remains outside the apartment');
     }
     const world={group:new THREE.Group(),colliders:[]},sites=[],entries=[];
     const site=buildRamenRestaurant(world,{sites,register:(o,label,fn)=>entries.push({o,label,fn}),enter:s=>assert.equal(s.id,'ramen')});
@@ -132,11 +134,11 @@ test('supplied models retain textures, correct material support and reachable ro
 });
 
 test('missing supplied models preserve the existing procedural buildings and rooms',async()=>{
-  const mod=await import('../src/world/supplied-rooms.js?snappy=1');
+  const mod=await import('../src/world/supplied-rooms.js?load-failure=1');
   const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
   try{
     assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false,false,false]);
-    assert.equal(mod.buildRamenRestaurant({},{}),false);
+    assert.equal(mod.buildRamenRestaurant({},{},{x:0,z:0}),false);
     for(const id of ['office','ramen'])assert.equal(mod.buildSuppliedRoom({site:{id},room:new THREE.Group()}),null);
   }finally{globalThis.fetch=originalFetch;console.warn=originalWarn;}
 });

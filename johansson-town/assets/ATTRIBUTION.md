@@ -177,3 +177,11 @@ The complete seven-building street, canal and bridge are retained. Changes inclu
 `models/dining-street/night-lane.glb` adapts the user-supplied **Japanese street at night** by [AFX/CGMotion 3DModel Maker](https://sketchfab.com/afx_cgmotion). [Source model](https://sketchfab.com/3d-models/japanese-street-at-night-fb1bdcd71a5544d699379d2d13dd1171); licence recorded in its GLB: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Eight approach buildings, signs, lights, vending machines and paving lead into the existing restaurant façades. The studio backdrop, two closing buildings and central pole/cables were removed to make the connection. Other changes: baked transforms, static material batches, compacted vertices and smaller embedded JPEG textures. Original retained geometry, UVs and authorship are preserved. See `models/dining-street/CREDITS.md`, `manifest.json` and `tools/pack-dining-street.mjs`.
+
+## Yuri’s apartment replacement
+
+**Seinfeld Apartment** by **kagley**, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Source model](https://sketchfab.com/3d-models/seinfeld-apartment-fd8abc336560446f9714dfe7076295b9). Supplied by the project owner as `seinfeld_apartment.glb`. Converted legacy diffuse materials, resized embedded textures, merged compatible primitives, scaled uniformly to metres, and moved the breakfast table 25 cm to clear the study passage. Runtime file: `models/yuri-home/seinfeld-apartment.glb`. Original metadata and SHA-256 recorded in the adjacent `manifest.json`.
+
+## Advertising screen
+
+Owner-supplied `Image-to-Image-5b45ad04.mp4`, encoded as `video/izakaya-ad.mp4`; poster extracted from its first frame. No third-party source or licence was supplied.

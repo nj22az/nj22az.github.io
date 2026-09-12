@@ -1,3 +1,4 @@
+import {YURI_APARTMENT_LAYOUT} from './interiors/yuri-apartment-layout.js';
 import {DINING} from './dining-layout.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -8,9 +9,9 @@ import {localToWorld} from './landmark-lots.js';
 
 const assets=new Map();
 const pending=new Map();
-const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/yuri-bedroom.glb'};
+const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/seinfeld-apartment.glb'};
 
-// Geometry is already in metres, with the front door facing +Z and the floor at Y=0.
+// Geometry is in metres. Layouts specify each actual doorway and floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
 export const SUPPLIED_ROOM_LAYOUTS={
   'crystal-room':{bounds:{minX:-3.32,maxX:3.32,minZ:-3.32,maxZ:3.32},spawn:[0,0,2.45],exit:[0,1.1,3.28],
@@ -36,19 +37,18 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:-2.54,z:2.51,w:.61,d:.62,height:1.62},
     ]},
   ramen:RAMEN_LAYOUT,
-  'yuri-home':{bounds:{minX:-2.20,maxX:2.20,minZ:-2.40,maxZ:2.50},spawn:[1.45,0,.3],yaw:Math.PI/2,exit:[1.55,1.1,2.48],
-    colliders:[
-      {x:-1.46,z:.79,w:1.78,d:1.66,height:.9},
-      {x:-2.17,z:-.26,w:.42,d:.42,height:.47},
-      {x:-2.17,z:1.83,w:.42,d:.42,height:.47},
-      {x:.70,z:.80,w:.32,d:1.56,height:1.55},
-      {x:-.95,z:-2.16,w:2.16,d:.70,height:.76},
-      {x:1.64,z:-1.35,w:1.60,d:.16,height:2.4},
-    ]},
+  'yuri-home':YURI_APARTMENT_LAYOUT,
 };
 
 export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
   const b=layout.bounds;
+  if(layout.floorPolygon){
+    const inside=(px,pz)=>{let hit=false;const p=layout.floorPolygon;for(let i=0,j=p.length-1;i<p.length;j=i++){
+      const [ax,az]=p[i],[bx,bz]=p[j];if((az>pz)!==(bz>pz)&&px<(bx-ax)*(pz-az)/(bz-az)+ax)hit=!hit;
+    }return hit;};
+    if(!inside(x,z))return true;
+    for(let i=0;r>0&&i<16;i++)if(!inside(x+Math.cos(i*Math.PI/8)*r,z+Math.sin(i*Math.PI/8)*r))return true;
+  }
   return x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r;
 }
 
@@ -226,11 +226,13 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([-2.52,.7,-1.82],'Sit at the desk','seat','Office chair','A blue swivel chair faces the service desk.');
     anchor([1.14,.7,-2.05],'Sit down','seat','Office chair','The desk is ready for the next round of paperwork.');
   }else if(site.id==='yuri-home'){
-    anchor([-1.2,.55,.8],'Sit on Yuri’s bed','seat','Yuri’s bed','The duvet is smoothed, then immediately sat on. A ribbon is tied around one bedpost.');
-    anchor([-.9,.48,-2.05],'Sit on the sofa','seat','Window sofa','The seat faces the little table. Harbour light would reach here in the morning.');
-    anchor([.7,1.1,.8],'Watch the television','inspect','Yuri’s television','A late-showa set, warm even when it is off. The channel marker sits on JOJO.');
-    anchor([-1.7,1.5,-2.45],'Look at the pictures','inspect','Wall collage','Cuttings, a harbour postcard and a Polaroid of the shop ribbon.');
-    anchor([-2.05,.55,-.26],'Read the bedside note','read','Bedside note','Lock up at eight. Water the fern. If Nao lights the lantern, it is allowed to be a late night.');
+    room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
+    const sofa=anchor([-2.4,.48,2.2],'Sit on the sofa','seat','Yuri’s sofa','A broad sofa faces the coffee table. Yuri rests here after closing the shop.');
+    sofa.userData.seat={position:[-2.4,0,2.2],stand:[-1,0,2.2],eyeY:1.22,yaw:Math.PI,pitch:0};
+    anchor([-2.17,.7,3.5],'Read the coffee-table note','read','Tomorrow’s list','Open Sakura. Check the deliveries. Put the kettle on before breakfast.');
+    anchor([-4.96,1,-.55],'Inspect the writing desk','inspect','Writing desk','A computer, papers and a quiet corner for the household accounts.');
+    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Yuri’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
+    anchor([-2.75,.6,.84],'Inspect the breakfast table','inspect','Breakfast table','A small round table beside the living area.');
   }else{
     anchor(ramenPoint(.31,1.18,1.7),'Order ramen · ¥300','ramen','Sato Ramen');
     RAMEN_PLAYER_SEATS.forEach((seat,i)=>{

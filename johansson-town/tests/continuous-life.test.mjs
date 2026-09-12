@@ -38,7 +38,7 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
   assert.equal(p.g.parent,parent,profile.name);assert.equal(p.g.userData.sleeping,true,profile.name);
   const cover=parent.getObjectByName('animated sleep cover');assert.ok(cover?.visible,profile.name+' has a blanket');assert.equal(cover.userData.animatedCover,true);
   const coverBefore=cover.geometry.attributes.position.array.slice();residents.update(1/30,beforeWake-2);
-  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=profile.name==='Yuri'?.68:.57,profile.name+' rests on the mattress');
+  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=(profile.name==='Yuri'?.47:.57),profile.name+' rests on the sleeping surface');
   tick((dt,m)=>residents.update(dt,m),beforeWake-2,4);
   assert.equal(p.g.parent,parent);assert.equal(p.g.userData.waking,true,profile.name);assert.equal(p.g.userData.sleeping,false);
   tick((dt,m)=>residents.update(dt,m),beforeWake+16,12);

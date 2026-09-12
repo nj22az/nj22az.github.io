@@ -21,7 +21,7 @@ test('interiors load only on request, share in-flight work, cache success and re
  try{
   assert.equal(suppliedRoomReady('yuri-home'),false);
   const results=await Promise.all([preloadSuppliedRooms(['yuri-home']),preloadSuppliedRooms(['yuri-home'])]);
-  assert.deepEqual(results,[[true],[true]]);assert.equal(calls.length,1);assert.match(calls[0],/yuri-bedroom/);
+  assert.deepEqual(results,[[true],[true]]);assert.equal(calls.length,1);assert.match(calls[0],/seinfeld-apartment/);
   await preloadSuppliedRooms(['yuri-home']);assert.equal(calls.length,1);
   const beforeRamen=calls.length;
   assert.deepEqual(await Promise.all([preloadSuppliedRooms(['ramen']),preloadSuppliedRooms(['ramen-exterior'])]),[[true],[true]]);
@@ -40,7 +40,7 @@ test('Yuri entry is clear of measured furniture and set back from the walls',asy
  for(const c of layout.colliders)assert.equal(circleHitsRect(x,z,.32,c),false);
  const manifest=JSON.parse(await readFile(new URL('../assets/models/yuri-home/manifest.json',import.meta.url)));
  for(const [name,b] of Object.entries(manifest.furniture)){
-  if(/^Wall|Celing|Ceiling|CFL|Scerting/.test(name)||b.min[1]>1.9||b.max[1]<.15)continue;
+  if(/^apt|cabinets|door_|Wall|Celing|Ceiling|CFL|Scerting/.test(name)||b.min[1]>1.9||b.max[1]<.15)continue;
   const c={x:(b.min[0]+b.max[0])/2,z:(b.min[2]+b.max[2])/2,w:b.max[0]-b.min[0],d:b.max[2]-b.min[2]};
   assert.equal(circleHitsRect(x,z,.32,c),false,name+' must clear the entry');
  }

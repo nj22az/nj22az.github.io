@@ -20,6 +20,4 @@ export const homeOwner=site=>site?.homeOwner||(site?.id==='yuri-home'?'Yuri':nul
 export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2],exit:[1.5,1.1,2.9],
  bed:[-1.75,.58,.65],bedside:[-.5,0,-.3],table:[1.1,0,-1.2],door:[1.5,0,2.45],
  cover:{position:[-1.75,.64,.05],width:1.10,length:1.30,axis:'z'}};
-// Supplied bedroom: sleep lengthwise on the existing bed, feet towards its open side.
-export const YURI_HOME_LAYOUT={bed:[-.63,.69,.8],bedside:[-.05,0,.8],table:[-.1,0,-1.45],door:[1.5,0,2.04],bedAxis:'x',
- cover:{position:[-1.28,.72,.8],width:1.20,length:1.48,axis:'x'}};
+export {YURI_APARTMENT_ROUTINE as YURI_HOME_LAYOUT} from '../world/interiors/yuri-apartment-layout.js';
