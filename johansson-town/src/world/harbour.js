@@ -1,4 +1,5 @@
 import {RESIDENTIAL_CANAL} from './residential-layout.js';
+import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
 import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
 import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
@@ -121,6 +122,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(ALLEY_SHOPS[s.id]){
+      // Enclosed service courts replace the two retired shells. Their rear and
+      // side walls maintain the street edge without adding another building.
+      const x=s.side*11.0,z=s.z;
+      box([6.8,.10,7.4],[x,.04,z],0x9c9c90,[0,0,0],'wall');
+      for(const dz of [-3.6,3.6]){box([6.8,1.6,.18],[x,.8,z+dz],0xa8a391,[0,0,0],'wall');obstacle(x,z+dz,6.8,.18);}
+      box([.18,2.1,7.4],[s.side*14.3,1.05,z],0xa8a391,[0,0,0],'wall');obstacle(s.side*14.3,z,.18,7.4);
+      harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
+    }
     if(s.id==='market'){
       buildStorefront({parent:group,site:s,register,enter,label});
       s.x=s.side*11.65;s.door=[s.side*5.5,0,s.z+2.5];
