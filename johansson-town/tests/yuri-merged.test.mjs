@@ -16,7 +16,7 @@ test('merged Thuan retains her supplied mesh and ten animations in a self-contai
  for(const view of g.bufferViews){assert.equal(view.byteOffset%4,0);assert.ok(view.byteOffset+view.byteLength<=binary.length);}
 });
 
-test('Thuan uses her authored walk, run, wave and seat without root drift or crouching at idle',async()=>{
+test('Thuan retains authored locomotion and a calm chair loop without root drift or crouching at idle',async()=>{
  const previous={self:globalThis.self,bitmap:globalThis.createImageBitmap};globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  try{
   const b=await readFile(new URL('../assets/characters/yuri/yuri-merged.glb',import.meta.url)),asset=await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');
@@ -28,13 +28,15 @@ test('Thuan uses her authored walk, run, wave and seat without root drift or cro
    const root=clip.tracks.find(t=>t.name==='Hips.position');
    for(let i=0;i<root.values.length;i+=3){assert.equal(root.values[i],rest[0]);assert.equal(root.values[i+2],rest[2]);}
   }
-  for(const [name,source] of [['Walk','Walking'],['Run','Running'],['Wave','Big_Wave_Hello'],['Sit','Chair_Sit_Idle_F']]){
+  for(const [name,source] of [['Walk','Walking'],['Run','Running'],['Wave','Big_Wave_Hello']]){
    const clip=clips.find(c=>c.name===name),authored=asset.animations.find(c=>c.name===source);assert.equal(clip.duration,authored.duration);
    for(const track of authored.tracks.filter(t=>t.name.endsWith('.quaternion'))){
     const a=track.createInterpolant(),b=clip.tracks.find(t=>t.name===track.name).createInterpolant();
     for(const fraction of [0,.23,.51,.89])assert.ok(new THREE.Quaternion().fromArray(a.evaluate(clip.duration*fraction)).angleTo(new THREE.Quaternion().fromArray(b.evaluate(clip.duration*fraction)))<.001,'Preserve authored rotations: '+name+' '+track.name);
    }
   }
+  const sit=clips.find(c=>c.name==='Sit');
+  for(const track of sit.tracks){const sample=track.createInterpolant();assert.deepEqual([...sample.evaluate(0)],[...sample.evaluate(sit.duration)],'The quiet seated loop closes without a jump');}
   const mixer=new THREE.AnimationMixer(asset.scene);mixer.clipAction(clips.find(c=>c.name==='Idle_Neutral')).play();mixer.update(.5);asset.scene.updateMatrixWorld(true);
   const bounds=new THREE.Box3().setFromObject(asset.scene,true);assert.ok(bounds.max.y>1.68&&bounds.min.y>-.01&&bounds.min.y<.01,'Standing idle stays grounded at full height');
  }finally{globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}

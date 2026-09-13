@@ -30,7 +30,16 @@ export function prepareMergedYuriAnimations(asset){
  }
  alias('Walking','Walk');alias('Running','Run');alias('Big_Wave_Hello','Wave');
  const sit=alias('Chair_Sit_Idle_F','Sit');
- for(const name of ['Wake','Type'])clips.push(sittingClip(asset,sit,name,true));
+ // The full take crosses the legs and folds the chest onto a raised hand.
+ // Keep its relaxed opening, with a seamless, slow return through the same
+ // samples. That gives the shop chair a quiet idle instead of a deep slump.
+ sit.duration=6;
+ for(const track of sit.tracks){
+  const sample=track.createInterpolant(),times=[],values=[];
+  for(let i=0;i<=60;i++){const t=i/10;times.push(t);values.push(...sample.evaluate(1-Math.cos(t/6*Math.PI*2)));}
+  track.times=new Float32Array(times);track.values=new Float32Array(values);
+ }
+ for(const name of ['Wake','Type']){const clip=sit.clone();clip.name=name;clips.push(clip);}
  for(const name of ['Read','Use','Phone','Fish'])clips.push(sittingClip(asset,idle,name,true));
  for(const [source,names] of [[sit,['Eat','Drink']],[idle,['DrinkStanding','EatStanding','CarryIdle']],[clips.find(c=>c.name==='Walk'),['CarryWalk']]])for(const name of names){const clip=source.clone();clip.name=name;clips.push(clip);}
  const sleep=idle.clone();sleep.name='Sleep';clips.push(sleep);

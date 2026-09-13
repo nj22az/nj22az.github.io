@@ -155,10 +155,10 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
   shape('cylinder',[.10,.7,.10],[t.x,.35,t.z],steel);collider(t.x,t.z,1.35,.9,.86);
  }
  for(const spec of STORE_SEATS){
-  const [x,,z]=spec.position;
-  block([.58,.12,.58],[x,.45,z],red);block([.58,.58,.09],[x,.77,z+(spec.yaw?-.28:.28)],red);
-  for(const dx of [-.23,.23])for(const dz of [-.23,.23])block([.07,.4,.07],[x+dx,.2,z+dz],0xc6a170);
-  collider(x,z,.65,.67,1.1);
+  const [x,,z]=spec.position,depth=spec.depth??.58;
+  block([.58,.12,depth],[x,.45,z],red);block([.58,.58,.09],[x,.77,z+(spec.yaw?-1:1)*(depth/2-.01)],red);
+  for(const dx of [-.23,.23])for(const dz of [-depth/2+.06,depth/2-.06])block([.07,.4,.07],[x+dx,.2,z+dz],0xc6a170);
+  collider(x,z,.65,depth+.09,1.1);
   const seat=anchor([spec.stand[0],1,spec.stand[2]],'Sit at the table',()=>action('seat','Sakura table','Order something warm and watch the street.'));
   seat.userData.seat={...spec,pitch:0,storeSeatId:spec.id};
  }

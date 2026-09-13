@@ -7,6 +7,8 @@ import {residentPersonality} from './resident-personalities.js';
 import {addResidentAccessories,addSleepEyes} from './resident-wardrobe.js';
 import {createResidentHands} from './resident-props.js';
 import {createMealMotion} from './meal-motion.js';
+import {createThuanChairMotion} from './thuan-chair-motion.js';
+import {createThuanSeatDrape} from './thuan-seat-drape.js';
 import {prepareResidentAnimations} from './resident-animation.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -128,12 +130,21 @@ export function createLocalCharacters({shadows=false}={}){
     }
     }catch{mixer.stopAllAction();}
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
+    actor.chairMotion=createThuanChairMotion(model,entity);
+    if(actor.chairMotion&&actor.seatSupport){
+      const idleTime=idle.time;mixer.stopAllAction();actions.get('Sit').reset().play();mixer.update(0);
+      model.position.set(-actor.seatSupport.x,actor.floorOffset+.51-actor.seatSupport.y,-actor.seatSupport.z);
+      actor.chairMotion.update({seatHeight:.51,floorHeight:.078},1);
+      actor.seatDrape=createThuanSeatDrape(model,entity,.51);
+      actor.chairMotion.restore();mixer.stopAllAction();idle.reset().play();idle.time=idleTime;mixer.update(0);model.position.set(0,actor.floorOffset,0);
+    }
     actor.mealMotion=createMealMotion(model,entity,targetHeight);actor.hands?.fit(actor.mealMotion);
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
       actor.mealMotion?.restore();
+      actor.chairMotion?.restore();
       const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
       if(eyesClosed&&actor.lowPoly&&!actor.face&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
       if(actor.sleepEyes)actor.sleepEyes.visible=eyesClosed;
@@ -148,21 +159,35 @@ export function createLocalCharacters({shadows=false}={}){
         // Stop outgoing actions so their stale pose cannot bleed into arrival.
         mixer.stopAllAction();actor.current=null;actor.speed=0;actor.moving=false;actor.gestureTime=0;
       }
-      const measured=relocated?0:distance/Math.max(dt,.001);
+      // Moving the pelvis over a chair is weight transfer, not a walking step.
+      const measured=relocated||actor.chairTransition||Number.isFinite(entity.userData.chairBlend)?0:distance/Math.max(dt,.001);
       actor.speed=THREE.MathUtils.damp(actor.speed,measured,12,dt);
       actor.moving=actor.speed>(actor.moving?.08:.18);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
       const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink'].includes(entity.userData.socialPose);
-      actor.seatBlend=THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
+      const chairTransition=actor.chairMotion&&Number.isFinite(entity.userData.chairBlend);
+      actor.seatBlend=chairTransition?THREE.MathUtils.clamp(entity.userData.chairBlend,0,1):THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
       if(seated)actor.lastSeatHeight=entity.userData.seatHeight;
       const blend=actor.seatBlend,support=actor.seatSupport;
-      actor.model.position.set(support?-support.x*blend:0,actor.floorOffset+(support?(actor.lastSeatHeight-support.y)*blend||0:0),support?-support.z*blend:0);
+      actor.seatDrape?.update(0);
+      actor.model.position.set(support?-support.x*blend:0,actor.floorOffset+(Number(entity.userData.floorHeight)||0)*(1-blend)+(support?(actor.lastSeatHeight-support.y)*blend||0:0),support?-support.z*blend:0);
+      // Clear the front edge before settling the pelvis onto the cushion.
+      if(chairTransition)actor.model.position.y+=.075*Math.sin(Math.PI*blend)**2;
       const requested=(actor.isYuri&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||entity.userData.socialPose|| (entity.userData.chat?.greeting?'Wave':null)|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
-      if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
+      if(chairTransition){
+        // The chair controller owns the weight transfer, including reversal
+        // for standing. Do not run a second, shorter mixer fade over it.
+        if(!actor.chairTransition){mixer.stopAllAction();actions.get('Sit').reset().play();actions.get('Idle_Neutral').reset().play();}
+        actions.get('Sit').setEffectiveWeight(blend);actions.get('Idle_Neutral').setEffectiveWeight(1-blend);actor.current=blend>.5?'Sit':'Idle_Neutral';
+      }else{
+        if(actor.chairTransition){mixer.stopAllAction();actor.current=null;}
+        if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
+      }
+      actor.chairTransition=chairTransition;
       const locomotion=actions.get(actor.current);
       const {walkSpeed,runSpeed}=actor;
       if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
@@ -175,6 +200,8 @@ export function createLocalCharacters({shadows=false}={}){
       }
       actor.face?.update(dt,{sleeping:eyesClosed,engaged:!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime),speaking:!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now())});
       if(entity.userData.inWorkplace==='office'&&entity.userData.socialPose==='Type')actor.officeHands?.update(dt);
+      actor.seatDrape?.update(blend);
+      actor.chairMotion?.update(entity.userData,actor.seatBlend);
       actor.mealMotion?.update(dt,{...entity.userData,heldItem:entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null)});
       actor.hands?.align();
       if(actor.lowPoly){

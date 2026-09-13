@@ -14,7 +14,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  function restore(p){
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray'])delete g.userData[key];
+  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray'])delete g.userData[key];
   if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);
  }
  function seatFor(p){

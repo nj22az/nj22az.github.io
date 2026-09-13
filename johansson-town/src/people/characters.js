@@ -61,10 +61,11 @@ export function createCharacters(options={}){
   }
 
   function face(entity,target,flip=false){if(!entity||!target)return;entity.lookAt(target.position.x,entity.position.y,target.position.z);if(flip)entity.rotateY(Math.PI);}
+  const bodyBusy=entity=>Number.isFinite(entity.userData.seatHeight)||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition;
 
   function stageConversation(entity){
     if(!playerEntity||!entity||entity===playerEntity)return;
-    if(entity.userData.seatHeight||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition)return;
+    if(bodyBusy(entity))return;
     const dx=playerEntity.position.x-entity.position.x,dz=playerEntity.position.z-entity.position.z;
     let d=Math.hypot(dx,dz),nx=0,nz=1;if(d>.001){nx=dx/d;nz=dz/d;}
     const targetDistance=1.34;
@@ -120,7 +121,7 @@ export function createCharacters(options={}){
   function update(dt){
     updateAIControls(dt);
     const now=performance.now();
-    for(const [entity,c] of conversations){if(c.until<=now){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
+    for(const [entity,c] of conversations){if(c.until<=now||bodyBusy(entity)){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
     for(const [entity,entry] of upgrades)if(characterReady(entry.file)&&mount(entity,entry))entry.onChange?.();
     models.update(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
