@@ -13,7 +13,7 @@ export function buildAlleyShop({parent,site,register,enter,label,shadows}){
  const p=alleyShopPlacement(site.id);if(!p)return null;
  const group=new THREE.Group();group.name='alley-shop:'+site.id;
  // Recess the new joinery into the solid footprint, clear of the narrow lane.
- group.position.set(p.x,NIGHT_LANE.y,p.z-(p.yaw===0?.40:-.40));group.rotation.y=p.yaw;parent.add(group);
+ group.position.set(p.x-Math.sin(p.yaw)*.40,NIGHT_LANE.y,p.z-Math.cos(p.yaw)*.40);group.rotation.y=p.yaw;parent.add(group);
  const door=buildShopDoor(group,{name:site.id+'-alley-door',width:1.0,shadows});
  const sign=new THREE.Vector3(0,2.94,.39);group.localToWorld(sign);
  label(site.jp,site.title.toUpperCase(),sign.toArray(),2.0,.43,p.yaw,'#e7dcc0','#3e463f',true);

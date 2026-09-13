@@ -124,7 +124,7 @@ test('supplied models retain textures, correct material support and reachable ro
     world.group.updateMatrixWorld(true);
     const bounds=new THREE.Box3().setFromObject(exterior);
     assert.ok(Math.abs(bounds.min.y)<.01,'Exterior is grounded');
-    assert.ok(bounds.min.x>7&&bounds.max.z<site.door[2]-.3,'Source paving and props stay off the lanes');
+    assert.ok(bounds.min.x>site.door[0]+.3&&bounds.max.x<11,'Rotated source paving and props stay behind the Main Street entrance');
     let draws=0;exterior.traverse(o=>{if(o.isMesh)draws++;});assert.equal(draws,manifest.draws);
     const interior=new THREE.Group();
     buildSuppliedRoom({site:{id:'ramen'},room:interior,reg(){},collider(){},action(){},exit(){}});

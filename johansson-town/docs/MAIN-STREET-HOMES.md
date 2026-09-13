@@ -1,6 +1,6 @@
 # Main Street homes
 
-The supplied Street 2 frontage now forms the west side of Main Street, facing the shopping and dining alley. Its northern and southern ends join the existing grid; the sea boundary, Sakura, harbour office and warehouse remain connected. The superseded housing lane, canal bridge and overlapping bathhouse shell are removed. The bus stop moves to the north junction.
+The supplied Street 2 frontage forms the west side of Main Street, facing the shopping and dining buildings. The former alley is now split into two rows facing the six-metre road; see [Road-facing shops](ROAD-FACING-SHOPS.md). The northern and southern ends of the homes join the existing grid; the sea boundary, Sakura, harbour office and warehouse remain connected. The superseded housing lane, canal bridge and overlapping bathhouse shell are removed. The bus stop is at the north junction.
 
 | Entrance | Household | Interior |
 | --- | --- | --- |

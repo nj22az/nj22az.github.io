@@ -6,6 +6,7 @@ import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
+import {MAIN_ROAD} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
@@ -97,24 +98,21 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const markingMaterials=new Map();
   function roadMark(w,d,x,z,c=0xb7aa80){
     if(!markingMaterials.has(c))markingMaterials.set(c,new THREE.MeshBasicMaterial({color:c,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),markingMaterials.get(c));m.rotation.x=-Math.PI/2;m.position.set(x,-.046,z);m.renderOrder=1;group.add(m);return m;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),markingMaterials.get(c));m.rotation.x=-Math.PI/2;m.position.set(x,.004,z);m.renderOrder=1;group.add(m);return m;
   }
 
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   buildPeninsula(group);
-  box([15,.2,26.4],[0,-.16,21.2],0xb8b8af,[0,0,0],'road');
-  box([15,.2,4],[0,-.16,-40],0xb8b8af,[0,0,0],'road');
+  box([MAIN_ROAD.width,.2,26.2],[MAIN_ROAD.x,-.10,21.1],0xb8b8af,[0,0,0],'road');
+  box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
-  for(const side of [-1,1]){
-    if(side===1)for(const [a,b] of [[8,21.5],[26.5,31]])box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
-    if(side===1)for(let z=9;z<31;z+=1)if(![24].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
-    for(let z=11;z<31;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
-    if(side===1)for(let z=10;z<31;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
+  for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
+    const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],0xc8c0b0,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
   }
-  for(let z=11;z<29;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
-  for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,24,0xbeb79a);
-  [[-2.1,20,1.15,.45,.2],[2.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
+  for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<31;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
+  for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,28.5,0xbeb79a);
+  [[-4.1,20,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
@@ -132,32 +130,33 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Utility poles and overhead cables.
   for(const side of [-1,1])for(const z of [-32,12,28]){
+    const px=side<0?-7.2:.8,toward=side<0?1:-1;
     if(z<=BOARDWALK.maxZ){
       if(z===-32){
         // Low deck lights replace the southern overhead power poles.
-        cyl(.10,.85,[side*6.3,.425,z],0x3b4848);box([.22,.10,.22],[side*6.3,.9,z],0xe7c080);obstacle(side*6.3,z,.25,.25);
-        const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(side*6.3,1,z);group.add(light);lampLights.push(light);
+        cyl(.10,.85,[px,.425,z],0x3b4848);box([.22,.10,.22],[px,.9,z],0xe7c080);obstacle(px,z,.25,.25);
+        const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,z);group.add(light);lampLights.push(light);
       }
       continue;
     }
-    cyl(.13,8,[side*6.7,4,z],0x574f49);obstacle(side*6.7,z,.38,.38);box([2.4,.14,.18],[side*6.7,7.3,z],0x4b534e);
+    cyl(.13,8,[px,4,z],0x574f49);obstacle(px,z,.38,.38);box([1.8,.14,.18],[px,7.3,z],0x4b534e);
     for(const dx of [-.8,0,.8]){
-      cyl(.08,.26,[side*6.7+dx,7.52,z],0xc6cac1);
-      if(z<28){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(side*6.7+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
+      cyl(.08,.26,[px+dx,7.52,z],0xc6cac1);
+      if(z<28){const points=[];for(let k=0;k<=8;k++)points.push(new THREE.Vector3(px+dx,7.58+42*(Math.cosh((k*2-8)/42)-Math.cosh(8/42)),z+k*2));const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
     }
-    beam([side*6.7,5.7,z],[side*5.6,5.7,z],.06);box([.6,.12,.26],[side*5.5,5.65,z],0xdac08d);
-    if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(side*5.5,4.8,z);group.add(light);lampLights.push(light);}
+    beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
+    if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7,7])cyl(.17,6.8,[x,3.4,29],0x416568);beam([-7,6.4,29],[7,6.4,29],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[0,6.3,29],7.2,1.15,0,'#d8d5b9','#31565d');
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,29],0x416568);beam([-7.8,6.4,29],[.8,6.4,29],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[MAIN_ROAD.x,6.3,29],5.8,.9,0,'#d8d5b9','#31565d');
 
   // Useful street furniture sits in the block recesses, clear of junctions.
-  const vending=createVendingMachine({shadows});vending.position.set(5.95,0,20);group.add(vending);
-  if(!vendingReady())details.push({id:'street-vending',x:5.95,z:20,radius:42,load:()=>hydrateVending(vending,{shadows})});
-  obstacle(5.95,20,1.3,1);anchor([5.95,1,21],'Buy a drink',()=>onAction('vending'));
-  box([1.1,2.5,1],[-5.9,1.25,19.5],0x457e73);box([.91,1.6,.91],[-5.9,1.55,19.5],0x648c87);box([.35,.65,.28],[-5.9,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,20.05],1,.28);anchor([-5.9,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-5.9,19.5,1.1,1);
+  const vending=createVendingMachine({shadows});vending.position.set(3.7,0,28.3);group.add(vending);
+  if(!vendingReady())details.push({id:'street-vending',x:3.7,z:28.3,radius:42,load:()=>hydrateVending(vending,{shadows})});
+  obstacle(3.7,28.3,1.3,1);anchor([3.7,1,29.3],'Buy a drink',()=>onAction('vending'));
+  box([1.1,2.5,1],[-7.5,1.25,19.5],0x457e73);box([.91,1.6,.91],[-7.5,1.55,19.5],0x648c87);box([.35,.65,.28],[-7.5,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-7.5,2.4,20.05],1,.28);anchor([-7.5,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-7.5,19.5,1.1,1);
   cyl(.05,2.8,[-9.8,1.4,32.4],0x64756d);label('バス停','HARBOUR LINE',[-9.8,2.6,32.4],1.1,.75);anchor([-8.6,1,31.7],'Read bus timetable',()=>onAction('bus'));obstacle(-9.8,32.4,.26,.26);
 
-  for(const [x,z] of [[-6,10],[6,-15],[-6,-34.5]]){
+  for(const [x,z] of [[-7.4,10],[3.9,-22],[-7.4,-33]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
   }
 
@@ -174,8 +173,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   const warehouseWorld={group,colliders};
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
-  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-5.9,2.7,-35],3.2,.72);
-  cyl(.045,2.3,[-5.9,1.15,-35],0x655444);obstacle(-5.9,-35,.12,.12);
+  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
+  cyl(.045,2.3,[-7.3,1.15,-35],0x655444);obstacle(-7.3,-35,.12,.12);
 
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);

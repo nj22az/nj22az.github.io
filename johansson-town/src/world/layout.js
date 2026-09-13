@@ -2,15 +2,16 @@ import {DINING,NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {RESIDENTIAL,inResidential,residentialContains,residentialHeight} from './residential-layout.js';
 import {FULL_TOWN,fullHeight,fullContains} from './full-town-state.js';
 import {PARK,parkHeight} from './park-layout.js';
+import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 // Rendering, grounding and navigation use the same compact street network.
-export const BOARDWALK=Object.freeze({minZ:-38,maxZ:8,width:14});
+export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
-const boardwalkRoute={id:'harbour-boardwalk',width:BOARDWALK.width,surface:'wood',points:[[0,BOARDWALK.maxZ],[0,BOARDWALK.minZ]]};
+const boardwalkRoute={id:'harbour-boardwalk',width:BOARDWALK.width,surface:'wood',points:[[BOARDWALK.x,BOARDWALK.maxZ],[BOARDWALK.x,BOARDWALK.minZ]]};
 export const ROUTES = [
- {id:'shotengai',width:14,surface:'asphalt',points:[[0,31],[0,-38]]},
+ {id:'shotengai',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,31],[MAIN_ROAD.x,-38]]},
  {id:'quay',width:12,surface:'stone',points:[[-17,-44],[17,-44]]},
  {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,-64.5]]},
- {id:'east-alley',width:3.8,surface:'stone',points:[[0,4],[38,4],[38,31],[0,31]]},
+ {id:'east-alley',width:3,surface:'stone',points:[[0,SHOP_CROSSING_Z],[38,SHOP_CROSSING_Z],[38,31],[0,31]]},
  {id:'west-alley',width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
  {id:'home-door',width:3,surface:'stone',points:[[28,31],[28,30]]},
@@ -25,18 +26,21 @@ export const ROUTES = [
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-36,-36]]},
  {id:'market-cut',width:3,surface:'stone',points:[[0,-20],[-36,-20]]},
  {id:'west-service',width:3,surface:'stone',points:[[-8.5,-20],[-8.5,31]]},
- {id:'east-service',width:3,surface:'stone',points:[[18,-44],[18,-2],[23.8,-2],[23.8,4]]},
+ {id:'east-service',width:3,surface:'stone',points:[[18,-44],[18,SHOP_CROSSING_Z]]},
  {id:'east-market-cut',width:3,surface:'stone',points:[[0,-20],[16,-20]]},
 ];
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
 export function routeAt(x,z,r=0){
  if(FULL_TOWN.active)return fullContains(x,z,r,parkHeight)?{id:'supplied-town',surface:'stone'}:null;
- if(inDiningLane(x,z))return {id:'dining-lane',surface:'asphalt'};
+ if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
  if(inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  // Match the ends of the actual decks, without round route caps over water.
- if(Math.abs(x)<=7-r&&z>=-38&&z<=34.2-r)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
+ if(x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast-r&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ-r){
+  if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
+  return {id:'main-street-pavement',surface:'stone'};
+ }
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
  return LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||ROUTES.slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));

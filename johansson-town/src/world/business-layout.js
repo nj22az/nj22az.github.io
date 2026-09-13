@@ -7,9 +7,9 @@ export function alleyBusinessLayout(id){
  const minX=Math.min(...units.map(b=>b.min[0])),maxX=Math.max(...units.map(b=>b.max[0])),minZ=Math.min(...units.map(b=>b.min[2])),maxZ=Math.max(...units.map(b=>b.max[2]));
  const south=first.max[0]<0,front=south?first.max[0]:first.min[0],along=(first.min[2]+first.max[2])/2;
  const [x,z]=diningPoint(front,along),[dx,dz]=diningPoint(front+(south?.44:-.44),along);
- const width=maxZ-minZ-.22,depth=maxX-minX-.22,centre=NIGHT_LANE.x-(minZ+maxZ)/2;
- const doorX=(x-centre)*(south?1:-1),halfW=width/2,halfD=depth/2;
- return {building:ids[0],units:ids,x,z,yaw:south?0:Math.PI,door:[dx,NIGHT_LANE.y,dz],
+ const width=maxZ-minZ-.22,depth=maxX-minX-.22;
+ const doorX=((minZ+maxZ)/2-along)*(south?1:-1),halfW=width/2,halfD=depth/2;
+ return {building:ids[0],units:ids,x,z,yaw:-Math.PI/2,door:[dx,NIGHT_LANE.y,dz],
   room:{width,depth,bounds:{minX:-halfW,maxX:halfW,minZ:-halfD,maxZ:halfD},doorX,spawn:[doorX,0,halfD-.48],exit:[doorX,1.1,halfD-.08],yaw:0,
    staff:id==='frontrow'?{Aya:[-1.9,0,0],Reiko:[1.65,0,0]}:{Kenji:[-1.25,0,.08],Tetsuo:[.75,0,.08]}}};
 }

@@ -35,7 +35,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
-  if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(0),pz(BOARDWALK.minZ));ctx.lineTo(px(0),pz(BOARDWALK.maxZ));ctx.stroke();
+  if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
   ctx.fillStyle='#a8997a';for(const house of [...RESIDENTIAL_BUILDINGS,...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}

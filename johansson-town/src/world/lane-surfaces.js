@@ -2,6 +2,7 @@ import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,routeAt,groundHeight} from './layout.js?snappy=1';
+import {MAIN_ROAD} from './main-road.js';
 
 // Low garden boundaries make the authored walking network legible. Leave every
 // junction open, including routes supplied by the residential and dining models.
@@ -31,13 +32,14 @@ export function lanePatches(routes=ROUTES.slice(3)) {
       rects.push({minX:Math.min(a[0],b[0])-half,maxX:Math.max(a[0],b[0])+half,minZ:Math.min(a[1],b[1])-half,maxZ:Math.max(a[1],b[1])+half,route});
     }
   }
-  const xs=[...new Set([-7.5,7.5,17.5,22.2,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
-  const zs=[...new Set([-50,31,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
+  const xs=[...new Set([-19,19,MAIN_ROAD.pavementWest,MAIN_ROAD.pavementEast,17.5,22.2,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
+  const zs=[...new Set([-50,MAIN_ROAD.minZ,MAIN_ROAD.maxZ,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
   const patches=[];
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
     const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
     if(inResidential(x,z)||inDiningLane(x,z))continue;
-    if(Math.abs(x)<7.5&&z>-50&&z<31)continue;
+    if(x>MAIN_ROAD.pavementWest&&x<MAIN_ROAD.pavementEast&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
+    if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
     if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
   }
