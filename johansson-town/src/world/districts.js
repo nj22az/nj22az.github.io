@@ -54,7 +54,7 @@ export function buildDistricts(world,options){
   box([.12,1.6,8],[41.5,.8,24],'timber',0x687566);colliders.push({x:41.5,z:24,w:.12,d:8,height:1.6});
   verb([40,1,24],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  for(const [x,z,jp,en] of [[6.0,7.8,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,6.5,'住まい','MAIN STREET HOMES ←'],[5.9,-34,'港通り','PORT · WAREHOUSE AHEAD'],[5.9,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
+  for(const [x,z,jp,en] of [[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[-7.4,6.5,'住まい','MAIN STREET HOMES ←'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
     const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }

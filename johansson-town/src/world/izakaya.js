@@ -1,4 +1,4 @@
-import {DINING} from './dining-layout.js';
+import {DINING,restaurantCollider} from './dining-layout.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -18,8 +18,8 @@ function asset(kind,parent){
 }
 export function buildIzakaya(world,options){
  const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:DINING.izakayaX,z:DINING.izakayaZ,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]],opens:'16:00'};
- site.exitPosition=[...site.door];site.approachPosition=[site.door[0],0,site.door[2]-.7];site.entryFacing=Math.PI;
- options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(DINING.izakayaX,0,DINING.izakayaZ);exterior.rotation.y=Math.PI;world.group.add(exterior);
+ site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];site.entryFacing=DINING.izakayaYaw;
+ options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(DINING.izakayaX,0,DINING.izakayaZ);exterior.rotation.y=DINING.izakayaYaw;world.group.add(exterior);
  const suppliedExterior=asset('exterior',exterior);
  if(!suppliedExterior){
   const fallback=new THREE.Mesh(new THREE.BoxGeometry(8,4,8),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.y=2;exterior.add(fallback);
@@ -31,9 +31,7 @@ export function buildIzakaya(world,options){
  // The new facade has a recessed closed door and an asymmetric footprint.
  // Stop at the visible step; the entrance prompt opens the existing dining room.
  world.colliders.push(
-  {x:DINING.izakayaX+.91,z:DINING.izakayaZ-1.11,w:5.22,d:6.82,height:9.05},
-  {x:DINING.izakayaX+3.92,z:DINING.izakayaZ+1.54,w:.85,d:.85,height:1.08},
-  {x:DINING.izakayaX+3.74,z:DINING.izakayaZ+.90,w:.50,d:.50,height:.36});
+  ...[{x:-.91,z:1.11,w:5.22,d:6.82,height:9.05},{x:-3.92,z:-1.54,w:.85,d:.85,height:1.08},{x:-3.74,z:-.90,w:.50,d:.50,height:.36}].map(c=>restaurantCollider('izakaya',c)));
 
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:DINING.izakayaX,z:DINING.izakayaZ,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;

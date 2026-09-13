@@ -1,6 +1,6 @@
 import {buildOfficeWorkplace,OFFICE_STAFF} from './interiors/office-workplace.js';
 import {YURI_APARTMENT_LAYOUT} from './interiors/yuri-apartment-layout.js';
-import {DINING} from './dining-layout.js';
+import {DINING,restaurantPoint,restaurantCollider} from './dining-layout.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -118,7 +118,7 @@ function addAsset(id,parent){
 // timber neighbour on the left. Both transition from the same clear east lane.
 function buildInakayaPair(world,options){
   const building=new THREE.Group();building.name='Inakaya restaurant and neighbour';
-  building.position.set(DINING.ramenX,0,DINING.ramenZ);world.group.add(building);
+  building.position.set(DINING.ramenX,0,DINING.ramenZ);building.rotation.y=DINING.ramenYaw;world.group.add(building);
   const model=addAsset('ramen-exterior',building);
   const prepare=model=>model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
   if(model)prepare(model);
@@ -134,23 +134,23 @@ function buildInakayaPair(world,options){
     }});
   }
   const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:DINING.ramenDoor[0],z:DINING.ramenZ,
+    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
-    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:DINING.crystalDoor[0],z:DINING.ramenZ+2.2,
+    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:3.2,z:DINING.crystalDoor[1],
       color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[DINING.crystalDoor[0],0,DINING.crystalDoor[1]]},
   ];
   for(const site of sites){
+    site.entryFacing=DINING.ramenYaw;site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];
     options.sites.push(site);
     const entrance=new THREE.Object3D();entrance.name=site.title+' entrance';
-    entrance.position.set(site.door[0],1.2,DINING.ramenZ+(site.id==='ramen'?3.9:4.1));world.group.add(entrance);
+    const [ex,ez]=restaurantPoint('ramen',site.id==='ramen'?.65:-2.8,site.id==='ramen'?3.9:4.1);
+    entrance.position.set(ex,1.2,ez);world.group.add(entrance);
     options.register(entrance,'Enter '+site.title,()=>options.enter(site));
   }
   // Facade-aligned solids keep the source's doors and paving behind the
   // interaction line; both exit points remain outside the walls and props.
   world.colliders.push(
-    {x:DINING.ramenX+.05,z:DINING.ramenZ-.6,w:3.7,d:7.1,height:6.3},
-    {x:DINING.ramenX-2.84,z:DINING.ramenZ+2.19,w:2.35,d:2.9,height:4},
-    {x:DINING.ramenX-1.28,z:DINING.ramenZ+3.7,w:6.28,d:.3,height:1},
+    ...[{x:.05,z:-.6,w:3.7,d:7.1,height:6.3},{x:-2.84,z:2.19,w:2.35,d:2.9,height:4},{x:-1.28,z:3.7,w:6.28,d:.3,height:1}].map(c=>restaurantCollider('ramen',c)),
   );
   return sites[0];
 }

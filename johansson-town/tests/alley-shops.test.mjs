@@ -47,14 +47,16 @@ test('alley businesses retain their rooms, reachable thresholds, exits and staff
    const z=b.min[2]+(b.max[2]-b.min[2])*t;
    // Both exterior and interior views see an opaque rear face.
    for(const side of [-1,1]){
-    const [wx,wz]=diningPoint(rear+side*.4,z);ray.set(new THREE.Vector3(wx,y+NIGHT_LANE.y,wz),new THREE.Vector3(0,0,-side));ray.far=.6;
+    const [wx,wz]=diningPoint(rear+side*.4,z);ray.set(new THREE.Vector3(wx,y+NIGHT_LANE.y,wz),new THREE.Vector3(left?side:-side,0,0));ray.far=.6;
     assert.ok(ray.intersectObject(backs).length,b.id+' rear closed at '+y);
    }
   }
  }
  for(const id of Object.keys(ALLEY_SHOPS)){
   const p=alleyShopPlacement(id),direction=new THREE.Vector3(-Math.sin(p.yaw),0,-Math.cos(p.yaw));
-  ray.set(new THREE.Vector3(p.door[0]+.2,1.3,p.door[2]),direction);ray.far=2;
+  assert.equal(p.yaw,-Math.PI/2,'Shop faces west towards Main Street');
+  assert.equal(sweepFraction({x:-3.5,z:p.door[2]},{x:p.door[0],z:p.door[2]},blocked),1,'Straight approach across Main Street');
+  ray.set(new THREE.Vector3(p.door[0],1.3,p.door[2]+.2),direction);ray.far=2;
   const hits=ray.intersectObjects(world.group.children,true).filter(h=>h.object.layers.mask!==1<<31);
   assert.ok(hits.some(h=>h.object.name==='door-glazing'),'visible joinery at '+id);
   assert.equal(hits[0].object.name,'door-glazing','source facade does not hide '+id+' entrance');
