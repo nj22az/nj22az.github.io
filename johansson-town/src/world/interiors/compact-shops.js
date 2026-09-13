@@ -1,3 +1,4 @@
+import {buildWorkshopMachine} from '../../workshop/machine.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {alleyBusinessLayout} from '../business-layout.js';
@@ -9,6 +10,7 @@ export function compactRoomLayout(id){return id==='tea-house'?TEA_ROOM:alleyBusi
 // The combined shops use the floor area of two adjoining supplied alley units.
 // Furniture and approaches are authored together; there is no generic room shell.
 export function buildCompactShop({site,room,reg,collider,action,exit}){
+ let workshop=null;
  const layout=compactRoomLayout(site.id);if(!layout)return null;
  const {width:w,depth:d,doorX}=layout,hw=w/2,hd=d/2;
  room.name=site.title+' interior';
@@ -58,19 +60,19 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   board('FRONT-ROW BOOKS & PRESS','READING COPIES · LOCAL NEWS',[0,2.38,-hd+.08],3.7);
  }else if(site.id==='form3d'){
   bench('Shared repair bench',0,-hd+.32,w-.3,.54);
-  box('Tool board',[1.8,.66,.06],[-1.02,1.55,-hd+.08],dark);
-  for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,1.56,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,1.72,-hd+.13],0x7b4e38);}
-  box('Bench vice',[.24,.18,.24],[-1.55,1,-hd+.28],0x485a58);box('Vice jaws',[.32,.05,.20],[-1.55,1.13,-hd+.28],0x9baba1);
+  box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
+  for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}
+  workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
   box('Oscilloscope',[.58,.36,.35],[.45,1.08,-hd+.24],0x596c63);box('Oscilloscope screen',[.32,.22,.025],[.34,1.10,-hd+.045],0x324f45);box('Signal trace',[.25,.012,.018],[.34,1.10,-hd+.025],0xb3c491);
   for(const x of [.66,.77])box('Instrument control',[.035,.035,.03],[x,1.13,-hd+.04],0xd2c9ab);
   box('Repair radio',[.36,.25,.26],[1.50,1,-hd+.25],0x6f503d);
   for(let i=0;i<5;i++)box('Radio grille',[.016,.16,.025],[1.36+i*.045,1,-hd+.1],0xd0b992);
-  anchor([-1.32,1,-hd+.22],'Use pattern workbench','machine','Pattern workbench','Kenji checks the drawings, clamps the brass blank and files it to size.','Kenji');
+  anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Kenji');
   anchor([.55,1.18,-hd+.22],'Test the bench calibrator','machine','Bench calibrator','Zero, span and reference checks share Tetsuo’s instrument bench.','Tetsuo');
   anchor([1.50,1.05,-hd+.18],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
   box('Star Port cabinet',[.60,1.48,.47],[-1.65,.74,hd-.29],0x4b414d,true);box('Star Port screen',[.46,.43,.028],[-1.65,1.09,hd-.545],0x344f57);
   const arcade=anchor([-1.65,1,hd-.57],'Play Star Port','arcade','Star Port');arcade.userData.npcInteraction=false;
-  board('KENJI & TETSUO REPAIRS','PATTERNS · RADIOS · INSTRUMENTS',[0,2.35,-hd+.08],3.65);
+  board('KENJI & TETSUO REPAIRS','FORM 3D · STEPWISE · REPAIRS',[0,2.52,-hd+.08],3.65);
  }else{
   bench('Tea counter',-1.35,-2.15,3.2,.65);
   for(let i=0;i<6;i++){const tin=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.25,12),colour(i%2?0x6b7955:0x9d8854));tin.position.set(-2.55+i*.4,1.01,-2.2);room.add(tin);}
@@ -78,5 +80,5 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   for(const [x,z] of [[-1.75,.1],[1.55,-.5]]){bench('Tea table',x,z,1.05,.9);for(const dx of [-.84,.84]){const s=chair(x+dx,z,dx<0?-Math.PI/2:Math.PI/2);s.userData.seat={position:[x+dx,0,z],stand:[x+dx,0,z+.8],eyeY:1.12,yaw:dx<0?-Math.PI/2:Math.PI/2,pitch:0};reg(s,'Sit for tea',()=>action('seat','Tea house chair','A warm cup and a little time to linger.'),true);}for(const dx of [-.3,.3]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.085,.065,.13,12),colour(0xd7dfc4));cup.position.set(x+dx,.965,z);room.add(cup);}}
   board('一服どうぞ','CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
  }
- return {...layout,compact:true};
+ return {...layout,compact:true,workshop};
 }

@@ -285,6 +285,17 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.ok(Math.abs(api.camera.position.y-seat.eyeY)<.001,'Park sitting places the eye above the actual bench');
     const sitting=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.distanceTo(sitting)<.001,'Sitting prevents walking');
     api.doInteract();assert.ok(api.player.position.distanceTo(api.player.position.clone().set(...seat.stand))<.001,'Standing returns to a clear point beside the bench');
+    const choose=label=>{const button=document.querySelector('#activityActions').children.find(b=>b.textContent===label);assert.ok(button,'Workshop action: '+label);assert.equal(button.disabled,false);button.onclick();};
+    api.reviewSetMinutes(1002);await api.enterRoom(api.SITES.find(s=>s.id==='form3d'));
+    assert.ok(api.reviewRoom().getObjectByName('Form 3D printing machine'),'The real workshop contains the printer');
+    api.reviewRoom().getObjectByName('content-stepwise').userData.hit.fn();assert.match(document.querySelector('#activityTitle').textContent,/StepWise/);choose('Use this pattern in Form 3D');
+    const workshopBalance=api.activities.state.yen;choose('Print model · ¥40');
+    api.leaveRoom();for(let i=0;i<90;i++)api.simulate(.1);assert.equal(api.activities.state.workshop.job.remaining,0,'Printing progresses while exploring outdoors');
+    await api.enterRoom(api.SITES.find(s=>s.id==='form3d'));api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
+    assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
+    yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);await api.enterRoom(api.SITES.find(s=>s.id==='market'));
+    yuri.userData.hit.fn();choose('Sell my workshop models');choose('Sell Johansson cable ring · +¥120');
+    assert.equal(api.activities.state.yen,workshopBalance+80);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

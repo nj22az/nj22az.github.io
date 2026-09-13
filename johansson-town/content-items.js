@@ -1,3 +1,4 @@
+import {makeWorkshopModel} from './src/workshop/models.js';
 import * as THREE from './vendor/three.module.js';
 import {ITEMS} from './content-data.js?warehouse=1';
 
@@ -37,6 +38,8 @@ export function makeContentObject(item,{pageScale=1}={}){
     page.visible=false;const blank=cube(g,[.68,.88,.08],[0,0,0],item.color);blank.material.transparent=true;blank.material.opacity=.65;blank.material.roughness=.25;
     ring(g,.09,.014,[0,.32,.06],0xa6bdb4);ring(g,.16,.02,[0,.49,0],0x9da9a8);
     cube(g,[.69,.006,.087],[0,-.14,0],0xbdd4c5);
+  }else if(item.kind==='printed-model'){
+    page.visible=false;g.add(makeWorkshopModel(item.meshData,item.color));
   }else if(item.kind==='calculator'){
     cube(g,[.8,1.14,.18],[0,0,-.09],item.color);page.scale.set(.8,.32,1);page.position.y=.34;
     for(let i=0;i<20;i++)cube(g,[.12,.10,.055],[-.27+(i%4)*.18,-.06-Math.floor(i/4)*.1,.035],i%4===3?0xa78d5b:0xc5c7b1);

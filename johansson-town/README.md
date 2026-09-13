@@ -15,6 +15,12 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 
 ## Controls
 
+At **Kenji & Tetsuo Repairs**, use the Form 3D printer to make five collectible
+models. StepWise is available at the same bench. Carry one of each design,
+inspect it from the Field book, and talk to Yuri at Sakura Konbini to sell it for
+town yen during her working hours. Printing and inventory survive reloads.
+See `docs/WORKSHOP-PRINTING.md` for the full loop and regeneration instructions.
+
 Desktop: exploration is always first person. Click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; N cycles time. Escape closes panels or releases the mouse.
 
 Touch: left stick, right-side look, JUMP, ACTION and DRINK. The notebook can select a drink from the bag. Sound preference, inventory, money and quest state save on this device.

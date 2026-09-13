@@ -1,3 +1,7 @@
+import {printedModels} from './src/workshop/catalogue.js';
+import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
+import {createWorkshopUI} from './src/workshop/interface.js';
+import {loadWorkshopModel,printedItem} from './src/workshop/models.js';
 import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workbooks.js';
 import {STORE_MENU} from './src/people/store-service.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
@@ -14,7 +18,7 @@ import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{}}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Last harbour bus: 18:20.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -23,7 +27,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){
-      state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
+      state.workshop=saved.workshop;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -31,7 +35,17 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
   } catch {}
 
+  state.workshop=restoreWorkshop(state.workshop,state.inventory);
+
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
+
+  const workshopUI=createWorkshopUI({state,show,close,save,say,note,getContext:getSocialContext,getMinutes,preview:previewPrint,body,modal});
+
+  async function previewPrint(model){
+    show('Form 3D · '+model.name,'Preparing the model…',[['Close',close]]);const revision=modalRevision;
+    try{const data=await loadWorkshopModel(model.id);if(!modalOpen||revision!==modalRevision)return;close();onInspectModel(printedItem(model,data));}
+    catch{if(!modalOpen||revision!==modalRevision)return;show('Form 3D','The model could not be loaded. Your inventory is unchanged.',[['Try again',()=>previewPrint(model)],['Close',close]]);}
+  }
 
   function save(){
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Kenji’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
@@ -39,14 +53,14 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);previousFocus?.focus?.();}
+  function close(){workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);previousFocus?.focus?.();}
   function show(title,text,buttons=[]){
-    modal.classList.remove('office-records');
-    modalRevision++;
+    workshopUI.dispose();modal.classList.remove('office-records');
+    modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
-    buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b);});
+    buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
     const speaker=title.split('·')[0].trim();
     const conversation=speaker==='Yuri'||!!DIALOGUE[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
@@ -57,7 +71,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aya beside the bookshop.','Find Tama, Aya’s cat, near the ramen stall. A fish might help.','Return to Aya with news of Tama.','Tama is safely home. Aya has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -100,7 +114,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ ゆりです。\nWelcome! I am Yuri. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Yuri · Ramen break':offDuty?'Yuri · After hours':'Yuri · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Yuri',close]]);return;}
-    show(title,greeting,[['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
+    show(title,greeting,[['Sell my workshop models',workshopUI.selling],['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
   }
   function resident(name){
     if(name==='Yuri'){yuriConversation();return;}
@@ -116,6 +130,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(residentHomeDescription(name))buttons.push(['Where do you live?',()=>show(name+' · Home',residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
+    if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Yuri will pay. Start the print, let the machine run, then collect it. One of each in your bag. Yuri buys them at Sakura from nine till eight.',[['Got it, bro',close]])]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);
     if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
     if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
@@ -236,6 +251,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
+      case 'workshop':workshopUI.printer();break;
+      case 'stepwise':if(getSocialContext().inside==='form3d')inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'store-catalogue':show('Yuri’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Yuri is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
@@ -264,7 +281,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   $('#closeActivity').onclick=close;
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
-  document.addEventListener('keydown',e=>{if(!modalOpen)return;if(e.code==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),[tabindex="0"]')];const index=focusable.indexOf(document.activeElement);e.preventDefault();focusable[(index+(e.shiftKey?-1:1)+focusable.length)%focusable.length]?.focus();}});
+  document.addEventListener('keydown',e=>{if(!modalOpen)return;if(e.code==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],iframe,input:not(:disabled),[tabindex="0"]')];const index=focusable.indexOf(document.activeElement);e.preventDefault();focusable[(index+(e.shiftKey?-1:1)+focusable.length)%focusable.length]?.focus();}});
   $('#notebookButton').onclick=inventory;
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
@@ -273,5 +290,5 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(){}};
+  return {action,inventory,close,save,spend,note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }
