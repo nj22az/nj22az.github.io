@@ -61,7 +61,7 @@ export function createCharacters(options={}){
   }
 
   function face(entity,target,flip=false){if(!entity||!target)return;entity.lookAt(target.position.x,entity.position.y,target.position.z);if(flip)entity.rotateY(Math.PI);}
-  const bodyBusy=entity=>Number.isFinite(entity.userData.seatHeight)||entity.userData.character?.moving||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition;
+  const bodyBusy=entity=>Number.isFinite(entity.userData.seatHeight)||entity.userData.character?.moving||entity.userData.shopping||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition;
 
   function stageConversation(entity){
     if(!playerEntity||!entity||entity===playerEntity)return;

@@ -38,7 +38,11 @@ export function restoreResidentLife(saved){
   if(Array.isArray(source.activities))record.activities=source.activities.filter(s=>typeof s==='string').slice(-8).map(s=>s.slice(0,180));
   for(const place of ['market','izakaya','ramen']){
    const meal=source.meals?.[place];if(!meal||!['bun','rice','tea','ramen','fish','yakitori'].includes(meal.item))continue;
-   record.meals[place]={item:meal.item,drink:meal.drink==='beer'?'beer':'tea',delivered:meal.delivered===true,finished:meal.finished===true,started:Number.isFinite(meal.started)?meal.started:null,waited:Number.isFinite(meal.waited)?Math.max(0,Math.min(45,meal.waited)):0,eaten:Number.isFinite(meal.eaten)?Math.max(0,Math.min(42,meal.eaten)):0};
+   record.meals[place]={stockClaim:meal.stockClaim&&['bun','rice','tea'].includes(meal.stockClaim.item)&&Number.isSafeInteger(meal.stockClaim.unitCost)?{item:meal.stockClaim.item,unitCost:meal.stockClaim.unitCost}:null,item:meal.item,drink:meal.drink==='beer'?'beer':'tea',delivered:meal.delivered===true,finished:meal.finished===true,started:Number.isFinite(meal.started)?meal.started:null,waited:Number.isFinite(meal.waited)?Math.max(0,Math.min(45,meal.waited)):0,eaten:Number.isFinite(meal.eaten)?Math.max(0,Math.min(42,meal.eaten)):0};
+  }
+  const shopping=source.shopping;
+  if(shopping&&['browse','pickup','queue','paid','finished'].includes(shopping.phase)&&Number.isFinite(shopping.started)&&(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','bun'].includes(shopping.item)||shopping.phase==='browse'&&!shopping.picked)){
+   record.shopping={phase:shopping.phase,started:shopping.started,finished:shopping.finished===true,item:['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','bun'].includes(shopping.item)?shopping.item:null,picked:shopping.picked===true,paid:shopping.paid===true,timer:Number.isFinite(shopping.timer)?Math.max(0,Math.min(3,shopping.timer)):0,position:Array.isArray(shopping.position)&&shopping.position.length===3&&shopping.position.every(n=>Number.isFinite(n)&&Math.abs(n)<7)?shopping.position:[0,0,5.2]};
   }
   restored[name]=record;
  }return restored;

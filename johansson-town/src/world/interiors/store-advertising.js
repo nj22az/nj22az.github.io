@@ -1,7 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 import {STORE_BRANDS} from '../../commerce/brands.js';
-import {STORE_ITEMS} from '../../commerce/catalogue.js';
+import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
 
 export const POSTER_SPECS=Object.freeze([
  {id:'tea',file:'nagi-tea.webp',title:'NAGI · お茶のひととき',position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
@@ -10,7 +10,7 @@ export const POSTER_SPECS=Object.freeze([
 ]);
 const COLS=4,ROWS=8,TW=256,TH=128;
 const brandKeys=Object.keys(STORE_BRANDS),slots=new Map(brandKeys.map((id,i)=>[id,i]));
-const priceSlot=id=>brandKeys.length+STORE_ITEMS.findIndex(item=>item.id===id);
+const priceSlot=id=>16+STORE_ITEMS.findIndex(item=>item.id===id);
 const posterGeometry=new THREE.PlaneGeometry(1.06,1.59);
 let labelMaterial=null;const posterMaterials=new Map();
 
@@ -57,9 +57,10 @@ export function createLabelAtlas(){
  }
  return canvas;
 }
-function getLabelMaterial(){
+export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
-  labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';}
+  labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
+  new THREE.ImageLoader().load(assetURL('graphics/konbini/packaging-atlas.webp'),image=>{const canvas=texture.image;canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height/2);texture.needsUpdate=true;},undefined,()=>{});}
  return labelMaterial;
 }
 function fallbackPoster(id){
@@ -68,7 +69,7 @@ function fallbackPoster(id){
  emblem(x,b.symbol,128,185,55,b.ink);x.font='bold 28px serif';x.fillText(b.line,128,288,230);x.font='20px serif';x.fillText('さくら商店',128,350);
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
-function getPosterMaterial(spec){
+export function getPosterMaterial(spec){
  if(!posterMaterials.has(spec.id)){
   const material=new THREE.MeshBasicMaterial({map:fallbackPoster(spec.id),toneMapped:false});
   material.name='Sakura advertisement '+spec.id;posterMaterials.set(spec.id,material);
@@ -82,8 +83,8 @@ function getPosterMaterial(spec){
 
 // One static textured draw for all shelf labels and curved bottle/can wrappers.
 // Each room owns its geometry; material/texture caches survive room changes.
-export function createStoreAdvertising({room,reg,action}){
- const positions=[],normals=[],uvs=[],indices=[];let count=0;const labels=[];
+export function createStoreAdvertising({room,reg,action,posterSpecs=POSTER_SPECS}){
+ const positions=[],normals=[],uvs=[],indices=[],stockRanges=[];let count=0;const labels=[];
  function append(geometry,pos,yaw,slot){
   const matrix=new THREE.Matrix4().makeRotationY(yaw);matrix.setPosition(...pos);geometry.applyMatrix4(matrix);
   const p=geometry.attributes.position,n=geometry.attributes.normal,uv=geometry.attributes.uv,offset=positions.length/3;
@@ -94,10 +95,10 @@ export function createStoreAdvertising({room,reg,action}){
   }
   for(const i of geometry.index.array)indices.push(offset+i);geometry.dispose();count++;
  }
- function label(id,pos,width,height,{yaw=0,radius=null,price=false}={}){
+ function label(id,pos,width,height,{yaw=0,radius=null,price=false,stockKey=null}={}){
   const slot=price?priceSlot(id):slots.get(id);if(slot==null||slot<0)throw Error('Unknown Sakura label: '+id);
   const g=radius?new THREE.CylinderGeometry(radius,radius,height,16,1,true,-1.3,2.6):new THREE.PlaneGeometry(width,height);
-  append(g,pos,yaw,slot);labels.push({id,price,position:[...pos],width,height});
+  const start=positions.length;append(g,pos,yaw,slot);if(stockKey)stockRanges.push({key:stockKey,start,end:positions.length});labels.push({id,price,position:[...pos],width,height});
  }
  function finish(){
   const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeBoundingSphere();
@@ -106,13 +107,17 @@ export function createStoreAdvertising({room,reg,action}){
   mesh.userData.preserveMaterial=true;mesh.userData.labelCount=count;mesh.userData.labels=labels;room.add(mesh);
   const posterGroup=new THREE.Group();posterGroup.name='Sakura Showa advertisements';posterGroup.userData.sharedAsset=true;
   // The small paper meshes also persist with the cached materials.
-  for(const spec of POSTER_SPECS){
+  for(const spec of posterSpecs){
    const poster=new THREE.Mesh(posterGeometry,getPosterMaterial(spec));poster.name=spec.title;poster.position.set(...spec.position);poster.rotation.y=spec.yaw;posterGroup.add(poster);
    const target=new THREE.Object3D();target.position.set(...spec.approach);target.name='Read '+spec.title;room.add(target);
    const item=STORE_ITEMS.find(i=>i.id===spec.id);
    reg(target,target.name,()=>action('inspect',spec.title,STORE_BRANDS[spec.id].line+' · '+item.name+' · ¥'+item.cost+'\nAvailable here at Sakura. '+item.text),true);
   }
-  room.add(posterGroup);return {mesh,posters:posterGroup,labels};
+  room.add(posterGroup);const originals=geometry.attributes.position.array.slice();
+  return {mesh,posters:posterGroup,labels,updateStock(stock){
+   const points=geometry.attributes.position.array;for(const range of stockRanges){const [id,slot]=range.key.split(':');const visible=Number(slot)<(stock[id]?.shelf??Infinity);for(let i=range.start;i<range.end;i++)points[i]=visible?originals[i]:0;}
+   geometry.attributes.position.needsUpdate=true;
+  }};
  }
  return {label,finish};
 }

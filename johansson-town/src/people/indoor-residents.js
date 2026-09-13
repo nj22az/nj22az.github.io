@@ -6,20 +6,21 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
-export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,collides=()=>false,getRain=()=>false}){
+export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
  const borrowed=new Map();let clock=0,walker=null;
- const entrance=place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2];
+ const entrance=layout?.entrance|| (place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
  function restore(p){
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray'])delete g.userData[key];
-  if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);
+  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray','shopGoods','shopReach','shopping'])delete g.userData[key];
+  if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);walker?.forget(p);
  }
  function seatFor(p){
   const name=p.profile.name;
-  if(place==='market'&&name==='Thuan')return {position:STORE_CLERK_POSITION,stand:STORE_CLERK_POSITION,yaw:Math.PI,staff:true};
+  const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
+  if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
   if(place==='ramen'&&name==='Thuan')return {...RAMEN_YURI_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   const seats=place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
@@ -36,7 +37,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     if(!wanted(p)||!atDestination(p,place,door(p)))continue;
     const seat=seatFor(p);if(!seat)continue;
     const settled=g.userData.indoors===place&&!g.userData.justArrived;
-    onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);
+    walker.forget(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled||seat.managed?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);
     g.position.set(...(settled?seat.position:entrance));g.rotation.set(0,seat.yaw,0);
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
@@ -44,10 +45,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    const seat=saved.seat;
    // Staff can be at a break chair or carrying an order when their shift ends.
    // Let the service finish standing/returning before the exit walker takes over.
-   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=saved.phase==='seated'&&!seat.staff?'standing':'leaving';
+   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=saved.phase==='seated'&&Number.isFinite(seat.height)?'standing':'leaving';
    if(saved.phase!=='seated'){
     g.userData.roomTransition=true;
-    for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray'])delete g.userData[key];
+    for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray','shopGoods','shopReach','shopping'])delete g.userData[key];
     g.userData.activity=['standing','leaving'].includes(saved.phase)?'leaving '+place:'walking to '+(seat.staff?'work':'a seat');
     if(saved.phase==='standing'){
      saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0)saved.phase='leaving';
@@ -61,11 +62,11 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     continue;
    }
    delete g.userData.roomTransition;
-   if(!seat.staff){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
+   if(!seat.staff&&!seat.managed){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
    if(Number.isFinite(seat.height)){g.userData.seatHeight=seat.height;if(!g.userData.mealState)g.userData.socialPose='Sit';}
-   if(place==='market'&&!seat.staff)g.userData.storeSeatId=seat.id;
+   if(place==='market'&&!seat.staff&&!seat.managed)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
-   if(!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.staff?p.profile.role:'relaxing at '+place;
+   if(!seat.managed&&!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.staff?p.profile.role:'relaxing at '+place;
    const home=world.homes?.get(p.profile.name);if(home)home.occupied=false;
   }
   return [...borrowed.keys()].map(p=>p.profile.name);

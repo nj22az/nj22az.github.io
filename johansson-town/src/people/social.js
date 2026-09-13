@@ -1,10 +1,11 @@
-import {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
+import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
+import {closingStockPending} from '../commerce/shop-stock.js';
 export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
 export const RAMEN_DOOR=[...DINING.ramenDoor];
 export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
@@ -34,7 +35,7 @@ export function supperGuests(minutes){
 // Thuan retains her separate after-work stop and her standing/greeting animation.
 export const MARKET_VISITS=marketVisitsForDay(0);
 export function visitsMarket(profile,minutes,state=null){
- const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?account.meals?.market:null;
+ const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
  if(meal?.finished)return false;
  const ordering=Number.isFinite(meal?.started)&&minutes>=meal.started&&minutes<meal.started+160&&minuteOfDay(minutes)<1200;
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&!!visit&&(inTimeRange(minutes,...visit)||ordering);
@@ -51,6 +52,7 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Thuan'){
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
   if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};

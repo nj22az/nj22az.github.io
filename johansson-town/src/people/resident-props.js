@@ -1,3 +1,4 @@
+import {createShopProduct} from '../commerce/shop-product.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createSteamedBunGeometry} from '../world/interiors/steamed-bun.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
@@ -5,6 +6,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 // Small, solid-colour props at metre scale. One draw per item, including beer foam
 // and handles; no transparent sorting or new downloads on mobile.
 export function createResidentProp(kind){
+ if(kind.startsWith('shop-'))return createShopProduct(kind.slice(5));
  const parts=[];
  function part(geometry,color,position=[0,0,0],rotation=[0,0,0]){
   geometry.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...position),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation)),new THREE.Vector3(1,1,1)));
@@ -13,7 +15,9 @@ export function createResidentProp(kind){
  }
  const box=(size,pos,color)=>part(new THREE.BoxGeometry(...size),color,pos);
  const cylinder=(top,bottom,h,pos,color)=>part(new THREE.CylinderGeometry(top,bottom,h,12),color,pos);
- if(['beer','tea','cup','can'].includes(kind)){
+ if(kind==='carton'){
+  box([.32,.22,.25],[0,.11,0],0xb98d57);box([.06,.224,.255],[0,.11,0],0xdac59b);
+ }else if(['beer','tea','cup','can'].includes(kind)){
   const beer=kind==='beer',can=kind==='can',h=beer?.145:.10,r=beer?.047:.037;
   cylinder(r,r*.90,h,[0,h/2,0],beer?0xc88b2c:can?0x769e89:0x9db18a);
   cylinder(r*.99,r*.99,.009,[0,h-.004,0],beer?0xf6edcd:can?0xb7bdb6:0x667b42);

@@ -4,7 +4,7 @@ import {createResidentLedger,residentPersonality} from './resident-personalities
 
 const LABELS={beer:'beer',tea:'green tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
 // Persistent meal records stop guests ordering again when the player re-enters.
-// Only the currently occupied room owns table props; no offscreen room is loaded.
+// A venue can keep its props under a hidden group and continue its dining cycle.
 export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger()}){
  const settings=new Map();let serving=null,timer=0;
  function clear(person){for(const key of ['heldItem','mealState','residentSpeech'])delete person.g.userData[key];}
@@ -15,7 +15,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   prop.position.y=place==='ramen'?1.04:g.userData.seatHeight>.65?1.16:1.01;
  }
  return {update(dt){
-  const minutes=getMinutes(),present=getCustomers().filter(p=>p.profile.name!=='Nao'&&p.g.visible&&!p.g.userData.roomTransition&&p.g.userData.visualReady!==false);
+  const minutes=getMinutes(),present=getCustomers().filter(p=>(place!=='izakaya'||p.profile.name!=='Nao')&&p.g.visible&&!p.g.userData.roomTransition);
   for(const p of [...settings.keys()])if(!present.includes(p))remove(p);
   for(const person of present){
    const name=person.profile.name,account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};

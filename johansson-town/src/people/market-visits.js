@@ -25,3 +25,6 @@ export function marketVisitsForDay(minutes){
  const visits=choose(0,names,{})||{};
  const result=Object.freeze(visits);cache.set(day,result);if(cache.size>3)cache.delete(cache.keys().next().value);return result;
 }
+
+// Meals are served at Inakaya. Every Sakura visit is now a retail errand.
+export function marketVisitPurpose(){return 'goods';}

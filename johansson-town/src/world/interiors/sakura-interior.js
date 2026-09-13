@@ -1,0 +1,51 @@
+import * as THREE from '../../../vendor/three.module.js';
+import {GLTFLoader} from '../../../vendor/GLTFLoader.js';
+import {assetURL} from '../../assets.js';
+import {SHOP_STOCK} from '../../commerce/shop-stock.js';
+import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
+import {createStoreAdvertising,getPosterMaterial} from './store-advertising.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES} from './sakura-layout.js';
+let model=null,pending=null;
+export function preloadSakuraInterior(){
+ if(model)return Promise.resolve(true);if(pending)return pending;
+ pending=(async()=>{const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);try{
+  const response=await fetch(assetURL('models/sakura-interior/sakura-interior.glb'),{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);
+  model=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;model.name='Supplied convenience-store interior';model.userData.sharedAsset=true;
+  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;}}});return true;
+ }catch(error){console.warn('Sakura interior unavailable:',error.message);return false;}finally{clearTimeout(timeout);pending=null;}})();return pending;
+}
+export function buildSakuraInterior({room,reg,action,exit}){
+ const layout=SAKURA_LAYOUT,unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
+ const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
+ const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
+ for(const spec of SHOP_STOCK){const shelf=SAKURA_SHELVES[spec.id];if(!shelf)continue;
+  const template=shopProductTemplate(spec.id),pair=[template.body,template.art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,materials[i],spec.capacity);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
+  const matrices=[];
+  for(let slot=0;slot<spec.capacity;slot++){
+   const along=(slot-(spec.capacity-1)/2)*.19,x=shelf.x+Math.cos(shelf.yaw)*along,z=shelf.z-Math.sin(shelf.yaw)*along,y=spec.id==='bun'?.91:spec.id==='tea'||spec.id==='coffee'||spec.id==='water'||spec.id==='beer'?.94:.97;
+   dummy.position.set(x,y,z);dummy.rotation.set(0,shelf.yaw,0);dummy.updateMatrix();matrices.push(dummy.matrix.clone());pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
+   unitPositions.set(spec.id+':'+slot,[x,y+.09,z]);unitApproaches.set(spec.id+':'+slot,[shelf.stand[0]+Math.cos(shelf.yaw)*along,0,shelf.stand[2]-Math.sin(shelf.yaw)*along]);
+  }
+  pair.forEach(m=>m.computeBoundingSphere());batches.push({spec,pair,matrices});
+  const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw));
+  advertising.label(spec.id==='bun'?'buns':spec.id,[shelf.x+front.x*.09,.89,shelf.z+front.z*.09],.34,.14,{price:spec.id!=='bun',yaw:shelf.yaw});
+  const o=anchor([shelf.x+front.x*.12,1.12,shelf.z+front.z*.12],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||'肉まん',text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
+ }
+ const ads=advertising.finish();
+ for(const [id,file,x] of [['tea','nagi-tea.webp',-5.65],['coffee','port88-coffee.webp',-3.15],['biscuit','komorebi-biscuits.webp',3.10]]){
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.05,1.48),getPosterMaterial({id,file}));mesh.position.set(x,2.12,3.86);mesh.rotation.y=Math.PI;mesh.userData.sharedAsset=true;room.add(mesh);
+  anchor([x,2.0,3.65],'Read '+id+' poster',()=>action('inspect','Sakura · '+id,'Original fictional packaging and shop posters.'));
+ }
+ const ledger=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.20),new THREE.MeshStandardMaterial({color:0x436454,roughness:.8}));ledger.position.set(4.77,1.025,1.7);room.add(ledger);
+ anchor([4.50,1.24,1.7],'Read Sakura sales ledger',()=>action('shop-ledger'));
+ anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
+ anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
+ anchor(layout.exit,'Exit to street',exit);
+ // Stock cartons carry the same generated Sakura label as delivered cartons.
+ const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [-4.6,-3.7,-2.8,-1.9]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
+ room.add(new THREE.HemisphereLight(0xfff1d3,0x66715c,1.2));
+ let mounted=false,last='';
+ return {layout,unitPositions,unitApproaches,advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){room.add(model.clone(true));mounted=true;}return ok;},
+  updateStock(stock){const key=JSON.stringify(Object.values(stock).map(s=>s.shelf));if(last===key)return;last=key;for(const {spec,pair,matrices} of batches)for(const mesh of pair){for(let i=0;i<spec.capacity;i++)mesh.setMatrixAt(i,i<(stock[spec.id]?.shelf||0)?matrices[i]:zero);mesh.instanceMatrix.needsUpdate=true;}},
+ };
+}

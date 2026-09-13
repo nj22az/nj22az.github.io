@@ -25,7 +25,7 @@ export function createMealMotion(model,entity,height){
  const bones=[...new Set([...Object.values(arms).flatMap(a=>[a.upper,a.lower,a.hand]),...fingers])],saved=new Map();
  const propOffset=new THREE.Vector3();
  let amount=0,elapsed=0,lastMode='',lastKind='',mode='',kind=null,lift=0,orientation=new THREE.Quaternion();
- const mouth=new THREE.Vector3();
+ const mouth=new THREE.Vector3(),reachTarget=new THREE.Vector3();
  function restore(){for(const [bone,q] of saved)bone.quaternion.copy(q);saved.clear();}
  function worldPoint(point){return entity.localToWorld(point);}
  function aim(bone,child,target){
@@ -50,8 +50,8 @@ export function createMealMotion(model,entity,height){
   arm.contact.copy(grip).applyMatrix4(hand.matrixWorld);
  }
  function update(dt,data){
-  const active=data.carrying?'carry':/^(Eat|Drink)(Standing)?$/.test(data.socialPose||'')&&data.heldItem?'meal':'';
-  const nextKind=data.heldItem||null;
+  const active=data.shopReach?'reach':data.shopGoods?'hold':data.carrying?'carry':/^(Eat|Drink)(Standing)?$/.test(data.socialPose||'')&&data.heldItem?'meal':'';
+  const nextKind=data.heldItem||null;if(data.shopReach)reachTarget.set(...data.shopReach);
   if(active!==lastMode||nextKind!==lastKind){elapsed=0;lastMode=active;lastKind=nextKind;}
   else elapsed+=dt;
   amount=THREE.MathUtils.clamp(amount+(active?dt:-dt)/.24,0,1);
@@ -62,7 +62,11 @@ export function createMealMotion(model,entity,height){
   const headPoint=entity.worldToLocal(head.getWorldPosition(new THREE.Vector3())),mouthPoint=entity.worldToLocal(mouth.clone());
   const facing=new THREE.Vector3(0,0,-1).transformDirection(entity.matrixWorld),up=UP.clone().transformDirection(entity.matrixWorld);
   propOffset.set(0,0,0);orientation.copy(entity.getWorldQuaternion(new THREE.Quaternion()));lift=mode==='meal'?biteAmount(elapsed):0;
-  if(mode==='carry'){
+  if(mode==='reach'){
+   solve(arms.R,reachTarget,facing,up);
+  }else if(mode==='hold'){
+   solve(arms.R,worldPoint(new THREE.Vector3(headPoint.x+.16,headPoint.y-height*.28,headPoint.z-.28)),facing,up);
+  }else if(mode==='carry'){
    const centre=new THREE.Vector3(headPoint.x,headPoint.y-height*.27,headPoint.z-.30);
    for(const [side,sign] of [['R',1],['L',-1]])solve(arms[side],worldPoint(centre.clone().add(new THREE.Vector3(sign*.10,-.018,0))),facing,up);
   }else{
@@ -95,5 +99,5 @@ export function createMealMotion(model,entity,height){
    tray.position.copy(tray.parent.worldToLocal(position));tray.quaternion.copy(tray.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(entity.getWorldQuaternion(new THREE.Quaternion())));
   }
  }
- return {restore,update,arms,mouth,propOffset,get active(){return amount>0&&mode==='meal';},get bowl(){return ['ramen','fish','yakitori'].includes(kind);},get orientation(){return orientation;},get lift(){return lift;}};
+ return {restore,update,arms,mouth,propOffset,get active(){return amount>0&&['meal','hold','reach'].includes(mode);},get bowl(){return ['ramen','fish','yakitori'].includes(kind);},get orientation(){return orientation;},get lift(){return lift;}};
 }

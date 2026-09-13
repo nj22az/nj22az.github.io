@@ -30,6 +30,13 @@ test('different rigs bring food to the mouth, lower it and carry a plate on thei
   entity.userData.heldItem='ramen';entity.userData.socialPose='Eat';step(1);assert.equal(actor.cup.parent,motion.arms.L.hand);assert.equal(actor.hands.utensils.visible,true);
   const tip=actor.hands.utensils.localToWorld(new T.Vector3(0,.025,.155));assert.ok(tip.distanceTo(motion.mouth)<.055,name+' chopsticks reach mouth');
   delete entity.userData.heldItem;delete entity.userData.socialPose;delete entity.userData.seatHeight;step(.5);assert.equal(actor.cup.visible,false);assert.equal(actor.hands.utensils.visible,false);
+  entity.userData.shopGoods=true;entity.userData.heldItem='shop-milk';step(.5);
+  const heldSize=new T.Box3().setFromObject(actor.cup).getSize(new T.Vector3());assert.ok(heldSize.y>.19&&heldSize.y<.22,name+' keeps a carton at its actual shelf size');
+  const shelfTarget=entity.localToWorld(new T.Vector3(.20,heightOfHand(),-.36));
+  function heightOfHand(){return entity.worldToLocal(motion.arms.R.contact.clone()).y;}
+  entity.userData.shopReach=shelfTarget.toArray();step(.5);assert.ok(motion.arms.R.contact.distanceTo(shelfTarget)<.04,name+' reaches for a shelf item');
+  lengths().forEach((n,i)=>assert.ok(Math.abs(n-initial[i])<.018,name+' keeps its arm length while shopping'));
+  delete entity.userData.shopGoods;delete entity.userData.heldItem;delete entity.userData.shopReach;step(1);assert.equal(actor.cup.visible,false);
   if(name==='Thuan'){
    const tray=new T.Group();room.add(tray);entity.userData.carrying=true;entity.userData.carriedTray=tray;step(.5);
    const middle=motion.arms.R.contact.clone().add(motion.arms.L.contact).multiplyScalar(.5);assert.ok(tray.getWorldPosition(new T.Vector3()).distanceTo(middle)<.021);

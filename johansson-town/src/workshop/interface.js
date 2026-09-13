@@ -51,7 +51,7 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
   show('Thuan · Buy and sell','Shop takings available: ¥'+cash+'\n\nI use my sales to buy useful finds, fresh fish and your workshop creations. Tidy up around town or make something at Kenji’s workshop. Personal papers stay with you.\n\n'+(offers.length?'My offers are below. Grey offers need a few more shop sales.':'There is nothing I can buy in your bag yet.'),[
    ...offers.map(offer=>['Sell '+offer.name+' · +¥'+offer.price,()=>{
     if(!canSellAtSakura(getContext(),getMinutes())){selling();return;}
-    const result=sellToSakura(state,offer.name);if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}
+    const result=sellToSakura(state,offer.name,getMinutes());if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}
     save();note('Sold '+offer.name+' to Thuan for ¥'+offer.price+'.');
     show('Thuan · Thank you',offer.name+' sold for ¥'+offer.price+'.\n\nShop funds remaining: ¥'+state.sakura.cash+'.'+(offer.model?' You can make another now that there is room in your bag.':''),[['Sell another item',selling],['See you soon, Thuan',close]]);
    },!!saleProblem(state,offer.name)]),['Keep my items',close],

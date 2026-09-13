@@ -240,11 +240,11 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor(ramenPoint(.31,1.18,1.7),'Order ramen · ¥300','ramen','Sato Ramen');
     RAMEN_PLAYER_SEATS.forEach((seat,i)=>{
       const object=anchor([seat.position[0],seat.height,seat.position[2]],i?'Take a counter seat':'Sit at the ramen counter','seat','Counter stool','A patterned stool beside the wooden counter.');
-      object.userData.seat={position:[...seat.position],stand:[1.14,0,seat.position[2]],eyeY:seat.height+.85,yaw:seat.yaw,pitch:0};
+      object.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[1.14,0,seat.position[2]],eyeY:seat.height+.85,yaw:seat.yaw,pitch:0};
     });
     anchor(ramenPoint(-.6,1.18,.5),'Inspect broth kettle','inspect','Broth kettle','The simmering broth has been tended since morning.');
     anchor(ramenPoint(.27,1.18,.2),'Read the counter newspaper','read','Counter newspaper','The paper is folded open at the harbour notices. A delivery for the morning ferry is circled in pencil.');
-    anchor(ramenPoint(1,1.65,-.25),'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Take a seat at the counter and order a hot bowl.');
+    anchor(ramenPoint(1,1.65,-.25),'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Onigiri · ¥120. Steamed pork bun · ¥150. Green tea · ¥120. Take a counter seat to order and eat.');
   }
   return layout;
 }

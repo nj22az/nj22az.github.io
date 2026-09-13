@@ -1,6 +1,9 @@
+import {elapsedTownAbsence} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
-import {advanceShopBusiness,beginShopVisit} from './people/shop-business.js';
-import {recordSakuraSale} from './commerce/sakura-economy.js';
+import {createRamenPlayerService} from './people/ramen-player-service.js';
+import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
+import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
+import {createSakuraShop} from './people/sakura-shop.js';
 import {createBusinesses,businessId} from './world/businesses.js';
 import {buildCompactShop} from './world/interiors/compact-shops.js';
 import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from './world/interiors/business-content.js';
@@ -14,12 +17,9 @@ import {createWorkplaceResidents} from './people/workplace-residents.js';
 import {createResidentLedger} from './people/resident-personalities.js';
 import {createTownActivities} from './people/town-activities.js';
 import {createVenueService} from './people/venue-service.js';
-import {displayYuriFigurine} from './world/interiors/yuri-figurine.js';
 import {buildWarehouseInterior} from './world/interiors/warehouse.js';
 import {createDetailStream} from './world/detail-stream.js';
 import {createTownSections} from './render/town-sections.js';
-import {createStoreService} from './people/store-service.js';
-import {STORE_SEATS} from './world/interiors/store-layout.js';
 import {createShopStreetView} from './render/shop-street-view.js?konbini-1';
 import {createNeighbourChats,createChatBubble,clearChatLine} from './people/neighbour-chats.js?konbini-1';
 import {createIndoorResidents} from './people/indoor-residents.js?konbini-1';
@@ -33,7 +33,6 @@ import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?town-light-1';
-import {buildConvenienceStore,buildStoreShell} from './world/interiors/convenience.js?konbini-1';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-2';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -75,7 +74,8 @@ if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);su
 const SITES=createBusinesses();
 
 const interactables=[],roomColliders=[],doors=new Map();
-let inspector=null,content=null,castAI=null,hands=null,storeService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
+let catchingUp=false,hiddenAt=0;
+let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPlayerService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
 let conversationName=null,conversationCamera=null,navigationTarget=null;
 let activeRoomLayout=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=1002,subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
@@ -104,7 +104,7 @@ if(benchSeat){
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
-activities=createActivities({say,onInspectModel:item=>inspector.open(item),getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='market'&&parkSeat?.storeSeatId?storeService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,yuriAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(parkSeat.storeSeatId?'Sakura table · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;evictIfClosed();}});
+activities=createActivities({say,onInspectModel:item=>inspector.open(item),getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,yuriAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;evictIfClosed();}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
 characters=createCharacters({mobile,shadows,canJump:()=>!seated,isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
@@ -116,38 +116,46 @@ content={items:BUSINESS_CONTENT_CATALOGUE,objects:new Map()};
 const residentLedger=createResidentLedger(()=>activities.state);
 const townCleanup=createTownCleanup({parent:town,register:reg,action:activities.action,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
 const npcActivities=createTownActivities({getTargets:()=>interactables,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),getPlayerPosition:()=>current?null:player.position,ledger:residentLedger,getState:()=>activities.state});
-castAI=createCastAI({activities:npcActivities,world,player,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>activities.paused||inspector.active,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
+castAI=createCastAI({activities:npcActivities,world,player,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
 const workplaceResidents=createWorkplaceResidents({world,parent:scene,getEntrance:()=>activeRoomLayout?.spawn||[0,0,5.2],getLayout:()=>activeRoomLayout,getTargets:()=>interactables,collides:environmentBlocked,getPlayerPosition:()=>player.position,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release});
 const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.colliders);
 const neighbourChats=createNeighbourChats({world,observer:()=>player.position,blocked:chatBlocked,state:()=>activities.state});
 const chatBubble=createChatBubble({camera,canvas,target:g=>characters.conversationTarget(g),blocked:chatBlocked});
-function residentSpeech(){const person=world.people.filter(p=>p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
+function residentSpeech(){const person=world.people.filter(p=>p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current&&(!p.g.userData.inMarket||current?.id==='market')).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
 function roomHit(object,label,kind,title,text){reg(object,label,()=>activities.action(kind,title,text),true);return object;}
 function roomCollider(x,z,w,d,height=2.8,minY=0){roomColliders.push({x,z,w,d,height,minY});}
 
 const izakayaGuests=createIzakayaGuests({world,parent:scene,collides:environmentBlocked,getRain:()=>weather,getState:()=>activities.state,onBorrow:npcActivities.release,getYuri:()=>{const g=ensureYuri();if(!interactables.includes(g))reg(g,'Catch up with Thuan',()=>activities.action('resident','Thuan'),true);return g;}});
-const ramenGuests=createIndoorResidents({world,parent:scene,collides:environmentBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),marketClerk=createIndoorResidents({world,parent:scene,collides:environmentBlocked,getRain:()=>weather,place:'market',onBorrow:(person,time)=>{npcActivities.release(person,time);beginShopVisit(residentLedger,person.profile.name,time);},canLeave:person=>person.profile.name!=='Thuan'||storeService?.prepareToLeave()!==false,getState:()=>activities.state,getPlayerSeat:()=>parkSeat?.storeSeatId}),homeGuests=createHomeResidents({world,parent:scene,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
+const ramenLife=new THREE.Group();ramenLife.name='Inakaya continuous dining';ramenLife.userData.sharedAsset=true;ramenLife.visible=false;scene.add(ramenLife);
+const ramenBlocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(RAMEN_LAYOUT,x,z,r)||RAMEN_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
+function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
+const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
+const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen)});
 let storeClerk=world.people.find(p=>p.profile.name==='Thuan').g,storeWelcomed=false;
+const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
+storeService=sakuraShop.service;
 function ensureYuri(){return storeClerk;}
 function startVenueService(place){venueService=createVenueService({room,place,getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>place==='izakaya'?p.g.userData.inIzakaya:p.g.userData.inRamen),getStaff:()=>place==='izakaya'?world.people.find(p=>p.profile.name==='Nao')?.g:null});}
 function addRoomProps(s){
+  if(s.id==='market'){shopStreetView.invalidate();storeWelcomed=false;sakuraShop.enter(room);roomColliders.push(...sakuraShop.colliders);sakuraShop.update(0);return;}
   if(s.id==='warehouse')return;
   if(activeRoomLayout){
-    if(s.id==='ramen'){ramenGuests.sync(minutes);startVenueService('ramen');}
+    if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say});}
     if(homeOwner(s))homeGuests.enter(s,minutes);
     return;
   }
   if(s.id==='izakaya'){izakayaTV=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex}).television;izakayaGuests.sync(minutes);startVenueService('izakaya');const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
-  if(s.id==='market'){shopStreetView.invalidate();storeWelcomed=false;marketClerk.sync(minutes);buildConvenienceStore({room,box,reg,collider:roomCollider,action:activities.action,signTexture:signTex,clerk:storeClerk});displayYuriFigurine({room,reg,action:activities.action});storeService=createStoreService({clerk:storeClerk,room,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inMarket),getSeat:()=>STORE_SEATS.find(s=>s.id===parkSeat?.storeSeatId),getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,onSale:(cost,id)=>{recordSakuraSale(activities.state,cost,id);activities.save();},say,isBlocked:(x,z)=>Math.hypot(player.position.x-x,player.position.z-z)<.55});return;}
+
 }
 
-function clearRoom(){izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.dispose();storeService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();ramenGuests.restore();marketClerk.restore();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside)interactables.splice(i,1);}
+function clearRoom(){sakuraShop.hide();izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();hideRamen();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside&&!interactables[i].userData.persistentShop&&!interactables[i].userData.name)interactables.splice(i,1);}
 function roomShell(s){
  clearRoom();town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:activities.action,exit:leaveRoom};
+ if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
  activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
  if(activeRoomLayout||s.id==='izakaya')return;
- if(s.id==='market'){buildStoreShell({room,box,reg,exit:leaveRoom});return;}
+ if(s.id==='market')return;
  throw Error('No interior defined for '+s.id);
 }
 
@@ -155,6 +163,7 @@ let roomLoading=false;
 async function enterRoom(s){
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
+ if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
  if(s.id==='izakaya'&&!izakayaReady('interior')){
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
@@ -168,7 +177,7 @@ async function enterRoom(s){
   if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
  parkSeat=null;seated=false;activities.close();activities.visit(s.id);current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});player.position.set(...(activeRoomLayout?.spawn||[0,0,4.3]));unstuckPlayer();workplaceResidents.enter(s,minutes);yaw=activeRoomLayout?.yaw??0;pitch=0;$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;izakayaTV?.dispose();izakayaTV=null;storeService?.dispose();storeService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();ramenGuests.restore();marketClerk.restore();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;current=null;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);unstuckPlayer(true);$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
+function leaveRoom(){if(!current)return;sakuraShop.hide();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;current=null;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);unstuckPlayer(true);$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
 
 function welcomeAtCounter(forward){
   if(storeWelcomed||!storeClerk?.visible||storeClerk.userData.visualReady===false||current?.id!=='market')return;
@@ -178,26 +187,19 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(seated){active=null;$('#prompt').textContent=parkSeat?.storeSeatId?(storeService?.order?.delivered?'Eat / drink · Stand up':storeService?.order?'Order on its way · Stand up':'Order food · Stand up'):'Stand up';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
-function standUp(){if(!seated)return;storeService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();say('You stand up.',2);}
-function doInteract(){if(roomLoading||activities.paused)return;if(seated){if(parkSeat?.storeSeatId)activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
+function interaction(){if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand up':ramenPlayerService?.order?'Order on its way · Stand up':'Order food · Stand up'):'Stand up';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
+function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();say('You stand up.',2);}
+function doInteract(){if(roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
-function overlapsResident(x,z){return world.people.some(p=>p.g.visible&&p.g.userData.visualReady!==false&&(!current||indoorNpc(p.g))&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
-function residentBlocked(x,z){if(current&&storeClerk?.visible&&storeClerk.userData.visualReady!==false&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;return world.people.some(p=>{if(p.g.userData.visualReady===false||!p.g.visible||(current&&!indoorNpc(p.g)))return false;if(!current&&inEntrance(p.g.position.x,p.g.position.z))return false;return circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS);});}
+function residentInView(g){if(g.userData.visualReady===false)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
+function overlapsResident(x,z){return world.people.some(p=>residentInView(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
+function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){return environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);}
 function staysOpen(site){return !site||site.id==='home'||homeOwner(site)||site.id==='warehouse';}
-function occupiedByPerson(x,z){
- if(current&&storeClerk&&storeClerk.userData.visualReady!==false&&indoorNpc(storeClerk)&&circleHitsCircle(x,z,PLAYER_RADIUS,storeClerk.position.x,storeClerk.position.z,NPC_RADIUS))return true;
- return world.people.some(p=>{
-  if(p.g.userData.visualReady===false)return false;
-  if(current)return indoorNpc(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS);
-  if(indoorNpc(p.g))return false;
-  return circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS);
- });
-}
+function occupiedByPerson(x,z){return overlapsResident(x,z);}
 function findClear(x0,z0,maxR=6){
  const ok=(x,z)=>!environmentBlocked(x,z)&&!occupiedByPerson(x,z);
  if(ok(x0,z0))return [x0,z0];
@@ -293,7 +295,7 @@ function setConversation(name,text=''){for(const p of world.people)if(p.g.userDa
   if(speaker){speaker.userData.playerConversation=true;speaker.userData.chatHold=true;speaker.userData.speakingUntil=performance.now()+Math.min(6500,Math.max(1400,text.length*43));camera.lookAt(characters.conversationTarget(speaker));}
   player.visible=false;
  }else if(conversationCamera){camera.quaternion.copy(conversationCamera.rotation);player.visible=conversationCamera.playerVisible;conversationCamera=null;}
-}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;lookTouch.id=null;knob.style.transform='translate(0,0)';}addEventListener('blur',resetInput);document.addEventListener('visibilitychange',()=>{resetInput();if(!document.hidden)clock.getDelta();});
+}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;lookTouch.id=null;knob.style.transform='translate(0,0)';}addEventListener('blur',resetInput);document.addEventListener('visibilitychange',()=>{resetInput();if(document.hidden){activities.save();hiddenAt=Date.now();}else{if(hiddenAt)advanceAbsentTown(elapsedTownAbsence(hiddenAt));hiddenAt=0;clock.getDelta();}});addEventListener('pagehide',()=>activities.save());
 
 const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');function drawMap(){drawTownMap(mapCtx,mapCanvas.width,mapCanvas.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited,target:navigationTarget});updateWaypoint();}
 function updateWaypoint(){
@@ -304,22 +306,27 @@ function updateWaypoint(){
 }
 $('#waypoint').onclick=()=>{navigationTarget=null;drawMap();};
 let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
-function simulate(frameDt){
-  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
-  while(accumulator>=SIM_STEP){
-    const dt=SIM_STEP;minutes+=dt;elapsed+=dt;activities.tick(dt);
-    if((saveTick+=dt)>=15){activities.save();saveTick=0;}characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);
+function advanceTown(dt,playerPaused){
+    minutes+=dt;elapsed+=dt;activities.tick(dt);
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
-    if(current?.id==='market'){marketClerk.sync(minutes,dt);storeService?.update(dt);}
-    if(current?.id==='ramen')ramenGuests.sync(minutes,dt);
     if(homeOwner(current))homeGuests.update(dt,minutes);
-    venueService?.update(dt);workplaceResidents.update(dt,minutes,weather);
-    castAI?.update(dt,minutes,weather);advanceShopBusiness({world,ledger:residentLedger,state:activities.state,minutes,dt,visible:current?.id==='market',onSale:activities.save});neighbourChats.update(dt,minutes,weather);
-    if(!current){world.update(dt,elapsed,daylight(minutes),minutes);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
-    accumulator-=SIM_STEP;
-  }
+    venueService?.update(dt);ramenPlayerService?.update(dt);workplaceResidents.update(dt,minutes,weather);
+    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);
+    if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
+function simulate(frameDt,playerPaused=false){
+ accumulator+=Math.min(frameDt,MAX_FRAME_DT);
+ while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}
+}
+function advanceAbsentTown(seconds){
+ if(seconds<1)return;catchingUp=true;
+ try{for(let remaining=seconds;remaining>0;){const dt=Math.min(.2,remaining);advanceTown(dt,true);remaining-=dt;}}
+ finally{catchingUp=false;}
+ activities.save();
+}
+
 let controlsMovingUntil=0;
 function updateContextControls(){
  const blocked=roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
@@ -335,11 +342,12 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 detailStream.add({id:'sea-cave',x:SEA_CAVE.centerX,z:SEA_CAVE.frontZ,radius:36,load:()=>world.seaCave?.load()});
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');if(!paused){const before=player.position.clone();simulate(frameDt);if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();accumulator=0;resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:3.91}:null});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   townSections.render({renderer,scene,camera,town,position:player.position});
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
+advanceAbsentTown(activities.takeAbsence());
 // Allow the opening frame to paint before starting any district downloads.
 setTimeout(()=>{detailsStarted=true;},0);

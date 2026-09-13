@@ -70,7 +70,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -173,7 +173,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     warehouseExit.userData.hit.fn();
     assert.ok(Math.hypot(api.player.position.x+8.0,api.player.position.z+38.65)<.01,'Warehouse exit returns outside the same door');
     api.leaveRoom();assert.equal(api.reviewCurrentRoom(),null);
-    api.reviewSetMinutes(180);api.enterRoom(api.world.landmarks.find(s=>s.id==='warehouse'));
+    api.reviewSetMinutes(180);await api.enterRoom(api.world.landmarks.find(s=>s.id==='warehouse'));
     assert.equal(api.reviewCurrentRoom()?.id,'warehouse','Warehouse stays open overnight');
     api.leaveRoom();api.reviewSetMinutes(1002);
     document.querySelector('#directoryButton').onclick();
@@ -189,7 +189,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
 
     let entered=0;
     for(const site of api.SITES){
-      api.enterRoom(site);
+      await api.enterRoom(site);
       assert.equal(api.reviewCurrentRoom()?.id,site.id,'Interior entry: '+site.id);
       if(SUPPLIED_ROOM_LAYOUTS[site.id]){
         assert.deepEqual(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS[site.id].spawn,'Spawn matches supplied floor');
@@ -214,7 +214,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
         const rotation=api.camera.quaternion.clone(),aspect=api.camera.aspect;
         api.activities.action('resident','Thuan');
         assert.ok(api.camera.aspect<aspect,'Speech rail reserves horizontal scene space');
-        const clerk=api.scene.children.find(o=>o.userData.name==='Thuan');assert.ok(clerk);
+        const clerk=api.world.people.find(p=>p.profile.name==='Thuan').g;assert.ok(clerk);
         const target=clerk.position.clone();target.y+=1.25;api.camera.updateMatrixWorld(true);target.project(api.camera);
         assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Conversation keeps Thuan inside the unobstructed scene');
         api.activities.close();assert.equal(api.camera.aspect,aspect);
@@ -239,8 +239,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
         api.characters.gesture=entity=>{assert.equal(entity.userData.name,'Thuan');welcomes++;};
         try{
           api.interaction();assert.equal(welcomes,0,'No distant wave from the entrance');
-          api.player.position.set(3.35,0,-4.5);api.interaction();assert.equal(welcomes,0,'Do not wave behind the camera');
-          api.player.position.set(3.35,0,.7);api.interaction();assert.equal(welcomes,1,'Approaching the counter triggers a visible welcome');
+          api.player.position.set(3.7,0,-.5);api.reviewSetYaw(0);api.interaction();assert.equal(welcomes,0,'Do not wave behind the camera');
+          api.player.position.set(3.7,0,.85);api.reviewSetYaw(-Math.PI/2);api.interaction();assert.equal(welcomes,1,'Approaching the counter triggers a visible welcome');
           api.interaction();api.interaction();assert.equal(welcomes,1,'Only one proximity welcome per visit');
           assert.equal(api.activities.paused,false,'The greeting must not open a panel over Thuan');
         }finally{api.characters.gesture=gesture;}
@@ -259,29 +259,30 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       entered++;
     }
     assert.equal(entered,api.SITES.length,'Every registered interior is entered');assert.ok(entered>=15,'Consolidated homes and existing businesses remain registered');assert.equal(api.SITES.filter(s=>s.homeOwner).length,7,'Seven households remain accessible through five doors');
-    for(const site of api.SITES){api.reviewSetMinutes(180);api.enterRoom(site);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id);api.leaveRoom();}
+    for(const site of api.SITES){api.reviewSetMinutes(180);await api.enterRoom(site);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id);api.leaveRoom();}
     const yuri=api.world.people.find(p=>p.profile.name==='Thuan').g,yuriScale=yuri.scale.clone();
+    const finishShopShift=()=>{if(yuri.userData.inMarket){api.reviewSetMinutes(1200);for(let i=0;i<2400&&yuri.userData.inMarket;i++)api.simulate(.1);assert.equal(yuri.userData.inMarket,undefined,'The persistent shop releases Thuan after she walks out: '+api.reviewShop().service.phase+' '+yuri.position.toArray()+' '+api.activities.state.sakura.restockedDay);}};finishShopShift();
     yuri.position.set(DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]);yuri.userData.indoors='izakaya';delete yuri.userData.justArrived;
-    api.reviewSetMinutes(1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
+    api.reviewSetMinutes(1230);await api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
     assert.equal(yuri.visible,true,'Thuan visits after Sakura closes');
     assert.equal(yuri.userData.inIzakaya,true);assert.ok(yuri.scale.equals(yuriScale));
     assert.equal(api.scene.children.filter(o=>o.userData.name==='Thuan').length,1,'Reuse the existing Thuan');
     yuri.userData.hit.fn();assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');api.activities.close();
     api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.ok(yuri.parent===api.scene,'Thuan first walks to the indoor exit');for(let i=0;i<250;i++)api.simulate(.1);assert.ok(yuri.parent===api.world.group,'Thuan resumes walking outside after reaching the exit: '+yuri.position.toArray()+' '+yuri.userData.activity);assert.equal(yuri.userData.inIzakaya,undefined);
-    api.leaveRoom();api.reviewSetMinutes(1440+1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
+    api.leaveRoom();api.reviewSetMinutes(1440+1230);await api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
     assert.ok(yuri.parent===api.world.group,'She stays outside the restaurant on alternate evenings');api.leaveRoom();
-    yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
+    yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);await api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
     assert.equal(yuri.visible,true,'Thuan returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
-    const {STORE_CLERK_POSITION}=await import('../src/world/interiors/store-layout.js');
+    const {SAKURA_LAYOUT}=await import('../src/world/interiors/sakura-layout.js');const STORE_CLERK_POSITION=SAKURA_LAYOUT.staff;
     assert.deepEqual(yuri.position.toArray(),[...STORE_CLERK_POSITION]);api.leaveRoom();
-    const home=api.world.people.find(p=>p.g===yuri).profile.home;yuri.position.set(home[0],0,home[1]);yuri.userData.indoors='home';delete yuri.userData.justArrived;api.reviewSetMinutes(1420);api.enterRoom(api.SITES.find(s=>s.id==='yuri-home'));api.interaction();
+    finishShopShift();const home=api.world.people.find(p=>p.g===yuri).profile.home;yuri.position.set(home[0],0,home[1]);yuri.userData.indoors='home';delete yuri.userData.justArrived;api.reviewSetMinutes(1420);await api.enterRoom(api.SITES.find(s=>s.id==='yuri-home'));api.interaction();
     assert.equal(api.reviewCurrentRoom()?.id,'yuri-home');
     assert.equal(yuri.visible,true,'Thuan is home late at night');
     assert.equal(yuri.userData.inHome,true);assert.equal(api.scene.children.filter(o=>o.userData.name==='Thuan').length,1);
     api.leaveRoom();
-    api.reviewSetMinutes(1619.99);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
+    api.reviewSetMinutes(1619.99);await api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
     assert.equal(api.reviewRoomState().townVisible,false,'03:00 closing keeps the player indoors');assert.equal(api.reviewCurrentRoom().id,'izakaya');
-    assert.ok(api.world.people.find(p=>p.profile.name==='Nao').g.parent===api.world.group,'Nao leaves her counter at closing');
+    const nao=api.world.people.find(p=>p.profile.name==='Nao').g;for(let i=0;i<300&&nao.userData.inIzakaya;i++)api.simulate(.1);assert.ok(nao.parent===api.world.group,'Nao walks out after closing');
     api.leaveRoom();const seat=api.world.park.seat;api.player.position.set(...seat.stand);api.reviewSetYaw(-Math.PI/2);api.simulate(1/60);api.doInteract();api.simulate(.1);
     assert.ok(Math.abs(api.camera.position.y-seat.eyeY)<.001,'Park sitting places the eye above the actual bench');
     const sitting=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;assert.ok(api.player.position.distanceTo(sitting)<.001,'Sitting prevents walking');
@@ -298,57 +299,29 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Buy in town · ¥120');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
     yuri.userData.hit.fn();choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
     assert.equal(api.activities.state.yen,workshopBalance+80-120);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
-    // Exercise the actual fixed loop, indoor ownership, greetings and rig update
-    // together. A service-only test cannot catch another controller overriding it.
-    {
-      const kenji=api.world.people.find(p=>p.profile.name==='Kenji').g;
-      api.activities.state.kenjiEscort='done';
-      delete api.activities.state.residentLife.Kenji;
-      api.reviewSetMinutes(1022.8); // Kenji arrives just before his window ends.
-      for(const g of [kenji,yuri]){g.position.set(-4,0,-25.5);g.userData.indoors='market';g.userData.justArrived=g===kenji;}
-      await api.enterRoom(market);api.player.position.set(0,0,4.5);api.reviewSetYaw(0);
-      const cashBefore=api.activities.state.sakura.cash,poses=new Set();
-      for(let frame=0;frame<115*30;frame++){
-        api.simulate(1/30);api.interaction();api.characters.update(1/30);
-        const meal=api.activities.state.residentLife.Kenji?.meals?.market;
-        assert.ok(meal,'The visit starts at the door, before reaching a chair');
-        if(!meal.finished)assert.equal(kenji.userData.inMarket,true,'A late arrival stays through ordering and eating');
-        poses.add(kenji.userData.socialPose);
-      }
-      const meal=api.activities.state.residentLife.Kenji.meals.market;
-      assert.ok(meal.delivered&&meal.finished,'Thuan completes the late arrival’s meal in the running game');
-      assert.ok(poses.has('Eat')&&poses.has('Sit'),'The diner eats between seated pauses');
-      assert.equal(api.activities.state.residentLife.Kenji.purchases.filter(p=>p.id==='market-meal').length,1);
-      assert.ok(api.activities.state.sakura.cash>=cashBefore+150,'The completed meal funds Thuan’s till');
-      api.leaveRoom();
-
-      // Leave the counter quiet so the real break routine reaches its chair.
-      for(const record of Object.values(api.activities.state.residentLife)){record.meals??={};record.meals.market={item:'bun',finished:true};}
-      api.reviewSetMinutes(1160);yuri.userData.indoors='market';delete yuri.userData.justArrived;
-      await api.enterRoom(market);api.player.position.set(0,0,4.5);api.reviewSetYaw(0);
-      let greetedWhileWalking=false;
-      for(let frame=0;frame<31*30;frame++){
-        api.simulate(1/30);api.characters.update(1/30);
-        if(!greetedWhileWalking&&yuri.userData.character.moving){
-          const rotation=yuri.quaternion.clone(),position=yuri.position.clone();
-          yuri.userData.hit.fn();api.activities.close();
-          assert.ok(yuri.quaternion.angleTo(rotation)<1e-6,'Talking cannot instantly turn a walking Thuan');
-          assert.ok(yuri.position.equals(position),'Talking cannot drag her out of the aisle');
-          greetedWhileWalking=true;
-        }
-      }
-      assert.ok(greetedWhileWalking);assert.equal(yuri.userData.socialPose,'Sit');
-      api.reviewSetMinutes(1199.9);let stood=false,walkedOut=false;
-      for(let frame=0;frame<50*30;frame++){
-        const before=yuri.position.clone(),wasInside=yuri.userData.inMarket;
-        api.simulate(1/30);api.characters.update(1/30);
-        if(wasInside&&yuri.userData.inMarket)assert.ok(yuri.position.distanceTo(before)<.05,'Closing cannot teleport Thuan from the break chair to the counter');
-        if(Number.isFinite(yuri.userData.chairBlend)&&yuri.userData.chairBlend<.95)stood=true;
-        if(wasInside&&!yuri.userData.inMarket)walkedOut=true;
-      }
-      assert.ok(stood&&walkedOut,'Closing uses the stand-up transition before walking to the exit');
-      api.leaveRoom();
-    }
+    // The supplied store is retail-only; food is prepared at the ramen counter.
+    api.reviewSetMinutes(600);await api.enterRoom(api.SITES.find(s=>s.id==='ramen'));
+    const stool=api.reviewRoom().children.find(o=>Number.isInteger(o.userData.seat?.ramenSeatId));
+    assert.ok(stool,'The player can sit at the ramen counter');
+    api.player.position.set(...stool.userData.seat.stand);api.reviewSetYaw(Math.PI/2);api.interaction();
+    // Select this nearby authored stool through the same seat action as touch/E.
+    api.reviewSetActive(stool);stool.userData.hit.fn();api.doInteract();
+    choose('Shoyu ramen · ¥300');const ramenBalance=api.activities.state.yen;
+    for(let i=0;i<70;i++)api.simulate(.1);
+    assert.equal(api.activities.state.yen,ramenBalance-300,'Counter service charges only on delivery');
+    assert.ok(api.reviewRoom().getObjectByName('resident-prop-ramen')?.visible,'The served bowl is visible on the actual counter');
+    api.doInteract();choose('Eat Shoyu ramen');assert.equal(api.activities.state.yen,ramenBalance-300,'Eating cannot charge twice');api.leaveRoom();
+    // Run a full unattended day through the actual world and indoor controllers.
+    api.reviewSetMinutes(5*1440+510);const journalBefore=api.activities.state.sakura.journal.length;
+    api.advanceAbsentTown(660);
+    assert.ok(Object.values(api.activities.state.residentLife).some(r=>r.purchases.some(p=>p.id==='ramen-meal')),'Ramen guests also eat and pay while the player is elsewhere');
+    api.advanceAbsentTown(780);
+    const dayRows=api.activities.state.sakura.journal.slice(journalBefore);
+    assert.ok(dayRows.some(r=>r.kind==='Sale'&&r.buyer!=='Johansson'),'Unattended residents arrive, buy and pay in the real game');
+    assert.ok(dayRows.some(r=>r.kind==='Restocked'),'Thuan restocks without the player entering the shop');
+    assert.ok(dayRows.filter(r=>r.kind==='Restocked').every(r=>r.minute%1440>=1200||r.minute%1440<540),'Restocking is confined to closing hours');
+    const savedShop=JSON.stringify(api.activities.state.sakura);await api.enterRoom(market);api.leaveRoom();
+    assert.equal(JSON.stringify(api.activities.state.sakura),savedShop,'Opening and leaving the shop cannot replay its sales');
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

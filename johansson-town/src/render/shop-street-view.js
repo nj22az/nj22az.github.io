@@ -5,7 +5,7 @@ import {createWindowBatch} from './shop-street-batches.js';
 // frontage and render the street first; opaque room surfaces mask that view.
 export function mapShopCamera(source,target,frontage){
  const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),frontage.yaw);
- target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(0,0,6.3)).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
+ target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(0,0,frontage.interiorZ??6.3)).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
  target.quaternion.copy(rotation).multiply(source.quaternion);target.updateMatrixWorld(true);
  const outward=new THREE.Vector3(0,0,1).applyQuaternion(rotation);
  return new THREE.Plane().setFromNormalAndCoplanarPoint(outward,new THREE.Vector3(...frontage.position));
@@ -44,6 +44,7 @@ export function createShopStreetView(){
   });cachedTown=town;stats.total=entries.length;
  }
  return {stats,invalidate(){cachedTown=null;},render({renderer,scene,camera,town,room,frontage}){
+  const frontZ=frontage?.interiorZ??6.3;glazing.min.z=frontZ-.05;glazing.max.z=frontZ+.05;
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
   if(!frontage||!frustum.intersectsBox(glazing)){stats.visible=0;stats.culled=stats.total;stats.passes=0;renderer.render(scene,camera);return;}
   const plane=mapShopCamera(camera,exteriorCamera,frontage);

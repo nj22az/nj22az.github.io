@@ -193,3 +193,10 @@ Owner-supplied `Image-to-Image-5b45ad04.mp4`, encoded as `video/izakaya-ad.mp4`;
 The user supplied `street_2.glb`, **Street 2** by **Pasha**. Its embedded metadata records the [original model](https://sketchfab.com/3d-models/street-2-3c11ac40e38442489df9a0a7193ee62c) and [Sketchfab Standard licence](https://sketchfab.com/licenses). The central contiguous frontage is cropped, uniformly scaled, simplified and divided into three sections in `models/main-street/`. Two padded texture atlases preserve the original repeated tile UVs. Exact source hash, dimensions and processing budget are in the adjacent manifest.
 
 The office and Seinfeld apartment retain their existing source attribution. Redundant furniture was removed and replaced with original procedural furnishings for the office workstation and two sleeping corners. Both manifests record the refit and original source hashes.
+
+
+## Sakura convenience-store interior
+
+User-supplied `the-convenience-store.zip`, containing `source/8 16 20 conveniance_store.glb`. The archive supplies no author or licence document; no licence is inferred. The prepared interior retains the supplied architecture, aisle fixtures, refrigerators, checkout booth and back room. Static fittings are batched and recoloured; source merchandise, original advertising and opaque glass are replaced with interactive fictional stock and shop artwork. Source digest and preparation details: `models/sakura-interior/source.json`; reproducible preparation: `scripts/prepare-sakura-interior.py`.
+
+The fictional packaging atlas at `graphics/konbini/packaging-atlas.webp` was generated for Johansson Town on 13 September 2026 with the built-in image-generation tool. It contains original NAGI, PORT 88, SAKURA, KOMOREBI, HANAMORI, SHIOFUMI, HOSHIMARU, SHIOSAI, MIZUNOWA, UMINEKO, YUNAGI and ASAMORI labels. It is used on both shelf goods and customers’ held goods. Existing generated shop posters are reused.
