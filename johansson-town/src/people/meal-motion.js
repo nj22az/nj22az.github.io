@@ -21,7 +21,7 @@ export function createMealMotion(model,entity,height){
   arms[side]={upper,lower,hand,grip,sign,localBasis:new THREE.Quaternion().setFromRotationMatrix(localBasis),contact:new THREE.Vector3()};
  }
  if(!arms.R||!arms.L)return null;
- const fingers=[];if(!merged)model.traverse(bone=>{if(bone.isBone&&/^(Index|Middle|Ring|Pinky)[23][LR]$/.test(bone.name))fingers.push(bone);});
+ const fingers=[];model.traverse(bone=>{if(bone.isBone&&(/^(Index|Middle|Ring|Pinky)[23][LR]$/.test(bone.name)||/Hand(Index|Middle|Ring|Pinky|Thumb)[123]$/.test(bone.name)))fingers.push(bone);});
  const bones=[...new Set([...Object.values(arms).flatMap(a=>[a.upper,a.lower,a.hand]),...fingers])],saved=new Map();
  const propOffset=new THREE.Vector3();
  let amount=0,elapsed=0,lastMode='',lastKind='',mode='',kind=null,lift=0,orientation=new THREE.Quaternion();
@@ -87,7 +87,7 @@ export function createMealMotion(model,entity,height){
   }
   if(mode==='meal'&&['tea','beer','cup','can'].includes(kind)){
    const inward=new THREE.Vector3(-1,0,0).transformDirection(entity.matrixWorld);
-   for(const bone of fingers.filter(b=>b.name.endsWith('R'))){const child=bone.children.find(b=>b.isBone);if(!child)continue;const start=bone.getWorldPosition(new THREE.Vector3()),direction=child.getWorldPosition(new THREE.Vector3()).sub(start).normalize();aim(bone,child,start.clone().add(direction.multiplyScalar(.45).addScaledVector(inward,.65).normalize()));}
+   for(const bone of fingers.filter(b=>/R$|RightHand/.test(b.name))){const child=bone.children.find(b=>b.isBone);if(!child)continue;const start=bone.getWorldPosition(new THREE.Vector3()),direction=child.getWorldPosition(new THREE.Vector3()).sub(start).normalize();aim(bone,child,start.clone().add(direction.multiplyScalar(.45).addScaledVector(inward,.65).normalize()));}
   }
   // Blend against the authored pose, including on release. Restore these inputs
   // before the next mixer step so static tracks never accumulate the IK offset.

@@ -2,6 +2,7 @@ import {createYuriFace} from './yuri-face.js';
 import {createOfficeHands} from './office-hands.js';
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {prepareMergedYuriAnimations} from './yuri-merged-animation.js';
+import {rigThuanFingers} from './thuan-fingers.js';
 import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
 import {addResidentAccessories,addSleepEyes} from './resident-wardrobe.js';
@@ -33,7 +34,7 @@ export function preloadModel(id){
       const response=await fetch(assetURL(path),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const gltf=await loader.parseAsync(await response.arrayBuffer(),'');
-      if(id==='yuri-merged')gltf.animations=prepareMergedYuriAnimations(gltf);
+      if(id==='yuri-merged'){rigThuanFingers(gltf);gltf.animations=prepareMergedYuriAnimations(gltf);}
       else if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);
       else{
         gltf.animations=prepareResidentAnimations(gltf);
@@ -178,7 +179,9 @@ export function createLocalCharacters({shadows=false}={}){
       actor.model.position.set(support?-support.x*blend:0,actor.floorOffset+(Number(entity.userData.floorHeight)||0)*(1-blend)+(support?(actor.lastSeatHeight-support.y)*blend||0:0),support?-support.z*blend:0);
       // Clear the front edge before settling the pelvis onto the cushion.
       if(chairTransition)actor.model.position.y+=.075*Math.sin(Math.PI*blend)**2;
-      const requested=(actor.isYuri&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||entity.userData.socialPose|| (entity.userData.chat?.greeting?'Wave':null)|| (actor.gestureTime?'Wave':actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
+      const waving=!!(entity.userData.chat?.greeting||actor.gestureTime);
+      const pose=entity.userData.socialPose;
+      const requested=(actor.isYuri&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||(actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(chairTransition){

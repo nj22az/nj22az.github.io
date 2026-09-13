@@ -17,7 +17,8 @@ function setup(){
  return {service,clerk,room,step,get yen(){return yen;},get charges(){return charges;},seat:s=>seat=s,money:n=>yen=n,time:n=>minutes=n};
 }
 test('Thuan leaves her chair, collects the food, delivers once and the player eats',()=>{
- const t=setup();t.step(30);assert.equal(t.service.phase,'sit');assert.equal(t.clerk.userData.socialPose,'Sit');
+ const t=setup();t.step(.2);assert.equal(t.service.phase,'counter');assert.equal(t.clerk.userData.socialPose,'CounterIdle');
+ t.step(30);assert.equal(t.service.phase,'sit');assert.equal(t.clerk.userData.socialPose,'Sit');
  assert.ok(t.service.request('bun'));assert.equal(t.service.phase,'stand');assert.equal(t.clerk.userData.chairBlend,1,'Stand from the seated pose before walking');
  assert.equal(t.service.request('tea'),false);assert.equal(t.charges,0);
  t.step(45);assert.ok(t.service.order.delivered);assert.equal(t.charges,1);assert.equal(t.yen,1050);
