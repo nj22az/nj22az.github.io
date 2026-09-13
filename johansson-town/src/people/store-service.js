@@ -37,6 +37,12 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
   clerk.position.set(chairFront[0],0,chairFront[1]-THUAN_CHAIR_STEP*blend);clerk.rotation.y=seat.yaw;
  }
  function stand(){phase='stand';timer=chairDuration;chairPose(1);}
+ function prepareToLeave(){
+  if(phase==='counter')return true;
+  if(phase==='sit')stand();
+  else if(!['sit-down','stand','return'].includes(phase))returnToCounter();
+  return false;
+ }
  function returnToCounter(){
   if(order&&!order.delivered)order.tray.visible=false;
   const p=clerk.position,path=p.x<0?[[-3.6,4.3],[1,4.3],[1,1.1],[2.8,1.1]]:p.z<1.1?[[3.8,p.z],[3.8,1.1],[2.8,1.1]]:[[2.8,p.z],[2.8,1.1]];
@@ -110,7 +116,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
    data.activity=(ticket.item.id==='tea'?'drinking green tea':'eating '+ticket.item.name.toLowerCase())+' at Sakura';
   }
  }
- return {request,eat,cancel,occupied,get order(){return playerOrder;},get phase(){return phase;},get queue(){return [...tickets.values()].filter(t=>!t.delivered).map(t=>t.customer.profile.name);},
+ return {request,eat,cancel,occupied,prepareToLeave,get order(){return playerOrder;},get phase(){return phase;},get queue(){return [...tickets.values()].filter(t=>!t.delivered).map(t=>t.customer.profile.name);},
   update(dt){
    if(!clerk.visible||!clerk.userData.inMarket||clerk.userData.roomTransition||clerk.userData.indoors&&clerk.userData.indoors!=='market'||clerk.userData.visualReady===false){clerk.userData.carrying=false;delete clerk.userData.carriedTray;if(order&&!order.delivered)order.tray.visible=false;return;}
    elapsed+=dt;customers(dt);
@@ -119,7 +125,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
    clerk.userData.serving=!!nextOrder()||!!order;clerk.userData.carrying=phase==='deliver';
    if(phase==='counter'){
     const next=nextOrder();if(next)begin(next);
-    else if(elapsed>12&&(resumeBreak||elapsed%55<30)&&getSeat()?.id!==seat.id){resumeBreak=false;move([...STORE_SERVICE_ROUTE].reverse().slice(0,-1).concat([[seat.stand[0],chairFront[1]],chairFront]),'break-arrive');}
+    else if(open()&&elapsed>12&&(resumeBreak||elapsed%55<30)&&getSeat()?.id!==seat.id){resumeBreak=false;move([...STORE_SERVICE_ROUTE].reverse().slice(0,-1).concat([[seat.stand[0],chairFront[1]],chairFront]),'break-arrive');}
    }else if(phase==='break-arrive'){
     if(nextOrder()||getSeat()?.id===seat.id){returnToCounter();return;}
     if(walk(dt)){phase='break-turn';timer=.25;}
@@ -131,7 +137,7 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
     if(!timer){phase='sit';timer=18;delete clerk.userData.chairBlend;}
    }else if(phase==='sit'){
     clerk.rotation.y=seat.yaw;
-    if(nextOrder()||(timer-=dt)<=0)stand();
+    if(!open()||nextOrder()||(timer-=dt)<=0)stand();
    }else if(phase==='stand'){
     timer=Math.max(0,timer-dt);chairPose(timer/chairDuration);if(!timer)returnToCounter();
    }else if(phase==='return'){

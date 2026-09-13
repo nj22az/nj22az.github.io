@@ -6,7 +6,7 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
-export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},collides=()=>false,getRain=()=>false}){
+export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,collides=()=>false,getRain=()=>false}){
  const borrowed=new Map();let clock=0,walker=null;
  const entrance=place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2];
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
@@ -41,8 +41,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':'inIzakaya']=true;g.userData.place=place;
-   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase))saved.phase=saved.phase==='seated'?'standing':'leaving';
    const seat=saved.seat;
+   // Staff can be at a break chair or carrying an order when their shift ends.
+   // Let the service finish standing/returning before the exit walker takes over.
+   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=saved.phase==='seated'&&!seat.staff?'standing':'leaving';
    if(saved.phase!=='seated'){
     g.userData.roomTransition=true;
     for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray'])delete g.userData[key];
@@ -63,7 +65,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    if(Number.isFinite(seat.height)){g.userData.seatHeight=seat.height;if(!g.userData.mealState)g.userData.socialPose='Sit';}
    if(place==='market'&&!seat.staff)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
-   if(!g.userData.mealState)g.userData.activity=seat.staff?p.profile.role:'relaxing at '+place;
+   if(!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.staff?p.profile.role:'relaxing at '+place;
    const home=world.homes?.get(p.profile.name);if(home)home.occupied=false;
   }
   return [...borrowed.keys()].map(p=>p.profile.name);

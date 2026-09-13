@@ -298,6 +298,57 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Buy in town · ¥120');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
     yuri.userData.hit.fn();choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
     assert.equal(api.activities.state.yen,workshopBalance+80-120);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
+    // Exercise the actual fixed loop, indoor ownership, greetings and rig update
+    // together. A service-only test cannot catch another controller overriding it.
+    {
+      const kenji=api.world.people.find(p=>p.profile.name==='Kenji').g;
+      api.activities.state.kenjiEscort='done';
+      delete api.activities.state.residentLife.Kenji;
+      api.reviewSetMinutes(1022.8); // Kenji arrives just before his window ends.
+      for(const g of [kenji,yuri]){g.position.set(-4,0,-25.5);g.userData.indoors='market';g.userData.justArrived=g===kenji;}
+      await api.enterRoom(market);api.player.position.set(0,0,4.5);api.reviewSetYaw(0);
+      const cashBefore=api.activities.state.sakura.cash,poses=new Set();
+      for(let frame=0;frame<115*30;frame++){
+        api.simulate(1/30);api.interaction();api.characters.update(1/30);
+        const meal=api.activities.state.residentLife.Kenji?.meals?.market;
+        assert.ok(meal,'The visit starts at the door, before reaching a chair');
+        if(!meal.finished)assert.equal(kenji.userData.inMarket,true,'A late arrival stays through ordering and eating');
+        poses.add(kenji.userData.socialPose);
+      }
+      const meal=api.activities.state.residentLife.Kenji.meals.market;
+      assert.ok(meal.delivered&&meal.finished,'Thuan completes the late arrival’s meal in the running game');
+      assert.ok(poses.has('Eat')&&poses.has('Sit'),'The diner eats between seated pauses');
+      assert.equal(api.activities.state.residentLife.Kenji.purchases.filter(p=>p.id==='market-meal').length,1);
+      assert.ok(api.activities.state.sakura.cash>=cashBefore+150,'The completed meal funds Thuan’s till');
+      api.leaveRoom();
+
+      // Leave the counter quiet so the real break routine reaches its chair.
+      for(const record of Object.values(api.activities.state.residentLife)){record.meals??={};record.meals.market={item:'bun',finished:true};}
+      api.reviewSetMinutes(1160);yuri.userData.indoors='market';delete yuri.userData.justArrived;
+      await api.enterRoom(market);api.player.position.set(0,0,4.5);api.reviewSetYaw(0);
+      let greetedWhileWalking=false;
+      for(let frame=0;frame<31*30;frame++){
+        api.simulate(1/30);api.characters.update(1/30);
+        if(!greetedWhileWalking&&yuri.userData.character.moving){
+          const rotation=yuri.quaternion.clone(),position=yuri.position.clone();
+          yuri.userData.hit.fn();api.activities.close();
+          assert.ok(yuri.quaternion.angleTo(rotation)<1e-6,'Talking cannot instantly turn a walking Thuan');
+          assert.ok(yuri.position.equals(position),'Talking cannot drag her out of the aisle');
+          greetedWhileWalking=true;
+        }
+      }
+      assert.ok(greetedWhileWalking);assert.equal(yuri.userData.socialPose,'Sit');
+      api.reviewSetMinutes(1199.9);let stood=false,walkedOut=false;
+      for(let frame=0;frame<50*30;frame++){
+        const before=yuri.position.clone(),wasInside=yuri.userData.inMarket;
+        api.simulate(1/30);api.characters.update(1/30);
+        if(wasInside&&yuri.userData.inMarket)assert.ok(yuri.position.distanceTo(before)<.05,'Closing cannot teleport Thuan from the break chair to the counter');
+        if(Number.isFinite(yuri.userData.chairBlend)&&yuri.userData.chairBlend<.95)stood=true;
+        if(wasInside&&!yuri.userData.inMarket)walkedOut=true;
+      }
+      assert.ok(stood&&walkedOut,'Closing uses the stand-up transition before walking to the exit');
+      api.leaveRoom();
+    }
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}
