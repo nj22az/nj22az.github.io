@@ -48,7 +48,7 @@ test('Thuan retains authored locomotion and a calm chair loop without root drift
  }finally{globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}
 });
 
-test('Thuan idle rests a hand on her hip with independently posed fingers',async()=>{
+test('Thuan has relaxed idle and counter poses with independently posed fingers',async()=>{
  const previous={self:globalThis.self,bitmap:globalThis.createImageBitmap};globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  try{
   const asset=await load();
@@ -62,12 +62,7 @@ test('Thuan idle rests a hand on her hip with independently posed fingers',async
   assert.ok(counter);
   const mixer=new THREE.AnimationMixer(asset.scene),point=new THREE.Vector3();
   mixer.clipAction(idle).play();mixer.update(.3);asset.scene.updateMatrixWorld(true);mesh.skeleton.update();
-  const left=asset.scene.getObjectByName('LeftHand').getWorldPosition(new THREE.Vector3());
   const right=asset.scene.getObjectByName('RightHand').getWorldPosition(new THREE.Vector3());
-  const hip=asset.scene.getObjectByName('LeftUpLeg').getWorldPosition(new THREE.Vector3());
-  assert.ok(left.distanceTo(hip)<.18,'Left hand rests on the hip');
-  assert.ok(Math.abs(left.x)<.22,'Left elbow is no longer locked out at her side');
-  assert.ok(right.x>-.22,'Right arm tucks closer than the rest pose hang');
   const index=asset.scene.getObjectByName('LeftHandIndex3').getWorldPosition(new THREE.Vector3());
   const pinky=asset.scene.getObjectByName('LeftHandPinky3').getWorldPosition(new THREE.Vector3());
   assert.ok(index.distanceTo(pinky)>.02,'Fingers can separate');

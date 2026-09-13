@@ -3,6 +3,37 @@ import * as THREE from '../../vendor/three.module.js';
 const NAMES=['Thumb','Index','Middle','Ring','Pinky'];
 const UP=new THREE.Vector3(0,1,0);
 
+function repairDressWeights(mesh){
+ // In this export the skirt and bare hands are separate surfaces: below .79m
+ // the skirt ends inside |x|=.275, while the hands begin outside that gap.
+ // Automatic weights nevertheless assigned part of the hem to the wrists.
+ // Repair it before fitting fingers, or those folds become false fingertips.
+ const {position,skinIndex:joints,skinWeight:weights}=mesh.geometry.attributes;
+ const bones=mesh.skeleton.bones,garment=[],affected=[],point=new THREE.Vector3();
+ for(let i=0;i<position.count;i++){
+  point.fromBufferAttribute(position,i).applyMatrix4(mesh.matrixWorld);
+  if(point.y<.59||point.y>.79||Math.abs(point.x)>.275)continue;
+  let arm=0,body=0;
+  for(let k=0;k<4;k++){
+   const name=bones[joints.getComponent(i,k)].name,weight=weights.getComponent(i,k);
+   if(/Arm|Hand/.test(name))arm+=weight;
+   if(/^(Hips|LeftUpLeg|RightUpLeg)$/.test(name))body+=weight;
+  }
+  if(arm>.00001)affected.push({index:i,point:point.clone()});
+  else if(body>.999)garment.push({index:i,point:point.clone()});
+ }
+ for(const vertex of affected){
+  let closest=null,distance=Infinity;
+  for(const guide of garment){const d=vertex.point.distanceToSquared(guide.point);if(d<distance){distance=d;closest=guide;}}
+  if(!closest)continue;
+  for(let k=0;k<4;k++){
+   joints.setComponent(vertex.index,k,joints.getComponent(closest.index,k));
+   weights.setComponent(vertex.index,k,weights.getComponent(closest.index,k));
+  }
+ }
+ joints.needsUpdate=true;weights.needsUpdate=true;
+}
+
 function collectHand(mesh,side){
  const bones=mesh.skeleton.bones,hand=bones.find(b=>b.name===side+'Hand'),end=bones.find(b=>b.name===side+'Hand_End');
  if(!hand||!end)return null;
@@ -155,6 +186,7 @@ export function rigThuanFingers(asset){
  const scene=asset.scene;scene.updateMatrixWorld(true);
  if(scene.getObjectByName('LeftHandIndex1'))return scene;
  let mesh;scene.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});if(!mesh)return scene;
+ repairDressWeights(mesh);
  const skeleton=mesh.skeleton,added=[],painted=[];
  for(const side of ['Left','Right']){
   const collected=collectHand(mesh,side);if(!collected)continue;

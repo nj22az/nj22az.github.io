@@ -25,9 +25,12 @@ function solveArm(model,side,wrist,pole,palm){
  }
 }
 
-function worldPalm(forward,up,normal){
+function worldPalm(forward,normal,side){
  const y=forward.clone().normalize(),z=normal.clone().addScaledVector(y,-normal.dot(y)).normalize(),x=new THREE.Vector3().crossVectors(y,z);
- return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z));
+ // Meshy's palm normal is local +/-X, rather than local Z.
+ const localNormal=new THREE.Vector3(side,0,0),up=new THREE.Vector3(0,1,0);
+ const localBasis=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3().crossVectors(up,localNormal),up,localNormal));
+ return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z)).multiply(localBasis.invert());
 }
 
 function worldDelta(bone,euler){
@@ -45,12 +48,13 @@ function poseShopkeeper(pose,kind,t,duration){
  if(head)worldDelta(head,new THREE.Euler(.016*breath,.035*shift,.025));
  const hip=pose.getObjectByName('LeftUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(.05,.88,0);
  const rightHip=pose.getObjectByName('RightUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(-.06,.88,0);
- const up=new THREE.Vector3(0,1,0);
- const leftWrist=hip.clone().add(new THREE.Vector3(.11,.045,.015));
- const rightWrist=kind==='counter'?new THREE.Vector3(-.05,1.08,.50+.012*breath):rightHip.clone().add(new THREE.Vector3(-.11,.04,.02));
- const hipPalm=side=>worldPalm(new THREE.Vector3(side*.12,-.62,-.72),up,new THREE.Vector3(-side,.12,.08));
- solveArm(pose,'Left',leftWrist,new THREE.Vector3(.58,.22,-.12),hipPalm(1));
- solveArm(pose,'Right',rightWrist,kind==='counter'?new THREE.Vector3(-.28,-.32,.35):new THREE.Vector3(-.58,.18,-.12),kind==='counter'?worldPalm(new THREE.Vector3(.06,-.18,1),up,new THREE.Vector3(0,-1,.04)):hipPalm(-1));
+ // Rest beside and slightly in front of the dress. A wrist at the hip joint
+ // buries the palm and downward-pointing fingers inside the flared skirt.
+ const leftWrist=hip.clone().add(new THREE.Vector3(.20,.015,.09));
+ const rightWrist=kind==='counter'?new THREE.Vector3(-.05,1.08,.50+.012*breath):rightHip.clone().add(new THREE.Vector3(-.20,.01,.09));
+ const relaxedPalm=side=>worldPalm(new THREE.Vector3(side*.10,-1,.12),new THREE.Vector3(-side,.08,.10),side);
+ solveArm(pose,'Left',leftWrist,new THREE.Vector3(.45,-.10,-.10),relaxedPalm(1));
+ solveArm(pose,'Right',rightWrist,kind==='counter'?new THREE.Vector3(-.28,-.32,.35):new THREE.Vector3(-.45,-.10,-.10),kind==='counter'?worldPalm(new THREE.Vector3(.06,-.18,1),new THREE.Vector3(0,-1,.04),-1):relaxedPalm(-1));
 }
 
 function bakeIdle(asset,source,name,kind,duration){
@@ -72,9 +76,9 @@ function bakeIdle(asset,source,name,kind,duration){
  }
  const fidget=(t,side,finger,segment)=>{
   const onDesk=kind==='counter'&&side==='Right';
-  const rest=onDesk?(finger==='Thumb'?.35:.48):finger==='Thumb'?.68:.94;
-  const wave=Math.sin((t/duration*Math.PI*2)+(side==='Left'?0:1.3)+segment*.4)*.07;
-  return THREE.MathUtils.clamp(rest+wave+(finger==='Pinky'&&!onDesk?.05:0), .28, 1.12);
+  const rest=onDesk?.20:.26;
+  const wave=Math.sin((t/duration*Math.PI*2)+(side==='Left'?0:1.3)+segment*.4)*.025;
+  return rest+wave;
  };
  clip.tracks=clip.tracks.filter(track=>!/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(track.name));
  clip.tracks.push(...fingerTracks(asset.scene,times,fidget));

@@ -26,6 +26,7 @@ test('the actual Meshy rig turns its head smoothly, keeps its body still and ret
   for(let i=0;i<90;i++){controller.update(1/60);assert.ok(Math.abs(actor.customerGaze.yaw-last)<=1.2/60+.0001);last=actor.customerGaze.yaw;}
   assert.ok(actor.customerGaze.yaw>.5&&actor.customerGaze.yaw<=.65);assert.ok(entity.quaternion.equals(body)&&entity.position.equals(position));assert.ok(head.quaternion.toArray().every(Number.isFinite));
   entity.userData.lookTarget=entity.localToWorld(new T.Vector3(0,1.6,2)).toArray();for(let i=0;i<120;i++)controller.update(1/60);assert.ok(Math.abs(actor.customerGaze.yaw)<.001,'The gaze relaxes for someone behind her');
-  delete entity.userData.lookTarget;for(let i=0;i<240;i++)controller.update(1/60);const rest=head.quaternion.clone();for(let i=0;i<240;i++)controller.update(1/60);assert.ok(head.quaternion.angleTo(rest)<.001,'No accumulated head rotation across idle loops');
+  const idleFrames=Math.round(actor.actions.get('Idle_Neutral').getClip().duration*60);
+  delete entity.userData.lookTarget;for(let i=0;i<idleFrames;i++)controller.update(1/60);const rest=head.quaternion.clone();for(let i=0;i<idleFrames*2;i++)controller.update(1/60);assert.ok(head.quaternion.angleTo(rest)<.001,'No accumulated head rotation across complete idle loops');
  }finally{globalThis.fetch=previous;}
 });
