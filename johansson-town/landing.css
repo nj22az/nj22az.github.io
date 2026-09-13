@@ -703,6 +703,37 @@
   }
 }
 
+.poster-wall {
+  display: grid;
+}
+
+.poster-card {
+  padding: 16px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.poster-card img {
+  display: block;
+  width: 100%;
+  border: 2px solid var(--ink);
+}
+
+.poster-card figcaption {
+  margin-top: 12px;
+}
+
+@media (min-width: 640px) {
+  .poster-wall {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .poster-card {
+    border-right: 2px solid var(--ink);
+  }
+  .poster-wall > :last-child {
+    border-right: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #start * {
     transition: none !important;

@@ -21,8 +21,8 @@
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?v=7">
-<link rel="stylesheet" href="./landing.css?v=board-2">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-a0aVwgYx.js">
+<link rel="stylesheet" href="./landing.css?v=board-3">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-44wdUZEW.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -225,6 +225,41 @@
         </div>
       </section>
 
+      <section aria-labelledby="poster-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">11 · MINATO WALL</p>
+            <h2 id="poster-heading">Posters in the izakaya</h2>
+          </div>
+        </div>
+        <div class="poster-wall">
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · 港鳥, 1988 print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">港鳥</p>
+              <h3>MINATO TORI</h3>
+              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
+            </figcaption>
+          </figure>
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · 潮待ち, 1988 print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">潮待ち</p>
+              <h3>SHIOMACHI</h3>
+              <p>Junmai from a fictional harbour brewery. Waiting for the tide, one cup at a time.</p>
+            </figcaption>
+          </figure>
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · みなと, 1988 print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">みなと</p>
+              <h3>MINATO</h3>
+              <p>The house poster. Red lanterns, the noren, and おかえりなさい — welcome back.</p>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <footer class="board-foot">
         <p>Johansson Town is a first-person harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
         <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
@@ -289,7 +324,7 @@ import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-a0aVwgYx.js');
+      await import('./runtime/boot-44wdUZEW.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
