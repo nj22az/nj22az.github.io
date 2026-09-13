@@ -31,7 +31,7 @@ test('different rigs bring food to the mouth, lower it and carry a plate on thei
   const tip=actor.hands.utensils.localToWorld(new T.Vector3(0,.025,.155));assert.ok(tip.distanceTo(motion.mouth)<.055,name+' chopsticks reach mouth');
   delete entity.userData.heldItem;delete entity.userData.socialPose;delete entity.userData.seatHeight;step(.5);assert.equal(actor.cup.visible,false);assert.equal(actor.hands.utensils.visible,false);
   entity.userData.shopGoods=true;entity.userData.heldItem='shop-milk';step(.5);
-  const heldSize=new T.Box3().setFromObject(actor.cup).getSize(new T.Vector3());assert.ok(heldSize.y>.19&&heldSize.y<.22,name+' keeps a carton at its actual shelf size');
+  const heldSize=new T.Box3().setFromObject(actor.cup).getSize(new T.Vector3());assert.ok(Math.abs(heldSize.y-new T.Box3().setFromObject(createResidentProp('shop-milk')).getSize(new T.Vector3()).y)<.006,name+' keeps a carton at its actual shelf size');
   const shelfTarget=entity.localToWorld(new T.Vector3(.20,heightOfHand(),-.36));
   function heightOfHand(){return entity.worldToLocal(motion.arms.R.contact.clone()).y;}
   entity.userData.shopReach=shelfTarget.toArray();step(.5);assert.ok(motion.arms.R.contact.distanceTo(shelfTarget)<.04,name+' reaches for a shelf item');

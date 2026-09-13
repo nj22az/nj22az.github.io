@@ -1,6 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
-import {STORE_BRANDS} from '../../commerce/brands.js';
+import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
 
 export const POSTER_SPECS=Object.freeze([
@@ -8,9 +8,10 @@ export const POSTER_SPECS=Object.freeze([
  {id:'coffee',file:'port88-coffee.webp',title:'PORT 88 · 港の朝に、一杯。',position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
  {id:'biscuit',file:'komorebi-biscuits.webp',title:'KOMOREBI · 午後のおともに。',position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
 ]);
-const COLS=4,ROWS=8,TW=256,TH=128;
-const brandKeys=Object.keys(STORE_BRANDS),slots=new Map(brandKeys.map((id,i)=>[id,i]));
-const priceSlot=id=>16+STORE_ITEMS.findIndex(item=>item.id===id);
+const COLS=4,ROWS=16,TW=256,TH=128;
+const slots=new Map(BRAND_ATLAS_KEYS.map((id,i)=>[id,i]));
+export const packagingSlot=id=>slots.get(id==='bun'?'buns':id);
+const priceSlot=id=>32+STORE_ITEMS.findIndex(item=>item.id===id);
 const posterGeometry=new THREE.PlaneGeometry(1.06,1.59);
 let labelMaterial=null;const posterMaterials=new Map();
 
@@ -38,7 +39,7 @@ export function createLabelAtlas(){
  const canvas=document.createElement('canvas');canvas.width=COLS*TW;canvas.height=ROWS*TH;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#f0e5ca';ctx.fillRect(0,0,canvas.width,canvas.height);
  for(const [id,index] of slots){
-  const b=STORE_BRANDS[id],x=index%COLS*TW,y=Math.floor(index/COLS)*TH;
+  const b=STORE_BRANDS[id]||STORE_BRANDS.stock,x=index%COLS*TW,y=Math.floor(index/COLS)*TH;
   ctx.save();ctx.translate(x,y);ctx.fillStyle=b.paper;ctx.fillRect(0,0,TW,TH);
   ctx.strokeStyle=b.ink;ctx.lineWidth=2;ctx.strokeRect(6,6,TW-12,TH-12);
   ctx.fillStyle=b.accent;ctx.fillRect(8,90,TW-16,30);
@@ -60,7 +61,7 @@ export function createLabelAtlas(){
 export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
   labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
-  new THREE.ImageLoader().load(assetURL('graphics/konbini/packaging-atlas.webp'),image=>{const canvas=texture.image;canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height/2);texture.needsUpdate=true;},undefined,()=>{});}
+  for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image;canvas.getContext('2d').drawImage(image,0,row*512,canvas.width,512);texture.needsUpdate=true;},undefined,()=>{});}
  return labelMaterial;
 }
 function fallbackPoster(id){

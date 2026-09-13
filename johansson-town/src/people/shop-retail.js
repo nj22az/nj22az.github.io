@@ -42,7 +42,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
     if(walker.move(person,stand(record.item),dt)){record.phase='pickup';record.timer=1.2;}
    }else if(record.phase==='pickup'){
     const count=state.sakura.stock[record.item].shelf;if(!count){soldOut(person,record);continue;}
-    if(!face(g,SAKURA_SHELVES[record.item].yaw,dt))continue;g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
+    if(!face(g,SAKURA_SHELVES[record.item].yaw,dt))continue;display.accessShelf(record.item);g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
     if(record.timer<=0){const claim=takeShopStock(state,record.item);delete g.userData.shopReach;if(!claim){record.item=null;record.phase='browse';continue;}record.picked=true;record.phase='queue';}
    }else if(record.phase==='queue'){
     const line=[...customers].filter(([,r])=>r.phase==='queue'),index=line.findIndex(([p])=>p===person),target=[COUNTER[0],0,COUNTER[2]+Math.max(0,index)*.85];

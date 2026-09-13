@@ -19,19 +19,27 @@ export const SAKURA_LAYOUT={
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite
 // facings; the same product geometry is used on the shelf and in the hand.
-export const SAKURA_SHELVES={
- tea:{x:-1.62,z:-3.5,y:.84,yaw:0,stand:[-1.62,0,-2.57]},
- coffee:{x:-.27,z:-3.5,y:.84,yaw:0,stand:[-.27,0,-2.57]},
- water:{x:1.07,z:-3.5,y:.84,yaw:0,stand:[1.07,0,-2.57]},
- beer:{x:2.40,z:-3.5,y:.84,yaw:0,stand:[2.40,0,-2.57]},
- rice:{x:-3.6,z:1.77,y:.64,yaw:0,stand:[-3.6,0,2.52]},
- biscuit:{x:-1.48,z:1.77,y:.64,yaw:0,stand:[-1.48,0,2.52]},
- soap:{x:-3.6,z:.91,y:.64,yaw:Math.PI,stand:[-3.6,0,.32]},
- notebook:{x:-1.48,z:.91,y:.64,yaw:Math.PI,stand:[-1.48,0,.32]},
- postcard:{x:.55,z:1.77,y:.64,yaw:0,stand:[.55,0,2.52]},
- battery:{x:.55,z:.91,y:.64,yaw:Math.PI,stand:[.55,0,.32]},
- cola:{x:-1.48,z:-.70,y:.64,yaw:0,stand:[-1.48,0,-.18]},
- noodles:{x:.55,z:-.70,y:.64,yaw:0,stand:[.55,0,-.18]},
- milk:{x:.55,z:-1.58,y:.64,yaw:Math.PI,stand:[.55,0,-2.28]},
- bun:{x:-6.40,z:1.45,y:.91,yaw:Math.PI/2,stand:[-5.35,0,1.45]},
-};
+// Shelf tops measured against the imported triangles, not the nominal shelf origin.
+export const AISLE_LEVELS=[.3553,.6683,.9813,1.2943];
+export const FRIDGE_LEVELS=[.34,.70,1.06,1.42,1.78];
+export const SAKURA_SHELVES={};
+function aisle(low,high,x,z,yaw,stand){
+ for(const [id,levels] of [[low,AISLE_LEVELS.slice(0,2)],[high,AISLE_LEVELS.slice(2)]])SAKURA_SHELVES[id]={x,z,levels,yaw,stand,spacing:.24,depth:.12};
+}
+aisle('rice','curry',-3.6,1.56,0,[-3.6,0,2.30]);
+aisle('biscuit','chips',-1.48,1.56,0,[-1.48,0,2.30]);
+aisle('chocolate','candy',.55,1.56,0,[.55,0,2.30]);
+aisle('soap','detergent',-3.6,1.10,Math.PI,[-3.6,0,.32]);
+aisle('notebook','postcard',-1.48,1.10,Math.PI,[-1.48,0,.32]);
+aisle('battery','tissues',.55,1.10,Math.PI,[.55,0,.32]);
+aisle('noodles','crackers',-1.48,-.93,0,[-1.48,0,-.18]);
+aisle('soup','peaches',.55,-.93,0,[.55,0,-.18]);
+aisle('soy','tuna',-1.48,-1.39,Math.PI,[-1.48,0,-2.14]);
+aisle('toothpaste','bread',.55,-1.39,Math.PI,[.55,0,-2.14]);
+for(const [column,ids] of [['tea','coffee'],['water','orange'],['beer','cola'],['milk','yogurt']].entries()){
+ for(const [row,id] of ids.entries()){const x=-1.60+column*1.33;SAKURA_SHELVES[id]={x,z:-3.48,levels:FRIDGE_LEVELS.slice(row*2,row*2+2),yaw:0,stand:[x,0,-2.78],spacing:.19,depth:.13,fridge:column};}
+}
+SAKURA_SHELVES.soda={x:-.27,z:-3.48,levels:[FRIDGE_LEVELS[4]],yaw:0,stand:[-.27,0,-2.78],spacing:.19,depth:.105,fridge:1};
+SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:[-5.58,0,1.515],spacing:.33,depth:.12};
+
+SAKURA_SHELVES.noodles.depth=.15;

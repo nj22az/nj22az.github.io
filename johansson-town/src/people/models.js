@@ -6,6 +6,7 @@ import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
 import {addResidentAccessories,addSleepEyes} from './resident-wardrobe.js';
 import {createResidentHands} from './resident-props.js';
+import {createCustomerGaze} from './shop-attention.js';
 import {createMealMotion} from './meal-motion.js';
 import {createThuanChairMotion} from './thuan-chair-motion.js';
 import {createThuanSeatDrape} from './thuan-seat-drape.js';
@@ -138,11 +139,13 @@ export function createLocalCharacters({shadows=false}={}){
       actor.seatDrape=createThuanSeatDrape(model,entity,.51);
       actor.chairMotion.restore();mixer.stopAllAction();idle.reset().play();idle.time=idleTime;mixer.update(0);model.position.set(0,actor.floorOffset,0);
     }
+    actor.customerGaze=name==='Thuan'?createCustomerGaze(model,entity):null;
     actor.mealMotion=createMealMotion(model,entity,targetHeight);actor.hands?.fit(actor.mealMotion);
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
+      actor.customerGaze?.restore();
       actor.mealMotion?.restore();
       actor.chairMotion?.restore();
       const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
@@ -204,6 +207,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.chairMotion?.update(entity.userData,actor.seatBlend);
       actor.mealMotion?.update(dt,{...entity.userData,heldItem:entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null)});
       actor.hands?.align();
+      actor.customerGaze?.update(dt,entity.userData,actor.moving);
       if(actor.lowPoly){
         const chat=entity.userData.chat,head=actor.model.getObjectByName('Head');
         if(chat&&head){const partner=chat.partner.getWorldPosition(new THREE.Vector3());entity.worldToLocal(partner);

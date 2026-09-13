@@ -16,4 +16,22 @@ export const STORE_BRANDS=Object.freeze({
  milk:{name:'ASAMORI',jp:'あさもり',line:'牛乳',paper:'#f4ebdb',ink:'#356b8b',accent:'#80a4bb',symbol:'sun'},
  stock:{name:'SAKURA',jp:'さくら商店',line:'納品箱 · 取扱注意',paper:'#e5d1ac',ink:'#60523f',accent:'#9d493d',symbol:'flower'},
  buns:{name:'SAKURA',jp:'さくら商店',line:'ほかほか肉まん',paper:'#f3deb6',ink:'#934033',accent:'#d3934c',symbol:'sun'},
+ chips:{name:'KOGANE',jp:'こがね',line:'ポテトチップス',paper:'#f8dc7e',ink:'#a42a23',accent:'#bf3928',symbol:'sun'},
+ crackers:{name:'HAMABE',jp:'浜べ',line:'しょうゆせんべい',paper:'#f1e2bf',ink:'#233b51',accent:'#ac7840',symbol:'wave'},
+ chocolate:{name:'TSUKINO',jp:'月の',line:'ミルクチョコレート',paper:'#67252b',ink:'#f4d48a',accent:'#a07443',symbol:'star'},
+ candy:{name:'MARUAME',jp:'まるあめ',line:'フルーツキャンディ',paper:'#f6cd4d',ink:'#315a36',accent:'#e8812b',symbol:'sun'},
+ curry:{name:'HINODE',jp:'日の出',line:'カレールウ',paper:'#e7af32',ink:'#7e3024',accent:'#b73c24',symbol:'sun'},
+ soy:{name:'KAMEJIRUSHI',jp:'亀じるし',line:'しょうゆ',paper:'#efe2c7',ink:'#722b24',accent:'#ac352b',symbol:'flower'},
+ soup:{name:'MISATO',jp:'みさと',line:'みそ汁',paper:'#f1dfbd',ink:'#8e3529',accent:'#b15231',symbol:'sun'},
+ peaches:{name:'MOMOSATO',jp:'桃さと',line:'白桃シロップ漬け',paper:'#f5e4c9',ink:'#a95151',accent:'#cd8b7c',symbol:'leaf'},
+ tuna:{name:'SHIOHAMA',jp:'潮はま',line:'まぐろフレーク',paper:'#dce4d7',ink:'#265c6b',accent:'#679999',symbol:'gull'},
+ detergent:{name:'SUZUKAZE',jp:'すずかぜ',line:'洗たく洗剤',paper:'#eef0df',ink:'#284e81',accent:'#dd7b33',symbol:'wave'},
+ tissues:{name:'KOMACHI',jp:'こまち',line:'フェイシャルティッシュ',paper:'#dce5d2',ink:'#c25a58',accent:'#99b6a0',symbol:'flower'},
+ toothpaste:{name:'HAKUSEN',jp:'白せん',line:'薬用ハミガキ',paper:'#f2efe5',ink:'#20518a',accent:'#be4038',symbol:'star'},
+ orange:{name:'MIKANBI',jp:'みかん日',line:'みかんジュース',paper:'#f1a134',ink:'#28502e',accent:'#db7324',symbol:'sun'},
+ soda:{name:'AOZORA',jp:'あおぞら',line:'ラムネ',paper:'#d9eced',ink:'#25557e',accent:'#69aed0',symbol:'wave'},
+ yogurt:{name:'ASAMORI',jp:'あさもり',line:'プレーンヨーグルト',paper:'#eef0df',ink:'#32638b',accent:'#81aa7d',symbol:'sun'},
+ bread:{name:'KOMUGI',jp:'こむぎ',line:'ミルク食パン',paper:'#f1dcae',ink:'#6f422c',accent:'#c9924c',symbol:'leaf'},
 });
+
+export const BRAND_ATLAS_KEYS=Object.freeze(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','stock','buns','shop','chips','crackers','chocolate','candy','curry','soy','soup','peaches','tuna','detergent','tissues','toothpaste','orange','soda','yogurt','bread']);

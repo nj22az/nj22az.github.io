@@ -77,7 +77,7 @@ test('the readable spreadsheet shows actual sales and stock and updates while op
  const text=node=>[node.textContent||'',...node.children.map(text)].join(' ');const body=document.querySelector('#activityBody');
  assert.match(text(body),/Gross profit/);assert.match(text(body),/Reiko/);assert.match(text(body),/Pocket notebook/);
  const root=body.firstChild;root.children[1].children[1].onclick();assert.match(text(body),/On shelf/);assert.match(text(body),/Radio batteries/);
- acts.state.sakura.stock.battery.shelf=0;acts.tick(1/30);assert.match(text(body),/0 \/ 6/);dom.button('Close ledger');assert.equal(acts.paused,false);
+ acts.state.sakura.stock.battery.shelf=0;acts.tick(1/30);assert.match(text(body),/0 \/ 12/);dom.button('Close ledger');assert.equal(acts.paused,false);
 });
 
 test('sold-out goods get Thuan’s apology, no charge and no daytime refill, even with reserve stock',()=>{

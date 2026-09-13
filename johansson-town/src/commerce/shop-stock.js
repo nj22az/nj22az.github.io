@@ -1,6 +1,6 @@
 import {GROCERY_ITEMS} from './catalogue.js';
 
-export const SHOP_STOCK=Object.freeze([...GROCERY_ITEMS.map(item=>({...item,capacity:6,unitCost:Math.ceil(item.cost*55/100)})),{id:'bun',name:'Steamed pork bun',cost:150,unitCost:80,capacity:6}].map(Object.freeze));
+export const SHOP_STOCK=Object.freeze([...GROCERY_ITEMS.map(item=>({...item,capacity:12,unitCost:Math.ceil(item.cost*55/100)})),{id:'bun',name:'Steamed pork bun',cost:150,unitCost:80,capacity:12}].map(Object.freeze));
 export const stockSpec=id=>SHOP_STOCK.find(item=>item.id===id);
 const count=(n,max,fallback=0)=>Number.isSafeInteger(n)&&n>=0?Math.min(n,max):fallback;
 export function restoreShopStock(saved){return Object.fromEntries(SHOP_STOCK.map(item=>[item.id,{shelf:count(saved?.[item.id]?.shelf,item.capacity,saved?.[item.id]?0:item.capacity),reserve:count(saved?.[item.id]?.reserve,60,saved?.[item.id]?0:item.capacity*2)}]));}

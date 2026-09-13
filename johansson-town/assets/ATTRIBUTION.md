@@ -146,7 +146,7 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 
 ## Sakura fictional advertisements
 
-`graphics/konbini/*.webp`: original AI-generated NAGI, PORT 88 and KOMOREBI poster art created for Johansson Town with OpenAI image generation. See `../art/store/advertising/README.md` for the design briefs and runtime treatment. Product brand graphics are original canvas drawings defined in the source.
+`graphics/konbini/*.webp`: original AI-generated NAGI, PORT 88 and KOMOREBI poster art created for Johansson Town with OpenAI image generation. See `../art/store/advertising/README.md` for the design briefs and runtime treatment. Product packaging uses the original generated atlases described below, with canvas-drawn fallback labels and shelf prices.
 
 ## Umanose (Horseback) Sea Cave
 
@@ -200,3 +200,5 @@ The office and Seinfeld apartment retain their existing source attribution. Redu
 User-supplied `the-convenience-store.zip`, containing `source/8 16 20 conveniance_store.glb`. The archive supplies no author or licence document; no licence is inferred. The prepared interior retains the supplied architecture, aisle fixtures, refrigerators, checkout booth and back room. Static fittings are batched and recoloured; source merchandise, original advertising and opaque glass are replaced with interactive fictional stock and shop artwork. Source digest and preparation details: `models/sakura-interior/source.json`; reproducible preparation: `scripts/prepare-sakura-interior.py`.
 
 The fictional packaging atlas at `graphics/konbini/packaging-atlas.webp` was generated for Johansson Town on 13 September 2026 with the built-in image-generation tool. It contains original NAGI, PORT 88, SAKURA, KOMOREBI, HANAMORI, SHIOFUMI, HOSHIMARU, SHIOSAI, MIZUNOWA, UMINEKO, YUNAGI and ASAMORI labels. It is used on both shelf goods and customers’ held goods. Existing generated shop posters are reused.
+
+`graphics/konbini/packaging-groceries.webp`: sixteen additional original fictional labels generated on 13 September 2026. The complete built-in generation prompt, cell order and asset path are recorded in `../art/store/advertising/packaging-groceries.json`. Runtime meshes distinguish cans, shaped bottles, foil bags, cartons and household boxes. The fitted refrigerator, sliding doors and lighting are original project geometry; the supplied bakery trays have been levelled to keep stock supported.
