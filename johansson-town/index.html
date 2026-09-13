@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content">
-<meta name="theme-color" content="#0b171b">
+<meta name="theme-color" content="#1a3036">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
+<meta name="description" content="Johansson Town public information board. A first-person harbour neighbourhood, 14 September 1988.">
 <style>:root,html,body{margin:0;background:#0b171b!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?ui=controls-3">
@@ -17,10 +18,10 @@
 <link rel="stylesheet" href="./office.css?ui=controls-3">
 <link rel="stylesheet" href="./dialogue.css?ui=controls-3">
 <link rel="stylesheet" href="./workshop.css?v=1">
-
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?v=7">
+<link rel="stylesheet" href="./landing.css?v=board-1">
 <link rel="modulepreload" data-town-runtime href="./runtime/boot-a0aVwgYx.js">
 </head>
 <body>
@@ -28,14 +29,207 @@
 <div id="ink"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
 <section id="start">
-  <div class="start-card">
-    <div class="kicker">JOHANSSON TOWN · 1988</div>
-    <h1>JOHANSSON<br><span>TOWN</span></h1>
-    <div class="jp">ヨハンソン町</div>
-    <div class="scene-line">昭和63年 · A harbour neighbourhood, 1988</div>
-    <button id="enter">ENTER TOWN</button>
-    <div id="bootStatus" class="boot-status">READY</div>
-    <div class="desktop-help">FIRST PERSON · WASD move · SHIFT run · mouse look · SPACE jump · E interact · R drink<br>Q directory · B notebook · N time</div>
+  <a class="sr-only" href="#board">Skip to notice board</a>
+  <div class="board-wrap">
+    <article id="board" class="board-frame">
+      <div class="crop-marks" aria-hidden="true"></div>
+
+      <header>
+        <div class="board-kicker">
+          <span>Johansson Town Public Information</span>
+          <span class="red">Document JT-HB-63-0914</span>
+          <span>Harbour District · Unofficial visitor board</span>
+        </div>
+
+        <div class="board-hero">
+          <p class="board-vert" aria-hidden="true">港町案内</p>
+          <div>
+            <p class="board-tiny">SHOWA 63 · 14 SEPTEMBER 1988</p>
+            <p class="board-jp">ヨハンソン町</p>
+            <h1>JOHANSSON<span> TOWN</span></h1>
+            <p class="board-lede">A harbour neighbourhood, 1988. First person. Walk the shopping street to the quay, then the outer pier.</p>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+            <div class="board-seal" aria-hidden="true"><b>港</b></div>
+            <p class="board-tiny" style="text-align:right;letter-spacing:.12em">HARBOUR OFFICE<br>REVISION 7<br>ENGLISH EDITION</p>
+          </div>
+        </div>
+
+        <div class="board-status">
+          <div><span>Weekday</span><b>Wednesday</b></div>
+          <div><span>Weather</span><b>Clear</b></div>
+          <div><span>Shops</span><b id="statusShops">—</b></div>
+          <div><span>Period</span><b id="statusPeriod">AFTERNOON</b></div>
+        </div>
+      </header>
+
+      <div class="board-split">
+        <section class="clock-panel" aria-labelledby="town-clock-heading">
+          <div class="clock-head">
+            <div>
+              <p class="board-tiny">04 · TOWN CLOCK</p>
+              <h2 id="town-clock-heading">町時計</h2>
+            </div>
+            <p>
+              <small id="boardLive">LIVE · VISITOR CLOCK</small>
+              14 SEP 1988
+            </p>
+          </div>
+
+          <div class="clock-body">
+            <div class="clock-face">
+              <svg viewBox="0 0 200 200" role="img" aria-labelledby="boardDigital">
+                <circle cx="100" cy="100" r="96" fill="var(--paper)" stroke="currentColor" stroke-width="6"/>
+                <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <g id="clockTicks"></g>
+                <text x="100" y="48" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">12</text>
+                <text x="162" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">3</text>
+                <text x="100" y="168" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">6</text>
+                <text x="38" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">9</text>
+                <text x="100" y="72" text-anchor="middle" fill="var(--vermillion)" font-family="Shippori Mincho, serif" font-size="14">港</text>
+                <text x="100" y="136" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="6.5" font-weight="700" letter-spacing="0.32em">JOHANSSON</text>
+                <g id="handHour">
+                  <line x1="100" y1="118" x2="100" y2="56" stroke="currentColor" stroke-width="7" stroke-linecap="square"/>
+                </g>
+                <g id="handMinute">
+                  <line x1="100" y1="124" x2="100" y2="30" stroke="currentColor" stroke-width="4" stroke-linecap="square"/>
+                </g>
+                <g id="handSecond" class="hand-second">
+                  <line x1="100" y1="128" x2="100" y2="24" stroke="currentColor" stroke-width="2"/>
+                </g>
+                <circle cx="100" cy="100" r="5" fill="var(--vermillion)"/>
+                <circle cx="100" cy="100" r="2.2" fill="var(--paper)"/>
+              </svg>
+            </div>
+            <div>
+              <p class="board-tiny">SHOWA 63 · WEDNESDAY</p>
+              <p class="clock-digits" id="boardDigital" aria-live="polite">16:42:00</p>
+              <p class="clock-period" id="boardPeriod">AFTERNOON</p>
+              <p class="clock-line" id="boardLine">Shops are open.</p>
+              <p class="clock-shops" id="boardShops">SHOPS 00/00 OPEN · HARBOUR DISTRICT TIME</p>
+            </div>
+          </div>
+
+          <div class="clock-modes" role="group" aria-label="Town clock modes">
+            <button type="button" data-clock-mode="live" aria-pressed="true"><b>LIVE</b><span>Now in town</span></button>
+            <button type="button" data-clock-mode="run" aria-pressed="false"><b>60×</b><span>Town speed</span></button>
+            <button type="button" data-clock-mode="0900" aria-pressed="false"><b>09:00</b><span>Morning</span></button>
+            <button type="button" data-clock-mode="1642" aria-pressed="false"><b>16:42</b><span>Game start</span></button>
+            <button type="button" data-clock-mode="1830" aria-pressed="false"><b>18:30</b><span>Evening press</span></button>
+            <button type="button" data-clock-mode="2030" aria-pressed="false"><b>20:30</b><span>Night</span></button>
+          </div>
+        </section>
+
+        <section class="admit" aria-labelledby="enter-heading">
+          <p class="board-tiny">05 · ADMISSION</p>
+          <h2 id="enter-heading">Enter the three-dimensional town</h2>
+          <p>The live harbour is a first-person street. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
+          <button id="enter" type="button">
+            <span>
+              <small>入町</small>
+              <b>ENTER TOWN</b>
+            </span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </button>
+          <div id="bootStatus">READY</div>
+          <p class="muted" style="margin-top:10px;font-size:11px;letter-spacing:.04em">N on this board cycles the clock, same as in town.</p>
+
+          <p class="board-tiny" style="margin-top:20px">06 · STREET CONTROLS</p>
+          <ul class="controls-grid">
+            <li><kbd>WASD</kbd><span>Walk</span></li>
+            <li><kbd>Shift</kbd><span>Run</span></li>
+            <li><kbd>Mouse</kbd><span>Look</span></li>
+            <li><kbd>Space</kbd><span>Jump</span></li>
+            <li><kbd>E</kbd><span>Interact / stand</span></li>
+            <li><kbd>R</kbd><span>Drink</span></li>
+            <li><kbd>Q</kbd><span>Town book</span></li>
+            <li><kbd>B</kbd><span>Notebook</span></li>
+            <li><kbd>N</kbd><span>Cycle time</span></li>
+          </ul>
+        </section>
+      </div>
+
+      <section aria-labelledby="hours-heading">
+        <div class="section-bar">
+          <div>
+            <p class="board-tiny" style="opacity:.7">07 · HOURS OF BUSINESS</p>
+            <h2 id="hours-heading">Opening board</h2>
+          </div>
+          <p class="board-tiny" id="hoursHeadTime">16:42:00 · AFTERNOON</p>
+        </div>
+        <div class="hours-wrap">
+          <table class="hours-table">
+            <caption class="sr-only">Shop and landmark hours for Johansson Town</caption>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Place</th>
+                <th>District</th>
+                <th>Hours</th>
+                <th>Now</th>
+              </tr>
+            </thead>
+            <tbody id="hoursBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="dir-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">08 · DISTRICT DIRECTORY</p>
+            <h2 id="dir-heading">Places</h2>
+          </div>
+        </div>
+        <div class="place-grid" id="placesGrid"></div>
+      </section>
+
+      <section aria-labelledby="roll-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">09 · RESIDENT ROLL</p>
+            <h2 id="roll-heading">On the street</h2>
+          </div>
+        </div>
+        <div class="roll-grid" id="rollGrid"></div>
+      </section>
+
+      <section aria-labelledby="notice-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">10 · HARBOUR NOTICES</p>
+            <h2 id="notice-heading">Posted this Wednesday</h2>
+          </div>
+        </div>
+        <div class="notice-grid">
+          <article class="notice-card">
+            <p class="notice-no">NOTICE A-14</p>
+            <h3>Outer pier after dark</h3>
+            <p>Boards are wet and unlit past twenty hundred. Walk the inner quay.</p>
+          </article>
+          <article class="notice-card">
+            <p class="notice-no">NOTICE B-07</p>
+            <h3>Evening paper</h3>
+            <p>Reiko locks the press at Front-Row after eighteen-thirty. Copy is posted on the alley board.</p>
+          </article>
+          <article class="notice-card">
+            <p class="notice-no">NOTICE C-02</p>
+            <h3>Form 3D printer</h3>
+            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Yui at Sakura to sell a finished piece.</p>
+          </article>
+          <article class="notice-card">
+            <p class="notice-no">NOTICE D-11</p>
+            <h3>Opening seat</h3>
+            <p>Visitors arrive seated on the cedar bench, east sidewalk, facing Sakura. Press E to stand.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="board-foot">
+        <p>Johansson Town is a first-person harbour set on 14 September 1988. The clock on this board follows the time of day where you are, mapped onto that Wednesday; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
+        <p class="jp">昭和63年9月14日<span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
+      </footer>
+    </article>
   </div>
 </section>
 <div id="hud" class="hidden">
@@ -55,6 +249,7 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
+<script src="./landing.js?v=board-1"></script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
 (() => {
