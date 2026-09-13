@@ -12,7 +12,7 @@ test('delayed and failed character loads never show a placeholder or another ide
  globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return original(input);
   assert.doesNotMatch(url,/vroid|\/realistic\//);
   if(url.includes('town-suit')){workerRequests++;await held;}
-  if(url.includes('town-female_casual')&&failYuri)return new Response('',{status:503});
+  if(url.includes('yuri-merged')&&failYuri)return new Response('',{status:503});
   return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));
  };
  try{

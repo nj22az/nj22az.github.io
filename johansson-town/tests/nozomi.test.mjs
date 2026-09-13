@@ -5,9 +5,9 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 
 test('Nozomi and Aya retain their identities on low-poly rigs, including retries and historical names',async()=>{
- installDOM();const previous=globalThis.fetch,requests=[];let failFormal=true;
+ installDOM();const previous=globalThis.fetch,requests=[];let failFormal=true;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{
-  const url=String(input.url||input);requests.push(url);
+  const url=String(input.url||input);if(url.startsWith('blob:'))return previous(input);requests.push(url);
   assert.doesNotMatch(url,/realistic|vroid/,'Superseded character assets cannot be requested');
   if(url.includes('town-female_formal')&&failFormal)return new Response('',{status:503});
   return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));
@@ -16,7 +16,7 @@ test('Nozomi and Aya retain their identities on low-poly rigs, including retries
   const {preloadModels,preloadModel,preloadCharacter,createLocalCharacters}=await import('../src/people/models.js?nozomi-low-poly=1');
   for(const id of ['aya','nozomi','vroid-bob'])assert.equal(await preloadModel(id),false);
   assert.equal(requests.length,0);
-  assert.deepEqual(await preloadModels(),{ready:4,total:5});
+  assert.deepEqual(await preloadModels(),{ready:5,total:6});
   const scene=new THREE.Scene(),models=createLocalCharacters(),reikoEntity=new THREE.Group();reikoEntity.userData.name='Reiko';scene.add(reikoEntity);
   assert.equal(models.attach(reikoEntity,'Reiko'),null);assert.equal(reikoEntity.children.length,0);
   failFormal=false;assert.equal(await preloadCharacter('Nozomi'),true);
@@ -31,9 +31,9 @@ test('Nozomi and Aya retain their identities on low-poly rigs, including retries
    assert.notEqual(body(a).skeleton,body(b).skeleton);
    assert.deepEqual(body(a).geometry.attributes.color.array,body(b).geometry.attributes.color.array);
   }
-  for(const [a,b] of [[reiko,sato],[aya,yuri]])assert.notDeepEqual(body(a).geometry.attributes.color.array,body(b).geometry.attributes.color.array,'Shared rigs keep distinct resident palettes');
+  assert.notDeepEqual(body(reiko).geometry.attributes.color.array,body(sato).geometry.attributes.color.array,'Shared rigs keep distinct resident palettes');assert.ok(body(yuri).material.map);assert.notEqual(body(yuri).geometry.attributes.position.count,body(aya).geometry.attributes.position.count);
   assert.ok(aya.isAya&&aiko.isAya);assert.ok(aya.model.getObjectByName('resident-ponytail-satchel'));
   assert.equal(requests.filter(url=>url.includes('town-female_formal')).length,2,'Only the failed shared body is retried');
-  assert.equal(requests.filter(url=>url.includes('town-female_casual')).length,1,'Yuri and Aya share one asset download');
+  assert.equal(requests.filter(url=>url.includes('town-female_casual')).length,1,'Aya and Aiko share one asset download');
  }finally{globalThis.fetch=previous;}
 });

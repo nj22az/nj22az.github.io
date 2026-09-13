@@ -3,8 +3,8 @@
     "file": "assets-DNfyrzgA.js",
     "name": "assets"
   },
-  "_models-D6-N6ftf.js": {
-    "file": "models-D6-N6ftf.js",
+  "_models-CLVq5ceX.js": {
+    "file": "models-CLVq5ceX.js",
     "name": "models",
     "imports": [
       "_assets-DNfyrzgA.js"
@@ -20,12 +20,12 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-cI65jbSR.js",
+    "file": "boot-BWNyAW1Z.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_models-D6-N6ftf.js",
+      "_models-CLVq5ceX.js",
       "_assets-DNfyrzgA.js"
     ],
     "dynamicImports": [
@@ -36,12 +36,12 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-jl84KtcG.js",
+    "file": "game-ht350VEm.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_models-D6-N6ftf.js",
+      "_models-CLVq5ceX.js",
       "_assets-DNfyrzgA.js",
       "src/audio/town-audio.js?snappy=1"
     ]

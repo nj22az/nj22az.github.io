@@ -6,7 +6,7 @@ import {preloadModels,createLocalCharacters,characterSource} from '../src/people
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 
-test('every resident, including Aya and Nozomi, uses low-poly geometry with independent motion and seating',async()=>{
+test('residents retain independent motion and seating with Yuri on her supplied Meshy rig',async()=>{
  installDOM();const previous={fetch:globalThis.fetch,bitmap:globalThis.createImageBitmap,self:globalThis.self},requests=[];
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{
@@ -15,9 +15,9 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
   return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));
  };
  try{
-  assert.deepEqual(await preloadModels(),{ready:5,total:5});assert.equal(requests.length,5);
+  assert.deepEqual(await preloadModels(),{ready:6,total:6});assert.equal(requests.length,6);
   assert.ok(requests.every(url=>!url.includes('/realistic/')&&!url.includes('vroid')),'No superseded character or VRoid textures requested');
-  assert.equal(characterSource('Yuri'),'female_casual');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
+  assert.equal(characterSource('Yuri'),'yuri-merged');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
@@ -27,9 +27,11 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Sleep'])assert.ok(actor.actions.has(clip),name+' '+clip);
    assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
    {
-    assert.equal(actor.lowPoly,true);assert.equal(skins.length,name==='Yuri'?2:1,'Yuri has a separate skinned expression mesh');assert.match(entity.userData.visualSource,/PSX low-poly/);
-    const skin=skins[0];assert.equal(skin.geometry.groups.length,0);assert.equal(skin.material.map,null);assert.equal(skin.material.flatShading,true);
-    assert.ok(skin.geometry.attributes.position.count<14000);assert.ok(actor.seatSupport);assert.ok(actor.cup);
+    assert.equal(actor.lowPoly,name!=='Yuri');assert.equal(skins.length,1,'Each resident has one body');
+    const skin=skins[0];assert.equal(skin.geometry.groups.length,0);
+    if(name==='Yuri'){assert.match(entity.userData.visualSource,/Meshy merged/);assert.ok(skin.material.map);assert.equal(actor.face,null);assert.equal(skin.geometry.attributes.position.count,98333);}
+    else{assert.match(entity.userData.visualSource,/PSX low-poly/);assert.equal(skin.material.map,null);assert.equal(skin.material.flatShading,true);assert.ok(skin.geometry.attributes.position.count<14000);}
+    assert.ok(actor.seatSupport);assert.ok(actor.cup);
     for(const clip of ['Eat','Drink'])assert.ok(actor.actions.has(clip));
    }
    scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(actor.model,true);
@@ -51,7 +53,7 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
   models.gesture(yuri.entity);models.update(1/60);assert.equal(yuri.current,'Wave');assert.equal(yuri.actions.get('Wave').loop,THREE.LoopOnce);
   const remaining=yuri.gestureTime;models.gesture(yuri.entity);assert.equal(yuri.gestureTime,remaining);for(let i=0;i<Math.ceil((remaining+1)*60);i++)models.update(1/60);assert.equal(yuri.current,'Idle_Neutral');
   const point=new THREE.Vector3();
-  for(const actor of actors.filter(a=>a.lowPoly)){
+  for(const actor of actors){
    actor.entity.visible=true;actor.entity.parent.visible=true;actor.gestureTime=0;actor.speed=0;actor.moving=false;
    const standing=models.conversationTarget(actor.entity);
    for(const height of [.71,.565])for(const pose of ['Sit','Eat','Drink','Type']){

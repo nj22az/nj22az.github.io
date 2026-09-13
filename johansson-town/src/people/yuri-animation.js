@@ -6,7 +6,7 @@ export const YURI_GREETING_DURATION=1.6;
 
 // Bake a chair pose using the supplied skeleton's model-space axes. The skin,
 // bind pose and original locomotion clips are unchanged.
-function sittingClip(asset,idle,name='Sit',carrying=false){
+export function sittingClip(asset,idle,name='Sit',carrying=false){
  const pose=clone(asset.scene),clip=idle.clone();clip.name=name;
  const samples=idle.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
  const offsets=carrying?{LeftArm:[-.60,0,0],RightArm:[-.60,0,0],LeftForeArm:[-.85,0,0],RightForeArm:[-.85,0,0]}:{LeftUpLeg:[-Math.PI/2,0,0],RightUpLeg:[-Math.PI/2,0,0],LeftLeg:[Math.PI/2,0,0],RightLeg:[Math.PI/2,0,0],LeftFoot:[0,0,0],RightFoot:[0,0,0],LeftArm:[-.30,0,0],RightArm:[-.30,0,0],LeftForeArm:[-.85,0,0],RightForeArm:[-.85,0,0]};

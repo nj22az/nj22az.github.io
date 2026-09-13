@@ -32,12 +32,13 @@ test('old flat IDs migrate without changing individual schedules or belongings',
  const saved={visited:['resident-home-nao','yuri-home','resident-home-reiko','resident-home-tetsuo'],residentLocations:{Nao:{indoors:'home',position:[-24,10]}},residentLife:{Nao:{yen:800}}};
  const result=readSave({getItem:key=>key===SAVE_KEY?JSON.stringify(saved):null});assert.deepEqual(result.visited,['yuri-home','resident-home-aya','resident-home-kenji']);assert.deepEqual(result.residentLocations,saved.residentLocations);assert.deepEqual(result.residentLife,saved.residentLife);
 });
-test('Yuri expressions stay on her rig and typing wrists meet the fitted keyboard',async()=>{
+test('Yuri keeps her supplied appearance and typing wrists meet the fitted keyboard',async()=>{
  localAssets();try{
   await Promise.all(['Yuri','Harbour master'].map(preloadCharacter));const models=createLocalCharacters(),scene=new THREE.Scene();
-  const y=new THREE.Group();y.userData.name='Yuri';scene.add(y);const yuri=models.attach(y,'Yuri',1.64);assert.ok(yuri.face.mesh.isSkinnedMesh);assert.equal(yuri.model.getObjectByName('resident-ribbon-apron-uniform'),undefined);
-  const neutral=yuri.face.mesh.geometry.attributes.position.array.slice();yuri.face.update(.1,{engaged:true,speaking:true});assert.notDeepEqual(yuri.face.mesh.geometry.attributes.position.array,neutral);assert.ok(yuri.face.state.mouth>0);
-  yuri.face.update(.1,{sleeping:true});assert.equal(yuri.face.state.blink,1);assert.ok(yuri.face.mesh.geometry.attributes.position.array.every(Number.isFinite));
+  const y=new THREE.Group();y.userData.name='Yuri';scene.add(y);const yuri=models.attach(y,'Yuri',1.64);assert.equal(yuri.face,null);assert.equal(yuri.model.getObjectByName('resident-ribbon-apron-uniform'),undefined);
+  const body=yuri.model.getObjectByName('output_unwrapped');assert.ok(body.isSkinnedMesh&&body.material.map);const neutral=body.geometry.attributes.position.array.slice();
+  models.gesture(y);models.update(.1);assert.equal(yuri.current,'Wave');assert.deepEqual(body.geometry.attributes.position.array,neutral,'Keep the supplied face and body vertices');
+  y.userData.sleepBlend=1;y.userData.socialPose='Sleep';models.update(.4);assert.equal(yuri.current,'Sleep');assert.equal(yuri.sleepEyes,null,'Do not fit the old low-poly eye plaques to the new face');
   const g=new THREE.Group();g.userData={name:'Harbour master',inWorkplace:'office',socialPose:'Type',seatHeight:.54};g.position.set(...OFFICE_DESK_SEAT.position);scene.add(g);const clerk=models.attach(g,'Harbour master',1.74);
   for(let n=0;n<40;n++)models.update(.025);scene.updateMatrixWorld(true);
   for(const side of ['L','R']){const wrist=clerk.model.getObjectByName('Wrist'+side).getWorldPosition(new THREE.Vector3());assert.ok(Math.abs(wrist.y-.948)<.006);assert.ok(Math.abs(wrist.z+2.31)<.005);assert.ok(Math.abs(wrist.x-(-2.52+(side==='L'?-.15:.15)))<.005);}
