@@ -11,9 +11,10 @@ export function shuffledPlaylist(length,previous=-1,random=Math.random){
  return order;
 }
 
-// A modest 1980s set above Minato's counter. The square supplied film is
+// Mount the set on the right wall, clear of the back-wall radio and its grille.
+// The square supplied film is
 // pillarboxed inside a curved 4:3 tube instead of stretching the picture.
-export function createIzakayaTV({parent,position=[4.65,2.72,-5.55],yaw=-.24,clips=ADVERTISING_CLIPS,video=document.createElement('video')}){
+export function createIzakayaTV({parent,position=[5.94,2.72,-3.65],yaw=-Math.PI/2,clips=ADVERTISING_CLIPS,video=document.createElement('video')}){
  const group=new THREE.Group();group.name='Minato CRT television';group.position.set(...position);group.rotation.y=yaw;parent.add(group);
  const cabinet=new THREE.MeshStandardMaterial({color:0x654637,roughness:.78}),plastic=new THREE.MeshStandardMaterial({color:0x383632,roughness:.65}),metal=new THREE.MeshStandardMaterial({color:0x222927,roughness:.72}),glass=new THREE.MeshBasicMaterial({color:0x101b18,toneMapped:false});
  function box(size,position,material,name){const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),material);mesh.position.set(...position);mesh.name=name;group.add(mesh);return mesh;}
