@@ -38,6 +38,12 @@
     { name: "Mr Tanabe", jp: "田辺", role: "Resident", place: "Quay houses", start: null, end: null },
   ];
 
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const MONTHS_SHORT = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const TOWN_YEAR = 1988;
+  const SHOWA_YEAR = 63;
+
   const minuteOfDay = (m) => ((m % 1440) + 1440) % 1440;
   const pad = (n) => String(n).padStart(2, "0");
   const fmt = (m) => {
@@ -84,6 +90,26 @@
     const d = new Date(now);
     return d.getHours() * 60 + d.getMinutes() + (d.getSeconds() + d.getMilliseconds() / 1000) / 60;
   };
+  const townDate = (now) => {
+    const d = new Date(now);
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const weekday = WEEKDAYS[d.getDay()];
+    const monthName = MONTHS[d.getMonth()];
+    const monthShort = MONTHS_SHORT[d.getMonth()];
+    const mm = pad(month);
+    const dd = pad(day);
+    const long = `${day} ${monthName.toUpperCase()} ${TOWN_YEAR}`;
+    return {
+      weekday,
+      weekdayUpper: weekday.toUpperCase(),
+      short: `${day} ${monthShort} ${TOWN_YEAR}`,
+      eraLine: `SHOWA ${SHOWA_YEAR} · ${long}`,
+      weekdayLine: `SHOWA ${SHOWA_YEAR} · ${weekday.toUpperCase()}`,
+      japanese: `昭和${SHOWA_YEAR}年${month}月${day}日`,
+      documentNo: `JT-HB-${SHOWA_YEAR}-${mm}${dd}`,
+    };
+  };
 
   let mode = "live";
   let runOrigin = null;
@@ -101,6 +127,13 @@
   const hoursBody = $("hoursBody");
   const placesGrid = $("placesGrid");
   const rollGrid = $("rollGrid");
+  const statusWeekday = $("statusWeekday");
+  const boardDoc = $("boardDoc");
+  const boardDateLong = $("boardDateLong");
+  const boardDateShort = $("boardDateShort");
+  const boardWeekdayLine = $("boardWeekdayLine");
+  const noticeWhen = $("noticeWhen");
+  const boardJpDate = $("boardJpDate");
   const hourHand = $("handHour");
   const minuteHand = $("handMinute");
   const secondHand = $("handSecond");
@@ -169,6 +202,15 @@
     statusShops.textContent = `${openCount} open`;
     statusShops.classList.toggle("alert", openCount === 0);
     hoursHead.textContent = `${fmtS(minutes)} · ${period}`;
+
+    const civic = townDate(now);
+    if (statusWeekday) statusWeekday.textContent = civic.weekday;
+    if (boardDoc) boardDoc.textContent = `Document ${civic.documentNo}`;
+    if (boardDateLong) boardDateLong.textContent = civic.eraLine;
+    if (boardDateShort) boardDateShort.textContent = civic.short;
+    if (boardWeekdayLine) boardWeekdayLine.textContent = civic.weekdayLine;
+    if (noticeWhen) noticeWhen.textContent = `Posted this ${civic.weekday}`;
+    if (boardJpDate) boardJpDate.textContent = civic.japanese;
 
     const analogSeconds = (minutes * 60) % 60;
     const analogMinutes = minutes % 60;

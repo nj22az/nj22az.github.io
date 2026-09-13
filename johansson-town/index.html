@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
-<meta name="description" content="Johansson Town public information board. A first-person harbour neighbourhood, 14 September 1988.">
+<meta name="description" content="Johansson Town public information board. A first-person harbour neighbourhood, 1988.">
 <style>:root,html,body{margin:0;background:#0b171b!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?ui=controls-3">
@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="./context-controls.css?ui=controls-3">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?v=7">
-<link rel="stylesheet" href="./landing.css?v=board-1">
+<link rel="stylesheet" href="./landing.css?v=board-2">
 <link rel="modulepreload" data-town-runtime href="./runtime/boot-a0aVwgYx.js">
 </head>
 <body>
@@ -37,26 +37,26 @@
       <header>
         <div class="board-kicker">
           <span>Johansson Town Public Information</span>
-          <span class="red">Document JT-HB-63-0914</span>
+          <span class="red" id="boardDoc">Document JT-HB-63-0913</span>
           <span>Harbour District · Unofficial visitor board</span>
         </div>
 
         <div class="board-hero">
           <p class="board-vert" aria-hidden="true">港町案内</p>
           <div>
-            <p class="board-tiny">SHOWA 63 · 14 SEPTEMBER 1988</p>
+            <p class="board-tiny" id="boardDateLong">SHOWA 63 · 13 SEPTEMBER 1988</p>
             <p class="board-jp">ヨハンソン町</p>
             <h1>JOHANSSON<span> TOWN</span></h1>
             <p class="board-lede">A harbour neighbourhood, 1988. First person. Walk the shopping street to the quay, then the outer pier.</p>
           </div>
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
             <div class="board-seal" aria-hidden="true"><b>港</b></div>
-            <p class="board-tiny" style="text-align:right;letter-spacing:.12em">HARBOUR OFFICE<br>REVISION 7<br>ENGLISH EDITION</p>
+            <p class="board-tiny" style="text-align:right;letter-spacing:.12em">HARBOUR OFFICE<br>REVISION 8<br>ENGLISH EDITION</p>
           </div>
         </div>
 
         <div class="board-status">
-          <div><span>Weekday</span><b>Wednesday</b></div>
+          <div><span>Weekday</span><b id="statusWeekday">Sunday</b></div>
           <div><span>Weather</span><b>Clear</b></div>
           <div><span>Shops</span><b id="statusShops">—</b></div>
           <div><span>Period</span><b id="statusPeriod">AFTERNOON</b></div>
@@ -72,7 +72,7 @@
             </div>
             <p>
               <small id="boardLive">LIVE · VISITOR CLOCK</small>
-              14 SEP 1988
+              <span id="boardDateShort">13 SEP 1988</span>
             </p>
           </div>
 
@@ -102,7 +102,7 @@
               </svg>
             </div>
             <div>
-              <p class="board-tiny">SHOWA 63 · WEDNESDAY</p>
+              <p class="board-tiny" id="boardWeekdayLine">SHOWA 63 · SUNDAY</p>
               <p class="clock-digits" id="boardDigital" aria-live="polite">16:42:00</p>
               <p class="clock-period" id="boardPeriod">AFTERNOON</p>
               <p class="clock-line" id="boardLine">Shops are open.</p>
@@ -194,11 +194,11 @@
         <div class="roll-grid" id="rollGrid"></div>
       </section>
 
-      <section aria-labelledby="notice-heading">
+      <section aria-labelledby="noticeWhen">
         <div class="section-bar paper">
           <div>
             <p class="board-tiny">10 · HARBOUR NOTICES</p>
-            <h2 id="notice-heading">Posted this Wednesday</h2>
+            <h2 id="noticeWhen">Posted this Sunday</h2>
           </div>
         </div>
         <div class="notice-grid">
@@ -226,8 +226,8 @@
       </section>
 
       <footer class="board-foot">
-        <p>Johansson Town is a first-person harbour set on 14 September 1988. The clock on this board follows the time of day where you are, mapped onto that Wednesday; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
-        <p class="jp">昭和63年9月14日<span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
+        <p>Johansson Town is a first-person harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
+        <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
       </footer>
     </article>
   </div>
@@ -249,7 +249,7 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=board-1"></script>
+<script src="./landing.js?v=board-2"></script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
 (() => {
