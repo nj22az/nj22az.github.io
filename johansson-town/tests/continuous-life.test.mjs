@@ -1,3 +1,4 @@
+import {HOUSEHOLDS,householdFor} from '../src/people/households.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -5,7 +6,7 @@ import {RESIDENTS} from '../src/people/residents.js';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js';
 import {residentPlan,IZAKAYA_DOOR,RAMEN_DOOR,RAMEN_VISITS,GOSSIP} from '../src/people/social.js';
 import {WORK_SITES} from '../src/people/workplaces.js';
-import {sleepHours,homeRoutine,homeSiteId,HOME_LAYOUT} from '../src/people/home-life.js';
+import {sleepHours,homeRoutine,homeSiteId,HOME_LAYOUT,homeLayoutFor} from '../src/people/home-life.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
@@ -17,18 +18,18 @@ function person(name,parent){const profile=RESIDENTS.find(p=>p.name===name),g=ne
 const tick=(fn,from,seconds)=>{for(let i=0;i<seconds*30;i++)fn(1/30,from+i/30);};
 function roomFor(p){
  const room=new THREE.Group(),colliders=[];
- if(p.profile.name==='Yuri')colliders.push(...SUPPLIED_ROOM_LAYOUTS['yuri-home'].colliders);
+ if(homeSiteId(p.profile.name)==='yuri-home')colliders.push(...SUPPLIED_ROOM_LAYOUTS['yuri-home'].colliders);
  else buildResidentHome({profile:p.profile,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}});
- const b=p.profile.name==='Yuri'?SUPPLIED_ROOM_LAYOUTS['yuri-home'].bounds:HOME_LAYOUT.bounds;
+ const b=homeSiteId(p.profile.name)==='yuri-home'?SUPPLIED_ROOM_LAYOUTS['yuri-home'].bounds:homeLayoutFor(p.profile.name).bounds;
  return {room,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }
 test('all ten home owners can be selected even where their building entrance is shared',()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]},sites=[],anchors=[],menus=[];let entered;
  buildHomes(world,{sites,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),enter:s=>entered=s,onAction:(k,n,detail)=>menus.push(detail)});
- assert.equal(new Set(sites.map(s=>s.id)).size,10);assert.equal(anchors.length,6);
- assert.equal(new Set(RESIDENTS.map(p=>p.homeAddress)).size,10);
- for(const p of RESIDENTS){assert.equal(sites.find(s=>s.homeOwner===p.name).line,p.homeAddress);assert.equal(world.homes.get(p.name).address,p.homeAddress);}
- const selected=new Set();for(const a of anchors){entered=null;menus.length=0;a.fn();if(entered)selected.add(entered.homeOwner);for(const menu of menus)for(const item of menu){item.enter();selected.add(entered.homeOwner);}}
+ assert.equal(new Set(sites.map(s=>s.id)).size,7);assert.equal(anchors.length,5);
+ assert.equal(new Set(RESIDENTS.map(p=>p.homeAddress)).size,7);
+ for(const p of RESIDENTS){assert.equal(sites.find(s=>s.homeOwners.includes(p.name)).line,p.homeAddress);assert.equal(world.homes.get(p.name).address,p.homeAddress);}
+ const selected=new Set();for(const a of anchors){entered=null;menus.length=0;a.fn();if(entered)entered.homeOwners.forEach(n=>selected.add(n));for(const menu of menus)for(const item of menu){item.enter();entered.homeOwners.forEach(n=>selected.add(n));}}
  assert.deepEqual([...selected].sort(),RESIDENTS.map(p=>p.name).sort());
 });
 test('every current resident gives their actual address and knows a neighbour who is still in town',async()=>{
@@ -41,7 +42,7 @@ test('every current resident gives their actual address and knows a neighbour wh
   const answer=document.querySelector('#activityBody').firstChild.textContent;
   assert.ok(answer.includes(p.homeAddress),p.name+' gives the address shown on the door');
   const neighbour=RESIDENTS.find(n=>n.name!==p.name&&n.homeEntry===p.homeEntry);
-  if(neighbour){assert.ok(answer.includes(neighbour.name));assert.match(answer,/other flat/);}
+  if(neighbour){assert.ok(answer.includes(neighbour.name));assert.match(answer,householdFor(p.name).residents.length>1?/share the flat/:/other flat/);}
   acts.close();
   if(p.name!=='Yuri'){
    acts.action('resident',p.name);dom.button('How is '+p.friend+'?');

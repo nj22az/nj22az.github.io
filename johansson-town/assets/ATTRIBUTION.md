@@ -1,3 +1,5 @@
+> Current asset inventory: see [Main Street homes](../docs/MAIN-STREET-HOMES.md) and [resident provenance](characters/residents/PROVENANCE.md). Older cast descriptions below are historical; unused prototype binaries have been retired.
+
 # Asset licence ledger
 
 All runtime files are served from this game's directory. No remote model, map, texture or audio service is required while playing. This ledger identifies included files; proposed sources are not credited as if their assets shipped.
@@ -185,3 +187,9 @@ Eight approach buildings, signs, lights, vending machines and paving lead into t
 ## Advertising screen
 
 Owner-supplied `Image-to-Image-5b45ad04.mp4`, encoded as `video/izakaya-ad.mp4`; poster extracted from its first frame. No third-party source or licence was supplied.
+
+## Main Street frontage — September 2026
+
+The user supplied `street_2.glb`, **Street 2** by **Pasha**. Its embedded metadata records the [original model](https://sketchfab.com/3d-models/street-2-3c11ac40e38442489df9a0a7193ee62c) and [Sketchfab Standard licence](https://sketchfab.com/licenses). The central contiguous frontage is cropped, uniformly scaled, simplified and divided into three sections in `models/main-street/`. Two padded texture atlases preserve the original repeated tile UVs. Exact source hash, dimensions and processing budget are in the adjacent manifest.
+
+The office and Seinfeld apartment retain their existing source attribution. Redundant furniture was removed and replaced with original procedural furnishings for the office workstation and two sleeping corners. Both manifests record the refit and original source hashes.

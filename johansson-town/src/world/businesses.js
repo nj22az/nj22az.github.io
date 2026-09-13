@@ -1,3 +1,4 @@
+import {canonicalHomeId} from '../people/households.js';
 // Stable destinations: old save references resolve to the surviving business.
 export const BUSINESS_ALIASES=Object.freeze({journal:'frontrow',electronics:'form3d',stepwise:'form3d',career:'office'});
 export const businessId=id=>BUSINESS_ALIASES[id]||id;
@@ -15,4 +16,4 @@ export function consolidateBusinesses(sites){
  for(const definition of CORE_BUSINESSES){const site=sites.find(s=>s.id===definition.id);if(site)Object.assign(site,definition);}
  return sites;
 }
-export function migratedVisits(visits=[]){return [...new Set(visits.map(businessId))];}
+export function migratedVisits(visits=[]){return [...new Set(visits.map(id=>canonicalHomeId(businessId(id))))];}

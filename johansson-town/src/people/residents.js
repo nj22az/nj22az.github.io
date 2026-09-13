@@ -1,3 +1,4 @@
+import {householdFor} from './households.js';
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {DINING} from '../world/dining-layout.js';
@@ -11,7 +12,7 @@ const NEIGHBOURHOOD={
  'Mrs Sato':{friend:'Yuri',gossip:'Yuri calls her plant the assistant manager. I am still waiting for it to help with the stock.'},
  'Harbour master':{friend:'Bus driver',gossip:'The bus driver brings stories from the last stop. I check his timetable against the harbour clock.'},
  'Bus driver':{friend:'Harbour master',gossip:'The harbour master keeps the port records in order. I bring him a fresh story with the morning timetable.'},
- Nao:{friend:'Yuri',gossip:'Yuri has the other flat through our entrance. We compare our days over supper before my late shift ends.'},
+ Nao:{friend:'Yuri',gossip:'Yuri and I share a flat on Main Street. She leaves breakfast ready when I return from my late shift.'},
  'Officer Mori':{clue:'Main Street leads straight to the harbour. I follow it on the night patrol.'},
  Reiko:{clue:'The evening papers are at Aya’s counter. My printing bench is at the back.'},
  Kenji:{clue:'Star Port is inside our repair shop. Beat my score and I will show you around.'},
@@ -27,7 +28,8 @@ export function residentHomeDescription(name){
  if(!profile)return '';
  const neighbour=RESIDENTS.find(p=>p.name!==name&&p.homeEntry===profile.homeEntry);
  const address=name==='Kenji'?'My place is at '+profile.homeAddress+', bro.':'I live at '+profile.homeAddress+'.';
- return address+(neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');
+ const roommates=householdFor(name).residents.filter(n=>n!==name);
+ return address+(roommates.length?' I share the flat with '+roommates.join(' and ')+'.':neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');
 }
 // The peninsula scene uses the same active roster, without the bus driver.
 export const STREET_CAST_NAMES=Object.freeze(['Yuri','Nao','Mrs Sato','Kenji','Aya','Harbour master','Reiko','Tetsuo','Officer Mori']);

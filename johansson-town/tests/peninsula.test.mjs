@@ -2,16 +2,15 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildPeninsula} from '../src/world/peninsula.js';
-import {RESIDENTIAL_CANAL} from '../src/world/residential-layout.js';
 import {routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {laneEdges,buildLaneSurfaces} from '../src/world/lane-surfaces.js';
 
-test('peninsula ground leaves the surrounding sea and residential canal uncovered',()=>{
+test('peninsula ground leaves the surrounding sea uncovered and supports the Main Street homes',()=>{
  const group=new THREE.Group(),ground=buildPeninsula(group);group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),hit=(x,z)=>{ray.set(new THREE.Vector3(x,10,z),new THREE.Vector3(0,-1,0));return ray.intersectObject(ground).length>0;};
  assert.ok(hit(0,0));assert.equal(hit(0,100),false,'Sea separates the northern coast from the distant islands');
  for(const p of [[-55,0],[57,0],[0,-70],[30,95]])assert.equal(hit(...p),false,'Sea is exposed');
- const c=RESIDENTIAL_CANAL;assert.equal(hit((c.minX+c.maxX)/2,(c.minZ+c.maxZ)/2),false,'Canal remains open');
+ for(const p of [[-12,24],[-12,4],[-12,-15]])assert.ok(hit(...p),'The new frontage has continuous land underneath');
 });
 
 test('park shortcut has continuous walkable ground matching its visible ramp',()=>{

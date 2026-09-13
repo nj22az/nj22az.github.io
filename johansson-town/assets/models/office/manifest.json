@@ -8,10 +8,10 @@
     "source": "https://sketchfab.com/3d-models/3ds-tomodachi-life-interiors-065-office-e6d0799ea5f34c8a8ab57237a0208ff5",
     "title": "3DS - Tomodachi Life - Interiors - 065 Office"
   },
-  "sha256": "f61f6b4bcae9181c03616d0c7560abad4a2d73018ece38c81bd08a7a46e15b6d",
-  "bytes": 274812,
-  "triangles": 2991,
-  "draws": 28,
+  "sha256": "39fc4dcb495314a1283ff58707c97c05fe5c12e5a2af927d1d371b673ed7a22a",
+  "bytes": 275148,
+  "triangles": 2173,
+  "draws": 25,
   "removedDuplicatePrimitives": 40,
   "bounds": {
     "min": [
@@ -35,6 +35,12 @@
     "Merged primitives sharing material and vertex attributes",
     "Preserved embedded textures, UV transforms and vertex colours",
     "Unlit materials preserve baked lighting; vertex alpha restores office shadow overlays",
-    "Converted legacy specular/glossiness diffuse textures to core glTF base colour"
-  ]
+    "Converted legacy specular/glossiness diffuse textures to core glTF base colour",
+    "Replaced redundant furniture with fitted interactive household/office furnishings; see tools/refit-interiors.py."
+  ],
+  "refit": {
+    "kind": "office",
+    "removedTriangles": 818,
+    "sourceSHA256": "f61f6b4bcae9181c03616d0c7560abad4a2d73018ece38c81bd08a7a46e15b6d"
+  }
 }

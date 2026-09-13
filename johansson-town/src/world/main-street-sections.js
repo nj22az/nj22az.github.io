@@ -1,0 +1,3 @@
+// Generated from street_2.glb by tools/pack-main-street.mjs.
+export const MAIN_STREET_SECTIONS=[{"id":"north","file":"north.glb","bytes":3970472,"triangles":44927,"draws":2,"min":[-28.50991439819336,0.019999999552965164,11.041000366210938],"max":[-8.601423263549805,18.41881561279297,30.5]},{"id":"centre","file":"centre.glb","bytes":1615168,"triangles":16063,"draws":2,"min":[-28.526369094848633,0.019999999552965164,-4.4029998779296875],"max":[-8.150625228881836,13.98447322845459,11.041000366210938]},{"id":"south","file":"south.glb","bytes":2453144,"triangles":23966,"draws":2,"min":[-28.62078094482422,0.019999999552965164,-19.351999282836914],"max":[-6.820285797119141,15.405780792236328,-4.4029998779296875]}];
+export const FRONTAGE_ATLAS_COUNT=2;

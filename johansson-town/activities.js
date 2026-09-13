@@ -50,7 +50,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const speaker=title.split('·')[0].trim();
     const conversation=speaker==='Yuri'||!!DIALOGUE[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
-    modal.classList.remove('hidden');onConversation(conversation?speaker:null);$('#closeActivity').focus();
+    modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);$('#closeActivity').focus();
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}

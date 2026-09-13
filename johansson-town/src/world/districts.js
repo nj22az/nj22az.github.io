@@ -41,8 +41,6 @@ export function buildDistricts(world,options){
     if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }
-  building({id:'sento',x:-28,z:23,w:9,d:8,h:6,jp:'港の湯',title:'Minato Bathhouse',roof:2,colour:0x959f95});
-  box([1.15,17,1.15],[-31,8.5,19],'concrete',0x8d8b7a);
   buildTeaHouse(world,options);
   if(!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
@@ -56,7 +54,7 @@ export function buildDistricts(world,options){
   box([.12,1.6,8],[41.5,.8,24],'timber',0x687566);colliders.push({x:41.5,z:24,w:.12,d:8,height:1.6});
   verb([40,1,24],'Look through school gate','read','School gate','The last baseball practice has finished. Indoor shoes stand in neat rows beyond the locked gate.');
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  for(const [x,z,jp,en] of [[6.0,7.8,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,6.5,'柳小路','← HOMES · BATHHOUSE'],[5.9,-34,'港通り','PORT · WAREHOUSE AHEAD'],[5.9,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
+  for(const [x,z,jp,en] of [[6.0,7.8,'食堂通り','RAMEN · IZAKAYA →'],[-5.9,6.5,'住まい','MAIN STREET HOMES ←'],[5.9,-34,'港通り','PORT · WAREHOUSE AHEAD'],[5.9,28,'北通り','TEA HOUSE → · BUS STOP ←']]){
     const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }

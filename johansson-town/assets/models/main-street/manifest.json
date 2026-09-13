@@ -1,0 +1,79 @@
+{
+  "source": {
+    "author": "Pasha (https://sketchfab.com/Pasha.)",
+    "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+    "source": "https://sketchfab.com/3d-models/street-2-3c11ac40e38442489df9a0a7193ee62c",
+    "title": "Street 2"
+  },
+  "sourceFile": "street_2.glb",
+  "sourceSha256": "77ddf561ef2072c1c0012f2a332801ac57d28ea52d9244fd04904abf6130d9f1",
+  "sourceBytes": 72942356,
+  "sourceOpaqueTriangles": 441313,
+  "scale": 0.022,
+  "sourceRange": [
+    -1106.4,
+    1159.6
+  ],
+  "offset": {
+    "x": -14.16,
+    "y": -0.21760000000000002,
+    "z": 6.1591999999999985
+  },
+  "atlasSize": 2048,
+  "atlasCount": 2,
+  "textureLimit": 256,
+  "maximumSimplificationError": 0.025,
+  "sections": [
+    {
+      "id": "north",
+      "file": "north.glb",
+      "bytes": 3970472,
+      "triangles": 44927,
+      "draws": 2,
+      "min": [
+        -28.50991439819336,
+        0.019999999552965164,
+        11.041000366210938
+      ],
+      "max": [
+        -8.601423263549805,
+        18.41881561279297,
+        30.5
+      ]
+    },
+    {
+      "id": "centre",
+      "file": "centre.glb",
+      "bytes": 1615168,
+      "triangles": 16063,
+      "draws": 2,
+      "min": [
+        -28.526369094848633,
+        0.019999999552965164,
+        -4.4029998779296875
+      ],
+      "max": [
+        -8.150625228881836,
+        13.98447322845459,
+        11.041000366210938
+      ]
+    },
+    {
+      "id": "south",
+      "file": "south.glb",
+      "bytes": 2453144,
+      "triangles": 23966,
+      "draws": 2,
+      "min": [
+        -28.62078094482422,
+        0.019999999552965164,
+        -19.351999282836914
+      ],
+      "max": [
+        -6.820285797119141,
+        15.405780792236328,
+        -4.4029998779296875
+      ]
+    }
+  ]
+}

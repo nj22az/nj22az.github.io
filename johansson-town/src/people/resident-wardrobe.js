@@ -42,9 +42,10 @@ export function addResidentAccessories(model,style){
   for(const side of [-1,1])box(size.x*.055,size.y*.29,size.z*.16,centre.x+side*size.x*.44,bounds.max.y-size.y*.17,centre.z,style.accent);
   box(size.x*.90,size.y*.055,size.z*.16,centre.x,bounds.max.y-size.y*.035,centre.z,style.accent);
  }
- if(type==='ribbon-apron'){
-  for(const side of [-1,1])box(size.x*.20,size.y*.13,.035,centre.x+size.x*.39+side*size.x*.085,bounds.max.y-size.y*.22,centre.z,0xe7acc2);
-  box(size.x*.065,size.y*.09,.043,centre.x+size.x*.39,bounds.max.y-size.y*.22,centre.z,0xf6d9dc);
+ if(type==='ribbon'){
+  const x=centre.x+size.x*.35,y=bounds.max.y-size.y*.24,z=centre.z+size.z*.34;
+  for(const side of [-1,1])coloured(new THREE.SphereGeometry(1,8,5).scale(size.x*.077,size.y*.041,.009).rotateZ(side*.4).translate(x+side*.011,y+side*.002,z),0xd89ab4);
+  coloured(new THREE.SphereGeometry(.007,8,5).translate(x,y,z+.004),0xf0c8d3);
  }
  if(['glasses','driver'].includes(type)){
   for(const side of [-1,1]){const x=centre.x+side*size.x*.22;
