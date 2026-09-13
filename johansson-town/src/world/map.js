@@ -42,7 +42,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}
     if(w>=300&&site.id==='market'){ctx.fillStyle='#a6333c';ctx.font='bold 12px sans-serif';ctx.fillText('SAKURA',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='ramen'){ctx.fillStyle='#a34e3d';ctx.font='bold 12px sans-serif';ctx.fillText('SATO RAMEN',px(x)+7,pz(site.z)+4);}
-    if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('YURI & NAO',px(x)+7,pz(site.z)+4);}
+    if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('THUAN & NAO',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='warehouse'){ctx.fillStyle='#314d51';ctx.font='bold 12px sans-serif';ctx.fillText('WAREHOUSE',px(x)+7,pz(site.z)+4);}
   }
   if(target){const x=target.x??target.side*11.8;ctx.strokeStyle='#c45766';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px(x),pz(target.z),7,0,Math.PI*2);ctx.stroke();if(w>=300){ctx.fillStyle='#723b49';ctx.font='bold 12px sans-serif';ctx.fillText(target.title,px(x)+9,pz(target.z)-7);}}

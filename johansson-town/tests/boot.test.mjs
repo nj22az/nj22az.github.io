@@ -84,7 +84,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const {preloadYuriHome}=await import('../src/world/yuri-home.js');
-    assert.equal(await preloadYuriHome(),true,'Yuri house exterior preloaded');
+    assert.equal(await preloadYuriHome(),true,'Thuan house exterior preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
     const {preloadModels}=await import('../src/people/models.js?snappy=1');
@@ -204,6 +204,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       }
       assert.deepEqual(api.reviewRoomState(),{visible:true,townVisible:false,colliders:api.reviewRoomState().colliders});
       assert.ok(api.reviewRoomState().colliders>0,'Interior has colliders: '+site.id);
+      if(site.id==='izakaya'){assert.ok(api.reviewRoom().getObjectByName('Minato CRT television'));assert.equal(api.world.group.getObjectByName('Street advertising billboard'),undefined);}
       api.simulate(1/60);assert.equal(api.camera.fov,65);assert.equal(api.player.visible,false,'FPV inside '+site.id);assert.equal(api.reviewHiddenCutaways(),0,'FPV keeps the room enclosure visible: '+site.id);
       const roomStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;const facing=SUPPLIED_ROOM_LAYOUTS[site.id]?.yaw??0;assert.ok((api.player.position.x-roomStart.x)*-Math.sin(facing)+(api.player.position.z-roomStart.z)*-Math.cos(facing)>0,'Interior FPV walks forward: '+site.id);
 
@@ -211,18 +212,18 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assertFiniteTransforms(api,'inside '+site.id);
       if(site.id==='market'){
         const rotation=api.camera.quaternion.clone(),aspect=api.camera.aspect;
-        api.activities.action('resident','Yuri');
+        api.activities.action('resident','Thuan');
         assert.ok(api.camera.aspect<aspect,'Speech rail reserves horizontal scene space');
-        const clerk=api.scene.children.find(o=>o.userData.name==='Yuri');assert.ok(clerk);
+        const clerk=api.scene.children.find(o=>o.userData.name==='Thuan');assert.ok(clerk);
         const target=clerk.position.clone();target.y+=1.25;api.camera.updateMatrixWorld(true);target.project(api.camera);
-        assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Conversation keeps Yuri inside the unobstructed scene');
+        assert.ok(Math.abs(target.x)<.95&&Math.abs(target.y)<.95,'Conversation keeps Thuan inside the unobstructed scene');
         api.activities.close();assert.equal(api.camera.aspect,aspect);
         const canvas=document.querySelector('#game');
         for(const [width,height] of [[390,844],[768,1030],[1024,768],[844,390]]){
           globalThis.innerWidth=width;globalThis.innerHeight=height;
           api.resizeRenderer();
           for(const talking of [true,false]){
-            if(talking)api.activities.action('resident','Yuri');else api.activities.close();
+            if(talking)api.activities.action('resident','Thuan');else api.activities.close();
             const displayWidth=parseFloat(canvas.style.width),displayHeight=parseFloat(canvas.style.height);
             assert.ok(Math.abs(api.camera.aspect-displayWidth/displayHeight)<1e-12,'Camera must match the canvas dimensions');
             const projection=api.camera.projectionMatrix.elements;
@@ -235,23 +236,23 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assert.equal(api.scene.fog,null,'No interior fog');
       if(site.id==='market'){
         const gesture=api.characters.gesture;let welcomes=0;
-        api.characters.gesture=entity=>{assert.equal(entity.userData.name,'Yuri');welcomes++;};
+        api.characters.gesture=entity=>{assert.equal(entity.userData.name,'Thuan');welcomes++;};
         try{
           api.interaction();assert.equal(welcomes,0,'No distant wave from the entrance');
           api.player.position.set(3.35,0,-4.5);api.interaction();assert.equal(welcomes,0,'Do not wave behind the camera');
           api.player.position.set(3.35,0,.7);api.interaction();assert.equal(welcomes,1,'Approaching the counter triggers a visible welcome');
           api.interaction();api.interaction();assert.equal(welcomes,1,'Only one proximity welcome per visit');
-          assert.equal(api.activities.paused,false,'The greeting must not open a panel over Yuri');
+          assert.equal(api.activities.paused,false,'The greeting must not open a panel over Thuan');
         }finally{api.characters.gesture=gesture;}
       }
       const exitButton=document.querySelector('#exitRoomButton');
       assert.equal(exitButton.classList.contains('hidden'),false,'Visible exit control: '+site.id);
-      if(site.id==='market')api.activities.action('resident','Yuri');
+      if(site.id==='market')api.activities.action('resident','Thuan');
       exitButton.onclick();
       assert.equal(api.activities.paused,false,'Exit closes conversation');
       assert.equal(exitButton.classList.contains('hidden'),true,'Exit hides on the street');
       assert.equal(api.reviewCurrentRoom(),null,'Interior exit: '+site.id);
-      assert.equal(api.reviewRoomState().townVisible,true);
+      assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined,'The television releases its media on exit');
       api.simulate(1/60);
       assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first');assert.equal(api.player.visible,false,'Leaving '+site.id+' remains FPV');
       assertFiniteTransforms(api,'outside '+site.id);
@@ -259,24 +260,24 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     }
     assert.equal(entered,api.SITES.length,'Every registered interior is entered');assert.ok(entered>=15,'Consolidated homes and existing businesses remain registered');assert.equal(api.SITES.filter(s=>s.homeOwner).length,7,'Seven households remain accessible through five doors');
     for(const site of api.SITES){api.reviewSetMinutes(180);api.enterRoom(site);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id);api.leaveRoom();}
-    const yuri=api.world.people.find(p=>p.profile.name==='Yuri').g,yuriScale=yuri.scale.clone();
+    const yuri=api.world.people.find(p=>p.profile.name==='Thuan').g,yuriScale=yuri.scale.clone();
     yuri.position.set(DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]);yuri.userData.indoors='izakaya';delete yuri.userData.justArrived;
     api.reviewSetMinutes(1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
-    assert.equal(yuri.visible,true,'Yuri visits after Sakura closes');
+    assert.equal(yuri.visible,true,'Thuan visits after Sakura closes');
     assert.equal(yuri.userData.inIzakaya,true);assert.ok(yuri.scale.equals(yuriScale));
-    assert.equal(api.scene.children.filter(o=>o.userData.name==='Yuri').length,1,'Reuse the existing Yuri');
-    yuri.userData.hit.fn();assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · After hours');api.activities.close();
-    api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.ok(yuri.parent===api.scene,'Yuri first walks to the indoor exit');for(let i=0;i<250;i++)api.simulate(.1);assert.ok(yuri.parent===api.world.group,'Yuri resumes walking outside after reaching the exit: '+yuri.position.toArray()+' '+yuri.userData.activity);assert.equal(yuri.userData.inIzakaya,undefined);
+    assert.equal(api.scene.children.filter(o=>o.userData.name==='Thuan').length,1,'Reuse the existing Thuan');
+    yuri.userData.hit.fn();assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');api.activities.close();
+    api.reviewSetMinutes(1290);api.simulate(1/60);api.interaction();assert.ok(yuri.parent===api.scene,'Thuan first walks to the indoor exit');for(let i=0;i<250;i++)api.simulate(.1);assert.ok(yuri.parent===api.world.group,'Thuan resumes walking outside after reaching the exit: '+yuri.position.toArray()+' '+yuri.userData.activity);assert.equal(yuri.userData.inIzakaya,undefined);
     api.leaveRoom();api.reviewSetMinutes(1440+1230);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.interaction();
     assert.ok(yuri.parent===api.world.group,'She stays outside the restaurant on alternate evenings');api.leaveRoom();
     yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);api.enterRoom(api.SITES.find(s=>s.id==='market'));api.interaction();
-    assert.equal(yuri.visible,true,'Yuri returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
+    assert.equal(yuri.visible,true,'Thuan returns to the shop');assert.equal(yuri.userData.inIzakaya,undefined);assert.ok(yuri.scale.equals(yuriScale));
     const {STORE_CLERK_POSITION}=await import('../src/world/interiors/store-layout.js');
     assert.deepEqual(yuri.position.toArray(),[...STORE_CLERK_POSITION]);api.leaveRoom();
     const home=api.world.people.find(p=>p.g===yuri).profile.home;yuri.position.set(home[0],0,home[1]);yuri.userData.indoors='home';delete yuri.userData.justArrived;api.reviewSetMinutes(1420);api.enterRoom(api.SITES.find(s=>s.id==='yuri-home'));api.interaction();
     assert.equal(api.reviewCurrentRoom()?.id,'yuri-home');
-    assert.equal(yuri.visible,true,'Yuri is home late at night');
-    assert.equal(yuri.userData.inHome,true);assert.equal(api.scene.children.filter(o=>o.userData.name==='Yuri').length,1);
+    assert.equal(yuri.visible,true,'Thuan is home late at night');
+    assert.equal(yuri.userData.inHome,true);assert.equal(api.scene.children.filter(o=>o.userData.name==='Thuan').length,1);
     api.leaveRoom();
     api.reviewSetMinutes(1619.99);api.enterRoom(api.SITES.find(s=>s.id==='izakaya'));api.simulate(.1);
     assert.equal(api.reviewRoomState().townVisible,false,'03:00 closing keeps the player indoors');assert.equal(api.reviewCurrentRoom().id,'izakaya');
@@ -294,8 +295,9 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     await api.enterRoom(api.SITES.find(s=>s.id==='form3d'));api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
     assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
     yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);await api.enterRoom(api.SITES.find(s=>s.id==='market'));
-    yuri.userData.hit.fn();choose('Sell my workshop models');choose('Sell Johansson cable ring · +¥120');
-    assert.equal(api.activities.state.yen,workshopBalance+80);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
+    const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Buy in town · ¥120');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
+    yuri.userData.hit.fn();choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
+    assert.equal(api.activities.state.yen,workshopBalance+80-120);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
     api.runStabilityChecks();
     assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-interior stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
   }catch(error){throw quietDataUrlError(error);}

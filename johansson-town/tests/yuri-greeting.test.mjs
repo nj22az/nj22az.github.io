@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {prepareYuriAnimations} from '../src/people/yuri-animation.js';
 
-test('Yuri greeting raises her hand, keeps feet planted, bounds the head tilt and returns to authored idle',async()=>{
+test('Thuan greeting raises her hand, keeps feet planted, bounds the head tilt and returns to authored idle',async()=>{
  const oldSelf=globalThis.self,oldBitmap=globalThis.createImageBitmap;
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  try{

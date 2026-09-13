@@ -53,7 +53,7 @@ test('authored cedar bench sits the player looking at Sakura from across the str
 test('harbour town keeps the viewing bench and the neighbourhood bench',()=>{
   installDOM();
   FULL_TOWN.active=false;
-  const world=createTown({scene:new THREE.Scene(),sites:[{id:'market',title:'Sakura Shōten',jp:'桜商店',side:-1,z:-28,color:0x9d7c7e,accent:'#a76680',line:'Yuri'}],mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
+  const world=createTown({scene:new THREE.Scene(),sites:[{id:'market',title:'Sakura Shōten',jp:'桜商店',side:-1,z:-28,color:0x9d7c7e,accent:'#a76680',line:'Thuan'}],mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
   assert.ok(world.group.getObjectByName('sakura-viewing-bench'));
   assert.ok(world.group.getObjectByName('prop:bench'),'Neighbourhood bench remains further north');
   assert.ok(world.sakuraBench?.seat);

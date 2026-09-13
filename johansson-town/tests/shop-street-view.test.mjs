@@ -31,8 +31,8 @@ test('street renders behind the room and restores renderer state, including afte
 
 test('steamed bun has a flat resting base, rounded belly and folded crown',()=>{
  const g=createSteamedBunGeometry(),p=g.attributes.position;
- assert.ok(Math.abs(g.boundingBox.min.y)<1e-6);assert.ok(g.boundingBox.max.y>.17&&g.boundingBox.max.y<.19);
- const crown=[];for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));if(p.getY(i)>.165)crown.push(Math.hypot(p.getX(i),p.getZ(i)));}
+ assert.ok(Math.abs(g.boundingBox.min.y)<1e-6);assert.ok(g.boundingBox.max.y>.068&&g.boundingBox.max.y<.076);
+ const crown=[];for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));if(p.getY(i)>.066)crown.push(Math.hypot(p.getX(i),p.getZ(i)));}
  assert.ok(crown.length>64);assert.ok(g.attributes.color.count===p.count);g.dispose();
 });
 

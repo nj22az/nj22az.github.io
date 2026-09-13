@@ -22,7 +22,7 @@ test('late street, home, bench and vending assets replace placeholders without m
    const entry=world.details.find(e=>e.id===id);assert.ok(entry,id);assert.equal(await entry.load(),true,id);
    assert.equal(JSON.stringify(world.colliders),before);assert.equal(JSON.stringify(sites.map(s=>s.door)),doors);
   }
-  assert.equal(world.group.getObjectByName('home-placeholder:Yuri'),undefined);
+  assert.equal(world.group.getObjectByName('home-placeholder:Thuan'),undefined);
   const shop=world.harbourShops.find(s=>s.id==='frontrow');assert.equal(shop.source,'Japanese street at night');assert.equal(shop.lod.getObjectByName('street-kit-placeholder'),undefined);
   assert.ok(shop.lod.getObjectByName('door-handle'));assert.ok(shop.lod.getObjectByName('door-threshold'));assert.deepEqual(sites.find(s=>s.id==='frontrow').alleyUnits,['B','C']);
   world.group.updateMatrixWorld(true);
@@ -34,6 +34,6 @@ test('late street, home, bench and vending assets replace placeholders without m
   const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
   for(const door of [DINING.izakayaDoor,DINING.ramenDoor,DINING.crystalDoor])assert.equal(sweepFraction({x:0,z:door[1]},{x:door[0],z:door[1]},blocked),1,'Dining junction and doors remain clear after streaming');
   assert.equal(world.group.children.filter(o=>o.name==='East lane delivery shelf').length,0,'Retired outdoor content furniture cannot reappear after streaming');
-  assert.equal(await preloadCharacter('Yuri'),false);failYuri=false;assert.equal(await preloadCharacter('Yuri'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
+  assert.equal(await preloadCharacter('Thuan'),false);failYuri=false;assert.equal(await preloadCharacter('Thuan'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
  }finally{globalThis.fetch=native;}
 });

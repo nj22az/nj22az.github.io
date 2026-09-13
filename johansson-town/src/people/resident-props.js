@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {createSteamedBunGeometry} from '../world/interiors/steamed-bun.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
 // Small, solid-colour props at metre scale. One draw per item, including beer foam
@@ -17,7 +18,8 @@ export function createResidentProp(kind){
   cylinder(r,r*.90,h,[0,h/2,0],beer?0xc88b2c:can?0x769e89:0x9db18a);
   cylinder(r*.99,r*.99,.009,[0,h-.004,0],beer?0xf6edcd:can?0xb7bdb6:0x667b42);
   if(beer)part(new THREE.TorusGeometry(.037,.010,5,10),0xc7c3a9,[.055,h*.54,0]);
- }else if(kind==='bun')part(new THREE.SphereGeometry(.064,10,7),0xefe1b9,[0,.06,0]);
+ }else if(kind==='bun')parts.push(createSteamedBunGeometry());
+ else if(kind==='chopsticks'){for(const x of [-.008,.008])box([.005,.005,.18],[x,.025,.065],0xc5a16a);}
  else if(kind==='rice'){
   part(new THREE.ConeGeometry(.070,.125,3),0xf3e8d1,[0,.067,0],[0,Math.PI/2,0]);box([.043,.055,.095],[0,.032,0],0x2c4538);
  }else if(['ramen','fish','yakitori'].includes(kind)){
@@ -41,17 +43,32 @@ export function createResidentProp(kind){
 export function createResidentHands(model){
  let hand;model.traverse(o=>{if(o.isBone&&(/RightHand$/.test(o.name)||o.name==='WristR'))hand=o;});if(!hand)return null;
  const holder=new THREE.Group();holder.name='resident-held-item';holder.visible=false;holder.matrixAutoUpdate=false;hand.add(holder);
- const props=new Map(),point=new THREE.Vector3(),world=new THREE.Matrix4();
+ const utensils=new THREE.Group();utensils.name='resident-chopsticks';utensils.visible=false;utensils.matrixAutoUpdate=false;hand.add(utensils);
+ const props=new Map(),point=new THREE.Vector3(),world=new THREE.Matrix4(),rotation=new THREE.Quaternion(),one=new THREE.Vector3(1,1,1);
+ let motion=null;
  function show(kind){
-  holder.visible=!!kind;if(!kind)return;
+  holder.visible=!!kind;utensils.visible=false;if(!kind)return;
   if(!props.has(kind)){const prop=createResidentProp(kind);holder.add(prop);props.set(kind,prop);}
   for(const [id,prop] of props)prop.visible=id===kind;
  }
- function align(){
-  if(!holder.visible)return;hand.updateWorldMatrix(true,false);point.set(0,.025,.025).applyMatrix4(hand.matrixWorld);
-  // Cancel the complete hand transform, including non-uniform body proportions.
-  // Cancelling only its quaternion leaves mugs skewed and tilted by bone shear.
-  world.makeTranslation(point.x,point.y,point.z);holder.matrix.copy(hand.matrixWorld).invert().multiply(world);holder.matrixWorldNeedsUpdate=true;
+ function place(group,arm,q){
+  arm.hand.updateWorldMatrix(true,false);point.copy(arm.grip).applyMatrix4(arm.hand.matrixWorld);
+  // Preserve metre-sized food even under non-uniform character proportions.
+  if(group===holder&&motion?.active)point.add(motion.propOffset);
+  world.compose(point,q,one);group.matrix.copy(group.parent.matrixWorld).invert().multiply(world);group.matrixWorldNeedsUpdate=true;
  }
- return {holder,show,align};
+ function align(){
+  if(!holder.visible)return;
+  const bowl=motion?.active&&motion.bowl,arm=motion?.arms[bowl?'L':'R'];
+  if(arm){
+   if(holder.parent!==arm.hand)arm.hand.add(holder);
+   rotation.identity();if(motion.active)rotation.copy(motion.orientation);
+   // Bowls stay level in the left palm; the right hand works the chopsticks.
+   place(holder,arm,rotation);utensils.visible=!!bowl;
+   if(bowl){if(!utensils.children.length)utensils.add(createResidentProp('chopsticks'));place(utensils,motion.arms.R,rotation);}
+  }else{
+   hand.updateWorldMatrix(true,false);point.set(0,.05,0).applyMatrix4(hand.matrixWorld);world.makeTranslation(point.x,point.y,point.z);holder.matrix.copy(hand.matrixWorld).invert().multiply(world);holder.matrixWorldNeedsUpdate=true;
+  }
+ }
+ return {holder,utensils,show,align,fit(value){motion=value;}};
 }

@@ -34,7 +34,7 @@ test('interiors load only on request, share in-flight work, cache success and re
  }finally{globalThis.fetch=originalFetch;}
 });
 
-test('Yuri entry is clear of measured furniture and set back from the walls',async()=>{
+test('Thuan entry is clear of measured furniture and set back from the walls',async()=>{
  const layout=SUPPLIED_ROOM_LAYOUTS['yuri-home'],[x,,z]=layout.spawn;
  assert.equal(suppliedRoomBoundsBlocked(layout,x,z,.65),false);
  for(const c of layout.colliders)assert.equal(circleHitsRect(x,z,.32,c),false);

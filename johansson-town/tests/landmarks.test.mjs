@@ -11,7 +11,7 @@ const navigation=JSON.parse(await readFile(new URL('navigation.json',folder)));
 const manifest=JSON.parse(await readFile(new URL('street-clearance.json',folder)));
 globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
 
-test('Sakura, ramen and Yuri lots hide the original street buildings without cutting the road',async()=>{
+test('Sakura, ramen and Thuan lots hide the original street buildings without cutting the road',async()=>{
  const {scene}=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
  applyStreetClearance(scene,navigation,manifest);
  const before=scene.children.reduce((sum,m)=>sum+m.geometry.index.count/3,0);
@@ -31,16 +31,16 @@ test('Sakura, ramen and Yuri lots hide the original street buildings without cut
  assert.equal(colliderInLandmarkLot({x:6.18,z:1.5,height:3}),false,'Walking street in front of Sakura stays clear');
  assert.equal(colliderInLandmarkLot({x:-9.15,z:2.6,height:3}),false,'Walking street in front of ramen stays clear');
  assert.equal(colliderInLandmarkLot({x:-7.12,z:11.65,height:6}),true);
- assert.equal(colliderInLandmarkLot({x:-4.0,z:11.53,height:3}),false,'Canal boardwalk in front of Yuri stays clear');
+ assert.equal(colliderInLandmarkLot({x:-4.0,z:11.53,height:3}),false,'Canal boardwalk in front of Thuan stays clear');
 });
 
 test('Landmark placements face the walking street at the canal quarter doors',()=>{
  const sakura=LANDMARK_LOTS.find(l=>l.id==='sakura'),ramen=LANDMARK_LOTS.find(l=>l.id==='ramen'),home=LANDMARK_LOTS.find(l=>l.id==='yuri-home');
  assert.ok(Math.abs(sakura.yaw-Math.PI)<1e-6);assert.ok(Math.abs(ramen.yaw-Math.PI)<1e-6);
- assert.ok(Math.abs(home.yaw-Math.PI/2)<1e-6,'Yuri’s house faces the canal boardwalk');
+ assert.ok(Math.abs(home.yaw-Math.PI/2)<1e-6,'Thuan’s house faces the canal boardwalk');
  assert.ok(sakura.scale.y>=.9,'Konbini keeps a full building height on the street');
  assert.ok(ramen.scale.y>=.9,'Ramen keeps a full building height on the street');
- assert.ok(home.scale.y>=.9,'Yuri’s house keeps a two-storey height on the canal');
+ assert.ok(home.scale.y>=.9,'Thuan’s house keeps a two-storey height on the canal');
  const [sx,sz]=localToWorld(sakura.x,sakura.z,sakura.yaw,sakura.scale,0,.85);
  assert.ok(sz<sakura.z,'Sakura door is on the street side of the lot');
  assert.ok(sx>4&&sx<10);
@@ -48,7 +48,7 @@ test('Landmark placements face the walking street at the canal quarter doors',()
  assert.ok(rz<3.5,'Ramen door sits on the walking street');
  assert.ok(rx>-13&&rx<-6);
  const [hx,hz]=localToWorld(home.x,home.z,home.yaw,home.scale,.077,3.374);
- assert.ok(hx>home.x,'Yuri’s door is on the canal side of the lot');
+ assert.ok(hx>home.x,'Thuan’s door is on the canal side of the lot');
  assert.ok(hx>-5.3&&hx<-4.8);
  assert.ok(hz>11&&hz<12);
 });

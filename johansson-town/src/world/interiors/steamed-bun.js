@@ -13,5 +13,6 @@ export function createSteamedBunGeometry(){
   p.setXYZ(i,x*shrink,y-.004*fold,z*shrink);
   const shade=1-.10*fold;colors.push(.97*shade,.925*shade,.82*shade);
  }
- g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingBox();return g;
+ // A palm-sized bao: 11 cm across and just over 7 cm tall.
+ g.scale(.4,.4,.4);g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingBox();return g;
 }

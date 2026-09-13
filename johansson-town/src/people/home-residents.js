@@ -7,12 +7,12 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 import {createSleepCover} from './sleep-cover.js';
 import {residentPersonality} from './resident-personalities.js';
 
-function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false},name){
+function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false,getState=()=>({})},name){
  let site=null,person=null,saved=null,layout=null,walker=null,cover=null,clock=0,rest=0,sleepBlend=0;
  function restore(){
   cover?.dispose();cover=null;
   if(!saved)return;
-  const g=person.g,stillHome=residentPlan(person.profile,clock,getRain()).place==='home';
+  const g=person.g,stillHome=residentPlan(person.profile,clock,getRain(),getState()).place==='home';
   saved.parent.add(g);g.position.set(person.profile.home[0],groundHeight(...person.profile.home),person.profile.home[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
   for(const key of ['inHome','socialPose','seatHeight','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
   if(stillHome){g.userData.indoors='home';g.visible=false;}else{delete g.userData.indoors;g.visible=true;}
@@ -21,7 +21,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
  }
  function update(dt,minutes){
   clock=minutes;if(!site)return;
-  const plan=residentPlan(person.profile,minutes,getRain()),g=person.g;
+  const plan=residentPlan(person.profile,minutes,getRain(),getState()),g=person.g;
   if(!saved){
    if(plan.place!=='home'||!atDestination(person,'home',person.profile.home))return;
    const alreadyHome=g.userData.indoors==='home'&&!g.userData.justArrived;

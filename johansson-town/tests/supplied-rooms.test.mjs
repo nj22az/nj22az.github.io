@@ -80,7 +80,7 @@ test('supplied models retain textures, correct material support and reachable ro
       assert.ok(gltf.images.every(i=>Number.isInteger(i.bufferView)&&!i.uri));
       assert.ok(gltf.materials.every(m=>m.extensions?.KHR_materials_unlit));
       const room=new THREE.Group(),actions=[],colliders=[],calls=[];let exits=0;
-      const layout=buildSuppliedRoom({site:{id,line:'Yuri’s room'},room,
+      const layout=buildSuppliedRoom({site:{id,line:'Thuan’s room'},room,
         reg:(object,label,fn,inside)=>actions.push({object,label,fn,inside}),
         collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action:(...args)=>calls.push(args),exit:()=>exits++});
       assert.equal(layout,SUPPLIED_ROOM_LAYOUTS[id]);assert.deepEqual(colliders,layout.colliders);

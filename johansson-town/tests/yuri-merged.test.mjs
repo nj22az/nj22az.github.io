@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {prepareMergedYuriAnimations} from '../src/people/yuri-merged-animation.js';
 
-test('merged Yuri retains her supplied mesh and ten animations in a self-contained mobile texture package',async()=>{
+test('merged Thuan retains her supplied mesh and ten animations in a self-contained mobile texture package',async()=>{
  const b=await readFile(new URL('../assets/characters/yuri/yuri-merged.glb',import.meta.url));
  assert.equal(b.readUInt32LE(0),0x46546c67);assert.equal(b.readUInt32LE(8),b.length);assert.ok(b.length<10_100_000);
  const g=JSON.parse(b.subarray(20,20+b.readUInt32LE(12))),binary=b.subarray(28+b.readUInt32LE(12));
@@ -16,7 +16,7 @@ test('merged Yuri retains her supplied mesh and ten animations in a self-contain
  for(const view of g.bufferViews){assert.equal(view.byteOffset%4,0);assert.ok(view.byteOffset+view.byteLength<=binary.length);}
 });
 
-test('Yuri uses her authored walk, run, wave and seat without root drift or crouching at idle',async()=>{
+test('Thuan uses her authored walk, run, wave and seat without root drift or crouching at idle',async()=>{
  const previous={self:globalThis.self,bitmap:globalThis.createImageBitmap};globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  try{
   const b=await readFile(new URL('../assets/characters/yuri/yuri-merged.glb',import.meta.url)),asset=await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');

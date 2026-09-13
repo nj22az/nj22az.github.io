@@ -10,7 +10,7 @@ const EXCHANGES=[
  ['Officer Mori','Reiko',['Nothing suspicious on my rounds.','What about the cat in the fish crate?','An ongoing investigation.']],
  ['Kenta','Cold-storage kid',['I practised saying hello to Emi.','The freezer heard every word.','Was it convincing?']],
  ['Nao','Masaru',['Is this the catch of the day?','Small, but exceptionally brave.','I will need smaller plates.']],
- ['Yuri','Nao',['I promised my plants an early night.','Did they answer?','The fern looked disappointed.']],
+ ['Thuan','Nao',['I promised my plants an early night.','Did they answer?','The fern looked disappointed.']],
  ['Bus driver','Naoko',['Any letters for the harbour bus?','Only complaints about the timetable.','At least somebody is reading it.']],
  ['Mr Tanabe','Fumiko',['A quiet evening is good for the soul.','So is a little gossip.','We shall call it local history.']]
 ];
@@ -31,7 +31,7 @@ const place=p=>p.g.userData.inWorkplace|| (p.g.userData.inIzakaya?'izakaya':p.g.
 export function createNeighbourChats({world,observer,blocked=()=>false,state=()=>({})}){
  let clock=0,nextScan=2,active=null,sequence=0;const cooldown=new Map();
  const point=p=>{const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;};
- const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain).place+'/'+place(p);
+ const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain,state()).place+'/'+place(p);
  function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;cooldown.set(p.profile.name,clock+45);}active=null;}nextScan=clock+4;}
  function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Kenji'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<12;}
  function update(dt,minutes,rain=false){

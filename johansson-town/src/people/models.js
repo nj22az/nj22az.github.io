@@ -6,6 +6,7 @@ import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
 import {addResidentAccessories,addSleepEyes} from './resident-wardrobe.js';
 import {createResidentHands} from './resident-props.js';
+import {createMealMotion} from './meal-motion.js';
 import {prepareResidentAnimations} from './resident-animation.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -76,7 +77,7 @@ export async function createYuriFigurine(){
   mixer.stopAllAction();mixer.uncacheRoot(posed);
   const bounds=new THREE.Box3().setFromObject(group),centre=bounds.getCenter(new THREE.Vector3()),scale=.30/(bounds.max.y-bounds.min.y);
   group.scale.setScalar(scale);group.position.set(-centre.x*scale,-bounds.min.y*scale,-centre.z*scale);
-  const root=new THREE.Group();root.add(group);root.name='Yuri soft figurine';root.userData.sharedAsset=true;root.userData.figurine=true;figurineTemplate=root;
+  const root=new THREE.Group();root.add(group);root.name='Thuan soft figurine';root.userData.sharedAsset=true;root.userData.figurine=true;figurineTemplate=root;
  }
  return figurineTemplate.clone(true);
 }
@@ -87,7 +88,7 @@ export function createLocalCharacters({shadows=false}={}){
     if(!asset)return null;
     const model=clone(asset.scene);
     const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
-    const face=lowPoly&&name==='Yuri'?createYuriFace(model):null;
+    const face=lowPoly&&name==='Thuan'?createYuriFace(model):null;
     if(lowPoly)addResidentAccessories(model,style);
     const bedAccessories=[];
     model.traverse(o=>{if(/^resident-(glasses|captain|police|driver)$/.test(o.name))bedAccessories.push(o);});
@@ -97,14 +98,14 @@ export function createLocalCharacters({shadows=false}={}){
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='yuri-merged'?'Meshy merged · Yuri':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
+    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='yuri-merged'?'Meshy merged · Thuan':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
     }
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Thuan',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -127,10 +128,12 @@ export function createLocalCharacters({shadows=false}={}){
     }
     }catch{mixer.stopAllAction();}
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
+    actor.mealMotion=createMealMotion(model,entity,targetHeight);actor.hands?.fit(actor.mealMotion);
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
+      actor.mealMotion?.restore();
       const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
       if(eyesClosed&&actor.lowPoly&&!actor.face&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
       if(actor.sleepEyes)actor.sleepEyes.visible=eyesClosed;
@@ -172,6 +175,7 @@ export function createLocalCharacters({shadows=false}={}){
       }
       actor.face?.update(dt,{sleeping:eyesClosed,engaged:!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime),speaking:!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now())});
       if(entity.userData.inWorkplace==='office'&&entity.userData.socialPose==='Type')actor.officeHands?.update(dt);
+      actor.mealMotion?.update(dt,{...entity.userData,heldItem:entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null)});
       actor.hands?.align();
       if(actor.lowPoly){
         const chat=entity.userData.chat,head=actor.model.getObjectByName('Head');
@@ -189,7 +193,7 @@ export function createLocalCharacters({shadows=false}={}){
     if(head){
       if(actor.eyeCentres){const [left,right]=actor.eyeCentres;target.fromArray(left).add(new THREE.Vector3(...right)).multiplyScalar(.5);return head.localToWorld(target);}
       head.getWorldPosition(target);
-      // Yuri's Head joint is at the base of her large head, not eye level.
+      // Thuan's Head joint is at the base of her large head, not eye level.
       const crown=actor.model.getObjectByName('head_end');
       if(crown)return target.lerp(crown.getWorldPosition(new THREE.Vector3()),.65);
       target.y+=actor.height*.045;return target;

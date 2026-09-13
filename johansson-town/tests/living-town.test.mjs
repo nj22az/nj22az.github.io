@@ -46,19 +46,19 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
  acts.state.yen=0;acts.action('izakaya-menu');dom.button('Oden supper · ¥260');assert.equal(acts.state.yen,0);assert.equal(minutes,1108);
 });
 
-test('Yuri visits after closing on alternate days and has off-duty conversation',()=>{
+test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
  for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(yuriVisitsIzakaya(m),false);
  for(const m of [1220,1230,1289,2880+1230])assert.equal(yuriVisitsIzakaya(m),true);
- const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Yuri','Nao']})});
- acts.action('resident','Yuri');assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · After hours');
+ const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Thuan','Nao']})});
+ acts.action('resident','Thuan');assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/all locked up/);
  dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Nao saved me/);
- assert.ok(acts.state.notes.includes('Caught up with Yuri after closing at Minato Izakaya.'));
- assert.equal(gossipAt(1230,['Yuri','Nao']).id,'yuri-evening');
+ assert.ok(acts.state.notes.includes('Caught up with Thuan after closing at Minato Izakaya.'));
+ assert.equal(gossipAt(1230,['Thuan','Nao']).id,'yuri-evening');
 });
 
-test('Yuri spends evenings at Minato, ramen, the canal and her own door',()=>{
- const yuri=RESIDENTS.find(p=>p.name==='Yuri');
+test('Thuan spends evenings at Minato, ramen, the canal and her own door',()=>{
+ const yuri=RESIDENTS.find(p=>p.name==='Thuan');
  assert.equal(yuri.retire,1410);
  assert.equal(residentPlan(yuri,1002).place,'market');
  assert.equal(residentPlan(yuri,1205).place,'stroll');
@@ -102,8 +102,8 @@ test('ramen and Sakura reuse their residents and release them at the street door
  const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
  const nao=world.people.find(p=>p.profile.name==='Nao').g;nao.position.set(...[RAMEN_DOOR[0],0,RAMEN_DOOR[1]]);nao.userData.indoors='ramen';
  assert.deepEqual(ramen.sync(800),['Nao']);assert.equal(nao.parent,scene);ramen.restore();assert.equal(nao.parent,street);assert.equal(nao.userData.indoors,'ramen');
- const yuri=world.people.find(p=>p.profile.name==='Yuri').g;yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';
- assert.deepEqual(market.sync(1199),['Yuri']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
+ const yuri=world.people.find(p=>p.profile.name==='Thuan').g;yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';
+ assert.deepEqual(market.sync(1199),['Thuan']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
  for(let i=0;i<600;i++)market.sync(1200+i/30,1/30);
  assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
 });

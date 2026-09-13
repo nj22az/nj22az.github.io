@@ -44,7 +44,7 @@ test('every current resident gives their actual address and knows a neighbour wh
   const neighbour=RESIDENTS.find(n=>n.name!==p.name&&n.homeEntry===p.homeEntry);
   if(neighbour){assert.ok(answer.includes(neighbour.name));assert.match(answer,householdFor(p.name).residents.length>1?/share the flat/:/other flat/);}
   acts.close();
-  if(p.name!=='Yuri'){
+  if(p.name!=='Thuan'){
    acts.action('resident',p.name);dom.button('How is '+p.friend+'?');
    assert.equal(document.querySelector('#activityBody').firstChild.textContent,p.gossip);acts.close();
   }
@@ -61,7 +61,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home')&&places.has('ramen'));
-  const work=profile.name==='Nao'?'izakaya':profile.name==='Yuri'?'market':profile.name==='Officer Mori'?'patrol':'work';
+  const work=profile.name==='Nao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Nao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
@@ -70,8 +70,8 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
 });
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
  const cases=RESIDENTS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',p.name==='Officer Mori'?1320:p.name==='Nao'?960:p.start-30,p.home,false]]);
- const market=RESIDENTS.find(p=>p.name==='Yuri').work;
- cases.push(['Kenji','ramen',600,RAMEN_DOOR,true],['Kenji','ramen',800,RAMEN_DOOR,false],['Nao','izakaya',1100,IZAKAYA_DOOR,true],['Nao','izakaya',800,IZAKAYA_DOOR,false],['Mrs Sato','market',600,market,true],['Mrs Sato','market',800,market,false]);
+ const market=RESIDENTS.find(p=>p.name==='Thuan').work;
+ cases.push(['Kenji','ramen',600,RAMEN_DOOR,true],['Kenji','ramen',800,RAMEN_DOOR,false],['Nao','izakaya',1100,IZAKAYA_DOOR,true],['Nao','izakaya',800,IZAKAYA_DOOR,false],['Reiko','market',600,market,true],['Reiko','market',800,market,false]);
  for(const name of Object.keys(WORK_SITES)){
   const p=RESIDENTS.find(p=>p.name===name);cases.push([name,'work',730,p.work,true],[name,'work',1300,p.work,false]);
  }
@@ -95,7 +95,7 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
   assert.equal(p.g.parent,parent,profile.name);assert.equal(p.g.userData.sleeping,true,profile.name);
   const cover=parent.getObjectByName('animated sleep cover');assert.ok(cover?.visible,profile.name+' has a blanket');assert.equal(cover.userData.animatedCover,true);
   const coverBefore=cover.geometry.attributes.position.array.slice();residents.update(1/30,beforeWake-2);
-  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=(profile.name==='Yuri'?.47:.57),profile.name+' rests on the sleeping surface');
+  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=(profile.name==='Thuan'?.47:.57),profile.name+' rests on the sleeping surface');
   tick((dt,m)=>residents.update(dt,m),beforeWake-2,4);
   assert.equal(p.g.parent,parent);assert.equal(p.g.userData.waking,true,profile.name);assert.equal(p.g.userData.sleeping,false);
   tick((dt,m)=>residents.update(dt,m),beforeWake+16,12);
@@ -115,8 +115,8 @@ test('residents travelling home cannot be teleported into a visited apartment',(
  p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1301);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
 test('venue visitors arrive at the door, keep their seat, walk out, and remain indoors when the player leaves first',()=>{
- for(const [place,name,minutes,door,end] of [['market','Kenji',880,RESIDENTS.at(-1).work,925],['ramen','Kenji',RAMEN_VISITS.Kenji[0]+25,RAMEN_DOOR,RAMEN_VISITS.Kenji[1]],['izakaya','Nao',1100,IZAKAYA_DOOR,1620]]){
-  const street=new THREE.Group(),parent=new THREE.Group(),p=person(name,street),yuri=person('Yuri',street),world={people:[p,yuri]};p.g.position.set(0,0,40);
+ for(const [place,name,minutes,door,end] of [['market','Kenji',945,RESIDENTS.at(-1).work,1023],['ramen','Kenji',RAMEN_VISITS.Kenji[0]+25,RAMEN_DOOR,RAMEN_VISITS.Kenji[1]],['izakaya','Nao',1100,IZAKAYA_DOOR,1620]]){
+  const street=new THREE.Group(),parent=new THREE.Group(),p=person(name,street),yuri=person('Thuan',street),world={people:[p,yuri]};p.g.position.set(0,0,40);
   const service=createIndoorResidents({world,parent,place});service.sync(minutes);assert.equal(p.g.parent,street,place+' cannot pull someone from the street');
   p.g.position.set(door[0],0,door[1]);service.sync(minutes);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
   tick((dt,m)=>service.sync(m,dt),minutes,18);assert.equal(p.g.userData.roomTransition,undefined,place+' reaches seat');
@@ -127,7 +127,7 @@ test('venue visitors arrive at the door, keep their seat, walk out, and remain i
 });
 test('camera rank cannot remove a visible street resident, and saves preserve a walk in progress',()=>{
  const street=new THREE.Group(),player=new THREE.Group(),world={people:RESIDENTS.map(p=>person(p.name,street))},saved={inventory:[]};
- for(const p of world.people){p.profile={...p.profile,name:p.profile.name==='Yuri'?'Extra':p.profile.name,start:540,close:1080};}
+ for(const p of world.people){p.profile={...p.profile,name:p.profile.name==='Thuan'?'Extra':p.profile.name,start:540,close:1080};}
  const ai=createCastAI({world,player,state:()=>saved,paused:()=>false,collides:()=>false});ai.update(0,1002,false);
  // Use ten ordinary outdoor workers, regardless of their observer distance.
  for(const p of world.people){p.profile={...p.profile,name:'Worker '+p.profile.name};delete p.g.userData.indoors;}

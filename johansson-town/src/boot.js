@@ -8,7 +8,7 @@ import {settleStartupAssets} from './startup-assets.js';
 const status=document.querySelector('#bootStatus');
 const startup=window.__JOHANSSON_STARTUP__;if(startup){startup.codeMs=performance.now()-startup.startedAt;startup.stage='street-model';}
 // Start the retained shopkeeper during the existing entry gate, without extending it.
-void preloadCharacter('Yuri');
+void preloadCharacter('Thuan');
 status.textContent='LOADING STREET MODEL…';
 const result=await settleStartupAssets({street:preloadDiningStreet,vending:preloadVending,bench:preloadSakuraBench},{timeoutMs:3000});
 if(result.pending.length)console.warn('Starting with fallback models:',result.pending.join(', '));

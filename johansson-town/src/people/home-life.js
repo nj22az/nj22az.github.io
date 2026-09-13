@@ -31,4 +31,4 @@ export function homeLayoutFor(name){
  return {...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:[side*.95,0,-.4],table:[side*.72,0,2.15],
   cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'}};
 }
-export const YURI_HOME_LAYOUT=YURI_APARTMENT_ROUTINES.Yuri;
+export const YURI_HOME_LAYOUT=YURI_APARTMENT_ROUTINES.Thuan;

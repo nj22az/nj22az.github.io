@@ -9,18 +9,18 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},collides=()=>false,getRain=()=>false}){
  const borrowed=new Map();let clock=0,walker=null;
  const entrance=place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2];
- const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:world.people.find(p=>p.profile.name==='Yuri').profile.work;
- const wanted=p=>residentPlan(p.profile,clock,getRain()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
+ const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
+ const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
  function restore(p){
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying'])delete g.userData[key];
+  for(const key of ['inMarket','inRamen','inIzakaya','indoors','socialPose','seatHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray'])delete g.userData[key];
   if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);
  }
  function seatFor(p){
   const name=p.profile.name;
-  if(place==='market'&&name==='Yuri')return {position:STORE_CLERK_POSITION,stand:STORE_CLERK_POSITION,yaw:Math.PI,staff:true};
-  if(place==='ramen'&&name==='Yuri')return {...RAMEN_YURI_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
+  if(place==='market'&&name==='Thuan')return {position:STORE_CLERK_POSITION,stand:STORE_CLERK_POSITION,yaw:Math.PI,staff:true};
+  if(place==='ramen'&&name==='Thuan')return {...RAMEN_YURI_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   const seats=place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
   const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==getPlayerSeat())&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
@@ -45,7 +45,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    const seat=saved.seat;
    if(saved.phase!=='seated'){
     g.userData.roomTransition=true;
-    for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying'])delete g.userData[key];
+    for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray'])delete g.userData[key];
     g.userData.activity=['standing','leaving'].includes(saved.phase)?'leaving '+place:'walking to '+(seat.staff?'work':'a seat');
     if(saved.phase==='standing'){
      saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0)saved.phase='leaving';

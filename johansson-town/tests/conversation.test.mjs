@@ -13,12 +13,12 @@ test('conversation reserves a separate scene area on phones, tablets and desktop
   assert.deepEqual(conversationViewport(width,height,false),{width,height});
  }
 });
-test('Yuri topics and resident quest replies retain bubbles; notebook and close restore the scene',()=>{
+test('Thuan topics and resident quest replies retain bubbles; notebook and close restore the scene',()=>{
  const dom=installDOM(),speakers=[];
  const acts=createActivities({say(){},onWeather(){},onTime(){},onConversation:name=>speakers.push(name)});
  const modal=document.querySelector('#activity');
- acts.action('resident','Yuri');assert.equal(speakers.at(-1),'Yuri');assert.ok(modal.classList.contains('conversation'));
- dom.button('I like your ribbon');assert.equal(speakers.at(-1),'Yuri');
+ acts.action('resident','Thuan');assert.equal(speakers.at(-1),'Thuan');assert.ok(modal.classList.contains('conversation'));
+ dom.button('I like your ribbon');assert.equal(speakers.at(-1),'Thuan');
  acts.close();assert.equal(speakers.at(-1),null);assert.ok(!document.body.classList.contains('conversation-open'));
  acts.action('resident','Aya');dom.button('About Tama');assert.equal(speakers.at(-1),'Aya');
  assert.ok(modal.classList.contains('conversation'));

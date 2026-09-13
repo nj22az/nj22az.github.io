@@ -1,3 +1,5 @@
+import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
+import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
@@ -27,7 +29,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){
-      state.workshop=saved.workshop;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
+      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -35,6 +37,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
   } catch {}
 
+  state.sakura=restoreSakura(state.sakura);
+  state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
 
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
@@ -62,7 +66,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
     const speaker=title.split('·')[0].trim();
-    const conversation=speaker==='Yuri'||!!DIALOGUE[speaker];
+    const conversation=speaker==='Thuan'||!!DIALOGUE[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
     modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);$('#closeActivity').focus();
   }
@@ -83,17 +87,17 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aya has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
   function yuriConversation(topic=null){
-    if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Yuri');
+    if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
     const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya';
-    if(ramenVisit)note('Shared a ramen-shop break with Yuri after closing.');
-    if(offDuty)note('Caught up with Yuri after closing at Minato Izakaya.');
-    const met=state.notes.includes('Met Yuri, the heart of Sakura Konbini.');
-    if(!met)note('Met Yuri, the heart of Sakura Konbini.');
+    if(ramenVisit)note('Shared a ramen-shop break with Thuan after closing.');
+    if(offDuty)note('Caught up with Thuan after closing at Minato Izakaya.');
+    const met=state.notes.includes('Met Thuan, the heart of Sakura Konbini.');
+    if(!met)note('Met Thuan, the heart of Sakura Konbini.');
     const replies={
       snack:'おすすめ？ 任せて！\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.',
       ribbon:'このリボン？\nThis ribbon? I tied it three times this morning. Effortlessly charming takes a surprising amount of effort.',
       town:'夕方の港が好き。\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.',
-      home:residentHomeDescription('Yuri'),
+      home:residentHomeDescription('Thuan'),
       compliment:'もう、照れちゃう。\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.',
       challenge:'勝負しよう！\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.',
       radio:'内緒だよ。\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.',
@@ -101,7 +105,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     };
     if(offDuty){
       replies.snack='Nao saved me some edamame and barley tea. Choosing a snack is much easier when I am not the person stocking the shelves.';
-      replies.compliment='Thank you. It is lovely being here with everyone, just as Yuri. No till to count tonight.';
+      replies.compliment='Thank you. It is lovely being here with everyone, just as Thuan. No till to count tonight.';
       replies.challenge='A little challenge: ask Nao which neighbour tells the tallest stories. I have my suspicions.';
       replies.radio='When this song comes on at Sakura I sing along. Here I let Nao join in. She knows all the wrong words with enormous confidence.';
     }
@@ -111,13 +115,13 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       replies.challenge='Try naming every topping before the steam fogs your glasses. I always forget one.';
       replies.radio='I leave the singing to the shop radio tonight. Here I am listening to the kitchen.';
     }
-    const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ ゆりです。\nWelcome! I am Yuri. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
-    const title=ramenVisit?'Yuri · Ramen break':offDuty?'Yuri · After hours':'Yuri · Heart of Sakura';
-    if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Yuri',close]]);return;}
-    show(title,greeting,[['Sell my workshop models',workshopUI.selling],['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Yuri',close]]);
+    const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
+    const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
+    if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Thuan',close]]);return;}
+    show(title,greeting,[['Sell items from my bag',workshopUI.selling],['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],['Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Thuan',close]]);
   }
   function resident(name){
-    if(name==='Yuri'){yuriConversation();return;}
+    if(name==='Thuan'){yuriConversation();return;}
 
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
@@ -130,7 +134,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(residentHomeDescription(name))buttons.push(['Where do you live?',()=>show(name+' · Home',residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
-    if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Yuri will pay. Start the print, let the machine run, then collect it. One of each in your bag. Yuri buys them at Sakura from nine till eight.',[['Got it, bro',close]])]);
+    if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Thuan will pay. Start the print, let the machine run, then collect it. One of each in your bag. Thuan buys them at Sakura from nine till eight, using the money her shop earns.',[['Got it, bro',close]])]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);
     if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
     if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
@@ -211,7 +215,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function tableService(){
     const service=getTableService();if(!service)return;
     const order=service.order;
-    const text=order?.delivered?'Your order is on the table.':order?'Yuri is bringing your '+order.item.name.toLowerCase()+'.':'Take your time. Yuri will bring your order to the table. Pay when it arrives.';
+    const text=order?.delivered?'Your order is on the table.':order?'Thuan is bringing your '+order.item.name.toLowerCase()+'.':'Take your time. Thuan will bring your order to the table. Pay when it arrives.';
     const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:STORE_MENU.map(item=>[item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
     show('Sakura · At the table',text,[...buttons,['Keep sitting',close],['Stand up',()=>{close();onStand();}]]);
   }
@@ -227,7 +231,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       }],['Back',close]]);
     }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
   }
-  function storeItem(item){if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till is closed. Yuri returns at 09:00.');return;}show(item.jp+' · '+item.name,item.text,[[`Buy in town · ¥${item.cost}`,()=>{if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till has closed for the evening.');return;}if(state.inventory.length>=100){receipt('Your bag is full','Make room before buying another item.');return;}if(!spend(item.cost))return;addItem(item.name);if(['Green tea','Canned coffee'].includes(item.name))onPurchase(item.name);receipt('Thank you',item.name+' is in your bag.');}],...(realShop.enabled&&SHOPIFY_CONFIG.products[item.id]?[['View real-world product',()=>realProduct(item)]]:[]),['Put it back',close]]);}
+  function storeItem(item){if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till is closed. Thuan returns at 09:00.');return;}show(item.jp+' · '+item.name,item.text,[[`Buy in town · ¥${item.cost}`,()=>{if(getMinutes()%1440<540||getMinutes()%1440>=1200){receipt('Sakura Shōten','The till has closed for the evening.');return;}if(state.inventory.length>=100){receipt('Your bag is full','Make room before buying another item.');return;}if(!spend(item.cost))return;recordSakuraSale(state,item.cost);addItem(item.name);if(['Green tea','Canned coffee'].includes(item.name))onPurchase(item.name);receipt('Thank you',item.name+' is in your bag.');}],...(realShop.enabled&&SHOPIFY_CONFIG.products[item.id]?[['View real-world product',()=>realProduct(item)]]:[]),['Put it back',close]]);}
   function buy(name,detail){
     const spec=detail&&typeof detail==='object'?detail:{};const cost=Number.isFinite(spec.cost)?Math.max(0,Math.round(spec.cost)):100,item=typeof spec.item==='string'?spec.item:name,text=typeof spec.text==='string'?spec.text:`${name} is ready to purchase.`;
     show(name,text,[[`Buy · ¥${cost}`,()=>{if(!spend(cost))return;addItem(item);tone(700,.12);receipt(name,`${item} has been added to your bag.`);}],['Leave',close]]);
@@ -252,10 +256,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     body.classList.remove('signal');
     switch(kind){
       case 'workshop':workshopUI.printer();break;
+      case 'town-cleanup':{const result=collectTownFind(state,name);if(!result.ok){receipt('Town clean-up',result.message);break;}save();receipt('Street tidied',result.name+' is in your bag. Thuan offers ¥'+result.price+' when the shop has enough takings.');break;}
       case 'stepwise':if(getSocialContext().inside==='form3d')inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
-      case 'store-catalogue':show('Yuri’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Yuri is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
+      case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
       case 'resident':resident(name);break;
@@ -286,7 +291,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
-  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nUmanose(Horseback) Sea Cave: STUDIO DUCKBILL · CC BY-NC 4.0. Simplified geometry, resized textures and adapted lighting. Source and licence links: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Yuri: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nUmanose(Horseback) Sea Cave: STUDIO DUCKBILL · CC BY-NC 4.0. Simplified geometry, resized textures and adapted lighting. Source and licence links: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';

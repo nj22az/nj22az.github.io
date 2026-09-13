@@ -1,5 +1,5 @@
 // Street-facing canal-quarter lots. Original kit buildings here are hidden
-// and replaced with Sakura, Sato Ramen and Yuri's house so enterable places read at a glance.
+// and replaced with Sakura, Sato Ramen and Thuan's house so enterable places read at a glance.
 export const LANDMARK_LOTS=Object.freeze([
  {id:'sakura',site:'market',
   minX:3.95,maxX:10.0,minY:.35,maxY:8.3,minZ:2.25,maxZ:8.05,

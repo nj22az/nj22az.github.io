@@ -1,5 +1,6 @@
-import {WORKSHOP_MODELS,workshopModel,printedModels,modelTicket} from './catalogue.js';
-import {printProblem,startPrint,collectPrint,sellPrint,canSellAtSakura} from './production.js';
+import {sakuraStock,saleProblem,sellToSakura} from '../commerce/sakura-economy.js';
+import {WORKSHOP_MODELS,workshopModel,modelTicket} from './catalogue.js';
+import {printProblem,startPrint,collectPrint,canSellAtSakura} from './production.js';
 
 export function createWorkshopUI({state,show,close,save,say,note,getContext,getMinutes,preview,body,modal}){
  let embedded=null;
@@ -23,12 +24,12 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
   if(job){
    const model=workshopModel(job.id),ready=job.remaining===0;
    show('Form 3D · '+(ready?'Ready to collect':'Printing'),model.name+'\n\n'+(ready?'Your model is on the print bed. Collect it for your inventory, or leave it here until there is room.':Math.ceil(job.remaining)+' seconds remaining. The machine runs while you explore; return to collect the finished model.'),[
-    ...(ready?[['Collect model',()=>{if(!inWorkshop()){unavailable();return;}const result=collectPrint(state);if(!result.ok){show('Form 3D',result.message,[['Back to printer',printer]]);return;}save();note('Printed '+model.name+' at Kenji’s workshop.');show('Added to your inventory',model.name+' · 1 of 1\n\nTalk to Yuri at Sakura Konbini to sell it for ¥'+model.price+'.',[['Inspect model',()=>preview(model)],['Back to printer',printer],['Leave the bench',close]]);}]]:[]),
+    ...(ready?[['Collect model',()=>{if(!inWorkshop()){unavailable();return;}const result=collectPrint(state);if(!result.ok){show('Form 3D',result.message,[['Back to printer',printer]]);return;}save();note('Printed '+model.name+' at Kenji’s workshop.');show('Added to your inventory',model.name+' · 1 of 1\n\nTalk to Thuan at Sakura Konbini. When her takings cover it, she offers ¥'+model.price+'.',[['Inspect model',()=>preview(model)],['Back to printer',printer],['Leave the bench',close]]);}]]:[]),
     [ready?'Leave it on the machine':'Leave the machine running',close],
    ]);return;
   }
   const model=selection(),problem=printProblem(state,model.id);
-  show('Form 3D · Workshop printer',model.name+'\n'+model.description+'\n\nMaterials ¥'+model.material+' · Yuri pays ¥'+model.price+'\nPrint time '+model.seconds+' seconds\n\n'+(problem||'Carry one of each model. Sell a copy at Sakura to make room for another.'),[
+  show('Form 3D · Workshop printer',model.name+'\n'+model.description+'\n\nMaterials ¥'+model.material+' · Thuan pays ¥'+model.price+'\nPrint time '+model.seconds+' seconds\n\n'+(problem||'Carry one of each model. Sell a copy at Sakura to make room for another.'),[
    ['Print model · ¥'+model.material,()=>{if(!inWorkshop()){unavailable();return;}const result=startPrint(state,model.id);if(!result.ok){printer();return;}if(!state.operated.includes('Form 3D printer'))state.operated.push('Form 3D printer');save();close();say('Form 3D: printing '+model.name+'. Return to collect it in '+model.seconds+' seconds.',5);},!!problem],
    ['Preview model in 3D',()=>preview(model)],
    ['Check with StepWise',stepwise],
@@ -45,16 +46,17 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
   ]);
  }
  function selling(){
-  if(!canSellAtSakura(getContext(),getMinutes())){show('Yuri · Workshop models','Bring your models to Sakura Konbini while I am at work, from 09:00 to 20:00. I will buy them at the till.',[['See you at Sakura',close]]);return;}
-  const models=printedModels(state.inventory);
-  show('Yuri · Sell workshop models',models.length?'You made these at Kenji’s? Let me see! Choose a model to sell. The price goes straight into your town wallet.':'Your bag has no workshop models yet. Use the Form 3D printer at Kenji & Tetsuo Repairs, collect a finished model, then bring it to me.',[
-   ...models.map(model=>['Sell '+model.name+' · +¥'+model.price,()=>{
+  if(!canSellAtSakura(getContext(),getMinutes())){show('Thuan · Shop counter','Bring your items to Sakura while I am working, from 09:00 to 20:00.',[['Back',close]]);return;}
+  const offers=sakuraStock(state),cash=state.sakura.cash;
+  show('Thuan · Buy and sell','Shop takings available: ¥'+cash+'\n\nI use my sales to buy useful finds, fresh fish and your workshop creations. Tidy up around town or make something at Kenji’s workshop. Personal papers stay with you.\n\n'+(offers.length?'My offers are below. Grey offers need a few more shop sales.':'There is nothing I can buy in your bag yet.'),[
+   ...offers.map(offer=>['Sell '+offer.name+' · +¥'+offer.price,()=>{
     if(!canSellAtSakura(getContext(),getMinutes())){selling();return;}
-    const result=sellPrint(state,model.id);if(!result.ok){show('Yuri · Workshop models',result.message,[['Back to models',selling],['Keep looking around',close]]);return;}
-    save();note('Sold '+model.name+' to Yuri for ¥'+model.price+'.');
-    show('Yuri · Thank you',model.name+' sold for ¥'+model.price+'.\n\nI will find a place for it on the shelf. You can make another now that there is room in your bag.',[['Sell another model',selling],['See you soon, Yuri',close]]);
-   }]),['Keep my models',close],
+    const result=sellToSakura(state,offer.name);if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}
+    save();note('Sold '+offer.name+' to Thuan for ¥'+offer.price+'.');
+    show('Thuan · Thank you',offer.name+' sold for ¥'+offer.price+'.\n\nShop funds remaining: ¥'+state.sakura.cash+'.'+(offer.model?' You can make another now that there is room in your bag.':''),[['Sell another item',selling],['See you soon, Thuan',close]]);
+   },!!saleProblem(state,offer.name)]),['Keep my items',close],
   ]);
  }
+
  return {printer,stepwise,selling,dispose(){if(embedded){embedded.src='about:blank';embedded.remove?.();embedded=null;}modal.classList.remove('workshop-tool');}};
 }

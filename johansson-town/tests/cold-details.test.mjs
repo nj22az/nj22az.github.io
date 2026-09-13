@@ -25,10 +25,10 @@ test('retained alley and vending assets fit their budget; streamed facades prese
   assert.equal(JSON.stringify(world.colliders),colliders,id+' cannot change collision');assert.equal(JSON.stringify(sites.map(s=>[s.id,s.door])),doors,id+' cannot move entrances');
  }
  assert.equal(requests.includes('models/izakaya/minato-interior.glb'),false,'Izakaya interior waits for its door');
- const characters=createCharacters({mobile:true,shadows:false}),yuri=world.people.find(p=>p.g.userData.name==='Yuri').g;
- characters.attach(yuri,'Yuri',1.6);const old=[...yuri.children],entries=[];
+ const characters=createCharacters({mobile:true,shadows:false}),yuri=world.people.find(p=>p.g.userData.name==='Thuan').g;
+ characters.attach(yuri,'Thuan',1.6);const old=[...yuri.children],entries=[];
  characters.streamDetails({add:entry=>entries.push(entry)},()=>{});
- const requestsBefore=requests.length;assert.equal(await entries[0].load(),true);assert.equal(requests.length,requestsBefore+1,'Only Yuri is fetched');
+ const requestsBefore=requests.length;assert.equal(await entries[0].load(),true);assert.equal(requests.length,requestsBefore+1,'Only Thuan is fetched');
  assert.equal(requests.at(-1),'characters/yuri/yuri-merged.glb');assert.ok(old.every(child=>child.parent===null));assert.equal(characters.actors.length,1);assert.ok(characters.actors[0].mixer);
  globalThis.fetch=nativeFetch;
 });

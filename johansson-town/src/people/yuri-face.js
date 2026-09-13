@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 
 // Small, skinned facial features follow the actual cheek surface. No rectangular
-// eye covers, floating face cards or extra character model are used for Yuri.
+// eye covers, floating face cards or extra character model are used for Thuan.
 export function createYuriFace(model){
  let body;model.traverse(o=>{if(o.isSkinnedMesh&&!body)body=o;});if(!body)return null;
  const source=body.geometry,colors=source.attributes.color,pos=source.attributes.position;
@@ -51,7 +51,7 @@ export function createYuriFace(model){
  patch(0,1.62,.018,.0018,0xad7275,.0013,'mouth');
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(rgb,3));geometry.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(joints,4));geometry.setAttribute('skinWeight',new THREE.Float32BufferAttribute(weights,4));geometry.setIndex(indices);geometry.computeVertexNormals();
  const face=new THREE.SkinnedMesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide}));
- face.name='Yuri expressive face';face.userData.facialFeatures=true;face.frustumCulled=false;face.position.copy(body.position);face.quaternion.copy(body.quaternion);face.scale.copy(body.scale);face.bind(body.skeleton,body.bindMatrix.clone());body.parent.add(face);
+ face.name='Thuan expressive face';face.userData.facialFeatures=true;face.frustumCulled=false;face.position.copy(body.position);face.quaternion.copy(body.quaternion);face.scale.copy(body.scale);face.bind(body.skeleton,body.bindMatrix.clone());body.parent.add(face);
  let time=0,smile=0;
  const state={blink:0,smile:0,mouth:0};
  function update(dt,{sleeping=false,engaged=false,speaking=false}={}){

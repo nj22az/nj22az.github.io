@@ -52,7 +52,7 @@ test('Inakaya shares the street asset, aligns to real stools and leaves a passab
 test('current residents visit throughout the day, with two seats, closing and night patrol preserved',()=>{
  for(let t=0;t<2880;t++){
   const visitors=RESIDENTS.filter(p=>residentPlan(p,t).place==='ramen');
-  assert.ok(visitors.filter(p=>p.name!=='Yuri').length<=2,'No double-booked stools at '+t);
+  assert.ok(visitors.filter(p=>p.name!=='Thuan').length<=2,'No double-booked stools at '+t);
   if(!ramenOpen(t))assert.equal(visitors.length,0);
   for(const p of visitors)assert.ok(ACTIVE_RESIDENT_NAMES.includes(p.name));
  }
@@ -77,10 +77,10 @@ test('diners keep their seats during turnover and resume their schedules outside
  assert.deepEqual(guests.sync(1260),[]);
 });
 
-test('Kenji keeps an active escort and Yuri recognises her ramen break',async()=>{
+test('Kenji keeps an active escort and Thuan recognises her ramen break',async()=>{
  const dom=installDOM();const {createActivities}=await import('../activities.js?snappy=1');
- const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1205,getSocialContext:()=>({inside:'ramen',names:['Yuri']})});
- acts.action('resident','Yuri');assert.equal(document.querySelector('#activityTitle').textContent,'Yuri · Ramen break');
+ const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1205,getSocialContext:()=>({inside:'ramen',names:['Thuan']})});
+ acts.action('resident','Thuan');assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · Ramen break');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/bowl of ramen/);
  dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/shoyu ramen/);acts.close();
  const street=new THREE.Group(),parent=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Kenji'),g=new THREE.Group();g.userData.hit={inside:false};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);

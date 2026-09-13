@@ -13,7 +13,7 @@ export async function preloadYuriHome(){
   if(!response.ok)throw Error(response.status);
   exterior=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
   return true;
- }catch(error){console.warn('Yuri home exterior unavailable',error);return false;}
+ }catch(error){console.warn('Thuan home exterior unavailable',error);return false;}
  finally{clearTimeout(timeout);}
 }
 
@@ -22,15 +22,15 @@ export function buildYuriHome(world,options,placement){
  const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
  const yaw=place.yaw??Math.PI/2;
  const [dx,dz]=localToWorld(place.x,place.z,yaw,scale,YURI_HOME_DOOR_LOCAL[0],YURI_HOME_DOOR_LOCAL[2]);
- const site=place.site||{id:'yuri-home',title:'Yuri’s room',jp:'ゆりの家',sub:'WILLOW ALLEY',
+ const site=place.site||{id:'yuri-home',title:'Thuan’s room',jp:'トゥアンの家',sub:'WILLOW ALLEY',
   color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};
  site.door=[dx,0,dz];site.x=place.x;site.z=place.z;
  if(!place.skipSite)options.sites.push(site);
- const building=new THREE.Group();building.name=place.name||'Yuri canal house';
+ const building=new THREE.Group();building.name=place.name||'Thuan canal house';
  building.position.set(place.x,0,place.z);building.rotation.y=yaw;building.scale.set(sx,sy,sz);
  world.group.add(building);
  if(exterior){
-  const model=exterior.clone(true);model.userData.sharedAsset=true;model.name='Yuri house exterior';
+  const model=exterior.clone(true);model.userData.sharedAsset=true;model.name='Thuan house exterior';
   model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
   building.add(model);
  }else{
@@ -40,12 +40,12 @@ export function buildYuriHome(world,options,placement){
  hangNoren(building);
  if(place.label){
   const [lx,lz]=localToWorld(place.x,place.z,yaw,scale,0,3.02);
-  place.label('ゆりの家','YURI · 22 WILLOW ALLEY',[lx,3.45*sy,lz],3.4*sx,.52*sy,yaw,'#f3e4d0','#6b3a48');
+  place.label('トゥアンの家','THUAN · 22 WILLOW ALLEY',[lx,3.45*sy,lz],3.4*sx,.52*sy,yaw,'#f3e4d0','#6b3a48');
  }
  if(!place.skipSite){
   const [ex,ez]=localToWorld(place.x,place.z,yaw,scale,YURI_HOME_DOOR_LOCAL[0],YURI_HOME_DOOR_LOCAL[2]+.15);
-  const entrance=new THREE.Object3D();entrance.name='Yuri house entrance';entrance.position.set(ex,1.2,ez);world.group.add(entrance);
-  options.register(entrance,'Enter Yuri’s room',()=>options.enter(site));
+  const entrance=new THREE.Object3D();entrance.name='Thuan house entrance';entrance.position.set(ex,1.2,ez);world.group.add(entrance);
+  options.register(entrance,'Enter Thuan’s room',()=>options.enter(site));
  }
  return site;
 }
@@ -59,5 +59,5 @@ function hangNoren(building){
  ctx.fillText('ゆ',64,130);ctx.fillText('り',192,130);
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const noren=new THREE.Mesh(new THREE.PlaneGeometry(1.55,1.55),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
- noren.name='Yuri house noren';noren.position.set(.08,1.72,3.42);building.add(noren);
+ noren.name='Thuan house noren';noren.position.set(.08,1.72,3.42);building.add(noren);
 }

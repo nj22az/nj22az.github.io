@@ -18,10 +18,10 @@ test('stalled detail releases the queue and keeps fallback status',async()=>{
 test('visible residents have priority, failed requests retry with a bound, and look-ahead loads the next frontage',async()=>{
  let time=0,tries=0;const calls=[],stream=createDetailStream({now:()=>time,retryMs:10,maxAttempts:2});
  stream.add({id:'scenery',x:0,z:0,load:()=>{calls.push('scenery');return true;}});
- stream.add({id:'Yuri',priority:0,x:2,z:0,load:()=>{calls.push('Yuri');return ++tries>1;}});
+ stream.add({id:'Thuan',priority:0,x:2,z:0,load:()=>{calls.push('Thuan');return ++tries>1;}});
  stream.add({id:'next-shop',priority:1,x:0,z:-48,radius:35,load:()=>{calls.push('next-shop');return true;}});
- stream.update({x:0,z:0});await tick();assert.deepEqual(calls,['Yuri']);
- stream.update({x:0,z:0});await tick();assert.deepEqual(calls,['Yuri','scenery']);
+ stream.update({x:0,z:0});await tick();assert.deepEqual(calls,['Thuan']);
+ stream.update({x:0,z:0});await tick();assert.deepEqual(calls,['Thuan','scenery']);
  time=10;stream.update({x:0,z:0});await tick();assert.equal(tries,2);assert.deepEqual(stream.stats.failed,[]);
  stream.update({x:0,z:0},{x:0,z:-1});await tick();assert.equal(calls.at(-1),'next-shop');
  let failures=0;stream.add({id:'offline',x:0,z:0,load:()=>{failures++;return false;}});

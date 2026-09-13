@@ -16,12 +16,12 @@ function setup(){
  const step=(seconds,check=()=>{})=>{for(let i=0;i<seconds*60;i++){service.update(1/60);check();}};
  return {service,clerk,room,step,get yen(){return yen;},get charges(){return charges;},seat:s=>seat=s,money:n=>yen=n,time:n=>minutes=n};
 }
-test('Yuri leaves her chair, collects the food, delivers once and the player eats',()=>{
+test('Thuan leaves her chair, collects the food, delivers once and the player eats',()=>{
  const t=setup();t.step(30);assert.equal(t.service.phase,'sit');assert.equal(t.clerk.userData.socialPose,'Sit');
  assert.ok(t.service.request('bun'));assert.equal(t.service.phase,'stand');assert.equal(t.clerk.userData.socialPose,undefined);
  assert.equal(t.service.request('tea'),false);assert.equal(t.charges,0);
  t.step(45);assert.ok(t.service.order.delivered);assert.equal(t.charges,1);assert.equal(t.yen,1050);
- const tray=t.room.getObjectByName('Yuri food service');assert.ok(tray.visible);assert.equal(tray.position.y,.875);
+ const tray=t.room.getObjectByName('Thuan food service');assert.ok(tray.visible);assert.equal(tray.position.y,.875);
  t.step(20);assert.equal(t.charges,1);assert.ok(t.service.eat());assert.equal(t.service.eat(),false);assert.equal(tray.visible,false);
  t.service.dispose();assert.equal(t.room.children.length,0);
 });
@@ -40,17 +40,17 @@ test('both tables are served through the clear aisle, without crossing shelves, 
   for(let frame=0;frame<60*35&&!t.service.order?.delivered;frame++){
    t.service.update(1/60);
    const {x,z}=t.clerk.position;
-   assert.ok(!colliders.some(c=>circleHitsRect(x,z,.25,c)),`${seat.id}: Yuri crosses furniture at ${x},${z}`);
+   assert.ok(!colliders.some(c=>circleHitsRect(x,z,.25,c)),`${seat.id}: Thuan crosses furniture at ${x},${z}`);
   }
   assert.ok(t.service.order?.delivered,seat.id+' received food');t.service.dispose();
  }
 });
-test('market borrowing preserves Yuri movement, reserves the player chair and restores actors',()=>{
+test('market borrowing preserves Thuan movement, reserves the player chair and restores actors',()=>{
  const street=new THREE.Group(),parent=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.hit={inside:false};street.add(g);return {g,profile};})};
  for(const p of world.people){p.g.position.set(0,0,0);p.g.userData.indoors='market';}
  const guests=createIndoorResidents({world,parent,place:'market',getPlayerSeat:()=>STORE_SEATS[2].id});
- assert.deepEqual(guests.sync(600).sort(),['Mrs Sato','Yuri']);
- const yuri=world.people.find(p=>p.profile.name==='Yuri').g,mrs=world.people.find(p=>p.profile.name==='Mrs Sato').g;
+ assert.deepEqual(guests.sync(600).sort(),['Reiko','Thuan']);
+ const yuri=world.people.find(p=>p.profile.name==='Thuan').g,mrs=world.people.find(p=>p.profile.name==='Reiko').g;
  assert.equal(mrs.userData.storeSeatId,STORE_SEATS[3].id);assert.equal(mrs.userData.socialPose,'Sit');
  yuri.position.set(2.8,0,2.3);guests.sync(601);assert.equal(yuri.position.z,2.3,'Schedule does not reset service movement');
  guests.restore();for(const g of [yuri,mrs]){assert.equal(g.parent,street);assert.equal(g.userData.hit.inside,false);assert.equal(g.userData.storeSeatId,undefined);assert.equal(g.userData.seatHeight,undefined);}

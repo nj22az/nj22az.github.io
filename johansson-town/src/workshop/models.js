@@ -21,4 +21,4 @@ export function makeWorkshopModel(data,colour=0xc7dbcf){
  const scale=1.1/Math.max(size.x,size.y,size.z);group.scale.setScalar(scale);group.position.copy(centre).multiplyScalar(-scale);
  const wrapper=new THREE.Group();wrapper.add(group);return wrapper;
 }
-export function printedItem(model,data){return {id:'print-'+model.id,kind:'printed-model',title:model.name,color:model.colour,meshData:data,note:'Examined the Form 3D '+model.name+'.',pages:[[model.name,model.description+'\n\nYuri buys this for ¥'+model.price+' at Sakura Konbini.']]};}
+export function printedItem(model,data){return {id:'print-'+model.id,kind:'printed-model',title:model.name,color:model.colour,meshData:data,note:'Examined the Form 3D '+model.name+'.',pages:[[model.name,model.description+'\n\nThuan buys this for ¥'+model.price+' at Sakura Konbini.']]};}

@@ -6,7 +6,7 @@ import {preloadModels,createLocalCharacters,characterSource} from '../src/people
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 
-test('residents retain independent motion and seating with Yuri on her supplied Meshy rig',async()=>{
+test('residents retain independent motion and seating with Thuan on her supplied Meshy rig',async()=>{
  installDOM();const previous={fetch:globalThis.fetch,bitmap:globalThis.createImageBitmap,self:globalThis.self},requests=[];
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{
@@ -17,19 +17,19 @@ test('residents retain independent motion and seating with Yuri on her supplied 
  try{
   assert.deepEqual(await preloadModels(),{ready:6,total:6});assert.equal(requests.length,6);
   assert.ok(requests.every(url=>!url.includes('/realistic/')&&!url.includes('vroid')),'No superseded character or VRoid textures requested');
-  assert.equal(characterSource('Yuri'),'yuri-merged');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
+  assert.equal(characterSource('Thuan'),'yuri-merged');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
-  for(const name of [...PROFILES.map(p=>p.name),'Yui','Yuri']){
+  for(const name of [...PROFILES.map(p=>p.name),'Yui','Thuan']){
    const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);
-   const actor=models.attach(entity,name,name==='Yuri'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
+   const actor=models.attach(entity,name,name==='Thuan'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
    assert.equal(entity.userData.visualReady,true);const skins=[];actor.model.traverse(o=>{if(o.isSkinnedMesh)skins.push(o);});
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Sleep'])assert.ok(actor.actions.has(clip),name+' '+clip);
-   assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
+   assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Thuan');assert.equal(actor.isNozomi,name==='Reiko');
    {
-    assert.equal(actor.lowPoly,name!=='Yuri');assert.equal(skins.length,1,'Each resident has one body');
+    assert.equal(actor.lowPoly,name!=='Thuan');assert.equal(skins.length,1,'Each resident has one body');
     const skin=skins[0];assert.equal(skin.geometry.groups.length,0);
-    if(name==='Yuri'){assert.match(entity.userData.visualSource,/Meshy merged/);assert.ok(skin.material.map);assert.equal(actor.face,null);assert.equal(skin.geometry.attributes.position.count,98333);}
+    if(name==='Thuan'){assert.match(entity.userData.visualSource,/Meshy merged/);assert.ok(skin.material.map);assert.equal(actor.face,null);assert.equal(skin.geometry.attributes.position.count,98333);}
     else{assert.match(entity.userData.visualSource,/PSX low-poly/);assert.equal(skin.material.map,null);assert.equal(skin.material.flatShading,true);assert.ok(skin.geometry.attributes.position.count<14000);}
     assert.ok(actor.seatSupport);assert.ok(actor.cup);
     for(const clip of ['Eat','Drink'])assert.ok(actor.actions.has(clip));
@@ -37,7 +37,7 @@ test('residents retain independent motion and seating with Yuri on her supplied 
    scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(actor.model,true);
    assert.ok(Math.abs(bounds.max.y-actor.height)<.055,name+' retains their height');assert.ok(Math.abs(bounds.min.y)<.02,name+' is grounded');
   }
-  const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Yuri'),mrsSato=byName('Mrs Sato');
+  const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Thuan'),mrsSato=byName('Mrs Sato');
   const skin=actor=>{let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh&&!o.userData.facialFeatures)mesh=o;});return mesh;};
   assert.notEqual(skin(kenji).skeleton,skin(tetsuo).skeleton);assert.equal(skin(byName('Harbour master')).geometry.attributes.position,skin(byName('Bus driver')).geometry.attributes.position);
   assert.notEqual(skin(kenji).geometry.attributes.color,skin(tetsuo).geometry.attributes.color,'Wardrobe colours remain independent');

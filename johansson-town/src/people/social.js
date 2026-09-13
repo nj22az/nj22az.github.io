@@ -1,3 +1,5 @@
+import {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
+export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
@@ -5,7 +7,7 @@ import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
 export const RAMEN_DOOR=[...DINING.ramenDoor];
-export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Yuri').home];
+export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
 export const izakayaOpen=m=>inTimeRange(m,960,1620);
@@ -29,31 +31,26 @@ export function supperGuests(minutes){
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
 // Overlapping, repeatable visits by the active cast. At most two seated diners;
-// Yuri retains her separate after-work stop and her standing/greeting animation.
-export const RAMEN_VISITS=Object.freeze({
- Kenji:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
- Nao:[780,840], Tetsuo:[795,900], Aya:[855,960],
- Reiko:[915,1020], 'Bus driver':[975,1080], 'Officer Mori':[1140,1255],
-});
-export const MARKET_VISITS=Object.freeze({
- 'Mrs Sato':[570,625],Aya:[660,715],Kenji:[870,925],Tetsuo:[930,985],
- Reiko:[1025,1080],'Harbour master':[1085,1140],'Bus driver':[1140,1190],
-});
-export function visitsMarket(profile,minutes){
- const visit=MARKET_VISITS[profile.name];
- return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&!!visit&&inTimeRange(minutes,...visit);
+// Thuan retains her separate after-work stop and her standing/greeting animation.
+export const MARKET_VISITS=marketVisitsForDay(0);
+export function visitsMarket(profile,minutes,state=null){
+ const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?account.meals?.market:null;
+ if(meal?.finished)return false;
+ const ordering=Number.isFinite(meal?.started)&&minutes>=meal.started&&minutes<meal.started+160&&minuteOfDay(minutes)<1200;
+ return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&!!visit&&(inTimeRange(minutes,...visit)||ordering);
 }
 export const ramenOpen=m=>inTimeRange(m,540,1260);
 export function visitsRamen(profile,minutes){
  const visit=RAMEN_VISITS[profile.name];
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
 }
-export function residentPlan(profile,minutes,rain=false){
+export function residentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes);
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a snack at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
- if(profile.name==='Yuri'){
+ if(profile.name==='Thuan'){
   if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
@@ -65,13 +62,12 @@ export function residentPlan(profile,minutes,rain=false){
   return {place:'evening',target:profile.evening,activity:'walking Main Street'};
  }
  if(supperGuests(minutes).some(p=>p.name===profile.name))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with the neighbours'};
- if(visitsMarket(profile,minutes))return {place:'market',target:RESIDENTS.find(p=>p.name==='Yuri').work,activity:'a snack at Sakura'};
  if(inTimeRange(m,profile.start-30,profile.close))return {place:'work',target:profile.work,activity:profile.role};
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
 export const GOSSIP=[
- {id:'yuri-evening',a:'Yuri',b:'Nao',line:'Yuri: I told the assistant manager I would be home early.\nNao: The plant?\nYuri: He looked very disappointed. I watered him twice.',clue:'Yuri sometimes stops at Minato after locking Sakura. Look for her after 20:20, or near her home on Main Street.'},
+ {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be home early.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan sometimes stops at Minato after locking Sakura. Look for her after 20:20, or near her home on Main Street.'},
  {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and a home at 2 Main Street.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the Main Street stop.'},

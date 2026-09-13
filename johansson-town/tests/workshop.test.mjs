@@ -1,3 +1,4 @@
+import {recordSakuraSale} from '../src/commerce/sakura-economy.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -26,7 +27,7 @@ test('all five models print, collect once, block duplicates and sell for the cor
   assert.equal(advancePrint(state,model.seconds),true);assert.equal(advancePrint(state,1),false);
   assert.equal(collectPrint(state).ok,true);assert.equal(collectPrint(state).ok,false);assert.deepEqual(state.inventory,[model.name]);
   assert.equal(startPrint(state,model.id).ok,false);assert.equal(state.yen,1200-model.material);
-  assert.equal(sellPrint(state,model.id).ok,true);assert.equal(sellPrint(state,model.id).ok,false);
+  recordSakuraSale(state,model.price);assert.equal(sellPrint(state,model.id).ok,true);assert.equal(sellPrint(state,model.id).ok,false);
   assert.deepEqual(state.inventory,[]);assert.equal(state.yen,1200-model.material+model.price);
   assert.equal(startPrint(state,model.id).ok,true,'a sold copy can be made again');
  }
@@ -50,23 +51,23 @@ test('old saves and mid-print reloads preserve unique models, ordinary stacks an
  for(const job of [{id:recipe.id,remaining:-1},{id:recipe.id,remaining:'0'},{id:'missing',remaining:0}])assert.equal(restoreWorkshop({job},[]).job,null);
 });
 
-test('actual activity buttons complete the workshop–Yuri loop and ignore stale double taps',()=>{
- const ui=setup();ui.acts.action('workshop');
+test('actual activity buttons complete the workshop–Thuan loop and ignore stale double taps',()=>{
+ const ui=setup();recordSakuraSale(ui.acts.state,150);ui.acts.action('workshop');
  ui.dom.button('Check with StepWise');assert.match(document.querySelector('#activityBody').firstChild.textContent,/120 − ¥40 = ¥80/);
  ui.dom.button('Use this pattern in Form 3D');const print=ui.button('Print model · ¥40');print.onclick();print.onclick();assert.equal(ui.acts.state.yen,1160);assert.equal(ui.acts.paused,false);
  ui.acts.tick(8);ui.acts.action('workshop');const collect=ui.button('Collect model');collect.onclick();collect.onclick();assert.deepEqual(ui.acts.state.inventory,[recipe.name]);
  ui.dom.button('Back to printer');assert.equal(ui.button('Print model · ¥40').disabled,true);
- ui.context({inside:'market',yuriAvailable:true});ui.acts.action('resident','Yuri');ui.dom.button('Sell my workshop models');
+ ui.context({inside:'market',yuriAvailable:true});ui.acts.action('resident','Thuan');ui.dom.button('Sell items from my bag');
  const sell=ui.button('Sell '+recipe.name+' · +¥120');sell.onclick();sell.onclick();assert.equal(ui.acts.state.yen,1280);assert.deepEqual(ui.acts.state.inventory,[]);
  const persisted=JSON.parse(localStorage.getItem(SAVE_KEY));assert.equal(persisted.yen,1280);assert.deepEqual(persisted.inventory,[]);
  ui.context({inside:'form3d'});ui.acts.action('workshop');assert.equal(ui.button('Print model · ¥40').disabled,false);
 });
 
-test('only Yuri at Sakura during her working hours can buy a model, including stale offers',()=>{
+test('only Thuan at Sakura during her working hours can buy a model, including stale offers',()=>{
  for(const context of [{inside:'izakaya',yuriAvailable:true},{inside:'form3d',yuriAvailable:true},{inside:'market',yuriAvailable:false}])assert.equal(canSellAtSakura(context,600),false);
  const available={inside:'market',yuriAvailable:true};for(const minute of [539,1200,180,1440+1200])assert.equal(canSellAtSakura(available,minute),false);
  for(const minute of [540,1199,1440+540])assert.equal(canSellAtSakura(available,minute),true);
- const ui=setup({yen:300,inventory:[recipe.name]});ui.context(available);ui.acts.action('resident','Yuri');ui.dom.button('Sell my workshop models');const sell=ui.button('Sell '+recipe.name+' · +¥120');
+ const ui=setup({yen:300,inventory:[recipe.name]});recordSakuraSale(ui.acts.state,150);ui.context(available);ui.acts.action('resident','Thuan');ui.dom.button('Sell items from my bag');const sell=ui.button('Sell '+recipe.name+' · +¥120');
  ui.time(1200);sell.onclick();assert.equal(ui.acts.state.yen,300);assert.deepEqual(ui.acts.state.inventory,[recipe.name]);
  ui.context({inside:'izakaya',yuriAvailable:true});ui.acts.action('workshop');assert.equal(ui.button('Print model · ¥40'),undefined);
 });

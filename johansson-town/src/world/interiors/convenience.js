@@ -132,7 +132,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  for(const trayY of [1.265,1.585]){
   block([.98,.024,.53],[2.55,trayY,-.50],0xc2c7c6);
   for(const x of [2.24,2.55,2.86]){
-   block([.282,.004,.26],[x,trayY+.014,-.50],0xf7f0df);
+   block([.135,.004,.125],[x,trayY+.014,-.50],0xf7f0df);
    dummy.position.set(x,trayY+.016,-.50);dummy.rotation.set(0,bunIndex*.39,0);dummy.scale.set(1,1,1);dummy.updateMatrix();buns.setMatrixAt(bunIndex++,dummy.matrix);
   }
  }
@@ -145,8 +145,8 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  advertising.label('buns',[2.55,1.20,-.185],.65,.10);
  anchor([2.45,1.3,.02],'Browse steamed buns',()=>action('inspect','Steamed buns','Soft steamed pork buns with hand-pinched tops rest on paper squares in the heated display.'));
  anchor([1.25,1.2,.05],'Browse mail-order catalogue',()=>action('store-catalogue'));
- anchor([.2,1.25,.05],'Ring service bell',()=>action('resident','Yuri'));
- anchor([-.35,1.3,-.45],'Tune counter radio',()=>action('radio','Yuri’s radio','A quiet radio behind the till.'));
+ anchor([.2,1.25,.05],'Ring service bell',()=>action('resident','Thuan'));
+ anchor([-.35,1.3,-.45],'Tune counter radio',()=>action('radio','Thuan’s radio','A quiet radio behind the till.'));
  // Compact cash machine and two seats beside the front window.
  block([.88,1.55,.65],[5.05,.775,.10],0x80858b);block([.60,.46,.035],[5.05,1.23,.44],0x78aed0);block([.55,.08,.12],[5.05,.80,.45],0x41484f);collider(5.05,.10,.95,.72,1.55);
  inspect([4.9,1.2,.70],'cash machine','The local bank services this terminal on weekday mornings.');
@@ -178,7 +178,7 @@ export function buildConvenienceStore({room,box,reg,collider,action,signTexture,
  for(const [x,z] of [[-2,1],[2,1],[0,-4]]){
   const lamp=box([.45,.07,1.8],[x,3.48,z],0xfff5dc,room,false);lamp.material.emissive.set(0xfff1ce);lamp.material.emissiveIntensity=.8;
  }
- clerk.position.set(...STORE_CLERK_POSITION);clerk.rotation.y=Math.PI;clerk.visible=true;reg(clerk,'Say hello to Yuri',()=>action('resident','Yuri'),true);
+ clerk.position.set(...STORE_CLERK_POSITION);clerk.rotation.y=Math.PI;clerk.visible=true;reg(clerk,'Say hello to Thuan',()=>action('resident','Thuan'),true);
  for(const {geometry,color,matrices} of batches.values()){
   const m=new THREE.InstancedMesh(geometry,new THREE.MeshStandardMaterial({color,roughness:.74}),matrices.length);m.name='sakura-stock-batch';matrices.forEach((matrix,i)=>m.setMatrixAt(i,matrix));m.receiveShadow=true;m.castShadow=false;m.computeBoundingSphere();room.add(m);
  }

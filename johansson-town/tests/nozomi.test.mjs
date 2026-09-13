@@ -24,7 +24,7 @@ test('Nozomi and Aya retain their identities on low-poly rigs, including retries
   assert.ok(reiko.model.getObjectByName('resident-headband-scarf'));
   const body=actor=>{let skin;actor.model.traverse(o=>{if(o.isSkinnedMesh)skin=o;});return skin;};
   const attach=name=>{const entity=new THREE.Group();entity.userData.name=name;scene.add(entity);return models.attach(entity,name);};
-  const nozomi=attach('Nozomi'),sato=attach('Mrs Sato'),aya=attach('Aya'),aiko=attach('Aiko'),yuri=attach('Yuri');
+  const nozomi=attach('Nozomi'),sato=attach('Mrs Sato'),aya=attach('Aya'),aiko=attach('Aiko'),yuri=attach('Thuan');
   for(const [a,b] of [[reiko,nozomi],[aya,aiko]]){
    assert.ok(a.lowPoly&&b.lowPoly);assert.equal(a.height,b.height);
    assert.equal(body(a).geometry.attributes.position,body(b).geometry.attributes.position);

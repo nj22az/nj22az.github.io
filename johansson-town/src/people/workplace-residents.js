@@ -13,7 +13,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
   const saved=borrowed.get(person);if(!saved)return;interactions?.release(person,clock);
   const g=person.g;saved.parent.add(g);g.position.copy(saved.position);g.quaternion.copy(saved.rotation);g.visible=true;g.userData.hit.inside=saved.inside;
   for(const key of ['inWorkplace','indoors','usingTownObject','socialPose','seatHeight','heldItem','roomTransition'])delete g.userData[key];
-  if(residentPlan(person.profile,clock).place==='work'&&person.profile.workSite){g.userData.indoors='work';g.visible=false;}
+  if(residentPlan(person.profile,clock,false,getState()).place==='work'&&person.profile.workSite){g.userData.indoors='work';g.visible=false;}
   borrowed.delete(person);
  }
  function walk(person,target,dt){
@@ -23,7 +23,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
  }
  function update(dt,minutes,rain,initial=false){
   clock=minutes;if(!site)return;
-  const working=p=>residentPlan(p.profile,minutes,rain).place==='work'&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
+  const working=p=>residentPlan(p.profile,minutes,rain,getState()).place==='work'&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
   for(const person of [...borrowed.keys()])if(!working(person)){
    interactions.release(person,minutes);person.g.userData.roomTransition=true;person.g.userData.activity='leaving work';
    if(walk(person,getEntrance(),dt))restore(person);

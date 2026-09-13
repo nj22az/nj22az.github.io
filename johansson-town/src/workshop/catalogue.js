@@ -10,7 +10,7 @@ export const workshopModel=id=>WORKSHOP_MODELS.find(model=>model.id===id);
 export const printedModels=inventory=>WORKSHOP_MODELS.filter(model=>inventory.includes(model.name));
 export function modelTicket(model){return [
  '1. Materials: ¥'+model.material,
- '2. Yuri’s buying price: ¥'+model.price,
+ '2. Thuan’s buying price: ¥'+model.price,
  '3. Earnings: ¥'+model.price+' − ¥'+model.material+' = ¥'+(model.price-model.material),
  '4. Machine time: '+model.seconds+' seconds while you explore.',
 ].join('\n');}

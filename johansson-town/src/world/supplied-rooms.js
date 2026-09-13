@@ -223,17 +223,17 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   }else if(site.id==='yuri-home'){
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
     const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);
-    for(const [name,x,colour] of [['Yuri',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){
+    for(const [name,x,colour] of [['Thuan',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){
       const part=(size,pos,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color,roughness:.92}));m.position.set(...pos);furnishings.add(m);return m;};
       part([1.15,.22,1.85],[x,.34,3.27],0xd1b99a).name=name+' bed';
       part([1.08,.06,1.48],[x,.48,3.42],colour);part([.9,.16,.45],[x,.57,2.6],0xede3cb);
-      part([.32,.03,.24],[x,.5,4.1],name==='Yuri'?0x668074:0x586577).name=name+' bedside book';
-      anchor([x,1,3.27],'Inspect '+name+'’s corner','inspect',name+'’s corner',name==='Yuri'?'Yuri’s pink bedspread, a little book of plants and tomorrow’s Sakura list. Nao has the other bed; they share the kitchen and breakfast table.':'Nao’s terracotta bedspread and a notebook of supper recipes. She comes home after the late shift and sleeps until noon.');
+      part([.32,.03,.24],[x,.5,4.1],name==='Thuan'?0x668074:0x586577).name=name+' bedside book';
+      anchor([x,1,3.27],'Inspect '+name+'’s corner','inspect',name+'’s corner',name==='Thuan'?'Thuan’s pink bedspread, a little book of plants and tomorrow’s Sakura list. Nao has the other bed; they share the kitchen and breakfast table.':'Nao’s terracotta bedspread and a notebook of supper recipes. She comes home after the late shift and sleeps until noon.');
     }
     anchor([-4.96,1,-.55],'Inspect the writing desk','inspect','Writing desk','A computer, papers and a quiet corner for the household accounts.');
-    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Yuri & Nao’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
+    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Thuan & Nao’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
     anchor([-2.75,.6,.84],'Inspect the breakfast table','inspect','Breakfast table','A small round table beside the living area.');
-    anchor([-4.96,.7,-.55],'Read the household notebook','read','Yuri & Nao’s notebook','Yuri: Water the plants before the morning shift.\nNao: Breakfast is in the refrigerator. Leave the porch light on after supper.');
+    anchor([-4.96,.7,-.55],'Read the household notebook','read','Thuan & Nao’s notebook','Thuan: Water the plants before the morning shift.\nNao: Breakfast is in the refrigerator. Leave the porch light on after supper.');
     const chair=anchor([-2.75,.56,1.5],'Sit at the breakfast table','seat','Breakfast table','A quiet place to sit between the morning and evening shifts.');
     chair.userData.seat={position:[-2.75,0,1.5],stand:[-2.75,0,2.1],eyeY:1.2,yaw:0,pitch:0};chair.userData.npcInteraction=false;
   }else{

@@ -1,3 +1,4 @@
+import {sellToSakura} from '../commerce/sakura-economy.js';
 import {WORKSHOP_MODELS,workshopModel} from './catalogue.js';
 
 export const BAG_LIMIT=100;
@@ -13,7 +14,7 @@ export function restoreWorkshop(saved,inventory){
 export function printProblem(state,id){
  const model=workshopModel(id);
  if(!model)return 'Choose a workshop model.';
- if(state.inventory.includes(model.name))return 'You already have this model. Carry only one of each; sell it to Yuri before making another.';
+ if(state.inventory.includes(model.name))return 'You already have this model. Carry only one of each; sell it to Thuan before making another.';
  if(state.workshop.job)return 'Collect the current print before starting another.';
  if(state.inventory.length>=BAG_LIMIT)return 'Your bag is full. Make room before printing.';
  if(state.yen<model.material)return 'You need ¥'+model.material+' for materials.';
@@ -37,10 +38,8 @@ export function collectPrint(state){
  state.inventory.push(model.name);state.workshop.job=null;return {ok:true,model};
 }
 export function sellPrint(state,id){
- const model=workshopModel(id),index=model?state.inventory.indexOf(model.name):-1;
- if(index<0)return {ok:false,message:'That model is no longer in your bag.'};
- if(state.yen+model.price>999999)return {ok:false,message:'Your wallet is full. Keep the model until you have room for the payment.'};
- state.inventory.splice(index,1);state.yen+=model.price;return {ok:true,model};
+ const model=workshopModel(id);if(!model)return {ok:false,message:'Choose a workshop model.'};
+ return sellToSakura(state,model.name);
 }
 export function canSellAtSakura(context,minutes){
  const time=((minutes%1440)+1440)%1440;
