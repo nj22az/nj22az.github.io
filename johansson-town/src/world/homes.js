@@ -1,9 +1,8 @@
-import {homeSiteId} from '../people/home-life.js';
+import {HOUSEHOLDS} from '../people/households.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
 import {YURI_HOME_DOOR} from '../people/social.js';
-import {groundHeight} from './layout.js?snappy=1';
 import {RESIDENTIAL_ENTRIES} from './residential-layout.js';
 import {buildResidentialStreet} from './residential-street.js';
 
@@ -12,25 +11,28 @@ import {buildResidentialStreet} from './residential-street.js';
 export function buildHomes(world,options){
  buildResidentialStreet(world,options);
  const atlas=document.createElement('canvas');atlas.width=1024;atlas.height=512;
- const ctx=atlas.getContext('2d'),plates=[],dummy=new THREE.Object3D(),homes=new Map(),slots=new Map();
+ const ctx=atlas.getContext('2d'),plates=[],dummy=new THREE.Object3D(),homes=new Map();
  ctx.fillStyle='#e6dbc1';ctx.fillRect(0,0,1024,512);
- for(const [i,p] of RESIDENTS.entries()){
-  const entry=RESIDENTIAL_ENTRIES[p.homeEntry],slot=slots.get(p.homeEntry)||0;slots.set(p.homeEntry,slot+1);
-  const col=i%4,row=Math.floor(i/4);ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 25px sans-serif';ctx.fillText(p.name,col*256+128,row*128+49,240);ctx.font='19px sans-serif';ctx.fillText(p.homeAddress,col*256+128,row*128+86,240);
-  const geometry=new THREE.PlaneGeometry(.58,.25),uv=geometry.attributes.uv;
+ for(const household of HOUSEHOLDS){
+  const entry=RESIDENTIAL_ENTRIES[household.entry],profile=RESIDENTS.find(p=>p.name===household.residents[0]);
+  let site=options.sites.find(s=>s.id===household.id);
+  if(!site){site={id:household.id,jp:'住まい',sub:'MAIN STREET',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
+  Object.assign(site,{title:household.title,line:household.address,homeOwner:household.residents[0],homeOwners:[...household.residents],homeEntry:household.entry,door:[profile.home[0],.02,profile.home[1]],entryFacing:entry.angle,x:entry.facade[0]-.3,z:entry.door[1]});site.exitPosition=[...site.door];
+  for(const name of household.residents)homes.set(name,{owner:name,household:household.id,address:household.address,door:profile.home,building:entry.buildingId,occupied:false});
+ }
+ YURI_HOME_DOOR.splice(0,2,...RESIDENTS.find(p=>p.name==='Yuri').home);
+ for(const [i,[key,entry]] of Object.entries(RESIDENTIAL_ENTRIES).entries()){
+  const households=HOUSEHOLDS.filter(h=>h.entry===key),col=i%4,row=Math.floor(i/4);
+  ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 23px sans-serif';ctx.fillText('MAIN STREET · '+(i+1),col*256+128,row*128+28,240);
+  households.forEach((h,j)=>{ctx.font='21px sans-serif';ctx.fillText(h.residents.join(' & '),col*256+128,row*128+60+j*28,240);});
+  const geometry=new THREE.PlaneGeometry(.55,.28),uv=geometry.attributes.uv;
   for(let n=0;n<uv.count;n++)uv.setXY(n,(col+uv.getX(n))/4,1-(row+1-uv.getY(n))/4);
-  dummy.position.set(entry.plate[0]+Math.sin(entry.angle)*.045,1.55+slot*.29,entry.plate[1]+Math.cos(entry.angle)*.045);dummy.rotation.set(0,entry.angle,0);dummy.updateMatrix();geometry.applyMatrix4(dummy.matrix);plates.push(geometry);
-  const home={owner:p.name,address:p.homeAddress,door:p.home,building:entry.buildingId,occupied:false};homes.set(p.name,home);
-  const anchor=new THREE.Object3D();anchor.name='home entrance:'+p.name;anchor.position.set(p.home[0],groundHeight(...p.home)+1.3,p.home[1]);world.group.add(anchor);
-  let site=options.sites.find(s=>s.id===homeSiteId(p.name));
-  if(!site){site={id:homeSiteId(p.name),title:p.name+'’s home',jp:'住まい',sub:'WILLOW ALLEY',color:0xd4c6ad,accent:'#776953',line:p.homeAddress};options.sites.push(site);}
-  site.line=p.homeAddress;site.homeOwner=p.name;site.door=[p.home[0],groundHeight(...p.home),p.home[1]];site.exitPosition=[...site.door];site.entryFacing=entry.angle;site.x=p.house.x;site.z=p.house.z;
-  if(p.name==='Yuri')YURI_HOME_DOOR.splice(0,2,...p.home);
-  // Shared street entrances open a choice of apartments, never overlapping hit targets.
-  if(slot===0)options.register(anchor,'Visit homes',()=>{
-   const neighbours=RESIDENTS.filter(n=>n.homeEntry===p.homeEntry).map(n=>options.sites.find(s=>s.id===homeSiteId(n.name)));
-   if(neighbours.length===1)options.enter(neighbours[0]);
-   else options.onAction('visit-home','Willow Alley',neighbours.map(site=>({name:site.title+' · '+site.line,enter:()=>options.enter(site)})));
+  dummy.position.set(entry.plate[0],1.48,entry.plate[1]);dummy.rotation.set(0,entry.angle,0);dummy.updateMatrix();geometry.applyMatrix4(dummy.matrix);plates.push(geometry);
+  const anchor=new THREE.Object3D();anchor.name='home entrance:'+key;anchor.position.set(entry.door[0],1.3,entry.door[1]);world.group.add(anchor);
+  options.register(anchor,'Visit homes',()=>{
+   const flats=households.map(h=>options.sites.find(s=>s.id===h.id));
+   if(flats.length===1)options.enter(flats[0]);
+   else options.onAction('visit-home',(i+1)+' Main Street',flats.map(site=>({name:site.title+' · '+site.line,enter:()=>options.enter(site)})));
   });
  }
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;

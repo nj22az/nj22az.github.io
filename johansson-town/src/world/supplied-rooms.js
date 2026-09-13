@@ -30,7 +30,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:0,z:-2.0,w:.11,d:.45,height:1.7},
       {x:-3.08,z:-2.02,w:.12,d:.48,height:1.7},
       {x:3.08,z:-2.02,w:.12,d:.48,height:1.7},
-      {x:-2.52,z:-1.82,w:.59,d:.68,height:.94},
+      {x:-2.52,z:-2.02,w:.68,d:.68,height:1.28},
       {x:1.14,z:-2.22,w:.65,d:.72,height:.94},
       {x:2.91,z:-1.39,w:.43,d:.46,height:.46},
       {x:3.1,z:1.58,w:.6,d:2.72,height:1.87},
@@ -222,12 +222,20 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     buildOfficeWorkplace({room,reg,action});
   }else if(site.id==='yuri-home'){
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
-    const sofa=anchor([-2.4,.48,2.2],'Sit on the sofa','seat','Yuri’s sofa','A broad sofa faces the coffee table. Yuri rests here after closing the shop.');
-    sofa.userData.seat={position:[-2.4,0,2.2],stand:[-1,0,2.2],eyeY:1.22,yaw:Math.PI,pitch:0};
-    anchor([-2.17,.7,3.5],'Read the coffee-table note','read','Tomorrow’s list','Open Sakura. Check the deliveries. Put the kettle on before breakfast.');
+    const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);
+    for(const [name,x,colour] of [['Yuri',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){
+      const part=(size,pos,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color,roughness:.92}));m.position.set(...pos);furnishings.add(m);return m;};
+      part([1.15,.22,1.85],[x,.34,3.27],0xd1b99a).name=name+' bed';
+      part([1.08,.06,1.48],[x,.48,3.42],colour);part([.9,.16,.45],[x,.57,2.6],0xede3cb);
+      part([.32,.03,.24],[x,.5,4.1],name==='Yuri'?0x668074:0x586577).name=name+' bedside book';
+      anchor([x,1,3.27],'Inspect '+name+'’s corner','inspect',name+'’s corner',name==='Yuri'?'Yuri’s pink bedspread, a little book of plants and tomorrow’s Sakura list. Nao has the other bed; they share the kitchen and breakfast table.':'Nao’s terracotta bedspread and a notebook of supper recipes. She comes home after the late shift and sleeps until noon.');
+    }
     anchor([-4.96,1,-.55],'Inspect the writing desk','inspect','Writing desk','A computer, papers and a quiet corner for the household accounts.');
-    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Yuri’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
+    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Yuri & Nao’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
     anchor([-2.75,.6,.84],'Inspect the breakfast table','inspect','Breakfast table','A small round table beside the living area.');
+    anchor([-4.96,.7,-.55],'Read the household notebook','read','Yuri & Nao’s notebook','Yuri: Water the plants before the morning shift.\nNao: Breakfast is in the refrigerator. Leave the porch light on after supper.');
+    const chair=anchor([-2.75,.56,1.5],'Sit at the breakfast table','seat','Breakfast table','A quiet place to sit between the morning and evening shifts.');
+    chair.userData.seat={position:[-2.75,0,1.5],stand:[-2.75,0,2.1],eyeY:1.2,yaw:0,pitch:0};chair.userData.npcInteraction=false;
   }else{
     anchor(ramenPoint(.31,1.18,1.7),'Order ramen · ¥300','ramen','Sato Ramen');
     RAMEN_PLAYER_SEATS.forEach((seat,i)=>{

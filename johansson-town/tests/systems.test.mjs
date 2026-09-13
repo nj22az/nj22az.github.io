@@ -10,6 +10,7 @@ import {createActivities} from '../activities.js?snappy=1';
 import {createCharacters} from '../src/people/characters.js?snappy=1';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {ROUTES,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
+import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 import {createContentItems} from '../content-items.js';
@@ -38,9 +39,9 @@ test('world construction, original route and new door reachability',()=>{
 });
 test('compact outskirts retain destinations without the long empty detours',()=>{
  const length=id=>{const r=ROUTES.find(r=>r.id===id);return r.points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-r.points[i][0],p[1]-r.points[i][1]),0);};
- assert.ok(length('residential')<75,'Residential circuit fits beside the shops');
+ assert.ok(length('west-service')<55,'Home pavement fits beside Main Street');
  assert.ok(!ROUTES.some(r=>r.id==='shrine-slope'||r.id==='bus-door'),'Removed landmarks leave no ghost routes');
- const residential=ROUTES.find(r=>r.id==='residential');assert.equal(residential.points.length,2);assert.deepEqual(residential.points[0],[0,4]);assert.equal(residential.points[1][1],4,'A single straight road reaches the residential lane');
+ const residential=ROUTES.find(r=>r.id==='west-service');assert.equal(residential.points.length,2);assert.deepEqual(residential.points,[[-8.5,-20],[-8.5,31]],'One straight pavement connects the entire home frontage');assert.ok(!ROUTES.some(r=>r.id==='residential'||r.id==='bathhouse-door'),'Retired neighbourhood routes are removed');
  for(const [x,z] of [[120,60],[72,117],[-58,-74]])assert.equal(townBoundsBlocked(x,z,.28),true,'Old empty outskirts are no longer playable');
  const {world,anchors}=build();
  assert.ok(!anchors.some(a=>/hillside shrine|harbour bus hut/i.test(a.label)));assert.ok(!world.group.getObjectByName('district-building:bus-hut'));
@@ -87,7 +88,7 @@ test('malformed current save falls back to valid legacy data without deleting it
 test('resident paths clear detailed props; evening destinations and Kenji escort do not deadlock',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(-2,0,-5.5);const state={inventory:[],quest:0,kenjiEscort:'walking'};
  const blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
- for(const target of [[-28,28],[40,24],[-30,4],[-36,-46],[-36,-60]]){
+ for(const target of [...Object.values(TOWN_DESTINATIONS),...world.homes.values()].map(t=>t.door||t)){
   const path=nav.path({x:0,z:26},{x:target[0],z:target[1]});assert.ok(path.length,'Destination is reachable: '+target);
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.05)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,'Path edge is clear');
  }
@@ -98,7 +99,7 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
 });
 
 test('every resident retains a named home and a clear route through the supplied neighbourhood',()=>{
- const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.owner)).size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,6);
+ const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.owner)).size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,5);assert.equal(new Set([...world.homes.values()].map(h=>h.household)).size,7);
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
   assert.ok(anchors.some(a=>a.label==='Visit homes'&&a.o.position.x===home.door[0]&&a.o.position.z===home.door[1]),p.profile.name+' home prompt');
@@ -106,8 +107,7 @@ test('every resident retains a named home and a clear route through the supplied
   const path=nav.path({x:0,z:26},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
  }
- const homes=world.colliders.filter(c=>c.id?.startsWith('DomekRdy'));assert.equal(homes.length,7);
- for(let i=0;i<homes.length;i++)for(const c of world.colliders){if(c===homes[i]||c.residential&&!c.id)continue;const a=homes[i];assert.ok(Math.abs(a.x-c.x)>=(a.w+c.w)/2||Math.abs(a.z-c.z)>=(a.d+c.d)/2,a.home+' overlaps '+JSON.stringify(c));}
+ assert.equal(world.colliders.filter(c=>c.id==='main-street-core').length,1);assert.ok(!world.colliders.some(c=>c.id?.startsWith('DomekRdy')),'Old detached houses leave no colliders');
 });
 
 test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{

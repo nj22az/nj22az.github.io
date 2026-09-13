@@ -257,7 +257,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assertFiniteTransforms(api,'outside '+site.id);
       entered++;
     }
-    assert.ok(entered>=18,'All existing interiors and resident homes remain registered');
+    assert.equal(entered,api.SITES.length,'Every registered interior is entered');assert.ok(entered>=15,'Consolidated homes and existing businesses remain registered');assert.equal(api.SITES.filter(s=>s.homeOwner).length,7,'Seven households remain accessible through five doors');
     for(const site of api.SITES){api.reviewSetMinutes(180);api.enterRoom(site);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id);api.leaveRoom();}
     const yuri=api.world.people.find(p=>p.profile.name==='Yuri').g,yuriScale=yuri.scale.clone();
     yuri.position.set(DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]);yuri.userData.indoors='izakaya';delete yuri.userData.justArrived;

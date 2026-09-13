@@ -18,7 +18,7 @@ test('late street, home, bench and vending assets replace placeholders without m
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const entered=[],world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(o,label,fn){o.userData.hit={label,fn};},enter:site=>entered.push(site.id),onAction(){}});
   const before=JSON.stringify(world.colliders),doors=JSON.stringify(sites.map(s=>s.door));
-  for(const id of ['dining-street','residential-street','sakura-bench','street-vending']){
+  for(const id of ['dining-street','residential-north','residential-centre','residential-south','sakura-bench','street-vending']){
    const entry=world.details.find(e=>e.id===id);assert.ok(entry,id);assert.equal(await entry.load(),true,id);
    assert.equal(JSON.stringify(world.colliders),before);assert.equal(JSON.stringify(sites.map(s=>s.door)),doors);
   }

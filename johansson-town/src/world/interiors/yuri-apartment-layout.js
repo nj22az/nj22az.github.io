@@ -5,13 +5,11 @@ export const YURI_APARTMENT_LAYOUT={
  floorPolygon:[[-5.62,-.83],[-3.88,-.83],[-3.88,-2.65],[-3.43,-2.65],[-3.43,-4.75],[-.68,-4.75],[-.68,-1.43],[1.08,.42],[3.78,.42],[3.78,4.40],[-5.62,4.40]],
  spawn:[-.45,0,.4],yaw:Math.PI/2,exit:[.24,1.1,-.55],
  colliders:[
+  {x:-4.15,z:3.27,w:1.15,d:1.85,height:.55},
+  {x:-1.6,z:3.27,w:1.15,d:1.85,height:.55},
   {x:-2.75,z:.84,w:1.54,d:.76,height:.56},
   {x:-2.75,z:.27,w:1.1,d:.38,height:.56},
   {x:-2.75,z:1.41,w:1.1,d:.38,height:.56},
-  {x:-2.4,z:2.23,w:2.06,d:1.04,height:.85},
-  {x:-3.96,z:3.37,w:1.02,d:1.16,height:.85},
-  {x:-3.82,z:2.33,w:.58,d:.59,height:.59},
-  {x:-2.17,z:3.5,w:1.58,d:.84,height:.4},
   {x:-4.96,z:-.55,w:1.41,d:.64,height:.62},
   {x:-4.99,z:.12,w:.8,d:.7,height:.91},
   {x:-5.45,z:.98,w:.31,d:.96,height:.78},
@@ -29,7 +27,10 @@ export const YURI_APARTMENT_LAYOUT={
   {x:-4.97,z:2.31,w:.1,d:.62,height:2.2},
  ],
 };
-export const YURI_APARTMENT_ROUTINE={
- bed:[-1.5,.48,2.2],bedside:[-1.0,0,2.2],table:[-1.6,0,.5],door:[-.45,0,.4],bedAxis:'x',
- cover:{position:[-2.16,.5,2.2],width:.82,length:1.48,axis:'x'},
+export const YURI_APARTMENT_ROUTINES={
+ Yuri:{bed:[-4.15,.58,3.95],bedside:[-3.08,0,2.25],table:[-1.6,0,.5],door:[-.45,0,.4],
+  cover:{position:[-4.15,.64,3.35],width:1.08,length:1.3,axis:'z'}},
+ Nao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
+  cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
 };
+export const YURI_APARTMENT_ROUTINE=YURI_APARTMENT_ROUTINES.Yuri;

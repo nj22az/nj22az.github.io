@@ -1,12 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
 import {residentPlan} from './social.js';
-import {homeRoutine,homeOwner,HOME_LAYOUT,YURI_HOME_LAYOUT} from './home-life.js';
+import {homeRoutine,homeLayoutFor} from './home-life.js';
+import {householdNames} from './households.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {createRoomWalk,atDestination} from './room-walk.js';
 import {createSleepCover} from './sleep-cover.js';
 import {residentPersonality} from './resident-personalities.js';
 
-export function createHomeResidents({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false}){
+function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false},name){
  let site=null,person=null,saved=null,layout=null,walker=null,cover=null,clock=0,rest=0,sleepBlend=0;
  function restore(){
   cover?.dispose();cover=null;
@@ -15,6 +16,7 @@ export function createHomeResidents({world,parent,collides=()=>false,onBorrow=()
   saved.parent.add(g);g.position.set(person.profile.home[0],groundHeight(...person.profile.home),person.profile.home[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
   for(const key of ['inHome','socialPose','seatHeight','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
   if(stillHome){g.userData.indoors='home';g.visible=false;}else{delete g.userData.indoors;g.visible=true;}
+  const home=world.homes?.get(person.profile.name);if(home)home.occupied=stillHome;
   saved=null;rest=0;sleepBlend=0;
  }
  function update(dt,minutes){
@@ -50,5 +52,14 @@ export function createHomeResidents({world,parent,collides=()=>false,onBorrow=()
   g.quaternion.identity().slerp(lying,sleepBlend*amount);
   g.userData.sleepBlend=sleepBlend*amount;g.userData.socialPose=asleep||sleepBlend>.01?'Sleep':'Wake';if(!asleep&&sleepBlend<=.01)g.userData.seatHeight=to[1];
  }
- return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===homeOwner(next));if(!person){site=null;return;}layout=person.profile.name==='Yuri'?YURI_HOME_LAYOUT:HOME_LAYOUT;walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
+ return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===name);if(!person){site=null;return;}layout=homeLayoutFor(person.profile.name);walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
+}
+
+// Borrow each existing street actor independently. Entering a shared home cannot
+// summon a roommate from work, wake a night worker or duplicate a character.
+export function createHomeResidents(options){
+ let residents=[];
+ const restore=()=>{residents.forEach(r=>r.restore());residents=[];};
+ return {enter(site,minutes){restore();residents=householdNames(site).filter(name=>options.world.people.some(p=>p.profile.name===name)).map(name=>createHomeResident(options,name));residents.forEach(r=>r.enter(site,minutes));},
+  update(dt,minutes){residents.forEach(r=>r.update(dt,minutes));},restore};
 }

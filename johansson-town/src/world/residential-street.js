@@ -2,41 +2,41 @@ import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
-import {RESIDENTIAL,RESIDENTIAL_BUILDINGS,residentialPoint} from './residential-layout.js';
-let source=null,pending=null;
-export function preloadResidentialStreet(){
- if(source)return Promise.resolve(true);if(pending)return pending;
- pending=(async()=>{
+import {MAIN_STREET_SECTIONS} from './main-street-sections.js';
+import {FRONTAGE_COLLIDERS} from './main-street-colliders.js';
+import {frontageMaterial} from '../render/frontage-material.js';
+const sources=new Map(),pending=new Map();
+async function preloadSection(section){
+ if(sources.has(section.id))return true;if(pending.has(section.id))return pending.get(section.id);
+ const task=(async()=>{
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
   try{
-   const response=await fetch(assetURL('models/residential-street/willow-street.glb'),{signal:controller.signal});if(!response.ok)throw Error(response.status);
-   const loaded=await new GLTFLoader().parseAsync(await response.arrayBuffer(),'');
-   for(const b of RESIDENTIAL_BUILDINGS)if(!loaded.scene.getObjectByName(b.id)?.isMesh)throw Error('Missing residential building '+b.id);
-   source=loaded.scene;return true;
-  }catch(error){console.warn('Willow Alley model unavailable; will retry',error);return false;}
+   const response=await fetch(assetURL('models/main-street/'+section.file),{signal:controller.signal});if(!response.ok)throw Error(response.status);
+   const {scene}=await new GLTFLoader().parseAsync(await response.arrayBuffer(),'');
+   const meshes=[];scene.traverse(o=>{if(o.isMesh)meshes.push(o);});if(!meshes.length)throw Error('Empty frontage');
+   await Promise.all(meshes.map(async mesh=>{mesh.material=await frontageMaterial(mesh.material.userData.frontageAtlas);mesh.userData.sharedAsset=true;}));
+   sources.set(section.id,scene);return true;
+  }catch(error){console.warn('Main Street '+section.id+' unavailable; will retry',error);return false;}
   finally{clearTimeout(timer);}
- })();pending.finally(()=>{pending=null;});return pending;
+ })();pending.set(section.id,task);task.finally(()=>pending.delete(section.id));return task;
 }
+export async function preloadResidentialStreet(){return (await Promise.all(MAIN_STREET_SECTIONS.map(preloadSection))).every(Boolean);}
 export function buildResidentialStreet(world,options={}){
- const group=new THREE.Group();group.name='Willow Alley supplied street';group.position.set(RESIDENTIAL.x,0,RESIDENTIAL.z);group.rotation.y=RESIDENTIAL.yaw;world.group.add(group);
- // Short landing strips join the supplied paving to the two existing cross paths.
- const positions=[],indices=[];
- for(const [a,b] of [[-11.02,-10.30],[9.48,10.44]]){const n=positions.length/3;positions.push(-1.95,.025,a,1.45,.025,a,-1.95,.025,b,1.45,.025,b);indices.push(n,n+2,n+1,n+1,n+2,n+3);}
- const paving=new THREE.BufferGeometry();paving.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));paving.setIndex(indices);paving.computeVertexNormals();
- const approaches=new THREE.Mesh(paving,new THREE.MeshStandardMaterial({color:0xcba58e,roughness:.95}));approaches.name='Willow Alley path connections';approaches.receiveShadow=true;group.add(approaches);
- for(const b of RESIDENTIAL_BUILDINGS)world.colliders.push({...b,residential:true});
- // The florist's low display projects beyond its wall, beside the bridge landing.
- const [displayX,displayZ]=residentialPoint(-1.94,-.5);world.colliders.push({x:displayX,z:displayZ,w:1.26,d:.96,height:1.85,residential:true});
- let mounted=false;
- function mount(){
-  if(mounted)return true;if(!source)return false;
-  const scene=source.clone(true);scene.name='Willow Alley authored model';
-  scene.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=true;o.userData.sharedAsset=true;o.material.envMapIntensity=.45;o.material.dithering=true;
-   for(const map of [o.material.map,o.material.normalMap,o.material.roughnessMap,o.material.aoMap])if(map)map.anisotropy=Math.min(options.maxAnisotropy||1,options.mobile?4:8);
-  });
-  group.add(scene);mounted=true;return true;
+ const group=new THREE.Group();group.name='Main Street homes';world.group.add(group);
+ const pavement=new THREE.Mesh(new THREE.BoxGeometry(6.35,.12,49.852),new THREE.MeshStandardMaterial({color:0xb9b4a6,roughness:.96}));
+ pavement.position.set(-10.175,-.04,5.574);pavement.name='Continuous Main Street pavement';pavement.receiveShadow=true;group.add(pavement);
+ const masonry=new THREE.MeshStandardMaterial({color:0x969a90,roughness:1});
+ // Close the rear and the cropped party walls behind the existing façades.
+ for(const [size,position] of [[[.14,10.1,49.85],[-28.66,5.05,5.574]],[[15.6,18.36,.12],[-20.55,9.18,30.44]],[[15.6,12.5,.12],[-20.55,6.25,-19.29]]]){
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(...size),masonry);wall.position.set(...position);wall.name='Main Street party wall';wall.receiveShadow=true;group.add(wall);
  }
- if(!mount())registerDetail(world,{id:'residential-street',x:RESIDENTIAL.x,z:RESIDENTIAL.laneZ,priority:0,radius:90,timeoutMs:32000,load:async()=>await preloadResidentialStreet()&&mount()});
- world.residential={group,get ready(){return mounted;},source:'Stylized Little Japanese Town Street'};
- return group;
+ world.colliders.push({id:'main-street-core',x:-21.1,z:5.574,w:15.8,d:49.85,height:18.42,residential:true},...FRONTAGE_COLLIDERS.map(c=>({...c,residential:true})));
+ const mounted=new Set();
+ for(const section of MAIN_STREET_SECTIONS){
+  const mount=()=>{if(mounted.has(section.id))return true;const source=sources.get(section.id);if(!source)return false;
+   const scene=source.clone(true);scene.name='Main Street '+section.id;scene.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=true;o.material.map.anisotropy=Math.min(options.maxAnisotropy||1,options.mobile?4:8);});group.add(scene);mounted.add(section.id);return true;
+  };
+  if(!mount())registerDetail(world,{id:'residential-'+section.id,x:-14,z:(section.min[2]+section.max[2])/2,priority:0,radius:65,timeoutMs:32000,load:async()=>await preloadSection(section)&&mount()});
+ }
+ world.residential={group,get ready(){return mounted.size===MAIN_STREET_SECTIONS.length;},source:'Street 2 by Pasha'};return group;
 }

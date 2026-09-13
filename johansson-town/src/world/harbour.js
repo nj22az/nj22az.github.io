@@ -1,5 +1,4 @@
 import {buildHarbourOffice} from './harbour-office.js';
-import {RESIDENTIAL_CANAL} from './residential-layout.js';
 import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
 import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
@@ -103,17 +102,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
-  // Leave room below the supplied canal, so the town's base cannot cover its water.
   buildPeninsula(group);
-  box([RESIDENTIAL_CANAL.maxX-RESIDENTIAL_CANAL.minX,.2,RESIDENTIAL_CANAL.maxZ-RESIDENTIAL_CANAL.minZ],[(RESIDENTIAL_CANAL.minX+RESIDENTIAL_CANAL.maxX)/2,-1.15,(RESIDENTIAL_CANAL.minZ+RESIDENTIAL_CANAL.maxZ)/2],0x606b61);
   box([15,.2,26.4],[0,-.16,21.2],0xb8b8af,[0,0,0],'road');
   box([15,.2,4],[0,-.16,-40],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const side of [-1,1]){
-    for(const [a,b] of [[8,21.5],[26.5,31]])box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
-    for(let z=9;z<31;z+=1)if(![24].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
+    if(side===1)for(const [a,b] of [[8,21.5],[26.5,31]])box([4.5,.12,b-a],[side*9.5,-.06,(a+b)/2],0xddd7ca,[0,0,0],'paving');
+    if(side===1)for(let z=9;z<31;z+=1)if(![24].some(gap=>Math.abs(z-gap)<3.5))box([.22,.3,1],[side*7.35,.02,z],0x777c77);
     for(let z=11;z<31;z+=4.5)roadMark(.16,1.55,side*6.25,z,0xa99f7d);
-    for(let z=10;z<31;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
+    if(side===1)for(let z=10;z<31;z+=3)box([.18,.018,1.4],[side*7.1,.145,z],0x343d3e);
   }
   for(let z=11;z<29;z+=7.4)roadMark(.13,2.7,0,z,0xc2ad74);
   for(let x=-5.2;x<=5.2;x+=1.35)roadMark(.72,2.45,x,24,0xbeb79a);
@@ -158,7 +155,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   if(!vendingReady())details.push({id:'street-vending',x:5.95,z:20,radius:42,load:()=>hydrateVending(vending,{shadows})});
   obstacle(5.95,20,1.3,1);anchor([5.95,1,21],'Buy a drink',()=>onAction('vending'));
   box([1.1,2.5,1],[-5.9,1.25,19.5],0x457e73);box([.91,1.6,.91],[-5.9,1.55,19.5],0x648c87);box([.35,.65,.28],[-5.9,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-5.9,2.4,20.05],1,.28);anchor([-5.9,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-5.9,19.5,1.1,1);
-  cyl(.05,2.8,[-17,1.4,29],0x64756d);label('バス停','HARBOUR LINE',[-17,2.6,29],1.1,.75);anchor([-16.3,1,30],'Read bus timetable',()=>onAction('bus'));obstacle(-17,29,.26,.26);
+  cyl(.05,2.8,[-9.8,1.4,32.4],0x64756d);label('バス停','HARBOUR LINE',[-9.8,2.6,32.4],1.1,.75);anchor([-8.6,1,31.7],'Read bus timetable',()=>onAction('bus'));obstacle(-9.8,32.4,.26,.26);
 
   for(const [x,z] of [[-6,10],[6,-15],[-6,-34.5]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);

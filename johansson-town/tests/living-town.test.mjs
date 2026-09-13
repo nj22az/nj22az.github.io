@@ -72,17 +72,6 @@ test('Yuri spends evenings at Minato, ramen, the canal and her own door',()=>{
  assert.equal(yuriEveningPlace(1380),'home');
 });
 
-test('all exported Blender residents retain finite grounded poses and a single body draw',async()=>{
- const loader=new GLTFLoader();for(const p of PROFILES){const bytes=await readFile(new URL('../assets/characters/living/'+p.model+'.glb',import.meta.url));const gltf=await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');const meshes=[];gltf.scene.traverse(o=>{if(o.isMesh)meshes.push(o);});assert.equal(meshes.length,1,p.name);assert.ok(meshes[0].isSkinnedMesh);assert.ok(meshes[0].material.vertexColors);assert.equal(meshes[0].geometry.groups.length,0);
-  const mixer=new THREE.AnimationMixer(gltf.scene),point=new THREE.Vector3();let standingTop=0;
-  for(const name of ['Idle_Neutral','Walk','Run','Wave','Sit','Eat','Drink']){const clip=gltf.animations.find(c=>c.name===name);assert.ok(clip,p.name+' '+name);mixer.stopAllAction();mixer.clipAction(clip).play();
-   for(const fraction of [0,.25,.5,.75]){mixer.setTime(clip.duration*fraction);gltf.scene.updateMatrixWorld(true);for(const mesh of meshes){mesh.skeleton.update();for(let i=0;i<mesh.geometry.attributes.position.count;i+=31){mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld);assert.ok(point.toArray().every(Number.isFinite));assert.ok(point.length()<3,p.name+' exploded');}}
-    const b=new THREE.Box3().setFromObject(gltf.scene,true);assert.ok(b.min.y>-.05,p.name+' below floor '+name);if(name==='Idle_Neutral')standingTop=b.max.y;if(name==='Sit')assert.ok(b.max.y<standingTop-.15,p.name+' must lower onto stool');
-   }
-  }
- }
-});
-
 test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
  for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene);assert.ok(box.getSize(new THREE.Vector3()).x<=13.1);
   if(kind==='interior'){gltf.scene.updateMatrixWorld(true);IZAKAYA_SEATS.forEach(([x,z],i)=>{

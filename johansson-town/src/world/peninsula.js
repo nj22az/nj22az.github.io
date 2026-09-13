@@ -1,12 +1,10 @@
 import * as THREE from '../../vendor/three.module.js';
-import {RESIDENTIAL_CANAL} from './residential-layout.js';
 
 // One shoreline shared by the ground, visible retaining edge and visitor map.
 // A closed headland: water separates every edge from the distant islands.
 export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-10,39],[1,34],[13,35],[20,49],[35,51],[40,40],[45,29],[45,-43],[38,-50],[20,-50]];
 export function buildPeninsula(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
- const c=RESIDENTIAL_CANAL,hole=new THREE.Path();hole.moveTo(c.minX,-c.minZ);hole.lineTo(c.maxX,-c.minZ);hole.lineTo(c.maxX,-c.maxZ);hole.lineTo(c.minX,-c.maxZ);hole.closePath();shape.holes.push(hole);
  const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshStandardMaterial({color:0x8b9279,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
  const positions=[],indices=[];
  for(let i=0;i<COASTLINE.length;i++){

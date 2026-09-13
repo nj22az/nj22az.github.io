@@ -1,3 +1,5 @@
+import {createYuriFace} from './yuri-face.js';
+import {createOfficeHands} from './office-hands.js';
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
@@ -82,6 +84,7 @@ export function createLocalCharacters({shadows=false}={}){
     if(!asset)return null;
     const model=clone(asset.scene);
     const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
+    const face=lowPoly&&name==='Yuri'?createYuriFace(model):null;
     if(lowPoly)addResidentAccessories(model,style);
     const bedAccessories=[];
     model.traverse(o=>{if(/^resident-(glasses|captain|police|driver)$/.test(o.name))bedAccessories.push(o);});
@@ -89,7 +92,7 @@ export function createLocalCharacters({shadows=false}={}){
     const targetHeight=height||style.height||profile?.height||1.75,scale=targetHeight/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
-    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly)dressCharacter(o,profile?.top,style);}});
+    model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
     entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource='PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
@@ -98,7 +101,7 @@ export function createLocalCharacters({shadows=false}={}){
     }
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,hands,lowPoly,style,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Yuri',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -126,7 +129,7 @@ export function createLocalCharacters({shadows=false}={}){
   function update(dt){
     for(const actor of actors){const {entity,mixer,actions}=actor;
       const explicitSleep=Number(entity.userData.sleepBlend),sleepAmount=THREE.MathUtils.clamp(Number.isFinite(explicitSleep)?explicitSleep:(entity.userData.sleeping&&!entity.userData.roomTransition?1:0),0,1),eyesClosed=sleepAmount>.28;
-      if(eyesClosed&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
+      if(eyesClosed&&!actor.face&&!actor.sleepEyes)actor.sleepEyes=addSleepEyes(actor.model,actor.style);
       if(actor.sleepEyes)actor.sleepEyes.visible=eyesClosed;
       for(const accessory of actor.bedAccessories)accessory.visible=!eyesClosed&&!(entity.userData.inWorkplace==='office'&&accessory.name==='resident-captain');
       if(!eyesClosed&&actor.sleepEyes){actor.sleepEyes.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});actor.sleepEyes.removeFromParent();actor.sleepEyes=null;}
@@ -164,6 +167,8 @@ export function createLocalCharacters({shadows=false}={}){
         for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
         if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
       }
+      actor.face?.update(dt,{sleeping:eyesClosed,engaged:!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime),speaking:!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now())});
+      if(entity.userData.inWorkplace==='office'&&entity.userData.socialPose==='Type')actor.officeHands?.update(dt);
       actor.hands?.align();
       if(actor.lowPoly){
         const chat=entity.userData.chat,head=actor.model.getObjectByName('Head');

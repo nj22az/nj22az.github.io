@@ -8,10 +8,10 @@
     "source": "https://sketchfab.com/3d-models/seinfeld-apartment-fd8abc336560446f9714dfe7076295b9",
     "title": "Seinfeld Apartment"
   },
-  "sha256": "6fed3aa49276d39a7a0ee4d8d5c163ea8cdf93c02eee6249c99652290047a3ee",
-  "bytes": 3615416,
-  "triangles": 11813,
-  "draws": 78,
+  "sha256": "d949d794c6eca0be8a54e099ec55cd0267fb9e6975ab09e94f66efef04cde8d4",
+  "bytes": 3616432,
+  "triangles": 10068,
+  "draws": 72,
   "removedDuplicatePrimitives": 0,
   "bounds": {
     "min": [
@@ -1755,6 +1755,12 @@
     "Downsampled embedded JPEG textures to 1024px",
     "Merged primitives sharing material and vertex attributes",
     "Unlit materials preserve baked lighting",
-    "Moved the breakfast table 25 cm towards the sofa to clear the study passage"
-  ]
+    "Moved the breakfast table 25 cm towards the sofa to clear the study passage",
+    "Replaced redundant furniture with fitted interactive household/office furnishings; see tools/refit-interiors.py."
+  ],
+  "refit": {
+    "kind": "apartment",
+    "removedTriangles": 1745,
+    "sourceSHA256": "6fed3aa49276d39a7a0ee4d8d5c163ea8cdf93c02eee6249c99652290047a3ee"
+  }
 }

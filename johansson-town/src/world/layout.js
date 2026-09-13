@@ -12,7 +12,6 @@ export const ROUTES = [
  {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,-64.5]]},
  {id:'east-alley',width:3.8,surface:'stone',points:[[0,4],[38,4],[38,31],[0,31]]},
  {id:'west-alley',width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
- {id:'residential',width:3.4,surface:'stone',points:[[0,RESIDENTIAL.laneZ],[-36,RESIDENTIAL.laneZ]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
  {id:'home-door',width:3,surface:'stone',points:[[28,31],[28,30]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:[[0,DINING.izakayaDoor[1]],DINING.izakayaDoor]},
@@ -25,18 +24,16 @@ export const ROUTES = [
  {id:'park-approach',width:3,surface:'stone',points:[[16,-27],[22.2,-27]]},
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-36,-36]]},
  {id:'market-cut',width:3,surface:'stone',points:[[0,-20],[-36,-20]]},
- {id:'north-cut',width:3,surface:'stone',points:[[0,24],[-18,24]]},
- {id:'west-service',width:3,surface:'stone',points:[[-8.5,-20],[-8.5,4]]},
+ {id:'west-service',width:3,surface:'stone',points:[[-8.5,-20],[-8.5,31]]},
  {id:'east-service',width:3,surface:'stone',points:[[18,-44],[18,-2],[23.8,-2],[23.8,4]]},
  {id:'east-market-cut',width:3,surface:'stone',points:[[0,-20],[16,-20]]},
- {id:'bathhouse-door',width:3,surface:'stone',points:[[-28,31],[-28,28]]},
 ];
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
 export function routeAt(x,z,r=0){
  if(FULL_TOWN.active)return fullContains(x,z,r,parkHeight)?{id:'supplied-town',surface:'stone'}:null;
  if(inDiningLane(x,z))return {id:'dining-lane',surface:'asphalt'};
- if(inResidential(x,z))return residentialContains(x,z,r)?{id:'willow-alley',surface:'stone'}:null;
+ if(inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  // Match the ends of the actual decks, without round route caps over water.
  if(Math.abs(x)<=7-r&&z>=-38&&z<=34.2-r)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];

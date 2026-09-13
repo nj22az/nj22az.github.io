@@ -27,7 +27,7 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Sleep'])assert.ok(actor.actions.has(clip),name+' '+clip);
    assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Yuri');assert.equal(actor.isNozomi,name==='Reiko');
    {
-    assert.equal(actor.lowPoly,true);assert.equal(skins.length,1,'One body draw per low-poly resident');assert.match(entity.userData.visualSource,/PSX low-poly/);
+    assert.equal(actor.lowPoly,true);assert.equal(skins.length,name==='Yuri'?2:1,'Yuri has a separate skinned expression mesh');assert.match(entity.userData.visualSource,/PSX low-poly/);
     const skin=skins[0];assert.equal(skin.geometry.groups.length,0);assert.equal(skin.material.map,null);assert.equal(skin.material.flatShading,true);
     assert.ok(skin.geometry.attributes.position.count<14000);assert.ok(actor.seatSupport);assert.ok(actor.cup);
     for(const clip of ['Eat','Drink'])assert.ok(actor.actions.has(clip));
@@ -36,7 +36,7 @@ test('every resident, including Aya and Nozomi, uses low-poly geometry with inde
    assert.ok(Math.abs(bounds.max.y-actor.height)<.055,name+' retains their height');assert.ok(Math.abs(bounds.min.y)<.02,name+' is grounded');
   }
   const byName=name=>actors.find(a=>a.entity.userData.name===name),kenji=byName('Kenji'),tetsuo=byName('Tetsuo'),yuri=byName('Yuri'),mrsSato=byName('Mrs Sato');
-  const skin=actor=>{let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});return mesh;};
+  const skin=actor=>{let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh&&!o.userData.facialFeatures)mesh=o;});return mesh;};
   assert.notEqual(skin(kenji).skeleton,skin(tetsuo).skeleton);assert.equal(skin(byName('Harbour master')).geometry.attributes.position,skin(byName('Bus driver')).geometry.attributes.position);
   assert.notEqual(skin(kenji).geometry.attributes.color,skin(tetsuo).geometry.attributes.color,'Wardrobe colours remain independent');
   mrsSato.entity.userData.sleeping=true;mrsSato.entity.userData.roomTransition=true;models.update(.1);assert.equal(mrsSato.sleepEyes,null,'Eyes stay open while walking to bed');delete mrsSato.entity.userData.roomTransition;

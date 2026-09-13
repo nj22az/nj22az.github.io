@@ -38,7 +38,7 @@ test('supplied models retain textures, correct material support and reachable ro
       assert.ok(gltf.materials.every(m=>!m.extensions?.KHR_materials_pbrSpecularGlossiness));
       assert.equal(gltf.images.length,id==='office'?25:56,'Every embedded source texture retained');
       assert.ok(gltf.images.every(i=>Number.isInteger(i.bufferView)&&!i.uri),'No external model dependencies');
-      assert.equal(manifest.triangles,id==='office'?2991:7765);
+      assert.equal(manifest.triangles,id==='office'?2173:7765);
       assert.equal(manifest.removedDuplicatePrimitives,id==='office'?40:0);
       if(id==='office'){
         assert.ok(gltf.materials.some(m=>m.pbrMetallicRoughness.baseColorTexture?.extensions?.KHR_texture_transform?.scale[0]>10),'Office floor tiling preserved');
@@ -76,7 +76,7 @@ test('supplied models retain textures, correct material support and reachable ro
       const bytes=await readFile(new URL(manifest.file,folder));
       assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.sha256);
       const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
-      assert.equal(gltf.images.length,67);assert.equal(manifest.triangles,11813);assert.equal(manifest.draws,78);
+      assert.equal(gltf.images.length,67);assert.equal(manifest.triangles,10068);assert.equal(manifest.draws,72);
       assert.ok(gltf.images.every(i=>Number.isInteger(i.bufferView)&&!i.uri));
       assert.ok(gltf.materials.every(m=>m.extensions?.KHR_materials_unlit));
       const room=new THREE.Group(),actions=[],colliders=[],calls=[];let exits=0;
@@ -100,8 +100,8 @@ test('supplied models retain textures, correct material support and reachable ro
       assert.equal(exits,1);assert.ok(calls.some(c=>c[0]===(id==='office'?'office-records':'read')));assert.ok(calls.some(c=>c[0]==='seat'));
       const blocked=(x,z)=>suppliedRoomBoundsBlocked(layout,x,z,.28)||layout.colliders.some(c=>circleHitsRect(x,z,.28,c));
       assert.equal(blocked(-.45,.4),false,'Apartment doorway spawn is clear');
-      assert.equal(blocked(-1,2.2),false,'Sofa approach is clear');
-      for(const [x,z] of [[-1.3,-3.5],[-4,-.35],[-1,2.2]])assert.ok(points.some(p=>Math.hypot(p.x-x,p.z-z)<.2),'Apartment room connects to entry: '+[x,z]);
+      assert.equal(blocked(-2.75,2.1),false,'Shared bedroom and breakfast chair approach is clear');
+      for(const [x,z] of [[-1.3,-3.5],[-4,-.35],[-2.75,2.1]])assert.ok(points.some(p=>Math.hypot(p.x-x,p.z-z)<.2),'Apartment room connects to entry: '+[x,z]);
       assert.equal(blocked(1.5,-1.5),true,'Neighbour corridor remains outside the apartment');
     }
     const world={group:new THREE.Group(),colliders:[]},sites=[],entries=[];
