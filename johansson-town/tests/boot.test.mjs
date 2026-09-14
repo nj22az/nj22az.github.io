@@ -54,7 +54,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeUrl=pathToFileURL(resolve(root,'vendor/three.module.js')).href;
     let source=await readFile(gameUrl,'utf8');
     const index=await readFile(resolve(root,'index.html'),'utf8');
-    assert.doesNotMatch(index,/id="(?:view|camera)Button"/,'FPV-only UI must not expose camera switching');
+    assert.doesNotMatch(index,/id="viewButton"/,'FPV-only UI must not expose camera switching');
     assert.doesNotMatch(source,/toggleCamera|KeyV|cameraMode/,'FPV-only runtime must not retain a third-person path');
     source=source.replace(/(from\s*['"])(\.[^'"]+)(['"])/g,(_,prefix,relative,suffix)=>prefix+new URL(relative,gameUrl).href+suffix);
     const rendererShim=dataModule(`
@@ -70,7 +70,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -137,12 +137,12 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {ROUTES}=await import('../src/world/layout.js?snappy=1'),{circleHitsRect}=await import('../physics.js?snappy=1');
     for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i],x=a[0]*(1-t)+b[0]*t,z=a[1]*(1-t)+b[1]*t;assert.equal(api.world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,route.id+' clears the supplied shopfronts');}
     const runningStart=api.player.position.clone();
-    api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
+    api.touchSticks.move.y=-1;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
     api.player.position.copy(runningStart);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});document.querySelector('#run').onclick({detail:1});api.simulate(.1);
     const ran=api.player.position.distanceTo(runningStart);assert.ok(ran>walked*1.6&&ran<walked*1.9,'Touch Run increases movement speed');
     document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});api.player.position.copy(runningStart);api.keys.ShiftRight=true;api.simulate(.1);
     assert.ok(api.player.position.distanceTo(runningStart)>walked*1.6,'Right Shift also runs');
-    api.keys.ShiftRight=false;api.keys.KeyW=false;api.moveTouch.id=null;api.player.position.copy(runningStart);
+    api.keys.ShiftRight=false;api.keys.KeyW=false;api.touchSticks.reset();api.player.position.copy(runningStart);
 
     const startX=api.player.position.x;
     api.keys.KeyA=true;api.simulate(.1);api.keys.KeyA=false;assert.ok(api.player.position.x<startX,'A moves left in first person');

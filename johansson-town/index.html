@@ -23,7 +23,8 @@
 <link rel="stylesheet" href="living-town.css?v=7">
 <link rel="stylesheet" href="./landing.css?v=board-3">
 <link rel="stylesheet" href="./sakura-ledger.css">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-GSkpxq5K.js">
+<link rel="stylesheet" href="./dual-controls.css?v=1">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-D0NpKYXG.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -137,9 +138,9 @@
 
           <p class="board-tiny" style="margin-top:20px">06 · STREET CONTROLS</p>
           <ul class="controls-grid">
-            <li><kbd>WASD</kbd><span>Walk</span></li>
+            <li><kbd>WASD / left stick</kbd><span>Walk</span></li>
             <li><kbd>Shift</kbd><span>Run</span></li>
-            <li><kbd>Mouse</kbd><span>Look</span></li>
+            <li><kbd>Mouse / right stick</kbd><span>Look</span></li>
             <li><kbd>Space</kbd><span>Jump</span></li>
             <li><kbd>E</kbd><span>Interact / stand</span></li>
             <li><kbd>R</kbd><span>Drink</span></li>
@@ -216,7 +217,7 @@
           <article class="notice-card">
             <p class="notice-no">NOTICE C-02</p>
             <h3>Form 3D printer</h3>
-            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Yui at Sakura to sell a finished piece.</p>
+            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Thuan at Sakura to sell a finished piece.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE D-11</p>
@@ -271,6 +272,7 @@
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
   <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
+  <button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button>
   <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
 
 
@@ -279,9 +281,9 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="notebookButton">NOTEBOOK</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraMenuButton">CAMERA & CONTROLS</button><button id="notebookButton">NOTEBOOK</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1988</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
-<div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick"><div id="knob"></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
+<div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement stick"><div id="knob" class="stick-knob"></div><span>MOVE</span></div><div id="lookStick" class="touch-stick" aria-label="Camera stick"><div id="lookKnob" class="stick-knob"></div><span>LOOK</span></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
@@ -325,7 +327,7 @@ import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-GSkpxq5K.js');
+      await import('./runtime/boot-D0NpKYXG.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

@@ -2,7 +2,7 @@
   const PRESETS = { "0900": 540, "1642": 1002, "1830": 1110, "2030": 1230 };
   const ORDER = ["live", "run", "0900", "1642", "1830", "2030"];
   const PLACES = [
-    { id: "market", code: "01", title: "Sakura Shōten", jp: "桜商店", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Yui at the till 09:00–20:00." },
+    { id: "market", code: "01", title: "Sakura Shōten", jp: "桜商店", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
     { id: "frontrow", code: "02", title: "Front-Row Books & Press", jp: "前列書房・印刷", sub: "Books · evening press", district: "East alley", open: 540, close: 1110, line: "Aya’s books and Reiko’s evening paper, under one roof." },
     { id: "form3d", code: "03", title: "Kenji & Tetsuo Repairs", jp: "立体・電気工房", sub: "Patterns · radios · instruments", district: "East alley", open: 540, close: 1140, line: "Kenji’s pattern bench, Tetsuo’s radios, and the Form 3D printer." },
     { id: "office", code: "04", title: "Johansson Harbour Office", jp: "港務・技術事務所", sub: "Marine service · records", district: "Quay", open: 540, close: 1140, line: "Shipping records, tide tables, and Johansson’s marine files." },

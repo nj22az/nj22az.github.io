@@ -40,21 +40,22 @@ function worldDelta(bone,euler){
 }
 
 function poseShopkeeper(pose,kind,t,duration){
- const hips=pose.getObjectByName('Hips'),spine=pose.getObjectByName('Spine'),head=pose.getObjectByName('Head');
+ const spine=pose.getObjectByName('Spine'),head=pose.getObjectByName('Head');
  const breath=Math.sin(t/duration*Math.PI*2),shift=Math.sin(t/duration*Math.PI*2+1.1);
- const lean=kind==='counter'?.16:.0;
- if(hips)worldDelta(hips,new THREE.Euler(.01*breath+lean,0,.06+.018*shift));
- if(spine)worldDelta(spine,new THREE.Euler(.02*breath+lean*.45-.02,0,.015*shift));
- if(head)worldDelta(head,new THREE.Euler(.016*breath,.035*shift,.025));
+ // Slow breathing and a small asymmetric upper-body settle, without moving
+ // the planted feet or dropping the pelvis into the source crouch animation.
+ const lean=kind==='counter'?.065:0;
+ if(spine)worldDelta(spine,new THREE.Euler(.012*breath+lean-.018,.022,.035+.012*shift));
+ if(head)worldDelta(head,new THREE.Euler(.012*breath,.018*shift,-.018));
  const hip=pose.getObjectByName('LeftUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(.05,.88,0);
  const rightHip=pose.getObjectByName('RightUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(-.06,.88,0);
  // Rest beside and slightly in front of the dress. A wrist at the hip joint
  // buries the palm and downward-pointing fingers inside the flared skirt.
- const leftWrist=hip.clone().add(new THREE.Vector3(.20,.015,.09));
- const rightWrist=kind==='counter'?new THREE.Vector3(-.05,1.08,.50+.012*breath):rightHip.clone().add(new THREE.Vector3(-.20,.01,.09));
+ const leftWrist=hip.clone().add(new THREE.Vector3(.20,.105+.006*breath,.16));
+ const rightWrist=kind==='counter'?new THREE.Vector3(-.10,1.09,.50):rightHip.clone().add(new THREE.Vector3(-.20,.045,.14+.005*shift));
  const relaxedPalm=side=>worldPalm(new THREE.Vector3(side*.10,-1,.12),new THREE.Vector3(-side,.08,.10),side);
- solveArm(pose,'Left',leftWrist,new THREE.Vector3(.45,-.10,-.10),relaxedPalm(1));
- solveArm(pose,'Right',rightWrist,kind==='counter'?new THREE.Vector3(-.28,-.32,.35):new THREE.Vector3(-.45,-.10,-.10),kind==='counter'?worldPalm(new THREE.Vector3(.06,-.18,1),new THREE.Vector3(0,-1,.04),-1):relaxedPalm(-1));
+ solveArm(pose,'Left',leftWrist,new THREE.Vector3(.20,-.18,-.22),relaxedPalm(1));
+ solveArm(pose,'Right',rightWrist,kind==='counter'?new THREE.Vector3(-.22,-.32,.25):new THREE.Vector3(-.20,-.18,-.20),kind==='counter'?worldPalm(new THREE.Vector3(.06,-.18,1),new THREE.Vector3(0,-1,.04),-1):relaxedPalm(-1));
 }
 
 function bakeIdle(asset,source,name,kind,duration){
@@ -63,7 +64,8 @@ function bakeIdle(asset,source,name,kind,duration){
  const names=['Hips','Spine','Head','LeftShoulder','RightShoulder','LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand'];
  const times=Array.from({length:61},(_,i)=>i*duration/60),values=new Map(names.map(n=>[n,[]]));
  for(const t of times){
-  for(const {sample,binding} of samples)binding.setValue(sample.evaluate(t%Math.max(source.duration,.001)),0);
+  // The six-second baked loop must not inherit the four-second hold's seam.
+  for(const {sample,binding} of samples)binding.setValue(sample.evaluate(0),0);
   pose.updateMatrixWorld(true);
   poseShopkeeper(pose,kind,t,duration);
   for(const n of names){const bone=pose.getObjectByName(n);if(bone)values.get(n).push(...bone.quaternion.toArray());}

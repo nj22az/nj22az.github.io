@@ -36,9 +36,10 @@ test('a customer picks visible goods, waits for the till, pays once and funds an
   for(const item of Object.values(f.state.sakura.stock))assert.ok(item.shelf>=0&&item.reserve>=0);
  });
  const spec=stockSpec('notebook');assert.ok(picked&&paid&&hiddenLabels);assert.ok(f.state.residentLife.Reiko.shopping.finished);assert.equal(f.state.sakura.sales,spec.cost);assert.equal(f.state.sakura.profit,spec.cost-spec.unitCost);
+ assert.equal(f.shop.service.phase,'counter');assert.equal(clerk.userData.socialPose,'CounterIdle','The actual retail controller selects the relaxed counter pose after serving');
  assert.equal(f.state.sakura.stockSpent,spec.unitCost);assert.equal(f.state.sakura.cash,spec.cost-spec.unitCost);assert.equal(f.ledger.account('Reiko',f.minutes).yen,2400-spec.cost);
  assert.equal(f.state.sakura.stock.notebook.shelf,capacity-1,'The shelf stays depleted during the day');assert.equal(f.state.sakura.stock.notebook.reserve,1);assert.ok(!f.state.sakura.journal.some(r=>r.kind==='Restocked'));
- f.time(1200);f.step(110,()=>{phases.add(f.shop.service.phase);if(['stock-fetch','stock-carry','stock-place'].includes(f.shop.service.phase))assert.equal(f.shop.blocked(clerk.position.x,clerk.position.z,.25),false,'Restock route '+clerk.position.toArray());});
+ f.time(1200);f.step(110,()=>{phases.add(f.shop.service.phase);if(['stock-fetch','stock-carry','stock-place'].includes(f.shop.service.phase)){assert.notEqual(clerk.userData.socialPose,'CounterIdle','Release the counter pose before walking or handling goods');assert.equal(f.shop.blocked(clerk.position.x,clerk.position.z,.25),false,'Restock route '+clerk.position.toArray());}});
  assert.equal(f.state.sakura.stock.notebook.shelf,capacity);assert.equal(f.state.sakura.stock.notebook.reserve,0);assert.equal(visibleInstances(f.shop.group),original);
  for(const phase of ['checkout','checkout-pay','stock-fetch','stock-collect','stock-carry','stock-place'])assert.ok(phases.has(phase),'Observe '+phase);
  const rows=f.state.sakura.journal;assert.equal(rows.filter(r=>r.kind==='Sale').length,1);for(const kind of ['Stock purchase','Delivery','Restocked'])assert.ok(rows.some(r=>r.kind===kind));

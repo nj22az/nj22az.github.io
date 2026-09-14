@@ -13,7 +13,8 @@ export function createRetailClerk({person,room,layout,collides,getWork,completeW
    delete clerk.userData.socialPose;delete clerk.userData.seatHeight;delete clerk.userData.chairBlend;clerk.userData.floorHeight=0;clerk.userData.serving=phase!=='counter';clerk.userData.carrying=box.visible;
    if(job?.type==='checkout'&&job.record.finished){cancelWork(job);job=null;delete clerk.userData.shopReach;phase='return';}
    if(phase==='counter'){
-    if((job=getWork())){phase=job.type==='restock'?'stock-fetch':'checkout';clerk.userData.serving=true;}else turn(layout.staffYaw,dt);
+    if((job=getWork())){phase=job.type==='restock'?'stock-fetch':'checkout';clerk.userData.serving=true;}
+    else if(walk(layout.staff,dt)&&turn(layout.staffYaw,dt))clerk.userData.socialPose='CounterIdle';
    }else if(phase==='stock-next'){if((job=getWork()))phase=job.type==='restock'?(box.visible?'stock-carry':'stock-fetch'):'checkout';else{box.visible=false;phase='return';}}
    else if(phase==='return'){if(walk(layout.staff,dt)&&turn(layout.staffYaw,dt))phase='counter';}
    else if(phase==='checkout'){clerk.userData.activity='serving a customer at the till';if(walk(job.position,dt)&&turn(job.yaw,dt)){phase='checkout-pay';timer=2;}}

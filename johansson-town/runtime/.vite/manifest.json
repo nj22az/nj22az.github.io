@@ -3,8 +3,8 @@
     "file": "assets-DNfyrzgA.js",
     "name": "assets"
   },
-  "_models-Do-AkqHv.js": {
-    "file": "models-Do-AkqHv.js",
+  "_models-Bxnykb6u.js": {
+    "file": "models-Bxnykb6u.js",
     "name": "models",
     "imports": [
       "_assets-DNfyrzgA.js"
@@ -20,12 +20,12 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-GSkpxq5K.js",
+    "file": "boot-D0NpKYXG.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_models-Do-AkqHv.js",
+      "_models-Bxnykb6u.js",
       "_assets-DNfyrzgA.js"
     ],
     "dynamicImports": [
@@ -36,18 +36,18 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-DZaQOWyb.js",
+    "file": "game-ClV-HfjO.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_models-Do-AkqHv.js",
+      "_models-Bxnykb6u.js",
       "_assets-DNfyrzgA.js",
       "src/audio/town-audio.js?snappy=1"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-NJcydPoP.js",
+    "file": "touch-ui-CsFg5Zsn.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
     "isDynamicEntry": true

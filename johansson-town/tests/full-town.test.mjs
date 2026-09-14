@@ -53,7 +53,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     const threeUrl=pathToFileURL(resolve(root,'vendor/three.module.js')).href;
     let source=await readFile(gameUrl,'utf8');
     const index=await readFile(resolve(root,'index.html'),'utf8');
-    assert.doesNotMatch(index,/id="(?:view|camera)Button"/,'FPV-only UI must not expose camera switching');
+    assert.doesNotMatch(index,/id="viewButton"/,'FPV-only UI must not expose camera switching');
     assert.doesNotMatch(source,/toggleCamera|KeyV|cameraMode/,'FPV-only runtime must not retain a third-person path');
     source=source.replace(/(from\s*['"])(\.[^'"]+)(['"])/g,(_,prefix,relative,suffix)=>prefix+new URL(relative,gameUrl).href+suffix);
     const rendererShim=dataModule(`
@@ -69,7 +69,7 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,moveTouch};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,touchSticks};\nexport const reviewRoom=()=>room;\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>minutes=value;export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -203,10 +203,10 @@ test('Complete supplied overworld preserves gameplay, reachable destinations and
     assert.equal(blocked(-22.4,0),false,'West coastal boardwalk is walkable');
     assert.equal(blocked(19.6,0),false,'East coastal boardwalk is walkable');
     api.player.position.copy(spawn);api.reviewSetYaw(0);api.activities.close();
-    api.moveTouch.id=81;api.moveTouch.cx=100;api.moveTouch.cy=400;api.moveTouch.x=100;api.moveTouch.y=352;
+    api.touchSticks.move.y=-1;
     api.simulate(.1);const touchWalked=api.player.position.distanceTo(spawn);
     api.player.position.copy(spawn);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});api.simulate(.1);
-    assert.ok(api.player.position.distanceTo(spawn)>touchWalked*1.6,'Touch Run increases speed in the actual world');api.moveTouch.id=null;
+    assert.ok(api.player.position.distanceTo(spawn)>touchWalked*1.6,'Touch Run increases speed in the actual world');api.touchSticks.reset();
     for(const m of [180,540,1002,1320]){api.reviewSetMinutes(m);for(let i=0;i<10;i++)api.simulate(.1);assertFiniteTransforms(api,'clock '+m);}
     assert.equal(api.world.isOpen(api.SITES.find(s=>s.id==='izakaya'),179),true);
     assert.equal(api.world.isOpen(api.SITES.find(s=>s.id==='izakaya'),180),false);

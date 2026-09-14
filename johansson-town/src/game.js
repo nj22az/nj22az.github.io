@@ -1,3 +1,6 @@
+import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
+import {createTouchSticks} from './input/touch-sticks.js';
+import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
 import {elapsedTownAbsence} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
@@ -79,7 +82,18 @@ let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPl
 let conversationName=null,conversationCamera=null,navigationTarget=null;
 let activeRoomLayout=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=1002,subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
-const keys={},clock=new THREE.Clock(),moveTouch={id:null,cx:0,cy:0,x:0,y:0},lookTouch={id:null,x:0,y:0};
+const keys={},clock=new THREE.Clock();
+const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
+let controllerFrame=gamepadInput.sample([]),controllerConnected=false;
+const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:centreCamera,onOpen:()=>resetInput(),onClose:()=>resetInput()});
+camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
+document.documentElement.classList.toggle('touch-controls',touch);
+function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
+function controlsAllowed(){return started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
+const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),lookPad:$('#lookStick'),enabled:controlsAllowed,onDrag:dragLook});
+function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
+$('#cameraButton').onclick=openCamera;$('#cameraMenuButton').onclick=openCamera;
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
 const move2=new THREE.Vector2(),fwVec=new THREE.Vector3(),rtVec=new THREE.Vector3(),moveVec=new THREE.Vector3(),turnQ=new THREE.Quaternion(),yAxis=new THREE.Vector3(0,1,0);
 
@@ -107,7 +121,7 @@ else if(world.spawn)player.position.set(...world.spawn);
 activities=createActivities({say,onInspectModel:item=>inspector.open(item),getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,yuriAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1988");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;evictIfClosed();}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
-characters=createCharacters({mobile,shadows,canJump:()=>!seated,isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+characters=createCharacters({mobile,shadows,canJump:()=>!seated&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // Prioritise the shopkeeper visible from the opening bench.
 void preloadCharacter('Thuan');
 
@@ -231,14 +245,25 @@ function placeAtEntrance(s,leave=false){
  const [x,z]=findClear(x0+fwX*(leave?.6:0),z0+fwZ*(leave?.6:0));
  player.position.set(x,groundHeight(x,z),z);
 }
-function updatePlayer(dt){if(!seated)unstuckPlayer();let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0),s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0);if(moveTouch.id!==null){s+=THREE.MathUtils.clamp((moveTouch.x-moveTouch.cx)/48,-1,1);f+=THREE.MathUtils.clamp(-(moveTouch.y-moveTouch.cy)/48,-1,1);}if(seated){s=0;f=0;}move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);if(moveVec.lengthSq()>.02){const speed=(keys.ShiftLeft||keys.ShiftRight||touchRunning||activities.state.sprintUntil>performance.now()?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;if(!collides(nx,player.position.z))player.position.x=nx;if(!collides(player.position.x,nz))player.position.z=nz;turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));}player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
+function updatePlayer(dt){
+ if(!seated)unstuckPlayer();
+ const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
+ ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
+ let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
+ let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
+ if(seated){s=0;f=0;}move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();
+ fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);
+ if(moveVec.lengthSq()>.0001){const speed=(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]||activities.state.sprintUntil>performance.now()?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;if(!collides(nx,player.position.z))player.position.x=nx;if(!collides(player.position.x,nz))player.position.z=nz;turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));}
+ player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);
+ const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
+}
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
 function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();townSky.update(camera,day,weather,!!current);const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient;renderer.toneMappingExposure=air.exposure;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
 $('#exitRoomButton').onclick=()=>leaveRoom();
 function syncView(){
- document.body.classList.remove('diorama');camera.fov=65;camera.updateProjectionMatrix();
+ document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
  room.traverse(o=>{if(o.userData.cutaway)o.layers.set(0);});
  player.visible=false;window.__JOHANSSON_CAMERA_MODE__='first';
 }
@@ -250,7 +275,7 @@ function visitPlace(s){
  if(!travelProgress(activities.state).unlocked)return markPlace(s);
  if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);navigationTarget=null;drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
-function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;}$('#directory').classList.toggle('hidden',!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
+function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
 $('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){
  const grid=$('#directoryGrid');grid.replaceChildren();
@@ -273,20 +298,32 @@ function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(160,0,PLAY
 
 started=true;$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Thuan.',5);runStabilityChecks();
 canvas.addEventListener('click',event=>{
- if(!current||activities.paused||inspector?.active)return;
+ if(!current||!controlsAllowed()||touchSticks.suppressClick())return;
  if(seated){doInteract();return;}
  const rect=canvas.getBoundingClientRect();let best=null,bestDistance=48;
  for(const object of interactables){if(object.userData.visualReady===false||!object.userData.hit?.inside||!object.visible)continue;let hidden=false;for(let p=object.parent;p;p=p.parent)if(!p.visible)hidden=true;if(hidden)continue;const q=object.getWorldPosition(new THREE.Vector3());if(q.distanceTo(player.position)>3.4)continue;q.project(camera);const distance=Math.hypot((q.x+1)*rect.width/2-(event.clientX-rect.left),(1-q.y)*rect.height/2-(event.clientY-rect.top));if(distance<bestDistance){bestDistance=distance;best=object;}}
  if(best){active={...best.userData.hit,object:best};active.fn();}
 });
-canvas.onclick=()=>{if(inspector?.active||activities.paused)return;if(started&&!touch&&$('#directory').classList.contains('hidden'))canvas.requestPointerLock?.()?.catch?.(()=>{})};document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||activities.paused||inspector?.active)return;yaw-=e.movementX*.0023;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018,-.95,.85)});document.addEventListener('keydown',e=>{if(activities.paused)return;if(e.code==='Escape'){toggleDir(false);return;}if(!$('#directory').classList.contains('hidden')){if(e.code==='KeyQ')toggleDir(false);return;}if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(!started)return;if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='KeyR'&&!e.repeat)hands.drink();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.inventory();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();});document.addEventListener('keyup',e=>keys[e.code]=false);function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').textContent=value?'RUNNING':'RUN';}
+canvas.onclick=()=>{if(!controlsAllowed()||touchSticks.suppressClick())return;if(!touch)canvas.requestPointerLock?.()?.catch?.(()=>{});};
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||!controlsAllowed())return;const c=cameraControls.settings;yaw-=e.movementX*.0023*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);});
+document.addEventListener('keydown',e=>{
+ if(cameraControls.active||inspector?.active||activities.paused)return;
+ if(e.code==='Escape'){toggleDir(false);return;}
+ if(e.code==='KeyC'&&!e.repeat){openCamera();return;}
+ if(!$('#directory').classList.contains('hidden')){if(e.code==='KeyQ')toggleDir(false);return;}
+ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Home'].includes(e.code))e.preventDefault();keys[e.code]=true;
+ if(!started)return;
+ if(e.code==='Home'&&!e.repeat)centreCamera();
+ if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='KeyR'&&!e.repeat)hands.drink();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.inventory();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();
+});document.addEventListener('keyup',e=>keys[e.code]=false);
+function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').textContent=value?'RUNNING':'RUN';}
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
 $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();toggleRunning();};
 $('#run').onclick=e=>{if(e.detail===0)toggleRunning();};
 $('#drink').onpointerdown=e=>{e.preventDefault();hands.drink();};$('#act').onpointerdown=e=>{e.preventDefault();doInteract()};
 
-const stick=$('#stick'),knob=$('#knob');canvas.addEventListener('touchstart',e=>{if(!started||activities.paused||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden'))return;const r=stick.getBoundingClientRect();for(const t of e.changedTouches){if(t.clientX<innerWidth*.48&&moveTouch.id===null){moveTouch.id=t.identifier;moveTouch.cx=r.left+r.width/2;moveTouch.cy=r.top+r.height/2;moveTouch.x=t.clientX;moveTouch.y=t.clientY}else if(lookTouch.id===null){lookTouch.id=t.identifier;lookTouch.x=t.clientX;lookTouch.y=t.clientY}}e.preventDefault()},{passive:false});canvas.addEventListener('touchmove',e=>{for(const t of e.changedTouches){if(t.identifier===moveTouch.id){moveTouch.x=t.clientX;moveTouch.y=t.clientY;knob.style.transform=`translate(${THREE.MathUtils.clamp(t.clientX-moveTouch.cx,-42,42)}px,${THREE.MathUtils.clamp(t.clientY-moveTouch.cy,-42,42)}px)`}else if(t.identifier===lookTouch.id){yaw-=(t.clientX-lookTouch.x)*.005;pitch=THREE.MathUtils.clamp(pitch-(t.clientY-lookTouch.y)*.0037,-.95,.85);lookTouch.x=t.clientX;lookTouch.y=t.clientY}}e.preventDefault()},{passive:false});function endTouch(e){for(const t of e.changedTouches){if(t.identifier===moveTouch.id){moveTouch.id=null;knob.style.transform='translate(0,0)'}if(t.identifier===lookTouch.id)lookTouch.id=null}}canvas.addEventListener('touchend',endTouch,{passive:false});canvas.addEventListener('touchcancel',endTouch,{passive:false});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();started=false;const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Reload Johansson Town to continue.'}});canvas.addEventListener('webglcontextrestored',()=>location.reload());function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight,!!conversationName);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();started=false;const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Reload Johansson Town to continue.'}});canvas.addEventListener('webglcontextrestored',()=>location.reload());function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight,!!conversationName);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
 function setConversation(name,text=''){for(const p of world.people)if(p.g.userData.playerConversation){delete p.g.userData.playerConversation;delete p.g.userData.chatHold;delete p.g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
  if(name&&!conversationName)conversationCamera={rotation:camera.quaternion.clone(),playerVisible:player.visible};
  conversationName=name;resizeRenderer();
@@ -295,7 +332,7 @@ function setConversation(name,text=''){for(const p of world.people)if(p.g.userDa
   if(speaker){speaker.userData.playerConversation=true;speaker.userData.chatHold=true;speaker.userData.speakingUntil=performance.now()+Math.min(6500,Math.max(1400,text.length*43));camera.lookAt(characters.conversationTarget(speaker));}
   player.visible=false;
  }else if(conversationCamera){camera.quaternion.copy(conversationCamera.rotation);player.visible=conversationCamera.playerVisible;conversationCamera=null;}
-}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);moveTouch.id=null;lookTouch.id=null;knob.style.transform='translate(0,0)';}addEventListener('blur',resetInput);document.addEventListener('visibilitychange',()=>{resetInput();if(document.hidden){activities.save();hiddenAt=Date.now();}else{if(hiddenAt)advanceAbsentTown(elapsedTownAbsence(hiddenAt));hiddenAt=0;clock.getDelta();}});addEventListener('pagehide',()=>activities.save());
+}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{if(hiddenAt)advanceAbsentTown(elapsedTownAbsence(hiddenAt));hiddenAt=0;clock.getDelta();}});addEventListener('pagehide',()=>activities.save());
 
 const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');function drawMap(){drawTownMap(mapCtx,mapCanvas.width,mapCanvas.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited,target:navigationTarget});updateWaypoint();}
 function updateWaypoint(){
@@ -327,10 +364,38 @@ function advanceAbsentTown(seconds){
  activities.save();
 }
 
+function updateController(dt){
+ let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
+ controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
+ if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
+ if(!started||document.hidden)return;
+ if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
+ const direction=menuRepeat(f,dt);
+ if(inspector?.active){
+  if(f.pressed[1]||f.pressed[9]){inspector.close();return;}
+  inspector.control?.({x:f.look.x,y:f.look.y,zoom:(f.held[6]?1:0)-f.zoom,reset:f.pressed[11]},dt);
+  const root=$('#inspect-caption');navigateControls(root,direction);
+  if(f.pressed[0]){const items=focusableControls(root);if(items.includes(document.activeElement))document.activeElement.click();else items[0]?.focus();}return;
+ }
+ const root=cameraControls.active?cameraControls.panel:activities.paused?$('#activity'):!$('#directory').classList.contains('hidden')?$('#directory'):null;
+ if(root){
+  if(f.pressed[1]||f.pressed[9]){if(cameraControls.active)cameraControls.close();else if(activities.paused)activities.close();else toggleDir(false);return;}
+  navigateControls(root,direction);
+  if(f.pressed[0]){const items=focusableControls(root);if(items.includes(document.activeElement))document.activeElement.click();else items[0]?.focus();}return;
+ }
+ if(!controlsAllowed())return;
+ if(f.pressed[9]||f.pressed[8]){toggleDir(true);return;}
+ if(f.pressed[3]){activities.inventory();return;}
+ if(f.pressed[11])centreCamera();
+ if(f.pressed[0]){doInteract();return;}
+ if(f.pressed[2])hands.drink();
+ if(f.pressed[5])characters.jump();
+}
+
 let controlsMovingUntil=0;
 function updateContextControls(){
- const blocked=roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
- if(!blocked&&(move2.lengthSq()>.02||moveTouch.id!==null))controlsMovingUntil=performance.now()+1400;
+ const blocked=cameraControls.active||roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
+ if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05))controlsMovingUntil=performance.now()+1400;
  const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:performance.now()<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!active});
  for(const [id,visible] of Object.entries(state)){const element=$('#'+id);if(element.classList.contains('hidden')===visible)element.classList.toggle('hidden',!visible);}
 }
@@ -342,7 +407,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 detailStream.add({id:'sea-cave',x:SEA_CAVE.centerX,z:SEA_CAVE.frontZ,radius:36,load:()=>world.seaCave?.load()});
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:3.91}:null});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:3.91}:null});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   townSections.render({renderer,scene,camera,town,position:player.position});

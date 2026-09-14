@@ -10,7 +10,7 @@ const qte=document.querySelector('#qte');
 const qteGlyph=document.querySelector('#qteGlyph');
 const qteText=document.querySelector('#qteText');
 const qteTimer=document.querySelector('#qteTimer');
-let moveId=null,qteState=null,qteStart=null,lastRound=0;
+let qteState=null,qteStart=null,lastRound=0;
 
 function setActionLabel(){
   if(!act||!prompt)return;
@@ -37,29 +37,6 @@ if(prompt){
   const observer=new MutationObserver(setActionLabel);
   observer.observe(prompt,{attributes:true,childList:true,characterData:true,subtree:true});
   setActionLabel();
-}
-
-function placeStick(t){
-  if(!coarse||!stick)return;
-  const radius=58,edge=18;
-  const x=Math.max(edge+radius,Math.min(innerWidth-edge-radius,t.clientX));
-  const y=Math.max(edge+radius,Math.min(innerHeight-edge-radius,t.clientY));
-  stick.style.left=`${x}px`;stick.style.top=`${y}px`;stick.style.right='auto';stick.style.bottom='auto';
-  stick.classList.add('active');
-}
-function hideStick(){stick?.classList.remove('active');}
-
-// Capture phase intentionally runs before main.js reads the stick bounds. This turns the existing
-// analogue input maths into a floating thumbstick without duplicating or fighting the movement system.
-if(coarse&&canvas){
-  canvas.addEventListener('touchstart',e=>{
-    if(qteState||window.__JOHANSSON_INSPECTING__)return;
-    for(const t of e.changedTouches){
-      if(moveId===null&&t.clientX<innerWidth*.48){moveId=t.identifier;placeStick(t);break;}
-    }
-  },{capture:true,passive:true});
-  canvas.addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===moveId){moveId=null;hideStick();}}, {capture:true,passive:true});
-  canvas.addEventListener('touchcancel',e=>{for(const t of e.changedTouches)if(t.identifier===moveId){moveId=null;hideStick();}}, {capture:true,passive:true});
 }
 
 const directions={
@@ -128,4 +105,4 @@ if(title){
   watch.observe(title,{childList:true,characterData:true,subtree:true});
 }
 
-window.__JOHANSSON_TOUCH_UI__={version:11,floatingStick:true,contextAction:true,qteGestures:true};
+window.__JOHANSSON_TOUCH_UI__={version:12,dualSticks:true,contextAction:true,qteGestures:true,controller(frame){if(!qteState)return;const gesture=frame.pressed[0]?'tap':frame.pressed[12]?'up':frame.pressed[13]?'down':frame.pressed[14]?'left':frame.pressed[15]?'right':null;if(gesture)completeQTE(gesture===qteState.direction);}};
