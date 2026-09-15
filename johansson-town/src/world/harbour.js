@@ -10,6 +10,7 @@ import {MAIN_ROAD} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
+import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 
@@ -154,7 +155,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   if(!vendingReady())details.push({id:'street-vending',x:3.7,z:28.3,radius:42,load:()=>hydrateVending(vending,{shadows})});
   obstacle(3.7,28.3,1.3,1);anchor([3.7,1,29.3],'Buy a drink',()=>onAction('vending'));
   box([1.1,2.5,1],[-7.5,1.25,19.5],0x457e73);box([.91,1.6,.91],[-7.5,1.55,19.5],0x648c87);box([.35,.65,.28],[-7.5,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-7.5,2.4,20.05],1,.28);anchor([-7.5,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-7.5,19.5,1.1,1);
-  cyl(.05,2.8,[-9.8,1.4,32.4],0x64756d);label('バス停','HARBOUR LINE',[-9.8,2.6,32.4],1.1,.75);anchor([-8.6,1,31.7],'Read bus timetable',()=>onAction('bus'));obstacle(-9.8,32.4,.26,.26);
+  const busStation=buildBusStation({parent:group,colliders,register,onAction,label,shadows});
 
   for(const [x,z] of [[-7.4,10],[3.9,-22],[-7.4,-33]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
@@ -248,7 +249,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
 
   return {
-    group,colliders,people,cat,details,warehouse:harbourWarehouse,landmarks:[harbourWarehouse.place],
+    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,landmarks:[harbourWarehouse.place,busStation.place],
     harbourShops,boardwalk,plantSites,
     setRain(value){
       boardwalk.setRain(value);

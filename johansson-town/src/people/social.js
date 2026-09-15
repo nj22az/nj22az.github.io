@@ -6,6 +6,8 @@ import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
+import {BUS_STATION} from '../world/bus-station.js';
+import {commuterPhase,shiftActive} from './commuter-schedule.js';
 export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
 export const RAMEN_DOOR=[...DINING.ramenDoor];
 export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
@@ -45,7 +47,7 @@ export function visitsRamen(profile,minutes){
  const visit=RAMEN_VISITS[profile.name];
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
 }
-export function residentPlan(profile,minutes,rain=false,state=null){
+function legacyResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes);
  if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a snack at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
@@ -69,11 +71,36 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
+function commuterPlan(profile,minutes,rain=false,state=null){
+ const phase=commuterPhase(profile,minutes),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
+ if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
+ if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
+ if(phase==='departing')return bus('walking to the Harbour Line for departure');
+ if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
+ if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
+ if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
+ if(profile.name==='Nao')return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'running Minato Izakaya'}:bus('travelling to the next shift');
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a shopping errand at Sakura'};
+ if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
+ if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};
+ if(profile.name==='Thuan'){
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
+  if(shiftActive(profile,minutes))return {place:'market',target:profile.work,activity:profile.role};
+  return bus('leaving Sakura for the last bus');
+ }
+ if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
+ return bus('waiting for the next Harbour Line departure');
+}
+export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
+ const commuter=mode===true||mode==='shopping-district'||state?.townMode==='shopping-district';
+ return commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
+}
 export const GOSSIP=[
- {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be home early.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan sometimes stops at Minato after locking Sakura. Look for her after 20:20, or near her home on Main Street.'},
- {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and a home at 2 Main Street.'},
+ {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last bus.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Look for her at the terminal before 21:00.'},
+ {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and commute in for their shifts.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
- {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the Main Street stop.'},
+ {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the northern terminal.'},
  {id:'special',a:'Nao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nNao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Nao’s supper special at the counter.'}
 ];
 export function gossipAt(minutes,names){return GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b))[Math.floor(minutes/7)%Math.max(1,GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b)).length)]||{id:'welcome',line:'Nao: Pull up a chair. Nobody leaves this table a stranger.\nA gull outside offers a surprisingly firm objection.',clue:'Neighbours arrive after their shifts. Visit again later for different conversations.'};}

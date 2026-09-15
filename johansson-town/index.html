@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
-<meta name="description" content="Johansson Town public information board. A first-person harbour neighbourhood, 1988.">
+<meta name="description" content="Johansson Town public information board. A first-person shopping district and working harbour, 1988.">
 <style>:root,html,body{margin:0;background:#0b171b!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?ui=controls-3">
@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="./landing.css?v=board-3">
 <link rel="stylesheet" href="./sakura-ledger.css">
 <link rel="stylesheet" href="./dual-controls.css?v=1">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-C3ge6Z0Y.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CrAZcK0c.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -49,7 +49,7 @@
             <p class="board-tiny" id="boardDateLong">SHOWA 63 · 13 SEPTEMBER 1988</p>
             <p class="board-jp">ヨハンソン町</p>
             <h1>JOHANSSON<span> TOWN</span></h1>
-            <p class="board-lede">A harbour neighbourhood, 1988. First person. Walk the shopping street to the quay, then the outer pier.</p>
+            <p class="board-lede">A harbour shopping district, 1988. First person. Walk the shops to the quay, then the outer pier and Harbour Line terminal.</p>
           </div>
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
             <div class="board-seal" aria-hidden="true"><b>港</b></div>
@@ -125,7 +125,7 @@
         <section class="admit" aria-labelledby="enter-heading">
           <p class="board-tiny">05 · ADMISSION</p>
           <h2 id="enter-heading">Enter the three-dimensional town</h2>
-          <p>The live harbour is a first-person street. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
+          <p>The live town is a first-person shopping district with a working port. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
           <button id="enter" type="button">
             <span>
               <small>入町</small>
@@ -263,7 +263,7 @@
       </section>
 
       <footer class="board-foot">
-        <p>Johansson Town is a first-person harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
+        <p>Johansson Town is a first-person shopping district and working harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
         <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
       </footer>
     </article>
@@ -327,7 +327,7 @@ import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-C3ge6Z0Y.js');
+      await import('./runtime/boot-CrAZcK0c.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

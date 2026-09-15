@@ -1,8 +1,6 @@
-import {homeOwner} from '../people/home-life.js';
 import {buildDiningStreet} from './dining-street.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
-import {buildSeaCave} from './sea-cave.js';
 import {buildPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
 import {batchStaticProps} from '../render/static-props.js';
@@ -17,7 +15,8 @@ import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
-import {applyShopAddresses} from './town-grid.js';
+import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
+import {configureTownMode} from './town-mode.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -151,9 +150,11 @@ function addStreetLife(world,options,factory){
 function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
 
 export function createTown(options){
+  const mode=configureTownMode(options.townMode);
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
-  for(const [name,x,z] of [['Bus driver',-8.5,31]]){
+  world.townMode=mode;
+  for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
     options.register(g,'Talk to '+name,()=>options.onAction('resident',name));
@@ -162,10 +163,10 @@ export function createTown(options){
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(site.id==='home'||homeOwner(site)||site.id==='warehouse')return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
-  buildDiningStreet(world,options);buildIzakaya(world,options);buildPark(world,options);buildSeaCave(world,options);
+  buildDiningStreet(world,options);buildIzakaya(world,options);buildPark(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
@@ -182,6 +183,7 @@ export function createTown(options){
   const baseUpdate=world.update.bind(world);
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
+    world.busStation?.update(minutes,day);
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
@@ -195,6 +197,11 @@ export function createTown(options){
     staticProps,
     streetPlants:plants,
     walkableOuterPier:true,
+    shoppingDistrict:mode==='shopping-district',
+    residentialArea:mode!=='shopping-district',
+    seaCave:false,
+    port24Hours:true,
+    harbourOffice24Hours:true,
     pierPosts:pier.posts,
     antiShimmerCables:true,
     animatedWaterNormals:!!sea,

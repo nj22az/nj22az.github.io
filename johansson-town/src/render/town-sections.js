@@ -1,10 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createSectionInstances} from './section-instances.js';
 import {createWindowBatch} from './shop-street-batches.js';
+import {BUS_STATION} from '../world/bus-station.js';
+import {shoppingDistrictActive} from '../world/town-mode.js';
 
 export function districtAt(x,z){
+  if(shoppingDistrictActive()&&z>=BUS_STATION.minZ)return 'Bus Station';
   if(z < -36)return 'Port';
-  if(x < -18 || (x > 20 && z > 20))return 'Residential';
+  if(!shoppingDistrictActive()&&(x < -18 || (x > 20 && z > 20)))return 'Residential';
   if(x > 20 && z < -16)return 'Park';
   return 'Shopping';
 }

@@ -6,10 +6,10 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 
 - One module entry point in `src/boot.js`, local Three.js r170 and matching loaders. Runtime imports and assets stay inside this directory.
 - A fixed 1/60-second movement/physics step with a 0.1-second frame cap, first-person default, correct A/D strafing, jumping, and height-aware camera sweeps.
-- The existing street, quay and outer pier, connected western/eastern lanes, a second jetty, a school route and a raised shrine approach. The residential circuit adapts two Tomonoura OSM ways; connecting streets and the harbour are fictional. This is not a historical survey or a complete 1:1 reconstruction.
+- The compact shopping street, quay, outer pier and Harbour Line bus terminal, with connected western/eastern service lanes and a second jetty. The former residential circuit and sea cave are not part of the published town mode; connecting streets and the harbour are fictional. This is not a historical survey or a complete 1:1 reconstruction.
 - Shared PBR shading and local 1K albedo, normal and packed ARM maps, catenary cable geometry, shutters with opening hours, lit evening windows and a paper map using the same route coordinates as movement.
-- Twenty named resident profiles, eight visible at once, town-minute schedules, collision-aware raster A* and local slide avoidance. Five locally vendored Quaternius body bases provide compatible walk/idle/run/wave clips. Procedural bodies remain the failure fallback. Kenji now has a separate Blender-authored, textured anatomical model with six original clips. The remaining bases are interim stylised adults, not twenty bespoke Japanese identities or age-specific exports.
-- The eight inherited room layouts plus a ramen room; nearby furniture and documents remain interactive. Rooms still share a shell. Bathhouse, apartment and bus-hut exteriors are not yet enterable.
+- Ten named town residents, all scheduled through the compact district, with collision-aware raster A* and local slide avoidance. Day staff, evening press and repair workers arrive by bus; Nao and Officer Mori keep the late shift; the harbour office and bus service remain active around the clock. Five locally vendored Quaternius body bases provide compatible walk/idle/run/wave clips. Procedural bodies remain the failure fallback. Kenji now has a separate Blender-authored, textured anatomical model with six original clips. The remaining bases are interim stylised adults, not ten bespoke Japanese identities or age-specific exports.
+- The supplied shop and harbour rooms plus a ramen room; nearby furniture and documents remain interactive. Rooms still share a shell. The former residential circuit, apartment entrances and sea cave are retired from the published street.
 - Local original synthesised Foley and instrumental WAV files, positional ambience/radio, material footsteps, can purchase/holding/drinking and seated camera height. Sound unlocks on ENTER TOWN.
 - Tama, yen, fishing, Star Port, notebooks and existing transactions preserved. Website portals have become in-world paper records. Version 5 saves import valid v4/v3 data without deleting the old save.
 
@@ -62,7 +62,7 @@ The Sakura visual revision clears the daytime fog, revises Yuri’s face and out
 ### Outdoor sections and startup recovery
 
 The outdoor renderer selects nearby 24-metre cells in the Shopping, Port,
-Residential and Park districts. Large merged meshes and instance batches submit
+Bus Station and Park districts. Large merged meshes and instance batches submit
 nearby cells/instances only. Visibility and buffers are restored after each render,
 so the Konbini window view keeps its own clipping and selection.
 
@@ -74,7 +74,7 @@ The gate allows three seconds before using the existing fallback street.
 
 After the first frame, a nearby-detail queue loads one model at a time. It loads
 individual resident rigs, the tea house, ramen facade, izakaya exterior, park,
-plants, warehouse and sea cave on approach. Existing placeholders, door positions
+plants, warehouse and bus terminal on approach. Existing placeholders, door positions
 and colliders are established first; detail upgrades do not move the entrances or
 collision geometry. The izakaya interior now loads at its door, like the other
 supplied interiors. Sound files load when needed, and repeated district surface
@@ -82,7 +82,7 @@ materials share textures. Already-loaded models remain cached for return visits;
 this is demand loading rather than a complete district memory eviction system.
 
 Validation includes cold model-request counts and byte budget, loading all deferred
-facades without changing colliders/doors, upgrading Yuri without duplicate actors,
+facades without changing colliders/doors, upgrading Thuan without duplicate actors,
 serial/nearby queue behaviour, timeout recovery, route clearance, CPU game boot and
 interior transitions, Konbini window rendering, and Vite build. Actual Safari frame
 rate and time to first playable frame require a physical-device check.
@@ -106,7 +106,7 @@ asset gate; it does not bound JavaScript compilation or GPU rendering.
 
 ## September 11 entrance and streaming corrections
 
-Late street-kit, home, vending and bench models now replace their temporary shells
+Late street-kit, terminal, vending and bench models now replace their temporary shells
 without changing collision or doorway positions. Nearby residents are prioritised;
 failed requests retry at most three times with a delay. A completed slow request
 can still replace its placeholder after the queue timeout. Rendering follows the

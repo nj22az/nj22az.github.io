@@ -1,356 +1,508 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="cobalt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content">
-<meta name="theme-color" content="#1a3036">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Johansson Town">
-<meta name="description" content="Johansson Town public information board. A first-person shopping district and working harbour, 1988.">
-<style>:root,html,body{margin:0;background:#0b171b!important}</style>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?ui=controls-3">
-<link rel="stylesheet" href="./polish.css?ui=controls-3">
-<link rel="stylesheet" href="./viewport-fix.css?ui=dialogue-proportions-1">
-<link rel="stylesheet" href="./character-controls.css?ui=controls-3">
-<link rel="stylesheet" href="./office.css?ui=controls-3">
-<link rel="stylesheet" href="./dialogue.css?ui=controls-3">
-<link rel="stylesheet" href="./workshop.css?v=1">
-<link rel="stylesheet" href="./context-controls.css?ui=controls-3">
-<title>Johansson Town</title>
-<link rel="stylesheet" href="living-town.css?v=7">
-<link rel="stylesheet" href="./landing.css?v=board-3">
-<link rel="stylesheet" href="./sakura-ledger.css">
-<link rel="stylesheet" href="./dual-controls.css?v=1">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-CrAZcK0c.js">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Office of Nils Johansson</title>
+  <meta name="description" content="Field service engineering, industrial commissioning, and practical digital tools shaped by work across marine and international environments.">
+  <meta name="author" content="Nils Johansson">
+  <link rel="canonical" href="https://nj22az.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Office of Nils Johansson">
+  <meta property="og:description" content="Field service engineering, industrial commissioning, and practical digital tools shaped by international work.">
+  <meta property="og:url" content="https://nj22az.github.io/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#343ec9">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="/theme-bootstrap.js?v=random-2"></script>
+  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
 </head>
 <body>
-<canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
-<div id="ink"></div>
-<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
-<section id="start">
-  <a class="sr-only" href="#board">Skip to notice board</a>
-  <div class="board-wrap">
-    <article id="board" class="board-frame">
-      <div class="crop-marks" aria-hidden="true"></div>
 
-      <header>
-        <div class="board-kicker">
-          <span>Johansson Town Public Information</span>
-          <span class="red" id="boardDoc">Document JT-HB-63-0913</span>
-          <span>Harbour District · Unofficial visitor board</span>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <nav id="site-nav" class="site-nav"></nav>
+
+  <main id="main-content">
+
+    <!-- Hero — vertical stack: text + photo -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-logo logo-seal" id="hero-logo"></div>
+        <p class="hero-role" id="hero-role"></p>
+        <h1 class="hero-tagline" id="hero-title"></h1>
+        <p class="hero-sub" id="hero-description"></p>
+        <ul class="hero-credentials" aria-label="Areas of expertise">
+          <li>Marine systems</li>
+          <li>Industrial commissioning</li>
+          <li>Field diagnostics</li>
+        </ul>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">
+            View Projects
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#about" class="btn-secondary">About Me</a>
         </div>
-
-        <div class="board-hero">
-          <p class="board-vert" aria-hidden="true">港町案内</p>
-          <div>
-            <p class="board-tiny" id="boardDateLong">SHOWA 63 · 13 SEPTEMBER 1988</p>
-            <p class="board-jp">ヨハンソン町</p>
-            <h1>JOHANSSON<span> TOWN</span></h1>
-            <p class="board-lede">A harbour shopping district, 1988. First person. Walk the shops to the quay, then the outer pier and Harbour Line terminal.</p>
-          </div>
-          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
-            <div class="board-seal" aria-hidden="true"><b>港</b></div>
-            <p class="board-tiny" style="text-align:right;letter-spacing:.12em">HARBOUR OFFICE<br>REVISION 8<br>ENGLISH EDITION</p>
-          </div>
-        </div>
-
-        <div class="board-status">
-          <div><span>Weekday</span><b id="statusWeekday">Sunday</b></div>
-          <div><span>Weather</span><b>Clear</b></div>
-          <div><span>Shops</span><b id="statusShops">—</b></div>
-          <div><span>Period</span><b id="statusPeriod">AFTERNOON</b></div>
-        </div>
-      </header>
-
-      <div class="board-split">
-        <section class="clock-panel" aria-labelledby="town-clock-heading">
-          <div class="clock-head">
-            <div>
-              <p class="board-tiny">04 · TOWN CLOCK</p>
-              <h2 id="town-clock-heading">町時計</h2>
-            </div>
-            <p>
-              <small id="boardLive">LIVE · VISITOR CLOCK</small>
-              <span id="boardDateShort">13 SEP 1988</span>
-            </p>
-          </div>
-
-          <div class="clock-body">
-            <div class="clock-face">
-              <svg viewBox="0 0 200 200" role="img" aria-labelledby="boardDigital">
-                <circle cx="100" cy="100" r="96" fill="var(--paper)" stroke="currentColor" stroke-width="6"/>
-                <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <g id="clockTicks"></g>
-                <text x="100" y="48" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">12</text>
-                <text x="162" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">3</text>
-                <text x="100" y="168" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">6</text>
-                <text x="38" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">9</text>
-                <text x="100" y="72" text-anchor="middle" fill="var(--vermillion)" font-family="Shippori Mincho, serif" font-size="14">港</text>
-                <text x="100" y="136" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="6.5" font-weight="700" letter-spacing="0.32em">JOHANSSON</text>
-                <g id="handHour">
-                  <line x1="100" y1="118" x2="100" y2="56" stroke="currentColor" stroke-width="7" stroke-linecap="square"/>
-                </g>
-                <g id="handMinute">
-                  <line x1="100" y1="124" x2="100" y2="30" stroke="currentColor" stroke-width="4" stroke-linecap="square"/>
-                </g>
-                <g id="handSecond" class="hand-second">
-                  <line x1="100" y1="128" x2="100" y2="24" stroke="currentColor" stroke-width="2"/>
-                </g>
-                <circle cx="100" cy="100" r="5" fill="var(--vermillion)"/>
-                <circle cx="100" cy="100" r="2.2" fill="var(--paper)"/>
-              </svg>
-            </div>
-            <div>
-              <p class="board-tiny" id="boardWeekdayLine">SHOWA 63 · SUNDAY</p>
-              <p class="clock-digits" id="boardDigital" aria-live="polite">16:42:00</p>
-              <p class="clock-period" id="boardPeriod">AFTERNOON</p>
-              <p class="clock-line" id="boardLine">Shops are open.</p>
-              <p class="clock-shops" id="boardShops">SHOPS 00/00 OPEN · HARBOUR DISTRICT TIME</p>
-            </div>
-          </div>
-
-          <div class="clock-modes" role="group" aria-label="Town clock modes">
-            <button type="button" data-clock-mode="live" aria-pressed="true"><b>LIVE</b><span>Now in town</span></button>
-            <button type="button" data-clock-mode="run" aria-pressed="false"><b>60×</b><span>Town speed</span></button>
-            <button type="button" data-clock-mode="0900" aria-pressed="false"><b>09:00</b><span>Morning</span></button>
-            <button type="button" data-clock-mode="1642" aria-pressed="false"><b>16:42</b><span>Game start</span></button>
-            <button type="button" data-clock-mode="1830" aria-pressed="false"><b>18:30</b><span>Evening press</span></button>
-            <button type="button" data-clock-mode="2030" aria-pressed="false"><b>20:30</b><span>Night</span></button>
-          </div>
-        </section>
-
-        <section class="admit" aria-labelledby="enter-heading">
-          <p class="board-tiny">05 · ADMISSION</p>
-          <h2 id="enter-heading">Enter the three-dimensional town</h2>
-          <p>The live town is a first-person shopping district with a working port. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
-          <button id="enter" type="button">
-            <span>
-              <small>入町</small>
-              <b>ENTER TOWN</b>
-            </span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-          <div id="bootStatus">READY</div>
-          <p class="muted" style="margin-top:10px;font-size:11px;letter-spacing:.04em">N on this board cycles the clock, same as in town.</p>
-
-          <p class="board-tiny" style="margin-top:20px">06 · STREET CONTROLS</p>
-          <ul class="controls-grid">
-            <li><kbd>WASD / left stick</kbd><span>Walk</span></li>
-            <li><kbd>Shift</kbd><span>Run</span></li>
-            <li><kbd>Mouse / right stick</kbd><span>Look</span></li>
-            <li><kbd>Space</kbd><span>Jump</span></li>
-            <li><kbd>E</kbd><span>Interact / stand</span></li>
-            <li><kbd>R</kbd><span>Drink</span></li>
-            <li><kbd>Q</kbd><span>Town book</span></li>
-            <li><kbd>B</kbd><span>Notebook</span></li>
-            <li><kbd>N</kbd><span>Cycle time</span></li>
-          </ul>
-        </section>
       </div>
+      <div class="hero-photo">
+        <picture>
+          <source srcset="/assets/images/nils-lake-hero.webp" type="image/webp">
+          <img src="/assets/images/nils-lake-hero-optimized.jpg" alt="Sunlit tropical garden in Southeast Asia" width="1920" height="1440" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+    </section>
 
-      <section aria-labelledby="hours-heading">
-        <div class="section-bar">
-          <div>
-            <p class="board-tiny" style="opacity:.7">07 · HOURS OF BUSINESS</p>
-            <h2 id="hours-heading">Opening board</h2>
+    <!-- Schedule — availability table -->
+    <section class="section" id="schedule">
+      <div class="container">
+        <div class="section-header section-header--compact">
+          <div class="section-subtitle">Availability</div>
+          <h2>Working week at a glance</h2>
+          <p>Current office-hours availability, adjusted for location and public holidays.</p>
+        </div>
+        <div id="schedule-widget"></div>
+      </div>
+    </section>
+
+    <!-- Dashed divider -->
+    <hr class="section-divider">
+
+    <!-- Projects — bento grid -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-decor" id="decor-projects"></div>
+          <div class="section-subtitle">Selected Work</div>
+          <h2>Projects &amp; platforms</h2>
+          <p>Practical tools, long-form work, and professional channels built around engineering and making.</p>
+        </div>
+        <div class="bento-grid" id="bento-grid"></div>
+      </div>
+    </section>
+
+    <!-- Dashed divider -->
+    <hr class="section-divider">
+
+    <!-- Journal — row-style list -->
+    <section class="section section-alt" id="journal">
+      <div class="container section-shell">
+        <div class="decor-blob decor-blob-md decor-blob-tr"></div>
+        <div class="section-header">
+          <div class="section-decor" id="decor-journal"></div>
+          <div class="section-subtitle">Field Notes</div>
+          <h2>From the journal</h2>
+          <p>Technical dispatches and reflections from the field.</p>
+        </div>
+        <div class="journal-list" id="journal-list"></div>
+        <div class="read-all">
+          <a href="/blog/">
+            Read all posts
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashed divider -->
+    <hr class="section-divider">
+
+    <!-- About — gradient + centered -->
+    <section class="section section-mint" id="about">
+      <div class="container section-shell">
+        <div class="about-blobs">
+          <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
+          <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
+        </div>
+        <div class="about-layout">
+          <div class="about-identity">
+            <div id="about-logo" class="about-logo logo-seal"></div>
+            <div class="about-identity-copy">
+              <strong>Nils Johansson</strong>
+              <span id="about-role"></span>
+              <span id="about-location" class="about-location"></span>
+            </div>
           </div>
-          <p class="board-tiny" id="hoursHeadTime">16:42:00 · AFTERNOON</p>
-        </div>
-        <div class="hours-wrap">
-          <table class="hours-table">
-            <caption class="sr-only">Shop and landmark hours for Johansson Town</caption>
-            <thead>
-              <tr>
-                <th>No.</th>
-                <th>Place</th>
-                <th>District</th>
-                <th>Hours</th>
-                <th>Now</th>
-              </tr>
-            </thead>
-            <tbody id="hoursBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section aria-labelledby="dir-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">08 · DISTRICT DIRECTORY</p>
-            <h2 id="dir-heading">Places</h2>
+          <div class="about-content">
+            <div class="section-label-bar">About</div>
+            <h2 id="about-heading">Engineering with a wider field of view</h2>
+            <p class="about-bio" id="about-bio"></p>
+            <div class="social-links" id="social-links"></div>
           </div>
         </div>
-        <div class="place-grid" id="placesGrid"></div>
-      </section>
+      </div>
+    </section>
 
-      <section aria-labelledby="roll-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">09 · RESIDENT ROLL</p>
-            <h2 id="roll-heading">On the street</h2>
-          </div>
+    <!-- Dashed divider -->
+    <hr class="section-divider">
+
+    <!-- Locations — map cards -->
+    <section class="section" id="locations">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-decor"></div>
+          <div class="section-subtitle">Where I Work</div>
+          <h2>Locations</h2>
+          <p>Working between Sweden and Southeast Asia, with an international field-service perspective.</p>
         </div>
-        <div class="roll-grid" id="rollGrid"></div>
-      </section>
+        <div class="locations-grid" id="locations-grid"></div>
+      </div>
+    </section>
 
-      <section aria-labelledby="noticeWhen">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">10 · HARBOUR NOTICES</p>
-            <h2 id="noticeWhen">Posted this Sunday</h2>
-          </div>
-        </div>
-        <div class="notice-grid">
-          <article class="notice-card">
-            <p class="notice-no">NOTICE A-14</p>
-            <h3>Outer pier after dark</h3>
-            <p>Boards are wet and unlit past twenty hundred. Walk the inner quay.</p>
-          </article>
-          <article class="notice-card">
-            <p class="notice-no">NOTICE B-07</p>
-            <h3>Evening paper</h3>
-            <p>Reiko locks the press at Front-Row after eighteen-thirty. Copy is posted on the alley board.</p>
-          </article>
-          <article class="notice-card">
-            <p class="notice-no">NOTICE C-02</p>
-            <h3>Form 3D printer</h3>
-            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Thuan at Sakura to sell a finished piece.</p>
-          </article>
-          <article class="notice-card">
-            <p class="notice-no">NOTICE D-11</p>
-            <h3>Opening seat</h3>
-            <p>Visitors arrive seated on the cedar bench, east sidewalk, facing Sakura. Press E to stand.</p>
-          </article>
-        </div>
-      </section>
+  </main>
 
-      <section aria-labelledby="poster-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">11 · MINATO WALL</p>
-            <h2 id="poster-heading">Posters in the izakaya</h2>
-          </div>
-        </div>
-        <div class="poster-wall">
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · 港鳥, 1988 print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">港鳥</p>
-              <h3>MINATO TORI</h3>
-              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
-            </figcaption>
-          </figure>
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · 潮待ち, 1988 print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">潮待ち</p>
-              <h3>SHIOMACHI</h3>
-              <p>Junmai from a fictional harbour brewery. Waiting for the tide, one cup at a time.</p>
-            </figcaption>
-          </figure>
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · みなと, 1988 print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">みなと</p>
-              <h3>MINATO</h3>
-              <p>The house poster. Red lanterns, the noren, and おかえりなさい — welcome back.</p>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
+  <footer id="site-footer" class="site-footer"></footer>
 
-      <footer class="board-foot">
-        <p>Johansson Town is a first-person shopping district and working harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
-        <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
-      </footer>
-    </article>
-  </div>
-</section>
-<div id="hud" class="hidden">
-  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
-  <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
-  <button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button>
-  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
+  <script src="/config.js"></script>
+  <script src="/shared.js?v=random-2"></script>
+  <script>
+    (function () {
+      "use strict";
 
+      function $(sel) { return document.querySelector(sel); }
 
+      /* Hero */
+      $("#hero-logo").innerHTML = CONFIG.logo(120);
+      $("#hero-role").textContent = CONFIG.author.role;
+      $("#hero-title").textContent = CONFIG.site.tagline;
+      $("#hero-description").textContent = CONFIG.site.description;
 
-  <div id="prompt" role="status"></div>
-  <div id="subtitle" role="status" aria-live="polite"></div>
-  <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
-</div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraMenuButton">CAMERA & CONTROLS</button><button id="notebookButton">NOTEBOOK</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
-<div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1988</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
-<div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement stick"><div id="knob" class="stick-knob"></div><span>MOVE</span></div><div id="lookStick" class="touch-stick" aria-label="Camera stick"><div id="lookKnob" class="stick-knob"></div><span>LOOK</span></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
-<div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
-<div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
-<div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=board-2"></script>
-<script type="module">
-import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
-(() => {
-  const enter=document.getElementById('enter');
-  const status=document.getElementById('bootStatus');
-  const fatal=document.getElementById('fatal');
-  const retry=document.getElementById('retry');
-  const fsButton=document.getElementById('fullscreenButton');
-  const fsHelp=document.getElementById('iosFullscreen');
-  const fsClose=document.getElementById('closeFullscreenHelp');
-  const isIPhone=/iPhone|iPod/.test(navigator.userAgent);
-  const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+      /* Schedule — interactive week calendar */
+      if (CONFIG.author.schedule && CONFIG.author.locations) {
+        var sched = CONFIG.author.schedule;
+        var locations = CONFIG.author.locations;
+        var weekOffset = 0;
+        var holidayCache = {}; // key: "year-CC" -> array
+        var selectedLocIdx = parseInt(localStorage.getItem("nj-sched-loc") || sched.defaultLocation || "0", 10);
+        if (selectedLocIdx >= locations.length) selectedLocIdx = 0;
+        var locDropdownOpen = false;
+        var legendOpen = false;
 
-  async function fullscreen(){
-    if(document.fullscreenElement||document.webkitFullscreenElement){
-      const exit=document.exitFullscreen||document.webkitExitFullscreen;
-      if(exit){try{await exit.call(document)}catch{}}
-      return;
-    }
-    const el=document.documentElement;
-    const request=el.requestFullscreen||el.webkitRequestFullscreen;
-    if(request){try{await request.call(el);return}catch{}}
-    if(isIPhone&&!standalone())fsHelp.classList.remove('hidden');
-  }
+        var DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+        var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  async function launch(){
-    if(window.__JOHANSSON_BOOTING__)return;
-    window.__JOHANSSON_BOOTING__=true;
-    enter.disabled=true;
-    status.textContent='LOADING GAME CODE…';
-    window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
-    try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
-    if(!isIPhone||standalone())fullscreen();
-    const watchdog=setTimeout(()=>{
-      if(!window.__JOHANSSON_RUNNING__){
-        status.textContent='STILL LOADING · PLEASE WAIT';
+        function getWeekNumber(d) {
+          var date = new Date(d.getTime());
+          date.setHours(0, 0, 0, 0);
+          date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+          var week1 = new Date(date.getFullYear(), 0, 4);
+          return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        }
+
+        function getMondayOfWeek(offset) {
+          var now = new Date();
+          var day = now.getDay();
+          var diff = now.getDate() - day + (day === 0 ? -6 : 1) + (offset * 7);
+          return new Date(now.getFullYear(), now.getMonth(), diff);
+        }
+
+        function isSameDay(a, b) {
+          return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+        }
+
+        function renderCalendar(holidays) {
+          var monday = getMondayOfWeek(weekOffset);
+          var wk = getWeekNumber(monday);
+          var today = new Date();
+          var loc = locations[selectedLocIdx];
+
+          // Build holiday map for this week
+          var holidayMap = {};
+          if (holidays && holidays.length) {
+            for (var h = 0; h < holidays.length; h++) {
+              var parts = holidays[h].date.split("-");
+              var hDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+              var diff = Math.round((hDate - monday) / 86400000);
+              if (diff >= 0 && diff < 7) {
+                holidayMap[diff] = holidays[h].localName || holidays[h].name;
+              }
+            }
+          }
+
+          // Month label
+          var sunday = new Date(monday.getTime() + 6 * 86400000);
+          var monthLabel = MONTHS[monday.getMonth()];
+          if (monday.getMonth() !== sunday.getMonth()) {
+            monthLabel = MONTHS[monday.getMonth()] + " – " + MONTHS[sunday.getMonth()];
+          }
+
+          // Day cells
+          var dayCells = '';
+          var FULL_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+          for (var i = 0; i < 7; i++) {
+            var d = new Date(monday.getTime() + i * 86400000);
+            var isToday = isSameDay(d, today);
+            var isWeekend = i >= 5;
+            var isHoliday = !!holidayMap[i];
+            var classes = ["schedule-day"];
+            if (isToday) classes.push("today");
+            if (isWeekend) classes.push("weekend");
+            if (isHoliday) classes.push("holiday");
+
+            // Build popup info
+            var popupParts = [FULL_DAYS[i] + " " + d.getDate() + " " + MONTHS[d.getMonth()]];
+            if (isToday) popupParts.push("Today");
+            if (isHoliday) popupParts.push(holidayMap[i]);
+            if (isWeekend && !isHoliday) popupParts.push("Weekend");
+
+            dayCells += '<button class="' + classes.join(" ") + '" data-popup="' + popupParts.join(" · ") + '">' +
+              '<span class="schedule-day-name">' + DAYS[i] + '</span>' +
+              '<span class="schedule-day-num">' + d.getDate() + '</span>' +
+            '</button>';
+          }
+
+          // Holiday names
+          var holidayNames = [];
+          for (var idx in holidayMap) { holidayNames.push(holidayMap[idx]); }
+          var holidayNote = holidayNames.length ?
+            '<p class="schedule-holidays">' + holidayNames.join(" &middot; ") + '</p>' : '';
+
+          // Location dropdown items
+          var locItems = '';
+          for (var li = 0; li < locations.length; li++) {
+            var active = li === selectedLocIdx ? ' active' : '';
+            locItems += '<button class="schedule-loc-item' + active + '" data-loc-idx="' + li + '">' +
+              locations[li].name + ', ' + locations[li].label + '</button>';
+          }
+
+          var pinIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="' + CONFIG.icons.mappin + '"/></svg>';
+          var chevLeft = '<svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>';
+          var chevRight = '<svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M9 18l6-6-6-6"/></svg>';
+
+          $("#schedule-widget").innerHTML =
+            '<div class="schedule-frame">' +
+              '<div class="schedule-header">' +
+                '<div class="schedule-nav">' +
+                  '<button class="schedule-nav-btn" data-dir="-1" aria-label="Previous week">' + chevLeft + '</button>' +
+                  '<span class="schedule-week">Wk ' + wk + '</span>' +
+                  '<button class="schedule-nav-btn" data-dir="1" aria-label="Next week">' + chevRight + '</button>' +
+                '</div>' +
+                '<div class="schedule-loc-wrap">' +
+                  '<button class="schedule-location" aria-label="Change location">' + pinIcon +
+                    '<span class="schedule-location-town">' + loc.name + '</span>, ' +
+                    '<span class="schedule-location-country">' + loc.label + '</span>' +
+                  '</button>' +
+                  '<div class="schedule-loc-dropdown' + (locDropdownOpen ? ' open' : '') + '">' + locItems + '</div>' +
+                '</div>' +
+                '<span class="schedule-header-right">' +
+                  '<span class="schedule-month">' + monthLabel + ' ' + monday.getFullYear() + '</span>' +
+                  '<button class="schedule-info-btn' + (legendOpen ? ' active' : '') + '" aria-label="Legend" type="button">i</button>' +
+                '</span>' +
+              '</div>' +
+              '<div class="schedule-legend"' + (legendOpen ? '' : ' hidden') + '>' +
+                '<div class="schedule-legend-item"><span class="schedule-legend-dot today-sample"></span> Today</div>' +
+                '<div class="schedule-legend-item"><span class="schedule-legend-dot weekend-sample"></span> Weekend</div>' +
+                '<div class="schedule-legend-item"><span class="schedule-legend-dot holiday-sample"></span> Holiday</div>' +
+              '</div>' +
+              '<div class="schedule-days">' + dayCells + '</div>' +
+              '<div class="schedule-popup" hidden></div>' +
+              holidayNote +
+              '<p class="schedule-note">' + sched.note + '</p>' +
+            '</div>';
+
+          // Day cell click — show popup
+          var popup = document.querySelector(".schedule-popup");
+          document.querySelectorAll(".schedule-day").forEach(function (dayEl) {
+            dayEl.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var text = dayEl.dataset.popup;
+              if (popup.hidden === false && popup.textContent === text) {
+                popup.hidden = true;
+                return;
+              }
+              popup.textContent = text;
+              popup.hidden = false;
+            });
+          });
+          document.addEventListener("click", function dismissPopup() {
+            if (popup && !popup.hidden) popup.hidden = true;
+            document.removeEventListener("click", dismissPopup);
+          });
+
+          // Event listeners
+          document.querySelectorAll(".schedule-nav-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              weekOffset += parseInt(btn.dataset.dir, 10);
+              fetchAndRender();
+            });
+          });
+
+          var locBtn = document.querySelector(".schedule-location");
+          if (locBtn) {
+            locBtn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              locDropdownOpen = !locDropdownOpen;
+              var dd = document.querySelector(".schedule-loc-dropdown");
+              if (dd) dd.classList.toggle("open", locDropdownOpen);
+            });
+          }
+
+          document.querySelectorAll(".schedule-loc-item").forEach(function (item) {
+            item.addEventListener("click", function () {
+              selectedLocIdx = parseInt(item.dataset.locIdx, 10);
+              localStorage.setItem("nj-sched-loc", selectedLocIdx);
+              locDropdownOpen = false;
+              fetchAndRender();
+            });
+          });
+
+          var infoBtn = document.querySelector(".schedule-info-btn");
+          var legend = document.querySelector(".schedule-legend");
+          if (infoBtn && legend) {
+            infoBtn.addEventListener("click", function () {
+              legendOpen = !legendOpen;
+              legend.hidden = !legendOpen;
+              infoBtn.classList.toggle("active", legendOpen);
+            });
+          }
+
+          // Close dropdown on outside click
+          document.addEventListener("click", function closeLocDd() {
+            if (locDropdownOpen) {
+              locDropdownOpen = false;
+              var dd = document.querySelector(".schedule-loc-dropdown");
+              if (dd) dd.classList.remove("open");
+            }
+            document.removeEventListener("click", closeLocDd);
+          });
+        }
+
+        function fetchAndRender() {
+          var loc = locations[selectedLocIdx];
+          var monday = getMondayOfWeek(weekOffset);
+          var year = monday.getFullYear();
+          var cc = loc.countryCode;
+
+          if (!cc) { renderCalendar(null); return; }
+
+          var cacheKey = year + "-" + cc;
+          if (holidayCache[cacheKey]) {
+            renderCalendar(holidayCache[cacheKey]);
+            return;
+          }
+
+          // Render immediately without holidays, then update
+          renderCalendar(null);
+          fetch("https://date.nager.at/api/v3/PublicHolidays/" + year + "/" + cc)
+            .then(function (r) { return r.ok ? r.json() : []; })
+            .then(function (data) {
+              holidayCache[cacheKey] = data;
+              renderCalendar(data);
+            })
+            .catch(function () { /* silent */ });
+        }
+
+        fetchAndRender();
       }
-    },25000);
-    try{
-      await import('./runtime/boot-CrAZcK0c.js');
-      clearTimeout(watchdog);
-      window.__JOHANSSON_RUNNING__=true;
-      fatal.classList.add('hidden');
-    }catch(err){
-      clearTimeout(watchdog);
-      console.error(err);
-      status.textContent='START FAILED';
-      fatal.querySelector('p').textContent=/WebGL|graphics context/i.test(err.message||'')
-        ? 'Safari could not start the 3D graphics engine. Close other tabs, then reload this page.'
-        : 'Johansson Town could not start: '+(err.message||'Unknown startup error')+'. Reload and try again.';
-      fatal.classList.remove('hidden');
-      window.__JOHANSSON_BOOTING__=false;
-      enter.disabled=false;
-    }
-  }
 
-  enter.addEventListener('click',launch);
-  retry.addEventListener('click',()=>location.reload());
-  fsButton.addEventListener('click',fullscreen);
-  fsClose.addEventListener('click',()=>fsHelp.classList.add('hidden'));
-  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
-  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
-})();
-</script>
+      /* Decorative leaf icons above section headers */
+      var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
+      document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
+
+      /* Bento grid — project cards */
+      $("#bento-grid").innerHTML = CONFIG.projects.map(function (p) {
+        var bentoClass = p.bento === "large" ? "bento-large" :
+                         p.bento === "wide" ? "bento-wide" :
+                         p.bento === "tall" ? "bento-tall" : "";
+        var tags = p.tags.map(function (t) {
+          return '<span class="tag">' + t + '</span>';
+        }).join("");
+        var isExternal = new URL(p.url, location.origin).origin !== location.origin;
+        var linkAttrs = isExternal ? ' target="_blank" rel="noopener"' : '';
+        var actionLabel = isExternal ? "Visit site" : "Open project";
+
+        return '<a href="' + p.url + '"' + linkAttrs + ' class="bento-card ' + bentoClass + '" aria-label="' + actionLabel + ': ' + p.title + '">' +
+          '<div class="bento-card-top">' +
+            '<div class="bento-icon" data-icon="' + p.icon + '">' + siteIcon(p.icon) + '</div>' +
+            '<div class="bento-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
+          '</div>' +
+          '<div class="bento-card-body">' +
+            '<h3>' + p.title + '</h3>' +
+            '<p>' + p.description + '</p>' +
+            '<div class="card-tags">' + tags + '</div>' +
+            '<span class="bento-card-cta">' + actionLabel + '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>' +
+          '</div>' +
+        '</a>';
+      }).join("");
+
+      /* Journal posts (WordPress API) — row-style list */
+      var API = CONFIG.wordpressApi + "?_embed&per_page=3";
+
+      function strip(html) {
+        var el = document.createElement("div");
+        el.innerHTML = html;
+        return el.textContent || "";
+      }
+      function fmtDate(d) {
+        return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d));
+      }
+
+      fetch(API)
+        .then(function (r) { return r.json(); })
+        .then(function (posts) {
+          if (!posts.length) {
+            $("#journal-list").innerHTML = '<p class="journal-empty">New posts coming soon.</p>';
+            return;
+          }
+          $("#journal-list").innerHTML = posts.map(function (post) {
+            var title = strip(post.title.rendered) || "Untitled";
+            return '<a href="' + post.link + '" target="_blank" rel="noopener" class="journal-item reveal">' +
+              '<div class="journal-item-meta">' +
+                '<span class="journal-tag">Journal</span>' +
+                '<time>' + fmtDate(post.date) + '</time>' +
+              '</div>' +
+              '<h3>' + title + '</h3>' +
+            '</a>';
+          }).join("");
+
+          document.querySelectorAll(".journal-item").forEach(function (el) {
+            obs.observe(el);
+          });
+        })
+        .catch(function () {
+          $("#journal-list").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
+        });
+
+      /* About */
+      $("#about-logo").innerHTML = CONFIG.logo(140);
+      $("#about-role").textContent = CONFIG.author.role;
+      $("#about-location").textContent = "Based in " + CONFIG.author.location;
+      $("#about-bio").textContent = CONFIG.author.bio;
+
+      $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + key + '">' +
+          siteIcon(key) + '</a>';
+      }).join("");
+
+      /* Locations — map cards */
+      if (CONFIG.author.locations) {
+        $("#locations-grid").innerHTML = CONFIG.author.locations.map(function (loc) {
+          return '<div class="location-card reveal">' +
+            '<iframe class="location-map" src="' + loc.embed + '" title="Map of ' + loc.name + '" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' +
+            '<div class="location-info">' +
+              '<div class="location-meta"><div class="location-label">' + loc.label + '</div><span class="location-status">Field base</span></div>' +
+              '<div class="location-name">' + loc.name + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join("");
+      }
+
+      /* Staggered scroll-triggered reveals */
+      var items = document.querySelectorAll(".bento-card, .section-header, .about-layout, .hero-photo, .location-card");
+      items.forEach(function (el) { el.classList.add("reveal"); });
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+      items.forEach(function (el) { obs.observe(el); });
+
+    })();
+  </script>
 </body>
 </html>

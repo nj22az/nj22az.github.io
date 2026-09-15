@@ -5,11 +5,11 @@
     { id: "market", code: "01", title: "Sakura Shōten", jp: "桜商店", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
     { id: "frontrow", code: "02", title: "Front-Row Books & Press", jp: "前列書房・印刷", sub: "Books · evening press", district: "East alley", open: 540, close: 1110, line: "Aya’s books and Reiko’s evening paper, under one roof." },
     { id: "form3d", code: "03", title: "Kenji & Tetsuo Repairs", jp: "立体・電気工房", sub: "Patterns · radios · instruments", district: "East alley", open: 540, close: 1140, line: "Kenji’s pattern bench, Tetsuo’s radios, and the Form 3D printer." },
-    { id: "office", code: "04", title: "Johansson Harbour Office", jp: "港務・技術事務所", sub: "Marine service · records", district: "Quay", open: 540, close: 1140, line: "Shipping records, tide tables, and Johansson’s marine files." },
+    { id: "office", code: "04", title: "Johansson Harbour Office", jp: "港務・技術事務所", sub: "Marine service · records", district: "Quay", open: null, close: null, line: "Shipping records, tide tables, and Johansson’s marine files. Staffed around the clock." },
     { id: "tea-house", code: "05", title: "Corner Tea House", jp: "角の茶屋", sub: "Tea · seats", district: "Shopping street", open: 540, close: 1140, line: "A quiet corner for tea facing the cedar bench." },
     { id: "ramen", code: "06", title: "Sato Ramen", jp: "佐藤ラーメン", sub: "Noodles", district: "Dining junction", open: 540, close: 1260, line: "Mrs Sato’s counter. Broth until twenty-one hundred." },
     { id: "izakaya", code: "07", title: "Minato Izakaya", jp: "港居酒屋", sub: "Lanterns · yakitori", district: "Harbour front", open: 960, close: 1620, line: "Opens at sixteen hundred. Last pour around three in the morning." },
-    { id: "sento", code: "08", title: "Public Bath", jp: "銭湯", sub: "Sentō", district: "Residential circuit", open: 540, close: 1260, line: "The bathhouse frontage. Interior still locked to visitors." },
+    { id: "bus-station", code: "08", title: "Harbour Line Bus Station", jp: "バス乗場", sub: "Arrivals · departures", district: "Town terminus", open: null, close: null, line: "The northern terminus. Day staff arrive here and leave by the last bus." },
     { id: "warehouse", code: "09", title: "Quay Warehouse", jp: "倉庫", sub: "Fishing gear", district: "Quay", open: null, close: null, line: "Northern frontage. Ice cabinet, folio stand, storeroom at all hours." },
     { id: "arcade", code: "10", title: "Star Port Arcade", jp: "スターポート", sub: "Cabinets", district: "Dining junction", open: 540, close: 1140, line: "CRT cabinets off the crossing. Keep the aisle clear." },
     { id: "park", code: "11", title: "Harbour Park", jp: "公園", sub: "Benches · trees", district: "West lane", open: null, close: null, line: "Raised walk and benches looking back at the shotengai." },
@@ -17,25 +17,15 @@
   ];
   const RESIDENTS = [
     { name: "Thuan", jp: "トゥアン", role: "Shopkeeper", place: "Sakura Shōten", start: 540, end: 1200 },
-    { name: "Yui", jp: "由衣", role: "Clerk", place: "Sakura Shōten", start: 540, end: 1200 },
     { name: "Aya", jp: "綾", role: "Bookseller", place: "Front-Row Books", start: 540, end: 1110 },
-    { name: "Reiko", jp: "玲子", role: "Evening press", place: "Front-Row Press", start: 1020, end: 1260 },
     { name: "Kenji", jp: "健司", role: "Pattern maker", place: "Repairs", start: 540, end: 1140 },
-    { name: "Tetsuo", jp: "哲雄", role: "Radio repair", place: "Repairs", start: 540, end: 1140 },
-    { name: "Harbour master", jp: "港長", role: "Quay authority", place: "Harbour Office", start: 540, end: 1140 },
     { name: "Mrs Sato", jp: "佐藤", role: "Ramen", place: "Sato Ramen", start: 540, end: 1260 },
-    { name: "Officer Mori", jp: "森", role: "Night patrol", place: "Street", start: 1200, end: 1860 },
-    { name: "Hiroshi", jp: "浩", role: "Cook", place: "Minato Izakaya", start: 960, end: 1620 },
-    { name: "Nao", jp: "奈緒", role: "Errands", place: "Shopping street", start: 540, end: 1140 },
-    { name: "Bus driver", jp: "運転士", role: "Route", place: "Bus hut", start: 390, end: 1140 },
-    { name: "Kenta", jp: "健太", role: "Workshop", place: "Repairs", start: 540, end: 1140 },
-    { name: "Hana", jp: "花", role: "Resident", place: "Residential circuit", start: null, end: null },
-    { name: "Daichi", jp: "大地", role: "Resident", place: "Park", start: null, end: null },
-    { name: "Mr Fujita", jp: "藤田", role: "Resident", place: "East alley", start: null, end: null },
-    { name: "Yoshiko", jp: "良子", role: "Resident", place: "Residential circuit", start: null, end: null },
-    { name: "Naoko", jp: "直子", role: "Resident", place: "Shopping street", start: null, end: null },
-    { name: "Masaru", jp: "勝", role: "Cold storage", place: "Warehouse", start: 480, end: 1080 },
-    { name: "Mr Tanabe", jp: "田辺", role: "Resident", place: "Quay houses", start: null, end: null },
+    { name: "Reiko", jp: "玲子", role: "Evening press", place: "Front-Row Press", start: 900, end: 1470 },
+    { name: "Tetsuo", jp: "哲雄", role: "Night radio repair", place: "Repairs", start: 1020, end: 1440 },
+    { name: "Nao", jp: "奈緒", role: "Izakaya owner", place: "Minato Izakaya", start: 960, end: 1620 },
+    { name: "Officer Mori", jp: "森", role: "Night patrol", place: "Street", start: 1200, end: 1800 },
+    { name: "Harbour master", jp: "港長", role: "24-hour quay authority", place: "Harbour Office", always: true },
+    { name: "Bus driver", jp: "運転士", role: "24-hour Harbour Line", place: "Bus Station", always: true },
   ];
 
   const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -64,10 +54,10 @@
   };
   const periodLine = (m) => {
     const p = periodOf(m);
-    if (p === "EARLY MORNING") return "Shutters down. The quay is still.";
+    if (p === "EARLY MORNING") return "Shops are closed. The Harbour Line is preparing the first arrival.";
     if (p === "AFTERNOON") return "Shops are open.";
     if (p === "EVENING") return "Windows lighting. Paper going to press.";
-    return "Most shops are closed. Minato is still pouring.";
+    return "Most shops are closed. Minato and the quay office are still working.";
   };
   const isOpen = (place, m) => {
     if (place.open == null || place.close == null) return true;
@@ -81,6 +71,7 @@
     return `${fmt(place.open)}–${fmt(close)}`;
   };
   const onDuty = (r, m) => {
+    if (r.always) return true;
     if (r.start == null) return periodOf(m) === "AFTERNOON";
     const t = minuteOfDay(m);
     if (r.end > 1440) return t >= r.start || t < r.end - 1440;

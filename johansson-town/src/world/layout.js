@@ -3,6 +3,8 @@ import {RESIDENTIAL,inResidential,residentialContains,residentialHeight} from '.
 import {FULL_TOWN,fullHeight,fullContains} from './full-town-state.js';
 import {PARK,parkHeight} from './park-layout.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
+import {shoppingDistrictActive} from './town-mode.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -11,16 +13,15 @@ export const ROUTES = [
  {id:'shotengai',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,31],[MAIN_ROAD.x,-38]]},
  {id:'quay',width:12,surface:'stone',points:[[-17,-44],[17,-44]]},
  {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,-64.5]]},
+ ...BUS_STATION_ROUTES,
  {id:'east-alley',width:3,surface:'stone',points:[[0,SHOP_CROSSING_Z],[38,SHOP_CROSSING_Z],[38,31],[0,31]]},
  {id:'west-alley',width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
- {id:'home-door',width:3,surface:'stone',points:[[28,31],[28,30]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:[[0,DINING.izakayaDoor[1]],DINING.izakayaDoor]},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
  {id:'crystal-door',width:2.4,surface:'stone',points:[[0,DINING.crystalDoor[1]],DINING.crystalDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
  {id:'office-crossing',width:3,surface:'stone',points:[[0,-36],[18,-36]]},
- {id:'school-route',width:3,surface:'stone',points:[[38,24],[40,24]]},
  {id:'park-walk',width:4,surface:'stone',points:[[18,-44],[30,-44],[30,-36.8]]},
  {id:'park-approach',width:3,surface:'stone',points:[[16,-27],[22.2,-27]]},
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-36,-36]]},
@@ -34,7 +35,8 @@ export const LANDINGS=[];
 export function routeAt(x,z,r=0){
  if(FULL_TOWN.active)return fullContains(x,z,r,parkHeight)?{id:'supplied-town',surface:'stone'}:null;
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
- if(inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
+ if(!shoppingDistrictActive()&&inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
+ if(x>=BUS_STATION.minX+r&&x<=BUS_STATION.maxX-r&&z>=BUS_STATION.minZ+r&&z<=BUS_STATION.maxZ-r)return {id:BUS_STATION.id,surface:'stone'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  // Match the ends of the actual decks, without round route caps over water.
  if(x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast-r&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ-r){
@@ -45,5 +47,5 @@ export function routeAt(x,z,r=0){
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
  return LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||ROUTES.slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
 }
-export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=residentialHeight(x,z);if(rh!==null)return rh;if(x>=17.5&&x<22.2&&Math.abs(z+27)<=1.5)return (x-17.5)/4.7*parkHeight(22.2,z);const ph=parkHeight(x,z);if(ph!==null)return ph;if(Math.abs(x-30)<=2.1&&z>=-44&&z< -36.8)return (z+44)/7.2*parkHeight(30,-36.8);if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
-export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:54};
+export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;if(x>=17.5&&x<22.2&&Math.abs(z+27)<=1.5)return (x-17.5)/4.7*parkHeight(22.2,z);const ph=parkHeight(x,z);if(ph!==null)return ph;if(Math.abs(x-30)<=2.1&&z>=-44&&z< -36.8)return (z+44)/7.2*parkHeight(30,-36.8);if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
+export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:46};

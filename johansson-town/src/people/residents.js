@@ -4,7 +4,8 @@ import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {DINING} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
-// Thuan shares the compact residential lanes and outdoor schedule.
+// Thuan's saved home fields remain for compatibility with archived saves; the
+// published shopping-district mode uses the Harbour Line commute instead.
 export const YURI_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,"role":"Sakura shopkeeper","height":1.64,"work":[-4,-25.5],"evening":[DINING.izakayaDoor[0]-.7,DINING.izakayaDoor[1]],"friend":"Nao","start":540,"close":1200,"retire":1410,"supperStart":null,"supperEnd":null};
 export const ACTIVE_RESIDENT_NAMES=Object.freeze(['Aya','Kenji','Mrs Sato','Harbour master','Reiko','Tetsuo','Officer Mori','Bus driver','Nao','Thuan']);
 const NEIGHBOURHOOD={
@@ -12,7 +13,7 @@ const NEIGHBOURHOOD={
  'Mrs Sato':{friend:'Thuan',gossip:'Thuan calls her plant the assistant manager. I am still waiting for it to help with the stock.'},
  'Harbour master':{friend:'Bus driver',gossip:'The bus driver brings stories from the last stop. I check his timetable against the harbour clock.'},
  'Bus driver':{friend:'Harbour master',gossip:'The harbour master keeps the port records in order. I bring him a fresh story with the morning timetable.'},
- Nao:{friend:'Thuan',gossip:'Thuan and I share a flat on Main Street. She leaves breakfast ready when I return from my late shift.'},
+ Nao:{friend:'Thuan',gossip:'Thuan and I arrive on the Harbour Line. She leaves breakfast ready when I return from my late shift.'},
  'Officer Mori':{clue:'Main Street leads straight to the harbour. I follow it on the night patrol.'},
  Reiko:{clue:'The evening papers are at Aya’s counter. My printing bench is at the back.'},
  Kenji:{clue:'Star Port is inside our repair shop. Beat my score and I will show you around.'},

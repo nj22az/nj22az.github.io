@@ -8,12 +8,14 @@ import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,YURI_PROFILE,residentHomeDescription} from './residents.js';
+import {BUS_STATION} from '../world/bus-station.js';
+import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 export const DIALOGUE={
  Thuan:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
  Kenji:[['delivery','This trolley steers beautifully towards whichever ankle is nearest.'],['folio','Harbour office tray, unless the wind took it. Look for the blue tape.'],['game','One perfect Star Port run and I will show you the workshop. No charge for directions.'],['book','I delivered those books. My back now has a historical perspective.','book'],['part','A keychain without keys. Sensible. Nothing to lose yet.','keychain'],['map','Our repair workshop is in the shopping alley, opposite Books & Press.'],['weather','Rain is just the harbour making a delivery inland.'],['model','Don’t drop it. We’re inside.']],
- 'Mrs Sato':[['stock','I sell many useful things. You seem determined to pick up paper.'],['homes','Stora Mellösa. Nam Phuoc. Two homes is not the same as no home.','cv'],['bligh','A captain is easier to judge from a dry chair.','bligh'],['fish','That fish is not becoming fresher while we discuss it.'],['food','Umeboshi rice ball. Eighty yen. Twenty seconds of renewed purpose.'],['book','Six books? He should charge by the kilogram.'],['weather','The noren is not an umbrella. Visitors continue to test this.'],['home','Leave things where you found them. A town runs on this small miracle.']],
+ 'Mrs Sato':[['stock','I sell many useful things. You seem determined to pick up paper.'],['shifts','The ramen counter keeps its own timetable. I arrive before the lunch rush and stay until the last bowl.'],['bligh','A captain is easier to judge from a dry chair.','bligh'],['fish','That fish is not becoming fresher while we discuss it.'],['food','Umeboshi rice ball. Eighty yen. Twenty seconds of renewed purpose.'],['book','Six books? He should charge by the kilogram.'],['weather','The noren is not an umbrella. Visitors continue to test this.'],['home','Leave things where you found them. A town runs on this small miracle.']],
  'Harbour master':[['obvious','Did you check the obvious thing twice? Good. Now check the connector.'],['folio','It is a document, not a relic. Put it back in the tray.'],['pattern','I still prefer a wooden pattern and a sharp pencil.','keychain'],['bligh','Read the Bligh paper? Command is not the same thing as shouting.','bligh'],['commission','Commissioning: prove it works before everyone goes home.'],['diagnostics','A useful fault report begins with what happened. Not what you hoped happened.'],['tide','The tide has not read the work order. Allow for this.'],['radio','Harbour Service, 82.1. Clear instructions. Mostly clear reception.']],
  'Bus driver':[['time','The timetable is optimistic. I admire that in paper.'],['stop','This is the Harbour Line. The bus is the part currently missing.'],['book','Those Swedish books need their own ticket.','book'],['cv','Two bases? I have two stops. It is not quite the same.','cv'],['rain','A wet timetable is still wrong.'],['route','Station that way. Harbour the other way. I keep it simple.']],
  'Cold-storage kid':[['ice','Ice. Twenty yen. Briefly solid.'],['books','The Swedish books weigh more than the fish.'],['paper','The Bligh paper is dry. That is already a good voyage.','bligh'],['key','That blank could label the freezer key. We have lost the label twice.','keychain'],['shift','Night shift. The fish keep very unsociable hours.'],['home','Go home before you smell like your work.']]
@@ -42,9 +44,10 @@ DIALOGUE.Kenji=[
 DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the shop stay here overnight.']);
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
- const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();
+ const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
+ const commuterMode=()=>world.townMode==='shopping-district'||state()?.townMode==='shopping-district';
  for(const person of world.people)person.g.userData.scheduled=true;
- const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||YURI_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='work'&&profile.workSite?profile.work:null;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||YURI_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -76,11 +79,14 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
   if(Math.hypot(movedX,movedZ)>.0001){const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));g.rotation.y+=delta*(1-Math.exp(-dt*7));}
  }
- return {update(dt,minutes,rain){if(paused())return;const minute=((minutes%1440)+1440)%1440;
+ return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const scheduled=residentPlan(v,minutes,rain,state()),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
+   const phase=transit?commuterPhase(v,minutes):'legacy';
+   if(transit&&phase==='away'){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){g.position.set(BUS_STATION.arrival[0],groundHeight(...BUS_STATION.arrival),BUS_STATION.arrival[1]);g.visible=true;delete g.userData.commuterAwayDay;routes.delete(g);}
+   const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
@@ -91,15 +97,15 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     target=FULL_TOWN.active?FULL_TOWN.escort:TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
-   // Unique home thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   // Venue thresholds must not be displaced by generic crowd spacing.
+   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
     // Indoor saves name a place, whose threshold may have moved since saving.
     // If its schedule has changed, the resident leaves that door and walks onward.
-    const rememberedDoor=indoorDoor(v,remembered?.indoors),savedWalk=valid&&!collides(...remembered.position,.32);
-    const spawn=rememberedDoor||(savedWalk?remembered.position:target);
+    const rememberedDoor=transit&&remembered?.indoors==='home'?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!transit&&!collides(...remembered.position,.32);
+    const spawn=rememberedDoor||(savedWalk?remembered.position:transit&&phase==='arriving'?BUS_STATION.arrival:target);
     delete g.userData.indoors;
     if(rememberedDoor)g.userData.indoors=remembered.indoors;
     else if(!savedWalk&&indoorDoor(v,tag))g.userData.indoors=tag;
@@ -109,6 +115,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
+   if(transit&&tag==='bus'&&phase==='departing'&&arrived()){world.busStation?.board(v.name,minutes);g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';g.visible=false;routes.delete(g);continue;}
    if(indoor&&(g.userData.indoors===tag||arrived())){
     if(!g.userData.indoors)g.userData.justArrived=true;
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
@@ -117,7 +124,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const home=world.homes?.get(v.name);if(home)home.occupied=g.userData.indoors==='home';
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
-  outside.forEach(p=>{p.g.visible=true;});world.updateHomes?.(minutes);
+  outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
   if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,target=indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target?inside:null}];}));},pose(){}};
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?BUS_STATION.exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

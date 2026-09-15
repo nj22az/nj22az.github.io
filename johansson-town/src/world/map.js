@@ -4,6 +4,7 @@ import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-
 import {RESIDENTIAL_BUILDINGS} from './residential-layout.js';
 import {PARK,activePark} from './park-layout.js';
 import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
+import {shoppingDistrictActive} from './town-mode.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
   sites=[...sites,...landmarks];
@@ -36,7 +37,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
   if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
-  ctx.fillStyle='#a8997a';for(const house of [...RESIDENTIAL_BUILDINGS,...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
+  ctx.fillStyle='#a8997a';for(const house of [...(shoppingDistrictActive()?[]:RESIDENTIAL_BUILDINGS),...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}
@@ -44,6 +45,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     if(w>=300&&site.id==='ramen'){ctx.fillStyle='#a34e3d';ctx.font='bold 12px sans-serif';ctx.fillText('SATO RAMEN',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('THUAN & NAO',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='warehouse'){ctx.fillStyle='#314d51';ctx.font='bold 12px sans-serif';ctx.fillText('WAREHOUSE',px(x)+7,pz(site.z)+4);}
+    if(w>=300&&site.id==='bus-station'){ctx.fillStyle='#3f5f63';ctx.font='bold 12px sans-serif';ctx.fillText('HARBOUR LINE BUS',px(x)+7,pz(site.z)+4);}
   }
   if(target){const x=target.x??target.side*11.8;ctx.strokeStyle='#c45766';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px(x),pz(target.z),7,0,Math.PI*2);ctx.stroke();if(w>=300){ctx.fillStyle='#723b49';ctx.font='bold 12px sans-serif';ctx.fillText(target.title,px(x)+9,pz(target.z)-7);}}
   ctx.fillStyle='#9c4b34';for(const p of people.filter(p=>p.g.visible)){ctx.beginPath();ctx.arc(px(p.g.position.x),pz(p.g.position.z),1.5,0,Math.PI*2);ctx.fill();}

@@ -19,7 +19,7 @@ export function buildHarbourOffice({parent,site,register,enter,label,shadows}){
  for(const x of [-2.2,2.2]){box([1.72,1.35,.06],[x,1.9,.11],glass);for(const dx of [-.88,0,.88])box([.06,1.45,.12],[x+dx,1.9,.16],trim);for(const y of [1.18,2.62])box([1.86,.07,.16],[x,y,.16],trim);}
  const door=buildShopDoor(group,{name:'office-quay-door',width:1.4,shadows});door.group.position.z=.13;
  box([1.9,.13,1.1],[0,2.75,.4],roof);
- label(site.jp,'HARBOUR OFFICE · MARINE SERVICE',[O.x,3.04,O.frontZ+.2],4.6,.45,0,'#e7dcc0','#3e463f',true);
+ label(site.jp,'HARBOUR OFFICE · 24 HOUR MARINE SERVICE',[O.x,3.04,O.frontZ+.2],4.6,.45,0,'#e7dcc0','#3e463f',true);
  const entrance=new THREE.Object3D();entrance.name='office-quay-entrance';entrance.position.set(O.x,1.25,O.frontZ+.65);parent.add(entrance);register(entrance,'Enter '+site.title,()=>enter(site));
  Object.assign(site,{x:O.x,z:O.z,door:[...O.door],exitPosition:[...O.door],entryFacing:0,streetFrontage:{position:[O.x,0,O.frontZ],yaw:0}});
  return {id:site.id,lod:group,entrance,shutter:door.pane,source:'Quay office',nearTriangles:0,farTriangles:0,collider:{x:O.x,z:O.z,w:O.width,d:O.depth,height:4.5},update:door.update};
