@@ -24,6 +24,8 @@ test('sparse customer visits change each day, survive reloads and leave Thuan at
    const state={residentLife:{[name]:{day,meals:{market:{finished:true}}}}};assert.notEqual(residentPlan(profile,day*1440+start+10,false,state).place,'market','Finished diners leave');
   }
   for(let minute=540;minute<1200;minute+=15)assert.equal(residentPlan(thuan,day*1440+minute,true).place,'market');
+  assert.equal(residentPlan(thuan,day*1440+1170,false,fresh()).activity,'checking closing stock');
+  assert.equal(residentPlan(thuan,day*1440+1200,false,fresh()).activity,'restocking after closing');
  }
  assert.equal(new Set(patterns).size,6);assert.equal(JSON.stringify(marketVisitsForDay(0)),patterns[0],'The bounded cache can recreate the same day');
 });

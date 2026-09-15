@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 
-import {SHOP_STOCK,stockSpec,takeShopStock,returnShopStock,restockItem,depletedShelf,closingDay,closingStockPending,SOLD_OUT} from '../commerce/shop-stock.js';
+import {SHOP_STOCK,stockSpec,takeShopStock,returnShopStock,restockItem,depletedShelf,closingDay,closingStockPending,closingPreparationPending,SOLD_OUT} from '../commerce/shop-stock.js';
 import {recordSakuraSale,shopEntry,advanceDeliveries} from '../commerce/sakura-economy.js';
 import {createRoomWalk} from './room-walk.js';
 import {marketVisitPurpose} from './market-visits.js';
@@ -61,14 +61,16 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   const minutes=getMinutes(),minute=minutes%1440,open=minute>=540&&minute<1200;
   const waiting=open&&[...customers].find(([,record])=>record.phase==='queue'&&!record.paid);
   if(waiting){const [customer,record]=waiting;activeJob={type:'checkout',customer,record,ready:()=>record.atCounter,position:layout.staff,yaw:layout.staffYaw};return activeJob;}
-  if(!closingStockPending(state,minutes))return null;
+  const preparation=closingPreparationPending(state,minutes);
+  if(!preparation&&!closingStockPending(state,minutes))return null;
   const item=depletedShelf(state);
   if(!item){
    const expected=state.sakura.deliveries.some(d=>state.sakura.stock[d.item].shelf<stockSpec(d.item).capacity);
-   if(!expected)state.sakura.restockedDay=closingDay(minutes);
+   if(!preparation&&!expected)state.sakura.restockedDay=closingDay(minutes);
    return null;
   }
-  activeJob={type:'restock',item:item.id,quantity:Math.min(item.capacity-state.sakura.stock[item.id].shelf,state.sakura.stock[item.id].reserve),position:stand(item.id),pickup:STOCKROOM,target:point(item.id,0),yaw:SAKURA_SHELVES[item.id].yaw};return activeJob;
+  const stock=state.sakura.stock[item.id],slot=stock.shelf,reach=point(item.id,slot);
+  activeJob={type:preparation?'restock-prep':'restock',item:item.id,name:item.name,quantity:Math.min(item.capacity-stock.shelf,stock.reserve),slot,position:stand(item.id),pickup:STOCKROOM,target:reach,reach,yaw:SAKURA_SHELVES[item.id].yaw,ready:preparation?()=>closingStockPending(state,getMinutes()):undefined};return activeJob;
  }
  function complete(job){
   if(job!==activeJob)return;const minutes=getMinutes();
@@ -80,7 +82,8 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
     customer.g.userData.residentSpeech={text:'Thank you, Thuan.',until:minutes+3};
    }else if(!record.paid)finish(customer,record);
   }else if(closingStockPending(state,minutes)){
-   const count=restockItem(state,job.item,job.quantity);if(count)shopEntry(state,{minute:minutes,kind:'Restocked',item:stockSpec(job.item).name,buyer:'Thuan',quantity:count});
+   const spec=stockSpec(job.item),stock=state.sakura.stock[job.item],quantity=spec&&stock?Math.min(spec.capacity-stock.shelf,stock.reserve):0;
+   const count=restockItem(state,job.item,quantity);if(count)shopEntry(state,{minute:minutes,kind:'Restocked',item:spec.name,buyer:'Thuan',quantity:count});
   }
   activeJob=null;display.updateStock(state.sakura.stock);
  }

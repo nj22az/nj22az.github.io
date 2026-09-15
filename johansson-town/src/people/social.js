@@ -5,7 +5,7 @@ import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
-import {closingStockPending} from '../commerce/shop-stock.js';
+import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
 export const RAMEN_DOOR=[...DINING.ramenDoor];
 export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
@@ -53,6 +53,7 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Thuan'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
   if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};

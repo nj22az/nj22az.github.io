@@ -21,5 +21,9 @@ export function depletedShelf(state){return SHOP_STOCK.find(item=>{const stock=s
 // Closing work belongs to the trading day that just ended, including work saved
 // after midnight. Never replenish shelves during the 09:00–20:00 trading hours.
 export function closingDay(minutes){const day=Math.floor(minutes/1440),m=((minutes%1440)+1440)%1440;return m>=1200?day:m<540?day-1:null;}
+// Thuan starts making the next stock run visible shortly before closing, but
+// shelves remain untouched until the trading day has ended.
+export function closingPreparationOpen(minutes){const m=((minutes%1440)+1440)%1440;return m>=1170&&m<1200;}
 export function closingStockPending(state,minutes){const day=closingDay(minutes);return day!==null&&day>=0&&(state?.sakura?.restockedDay??-1)<day;}
+export function closingPreparationPending(state,minutes){const day=Math.floor(minutes/1440);return closingPreparationOpen(minutes)&&day>=0&&(state?.sakura?.restockedDay??-1)<day;}
 export const SOLD_OUT='Sorry, we’ve sold out. Please come back tomorrow.';

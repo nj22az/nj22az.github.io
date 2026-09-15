@@ -6,7 +6,7 @@ import {RESIDENTS} from '../src/people/residents.js';
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
 import {createSakuraShop} from '../src/people/sakura-shop.js';
 import {restoreSakura,advanceDeliveries} from '../src/commerce/sakura-economy.js';
-import {stockSpec} from '../src/commerce/shop-stock.js';
+import {stockSpec,closingPreparationPending} from '../src/commerce/shop-stock.js';
 import {elapsedTownAbsence} from '../src/people/town-absence.js';
 import {createActivities} from '../activities.js';
 import {SAVE_KEY} from '../src/save.js';
@@ -90,6 +90,25 @@ test('sold-out goods get Thuan’s apology, no charge and no daytime refill, eve
  installDOM({[SAVE_KEY]:JSON.stringify({...f.state,minutes:600,sakura:{...f.state.sakura,stock:{...f.state.sakura.stock,notebook:{shelf:0,reserve:2}}}})});
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,getSocialContext:()=>({inside:'market'})});acts.action('store-item','notebook',{...spec,jp:'Notebook',text:'Pocket notebook'});
  assert.match(document.querySelector('#activityBody').children.map(n=>n.textContent||'').join(' '),/Please come back tomorrow/);
+});
+
+test('Thuan visibly prepares a closing carton without replenishing shelves early',()=>{
+ const f=fixture(),stock=f.state.sakura.stock.notebook;stock.shelf=0;stock.reserve=2;
+ f.time(1170);
+ assert.equal(closingPreparationPending(f.state,f.minutes),true);
+ const phases=new Set();let sawProductInHand=false;
+ for(let i=0;i<500&&f.shop.service.phase!=='stock-place';i++){f.step(.1);phases.add(f.shop.service.phase);if(f.shop.service.phase==='stock-place')sawProductInHand=f.world.people[0].g.userData.heldItem==='shop-notebook'&&Array.isArray(f.world.people[0].g.userData.shopReach);}
+ assert.ok(phases.has('stock-prep-fetch')||phases.has('stock-prep-carry')||phases.has('stock-prep-hold'));
+ assert.equal(stock.shelf,0);
+ assert.equal(f.state.sakura.restockedDay,-1);
+ assert.equal(f.world.people[0].g.userData.restocking,true);
+ assert.equal(sawProductInHand,true);
+ f.time(1200);
+ for(let i=0;i<100&&f.shop.service.phase!=='return';i++){f.step(.1);phases.add(f.shop.service.phase);}
+ assert.ok(phases.has('stock-place'));
+ assert.equal(stock.shelf,2);
+ assert.equal(f.world.people[0].g.userData.heldItem,undefined);
+ assert.equal(f.world.people[0].g.userData.shopReach,undefined);
 });
 
 test('all shelves are restocked after closing, then Thuan leaves and the completed shift survives a save',()=>{

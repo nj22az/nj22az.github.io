@@ -16,7 +16,7 @@ export function createShopAttention({clerk,world,retail,colliders,isInside,getPl
  let selected=null,hold=0,clock=0;
  return {update(dt){
   const data=clerk.userData;clock+=dt;hold=Math.max(0,hold-dt);
-  if(!data.inMarket||data.roomTransition||data.carrying||data.sleeping){delete data.lookTarget;selected=null;return;}
+  if(!data.inMarket||data.roomTransition||data.carrying||data.shopReach||data.restocking||data.sleeping){delete data.lookTarget;selected=null;return;}
   if(clock<.12)return;clock=0;
   const origin=clerk.getWorldPosition(new THREE.Vector3());origin.y+=1.32;
   const forward=new THREE.Vector3(0,0,-1).applyQuaternion(clerk.getWorldQuaternion(new THREE.Quaternion())),candidates=[];
@@ -42,7 +42,7 @@ export function createCustomerGaze(model,entity){
  const rotate=(bone,angle,axis)=>{if(!bone)return;const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(new THREE.Quaternion().setFromAxisAngle(axis,angle)).multiply(parent));bone.updateWorldMatrix(false,true);};
  return {restore,get yaw(){return yaw;},get pitch(){return pitch;},update(dt,data,moving=false){
   entity.updateWorldMatrix(true,true);let targetYaw=0,targetPitch=0;
-  if(data.lookTarget&&data.inMarket&&!data.carrying&&!data.sleeping&&!data.roomTransition&&!moving){
+  if(data.lookTarget&&data.inMarket&&!data.carrying&&!data.shopReach&&!data.restocking&&!data.sleeping&&!data.roomTransition&&!moving){
    const eye=head.getWorldPosition(new THREE.Vector3());eye.y+=.09;const offset=new THREE.Vector3(...data.lookTarget).sub(eye).applyQuaternion(entity.getWorldQuaternion(new THREE.Quaternion()).invert());
    const angle=Math.atan2(-offset.x,-offset.z);
    if(Math.abs(angle)<Math.PI*.49){targetYaw=THREE.MathUtils.clamp(angle,-.65,.65);targetPitch=THREE.MathUtils.clamp(Math.atan2(offset.y,Math.hypot(offset.x,offset.z)),-.22,.20);}
