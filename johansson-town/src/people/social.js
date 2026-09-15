@@ -2,6 +2,7 @@ import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visit
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
+import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
@@ -47,13 +48,13 @@ export function visitsRamen(profile,minutes){
 }
 export function residentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes);
- if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a snack at Sakura'};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a snack at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Thuan'){
-  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
-  if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
+  if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
   const slot=yuriEveningPlace(minutes);
