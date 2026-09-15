@@ -4,6 +4,10 @@ export const TOWN_GRID=Object.freeze({north:31,south:-38,quay:-44,west:-36,east:
 export const SHOP_ADDRESSES=Object.freeze({
  market:{side:-1,z:-28},
 });
+// Street door and the last outdoor step through the opening. Keep profile.work
+// off this doorway so the player entrance stays clear while she is inside.
+export const MARKET_DOOR=Object.freeze([SHOP_ADDRESSES.market.side*5.5,SHOP_ADDRESSES.market.z]);
+export const MARKET_THRESHOLD=Object.freeze([SHOP_ADDRESSES.market.side*6.3,SHOP_ADDRESSES.market.z]);
 export const TEA_HOUSE=Object.freeze({x:28,z:25,door:[28,0,30]});
 export const TOWN_DESTINATIONS=Object.freeze({
  bus:[-8.5,31],school:[40,24],
