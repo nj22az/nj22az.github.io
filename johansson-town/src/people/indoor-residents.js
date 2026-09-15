@@ -9,6 +9,7 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
  const borrowed=new Map();let clock=0,walker=null;
  const entrance=layout?.entrance|| (place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
+ const facing=(from,to)=>Math.atan2(-(to[0]-from[0]),-(to[2]-from[2]));
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
  function restore(p){
@@ -30,7 +31,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  }
  function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,0,from[2]+(to[2]-from[2])*amount);}
  function sync(minutes,dt=0){
-  clock=minutes;walker??=createRoomWalk(collides);
+  clock=minutes;walker??=createRoomWalk(collides,{bounds:layout?.bounds||{minX:-8,maxX:8,minZ:-8,maxZ:8},smoothTurn:true});
   for(const p of world.people){
    const g=p.g;let saved=borrowed.get(p);
    if(!saved){
@@ -38,7 +39,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     const seat=seatFor(p);if(!seat)continue;
     const settled=g.userData.indoors===place&&!g.userData.justArrived;
     walker.forget(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled||seat.managed?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);
-    g.position.set(...(settled?seat.position:entrance));g.rotation.set(0,seat.yaw,0);
+    g.position.set(...(settled?seat.position:entrance));g.rotation.set(0,settled?seat.yaw:facing(entrance,seat.stand||seat.position),0);delete g.userData.justArrived;
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':'inIzakaya']=true;g.userData.place=place;
@@ -55,7 +56,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     }else if(saved.phase==='leaving'){
      if(walker.move(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walker.move(p,seat.stand,dt))saved.phase='sitting';
+     if(walker.move(p,seat.stand,dt))saved.phase=Number.isFinite(seat.height)?'sitting':'seated';
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
