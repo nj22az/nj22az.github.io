@@ -1,4 +1,4 @@
-import {diningPoint} from './dining-layout.js';
+import {diningPoint,diningRow} from './dining-layout.js';
 
 // The packed file shares its textures and material batches across both sides.
 // Transform each half once when it loads, keeping those batches and original UVs.
@@ -13,7 +13,7 @@ export function unfoldDiningStreet(model){
   const geometry=mesh.geometry.clone(),p=geometry.attributes.position,n=geometry.attributes.normal;
   for(let i=0;i<p.count;i++){
    const x=p.getX(i),[wx,wz]=diningPoint(x,p.getZ(i));p.setXYZ(i,wx,p.getY(i),wz);
-   if(n&&x<0)n.setXYZ(i,-n.getX(i),n.getY(i),-n.getZ(i));
+   if(n){const sign=Math.cos(diningRow(x).yaw);n.setXYZ(i,sign*n.getX(i),n.getY(i),sign*n.getZ(i));}
   }
   p.needsUpdate=true;if(n)n.needsUpdate=true;
   geometry.computeBoundingBox();geometry.computeBoundingSphere();mesh.geometry=geometry;

@@ -9,7 +9,7 @@ export function alleyBusinessLayout(id){
  const [x,z]=diningPoint(front,along),[dx,dz]=diningPoint(front+(south?.44:-.44),along);
  const width=maxZ-minZ-.22,depth=maxX-minX-.22;
  const doorX=((minZ+maxZ)/2-along)*(south?1:-1),halfW=width/2,halfD=depth/2;
- return {building:ids[0],units:ids,x,z,yaw:-Math.PI/2,door:[dx,NIGHT_LANE.y,dz],
+ return {building:ids[0],units:ids,x,z,yaw:south?Math.PI/2:-Math.PI/2,door:[dx,NIGHT_LANE.y,dz],
   room:{width,depth,bounds:{minX:-halfW,maxX:halfW,minZ:-halfD,maxZ:halfD},doorX,spawn:[doorX,0,halfD-.48],exit:[doorX,1.1,halfD-.08],yaw:0,
    staff:id==='frontrow'?{Aya:[-1.9,0,0],Reiko:[1.65,0,0]}:{Kenji:[-1.25,0,.08],Tetsuo:[.75,0,.08]}}};
 }

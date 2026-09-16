@@ -6,7 +6,7 @@ import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
 import {ALLEY_SHOPS,alleyShopPlacement} from '../src/world/alley-shops.js';
 import {DINING_FOOTPRINTS} from '../src/world/dining-footprints.js';
-import {NIGHT_LANE,diningPoint} from '../src/world/dining-layout.js';
+import {NIGHT_LANE,diningPoint,diningRow} from '../src/world/dining-layout.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
 import {createNavigation} from '../src/people/navmesh.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
@@ -47,14 +47,14 @@ test('alley businesses retain their rooms, reachable thresholds, exits and staff
    const z=b.min[2]+(b.max[2]-b.min[2])*t;
    // Both exterior and interior views see an opaque rear face.
    for(const side of [-1,1]){
-    const [wx,wz]=diningPoint(rear+side*.4,z);ray.set(new THREE.Vector3(wx,y+NIGHT_LANE.y,wz),new THREE.Vector3(left?side:-side,0,0));ray.far=.6;
+    const [wx,wz]=diningPoint(rear+side*.4,z);ray.set(new THREE.Vector3(wx,y+NIGHT_LANE.y,wz),new THREE.Vector3(-side*Math.cos(diningRow(rear).yaw),0,0));ray.far=.6;
     assert.ok(ray.intersectObject(backs).length,b.id+' rear closed at '+y);
    }
   }
  }
  for(const id of Object.keys(ALLEY_SHOPS)){
   const p=alleyShopPlacement(id),direction=new THREE.Vector3(-Math.sin(p.yaw),0,-Math.cos(p.yaw));
-  assert.equal(p.yaw,-Math.PI/2,'Shop faces west towards Main Street');
+  assert.equal(p.yaw,id==='frontrow'?Math.PI/2:-Math.PI/2,'Opposite shop rows face Main Street');
   assert.equal(sweepFraction({x:-3.5,z:p.door[2]},{x:p.door[0],z:p.door[2]},blocked),1,'Straight approach across Main Street');
   ray.set(new THREE.Vector3(p.door[0],1.3,p.door[2]+.2),direction);ray.far=2;
   const hits=ray.intersectObjects(world.group.children,true).filter(h=>h.object.layers.mask!==1<<31);

@@ -1,12 +1,12 @@
 import {DINING_FOOTPRINTS} from './dining-footprints.js';
 // Unfold the two sides of the supplied alley into two Main Street shop rows.
-// A–D turn through 180 degrees; E–H retain their authored orientation.
+// A–D form the west block facing east; E–H form the east block facing west.
 export const DINING_ROWS=Object.freeze([
- Object.freeze({id:'north',units:Object.freeze(['A','B','C','D']),x:.2,z:4.6,yaw:Math.PI}),
+ Object.freeze({id:'north',units:Object.freeze(['A','B','C','D']),x:-6.8,z:-.5,yaw:0}),
  Object.freeze({id:'south',units:Object.freeze(['E','F','G','H']),x:.1,z:-2.8,yaw:0}),
 ]);
 export const diningRow=x=>DINING_ROWS[x<0?0:1];
-export function diningPoint(x,z){const r=diningRow(x),sign=x<0?-1:1;return [r.x+sign*x,r.z+sign*z];}
+export function diningPoint(x,z){const r=diningRow(x),sign=Math.cos(r.yaw);return [r.x+sign*x,r.z+sign*z];}
 export const NIGHT_LANE=Object.freeze({x:.1,z:.9,y:0,minX:-.5,maxX:4.8,minZ:-13,maxZ:14.5});
 export function inDiningLane(x,z){return x>=NIGHT_LANE.minX&&x<=NIGHT_LANE.maxX&&z>=NIGHT_LANE.minZ&&z<=NIGHT_LANE.maxZ;}
 export const DINING_COLLIDERS=Object.freeze(DINING_FOOTPRINTS.map(b=>{const [x,z]=diningPoint((b.min[0]+b.max[0])/2,(b.min[2]+b.max[2])/2);return Object.freeze({id:'dining-street:'+b.id,x,z,w:b.max[0]-b.min[0],d:b.max[2]-b.min[2],height:b.max[1]+NIGHT_LANE.y});}));

@@ -3,13 +3,16 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {BUS_STATION,BUS_STATION_ROUTES,buildBusStation} from '../src/world/bus-station.js';
 import {activeRoutes,routeAt} from '../src/world/layout.js';
-import {MAIN_ROAD} from '../src/world/main-road.js';
+import {MAIN_ROAD,SHOP_CROSSING_Z} from '../src/world/main-road.js';
 import {FOREST_EDGE} from '../src/world/forest-edge.js';
 import {configureTownMode} from '../src/world/town-mode.js';
 import {COMMUTER_SHIFTS,commuterPhase,shiftActive} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {residentPlan} from '../src/people/social.js';
 import {createTown} from '../src/world/town.js?snappy=1';
+import {DINING_COLLIDERS} from '../src/world/dining-layout.js';
+import {createNavigation} from '../src/people/navmesh.js';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
 const state={townMode:'shopping-district',inventory:[]};
@@ -64,6 +67,25 @@ test('published town mode builds shops and port without homes or the sea cave',(
   ];
   const world=createTown({scene:new THREE.Scene(),sites,townMode:'shopping-district',mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
   assert.equal(world.quality.shoppingDistrict,true);
+  const storefronts=[];world.group.traverse(o=>{if(o.name==='Sakura glass storefront')storefronts.push(o);});
+  assert.equal(storefronts.length,1,'Only one konbini exterior, including decorative copies');
+  assert.deepEqual(storefronts[0].scale.toArray(),[1,1,1],'Original full-size konbini');
+  assert.equal(sites.filter(s=>s.id==='market').length,1);
+  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
+  const nav=createNavigation(blocked),origin={x:MAIN_ROAD.x,z:-20};
+  for(const site of sites){
+   const [x,,z]=site.door;
+   assert.equal(blocked(x,z),false,site.id+' doorway remains clear');
+   const path=nav.path(origin,{x,z});assert.ok(path.length,site.id+' reachable');
+   assert.deepEqual(path.at(-1),[x,z],site.id+' route reaches actual door');
+  }
+  for(const z of [SHOP_CROSSING_Z,-18])assert.equal(sweepFraction({x:MAIN_ROAD.pavementWest+.35,z},{x:MAIN_ROAD.pavementEast-.35,z},blocked),1,'Grid crossing stays clear');
+  for(const c of DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))){
+   assert.ok(c.x+c.w/2<MAIN_ROAD.west||c.x-c.w/2>MAIN_ROAD.east,'Shop block stays outside road');
+  }
+  assert.ok(sites.find(s=>s.id==='frontrow').x<MAIN_ROAD.west);
+  assert.ok(sites.find(s=>s.id==='form3d').x>MAIN_ROAD.east);
+
   assert.equal(world.homes?.size||0,0);
   assert.equal(world.seaCave,undefined);
   assert.equal(world.quality.residentialArea,false);

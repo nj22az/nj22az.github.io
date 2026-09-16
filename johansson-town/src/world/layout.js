@@ -15,6 +15,8 @@ export const ROUTES = [
  {id:'quay',width:12,surface:'stone',points:[[-17,-44],[17,-44]]},
  {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,-64.5]]},
  ...BUS_STATION_ROUTES,
+ {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
+ {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
  {id:'west-alley',legacy:true,width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},

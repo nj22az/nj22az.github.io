@@ -6,7 +6,7 @@ import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
-import {MAIN_ROAD} from './main-road.js';
+import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
@@ -116,6 +116,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
+  // Two perpendicular crossings define the short rectangular shopping blocks.
+  for(const z of [SHOP_CROSSING_Z,-18])for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,z,0xbeb79a);
+
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
@@ -123,14 +126,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
-      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:-7.45,z:s.z,yaw:Math.PI/2,scale:.9}});
-      // A smaller matching frontage keeps the Konbini presence on both sides
-      // of Main Street without creating a second enterable business.
-      const annex={...s,id:'market-annex',title:'Sakura Konbini',jp:'桜商店',side:1};
-      buildStorefront({parent:group,site:annex,label,placement:{x:.6,z:s.z,yaw:-Math.PI/2,scale:.45}});
-      s.x=s.side*7.4;s.door=[s.side*5.5,0,s.z+2.5];
-      obstacle(s.side*11.65,s.z,8.2,10);
-      obstacle(2.35,s.z,3.4,6.4);return;
+      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:-7.45,z:s.z,yaw:Math.PI/2,scale:1}});
+      s.x=-7.45;s.door=[-5.5,0,s.z+2.5];
+      obstacle(-11.65,s.z,8.2,10);return;
     }
     throw Error('No street frontage defined for '+s.id);
   });
