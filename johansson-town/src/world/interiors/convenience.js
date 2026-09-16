@@ -1,3 +1,4 @@
+import {createShopGlass} from '../shop-glass.js';
 import {createSteamedBunGeometry} from './steamed-bun.js';
 import {createStoreAdvertising} from './store-advertising.js';
 import * as THREE from '../../../vendor/three.module.js';
@@ -194,10 +195,10 @@ export function buildStoreShell({room,box,reg,exit}){
  for(const x of [-6.32,6.32])box([.06,.20,12.8],[x,2.98,0],red,room,false);
  box([12.8,.20,.06],[0,2.98,-6.32],red,room,false);
  for(const x of [-4.0,4.0]){
-  const pane=box([5.3,2.8,.05],[x,1.5,6.3],0xc7dddf,room,false);pane.material.transparent=true;pane.material.opacity=.16;pane.material.depthWrite=false;
+  const pane=box([5.3,2.8,.05],[x,1.5,6.3],0xc7dddf,room,false);pane.material=createShopGlass();pane.name='Sakura interior clear window';pane.userData.clearWindow=true;pane.castShadow=false;pane.receiveShadow=false;
   box([5.4,.20,.12],[x,3.0,6.3],red,room,false);
  }
- const door=box([2.5,2.9,.045],[0,1.5,6.3],0xc6dddd,room,false);door.material.transparent=true;door.material.opacity=.12;door.material.depthWrite=false;reg(door,'Exit to street',exit,true);
+ const door=box([2.5,2.9,.045],[0,1.5,6.3],0xc6dddd,room,false);door.material=createShopGlass();door.name='Sakura interior clear door';door.userData.clearWindow=true;door.castShadow=false;door.receiveShadow=false;reg(door,'Exit to street',exit,true);
  for(const x of [-1.27,0,1.27])box([.05,3.0,.08],[x,1.5,6.3],0x969e9d,room,false);
  box([2.3,.025,.85],[0,.09,5.3],0x51545a,room,false);
 }
