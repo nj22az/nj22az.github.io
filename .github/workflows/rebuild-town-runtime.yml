@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22.16.0'
+          package-manager-cache: false
       - name: Install locked build dependencies
         working-directory: johansson-town
         run: npm ci --ignore-scripts --no-audit --no-fund
@@ -50,7 +51,7 @@ jobs:
           git checkout -b "build/town-runtime-${GITHUB_RUN_ID}"
           git commit -m "Rebuild town runtime for izakaya placement and clear glazing"
           git push origin "HEAD:refs/heads/build/town-runtime-${GITHUB_RUN_ID}"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rebuilt-town-runtime
           include-hidden-files: true
