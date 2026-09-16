@@ -1,0 +1,60 @@
+name: Rebuild town runtime
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/rebuild-town-runtime.yml']
+permissions:
+  contents: write
+concurrency:
+  group: rebuild-town-runtime
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install locked build dependencies
+        working-directory: johansson-town
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Rebuild published runtime
+        working-directory: johansson-town
+        run: npm run build:runtime
+      - name: Validate generated runtime
+        working-directory: johansson-town
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          import {runtimeSourceHash} from './scripts/runtime-source.mjs';
+          const receipt=JSON.parse(await readFile('runtime/source.json','utf8'));
+          if(receipt.sha256!==await runtimeSourceHash(process.cwd()))throw Error('Runtime source hash mismatch');
+          const manifest=JSON.parse(await readFile('runtime/.vite/manifest.json','utf8'));
+          for(const entry of Object.values(manifest))await readFile('runtime/'+entry.file);
+          const game=Object.values(manifest).find(e=>e.src?.startsWith('src/game.js'));
+          if(!game)throw Error('Missing game entry');
+          const code=await readFile('runtime/'+game.file,'utf8');
+          for(const text of ['Minato clear window panes','Sakura clear window pane','-11.97'])if(!code.includes(text))throw Error('Missing rebuilt change: '+text);
+          NODE
+      - name: Commit build to review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f johansson-town/index.html johansson-town/runtime
+          if git diff --cached --quiet; then exit 0; fi
+          git checkout -b "build/town-runtime-${GITHUB_RUN_ID}"
+          git commit -m "Rebuild town runtime for izakaya placement and clear glazing"
+          git push origin "HEAD:refs/heads/build/town-runtime-${GITHUB_RUN_ID}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rebuilt-town-runtime
+          include-hidden-files: true
+          retention-days: 2
+          path: |
+            johansson-town/index.html
+            johansson-town/runtime/
