@@ -1,0 +1,37 @@
+name: Town window review
+on:
+  push:
+    branches: [fix/izakaya-sakura-clear-windows]
+    paths:
+      - '.github/workflows/town-window-review.yml'
+      - 'johansson-town/src/**'
+      - 'johansson-town/tests/**'
+      - 'johansson-town/scripts/**'
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install build dependencies
+        working-directory: johansson-town
+        run: npm ci --ignore-scripts
+      - name: Create focused review workspace
+        run: |
+          mkdir -p review/johansson-town/assets/models/izakaya review/johansson-town/assets/models/store
+          cp johansson-town/*.js johansson-town/*.json johansson-town/*.html review/johansson-town/
+          cp -R johansson-town/src johansson-town/tests johansson-town/scripts johansson-town/vendor johansson-town/node_modules review/johansson-town/
+          cp johansson-town/assets/models/izakaya/minato-benmaher-exterior.glb johansson-town/assets/models/izakaya/benmaher-manifest.json review/johansson-town/assets/models/izakaya/
+          cp -R johansson-town/runtime review/johansson-town/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: town-window-review-workspace
+          path: review/
+          retention-days: 2
