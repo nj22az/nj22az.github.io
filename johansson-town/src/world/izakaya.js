@@ -1,6 +1,7 @@
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
-import {DINING,restaurantCollider} from './dining-layout.js';
+import {DINING,restaurantCollider,restaurantApproach} from './dining-layout.js';
+import {prepareIzakayaGlass} from './shop-glass.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -10,21 +11,21 @@ export async function preloadIzakaya(kinds=['exterior','interior']){
  const loader=new GLTFLoader();await Promise.allSettled(kinds.filter(kind=>!assets.has(kind)).map(async kind=>{
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   const file=kind==='exterior'?'minato-benmaher-exterior.glb':'minato-interior.glb';
-  try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);assets.set(kind,(await loader.parseAsync(await response.arrayBuffer(),'')).scene);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
+  try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);const source=(await loader.parseAsync(await response.arrayBuffer(),'')).scene;if(kind==='exterior')prepareIzakayaGlass(source);assets.set(kind,source);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
  }));return {ready:assets.size,total:2};
 }
 export const izakayaReady=kind=>assets.has(kind);
 function asset(kind,parent){
  const source=assets.get(kind);if(!source)return false;
- const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});parent.add(model);return true;
+ const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=!o.userData.clearWindow;o.receiveShadow=!o.userData.clearWindow;}});parent.add(model);return true;
 }
 export function buildIzakaya(world,options){
  const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:DINING.izakayaX,z:DINING.izakayaZ,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]],opens:'16:00'};
- site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];site.entryFacing=DINING.izakayaYaw;
+ const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=DINING.izakayaYaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(DINING.izakayaX,0,DINING.izakayaZ);exterior.rotation.y=DINING.izakayaYaw;world.group.add(exterior);
  const suppliedExterior=asset('exterior',exterior);
  if(!suppliedExterior){
-  const fallback=new THREE.Mesh(new THREE.BoxGeometry(8,4,8),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.y=2;exterior.add(fallback);
+  const fallback=new THREE.Mesh(new THREE.BoxGeometry(5.22,4,6.82),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.set(-.91,2,1.11);exterior.add(fallback);
  }
  // Warm readable bilingual sign remains a runtime canvas so it does not require font textures in GLB.
  const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;

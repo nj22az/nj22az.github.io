@@ -30,7 +30,7 @@ test('both alley halves and restaurants face Main Street, with shared streaming 
   for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor],['crystal-room',DINING.crystalDoor]]){
    const site=sites.find(s=>s.id===id);assert.deepEqual([site.door[0],site.door[2]],door);assert.equal(blocked(...door),false);
    assert.ok(nav.path({x:0,z:NIGHT_LANE.z},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
-   assert.equal(site.entryFacing,-Math.PI/2,'Entrance faces west towards the road');
+   assert.equal(site.entryFacing,id==='izakaya'?Math.PI/2:-Math.PI/2,'Entrance faces Main Street from its own side');
    assert.equal(sweepFraction({x:MAIN_ROAD.x,z:door[1]},{x:door[0],z:door[1]},blocked),1,'Direct Main Street approach to '+id);assert.ok(door[0]<2,'Dining thresholds sit on the Main Street pavement');
   }
   actions.find(a=>a.label==='Come into Minato Izakaya').fn();actions.find(a=>a.label==='Enter Sato Ramen').fn();assert.deepEqual(entered.map(s=>s.id),['izakaya','ramen']);
