@@ -1,6 +1,6 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {FULL_TOWN} from './full-town-state.js';
-export const PARK={id:'harbour-park',x:32,z:-27,half:9.8,lift:1,scale:.7,surface:'stone'};
+export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
 export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}
 export function parkHeight(x,z){
@@ -16,6 +16,12 @@ export function parkHeight(x,z){
  const ix=Math.min(55,Math.floor(gx)),iz=Math.min(55,Math.floor(gz)),u=gx-ix,v=gz-iz;
  const a=PARK_HEIGHTS[iz*57+ix]*(1-u)+PARK_HEIGHTS[iz*57+ix+1]*u,b=PARK_HEIGHTS[(iz+1)*57+ix]*(1-u)+PARK_HEIGHTS[(iz+1)*57+ix+1]*u;
  return p.lift+(a*(1-v)+b*v)*s;
+}
+export function parkApproachHeight(x,z){
+ const p=activePark();if(p.plaza)return null;
+ const edge=p.x-p.half,start=edge-2.8;
+ if(x<start||x>=edge||Math.abs(z-p.z)>1.5)return null;
+ const target=parkHeight(edge,z);return target==null?0:((x-start)/(edge-start))*target;
 }
 export function parkBench(p=activePark()){
  if(p.plaza)return {position:[p.x,0,p.z+.35],eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};

@@ -92,7 +92,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const api=await import(dataModule(source));
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('Sakura glass storefront'));
-    assert.ok(api.SITES.some(s=>s.id==='crystal-room'));
+    assert.ok(!api.SITES.some(s=>s.id==='crystal-room'));
     const waiting=api.world.people.find(p=>p.g.userData.name==='Kenji').g;
     const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
     waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;
@@ -101,7 +101,8 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     waiting.userData.visualReady=true;assert.equal(api.residentBlocked(0,10),true,'The completed character regains normal collision');
     waiting.position.copy(savedPosition);waiting.visible=savedVisibility;
 
-    assert.ok(api.world.group.getObjectByName('Inakaya restaurant and neighbour'));
+    assert.ok(api.world.group.getObjectByName('Sato Ramen restaurant'));
+    assert.equal(api.world.group.getObjectByName('Inakaya restaurant and neighbour'),undefined);
 
     assert.equal(window.__JOHANSSON_RUNNING__,true,'Game must reach running state');
     assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first','Exploration is always first person');

@@ -105,15 +105,16 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   buildPeninsula(group);
-  box([MAIN_ROAD.width,.2,26.2],[MAIN_ROAD.x,-.10,21.1],0xb8b8af,[0,0,0],'road');
+  const upperRoadLength=MAIN_ROAD.maxZ-BOARDWALK.maxZ;
+  box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],0xb8b8af,[0,0,0],'road');
   box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
     const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],0xc8c0b0,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
   }
-  for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<31;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
-  for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,28.5,0xbeb79a);
-  [[-4.1,20,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
+  for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<MAIN_ROAD.maxZ-.8;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
+  for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);
+  [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
@@ -122,15 +123,20 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
-      buildStorefront({parent:group,site:s,register,enter,label});
-      s.x=s.side*11.65;s.door=[s.side*5.5,0,s.z+2.5];
-      obstacle(s.side*11.65,s.z,8.2,10);return;
+      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:-7.45,z:s.z,yaw:Math.PI/2,scale:.9}});
+      // A smaller matching frontage keeps the Konbini presence on both sides
+      // of Main Street without creating a second enterable business.
+      const annex={...s,id:'market-annex',title:'Sakura Konbini',jp:'桜商店',side:1};
+      buildStorefront({parent:group,site:annex,label,placement:{x:.6,z:s.z,yaw:-Math.PI/2,scale:.45}});
+      s.x=s.side*7.4;s.door=[s.side*5.5,0,s.z+2.5];
+      obstacle(s.side*11.65,s.z,8.2,10);
+      obstacle(2.35,s.z,3.4,6.4);return;
     }
     throw Error('No street frontage defined for '+s.id);
   });
 
   // Utility poles and overhead cables.
-  for(const side of [-1,1])for(const z of [-32,12,28]){
+  for(const side of [-1,1])for(const z of [-32,11,17]){
     const px=side<0?-7.2:.8,toward=side<0?1:-1;
     if(z<=BOARDWALK.maxZ){
       if(z===-32){
@@ -148,13 +154,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
     if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,29],0x416568);beam([-7.8,6.4,29],[.8,6.4,29],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[MAIN_ROAD.x,6.3,29],5.8,.9,0,'#d8d5b9','#31565d');
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d');
 
   // Useful street furniture sits in the block recesses, clear of junctions.
-  const vending=createVendingMachine({shadows});vending.position.set(3.7,0,28.3);group.add(vending);
-  if(!vendingReady())details.push({id:'street-vending',x:3.7,z:28.3,radius:42,load:()=>hydrateVending(vending,{shadows})});
-  obstacle(3.7,28.3,1.3,1);anchor([3.7,1,29.3],'Buy a drink',()=>onAction('vending'));
-  box([1.1,2.5,1],[-7.5,1.25,19.5],0x457e73);box([.91,1.6,.91],[-7.5,1.55,19.5],0x648c87);box([.35,.65,.28],[-7.5,1.4,20.03],0x3d9c6c);label('電話','TELEPHONE',[-7.5,2.4,20.05],1,.28);anchor([-7.5,1,20.5],'Use payphone',()=>onAction('phone'));obstacle(-7.5,19.5,1.1,1);
+  const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);
+  if(!vendingReady())details.push({id:'street-vending',x:4.35,z:9.1,radius:42,load:()=>hydrateVending(vending,{shadows})});
+  obstacle(4.35,9.1,1.3,1);anchor([4.35,1,10.1],'Buy a drink',()=>onAction('vending'));
+  box([1.1,2.5,1],[-6.9,1.25,17.2],0x457e73);box([.91,1.6,.91],[-6.9,1.55,17.2],0x648c87);box([.35,.65,.28],[-6.9,1.4,17.73],0x3d9c6c);label('電話','TELEPHONE',[-6.9,2.4,17.75],1,.28);anchor([-6.9,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-6.9,17.2,1.1,1);
   const busStation=buildBusStation({parent:group,colliders,register,onAction,label,shadows});
 
   for(const [x,z] of [[-7.4,10],[3.9,-22],[-7.4,-33]]){

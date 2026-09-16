@@ -45,14 +45,14 @@ export function buildDistricts(world,options){
   buildTeaHouse(world,options);
   if(!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
-    building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
+    if(!shoppingDistrictActive())building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
   }
   // The western lane is the seafront service edge behind the shopping street.
   box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
   for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
   verb([-36,1,-22],'Watch the heron','inspect','Grey heron','It waits for a fish along the seawall.');
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  const signs=[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,28,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
+  const signs=[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,18.9,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
   if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,'住まい','MAIN STREET HOMES ←']);
   for(const [x,z,jp,en] of signs){
     const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';

@@ -21,6 +21,6 @@ export function buildTeaHouse(world,options){
   world.group.add(model);world.group.remove(building);building.geometry.dispose();building.material.dispose();building=model;return true;
  }});
  const entrance=new THREE.Object3D();entrance.position.set(TEA_HOUSE.door[0],1,TEA_HOUSE.door[2]);world.group.add(entrance);options.register(entrance,'Come into Corner Tea House',()=>options.enter(site));
- world.colliders.push({x:28,z:TEA_HOUSE.z-3.2,w:7,d:.3,height:4.5},{x:24.6,z:TEA_HOUSE.z,w:.3,d:6.4,height:4.5},{x:31.4,z:TEA_HOUSE.z,w:.3,d:6.4,height:4.5},{x:25.7,z:TEA_HOUSE.z+3.2,w:2.2,d:.3,height:4},{x:30.3,z:TEA_HOUSE.z+3.2,w:2.2,d:.3,height:4});
+ world.colliders.push({x:TEA_HOUSE.x,z:TEA_HOUSE.z-3.2,w:7,d:.3,height:4.5},{x:TEA_HOUSE.x-3.4,z:TEA_HOUSE.z,w:.3,d:6.4,height:4.5},{x:TEA_HOUSE.x+3.4,z:TEA_HOUSE.z,w:.3,d:6.4,height:4.5},{x:TEA_HOUSE.x-2.3,z:TEA_HOUSE.z+3.2,w:2.2,d:.3,height:4},{x:TEA_HOUSE.x+2.3,z:TEA_HOUSE.z+3.2,w:2.2,d:.3,height:4});
  return site;
 }

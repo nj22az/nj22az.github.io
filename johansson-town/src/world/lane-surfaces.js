@@ -1,7 +1,7 @@
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,routeAt,groundHeight} from './layout.js?snappy=1';
+import {ROUTES,activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {shoppingDistrictActive} from './town-mode.js';
 
@@ -10,7 +10,7 @@ import {shoppingDistrictActive} from './town-mode.js';
 export function laneEdges(){
  const edges=[];
  const selected=new Set(['bus-approach','bus-platform','east-alley','west-alley','residential','west-service','east-service','river-walk','park-approach']);
- for(const route of ROUTES.filter(r=>selected.has(r.id)))for(let i=1;i<route.points.length;i++){
+ for(const route of activeRoutes().filter(r=>selected.has(r.id)))for(let i=1;i<route.points.length;i++){
   const a=route.points[i-1],b=route.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/length,dz=(b[1]-a[1])/length,count=Math.ceil(length);
   for(let j=0;j<count;j++)for(const side of [-1,1]){
    const t=(j+.5)/count,x=a[0]+dx*length*t-dz*side*(route.width/2+.22),z=a[1]+dz*length*t+dx*side*(route.width/2+.22),span=length/count;
@@ -23,7 +23,7 @@ export function laneEdges(){
 
 // Partition the union of rectangular streets. Each patch belongs to exactly one
 // route: crossing lanes never produce coplanar, overlapping road meshes.
-export function lanePatches(routes=ROUTES.slice(3)) {
+export function lanePatches(routes=activeRoutes().slice(3)) {
   const rects=[];
   for(const route of routes) {
     const half=route.width/2;

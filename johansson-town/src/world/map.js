@@ -3,7 +3,8 @@ import {COASTLINE} from './peninsula.js';
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
 import {RESIDENTIAL_BUILDINGS} from './residential-layout.js';
 import {PARK,activePark} from './park-layout.js';
-import {ROUTES,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
+import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
+import {FOREST_EDGE} from './forest-edge.js';
 import {shoppingDistrictActive} from './town-mode.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
@@ -32,11 +33,12 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   const park=FULL_TOWN.active?activePark():PARK,pw=park.halfX||park.half,pd=park.halfZ||park.half;
   ctx.fillStyle='#91a776';ctx.fillRect(px(park.x-pw),pz(park.z+pd),pw*2*scale,pd*2*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('PARK',px(park.x-pw+0.4),pz(park.z));}
   ctx.lineJoin='round';ctx.lineCap='round';
-  for(const route of (FULL_TOWN.active?FULL_PATHS:ROUTES)){
+  for(const route of (FULL_TOWN.active?FULL_PATHS:activeRoutes())){
     ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
   if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
+  if(shoppingDistrictActive()){ctx.fillStyle='#496347';ctx.fillRect(px(FOREST_EDGE.minX),pz(FOREST_EDGE.roadEndZ+.3),Math.max(1,(FOREST_EDGE.maxX-FOREST_EDGE.minX)*scale),Math.max(2,.8*scale));if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('FOREST · BUS ONLY',px(FOREST_EDGE.minX+.5),pz(FOREST_EDGE.roadEndZ+.65));}}
   ctx.fillStyle='#a8997a';for(const house of [...(shoppingDistrictActive()?[]:RESIDENTIAL_BUILDINGS),...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}

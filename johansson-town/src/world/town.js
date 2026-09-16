@@ -17,6 +17,7 @@ import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode} from './town-mode.js';
+import {buildForestEdge} from './forest-edge.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -114,22 +115,22 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,28.02],stand:[2.05,0,27.15],eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[2.05,0,16.15],eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
-  addWithCollider(group,colliders,factory.bench(2.05,28.1,0));
-  seat([2.05,1,27.65],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
+  addWithCollider(group,colliders,factory.bench(2.05,17.1,0));
+  seat([2.05,1,16.65],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
-  addWithCollider(group,colliders,factory.postbox(2.4,19.5,Math.PI/2));
-  inspect([1.75,1,19.5],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
+  addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
+  inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.deliveryTrolley(-7.5,-34.5,.02));
   inspect([-6.8,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
 
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
   read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
 
-  addWithCollider(group,colliders,factory.utilityCabinet(-7.4,16.5,0));
-  inspect([-6.75,1,15.9],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
+  addWithCollider(group,colliders,factory.utilityCabinet(-6.2,13.8,0));
+  inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
   addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
@@ -137,9 +138,9 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
-  const recycleGroup=new THREE.Group();recycleGroup.position.set(3.6,0,-23.6);group.add(recycleGroup);
-  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:3.6,z:-23.6,w:1.1,d:.65});
-  inspect([3.1,1,-23.1],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
+  const recycleGroup=new THREE.Group();recycleGroup.position.set(5.05,0,-19.8);group.add(recycleGroup);
+  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:5.05,z:-19.8,w:1.1,d:.65});
+  inspect([4.55,1,-19.3],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
   const pump=factory.box(group,[.65,.85,.55],[-7.4,.52,-31.2],0x536568);factory.cylinder(group,.16,.45,[-7.4,1.12,-31.2],0x3d4c4e,12);colliders.push({x:-7.4,z:-31.2,w:.72,d:.62});
   machine([-6.8,1,-30.7],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
@@ -154,6 +155,8 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
+  const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+  world.forestEdge=forestEdge;
   for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
@@ -202,6 +205,8 @@ export function createTown(options){
     seaCave:false,
     port24Hours:true,
     harbourOffice24Hours:true,
+    forestWall:true,
+    busForestContinuation:forestEdge.busRoute,
     pierPosts:pier.posts,
     antiShimmerCables:true,
     animatedWaterNormals:!!sea,

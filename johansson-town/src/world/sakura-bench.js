@@ -4,11 +4,11 @@ import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 
 // Cedar bench on the east sidewalk, looking across the street at Sakura Shōten.
-export const SAKURA_SHOP=Object.freeze({x:-7.55,z:-28});
+export const SAKURA_SHOP=Object.freeze({x:-7.45,z:-26.8});
 export const SAKURA_BENCH_PLACE=Object.freeze({
   x:4.42,
-  z:-17.3,
-  yaw:Math.atan2(4.42-SAKURA_SHOP.x,-17.3-SAKURA_SHOP.z),
+  z:-19.8,
+  yaw:Math.atan2(4.42-SAKURA_SHOP.x,-19.8-SAKURA_SHOP.z),
   pitch:-.08,
   eyeY:1.16,
   sitLocal:[0,0,-.08],

@@ -7,6 +7,7 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {INAKAYA_FIT,RAMEN_LAYOUT,RAMEN_PLAYER_SEATS,ramenPoint,ramenX} from './interiors/ramen-layout.js';
 import {localToWorld} from './landmark-lots.js';
+import {shoppingDistrictActive} from './town-mode.js';
 
 const assets=new Map();
 const pending=new Map();
@@ -115,20 +116,23 @@ function addAsset(id,parent){
 }
 
 // The source contains two real doorways: the restaurant on the right and the
-// timber neighbour on the left. Both transition from the same clear east lane.
+// timber neighbour on the left. The live shopping district keeps the restaurant
+// frontage only; the legacy town mode retains both supplied doorways.
 function buildInakayaPair(world,options){
-  const building=new THREE.Group();building.name='Inakaya restaurant and neighbour';
+  const shopping=shoppingDistrictActive();
+  const building=new THREE.Group();building.name=shopping?'Sato Ramen restaurant':'Inakaya restaurant and neighbour';
   building.position.set(DINING.ramenX,0,DINING.ramenZ);building.rotation.y=DINING.ramenYaw;world.group.add(building);
-  const model=addAsset('ramen-exterior',building);
+  const model=shopping?false:addAsset('ramen-exterior',building);
   const prepare=model=>model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
   if(model)prepare(model);
   else{
     const fallback=new THREE.Group();building.add(fallback);
-    for(const [x,z,w,d,h] of [[.05,-.6,3.7,7.1,6.3],[-2.84,2.19,2.35,2.9,4]]){
+    const boxes=shopping?[[.05,-.6,3.7,7.1,6.3]]:[[.05,-.6,3.7,7.1,6.3],[-2.84,2.19,2.35,2.9,4]];
+    for(const [x,z,w,d,h] of boxes){
       const box=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:0xb6a98a,roughness:.9}));box.position.set(x,h/2,z);fallback.add(box);
     }
     hangRamenNoren(fallback);
-    registerDetail(world,{id:'ramen-exterior',priority:1,x:DINING.ramenX,z:DINING.ramenZ,radius:48,load:async()=>{
+    if(!shopping)registerDetail(world,{id:'ramen-exterior',priority:1,x:DINING.ramenX,z:DINING.ramenZ,radius:48,load:async()=>{
       const [ready]=await preloadSuppliedRooms(['ramen-exterior']);if(!ready)return false;
       const detailed=addAsset('ramen-exterior',building);prepare(detailed);fallback.removeFromParent();return true;
     }});
@@ -136,8 +140,9 @@ function buildInakayaPair(world,options){
   const sites=[
     {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
-    {id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:3.2,z:DINING.crystalDoor[1],
+    ...(!shoppingDistrictActive()?[{id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:3.2,z:DINING.crystalDoor[1],
       color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[DINING.crystalDoor[0],0,DINING.crystalDoor[1]]},
+    ]:[]),
   ];
   for(const site of sites){
     site.entryFacing=DINING.ramenYaw;site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];
