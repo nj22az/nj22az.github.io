@@ -1,0 +1,33 @@
+name: Build town publication
+on:
+  push:
+    branches: [build/izakaya-sakura-publication]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install locked build dependencies
+        working-directory: johansson-town
+        run: npm ci --ignore-scripts
+      - name: Build published runtime
+        working-directory: johansson-town
+        run: npm run build:runtime
+      - name: Check entrances, glass, and shop behaviour
+        working-directory: johansson-town
+        run: node --test tests/dining-street.test.mjs tests/supplied-buildings.test.mjs tests/shop-street-view.test.mjs tests/sakura-bench.test.mjs tests/shopping-district.test.mjs
+      - name: Save compiled runtime on the review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add johansson-town/runtime johansson-town/index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Compile approved neighbouring shops and clear glazing'
+            git push origin HEAD:build/izakaya-sakura-publication
+          fi
