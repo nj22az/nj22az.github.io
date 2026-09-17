@@ -7,9 +7,9 @@ import {installDOM} from './fixtures.mjs';
 test('conversation reserves a separate scene area on phones, tablets and desktop',()=>{
  for(const [width,height] of [[390,844],[844,390],[1024,768],[1440,900]]){
   const view=conversationViewport(width,height,true);
-  assert.ok(view.width>0&&view.height>0);
-  if(width<720){assert.equal(view.width,width);assert.ok(view.height+height*.48<=height);}
-  else{assert.equal(view.height,height);assert.equal(view.width+Math.min(420,Math.max(300,width*.36)),width);}
+  // Talking no longer takes the view away: the line is a bubble on the speaker and
+  // the replies are a strip along the bottom, so the scene keeps the whole screen.
+  assert.deepEqual(view,{width,height},'A conversation never shrinks the town');
   assert.deepEqual(conversationViewport(width,height,false),{width,height});
  }
 });

@@ -79,7 +79,13 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const beforeX=g.position.x,beforeZ=g.position.z;
   for(const [x,z] of candidates)if(clearOfPeople(x,z)&&!collides(x,z,.3)&&Math.abs(groundHeight(x,z)-g.position.y)<=step*.65+.025){g.position.set(x,groundHeight(x,z),z);break;}
   const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
-  if(Math.hypot(movedX,movedZ)>.0001){const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));g.rotation.y+=delta*(1-Math.exp(-dt*7));}
+  if(Math.hypot(movedX,movedZ)>.0001){
+   const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
+   // Sidestepping round an obstacle used to leave someone walking a direction their
+   // body was not facing for the best part of a second, which reads as a glide. Turn
+   // faster, and when they are heading more or less backwards stop easing and commit.
+   g.rotation.y+=Math.abs(delta)>2.1?delta*.55:delta*(1-Math.exp(-dt*11));
+  }
  }
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];

@@ -346,7 +346,7 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Into the basket · ¥120');
     // Goods are paid for at the counter now, so the sale is the whole ritual.
     api.activities.konbiniCounter();choose('I have my own');choose('Pay ¥120 in cash');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
-    yuri.userData.hit.fn();choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
+    yuri.userData.hit.fn();choose('The shop side of things');choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
     assert.equal(api.activities.state.yen,workshopBalance+80-120);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
     // The supplied store is retail-only; food is prepared at the ramen counter.
     api.reviewSetMinutes(600);await api.enterRoom(api.SITES.find(s=>s.id==='ramen'));

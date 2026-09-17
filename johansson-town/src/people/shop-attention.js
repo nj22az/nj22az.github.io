@@ -16,7 +16,12 @@ export function createShopAttention({clerk,world,retail,colliders,isInside,getPl
  let selected=null,hold=0,clock=0;
  return {update(dt){
   const data=clerk.userData;clock+=dt;hold=Math.max(0,hold-dt);
-  if(!data.inMarket||data.roomTransition||data.carrying||data.shopReach||data.restocking||data.sleeping){delete data.lookTarget;selected=null;return;}
+  if(!data.inMarket||data.roomTransition||data.carrying||data.shopReach||data.restocking||data.sleeping){
+   // Only clear a look this pass put there. facing.js points the same head at whoever
+   // is talking to her, in the shop or out of it, and that one is not ours to drop.
+   if(data.lookSource!=='facing')delete data.lookTarget;
+   selected=null;return;
+  }
   if(clock<.12)return;clock=0;
   const origin=clerk.getWorldPosition(new THREE.Vector3());origin.y+=1.32;
   const forward=new THREE.Vector3(0,0,-1).applyQuaternion(clerk.getWorldQuaternion(new THREE.Quaternion())),candidates=[];
@@ -28,8 +33,8 @@ export function createShopAttention({clerk,world,retail,colliders,isInside,getPl
   if(isInside()){const p=getPlayerPosition();add('player',new THREE.Vector3(p.x,p.y+1.65,p.z),data.playerConversation?-20:0);}
   candidates.sort((a,b)=>a.score-b.score);let target=candidates[0],previous=candidates.find(c=>c.id===selected);
   if(hold>0&&previous&&target&&previous.score-target.score<.45)target=previous;
-  if(target){if(selected!==target.id)hold=1.2;selected=target.id;data.lookTarget=target.point.toArray();data.lookCustomer=target.id;}
-  else{selected=null;delete data.lookTarget;delete data.lookCustomer;}
+  if(target){if(selected!==target.id)hold=1.2;selected=target.id;data.lookTarget=target.point.toArray();data.lookSource='shop';data.lookCustomer=target.id;}
+  else{selected=null;if(data.lookSource!=='facing')delete data.lookTarget;delete data.lookCustomer;}
  }};
 }
 
@@ -42,7 +47,8 @@ export function createCustomerGaze(model,entity){
  const rotate=(bone,angle,axis)=>{if(!bone)return;const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(new THREE.Quaternion().setFromAxisAngle(axis,angle)).multiply(parent));bone.updateWorldMatrix(false,true);};
  return {restore,get yaw(){return yaw;},get pitch(){return pitch;},update(dt,data,moving=false){
   entity.updateWorldMatrix(true,true);let targetYaw=0,targetPitch=0;
-  if(data.lookTarget&&data.inMarket&&!data.carrying&&!data.shopReach&&!data.restocking&&!data.sleeping&&!data.roomTransition&&!moving){
+  // Being spoken to turns a head anywhere, not only behind the counter.
+  if(data.lookTarget&&(data.inMarket||data.lookSource==='facing')&&!data.carrying&&!data.shopReach&&!data.restocking&&!data.sleeping&&!data.roomTransition&&!moving){
    const eye=head.getWorldPosition(new THREE.Vector3());eye.y+=.09;const offset=new THREE.Vector3(...data.lookTarget).sub(eye).applyQuaternion(entity.getWorldQuaternion(new THREE.Quaternion()).invert());
    const angle=Math.atan2(-offset.x,-offset.z);
    if(Math.abs(angle)<Math.PI*.49){targetYaw=THREE.MathUtils.clamp(angle,-.65,.65);targetPitch=THREE.MathUtils.clamp(Math.atan2(offset.y,Math.hypot(offset.x,offset.z)),-.22,.20);}

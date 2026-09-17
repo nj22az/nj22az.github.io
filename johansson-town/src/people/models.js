@@ -172,8 +172,11 @@ export function createLocalCharacters({shadows=false}={}){
       }
       // Moving the pelvis over a chair is weight transfer, not a walking step.
       const measured=relocated||actor.chairTransition||Number.isFinite(entity.userData.chairBlend)?0:distance/Math.max(dt,.001);
-      actor.speed=THREE.MathUtils.damp(actor.speed,measured,12,dt);
-      actor.moving=actor.speed>(actor.moving?.08:.18);
+      // Track the measured speed closely and call almost any translation walking. The
+      // old threshold let a person drift at up to 0.18 m/s in the idle pose, which is
+      // moonwalking: the feet are planted and the body slides anyway.
+      actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
+      actor.moving=actor.speed>(actor.moving?.03:.07);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;

@@ -57,7 +57,7 @@ test('actual activity buttons complete the workshop–Thuan loop and ignore stal
  ui.dom.button('Use this pattern in Form 3D');const print=ui.button('Print model · ¥40');print.onclick();print.onclick();assert.equal(ui.acts.state.yen,1160);assert.equal(ui.acts.paused,false);
  ui.acts.tick(8);ui.acts.action('workshop');const collect=ui.button('Collect model');collect.onclick();collect.onclick();assert.deepEqual(ui.acts.state.inventory,[recipe.name]);
  ui.dom.button('Back to printer');assert.equal(ui.button('Print model · ¥40').disabled,true);
- ui.context({inside:'market',thuanAvailable:true});ui.acts.action('resident','Thuan');ui.dom.button('Sell items from my bag');
+ ui.context({inside:'market',thuanAvailable:true});ui.acts.action('resident','Thuan');ui.dom.button('The shop side of things');ui.dom.button('Sell items from my bag');
  const sell=ui.button('Sell '+recipe.name+' · +¥120');sell.onclick();sell.onclick();assert.equal(ui.acts.state.yen,1280);assert.deepEqual(ui.acts.state.inventory,[]);
  const persisted=JSON.parse(localStorage.getItem(SAVE_KEY));assert.equal(persisted.yen,1280);assert.deepEqual(persisted.inventory,[]);
  ui.context({inside:'form3d'});ui.acts.action('workshop');assert.equal(ui.button('Print model · ¥40').disabled,false);
@@ -67,7 +67,7 @@ test('only Thuan at Sakura during her working hours can buy a model, including s
  for(const context of [{inside:'izakaya',thuanAvailable:true},{inside:'form3d',thuanAvailable:true},{inside:'market',thuanAvailable:false}])assert.equal(canSellAtSakura(context,600),false);
  const available={inside:'market',thuanAvailable:true};for(const minute of [539,1200,180,1440+1200])assert.equal(canSellAtSakura(available,minute),false);
  for(const minute of [540,1199,1440+540])assert.equal(canSellAtSakura(available,minute),true);
- const ui=setup({yen:300,inventory:[recipe.name]});recordSakuraSale(ui.acts.state,150);ui.context(available);ui.acts.action('resident','Thuan');ui.dom.button('Sell items from my bag');const sell=ui.button('Sell '+recipe.name+' · +¥120');
+ const ui=setup({yen:300,inventory:[recipe.name]});recordSakuraSale(ui.acts.state,150);ui.context(available);ui.acts.action('resident','Thuan');ui.dom.button('The shop side of things');ui.dom.button('Sell items from my bag');const sell=ui.button('Sell '+recipe.name+' · +¥120');
  ui.time(1200);sell.onclick();assert.equal(ui.acts.state.yen,300);assert.deepEqual(ui.acts.state.inventory,[recipe.name]);
  ui.context({inside:'izakaya',thuanAvailable:true});ui.acts.action('workshop');assert.equal(ui.button('Print model · ¥40'),undefined);
 });

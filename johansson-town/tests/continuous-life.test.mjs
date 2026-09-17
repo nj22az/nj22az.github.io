@@ -44,7 +44,14 @@ test('every current resident keeps a door address and a live neighbour behind th
   assert.ok(home.includes(p.homeAddress),p.name+' gives the address shown on the door');
   const neighbour=RESIDENTS.find(n=>n.name!==p.name&&n.homeEntry===p.homeEntry);
   if(neighbour){assert.ok(home.includes(neighbour.name));assert.match(home,householdFor(p.name).residents.length>1?/share the flat/:/other flat/);}
-  acts.action('resident',p.name);dom.button('How do you travel?');
+  acts.action('resident',p.name);
+  // Thuan rotates her small talk, so the travel topic is not always on the first
+  // screen. Ask for something else until it comes round, the way you would.
+  for(let tries=0;tries<6&&!dom.has('How do you travel?');tries++){
+   if(!dom.has('Tell me something else')){const other=dom.labels().find(l=>/\?$|^I like|^You make/.test(l));if(!other)break;dom.button(other);}
+   if(dom.has('Tell me something else'))dom.button('Tell me something else');
+  }
+  dom.button('How do you travel?');
   assert.match(document.querySelector('#activityBody').firstChild.textContent,/Harbour Line|quay/,p.name+' answers how they reach the district');
   acts.close();
   if(p.name!=='Thuan'){

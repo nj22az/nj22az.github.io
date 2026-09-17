@@ -26,24 +26,47 @@
 @media(prefers-reduced-motion:reduce){#activity .activity-card{animation:none}#activity #activityActions button{transition:none}#activity #activityActions button:hover:not(:disabled),#activity #activityActions button:active:not(:disabled){transform:none}}
 
 /* Conversations occupy their own rail; the renderer uses the remaining viewport. */
-body.conversation-open #hud,body.conversation-open #mobile,body.conversation-open #townControls,body.conversation-open #subtitle{visibility:hidden}
-#activity.conversation{inset:0 0 0 auto;width:clamp(300px,36vw,420px);height:100dvh;box-sizing:border-box;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) 16px;background:transparent;align-items:center;justify-content:center}
-#activity.conversation .activity-card{position:relative;width:100%;max-height:100%;box-sizing:border-box;padding:16px;border-radius:28px;border:3px solid #fffdf2;box-shadow:0 5px 0 #b9c6b5,0 12px 30px #142e4126;animation:none;overscroll-behavior:contain}
-#activity.conversation::before{content:"";position:absolute;left:8px;top:50%;width:24px;height:24px;background:#fff8e9;transform:rotate(45deg);border-bottom:3px solid #fffdf2;border-left:3px solid #fffdf2}
-#activity.conversation .activity-card header{justify-content:flex-end}
+/* Talking happens in the street, not in a panel over it.
+
+   The line is drawn as a bubble on the speaker (see people/neighbour-chats.js), so
+   what is left here is the replies. They sit as a strip along the bottom, over the
+   town rather than instead of it: no backdrop, no dimming, nothing covering the
+   person you are talking to. The HUD stays up, because you are still standing there. */
+body.conversation-open #subtitle{visibility:hidden}
+#activity.conversation{inset:auto 0 0;width:100%;height:auto;max-height:52dvh;display:block;
+ padding:0 max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+ background:none;pointer-events:none}
+#activity.conversation .activity-card{position:relative;width:min(620px,100%);margin:0 auto;max-height:100%;
+ box-sizing:border-box;padding:10px 12px;border-radius:22px;border:2px solid #fffdf2b0;
+ background:#fff8e9e6;backdrop-filter:blur(3px);box-shadow:0 8px 26px #0e222b40;pointer-events:auto}
+#activity.conversation::before{content:none}
+#activity.conversation .activity-card header{justify-content:flex-end;gap:8px;margin:0}
 #activity.conversation .activity-card header>span{display:none}
-#activity.conversation #activityTitle{margin:4px 0 12px;font-size:22px}
-#activity.conversation #activityBody{font-size:16px;line-height:1.5}
-#activity.conversation #activityBody p{padding:0;margin:0 0 16px;border:0;background:transparent;border-radius:0}
-#activity.conversation #activityActions{grid-template-columns:1fr;gap:8px}
-#activity.conversation #activityActions button{min-height:44px;padding:10px 12px;font-size:14px;border-radius:18px}
-@media(max-width:719px){
- #activity.conversation{inset:auto 0 0;width:100%;height:48dvh;padding:14px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));align-items:stretch}
- #activity.conversation::before{left:calc(50% - 12px);top:8px;transform:rotate(135deg)}
- #activity.conversation .activity-card{padding:12px 16px;border-radius:25px}
- #activity.conversation #activityTitle{font-size:20px}
- #activity.conversation #activityActions{grid-template-columns:repeat(2,minmax(0,1fr))}
+#activity.conversation #closeActivity{min-height:34px;padding:4px 11px;font-size:12px}
+#activity.conversation #activityTitle{margin:0 0 6px;font-size:15px;letter-spacing:.01em;color:#6b5140}
+/* The spoken line is in the bubble over her shoulder. It stays here for screen
+   readers, which cannot see the bubble: it is marked aria-hidden. */
+#activity.conversation #activityBody{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#activity.conversation #activityActions{display:grid;grid-template-columns:1fr;gap:6px;padding:0}
+#activity.conversation #activityActions button{min-height:42px;padding:9px 12px;font-size:14px;border-radius:15px;box-shadow:0 3px 0 #ceb079}
+@media(min-width:720px){
+ #activity.conversation #activityActions{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 }
+@media(max-width:719px){
+ /* On a phone the strip has to leave the street visible above it, so the replies are
+    tighter than they are in a modal and the panel is capped at a third of the screen. */
+ #activity.conversation{max-height:38dvh}
+ #activity.conversation .activity-card{padding:8px 10px;border-radius:18px;overflow-y:auto}
+ #activity.conversation #activityTitle{font-size:13px;margin:0 0 4px}
+ #activity.conversation #closeActivity{min-height:30px;padding:3px 9px;font-size:11px}
+ #activity.conversation #activityActions{gap:5px}
+ #activity.conversation #activityActions button{min-height:38px;padding:7px 10px;font-size:13px;border-radius:13px;box-shadow:0 2px 0 #ceb079}
+}
+@media(max-height:520px){
+ #activity.conversation{max-height:56dvh}
+ #activity.conversation #activityActions button{min-height:34px;font-size:12px}
+}
+
 
 /* Unscripted conversation with Thuan. Sits inside the existing conversation modal, so
    it inherits its paper and type; only the transcript and the input box are new. */

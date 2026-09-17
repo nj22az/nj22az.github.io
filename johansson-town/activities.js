@@ -200,7 +200,36 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
-    show(title,greeting,[...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),['Talk with Thuan',thuanStory],['Ask her something',askThuan],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
+    // A conversation, not a menu. Two pieces of small talk at a time, rotated so the
+    // next time you stop by she has something else to say, and the shop's paperwork
+    // folded away behind one button. Fourteen choices at once made her a directory.
+    const smallTalk=[
+      ['What is your favourite snack?','snack'],
+      ['I like your ribbon','ribbon'],
+      ['Where do you go after work?','town'],
+      [commuterMode?'How do you travel?':'Where do you live?','home'],
+      ['You make this place lovely','compliment'],
+      ['Give me a little challenge','challenge'],
+      ['Do you sing along to the radio?','radio'],
+      ['Tell me a shop secret','secret'],
+    ];
+    const asked=histories.get('Thuan/small-talk')||[];
+    const fresh=smallTalk.filter(([,id])=>!asked.includes(id));
+    const offered=(fresh.length>=2?fresh:smallTalk).slice(0,2);
+    histories.set('Thuan/small-talk',[...asked,...offered.map(([,id])=>id)].slice(-5));
+    const paperwork=()=>show(title,'書類ね。\nThe shop side of things.',[
+      ['Sell items from my bag',workshopUI.selling],
+      ['Read the shop ledger',shopLedger],
+      ['Back to Thuan',()=>thuanConversation()],
+    ]);
+    show(title,greeting,[
+      ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),
+      ['Talk with Thuan',thuanStory],
+      ...offered.map(([label,id])=>[label,()=>thuanConversation(id)]),
+      ['Ask her something',askThuan],
+      ['The shop side of things',paperwork],
+      ['See you soon, Thuan',close],
+    ]);
   }
   function resident(name){
     if(name==='Thuan'){thuanConversation();return;}
