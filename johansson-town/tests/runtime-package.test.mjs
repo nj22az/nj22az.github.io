@@ -26,3 +26,17 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
  assert.ok(game.imports.some(key=>manifest[key].file===audio.file),'Game and title share one audio context');
 });
+
+test('every stylesheet link carries a hash of the file it points at',async()=>{
+ const {createHash}=await import('node:crypto');
+ const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+ const links=[...html.matchAll(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g)];
+ assert.ok(links.length>=10,'The page still links its stylesheets');
+ for(const [,,file,query] of links){
+  const css=await readFile(new URL('../'+file,import.meta.url));
+  const hash=createHash('sha256').update(css).digest('hex').slice(0,8);
+  // A hand-written version string goes stale the moment someone edits the stylesheet
+  // and forgets it, which serves new markup with old CSS out of the browser cache.
+  assert.equal(query,'?h='+hash,file+' is cached under the wrong key; run npm run build:runtime');
+ }
+});

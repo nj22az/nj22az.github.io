@@ -1,5 +1,7 @@
 import {build} from 'vite';
 import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {readFileSync,existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import {runtimeSourceHash} from './runtime-source.mjs';
 const root=resolve(new URL('..',import.meta.url).pathname);
@@ -26,6 +28,19 @@ const preloadFiles=[...new Set(preloadEntries.flatMap(name=>{
 }))];
 const preloadLinks=preloadFiles.map(file=>`<link rel="modulepreload" data-town-runtime href="./runtime/${file}">`).join('\n');
 html=html.replace('</head>',`${preloadLinks}\n</head>`);
+// Stamp every local stylesheet with a hash of its contents. These links carried
+// hand-written query strings, so editing a stylesheet without remembering to bump its
+// version served the old file from cache: new markup with stale CSS. The hash means
+// the link changes exactly when the file does, and never when it does not.
+const cssHashes=[];
+html=html.replace(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g,(match,prefix='',file)=>{
+ const path=resolve(root,file);
+ if(!existsSync(path))return match;
+ const hash=createHash('sha256').update(readFileSync(path)).digest('hex').slice(0,8);
+ cssHashes.push(file+' '+hash);
+ return `href="${prefix}${file}?h=${hash}"`;
+});
 await writeFile(resolve(root,'index.html'),html);
 await writeFile(resolve(root,'runtime/source.json'),JSON.stringify({sha256:await runtimeSourceHash(root)},null,2)+'\n');
+console.log('Stylesheet hashes:',cssHashes.join(', '));
 console.log('Published runtime entry points:',boot,audio,'files:',(await readdir(resolve(root,'runtime'))).filter(f=>f.endsWith('.js')).length);
