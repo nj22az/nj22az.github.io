@@ -138,9 +138,13 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
-  const recycleGroup=new THREE.Group();recycleGroup.position.set(5.05,0,-19.8);group.add(recycleGroup);
-  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:5.05,z:-19.8,w:1.1,d:.65});
-  inspect([4.55,1,-19.3],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
+  // Moved along the pavement, not across it. These stood at z=-19.8, which the cedar
+  // bench was later placed across: the bench runs to x=5.07 and the bins began at 4.52,
+  // so half a metre of it grew out of a bin. Going east instead would have put them on
+  // the middle of the walk beside the park, so they go south of the bench.
+  const recycleGroup=new THREE.Group();recycleGroup.position.set(5.05,0,-21.7);group.add(recycleGroup);
+  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:5.05,z:-21.7,w:1.1,d:.65});
+  inspect([4.55,1,-21.2],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
   const pump=factory.box(group,[.65,.85,.55],[-7.4,.52,-31.2],0x536568);factory.cylinder(group,.16,.45,[-7.4,1.12,-31.2],0x3d4c4e,12);colliders.push({x:-7.4,z:-31.2,w:.72,d:.62});
   machine([-6.8,1,-30.7],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');

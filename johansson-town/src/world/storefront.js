@@ -18,22 +18,27 @@ export function buildStorefront({parent,site,register,enter,label,placement}){
  for(const [lx,width] of [[-4.2,1.5],[-2.5,1.7],[1.15,5.4]]){const pane=new THREE.Mesh(new THREE.PlaneGeometry(width,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*width/2,1.47,.055],0x879692);box([width,.08,.09],[lx,.15,.055],0x879692);}
  box([10,.1,.1],[0,2.82,.05],0x84938d);for(const lx of [-2.9,-2.1])box([.035,.5,.12],[lx,1.4,.12],0x465854);
  const cylinder=new THREE.CylinderGeometry(1,1,1,10);
- function round(radius,height,pos,color){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.55}));const m=new THREE.Mesh(cylinder,materials.get(color));m.scale.set(radius,height,radius);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);}
- // A few recognisable product groups read through the glazing at street distance.
+ function round(radius,height,pos,color){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.55}));const m=new THREE.Mesh(cylinder,materials.get(color));m.scale.set(radius,height,radius);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;}
+ // Stand-in shelves, for when the real interior has not arrived yet. They read as a
+ // shop at street distance, but they are not the shop you walk into, so they are
+ // grouped on their own and hidden the moment the supplied interior is in place.
+ const standIn=new THREE.Group();standIn.name='Sakura stand-in fittings';group.add(standIn);
+ const keep=object=>{standIn.add(object);return object;};
  for(const [row,y] of [.48,1.22,1.96].entries()){
-  box([5.8,.055,.65],[1.25,y,-2.0],0xdcdcc9);box([5.8,.07,.045],[1.25,y,-1.65],0xb84e45);
+  keep(box([5.8,.055,.65],[1.25,y,-2.0],0xdcdcc9));keep(box([5.8,.07,.045],[1.25,y,-1.65],0xb84e45));
   for(let n=0;n<10;n++){
    const x=-1.2+n*.52,z=-1.82,color=[0x477454,0xb65241,0xd8b56e][row];
-   if(row===0){round(.13,.30,[x,y+.18,z],color);for(const dy of [.035,.335])round(.134,.023,[x,y+dy,z],0xc9ccbf);round(.133,.10,[x,y+.19,z],0xf2e4c3);}
-   else if(row===1){round(.115,.30,[x,y+.18,z],color);round(.057,.15,[x,y+.395,z],color);round(.060,.045,[x,y+.485,z],0xe7d4a8);round(.118,.11,[x,y+.19,z],0xf2e4c3);}
-   else{box([.30,.36,.25],[x,y+.21,z],color);box([.27,.13,.01],[x,y+.23,z+.13],0xf2e4c3);box([.12,.04,.25],[x,y+.41,z],0xe7d4a8);}
+   if(row===0){keep(round(.13,.30,[x,y+.18,z],color));for(const dy of [.035,.335])keep(round(.134,.023,[x,y+dy,z],0xc9ccbf));keep(round(.133,.10,[x,y+.19,z],0xf2e4c3));}
+   else if(row===1){keep(round(.115,.30,[x,y+.18,z],color));keep(round(.057,.15,[x,y+.395,z],color));keep(round(.060,.045,[x,y+.485,z],0xe7d4a8));keep(round(.118,.11,[x,y+.19,z],0xf2e4c3));}
+   else{keep(box([.30,.36,.25],[x,y+.21,z],color));keep(box([.27,.13,.01],[x,y+.23,z+.13],0xf2e4c3));keep(box([.12,.04,.25],[x,y+.41,z],0xe7d4a8));}
   }
  }
  for(const lx of [-2.8,1.8]){const light=box([.45,.06,2.8],[lx,3.64,-2.3],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
- box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo');box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb);
+ keep(box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo'));keep(box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb));
  const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[5.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  hangNoren(group,-2.5,1.85,.07);
+ site.standInFittings=standIn;
  const [ax,az]=localToWorld(x,z,yaw,scale,-2.5,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  return group;

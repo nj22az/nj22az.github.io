@@ -27,6 +27,15 @@ export const ROUTES = [
  {id:'office-crossing',width:3,surface:'stone',points:[[0,-36],[18,-36]]},
  {id:'park-walk',width:4,surface:'stone',points:[[0,-36],[4.6,-36],[4.6,PARK.z]]},
  {id:'park-approach',width:3,surface:'stone',points:[[4.6,PARK.z],[PARK.x-PARK.half+.35,PARK.z]]},
+ // The pavement stops two metres short of the park, so the lawn could only be reached
+ // through one slot halfway along it and the rest read as an invisible wall. This is
+ // the apron between the two: ground you can actually walk along beside the grass.
+ // The pavement stopped two metres short of the park, so the lawn could only be
+ // reached through one slot halfway along it and the rest read as an invisible wall.
+ // This is the apron between them. It stops at the plinth on purpose: the park is
+ // raised by up to 1.2m and only the approach ramps up to it, so running the apron
+ // over the edge would pop the player up the side of it.
+ {id:'park-edge',width:3.4,surface:'stone',points:[[PARK.x-PARK.half-1.65,PARK.z-PARK.half+.8],[PARK.x-PARK.half-1.65,PARK.z+PARK.half-.8]]},
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-12,-36]]},
  {id:'market-cut',width:3,surface:'stone',points:[[0,-26],[-5.5,-26]]},
  {id:'west-service',legacy:true,width:3,surface:'stone',points:[[-8.5,-20],[-8.5,31]]},

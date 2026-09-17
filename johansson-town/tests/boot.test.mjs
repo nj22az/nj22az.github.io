@@ -129,6 +129,15 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;
     assert.ok(api.player.position.distanceTo(openingSit)<.001,'Opening sit prevents walking');
     assert.ok(api.world.colliders.every(c=>Math.abs(c.x-bench.seat.stand[0])>c.w/2+.28||Math.abs(c.z-bench.seat.stand[2])>c.d/2+.28),'Stand-up point is clear of walls');
+    // Nothing may stand inside the bench itself. The recycling bins were placed here
+    // first and the bench was later put across them, so half a metre of cedar grew out
+    // of a bin and the player spawned looking at it.
+    {const seat=bench.seat.position,half={x:.65,z:.84};
+     const inside=api.world.colliders.filter(c=>
+      // The bench's own collider sits on the bench, which is not the problem.
+      Math.hypot(c.x-seat[0],c.z-seat[2])>.25&&
+      Math.abs(c.x-seat[0])<c.w/2+half.x-.05&&Math.abs(c.z-seat[2])<c.d/2+half.z-.05);
+     assert.deepEqual(inside,[],'Street furniture stands through the viewing bench');}
     api.doInteract();
     assert.ok(Math.hypot(api.player.position.x-bench.seat.stand[0],api.player.position.z-bench.seat.stand[2])<.2,'E stands in front of the bench');
     assert.match(document.querySelector('#subtitle').textContent,/You stand up|Across the street/);
@@ -144,7 +153,15 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     assert.equal('cameraMode' in api.activities.state,false,'Legacy camera preference is discarded');
     const {ROUTES}=await import('../src/world/layout.js?snappy=1'),{circleHitsRect}=await import('../physics.js?snappy=1');
     for(const route of ROUTES.filter(r=>r.id.endsWith('-cut')))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i],x=a[0]*(1-t)+b[0]*t,z=a[1]*(1-t)+b[1]*t;assert.equal(api.world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,route.id+' clears the supplied shopfronts');}
+    // Somewhere with room to run. The old start was 0.73m in front of the bus-station
+    // bench, which a walk step cleared and a run step did not, so this read as a speed
+    // fault for as long as the bench has existed. Assert the clearance rather than
+    // trusting it: the next thing placed on the street would break it again silently.
+    api.player.position.set(0,0,14);api.reviewSetYaw(0);api.simulate(1/60);
     const runningStart=api.player.position.clone();
+    for(let ahead=0;ahead<=.8;ahead+=.1)
+     assert.ok(!api.world.colliders.some(c=>circleHitsRect(runningStart.x,runningStart.z-ahead,.34,c)),
+      'The running test needs a clear run of 0.8m, but something stands at '+ahead.toFixed(1)+'m');
     api.touchSticks.move.y=-1;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
     api.player.position.copy(runningStart);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});document.querySelector('#run').onclick({detail:1});api.simulate(.1);
     const ran=api.player.position.distanceTo(runningStart);assert.ok(ran>walked*1.6&&ran<walked*1.9,'Touch Run increases movement speed');
@@ -186,9 +203,19 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     api.leaveRoom();api.reviewSetMinutes(1002);
     document.querySelector('#directoryButton').onclick();
     const shortcut=find('izakaya');assert.equal(shortcut.dataset.travel,'ready');shortcut.onclick();
-    assert.equal(api.player.position.x,DINING.izakayaDoor[0]-.7);assert.equal(api.player.position.z,DINING.izakayaDoor[1]);
+    // A step from the door, either side of it: which side is the layout's business,
+    // and the line below is what actually matters — that the entrance is usable from
+    // where the shortcut sets you down.
+    assert.ok(Math.abs(Math.abs(api.player.position.x-DINING.izakayaDoor[0])-.7)<1e-9,
+     'Set down a step from the izakaya door, not on top of it');
+    assert.equal(api.player.position.z,DINING.izakayaDoor[1]);
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Minato Izakaya/,'Unlocked shortcut faces the usable entrance');
-    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();assert.equal(api.player.position.x,28);assert.equal(api.player.position.z,30.7);
+    document.querySelector('#directoryButton').onclick();find('tea-house').onclick();
+    // Against the tea house's own door rather than a copied pair of numbers: the shops
+    // move, and a shortcut that lands you at the door is the thing being tested.
+    {const tea=api.SITES.find(site=>site.id==='tea-house');
+     assert.ok(Math.hypot(api.player.position.x-tea.door[0],api.player.position.z-tea.door[2])<1.2,
+      'The tea house shortcut sets you down at its door');}
     api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Corner Tea House/);
     const minato=api.SITES.find(s=>s.id==='izakaya');assert.ok(Number.isFinite(minato.x)&&Number.isFinite(minato.z),'Izakaya appears on the map');
     document.querySelector('#notebookButton').onclick();
@@ -266,7 +293,19 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
       assertFiniteTransforms(api,'outside '+site.id);
       entered++;
     }
-    assert.equal(entered,api.SITES.length,'Every registered interior is entered');assert.ok(entered>=15,'Consolidated homes and existing businesses remain registered');assert.equal(api.SITES.filter(s=>s.homeOwner).length,7,'Seven households remain accessible through five doors');
+    assert.equal(entered,api.SITES.length,'Every registered interior is entered');
+    // Households are a residential-town feature: the shipping shopping district does
+    // not build them, so what "all of them" means depends on the mode. Both are asserted
+    // rather than the count being loosened, or this stops noticing a missing shop.
+    const households=api.SITES.filter(s=>s.homeOwner).length;
+    if(households){
+     assert.ok(entered>=15,'Consolidated homes and existing businesses remain registered');
+     assert.equal(households,7,'Seven households remain accessible through five doors');
+    }else{
+     assert.deepEqual(api.SITES.map(s=>s.id).sort(),
+      ['form3d','frontrow','izakaya','market','office','ramen','tea-house'],
+      'Every shopping-district business is registered and enterable');
+    }
     for(const site of api.SITES){api.reviewSetMinutes(180);await api.enterRoom(site);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id);api.leaveRoom();}
     const yuri=api.world.people.find(p=>p.profile.name==='Thuan').g,yuriScale=yuri.scale.clone();
     const finishShopShift=()=>{if(yuri.userData.inMarket){api.reviewSetMinutes(1200);for(let i=0;i<2400&&yuri.userData.inMarket;i++)api.simulate(.1);assert.equal(yuri.userData.inMarket,undefined,'The persistent shop releases Thuan after she walks out: '+api.reviewShop().service.phase+' '+yuri.position.toArray()+' '+api.activities.state.sakura.restockedDay);}};finishShopShift();

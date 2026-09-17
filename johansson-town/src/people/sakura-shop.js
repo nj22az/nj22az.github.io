@@ -29,9 +29,85 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   canLeave:p=>p!==person||service?.prepareToLeave()!==false});
  service=createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
   isBlocked:(x,z)=>isInside()&&Math.hypot(getPlayerPosition().x-x,getPlayerPosition().z-z)<.55});
+ /**
+  * The staff and customers, as distinct from the fittings. They are hidden while the
+  * shop is only being looked at through its window: nothing drives their animation
+  * from out there, and a person frozen mid-stride behind the glass reads worse than
+  * an empty aisle.
+  */
+ const showPeople=on=>{
+  // Staff are reparented in by the clerk service rather than added at the top, so this
+  // has to look through the whole shop, not just its direct children.
+  group.traverse(o=>{if(o!==group&&(o.userData?.name||o.userData?.character))o.visible=on;});
+ };
+ const UP=new THREE.Vector3(0,1,0);
+
+ /**
+  * The supplied interior brings its own walls, ceiling and floor. Seen from the street
+  * they swallow the shopfront — they are taller than it, and unlit from outside they
+  * read as a black mass over the fascia. The exterior already has a shell, so through
+  * the window we show the fittings inside it and leave the building to the building.
+  */
+ const shell=()=>group.getObjectByName('sakura-building');
+ /** What the interior scales to so it sits inside the shopfront's own walls. */
+ const WINDOW_FIT=.7;
+ /**
+  * Strip lights, so the aisles are legible from the pavement. A shop lit only by what
+  * gets past its own ceiling is a dark hole, which is not what a konbini looks like
+  * from the street at any hour.
+  */
+ let strip=null;
+ const lit=on=>{
+  if(on&&!strip){
+   strip=new THREE.Group();strip.name='Sakura shopfront strip lights';
+   // Two, because one over the counter leaves the far aisle in the dark and a konbini
+   // is evenly lit end to end. Distances are in room units, which the window fit scales
+   // along with everything else.
+   for(const [x,z,power] of [[1.2,1.1,150],[-3.2,-1.6,110]]){
+    const lamp=new THREE.PointLight(0xfff1d2,power,17,2);
+    lamp.position.set(x,2.6,z);strip.add(lamp);
+   }
+   group.add(strip);
+  }else if(!on&&strip){strip.traverse(o=>o.dispose?.());strip.removeFromParent();strip=null;}
+ };
+
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
-  enter(parent){parent.add(group);group.visible=true;display.updateStock(state.sakura.stock);},
-  hide(){scene.add(group);group.visible=false;},
+  enter(parent){
+   parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
+   const walls=shell();if(walls)walls.visible=true;
+   lit(false);
+   group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
+  },
+  /**
+   * Parks the real interior behind the shop's own glazing, so the street looks in at
+   * the shop the player will actually walk into rather than at a set of stand-in
+   * shelves. The transform is the one shop-street-view.js uses to map the interior
+   * camera out to the street, run the other way — which is what makes the view in and
+   * the view out agree.
+   *
+   * @param {THREE.Object3D} parent the town group
+   * @param {{position:number[],yaw:number}} frontage
+   */
+  street(parent,frontage){
+   if(!parent||!frontage?.position)return false;
+   parent.add(group);
+   // The supplied interior is 13.6m by 10.7m; the shopfront that stands for it on the
+   // street is 10m by 8.2m. That mismatch predates this, and it cannot be fixed by
+   // growing the facade — the izakaya is against its shoulder. So the shop is fitted
+   // to its own window instead: without this its ends stand outside the side walls,
+   // in daylight, as two black slabs either side of the fascia.
+   const fit=WINDOW_FIT;
+   group.scale.setScalar(fit);
+   group.rotation.set(0,frontage.yaw,0);
+   group.position.set(...frontage.position)
+    .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
+   const walls=shell();if(walls)walls.visible=false;
+   lit(true);
+   group.visible=true;showPeople(false);
+   display.updateStock(state.sakura.stock);
+   return true;
+  },
+  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const walls=shell();if(walls)walls.visible=true;showPeople(true);},
   update(dt){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
  };
 }

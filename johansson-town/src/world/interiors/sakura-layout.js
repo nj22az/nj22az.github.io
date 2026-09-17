@@ -4,6 +4,9 @@ export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
  spawn:[0,0,3.2],entrance:[0,0,3.45],exit:[0,1.35,3.88],yaw:0,
+ // The glazing plane, in room coordinates. Both directions of the shop window use
+ // it: the street seen from inside, and the real interior seen from the street.
+ frontZ:3.91,
  staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
  colliders:[
   rect(-1.5,1.33,6.05,1.23,1.5),rect(-.48,-1.16,4.08,1.23,1.5),
