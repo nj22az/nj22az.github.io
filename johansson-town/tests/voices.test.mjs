@@ -5,13 +5,19 @@ import {VOICE_LINES} from '../src/people/voice-lines.js';
 import {DIALOGUE} from '../src/people/schedules.js?snappy=1';
 
 test('published voice topics have matching subtitles and real local WAVs',async()=>{
- assert.equal(VOICE_LINES.length,4);
+ assert.equal(VOICE_LINES.length,3);
  for(const clip of VOICE_LINES){
   const row=DIALOGUE[clip.resident].find(row=>row[0]===clip.topic);
+  // A later rewrite of a resident's lines must not silently drop the wiring:
+  // an unreachable clip would play audio under a subtitle that disagrees with it.
+  assert.ok(row,clip.id+' still reaches a '+clip.resident+' line');
   assert.equal(row[1],clip.ja+'\n'+clip.en);assert.equal(row[3],clip.id);
   const wav=await readFile(new URL('../assets/audio/voices/'+clip.id+'.wav',import.meta.url));
   assert.equal(wav.toString('ascii',0,4),'RIFF');assert.equal(wav.toString('ascii',8,12),'WAVE');assert.ok(wav.length>100000);
  }
+ // Retired with Kenji's rewrite; the clip stays on disk with its provenance.
+ assert.ok(!VOICE_LINES.some(clip=>clip.id==='kenji-game'));
+ assert.ok(DIALOGUE.Kenji.every(row=>!row[3]),'no recording contradicts Kenji\u2019s rewritten lines');
 });
 
 test('delayed speech cannot play after close, replacement, mute or hidden page',async()=>{

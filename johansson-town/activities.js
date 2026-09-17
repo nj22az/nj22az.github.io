@@ -132,10 +132,13 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
     const commuterMode=state.townMode==='shopping-district';
-    const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id)&&!(commuterMode&&id==='home'));
+    // The home topic keeps its place in the rotation while commuting. Dropping it
+    // left the thinner residents three usable lines against a three-deep history,
+    // so their opening line came round again every fourth time they were asked.
+    const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
     // Newly discovered callbacks take precedence, then cycle through authored topics.
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
-    let text=row[1];
+    let text=commuterMode&&row[0]==='home'?commuterDescription(name):row[1];
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     if(residentHomeDescription(name)||commuterMode)buttons.push([commuterMode?'How do you travel?':'Where do you live?',()=>show(name+' · '+(commuterMode?'Harbour Line':'Home'),commuterMode?commuterDescription(name):residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);

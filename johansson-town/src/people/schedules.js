@@ -20,7 +20,6 @@ export const DIALOGUE={
  'Bus driver':[['time','The timetable is optimistic. I admire that in paper.'],['stop','This is the Harbour Line. The bus is the part currently missing.'],['book','Those Swedish books need their own ticket.','book'],['cv','Two bases? I have two stops. It is not quite the same.','cv'],['rain','A wet timetable is still wrong.'],['route','Station that way. Harbour the other way. I keep it simple.']],
  'Cold-storage kid':[['ice','Ice. Twenty yen. Briefly solid.'],['books','The Swedish books weigh more than the fish.'],['paper','The Bligh paper is dry. That is already a good voyage.','bligh'],['key','That blank could label the freezer key. We have lost the label twice.','keychain'],['shift','Night shift. The fish keep very unsociable hours.'],['home','Go home before you smell like your work.']]
 };
-for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
 for(const archived of PROFILES){
  const p=RESIDENTS.find(p=>p.name===archived.name)||archived;
  const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home',residentHomeDescription(p.name)||'I live at '+p.homeAddress+'.']];
@@ -42,6 +41,9 @@ DIALOGUE.Kenji=[
  ['home',residentHomeDescription('Kenji')+' After supper I put the tools away and kick back.']
 ];
 DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the shop stay here overnight.']);
+// Apply the recorded clips last: a later rewrite of a resident's lines must not
+// leave a published subtitle disagreeing with the audio it plays.
+for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;

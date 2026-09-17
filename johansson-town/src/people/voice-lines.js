@@ -1,5 +1,8 @@
 // Generated from the completed entries in assets/generation/pilot/voices.json.
 // Pending clips are deliberately excluded from runtime requests.
+// kenji-game is generated and kept on disk but retired from the runtime: Kenji's
+// lines were rewritten into 1980s American slang, which that Japanese recording
+// contradicts. A published clip must agree with the subtitle shown beside it.
 export const VOICE_LINES=[
   {
     "id": "aiko-greeting",
@@ -26,15 +29,6 @@ export const VOICE_LINES=[
     "ja": "窓際の椅子は空いていますよ。少し休んでいきませんか。",
     "en": "The window chair is free. Would you like to rest a little?",
     "speaker": "Ono_anna",
-    "instruction": "Speak Japanese naturally and clearly, with a calm, warm delivery. Do not sing."
-  },
-  {
-    "id": "kenji-game",
-    "resident": "Kenji",
-    "topic": "game",
-    "ja": "スターポートで満点を取ったら、工房に案内するよ。",
-    "en": "Get a perfect score at Star Port and I will show you the workshop.",
-    "speaker": "Aiden",
     "instruction": "Speak Japanese naturally and clearly, with a calm, warm delivery. Do not sing."
   }
 ];
