@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
+import {buildPeninsulaLife} from './peninsula-life.js';
 
 // The public road ends at a dense tree line. The Harbour Line still continues
 // beyond the trees. Pedestrians may walk the woods around the trunks; only the
@@ -46,5 +47,6 @@ export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{
  const postMat=new THREE.MeshStandardMaterial({color:0x594938,roughness:1});
  for(const x of [FOREST_EDGE.roadX-1.8,FOREST_EDGE.roadX+1.8]){const post=new THREE.Mesh(new THREE.BoxGeometry(.1,2.1,.1),postMat);post.position.set(x,1.05,FOREST_EDGE.wallZ-.48);group.add(post);}
  const marker=new THREE.Object3D();marker.name='forest-road-waypoint';marker.position.set(FOREST_EDGE.roadX,1,FOREST_EDGE.wallZ-.9);group.add(marker);register(marker,'Read the forest road notice',()=>onAction('read','Forest road notice','The sealed bus lane continues through the trees. Walk around the trunks: the northern woods and the rest of the headland are open ground.'));
- return {group,road,wall:null,marker,busRoute:{id:'bus-forest-road',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
+ const life=buildPeninsulaLife({parent,colliders,register,onAction,shadows});
+ return {group,road,wall:null,marker,life,busRoute:{id:'bus-forest-road',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
 }
