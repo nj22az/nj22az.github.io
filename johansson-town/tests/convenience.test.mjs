@@ -31,11 +31,24 @@ test('Shopify stays offline when disabled and maps only configured variants',asy
 test('store purchases charge once, stack goods, survive reload and honour closing time',async()=>{
  const {installDOM}=await import('./fixtures.mjs'),{createActivities}=await import('../activities.js?snappy=1');
  const dom=installDOM();let minutes=1002;const options={say(){},onWeather(){},onTime(){},getMinutes:()=>minutes};const acts=createActivities(options),item=STORE_ITEMS[4],start=acts.state.yen;
- for(let i=0;i<2;i++){acts.action('store-item',item.name,item);dom.button('Buy in town · ¥90');}
- assert.equal(acts.state.yen,start-180);assert.equal(acts.state.inventory.filter(n=>n===item.name).length,2);
+ // Goods are basketed at the shelf and paid for at the counter, so a purchase is the
+ // whole ritual: pick up, decline the bag, pay cash.
+ const pay=acts=>{acts.konbiniCounter();
+  if(dom.has('I have my own'))dom.button('I have my own');
+  dom.button(dom.labels().find(l=>l.startsWith('Pay ¥')));};
+ for(let i=0;i<2;i++){acts.action('store-item',item.name,item);dom.button('Into the basket · ¥90');}
+ pay(acts);
+ assert.equal(acts.state.yen,start-180,'Charged once for the pair, not per tap');
+ assert.equal(acts.state.inventory.filter(n=>n===item.name).length,2);
  const restored=createActivities(options);assert.equal(restored.state.yen,start-180);assert.equal(restored.state.inventory.filter(n=>n===item.name).length,2);
- restored.action('store-item',item.name,item);minutes=1200;dom.button('Buy in town · ¥90');assert.equal(restored.state.yen,start-180);
- minutes=1002;restored.state.yen=0;restored.action('store-item',item.name,item);dom.button('Buy in town · ¥90');assert.equal(restored.state.yen,0);assert.equal(restored.state.inventory.filter(n=>n===item.name).length,2);
+ // Closing time: the basket fills but the till refuses.
+ restored.action('store-item',item.name,item);dom.button('Into the basket · ¥90');
+ minutes=1200;pay(restored);
+ assert.equal(restored.state.yen,start-180,'Nothing is charged after closing');
+ // Reopened, but with an empty wallet.
+ minutes=1002;restored.state.yen=0;pay(restored);
+ assert.equal(restored.state.yen,0);
+ assert.equal(restored.state.inventory.filter(n=>n===item.name).length,2,'and nothing reaches the bag');
  restored.close();acts.close();
 });
 

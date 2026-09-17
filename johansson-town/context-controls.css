@@ -23,9 +23,10 @@
  #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 210px);font-size:14px}
 }
 
-/* Run and Jump share a layout container: separate absolute offsets can overlap. */
+/* Run and Jump share a layout container: separate absolute offsets can overlap.
+   dual-controls.css lays this out as a right-hand row; this is the fallback. */
 @media(pointer:coarse){
- #movementActions{position:absolute;right:max(116px,calc(env(safe-area-inset-right) + 106px));bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px));display:grid;grid-template-rows:48px 70px;gap:14px;width:84px;justify-items:center;pointer-events:none}
+ #movementActions{position:absolute;right:max(20px,env(safe-area-inset-right));bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px));display:grid;grid-template-rows:48px 70px;gap:14px;width:84px;justify-items:center;pointer-events:none}
  #movementActions #run,#movementActions #jump{position:static;inset:auto;transform:none;margin:0;pointer-events:auto}
  #movementActions #run{grid-row:1;width:84px;height:48px;min-height:48px}
  #movementActions #jump{grid-row:2;width:70px;height:70px}
@@ -44,13 +45,10 @@
 #act.control-off,#run.control-off,#jump.control-off,#drink.control-off{
  opacity:0;transform:scale(.82);pointer-events:none!important}
 
-/* The sticks are always needed, so they dim rather than leave. Anything that puts a
-   contextual button on screen, or any touch at all, brings them straight back. */
-@media(pointer:coarse){
- #mobile .touch-stick,#stick,#knob{transition:opacity .45s ease}
- #mobile.controls-idle .touch-stick,#mobile.controls-idle #stick,#mobile.controls-idle #knob{opacity:.28}
-}
+/* The stick used to be painted on the view the whole time, so it dimmed when nothing
+   was happening. It now draws nothing at all until a thumb is down — see
+   src/input/virtual-joystick.js — so there is no idle state left to dim. */
 
 @media(prefers-reduced-motion:reduce){
- #act,#run,#jump,#drink,#mobile .touch-stick,#stick,#knob{transition:none}
+ #act,#run,#jump,#drink,#mobile .stick-base{transition:none}
 }

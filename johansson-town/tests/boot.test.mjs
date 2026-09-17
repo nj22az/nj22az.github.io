@@ -60,11 +60,18 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const rendererShim=dataModule(`
       export * from ${JSON.stringify(threeUrl)};
       export class WebGLRenderer {
-        constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8};this.shadowMap={};this.dpr=1;this.info={render:{calls:0,triangles:0}};}
+        constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8,isWebGL2:true};this.shadowMap={};this.dpr=1;this.width=1;this.height=1;this.target=null;this.autoClear=true;this.info={render:{calls:0,triangles:0}};}
         setPixelRatio(value){this.dpr=value;}
         getPixelRatio(){return this.dpr;}
         setSize(width,height,updateStyle=true){this.width=width;this.height=height;if(updateStyle){this.domElement.style.width=width+'px';this.domElement.style.height=height+'px';}}
         render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);}
+        // The ink pipeline draws the town into an offscreen target before grading it,
+        // so the double has to answer the render-target half of the renderer too.
+        getDrawingBufferSize(target){target.set(this.width*this.dpr,this.height*this.dpr);return target;}
+        getRenderTarget(){return this.target;}
+        setRenderTarget(target){this.target=target;}
+        clear(){}
+        clearDepth(){}
       }
     `);
     const threeImport="import * as THREE from '"+threeUrl+"';";
@@ -297,7 +304,9 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     await api.enterRoom(api.SITES.find(s=>s.id==='form3d'));api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
     assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
     yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';delete yuri.userData.justArrived;api.reviewSetMinutes(1002);await api.enterRoom(api.SITES.find(s=>s.id==='market'));
-    const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Buy in town · ¥120');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
+    const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');api.activities.action('store-item','tea',STORE_ITEMS[0]);choose('Into the basket · ¥120');
+    // Goods are paid for at the counter now, so the sale is the whole ritual.
+    api.activities.konbiniCounter();choose('I have my own');choose('Pay ¥120 in cash');api.activities.close();assert.ok(api.activities.state.sakura.cash>=120,'A completed shop sale funds inventory purchases');
     yuri.userData.hit.fn();choose('Sell items from my bag');choose('Sell Johansson cable ring · +¥120');
     assert.equal(api.activities.state.yen,workshopBalance+80-120);assert.ok(!api.activities.state.inventory.includes('Johansson cable ring'));api.leaveRoom();
     // The supplied store is retail-only; food is prepared at the ramen counter.

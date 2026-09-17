@@ -28,17 +28,28 @@ test('camera rotation is independent of frame rate, invertible and pitch-limited
  assert.equal(lookStep(0,-1.25,0,1,.1).pitch,-1.25);
  const settings=cameraSettings({sensitivity:Infinity,fov:-100,deadzone:.9,invertY:true,bob:false});assert.deepEqual(settings,{sensitivity:1,fov:45,deadzone:.35,invertY:true,bob:false});
 });
-test('two touches can move and look together; release, cancel and pausing stop their axes',()=>{
- installDOM();let enabled=true,dragged=0;const canvas=new Element(),movePad=new Element(),lookPad=new Element();
- const sticks=createTouchSticks({canvas,movePad,lookPad,enabled:()=>enabled,onDrag:dx=>dragged+=dx});
- // A look pad is still supported for callers that want one; the published touch build
- // drops it and looks by dragging the view instead.
- const send=(target,type,id,x=56,y=56)=>{for(const fn of target.listeners[type]||[])fn({pointerId:id,pointerType:'touch',button:0,clientX:x,clientY:y,preventDefault(){},stopPropagation(){}});};
- send(movePad,'pointerdown',1,56,20);send(lookPad,'pointerdown',2,90,56);assert.ok(sticks.move.y<-.8&&sticks.look.x>.8);
- send(movePad,'pointerup',1);assert.equal(sticks.move.y,0);assert.ok(sticks.look.x>.8);
- send(lookPad,'pointercancel',2);assert.equal(sticks.look.x,0);
- send(movePad,'pointerdown',3,56,20);enabled=false;send(movePad,'pointermove',3,56,20);assert.deepEqual(sticks.move,{x:0,y:0});
- enabled=true;send(canvas,'pointerdown',4);send(canvas,'pointermove',4,90,56);assert.equal(dragged,34);assert.ok(sticks.suppressClick(),'Camera dragging must not activate a shelf item');sticks.reset();
+test('the move axes come from the joystick and a paused game drops them',()=>{
+ installDOM();let enabled=true,dragged=0;
+ const canvas=new Element(),movePad=new Element(),stickBase=new Element(),stickKnob=new Element();
+ movePad.getBoundingClientRect=()=>({left:0,top:0,width:300,height:300});
+ stickBase.getBoundingClientRect=()=>({left:88,top:88,width:124,height:124});
+ const sticks=createTouchSticks({canvas,movePad,stickBase,stickKnob,
+  enabled:()=>enabled,onDrag:dx=>dragged+=dx});
+ const send=(target,type,id,x=0,y=0)=>{for(const fn of target.listeners[type]||[])
+  fn({pointerId:id,pointerType:'touch',button:0,clientX:x,clientY:y,preventDefault(){},stopPropagation(){}});};
+
+ send(movePad,'pointerdown',1,150,150);send(movePad,'pointermove',1,150,20);
+ assert.ok(sticks.move.y<-.9,'a thumb drag up walks forward');
+ send(movePad,'pointerup',1);assert.equal(sticks.move.y,0);
+
+ send(movePad,'pointerdown',3,150,150);send(movePad,'pointermove',3,150,20);
+ enabled=false;send(movePad,'pointermove',3,150,20);
+ assert.deepEqual(sticks.move,{x:0,y:0},'pausing mid-walk stops the walk');
+
+ enabled=true;send(canvas,'pointerdown',4,56,56);send(canvas,'pointermove',4,90,56);
+ assert.equal(dragged,34);
+ assert.ok(sticks.suppressClick(),'Camera dragging must not activate a shelf item');
+ sticks.reset();
 });
 test('controller menu repeats do not spam and range adjustments remain within the camera limits',()=>{
  installDOM();const repeat=createMenuRepeat(),f={held:[],move:{x:0,y:1}};assert.equal(repeat(f,.016),'down');assert.equal(repeat(f,.016),'');assert.equal(repeat(f,.4),'down');f.move.y=0;repeat(f,.016);f.move.y=-1;assert.equal(repeat(f,.016),'up');
@@ -50,20 +61,3 @@ test('camera settings open and close safely with malformed stored preferences',(
  camera.open();assert.equal(camera.active,true);camera.close();assert.equal(camera.active,false);assert.equal(opened,1);assert.equal(closed,1);assert.equal(camera.settings.fov,65);
 });
 
-test('the published touch build looks by dragging the view, with no second stick',async()=>{
- installDOM();const dragged={x:0,y:0};
- const send=(target,type,id,x=56,y=56)=>{for(const fn of target.listeners[type]||[])fn({pointerId:id,pointerType:'touch',button:0,clientX:x,clientY:y,preventDefault(){},stopPropagation(){}});};
- const canvas=new Element(),movePad=new Element();
- const sticks=createTouchSticks({canvas,movePad,enabled:()=>true,onDrag:(dx,dy)=>{dragged.x+=dx;dragged.y+=dy;}});
- assert.deepEqual(sticks.look,{x:0,y:0},'There is no look stick to read');
- // Walking and looking at once: one thumb holds the move stick, another drags the view.
- send(movePad,'pointerdown',1,56,20);assert.ok(sticks.move.y<-.8,'The move stick still walks');
- send(canvas,'pointerdown',2,200,400);send(canvas,'pointermove',2,240,380);
- assert.ok(dragged.x>0&&dragged.y<0,'Dragging the view turns the camera');
- assert.ok(sticks.move.y<-.8,'and does not disturb the walk in progress');
- assert.equal(sticks.suppressClick(),true,'A drag is not also treated as a tap');
- send(canvas,'pointerup',2);send(movePad,'pointerup',1);
- assert.equal(sticks.move.y,0);
- const markup=await readFile(new URL('../index.html',import.meta.url),'utf8');
- assert.doesNotMatch(markup,/id="lookStick"/,'The look stick is gone from the page');
-});

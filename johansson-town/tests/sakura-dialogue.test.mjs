@@ -136,3 +136,15 @@ test('the letter is remembered after hours, and the flags reach the save',async(
  assert.equal(saved.story.sat_after_close,true);
  assert.deepEqual(restoreStory(saved.story).met_thuan,true,'and read back on reload');
 });
+
+test('the unscripted conversation is offered but never starts on its own',async()=>{
+ const {acts}=await town();
+ acts.action('resident','Thuan');
+ assert.ok(labels().includes('Ask her something'),'It sits beside her written topics');
+ assert.ok(labels().includes('Talk with Thuan'),'and does not replace them');
+ press('Ask her something');
+ // Node has no WebGPU, which is the same answer an older phone gives.
+ assert.match(body(),/672MB|cannot answer freely/,'The cost or the refusal is stated before anything downloads');
+ assert.ok(labels().some(l=>/Download and start|Not now/.test(l)),'Downloading is a choice, not a consequence');
+ press('Not now');
+});

@@ -52,20 +52,47 @@ export function createYuriFace(model){
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(rgb,3));geometry.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(joints,4));geometry.setAttribute('skinWeight',new THREE.Float32BufferAttribute(weights,4));geometry.setIndex(indices);geometry.computeVertexNormals();
  const face=new THREE.SkinnedMesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide}));
  face.name='Thuan expressive face';face.userData.facialFeatures=true;face.frustumCulled=false;face.position.copy(body.position);face.quaternion.copy(body.quaternion);face.scale.copy(body.scale);face.bind(body.skeleton,body.bindMatrix.clone());body.parent.add(face);
- let time=0,smile=0;
- const state={blink:0,smile:0,mouth:0};
+ // skinZ walks every skin triangle for a point-in-triangle test. The features move only
+ // a few millimetres in y and the cheek behind them is flat over that range, so resolve
+ // each feature's depth once here instead of tens of thousands of triangle tests a frame.
+ for(const f of features)f.z=skinZ(f.x,f.y);
+
+ let time=0;
+ const state={blink:0,smile:0,mouth:0,browOuter:0,browInner:0,eyeWide:0};
+
+ /**
+  * Positions the procedural features from explicit weights. This is the non-blendshape
+  * half of the face controller's rig interface.
+  * @param {import('./thuan-face-controller.js').FaceWeights} w
+  */
+ function apply(w){
+  const blink=THREE.MathUtils.clamp(w.blink||0,0,1),open=Math.max(.025,1-blink);
+  const smile=w.smile||0,browOuter=w.browOuter||0,browInner=w.browInner||0;
+  const eyeWide=w.eyeWide||0,mouth=(w.mouthOpen||0)*.0035;
+  const p=geometry.attributes.position;
+  for(const f of features){
+   let y=f.y;
+   if(['eye','iris','glint'].includes(f.kind))y=1.6908+(y-1.6908)*open*(1+eyeWide*.35);
+   if(f.kind==='lid')y=1.6908+open*.008*(1-f.u*f.u)+f.v+eyeWide*.0016;
+   if(f.kind==='brow'){
+    // Which end of the brow lifts is the whole difference between worry and surprise:
+    // inner rises at the nose, outer across the arc.
+    const inner=Math.max(0,-f.u*f.side);
+    y+=.003*(1-f.u*f.u)+smile*.0015+browOuter*.0030*(1-f.u*f.u)+browInner*.0034*inner;
+   }
+   if(f.kind==='mouth')y+=smile*.004*(f.u/.018)**2+Math.sign(f.v)*mouth;
+   p.setXYZ(f.i,f.x,y,f.z+f.layer);
+  }
+  p.needsUpdate=true;geometry.computeVertexNormals();
+  Object.assign(state,{blink,smile,mouth,browOuter,browInner,eyeWide});
+ }
+
+ // Retained so a caller without a controller still gets a living face.
+ let smile=.18;
  function update(dt,{sleeping=false,engaged=false,speaking=false}={}){
   time+=dt;smile=THREE.MathUtils.damp(smile,engaged?.85:.18,5,dt);
-  const phase=time%4.7,blink=sleeping?1:phase<.17?Math.sin(phase/.17*Math.PI):0,open=Math.max(.025,1-blink),mouth=speaking&&!sleeping?(.5+.5*Math.sin(time*15))*.0035:0;
-  const p=geometry.attributes.position;
-  for(const f of features){let x=f.x,y=f.y;
-   if(['eye','iris','glint'].includes(f.kind))y=1.6908+(y-1.6908)*open;
-   if(f.kind==='lid')y=1.6908+open*.008*(1-f.u*f.u)+f.v;
-   if(f.kind==='brow')y+=.003*(1-f.u*f.u)+smile*.0015;
-   if(f.kind==='mouth'){y+=smile*.004*(f.u/.018)**2+Math.sign(f.v)*mouth;}
-   p.setXYZ(f.i,x,y,skinZ(x,y)+f.layer);
-  }
-  p.needsUpdate=true;geometry.computeVertexNormals();Object.assign(state,{blink,smile,mouth});
+  const phase=time%4.7,blink=sleeping?1:phase<.17?Math.sin(phase/.17*Math.PI):0;
+  apply({blink,smile,mouthOpen:speaking&&!sleeping?(.5+.5*Math.sin(time*15)):0});
  }
- update(0);return {mesh:face,state,update};
+ update(0);return {mesh:face,state,update,apply};
 }

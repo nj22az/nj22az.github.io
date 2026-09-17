@@ -10,11 +10,3 @@ export function controlVisibility({playing,paused,seated,inside,moving,running,c
   run:available&&!seated&&(moving||running)||held('run'),
   jump:available&&!seated&&!inside&&moving||held('jump')};
 }
-
-// The sticks are always needed, so they dim rather than leave, and only once nothing
-// else is asking for attention: no contextual button on screen, no movement, and no
-// touch for a while. Any touch resets sinceTouchMs, so they come straight back.
-export function stickIdle({controls,moving,sinceTouchMs,idleAfterMs=2600}){
- const busy=controls.act||controls.drink||controls.run||controls.jump;
- return !!controls.mobile&&!busy&&!moving&&sinceTouchMs>idleAfterMs;
-}

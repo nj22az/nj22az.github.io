@@ -1,4 +1,5 @@
 import {createYuriFace} from './yuri-face.js';
+import {createThuanFaceController} from './thuan-face-controller.js';
 import {createOfficeHands} from './office-hands.js';
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {prepareMergedYuriAnimations} from './yuri-merged-animation.js';
@@ -92,6 +93,9 @@ export function createLocalCharacters({shadows=false}={}){
     if(!asset)return null;
     const model=clone(asset.scene);
     const lowPoly=LOW_POLY.includes(source),style=residentPersonality(name);
+    // The procedural face only exists on the low-poly stand-in. The merged Meshy model
+    // has neither it nor blendshapes, so the controller finds no rig there and idles;
+    // it starts driving the moment an ARKit export supplies one.
     const face=lowPoly&&name==='Thuan'?createYuriFace(model):null;
     if(lowPoly)addResidentAccessories(model,style);
     const bedAccessories=[];
@@ -132,6 +136,7 @@ export function createLocalCharacters({shadows=false}={}){
     }
     }catch{mixer.stopAllAction();}
     const idle=actions.get('Idle_Neutral');if(idle){idle.play();actor.current='Idle_Neutral';idle.time=(actors.length*.617)%idle.getClip().duration;mixer.update(0);}
+    actor.faceController=name==='Thuan'?createThuanFaceController({model,face}):null;
     actor.chairMotion=createThuanChairMotion(model,entity);
     if(actor.chairMotion&&actor.seatSupport){
       const idleTime=idle.time;mixer.stopAllAction();actions.get('Sit').reset().play();mixer.update(0);
@@ -144,7 +149,9 @@ export function createLocalCharacters({shadows=false}={}){
     actor.mealMotion=createMealMotion(model,entity,targetHeight);actor.hands?.fit(actor.mealMotion);
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
+  let faceClock=0;
   function update(dt){
+    faceClock+=dt;
     for(const actor of actors){const {entity,mixer,actions}=actor;
       actor.customerGaze?.restore();
       actor.mealMotion?.restore();
@@ -204,7 +211,14 @@ export function createLocalCharacters({shadows=false}={}){
         for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
         if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
       }
-      actor.face?.update(dt,{sleeping:eyesClosed,engaged:!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime),speaking:!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now())});
+      if(actor.faceController){
+        const engaged=!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime);
+        actor.faceController.setAsleep(eyesClosed);
+        actor.faceController.setSpeaking(!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now()));
+        // A conversation may pin an expression; otherwise she warms up when engaged.
+        actor.faceController.setExpression(entity.userData.thuanExpression||(engaged?'smile':'neutral'));
+        actor.faceController.update(dt,faceClock);
+      }
       if(entity.userData.inWorkplace==='office'&&entity.userData.socialPose==='Type')actor.officeHands?.update(dt);
       actor.seatDrape?.update(blend);
       actor.chairMotion?.update(entity.userData,actor.seatBlend);

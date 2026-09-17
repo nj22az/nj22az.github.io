@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {controlVisibility,stickIdle} from '../src/interact/control-visibility.js';
+import {controlVisibility} from '../src/interact/control-visibility.js';
 
 test('idle exploration hides unused controls; movement, targets and held drinks reveal only relevant actions',()=>{
  const idle={playing:true,paused:false,seated:false,inside:false,moving:false,running:false,canDrink:false,hasTarget:false};
@@ -39,22 +39,17 @@ test('contextual buttons fade instead of being removed from under the thumb',asy
  assert.match(css,/#act\.control-off[^}]*opacity:0/,'Hidden controls fade rather than collapse');
  assert.match(css,/#act\.control-off[^}]*pointer-events:none/,'A faded control cannot swallow a tap');
  assert.doesNotMatch(css,/\.control-off\{[^}]*display:none/,'control-off never removes layout');
- assert.match(css,/#mobile\.controls-idle[^}]*opacity:\.28/,'Idle sticks dim rather than disappear');
+ assert.doesNotMatch(css,/controls-idle/,'The stick hides itself now, so there is no idle state to dim');
  const markup=await readFile(new URL('../index.html',import.meta.url),'utf8');
  for(const id of ['act','run','jump','drink'])
   assert.match(markup,new RegExp('id="'+id+'" class="control-off"'),id+' starts faded, not display:none');
 });
 
-test('the sticks dim only when the screen is otherwise quiet, and any touch wakes them',()=>{
+test('the whole touch pad leaves when play stops, and comes back with it',()=>{
  const idle={playing:true,paused:false,seated:false,inside:false,moving:false,running:false,canDrink:false,hasTarget:false};
- const quiet=controlVisibility(idle);
- assert.equal(stickIdle({controls:quiet,moving:false,sinceTouchMs:5000}),true,'Standing still with nothing to do dims the sticks');
- assert.equal(stickIdle({controls:quiet,moving:false,sinceTouchMs:900}),false,'A recent touch keeps them bright');
- assert.equal(stickIdle({controls:quiet,moving:true,sinceTouchMs:5000}),false,'Walking keeps them bright');
- // Anything worth showing a button for is worth keeping the sticks legible beside it.
- for(const extra of [{hasTarget:true},{canDrink:true},{running:true}])
-  assert.equal(stickIdle({controls:controlVisibility({...idle,...extra}),moving:false,sinceTouchMs:5000}),false,
-   'A visible contextual button keeps the sticks bright: '+Object.keys(extra)[0]);
- // With play stopped the whole pad is gone, so there is nothing to dim.
- assert.equal(stickIdle({controls:controlVisibility({...idle,playing:false}),moving:false,sinceTouchMs:5000}),false);
+ assert.equal(controlVisibility(idle).mobile,true);
+ assert.equal(controlVisibility({...idle,playing:false}).mobile,false);
+ assert.equal(controlVisibility({...idle,paused:true}).mobile,false,'a menu takes the pad with it');
+ // The stick itself no longer needs a dimmed state: it draws nothing between touches.
+ // See tests/virtual-joystick.test.mjs.
 });

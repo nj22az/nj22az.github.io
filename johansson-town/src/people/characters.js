@@ -116,7 +116,26 @@ export function createCharacters(options={}){
       if(c.faceName){const target=entities.get(c.faceName);if(target)face(e,target,true);}
     }
   }
-  window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter});
+  /**
+   * Pins a facial expression, and optionally plays a gesture with it. The dialogue and
+   * the language model both reach the face through here rather than touching the rig.
+   */
+  function setExpression(name,expression,gesture='idle'){
+    const entity=entities.get(name);
+    if(!entity)return false;
+    entity.userData.thuanExpression=expression||null;
+    if(gesture&&gesture!=='idle')models.gesture(entity);
+    return true;
+  }
+  /** Holds the mouth open while a spoken line runs; the controller does the shaping. */
+  function setSpeaking(name,value){
+    const entity=entities.get(name);
+    if(!entity)return false;
+    // A generous window: the voice clears it on end, cancel or timeout.
+    entity.userData.speakingUntil=value?performance.now()+60000:0;
+    return true;
+  }
+  window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter,setExpression,setSpeaking});
 
   function update(dt){
     updateAIControls(dt);
