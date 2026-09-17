@@ -23,6 +23,9 @@ import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
+import {createThuanMind} from './src/people/thuan-mind.js';
+import {createThuanVoice} from './src/people/thuan-voice.js';
+import {createThuanChat} from './src/people/thuan-chat.js';
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
   const $=s=>document.querySelector(s);
@@ -112,6 +115,26 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   // Thuan's story thread. The shop counter menu below stays as it is; this is the part
   // that remembers, so it is the part the flags and conditions drive.
+  // Her unscripted side. Built on first use and never before: see thuan-chat.js for why
+  // the download is opt-in. The written conversation below stays the default.
+  let thuanChat=null;
+  function askThuan(){
+    if(!thuanChat){
+      const mind=createThuanMind();
+      const voice=createThuanVoice({face:{setSpeaking(value){
+        window.__JOHANSSON_CHARACTER_CONTROL__?.setSpeaking?.('Thuan',value);
+      }}});
+      thuanChat=createThuanChat({show,close,body,mind,voice,
+        onReply:reply=>window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',reply.expression,reply.gesture),
+        getContext:()=>{
+          const m=((getMinutes()%1440)+1440)%1440;
+          return 'It is '+String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')+
+            (m>=540&&m<1200?' and the shop is open.':' and the shop is shut.');
+        }});
+    }
+    thuanChat.open();
+  }
+
   function thuanStory(){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
     countTalk(state.story,getMinutes());
@@ -153,7 +176,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
-    show(title,greeting,[['Talk with Thuan',thuanStory],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
+    show(title,greeting,[['Talk with Thuan',thuanStory],['Ask her something',askThuan],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
   }
   function resident(name){
     if(name==='Thuan'){thuanConversation();return;}

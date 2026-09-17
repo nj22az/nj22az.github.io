@@ -44,3 +44,19 @@ body.conversation-open #hud,body.conversation-open #mobile,body.conversation-ope
  #activity.conversation #activityTitle{font-size:20px}
  #activity.conversation #activityActions{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Unscripted conversation with Thuan. Sits inside the existing conversation modal, so
+   it inherits its paper and type; only the transcript and the input box are new. */
+.chat-log{margin:10px 0 0;max-height:34vh;overflow-y:auto;overscroll-behavior:contain}
+.chat-line{margin:0 0 8px;font-size:14px;line-height:1.5}
+.chat-line b{display:inline-block;min-width:3.6em;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
+.chat-line span{display:inline}
+.chat-you{opacity:.8}
+.chat-status{margin:10px 0 0;font-size:12px;letter-spacing:.06em;opacity:.7}
+.chat-input{display:flex;gap:8px;margin-top:12px}
+.chat-input input{flex:1 1 auto;min-width:0;min-height:44px;padding:8px 12px;font:inherit;font-size:15px;
+ border:2px solid #252821;border-radius:8px;background:#fbf5e6;color:#172323}
+.chat-input input:disabled{opacity:.6}
+.chat-input button{flex:0 0 auto;min-height:44px;padding:8px 16px;border:2px solid #252821;border-radius:8px;
+ background:#9b4035;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.chat-input button:disabled{opacity:.6;cursor:progress}
