@@ -12,7 +12,12 @@ export function preloadSakuraInterior(){
  pending=(async()=>{const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);try{
   const response=await fetch(assetURL('models/sakura-interior/sakura-interior.glb?fittings=2'),{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);
   model=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;model.name='Supplied convenience-store interior';model.userData.sharedAsset=true;
-  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;}}});return true;
+  // Kept out of the cel pass. These meshes carry vertex colours, and converting them
+  // to MeshToonMaterial renders the whole shop black — verified by putting the
+  // materials back one by one, and it happens with stock toon too, not just with the
+  // shadow-tint patch. The shop still goes through the ink and the grade, so it sits
+  // in the same picture; only its shading stays as the model authored it.
+  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;m.userData.keepPhysical=true;}}});return true;
  }catch(error){console.warn('Sakura interior unavailable:',error.message);return false;}finally{clearTimeout(timeout);pending=null;}})();return pending;
 }
 export function buildSakuraInterior({room,reg,action,exit}){
