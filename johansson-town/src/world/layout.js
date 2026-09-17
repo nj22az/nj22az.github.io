@@ -6,6 +6,7 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
 import {shoppingDistrictActive} from './town-mode.js';
+import {peninsulaLandContains} from './coastline.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -49,7 +50,11 @@ export function routeAt(x,z,r=0){
  }
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
- return LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
+ const ribbon=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
+ if(ribbon)return ribbon;
+ // Off-road land on the closed headland is walkable grass. Water stays blocked.
+ if(peninsulaLandContains(x,z,r))return {id:'peninsula-ground',surface:'dirt'};
+ return null;
 }
 export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
-export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:FOREST_EDGE.roadEndZ+1};
+export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:52};
