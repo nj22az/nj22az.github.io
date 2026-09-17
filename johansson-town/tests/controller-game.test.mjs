@@ -14,7 +14,7 @@ test('controller and camera controls boot in the game, pause movement in setting
  const moduleUrl=new URL('../src/game.js',import.meta.url),three=new URL('../vendor/three.module.js',import.meta.url).href;
  const data=source=>'data:text/javascript;base64,'+Buffer.from(source).toString('base64');
  let source=await readFile(moduleUrl,'utf8');source=source.replace(/(from\s*['"])(\.[^'"]+)(['"])/g,(_,a,b,c)=>a+new URL(b,moduleUrl).href+c);
- const shim=data(`export * from ${JSON.stringify(three)};export class WebGLRenderer {constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8};this.shadowMap={};this.info={render:{calls:0,triangles:0}};this.dpr=1;}setPixelRatio(x){this.dpr=x;}getPixelRatio(){return this.dpr;}setSize(){}render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);}}`);
+ const shim=data(`export * from ${JSON.stringify(three)};export class WebGLRenderer {constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8,isWebGL2:true};this.shadowMap={};this.info={render:{calls:0,triangles:0}};this.dpr=1;this.target=null;this.autoClear=true;}setPixelRatio(x){this.dpr=x;}getPixelRatio(){return this.dpr;}setSize(){}render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);}getDrawingBufferSize(t){t.set(1280,720);return t;}getRenderTarget(){return this.target;}setRenderTarget(t){this.target=t;}clear(){}clearDepth(){}}`);
  source=source.replace("import * as THREE from '"+three+"';","import * as THREE from '"+shim+"';");
  source+='\nexport {camera,player,activities,cameraControls,touchSticks,controllerFrame,updateController,simulate,controlsAllowed,resetInput,centreCamera,keys};export const stand=()=>{seated=false;parkSeat=null;};';
  try{

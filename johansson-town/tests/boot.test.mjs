@@ -60,11 +60,18 @@ test('CPU-only game boots, passes startup checks and enters/exits every register
     const rendererShim=dataModule(`
       export * from ${JSON.stringify(threeUrl)};
       export class WebGLRenderer {
-        constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8};this.shadowMap={};this.dpr=1;this.info={render:{calls:0,triangles:0}};}
+        constructor({canvas}){this.domElement=canvas;this.capabilities={getMaxAnisotropy:()=>8,isWebGL2:true};this.shadowMap={};this.dpr=1;this.width=1;this.height=1;this.target=null;this.autoClear=true;this.info={render:{calls:0,triangles:0}};}
         setPixelRatio(value){this.dpr=value;}
         getPixelRatio(){return this.dpr;}
         setSize(width,height,updateStyle=true){this.width=width;this.height=height;if(updateStyle){this.domElement.style.width=width+'px';this.domElement.style.height=height+'px';}}
         render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);}
+        // The ink pipeline draws the town into an offscreen target before grading it,
+        // so the double has to answer the render-target half of the renderer too.
+        getDrawingBufferSize(target){target.set(this.width*this.dpr,this.height*this.dpr);return target;}
+        getRenderTarget(){return this.target;}
+        setRenderTarget(target){this.target=target;}
+        clear(){}
+        clearDepth(){}
       }
     `);
     const threeImport="import * as THREE from '"+threeUrl+"';";

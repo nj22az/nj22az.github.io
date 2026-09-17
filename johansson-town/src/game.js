@@ -47,6 +47,8 @@ import { createInspector } from '../inspect-3d.js';
 import { createCastAI } from './people/schedules.js?snappy=1';
 import { createCharacters, preloadCharacter } from './people/characters.js?snappy=1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
+import { createCelPass } from './render/cel.js?snappy=1';
+import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -54,7 +56,7 @@ const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700,highTier=!mobile||tabletLike,shadows=highTier,canvas=$('#game');
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
-renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
 const bands=new Uint8Array([48,48,48,255,115,115,115,255,184,184,184,255,255,255,255,255]),gradient=new THREE.DataTexture(bands,4,1,THREE.RGBAFormat);gradient.needsUpdate=true;gradient.magFilter=THREE.NearestFilter;gradient.minFilter=THREE.NearestFilter;
 const outlineMat=new THREE.MeshBasicMaterial({color:0x252821,side:THREE.BackSide}),boxCache=new Map();
@@ -67,10 +69,88 @@ function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
+
+// The drawn look, after Sakura Crossing (Kenton-GMI, MIT): quantised light with
+// violet shadows, screen-space ink from the depth buffer, and an anime colour grade.
+// Both halves fail soft — if the pipeline cannot be built the town renders exactly as
+// it did before, which matters more than the look does.
+const celPass=createCelPass();
+let pipeline=null;
+try{
+ pipeline=createInkPipeline(renderer,{
+  // Supersampling is what keeps the line work clean, and it is also the most
+  // expensive thing here. renderDpr already holds a phone's draw buffer well below
+  // its screen, so a modest factor there costs little and is what stops the ink
+  // stair-stepping when the small buffer is scaled back up to a 3x display.
+  superScale:mobile?(tabletLike?1.4:1.25):1.5,
+  pixelBudget:mobile?2.4e6:4.6e6,
+  // FXAA is a single pass and it is the one that resolves the line work, so it is
+  // worth having on the devices whose buffers need it most.
+  fxaa:true,
+  // Sakura Crossing grades flat painted colour. This town is built on photographed
+  // concrete and timber, which starts darker and busier, so the darks are tinted
+  // less heavily and lifted further than the reference does — otherwise the street
+  // goes to mud rather than to violet.
+  gradeOptions:{shadowTint:0xd4cfe8,lift:.07,saturation:1.18}
+ });
+}catch(error){console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
+window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},cel:celPass.stats,
+ get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
+ // Live knobs, so the look can be judged against the town instead of against numbers.
+ tune:v=>pipeline?.tune(v),
+ flatten:v=>celPass.setFlatten(v),
+ get lights(){return {ambient,bounce,uplight,sun};},
+ get state(){return pipeline?.state||null;}};
+let celTick=0;
+/** Cel-shades whatever has arrived since the last sweep. Districts stream in for the
+ * whole session, so this cannot be a one-off at startup. */
+function sweepCel(dt){
+ if((celTick-=dt)>0)return;
+ celTick=.4;
+ celPass.apply(scene);
+}
+sweepCel(0);
+/**
+ * Runs one frame's drawing through the ink and grade, or straight out without them.
+ *
+ * A driver that cannot give us a depth texture or a half-float target throws on the
+ * first frame rather than at construction, so the fallback lives here: the look is
+ * dropped once, tone mapping comes back, and the town keeps running. Being playable
+ * beats being drawn.
+ */
+function present(draw,view=camera){
+ if(!pipeline){draw(renderer);return;}
+ pipeline.setCamera(view);
+ try{pipeline.render(draw);}
+ catch(error){
+  console.warn('Ink pipeline failed, rendering plain:',error.message);
+  try{pipeline.dispose();}catch{}
+  pipeline=null;
+  // Whatever threw may well be the call that unbinds the target, so this one is
+  // allowed to fail too rather than take the frame down with it.
+  try{renderer.setRenderTarget?.(null);}catch{}
+  renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;
+  draw(renderer);
+ }
+}
 loadTownEnvironment(scene,renderer);
 const townSky=createTownSky(scene);
-const ambient=new THREE.HemisphereLight(0xdde9ec,0x695c4d,1.35);scene.add(ambient);
-const sun=new THREE.DirectionalLight(0xffd39a,highTier?3.8:3.2);sun.position.set(-28,38,18);sun.castShadow=shadows;
+// Two-light anime setup. One warm key that the ramp quantises into flat bands, one
+// strong cool bounce from the opposite quarter, and a weak up-light — because an
+// anime background has *coloured* shadows rather than dark ones, and the fill has to
+// be strong enough to carry them. The hemisphere's ground colour is violet for the
+// same reason. MeshToonMaterial ignores scene.environment entirely, so the HDR that
+// used to do this work no longer reaches the town and these lights replace it.
+// A toon ramp shapes direct light only, and MeshToonMaterial has no image-based
+// lighting at all, so the sky fill has to make up what scene.environment used to add.
+const CEL_FILL=1.75;
+// With tone mapping off, the grade carries the overall level; flat bands need more
+// headroom than the rolled-off highlights AgX used to give.
+const CEL_EXPOSURE=1.2;
+const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
+const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
+const uplight=new THREE.DirectionalLight(0xc9b9e0,.35);uplight.position.set(4,-18,6);scene.add(uplight);
+const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
 if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
 const SITES=createBusinesses();
@@ -268,7 +348,7 @@ function updatePlayer(dt){
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
-function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();townSky.update(camera,day,weather,!!current);const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient;renderer.toneMappingExposure=air.exposure;$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
+function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();townSky.update(camera,day,weather,!!current);const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient*CEL_FILL;bounce.intensity=(.55+day*.85)*(weather?.8:1);renderer.toneMappingExposure=air.exposure;pipeline?.setExposure(air.exposure*CEL_EXPOSURE);$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
 $('#exitRoomButton').onclick=()=>leaveRoom();
 function syncView(){
  document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
@@ -429,10 +509,10 @@ characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
 detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:38,load:()=>world.warehouse?.load()});
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)inspector.render(frameDt);else if(current?.id==='market')shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:3.91}:null});else if(!current)renderOutdoor();else renderer.render(scene,camera)}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);}if(!paused)chatBubble.render(neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:3.91}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
-  townSections.render({renderer,scene,camera,town,position:player.position});
+  present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
 advanceAbsentTown(activities.takeAbsence());
