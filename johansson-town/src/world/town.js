@@ -129,7 +129,7 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
   read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
 
-  addWithCollider(group,colliders,factory.utilityCabinet(-6.2,13.8,0));
+  addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
