@@ -6,7 +6,14 @@ export class Element {
   setPointerCapture(id){this.capture=id;}hasPointerCapture(id){return this.capture===id;}releasePointerCapture(){this.capture=null;}
   addEventListener(name,fn){(this.listeners[name]??=[]).push(fn);}removeEventListener(){}
   get firstChild(){return this.children[0];}get lastChild(){return this.children.at(-1);}
-  getContext(){return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText:s=>({width:s.length*17})},{get:(o,k)=>o[k]||(()=>{})});}
+  getContext(){
+    // Gradients have to hand back an object with addColorStop: the catch-all below
+    // returns undefined, and drawing code chains straight off the result.
+    const gradient=()=>({addColorStop(){}});
+    return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText:s=>({width:s.length*17}),
+      createLinearGradient:gradient,createRadialGradient:gradient,createConicGradient:gradient,
+      createPattern:()=>({setTransform(){}})},{get:(o,k)=>o[k]||(()=>{})});
+  }
 }
 export function installDOM(saved={}){
  const elements=new Map(),storage=new Map(Object.entries(saved));

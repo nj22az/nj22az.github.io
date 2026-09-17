@@ -10,6 +10,7 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
+import {peninsulaActive} from './town-mode.js';
 import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
@@ -179,7 +180,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const seaPos=seaGeo.attributes.position;
 
   const warehouseWorld={group,colliders};
-  const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
+  // The warehouse is a building, so the peninsula does without it for now; the quay,
+  // the pier and the water are the port.
+  const harbourWarehouse=peninsulaActive()?null:buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
   cyl(.045,2.3,[-7.3,1.15,-35],0x655444);obstacle(-7.3,-35,.12,.12);
 
@@ -255,7 +258,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
 
   return {
-    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,landmarks:[harbourWarehouse.place,busStation.place],
+    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,
+    landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
     harbourShops,boardwalk,plantSites,
     setRain(value){
       boardwalk.setRain(value);

@@ -20,7 +20,12 @@ function signTexture(title,sub){
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
-export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{},shadows=false}={}){
+/**
+ * @param {object} options
+ * @param {boolean} [options.trees] false builds the bus road on its own, for layouts
+ *   that close it with something other than a tree line — see coyote-tunnel.js.
+ */
+export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{},shadows=false,trees=true}={}){
  const group=new THREE.Group();group.name='Forest wall and bus-only road';parent.add(group);
  const road=new THREE.Mesh(new THREE.BoxGeometry(MAIN_ROAD.width,.09,FOREST_EDGE.roadEndZ-MAIN_ROAD.maxZ),new THREE.MeshStandardMaterial({color:0x60645d,roughness:.94}));
  road.name='bus-only forest road';road.position.set(FOREST_EDGE.roadX,.005,(FOREST_EDGE.roadEndZ+MAIN_ROAD.maxZ)/2);road.receiveShadow=!!shadows;group.add(road);
@@ -30,6 +35,7 @@ export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{
  }
  const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
  const leafMats=[0x42634b,0x4f7650,0x5b7f53].map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
+ if(!trees)return {group,road,wall:null,marker:null,busRoute:{id:'bus-forest-road',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
  const treeXs=[];
  for(let i=0;i<15;i++)treeXs.push(FOREST_EDGE.minX+.65+i*(FOREST_EDGE.maxX-FOREST_EDGE.minX-1.3)/14);
  for(const [row,zOffset] of [[0,-.18],[1,.72]])for(const [i,x] of treeXs.entries()){

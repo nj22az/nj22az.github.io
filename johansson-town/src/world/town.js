@@ -16,8 +16,9 @@ import {createMaterials} from '../render/materials.js?snappy=1';
 import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
-import {configureTownMode} from './town-mode.js';
+import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {buildForestEdge} from './forest-edge.js';
+import {buildCoyoteTunnel} from './coyote-tunnel.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -159,8 +160,12 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
-  const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+  const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
   world.forestEdge=forestEdge;
+  // The road out of town has to end somewhere, and on the peninsula it ends at a
+  // tunnel that is painted on a rock face. See coyote-tunnel.js.
+  if(peninsulaActive())world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+   register:options.register,onAction:options.onAction,shadows:options.shadows});
   for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
@@ -173,7 +178,10 @@ export function createTown(options){
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
-  buildDiningStreet(world,options);buildIzakaya(world,options);buildPark(world,options);
+  // The peninsula keeps the park and the port; the dining lane and the izakaya are
+  // switched off with the rest of the buildings.
+  if(!peninsulaActive()){buildDiningStreet(world,options);buildIzakaya(world,options);}
+  buildPark(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
