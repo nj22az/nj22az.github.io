@@ -30,7 +30,7 @@ import {FULL_TOWN} from './world/full-town-state.js';
 import {travelProgress} from './progression/travel.js';
 import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
-import {controlVisibility} from './interact/control-visibility.js';
+import {controlVisibility,stickIdle} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
@@ -78,6 +78,12 @@ const SITES=createBusinesses();
 const interactables=[],roomColliders=[],doors=new Map();
 let catchingUp=false,hiddenAt=0;
 let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPlayerService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
+// Contextual touch-control state. Declared with the rest of the player state because
+// starting play stamps the touch clock, and that can happen while this module runs.
+let controlsMovingUntil=0,controlsTargetUntil=0,controlsTouchedAt=0;
+// A control under a finger must not be hidden out from under it. Any pointer release
+// ends every press, so a control can never stay pinned on by a touch we lost track of.
+const pressedControls=new Set();
 let conversationName=null,conversationCamera=null,navigationTarget=null;
 let activeRoomLayout=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=1002,subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
@@ -295,7 +301,7 @@ function updateDirectory(){
 }
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(160,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<8)failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(!FULL_TOWN.active&&environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
-started=true;$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Thuan.',5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Thuan.',5);runStabilityChecks();
 canvas.addEventListener('click',event=>{
  if(!current||!controlsAllowed()||touchSticks.suppressClick())return;
  if(seated){doInteract();return;}
@@ -318,9 +324,9 @@ document.addEventListener('keydown',e=>{
 function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').textContent=value?'RUNNING':'RUN';}
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
-$('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();toggleRunning();};
+$('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();pressedControls.add('run');toggleRunning();};
 $('#run').onclick=e=>{if(e.detail===0)toggleRunning();};
-$('#drink').onpointerdown=e=>{e.preventDefault();hands.drink();};$('#act').onpointerdown=e=>{e.preventDefault();doInteract()};
+$('#drink').onpointerdown=e=>{e.preventDefault();pressedControls.add('drink');hands.drink();};$('#act').onpointerdown=e=>{e.preventDefault();pressedControls.add('act');doInteract()};
 
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();started=false;const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Reload Johansson Town to continue.'}});canvas.addEventListener('webglcontextrestored',()=>location.reload());function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight,!!conversationName);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
 function setConversation(name,text=''){for(const p of world.people)if(p.g.userData.playerConversation){delete p.g.userData.playerConversation;delete p.g.userData.chatHold;delete p.g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
@@ -391,12 +397,27 @@ function updateController(dt){
  if(f.pressed[5])characters.jump();
 }
 
-let controlsMovingUntil=0;
+const releasePressedControls=()=>pressedControls.clear();
+addEventListener('pointerup',releasePressedControls);
+addEventListener('pointercancel',releasePressedControls);
+addEventListener('pointerdown',()=>{controlsTouchedAt=performance.now();});
+// Jump is bound inside the character rig, so mark its press here to keep the same
+// rule: a button being held stays on screen until the finger leaves it.
+$('#jump').addEventListener?.('pointerdown',()=>pressedControls.add('jump'));
 function updateContextControls(){
  const blocked=cameraControls.active||roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
- if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05))controlsMovingUntil=performance.now()+1400;
- const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:performance.now()<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!active});
- for(const [id,visible] of Object.entries(state)){const element=$('#'+id);if(element.classList.contains('hidden')===visible)element.classList.toggle('hidden',!visible);}
+ const now=performance.now();
+ if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05)){controlsMovingUntil=now+1400;controlsTouchedAt=now;}
+ // Hold the action button for a moment after its target is lost. Walking past scenery
+ // otherwise blinks it in and out, and a tap can land where the button just was.
+ if(!blocked&&active)controlsTargetUntil=now+450;
+ const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:now<controlsTargetUntil,pressed:[...pressedControls]});
+ for(const [id,visible] of Object.entries(state)){
+  const element=$('#'+id);
+  if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}
+  element.classList.toggle('control-off',!visible);
+ }
+ $('#mobile').classList.toggle('controls-idle',stickIdle({controls:state,moving:now<controlsMovingUntil,sinceTouchMs:now-controlsTouchedAt}));
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
 const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;

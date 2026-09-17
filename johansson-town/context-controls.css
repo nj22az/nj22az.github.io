@@ -35,3 +35,22 @@
  #movementActions #run{height:44px;min-height:44px}
  #movementActions #jump{width:62px;height:62px}
 }
+
+/* Contextual touch controls fade rather than snap.
+   display:none removes a button mid-tap and shifts what sits under the thumb; the
+   fade keeps the target in place while it leaves, and pointer-events stops a faded
+   control from swallowing a tap meant for the world behind it. */
+#act,#run,#jump,#drink{transition:opacity .16s ease,transform .16s ease}
+#act.control-off,#run.control-off,#jump.control-off,#drink.control-off{
+ opacity:0;transform:scale(.82);pointer-events:none!important}
+
+/* The sticks are always needed, so they dim rather than leave. Anything that puts a
+   contextual button on screen, or any touch at all, brings them straight back. */
+@media(pointer:coarse){
+ #mobile .touch-stick,#stick,#knob{transition:opacity .45s ease}
+ #mobile.controls-idle .touch-stick,#mobile.controls-idle #stick,#mobile.controls-idle #knob{opacity:.28}
+}
+
+@media(prefers-reduced-motion:reduce){
+ #act,#run,#jump,#drink,#mobile .touch-stick,#stick,#knob{transition:none}
+}
