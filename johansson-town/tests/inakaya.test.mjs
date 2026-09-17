@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
-import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_YURI_SPOT,ramenPoint} from '../src/world/interiors/ramen-layout.js';
+import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_THUAN_SPOT,ramenPoint} from '../src/world/interiors/ramen-layout.js';
 import {circleHitsRect,circleHitsCircle,sweepFraction} from '../physics.js?snappy=1';
 import {RESIDENTS,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {residentPlan,ramenOpen,RAMEN_VISITS,RAMEN_DOOR} from '../src/people/social.js';
@@ -33,7 +33,7 @@ test('Inakaya shares the street asset, aligns to real stools and leaves a passab
    const hit=ray(seat.position[0],seat.height+.015,seat.position[2],-1)[0];
    assert.ok(hit&&Math.abs(hit.point.y-seat.height)<.02,'Pelvis aligned to actual stool cushion');
   }
-  const blocked=(x,z)=>suppliedRoomBoundsBlocked(RAMEN_LAYOUT,x,z,.28)||RAMEN_LAYOUT.colliders.some(c=>circleHitsRect(x,z,.28,c))||RAMEN_GUEST_SEATS.some(s=>circleHitsCircle(x,z,.28,s.position[0],s.position[2],.35))||circleHitsCircle(x,z,.28,RAMEN_YURI_SPOT.position[0],RAMEN_YURI_SPOT.position[2],.35);
+  const blocked=(x,z)=>suppliedRoomBoundsBlocked(RAMEN_LAYOUT,x,z,.28)||RAMEN_LAYOUT.colliders.some(c=>circleHitsRect(x,z,.28,c))||RAMEN_GUEST_SEATS.some(s=>circleHitsCircle(x,z,.28,s.position[0],s.position[2],.35))||circleHitsCircle(x,z,.28,RAMEN_THUAN_SPOT.position[0],RAMEN_THUAN_SPOT.position[2],.35);
   const [sx,,sz]=RAMEN_LAYOUT.spawn;assert.equal(blocked(sx,sz),false);
   assert.equal(sweepFraction({x:sx,z:sz},{x:1.14,z:sz},blocked),1);
   assert.equal(sweepFraction({x:1.14,z:sz},{x:1.14,z:-1.05},blocked),1,'Pass two seated guests and basin to the rear');

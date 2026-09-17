@@ -6,7 +6,7 @@ import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
 // Thuan's saved home fields remain for compatibility with archived saves; the
 // published shopping-district mode uses the Harbour Line commute instead.
-export const YURI_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,"role":"Sakura shopkeeper","height":1.64,"work":[-4,-25.5],"evening":restaurantApproach('izakaya'),"friend":"Nao","start":540,"close":1200,"retire":1410,"supperStart":null,"supperEnd":null};
+export const THUAN_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,"role":"Sakura shopkeeper","height":1.64,"work":[-4,-25.5],"evening":restaurantApproach('izakaya'),"friend":"Nao","start":540,"close":1200,"retire":1410,"supperStart":null,"supperEnd":null};
 export const ACTIVE_RESIDENT_NAMES=Object.freeze(['Aya','Kenji','Mrs Sato','Harbour master','Reiko','Tetsuo','Officer Mori','Bus driver','Nao','Thuan']);
 const NEIGHBOURHOOD={
  Aya:{friend:'Reiko',gossip:'Reiko put Tama in the evening paper. He has been sitting on the entire edition ever since.',clue:'The books and evening papers share our counter now. Tama still prefers the window chair.'},
@@ -20,7 +20,7 @@ const NEIGHBOURHOOD={
 };
 // Existing identities and saved routines use the supplied street’s shared entrances.
 export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
- const source=name==='Thuan'?YURI_PROFILE:PROFILES.find(p=>p.name===name);
+ const source=name==='Thuan'?THUAN_PROFILE:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
  return {...source,...NEIGHBOURHOOD[name],work:({Aya:TOWN_DESTINATIONS.books,Kenji:TOWN_DESTINATIONS.workshop,Reiko:TOWN_DESTINATIONS.books,Tetsuo:TOWN_DESTINATIONS.workshop,'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:DINING.izakayaDoor})[name]||diningPoint(source.work),evening:({Aya:[.15,18.7],Kenji:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:DINING.izakayaDoor})[name]||diningPoint(source.evening),...residentialHome(name)};
 });

@@ -1,5 +1,5 @@
 import {groundHeight} from '../world/layout.js?snappy=1';
-import {RAMEN_GUEST_SEATS,RAMEN_YURI_SPOT,RAMEN_LAYOUT} from '../world/interiors/ramen-layout.js';
+import {RAMEN_GUEST_SEATS,RAMEN_THUAN_SPOT,RAMEN_LAYOUT} from '../world/interiors/ramen-layout.js';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
@@ -21,7 +21,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const name=p.profile.name;
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
   if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
-  if(place==='ramen'&&name==='Thuan')return {...RAMEN_YURI_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
+  if(place==='ramen'&&name==='Thuan')return {...RAMEN_THUAN_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   const seats=place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
   const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==getPlayerSeat())&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));

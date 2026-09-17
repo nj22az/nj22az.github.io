@@ -43,5 +43,5 @@ export function sellPrint(state,id){
 }
 export function canSellAtSakura(context,minutes){
  const time=((minutes%1440)+1440)%1440;
- return context.inside==='market'&&time>=540&&time<1200&&context.yuriAvailable===true;
+ return context.inside==='market'&&time>=540&&time<1200&&context.thuanAvailable===true;
 }

@@ -7,7 +7,7 @@ import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
-import {RESIDENTS,YURI_PROFILE,residentHomeDescription} from './residents.js';
+import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -47,7 +47,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
  const commuterMode=()=>world.townMode==='shopping-district'||state()?.townMode==='shopping-district';
  for(const person of world.people)person.g.userData.scheduled=true;
- const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||YURI_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||THUAN_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){

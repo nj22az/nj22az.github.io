@@ -91,7 +91,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aya has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
-  function yuriConversation(topic=null){
+  function thuanConversation(topic=null){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
     const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya';
     const commuterMode=state.townMode==='shopping-district';
@@ -123,11 +123,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
-    if(topic){show(title,replies[topic],[['Tell me something else',()=>yuriConversation()],['See you soon, Thuan',close]]);return;}
-    show(title,greeting,[['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>yuriConversation('snack')],['I like your ribbon',()=>yuriConversation('ribbon')],['Where do you go after work?',()=>yuriConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>yuriConversation('home')],['You make this place lovely',()=>yuriConversation('compliment')],['Give me a little challenge',()=>yuriConversation('challenge')],['Do you sing along to the radio?',()=>yuriConversation('radio')],['Tell me a shop secret',()=>yuriConversation('secret')],['See you soon, Thuan',close]]);
+    if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
+    show(title,greeting,[['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
   }
   function resident(name){
-    if(name==='Thuan'){yuriConversation();return;}
+    if(name==='Thuan'){thuanConversation();return;}
 
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];

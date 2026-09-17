@@ -14,7 +14,7 @@ import {buildPark} from './park.js?snappy=1';
 import {createVendingMachine} from './vending.js';
 import {ITEMS} from '../../content-data.js';
 import {STREET_CAST} from '../people/residents.js';
-import {IZAKAYA_DOOR,RAMEN_DOOR,YURI_HOME_DOOR,izakayaOpen} from '../people/social.js';
+import {IZAKAYA_DOOR,RAMEN_DOOR,THUAN_HOME_DOOR,izakayaOpen} from '../people/social.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 let source=null,pending,clearance;
 export function preloadFullTown(){return pending??=(async()=>{
@@ -98,7 +98,7 @@ export function buildFullTown(options){
   const house=STREET_DOORS.find(d=>d.id==='house-west-canal');
   const home=nearest(...doorApproach(house),[],4);
   yuri.profile.home=home;yuri.profile.homeAddress='22 Willow Alley';
-  YURI_HOME_DOOR.splice(0,2,...home);
+  THUAN_HOME_DOOR.splice(0,2,...home);
   let site=yuriHome||options.sites.find(s=>s.id==='yuri-home');
   if(!site){site={id:'yuri-home',title:'Thuan’s room',jp:'トゥアンの家',sub:'WILLOW ALLEY',color:0x9d7c7e,accent:'#a76680',line:'Shoes off at the door. The fern expects her back before midnight.'};options.sites.push(site);}
   site.door=[home[0],groundHeight(...home),home[1]];site.exitPosition=[...site.door];site.entryFacing=Math.atan2(-house.nx,-house.nz);site.x=house.x;site.z=house.z;

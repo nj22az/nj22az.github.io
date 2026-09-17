@@ -6,7 +6,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
-import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,yuriVisitsIzakaya,yuriEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR,RAMEN_DOOR} from '../src/people/social.js';
+import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,thuanVisitsIzakaya,thuanEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR,RAMEN_DOOR} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
@@ -47,8 +47,8 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
 });
 
 test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
- for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(yuriVisitsIzakaya(m),false);
- for(const m of [1220,1230,1289,2880+1230])assert.equal(yuriVisitsIzakaya(m),true);
+ for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(thuanVisitsIzakaya(m),false);
+ for(const m of [1220,1230,1289,2880+1230])assert.equal(thuanVisitsIzakaya(m),true);
  const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Thuan','Nao']})});
  acts.action('resident','Thuan');assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/all locked up/);
@@ -68,8 +68,8 @@ test('Thuan spends evenings at Minato, ramen, the canal and her own door',()=>{
  assert.equal(residentPlan(yuri,1440+1205).place,'ramen');
  assert.equal(residentPlan(yuri,1440+1230).place,'ramen');
  assert.equal(residentPlan(yuri,1230,true).place,'home');
- assert.equal(yuriEveningPlace(1205),'stroll');
- assert.equal(yuriEveningPlace(1380),'home');
+ assert.equal(thuanEveningPlace(1205),'stroll');
+ assert.equal(thuanEveningPlace(1380),'home');
 });
 
 test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
