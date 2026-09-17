@@ -7,6 +7,7 @@ All runtime files are served from this game's directory. No remote model, map, t
 | Files | Creator/source | Licence and changes |
 | --- | --- | --- |
 | `../vendor/three.module.js`, loaders, utilities and `../tools/vendor/GLTFExporter.js` | [Three.js r170](https://github.com/mrdoob/three.js/tree/r170) | MIT; full text in `../vendor/LICENSE-THREE.txt`; module paths and whitespace normalised |
+| `../src/dialogue/dialogue-engine.js` | [Godot Open Dialogue System — Tina Qin (QueenChristina)](https://github.com/QueenChristina/gd_dialog) | MIT; full text in `../src/dialogue/LICENSE-GD-DIALOG.txt`; GDScript reimplemented in JavaScript as a DOM-free state machine. The dialogue data format and its rules are kept: text pages, conditional `next` with a trailing default, `show_only_if` choices, actions, and the `&` and `|` characters. Godot's scene tree, typewriter timer, voices and bbcode are not ported; town dialogue in `../src/dialogue/sakura.json` is original writing |
 | `asphalt.jpg`, `materials/asphalt-*.jpg` | [asphalt_02 — Rob Tuytel / Poly Haven](https://polyhaven.com/a/asphalt_02) | CC0; 1K albedo, OpenGL normal and packed AO/roughness/metalness |
 | `timber.jpg`, `materials/timber-*.jpg` | [weathered_planks — Dario Barresi and Dimitrios Savva / Poly Haven](https://polyhaven.com/a/weathered_planks) | CC0; same three channels |
 | `roof.jpg`, `materials/roof-*.jpg` | [roof_tiles_14 — Rob Tuytel / Poly Haven](https://polyhaven.com/a/roof_tiles_14) | CC0; same three channels |

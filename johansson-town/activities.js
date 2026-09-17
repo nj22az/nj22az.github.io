@@ -21,6 +21,8 @@ import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave} from './src/save.js';
+import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
+import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
   const $=s=>document.querySelector(s);
@@ -31,7 +33,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=elapsedTownAbsence(saved.savedAt);
-      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
+      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -39,6 +41,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
   } catch {}
 
+  state.story=restoreStory(state.story);
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
@@ -91,6 +94,32 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aya has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
+  // Runs a ported gd_dialog script through the existing conversation modal: one speaker
+  // line, its choices as buttons, and the node's own actions writing the story flags.
+  function runDialogue(script,startId,title){
+    const dialogue=createTownDialogue({script,state,note,getMinutes,
+      getPlace:()=>getSocialContext().inside||'street',getRain:()=>state.weather===true});
+    const render=frame=>{
+      if(frame.done){save();close();return;}
+      const buttons=frame.choices.length
+        ? frame.choices.map(choice=>[choice.text,()=>render(dialogue.choose(choice.index))])
+        : [[frame.endsHere?'See you soon, Thuan':'Go on',()=>render(dialogue.advance())]];
+      show(title||frame.speaker||'',frame.text,buttons);
+    };
+    render(dialogue.start(startId));
+    return dialogue;
+  }
+
+  // Thuan's story thread. The shop counter menu below stays as it is; this is the part
+  // that remembers, so it is the part the flags and conditions drive.
+  function thuanStory(){
+    if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
+    countTalk(state.story,getMinutes());
+    const variables=dialogueVariables({story:state.story,minutes:getMinutes(),
+      place:getSocialContext().inside||'street',rain:state.weather===true});
+    return runDialogue(SAKURA_SCRIPT,sakuraEntry(variables),'Thuan · Sakura Shōten');
+  }
+
   function thuanConversation(topic=null){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
     const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya';
@@ -124,7 +153,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
-    show(title,greeting,[['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
+    show(title,greeting,[['Talk with Thuan',thuanStory],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
   }
   function resident(name){
     if(name==='Thuan'){thuanConversation();return;}
@@ -313,9 +342,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
-  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,thuanStory,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }
