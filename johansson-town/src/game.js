@@ -30,7 +30,7 @@ import {FULL_TOWN} from './world/full-town-state.js';
 import {travelProgress} from './progression/travel.js';
 import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
-import {controlVisibility,stickIdle} from './interact/control-visibility.js';
+import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
@@ -161,6 +161,7 @@ let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPl
 // Contextual touch-control state. Declared with the rest of the player state because
 // starting play stamps the touch clock, and that can happen while this module runs.
 let controlsMovingUntil=0,controlsTargetUntil=0,controlsTouchedAt=0;
+let stickHintUntil=0;
 // A control under a finger must not be hidden out from under it. Any pointer release
 // ends every press, so a control can never stay pinned on by a touch we lost track of.
 const pressedControls=new Set();
@@ -176,7 +177,7 @@ document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
 function controlsAllowed(){return started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
-const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),enabled:controlsAllowed,onDrag:dragLook});
+const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 $('#cameraButton').onclick=openCamera;$('#cameraMenuButton').onclick=openCamera;
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
@@ -384,7 +385,7 @@ function updateDirectory(){
 }
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(160,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<8)failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(!FULL_TOWN.active&&environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
-started=true;controlsTouchedAt=performance.now();$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Thuan.',5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Sakura Konbini · Across the street. E to stand.':'Sakura Konbini · Step up to the entrance to meet Thuan.',5);runStabilityChecks();
 canvas.addEventListener('click',event=>{
  if(!current||!controlsAllowed()||touchSticks.suppressClick())return;
  if(seated){doInteract();return;}
@@ -500,7 +501,7 @@ function updateContextControls(){
   if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}
   element.classList.toggle('control-off',!visible);
  }
- $('#mobile').classList.toggle('controls-idle',stickIdle({controls:state,moving:now<controlsMovingUntil,sinceTouchMs:now-controlsTouchedAt}));
+ if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
 const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;
