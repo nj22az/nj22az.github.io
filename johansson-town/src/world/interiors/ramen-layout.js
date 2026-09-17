@@ -9,7 +9,7 @@ const seat=z=>({position:ramenPoint(.28,INAKAYA_FIT.floor,z),height:.8868523-INA
 // Alternate stools leave shoulder room; two more stools remain for the player.
 export const RAMEN_GUEST_SEATS=[seat(1),seat(-.6)];
 export const RAMEN_PLAYER_SEATS=[seat(1.8),seat(.2)];
-export const RAMEN_YURI_SPOT={position:ramenPoint(.25,INAKAYA_FIT.floor,2.58),yaw:0};
+export const RAMEN_THUAN_SPOT={position:ramenPoint(.25,INAKAYA_FIT.floor,2.58),yaw:0};
 const rect=(x,z,w,d,height)=>({x:(ramenX(x-w/2)+ramenX(x+w/2))/2,z:z*1.25,w:ramenX(x+w/2)-ramenX(x-w/2),d:d*1.25,height});
 export const RAMEN_LAYOUT={
  bounds:{minX:ramenX(-1.76),maxX:ramenX(1.035),minZ:-1.10*1.25,maxZ:2.94*1.25},

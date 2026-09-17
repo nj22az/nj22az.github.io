@@ -35,7 +35,9 @@ test('consolidated harbour keeps one reachable entrance per business through det
   }
   assert.deepEqual(entered.sort(),['form3d','frontrow','office']);
   for(let z=BOARDWALK.minZ;z<=BOARDWALK.maxZ;z+=.25){assert.equal(blocked(BOARDWALK.x,z),false,'Boardwalk centreline at '+z);assert.equal(routeAt(BOARDWALK.x,z).surface,'wood');assert.equal(groundHeight(BOARDWALK.x,z),0);}
-  assert.equal(routeAt(BOARDWALK.x,25).surface,'asphalt');assert.equal(routeAt(0,25).surface,'stone','Restaurant approach is a separate pavement');
+  // Main Street now ends at z=20.5, so z=25 is bus station forecourt on both lines.
+  // Sample inside the carriageway, where road and footway are still distinct.
+  assert.equal(routeAt(BOARDWALK.x,15).surface,'asphalt');assert.equal(routeAt(0,15).surface,'stone','Restaurant approach is a separate pavement');
   const bounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.ok(Math.abs(bounds.max.y)<1e-6);assert.equal(bounds.min.z,BOARDWALK.minZ);assert.equal(bounds.max.z,BOARDWALK.maxZ);
   world.update(0,0,1,1002);assert.ok(world.harbourShops.every(s=>s.shutter.material.emissiveIntensity===0),'Daylight entries need no artificial glow');
   world.update(0,0,0,1080);assert.ok(world.harbourShops.every(s=>s.shutter.material.emissiveIntensity>0),'Evening door lighting remains visible');

@@ -109,7 +109,7 @@ export function createLocalCharacters({shadows=false}={}){
     }
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
-    const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isYuri:name==='Thuan',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isThuan:name==='Thuan',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -181,7 +181,7 @@ export function createLocalCharacters({shadows=false}={}){
       if(chairTransition)actor.model.position.y+=.075*Math.sin(Math.PI*blend)**2;
       const waving=!!(entity.userData.chat?.greeting||actor.gestureTime);
       const pose=entity.userData.socialPose;
-      const requested=(actor.isYuri&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||(actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
+      const requested=(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||(actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
       const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(chairTransition){

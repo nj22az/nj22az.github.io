@@ -3,37 +3,47 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js?snappy=1';
-import {ROUTES,routeAt} from '../src/world/layout.js?snappy=1';
+import {activeRoutes,routeAt} from '../src/world/layout.js?snappy=1';
 import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 import {circleHitsRect} from '../physics.js?snappy=1';
 import {RESIDENTS} from '../src/people/residents.js';
 import {FULL_TOWN} from '../src/world/full-town-state.js';
 import {buildPark} from '../src/world/park.js?snappy=1';
 
-const make=()=>{
+const make=(townMode='shopping-district')=>{
  installDOM();
  const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
- const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const world=createTown({scene:new THREE.Scene(),sites,townMode,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
  return {world,sites};
 };
 
-test('rectangular lanes have clear centres and all homes face a reachable lane',()=>{
+// The published district is what the game paths through, so it is what the lane
+// walk guards. Its retired legacy lanes are not walked: activeRoutes() drops them
+// exactly as the running game does.
+test('rectangular lanes have clear centres and every shopfront door is reachable',()=>{
  const {world,sites}=make();
  const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
- for(const route of ROUTES.slice(3)){
+ for(const route of activeRoutes().slice(3)){
   for(let i=1;i<route.points.length;i++){
    const a=route.points[i-1],b=route.points[i];assert.ok(a[0]===b[0]||a[1]===b[1],route.id);
    const steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])*4);
    for(let j=0;j<=steps;j++)assert.equal(blocked(a[0]+(b[0]-a[0])*j/steps,a[1]+(b[1]-a[1])*j/steps),false,route.id+' at '+j);
   }
  }
+ for(const site of sites){const door=site.door||[site.side*4,0,site.z+2.5];assert.equal(blocked(door[0],door[2]),false,site.id+' entrance');}
+ assert.ok(world.group.getObjectByName('Sakura glass storefront'));
+});
+
+// Homes exist only in the archived legacy fixtures; the published cast commutes
+// in on the Harbour Line, so there is no residential lane there to stand on.
+test('archived residential fixtures keep every home on a reachable lane it faces',()=>{
+ const {world}=make('legacy');
+ const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
  for(const p of RESIDENTS){
   assert.equal(blocked(...p.home),false,p.name+' home approach');
   const dx=p.home[0]-p.house.x,dz=p.home[1]-p.house.z;
   assert.ok(dx*Math.sin(p.house.angle)+dz*Math.cos(p.house.angle)>2,p.name+' faces its lane');
  }
- for(const site of sites){const door=site.door||[site.side*4,0,site.z+2.5];assert.equal(blocked(door[0],door[2]),false,site.id+' entrance');}
- assert.ok(world.group.getObjectByName('Sakura glass storefront'));
 });
 
 test('lane paving is partitioned without overlapping coplanar patches',()=>{

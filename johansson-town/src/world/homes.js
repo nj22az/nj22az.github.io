@@ -2,7 +2,7 @@ import {HOUSEHOLDS} from '../people/households.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {RESIDENTS} from '../people/residents.js';
-import {YURI_HOME_DOOR} from '../people/social.js';
+import {THUAN_HOME_DOOR} from '../people/social.js';
 import {RESIDENTIAL_ENTRIES} from './residential-layout.js';
 import {buildResidentialStreet} from './residential-street.js';
 
@@ -20,7 +20,7 @@ export function buildHomes(world,options){
   Object.assign(site,{title:household.title,line:household.address,homeOwner:household.residents[0],homeOwners:[...household.residents],homeEntry:household.entry,door:[profile.home[0],.02,profile.home[1]],entryFacing:entry.angle,x:entry.facade[0]-.3,z:entry.door[1]});site.exitPosition=[...site.door];
   for(const name of household.residents)homes.set(name,{owner:name,household:household.id,address:household.address,door:profile.home,building:entry.buildingId,occupied:false});
  }
- YURI_HOME_DOOR.splice(0,2,...RESIDENTS.find(p=>p.name==='Thuan').home);
+ THUAN_HOME_DOOR.splice(0,2,...RESIDENTS.find(p=>p.name==='Thuan').home);
  for(const [i,[key,entry]] of Object.entries(RESIDENTIAL_ENTRIES).entries()){
   const households=HOUSEHOLDS.filter(h=>h.entry===key),col=i%4,row=Math.floor(i/4);
   ctx.fillStyle='#344b45';ctx.textAlign='center';ctx.font='bold 23px sans-serif';ctx.fillText('MAIN STREET · '+(i+1),col*256+128,row*128+28,240);

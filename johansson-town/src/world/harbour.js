@@ -158,7 +158,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);
   if(!vendingReady())details.push({id:'street-vending',x:4.35,z:9.1,radius:42,load:()=>hydrateVending(vending,{shadows})});
   obstacle(4.35,9.1,1.3,1);anchor([4.35,1,10.1],'Buy a drink',()=>onAction('vending'));
-  box([1.1,2.5,1],[-6.9,1.25,17.2],0x457e73);box([.91,1.6,.91],[-6.9,1.55,17.2],0x648c87);box([.35,.65,.28],[-6.9,1.4,17.73],0x3d9c6c);label('電話','TELEPHONE',[-6.9,2.4,17.75],1,.28);anchor([-6.9,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-6.9,17.2,1.1,1);
+  // Payphone sits fully on the west footway: narrowing Main Street to six metres
+  // left it overhanging the kerb into the carriageway.
+  box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label('電話','TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
   const busStation=buildBusStation({parent:group,colliders,register,onAction,label,shadows});
 
   for(const [x,z] of [[-7.4,10],[3.9,-22],[-7.4,-33]]){

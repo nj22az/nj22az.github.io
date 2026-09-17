@@ -63,7 +63,7 @@ test('town clean-up can be collected once, survives saves and never discards a f
  const state=fresh();state.inventory=Array(100).fill('Sea bream');assert.equal(collectTownFind(state,CLEANUP_SPOTS[0].id).ok,false);assert.equal(state.townCleanup.collected.length,0);state.inventory=[];
  for(const spot of CLEANUP_SPOTS){assert.equal(collectTownFind(state,spot.id).ok,true);assert.equal(collectTownFind(state,spot.id).ok,false);}
  assert.equal(state.inventory.length,6);assert.deepEqual(restoreTownCleanup(JSON.parse(JSON.stringify(state.townCleanup))),state.townCleanup);
- const dom=installDOM({[SAVE_KEY]:JSON.stringify(state)}),acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,getSocialContext:()=>({inside:'market',yuriAvailable:true})});
+ const dom=installDOM({[SAVE_KEY]:JSON.stringify(state)}),acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,getSocialContext:()=>({inside:'market',thuanAvailable:true})});
  recordSakuraSale(acts.state,150);acts.action('resident','Thuan');dom.button('Sell items from my bag');const sell=document.querySelector('#activityActions').children.find(b=>b.textContent==='Sell returnable glass bottle · +¥30'||b.textContent==='Sell Returnable glass bottle · +¥30');assert.ok(sell);sell.onclick();sell.onclick();assert.equal(acts.state.yen,1230);assert.equal(acts.state.sakura.cash,120);
  assert.equal(JSON.parse(localStorage.getItem(SAVE_KEY)).sakura.cash,120);
 });

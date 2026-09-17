@@ -32,17 +32,20 @@ test('all ten home owners can be selected even where their building entrance is 
  const selected=new Set();for(const a of anchors){entered=null;menus.length=0;a.fn();if(entered)entered.homeOwners.forEach(n=>selected.add(n));for(const menu of menus)for(const item of menu){item.enter();entered.homeOwners.forEach(n=>selected.add(n));}}
  assert.deepEqual([...selected].sort(),RESIDENTS.map(p=>p.name).sort());
 });
-test('every current resident gives their actual address and knows a neighbour who is still in town',async()=>{
+test('every current resident keeps a door address and a live neighbour behind the commuter answer',async()=>{
  const dom=installDOM(),{createActivities}=await import('../activities.js?snappy=1');
  const acts=createActivities({say(){},onWeather(){},onTime(){}});
  for(const p of RESIDENTS){
   assert.ok(RESIDENTS.some(friend=>friend.name===p.friend),p.name+' has a current friend');
-  assert.ok(DIALOGUE[p.name].find(r=>r[0]==='home')[1].includes(p.homeAddress));
-  acts.action('resident',p.name);dom.button('Where do you live?');
-  const answer=document.querySelector('#activityBody').firstChild.textContent;
-  assert.ok(answer.includes(p.homeAddress),p.name+' gives the address shown on the door');
+  // The published shopping district commutes the cast in on the Harbour Line, so
+  // the modal offers travel rather than an address. The addressed home line stays
+  // authored behind it and is still what archived saves and the map read.
+  const home=DIALOGUE[p.name].find(r=>r[0]==='home')[1];
+  assert.ok(home.includes(p.homeAddress),p.name+' gives the address shown on the door');
   const neighbour=RESIDENTS.find(n=>n.name!==p.name&&n.homeEntry===p.homeEntry);
-  if(neighbour){assert.ok(answer.includes(neighbour.name));assert.match(answer,householdFor(p.name).residents.length>1?/share the flat/:/other flat/);}
+  if(neighbour){assert.ok(home.includes(neighbour.name));assert.match(home,householdFor(p.name).residents.length>1?/share the flat/:/other flat/);}
+  acts.action('resident',p.name);dom.button('How do you travel?');
+  assert.match(document.querySelector('#activityBody').firstChild.textContent,/Harbour Line|quay/,p.name+' answers how they reach the district');
   acts.close();
   if(p.name!=='Thuan'){
    acts.action('resident',p.name);dom.button('How is '+p.friend+'?');

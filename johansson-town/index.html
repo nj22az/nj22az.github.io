@@ -24,7 +24,12 @@
 <link rel="stylesheet" href="./landing.css?v=board-3">
 <link rel="stylesheet" href="./sakura-ledger.css">
 <link rel="stylesheet" href="./dual-controls.css?v=1">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-B349HHs6.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CzsBuhU2.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-bench-BS2ccYE8.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/assets-DNfyrzgA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BnN2Tu7q.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/audio-BrCOdDNs.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -51,12 +56,27 @@
             <h1>JOHANSSON<span> TOWN</span></h1>
             <p class="board-lede">A harbour shopping district, 1988. First person. Walk the shops to the quay, then the outer pier and Harbour Line terminal.</p>
           </div>
-          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+          <div class="board-stamp">
             <div class="board-seal" aria-hidden="true"><b>港</b></div>
-            <p class="board-tiny" style="text-align:right;letter-spacing:.12em">HARBOUR OFFICE<br>REVISION 8<br>ENGLISH EDITION</p>
+            <p class="board-tiny board-edition">HARBOUR OFFICE<br>REVISION 8<br>ENGLISH EDITION</p>
           </div>
         </div>
 
+        <section class="admit" aria-labelledby="enter-heading">
+          <p class="board-tiny">05 · ADMISSION</p>
+          <h2 id="enter-heading">Enter the three-dimensional town</h2>
+          <button id="enter" type="button">
+            <span>
+              <small>入町</small>
+              <b>ENTER TOWN</b>
+            </span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </button>
+          <div id="bootStatus">READY</div>
+          <p>The live town is a first-person shopping district with a working port. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
+          <p class="muted admit-note">N on this board cycles the clock, same as in town.</p>
+
+        </section>
         <div class="board-status">
           <div><span>Weekday</span><b id="statusWeekday">Sunday</b></div>
           <div><span>Weather</span><b>Clear</b></div>
@@ -121,26 +141,13 @@
             <button type="button" data-clock-mode="2030" aria-pressed="false"><b>20:30</b><span>Night</span></button>
           </div>
         </section>
-
-        <section class="admit" aria-labelledby="enter-heading">
-          <p class="board-tiny">05 · ADMISSION</p>
-          <h2 id="enter-heading">Enter the three-dimensional town</h2>
-          <p>The live town is a first-person shopping district with a working port. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
-          <button id="enter" type="button">
-            <span>
-              <small>入町</small>
-              <b>ENTER TOWN</b>
-            </span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-          <div id="bootStatus">READY</div>
-          <p class="muted" style="margin-top:10px;font-size:11px;letter-spacing:.04em">N on this board cycles the clock, same as in town.</p>
-
-          <p class="board-tiny" style="margin-top:20px">06 · STREET CONTROLS</p>
+        <section class="controls-panel" aria-labelledby="controls-heading">
+          <h2 id="controls-heading" class="sr-only">Street controls</h2>
+          <p class="board-tiny">06 · STREET CONTROLS</p>
           <ul class="controls-grid">
             <li><kbd>WASD / left stick</kbd><span>Walk</span></li>
             <li><kbd>Shift</kbd><span>Run</span></li>
-            <li><kbd>Mouse / right stick</kbd><span>Look</span></li>
+            <li><kbd>Mouse / drag / right stick</kbd><span>Look</span></li>
             <li><kbd>Space</kbd><span>Jump</span></li>
             <li><kbd>E</kbd><span>Interact / stand</span></li>
             <li><kbd>R</kbd><span>Drink</span></li>
@@ -149,12 +156,13 @@
             <li><kbd>N</kbd><span>Cycle time</span></li>
           </ul>
         </section>
+
       </div>
 
       <section aria-labelledby="hours-heading">
         <div class="section-bar">
           <div>
-            <p class="board-tiny" style="opacity:.7">07 · HOURS OF BUSINESS</p>
+            <p class="board-tiny">07 · HOURS OF BUSINESS</p>
             <h2 id="hours-heading">Opening board</h2>
           </div>
           <p class="board-tiny" id="hoursHeadTime">16:42:00 · AFTERNOON</p>
@@ -264,7 +272,7 @@
 
       <footer class="board-foot">
         <p>Johansson Town is a first-person shopping district and working harbour in the 1980s. The clock on this board follows the weekday and hour where you are, mapped onto 1988; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
-        <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span style="display:block;margin-top:4px;font-family:var(--gothic);font-size:10px;letter-spacing:.16em">HARBOUR DISTRICT · 1988</span></p>
+        <p class="jp"><span id="boardJpDate">昭和63年9月13日</span><span class="board-foot-line">HARBOUR DISTRICT · 1988</span></p>
       </footer>
     </article>
   </div>
@@ -283,7 +291,7 @@
 </div>
 <div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraMenuButton">CAMERA & CONTROLS</button><button id="notebookButton">NOTEBOOK</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1988 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1988</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
-<div id="mobile" class="hidden"><button id="drink" class="hidden" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement stick"><div id="knob" class="stick-knob"></div><span>MOVE</span></div><div id="lookStick" class="touch-stick" aria-label="Camera stick"><div id="lookKnob" class="stick-knob"></div><span>LOOK</span></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="hidden" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="hidden" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="hidden" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
+<div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement stick"><div id="knob" class="stick-knob"></div><span>MOVE</span></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
@@ -327,7 +335,7 @@ import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-B349HHs6.js');
+      await import('./runtime/boot-CzsBuhU2.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

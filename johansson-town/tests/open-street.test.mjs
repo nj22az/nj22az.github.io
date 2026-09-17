@@ -21,7 +21,11 @@ test('street has no transparent canopy sheets and phones retain bounded night li
   if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.material.transparent){const b=new THREE.Box3().setFromObject(o);if(b.min.y<2&&b.max.x-b.min.x>5)barriers.push(o);}
  });
  assert.equal(barriers.length,0,'No street-wide vertical transparent surfaces');
- assert.equal(lights.length,4);assert.ok(lights.every(l=>!l.castShadow));
+ // Compacting the town ended Main Street at z=20.5, so the northern lamp pair at
+ // z=28 no longer stands on any street. Pin the survivors rather than the count
+ // alone, so losing one of these is not mistaken for the same deliberate change.
+ assert.equal(lights.length,2);assert.ok(lights.every(l=>!l.castShadow));
+ assert.deepEqual(lights.map(l=>l.position.z),[-32,-32]);
  world.update(0,0,0,1271);assert.ok(lights.every(l=>l.intensity===18));
  world.update(0,0,1,1002);assert.ok(lights.every(l=>l.intensity===0));
 });

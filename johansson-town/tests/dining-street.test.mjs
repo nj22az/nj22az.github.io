@@ -46,15 +46,22 @@ test('six-metre roadway and continuous pavement support the frontages without th
  const ray=new THREE.Raycaster(),footways=world.group.children.filter(o=>o.name==='Main Street footway'),blocked=(x,z)=>townBoundsBlocked(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
  const deckBounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.equal(deckBounds.max.x-deckBounds.min.x,6);assert.equal((deckBounds.max.x+deckBounds.min.x)/2,MAIN_ROAD.x);
  let floors=0,draws=0;group.traverse(o=>{if(o.isMesh){draws++;assert.ok(!['ground','pole'].includes(o.material.name),'No detached spanning wires or old alley floor');}});assert.ok(draws<=30,'Keep shared material batches after splitting');
- for(let z=-17;z<27;z+=.3){
+ // Compacting the town ended Main Street, its footway and its pavement together at
+ // z=20.5; the bus station forecourt beyond the seam is its own ground, covered by
+ // the spine and lane walks. Guard the shopfront stretch over its real extent.
+ for(let z=-17;z<MAIN_ROAD.maxZ-.5;z+=.3){
   ray.set(new THREE.Vector3(0,.7,z),new THREE.Vector3(0,-1,0));ray.far=1;const h=ray.intersectObjects(footways)[0];assert.ok(h&&Math.abs(h.point.y-groundHeight(0,z))<.04,'Visible pavement at '+z);floors++;
   for(const y of [.4,1.2,1.75])for(const dir of [[0,0,1],[0,0,-1],[1,0,0],[-1,0,0]]){ray.set(new THREE.Vector3(0,y,z),new THREE.Vector3(...dir));ray.far=.32;assert.equal(ray.intersectObjects(group.children,true).length,0,'Pavement body clearance at '+z);}
-  assert.equal(blocked(0,z),false,'Continuous pavement beside every shop');
+  assert.equal(blocked(0,z),false,'Continuous pavement beside every shop at '+z);
  }
- for(let z=-37;z<31;z+=.5)for(let x=MAIN_ROAD.west+.34;x<MAIN_ROAD.east-.33;x+=.3)assert.equal(blocked(x,z),false,'Furniture stays outside the narrower road: '+[x,z]);
- assert.ok(floors>140);assert.equal(lanePatches().filter(p=>p.x0<NIGHT_LANE.maxX&&p.x1>NIGHT_LANE.minX&&p.z0<NIGHT_LANE.maxZ&&p.z1>NIGHT_LANE.minZ).length,0);
+ // The carriageway itself ends at MAIN_ROAD.maxZ; the bus station forecourt beyond
+ // it stands its own shelter, so walking past that end only re-finds the bus stop.
+ for(let z=-37;z<MAIN_ROAD.maxZ;z+=.5)for(let x=MAIN_ROAD.west+.34;x<MAIN_ROAD.east-.33;x+=.3)assert.equal(blocked(x,z),false,'Furniture stays outside the narrower road: '+[x,z]);
+ assert.equal(floors,124,'Every sample along the shortened Main Street has visible footway');assert.equal(lanePatches().filter(p=>p.x0<NIGHT_LANE.maxX&&p.x1>NIGHT_LANE.minX&&p.z0<NIGHT_LANE.maxZ&&p.z1>NIGHT_LANE.minZ).length,0);
  for(const c of DINING_COLLIDERS)assert.ok(world.colliders.some(r=>r.id===c.id));
- for(const x of [0,2,5,8,12])assert.equal(blocked(x,SHOP_CROSSING_Z),false,'The gap between shop rows remains a cross-street');
+ // The compacted town ends the crossing at the east pavement, so the old samples at
+ // x=8 and x=12 now fall outside it. Walk the whole span instead of fixed points.
+ for(let x=MAIN_ROAD.pavementWest;x<=MAIN_ROAD.pavementEast;x+=.2)assert.equal(blocked(x,SHOP_CROSSING_Z),false,'The gap between shop rows remains a cross-street at '+x.toFixed(1));
 });
 
 test('night lane keeps original source geometry and authorship within its mobile asset budget',async()=>{

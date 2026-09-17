@@ -1,7 +1,10 @@
 import {stickAxes} from './analogue.js';
 
-export function createTouchSticks({canvas,movePad,lookPad,enabled,onDrag}){
- const pads=[movePad,lookPad],active=new Map(),axes=[{x:0,y:0},{x:0,y:0}];
+// lookPad is optional. On a touch screen looking is a finger drag anywhere on the view,
+// which is what the thumb does anyway, so the second stick is only built when a caller
+// still wants one. A gamepad's right stick is unaffected: that arrives through analogue.js.
+export function createTouchSticks({canvas,movePad,lookPad=null,enabled,onDrag}){
+ const pads=[movePad,lookPad].filter(Boolean),active=new Map(),axes=[{x:0,y:0},{x:0,y:0}];
  let drag=null,suppressClickUntil=0;
  function update(index,e){
   const rect=pads[index].getBoundingClientRect(),radius=rect.width*.34;

@@ -31,7 +31,14 @@ test('ground, pier edges and A/D coordinate convention',()=>{
 test('world construction, original route and new door reachability',()=>{
  const {world,all}=build();assert.equal(world.people.length,10);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
- for(let z=32;z>=-62;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
+ // The compact town put the bus station across the old spine, so x=0 runs clear
+ // only south of it. North of z=20.4 the shelter, its bench and the tightened
+ // town bounds interrupt the line by design; assert that, so a new obstruction
+ // further south is still caught.
+ for(let z=20.2;z>=-62;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
+ const northern=new Set();
+ for(let z=32;z>20.2;z-=.2)for(const c of world.colliders)if(circleHitsRect(0,z,.28,c))northern.add(c.id);
+ assert.deepEqual([...northern].sort(),['bus-station-bench','bus-station-shelter']);
  for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}
  world.update(.016,1,1,1002);world.update(.016,2,0,1230);
  const book=all.find(s=>s.id==='frontrow');assert.equal(world.isOpen(book,1002),true);assert.equal(world.isOpen(book,1230),false);

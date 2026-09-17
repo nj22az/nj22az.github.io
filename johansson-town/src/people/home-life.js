@@ -1,5 +1,5 @@
 import {householdFor,householdAt,householdNames} from './households.js';
-import {YURI_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
+import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
@@ -25,10 +25,10 @@ export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2]
  cover:{position:[-1.75,.64,.05],width:1.10,length:1.30,axis:'z'}};
 export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
 export function homeLayoutFor(name){
- if(YURI_APARTMENT_ROUTINES[name])return YURI_APARTMENT_ROUTINES[name];
+ if(THUAN_APARTMENT_ROUTINES[name])return THUAN_APARTMENT_ROUTINES[name];
  const household=householdFor(name);if(!household||household.residents.length===1)return HOME_LAYOUT;
  const side=household.residents.indexOf(name)===0?-1:1,x=side*2.1;
  return {...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:[side*.95,0,-.4],table:[side*.72,0,2.15],
   cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'}};
 }
-export const YURI_HOME_LAYOUT=YURI_APARTMENT_ROUTINES.Thuan;
+export const THUAN_HOME_LAYOUT=THUAN_APARTMENT_ROUTINES.Thuan;

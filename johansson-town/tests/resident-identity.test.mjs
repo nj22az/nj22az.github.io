@@ -7,7 +7,7 @@ import {RESIDENTS} from '../src/people/residents.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {preloadModels,createLocalCharacters,createYuriFigurine} from '../src/people/models.js?snappy=1';
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
-import {SAVE_KEY} from '../src/save.js';
+import {SAVE_KEY,migrateThuan} from '../src/save.js';
 
 test('all named low-poly identities are distinct, retain shared body buffers and keep original Thuan only as a small static figurine',async()=>{
  installDOM();const native=globalThis.fetch,requests=[];globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
@@ -38,4 +38,25 @@ test('resident budgets and delivered meals survive real save restoration without
  const reloaded=createResidentLedger(()=>activities.state);assert.equal(reloaded.purchase('Kenji',900,'market-meal','bun',150),true);assert.equal(activities.state.residentLife.Kenji.yen,2250);activities.save();assert.equal(JSON.parse(dom.storage.get(SAVE_KEY)).residentLife.Kenji.purchases.length,1);
  const next=reloaded.account('Kenji',1441);assert.equal(next.yen,2400);assert.equal(next.purchases.length,0);
  assert.deepEqual(restoreResidentLife({Kenji:{day:0,yen:'bad'},stranger:{day:0,yen:1}}),{});
+});
+
+test('legacy Yuri and Yui saves read back as Thuan across records, notes and the shop ledger',()=>{
+ const migrated=migrateThuan({
+  notes:['Met Yuri, the heart of Sakura Konbini.','Sold a bracket to Yuri for ¥180.'],
+  residentLocations:{Yuri:{place:'market'},Nao:{place:'izakaya'}},
+  residentLife:{Yui:{activities:['Yui is restocking the cooler.']}},
+  sakura:{journal:[{kind:'Restocked',buyer:'Yuri',item:'Green tea'},{kind:'Sale',buyer:'Johansson',item:'Green tea'}]}
+ });
+ assert.deepEqual(Object.keys(migrated.residentLocations),['Nao','Thuan']);
+ assert.deepEqual(Object.keys(migrated.residentLife),['Thuan']);
+ assert.deepEqual(migrated.residentLife.Thuan.activities,['Thuan is restocking the cooler.']);
+ assert.deepEqual(migrated.notes,['Met Thuan, the heart of Sakura Konbini.','Sold a bracket to Thuan for ¥180.']);
+ assert.deepEqual(migrated.sakura.journal.map(r=>r.buyer),['Thuan','Johansson']);
+ const text=JSON.stringify(migrated);
+ assert.equal(/\bYuri\b|\bYui\b/.test(text),false,'no legacy shopkeeper name survives a migrated save');
+});
+
+test('a save holding both the old and the new shopkeeper keeps the Thuan record',()=>{
+ const migrated=migrateThuan({residentLocations:{Yuri:{place:'izakaya'},Thuan:{place:'market'}}});
+ assert.deepEqual(migrated.residentLocations,{Thuan:{place:'market'}});
 });

@@ -13,7 +13,9 @@ export const DINING_COLLIDERS=Object.freeze(DINING_FOOTPRINTS.map(b=>{const [x,z
 
 export const DINING=Object.freeze({
  // Next to Sakura's north wall; retain the full-size konbini and clear footway.
- izakayaX:-11.97,izakayaZ:-20.4,izakayaYaw:Math.PI/2,izakayaDoor:Object.freeze([-7.05,-20.4]),
+ // Set back from the west pavement: at -11.97 the east face landed at -7.45,
+ // 0.10 inside the pavement edge, which blocked the south shop crossing.
+ izakayaX:-12.5,izakayaZ:-20.4,izakayaYaw:Math.PI/2,izakayaDoor:Object.freeze([-7.05,-20.4]),
  ramenX:5.45,ramenZ:-12.8,ramenYaw:-Math.PI/2,ramenDoor:Object.freeze([.75,-12.15]),crystalDoor:Object.freeze([.75,-15.6]),
 });
 // Cardinal rotations are exact so entrance and collision coordinates agree.

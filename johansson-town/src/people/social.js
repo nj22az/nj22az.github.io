@@ -10,18 +10,18 @@ import {BUS_STATION} from '../world/bus-station.js';
 import {commuterPhase,shiftActive} from './commuter-schedule.js';
 export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
 export const RAMEN_DOOR=[...DINING.ramenDoor];
-export const YURI_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
+export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
 export const izakayaOpen=m=>inTimeRange(m,960,1620);
 export const NIGHT_PATROL=[[0,28],[0,SHOP_CROSSING_Z],[0,-16],[0,-36],[0,-44],[0,-36],[0,-16],[0,SHOP_CROSSING_Z],[10,SHOP_CROSSING_Z],[0,SHOP_CROSSING_Z]];
 // A repeatable visit on alternate town days, with time to lock up and walk over.
 // Keep the unwrapped saved clock so revisiting or reloading never rerolls her.
-export function yuriVisitsIzakaya(minutes){
+export function thuanVisitsIzakaya(minutes){
  const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
  return day%2===0&&minute>=1220&&minute<1290;
 }
-export function yuriEveningPlace(minutes){
+export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
  if(m<1200||m>=1370)return 'home';
  if(m<1260)return Math.floor(minutes/1440)%2===0?'stroll':'ramen';
@@ -58,8 +58,8 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
   if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
-  if(yuriVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
-  const slot=yuriEveningPlace(minutes);
+  if(thuanVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
+  const slot=thuanEveningPlace(minutes);
   if(slot==='home')return {place:'home',target:profile.home,activity:'settling in at home'};
   if(slot==='izakaya')return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a drink after work'};
   if(slot==='ramen')return {place:'ramen',target:RAMEN_DOOR,activity:'a late bowl of ramen'};

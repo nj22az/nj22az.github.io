@@ -25,7 +25,7 @@ test('residents retain independent motion and seating with Thuan on her supplied
    const actor=models.attach(entity,name,name==='Thuan'?1.64:undefined);assert.ok(actor,name);actors.push(actor);
    assert.equal(entity.userData.visualReady,true);const skins=[];actor.model.traverse(o=>{if(o.isSkinnedMesh)skins.push(o);});
    for(const clip of ['Idle_Neutral','Walk','Run','Wave','Sit','Sleep'])assert.ok(actor.actions.has(clip),name+' '+clip);
-   assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isYuri,name==='Thuan');assert.equal(actor.isNozomi,name==='Reiko');
+   assert.equal(actor.isAya,name==='Aya');assert.equal(actor.isThuan,name==='Thuan');assert.equal(actor.isNozomi,name==='Reiko');
    {
     assert.equal(actor.lowPoly,name!=='Thuan');assert.equal(skins.length,1,'Each resident has one body');
     const skin=skins[0];assert.equal(skin.geometry.groups.length,0);

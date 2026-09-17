@@ -12,11 +12,16 @@ const qteText=document.querySelector('#qteText');
 const qteTimer=document.querySelector('#qteTimer');
 let qteState=null,qteStart=null,lastRound=0;
 
+// The action button lingers for a moment after its target is lost, so a tap already on
+// its way still lands. Remember the last real label: reverting to a generic one the
+// instant the target goes flashes a meaningless verb on the button as it fades out.
+let lastVerb='ACTION',lastGlyph='◎',lastText='';
 function setActionLabel(){
   if(!act||!prompt)return;
   const text=prompt.textContent.trim();
   const active=prompt.classList.contains('on')&&text;
-  let verb='ACTION',glyph='◎';
+  const lingering=!active&&!act.classList.contains('control-off');
+  let verb=lingering?lastVerb:'ACTION',glyph=lingering?lastGlyph:'◎';
   if(active){
     if(/^Stand/i.test(text)){verb='STAND';glyph='↑';}
     else if(/^Talk/i.test(text)){verb='TALK';glyph='◇';}
@@ -28,9 +33,10 @@ function setActionLabel(){
     else if(/play/i.test(text)){verb='PLAY';glyph='▶';}
     else {verb='INSPECT';glyph='○';}
   }
-  act.classList.toggle('available',!!active);
+  if(active){lastVerb=verb;lastGlyph=glyph;lastText=text;}
+  act.classList.toggle('available',!!active||lingering);
   act.innerHTML=`<span class="act-glyph">${glyph}</span><b class="act-label">${verb}</b>`;
-  act.setAttribute('aria-label',active?text:'Context action');
+  act.setAttribute('aria-label',active?text:lingering&&lastText?lastText:'Context action');
 }
 
 if(prompt){
