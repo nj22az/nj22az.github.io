@@ -26,6 +26,9 @@ import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {createThuanMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
+import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
+import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
+ checkoutQuote,checkout,receiptText,CARD_STAMPS} from './src/commerce/konbini.js';
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
   const $=s=>document.querySelector(s);
@@ -36,7 +39,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=elapsedTownAbsence(saved.savedAt);
-      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
+      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -45,6 +48,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   } catch {}
 
   state.story=restoreStory(state.story);
+  state.konbini=restoreKonbini(state.konbini);
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
@@ -86,10 +90,30 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aya beside the bookshop.','Find Tama, Aya’s cat, near the ramen stall. A fish might help.','Return to Aya with news of Tama.','Tama is safely home. Aya has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Konbini passport',konbiniPassport],['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
+
+  // What the shop remembers of you: the card under the till, what you have tried, and
+  // the last thing she rang through.
+  function konbiniPassport(){
+    const {visits,cards,stamps,tried,lastReceipt}=state.konbini;
+    const stock=GROCERY_ITEMS.filter(item=>state.sakura.stock[item.id]);
+    const names=tried.map(id=>GROCERY_ITEMS.find(item=>item.id===id)?.name).filter(Boolean).sort();
+    const card='スタンプカード  '+'●'.repeat(stamps)+'○'.repeat(Math.max(0,CARD_STAMPS-stamps))+`  ${stamps}/${CARD_STAMPS}`;
+    const body=[
+      `Visits: ${visits}`,
+      `Cards filled: ${cards}`,
+      card,
+      '',
+      `Tried ${names.length} of ${stock.length} things she stocks.`,
+      names.length?names.join(', '):'Nothing yet. The cooler is at the back.'
+    ].join('\n');
+    show('コンビニ手帳 · Konbini passport',body,
+      [...(lastReceipt?[['Last receipt',()=>show('レシート · Receipt',receiptText(lastReceipt),[['Back',konbiniPassport]])]]:[]),
+       ['Back to the field book',inventory]]);
+  }
 
   function note(text){if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}}
   function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
@@ -176,7 +200,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
-    show(title,greeting,[['Talk with Thuan',thuanStory],['Ask her something',askThuan],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
+    show(title,greeting,[...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),['Talk with Thuan',thuanStory],['Ask her something',askThuan],['Sell items from my bag',workshopUI.selling],['Read the shop ledger',shopLedger],['What is your favourite snack?',()=>thuanConversation('snack')],['I like your ribbon',()=>thuanConversation('ribbon')],['Where do you go after work?',()=>thuanConversation('town')],[commuterMode?'How do you travel?':'Where do you live?',()=>thuanConversation('home')],['You make this place lovely',()=>thuanConversation('compliment')],['Give me a little challenge',()=>thuanConversation('challenge')],['Do you sing along to the radio?',()=>thuanConversation('radio')],['Tell me a shop secret',()=>thuanConversation('secret')],['See you soon, Thuan',close]]);
   }
   function resident(name){
     if(name==='Thuan'){thuanConversation();return;}
@@ -298,12 +322,73 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
     ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);
   }
+  // A konbini is not a vending machine: things go in the basket and are paid for at the
+  // counter, where Thuan rings them through.
   function storeItem(item){
     const available=state.sakura.stock[item.id]?.shelf||0;
-    show(item.jp+' · '+item.name,item.text+'\n\n'+(available?'On shelf: '+available:'Thuan: Sorry, we’ve sold out. Please come back tomorrow.'),[[`Buy in town · ¥${item.cost}`,()=>{
-      const result=buySakuraItem(state,item,getMinutes());if(!result.ok){receipt('Sakura Shōten',result.message);return;}
-      save();if(['Green tea','Canned coffee'].includes(item.name))onPurchase(item.name);receipt('Thank you',item.name+' is in your bag.');
-    },!available],...(realShop.enabled&&SHOPIFY_CONFIG.products[item.id]?[['View real-world product',()=>realProduct(item)]]:[]),['Put it back',close]]);
+    const held=state.konbini.basket.filter(id=>id===item.id).length;
+    const carrying=state.konbini.basket.length;
+    const note=available?'On shelf: '+available+(held?' · in your basket: '+held:''):'Thuan: Sorry, we’ve sold out. Please come back tomorrow.';
+    show(item.jp+' · '+item.name,item.text+'\n\n'+note,[
+      [`Into the basket · ¥${item.cost}`,()=>{
+        const result=addToBasket(state,item);save();
+        receipt(result.ok?'Basket':'Sakura Shōten',result.ok
+          ?result.message+' '+basketLines(state).reduce((n,l)=>n+l.count,0)+' item(s), ¥'+basketTotal(state)+'. Pay at the counter.'
+          :result.message);
+      },!available],
+      ...(carrying?[[`Take ¥${basketTotal(state)} to the counter`,konbiniCounter]]:[]),
+      ...(realShop.enabled&&SHOPIFY_CONFIG.products[item.id]?[['View real-world product',()=>realProduct(item)]]:[]),
+      ['Put it back',close]]);
+  }
+
+  // --- the counter -------------------------------------------------------------
+  // Thuan's half of the exchange, in the order a 1988 konbini would run it: warm it,
+  // a bag, the stamp card, then cash and change.
+  let counterWarm=null,counterBag=null;
+  function konbiniCounter(){
+    const lines=basketLines(state);
+    if(!lines.length){receipt('Sakura Shōten','Your basket is empty.');return;}
+    const listing=lines.map(l=>`${l.jp} ${l.name}${l.count>1?' ×'+l.count:''} · ¥${l.cost*l.count}`).join('\n');
+    const warmable=warmableInBasket(state);
+    if(warmable.length&&counterWarm===null){
+      show('Thuan · Counter',listing+'\n\n温めますか？\nShall I warm the '+warmable.map(l=>l.name.toLowerCase()).join(' and ')+'?',
+        [['Yes, please',()=>{counterWarm=true;konbiniCounter();}],['No, thank you',()=>{counterWarm=false;konbiniCounter();}],
+         ['Put something back',konbiniBasket]]);
+      return;
+    }
+    if(counterBag===null){
+      show('Thuan · Counter',listing+'\n\n袋はご利用ですか？\nDo you need a bag?',
+        [['Yes, please',()=>{counterBag=true;konbiniCounter();}],
+         ['I have my own',()=>{counterBag=false;konbiniCounter();}],
+         ['Put something back',konbiniBasket]]);
+      return;
+    }
+    const quote=checkoutQuote(state,{warm:counterWarm===true,bag:counterBag!==false});
+    const card=quote.cardFull?'\n\nカード満了 · that fills your stamp card.'
+      :`\n\nスタンプカード · ${state.konbini.stamps}/${CARD_STAMPS}${quote.stampsEarned?', +'+quote.stampsEarned+' with this':''}`;
+    show('Thuan · Counter',listing+`\n\n合計 ¥${quote.total}\nShe waits with her hand on the till.`+card,
+      [[`Pay ¥${quote.total} in cash`,payAtCounter],['Put something back',konbiniBasket],['Not yet',close]]);
+  }
+
+  function payAtCounter(){
+    const result=checkout(state,{warm:counterWarm===true,bag:counterBag!==false},getMinutes());
+    counterWarm=null;counterBag=null;
+    if(!result.ok){receipt('Sakura Shōten',result.message);return;}
+    save();
+    const bought=result.receipt.lines.map(l=>l.name);
+    if(bought.some(name=>['Green tea','Canned coffee'].includes(name)))onPurchase(bought.find(name=>['Green tea','Canned coffee'].includes(name)));
+    note('Shopped at Sakura Shōten · ¥'+result.receipt.total+'.');
+    if(result.receipt.gift)note('Filled a Sakura stamp card. Thuan put a green tea on the counter.');
+    show('レシート · Receipt',receiptText(result.receipt),[['Into your pocket',close]]);
+  }
+
+  function konbiniBasket(){
+    const lines=basketLines(state);
+    if(!lines.length){counterWarm=null;counterBag=null;receipt('Basket','Your basket is empty.');return;}
+    show('かご · Basket',`${lines.reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,
+      [...lines.map(line=>[`Put back ${line.name}${line.count>1?' (×'+line.count+')':''}`,()=>{
+        removeFromBasket(state,line.id);counterWarm=null;save();konbiniBasket();
+      }]),['Back to the counter',konbiniCounter],['Close',close]]);
   }
   function buy(name,detail){
     const spec=detail&&typeof detail==='object'?detail:{};const cost=Number.isFinite(spec.cost)?Math.max(0,Math.round(spec.cost)):100,item=typeof spec.item==='string'?spec.item:name,text=typeof spec.text==='string'?spec.text:`${name} is ready to purchase.`;
@@ -365,9 +450,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
-  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1988, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,thuanStory,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }
