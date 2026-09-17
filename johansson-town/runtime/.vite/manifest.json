@@ -20,7 +20,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-BrTRlv_f.js",
+    "file": "boot-COW6quf8.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -36,7 +36,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CDLO1bap.js",
+    "file": "game-CET6P1nl.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -47,7 +47,7 @@
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CsFg5Zsn.js",
+    "file": "touch-ui-CTFB8DFd.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
     "isDynamicEntry": true

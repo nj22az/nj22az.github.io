@@ -3,7 +3,10 @@ import {readFile,writeFile,readdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {runtimeSourceHash} from './runtime-source.mjs';
 const root=resolve(new URL('..',import.meta.url).pathname);
-await build({configFile:false,root,publicDir:false,build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1'},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
+// configFile:false means vite.config.js is not read, so base has to be set here too.
+// Without it the build defaults to '/', and the preload helper asks for every chunk
+// at the site root: each dynamic import 404s its hint and loads unprefetched.
+await build({configFile:false,root,publicDir:false,base:'./',build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1'},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
 const manifest=JSON.parse(await readFile(resolve(root,'runtime/.vite/manifest.json'),'utf8'));
 const boot=manifest['src/boot.js'].file,audio=Object.values(manifest).find(entry=>entry.isEntry&&entry.name==='audio').file;
 let html=await readFile(resolve(root,'index.html'),'utf8');

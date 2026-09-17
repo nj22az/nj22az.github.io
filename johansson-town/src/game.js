@@ -96,7 +96,7 @@ document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
 function controlsAllowed(){return started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
-const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),lookPad:$('#lookStick'),enabled:controlsAllowed,onDrag:dragLook});
+const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),enabled:controlsAllowed,onDrag:dragLook});
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 $('#cameraButton').onclick=openCamera;$('#cameraMenuButton').onclick=openCamera;
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
