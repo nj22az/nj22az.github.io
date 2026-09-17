@@ -36,6 +36,18 @@ export function turnToward(current,target,dt,rate=6){
  return current+delta*(1-Math.exp(-Math.max(0,dt)*rate));
 }
 
+/**
+ * How much of a step to take when you are not yet facing where you are going.
+ *
+ * Full pace facing forward, nothing at all facing backward, and the cosine in
+ * between. Walking at full speed toward a place you have not turned to face yet is
+ * what reads as walking backwards: the legs play forward while the body travels the
+ * other way. Turning is never blocked by this, so nobody can get stuck.
+ *
+ * @param {number} angle radians between facing and heading
+ */
+export const alignedStep=angle=>Math.max(0,Math.cos(Math.min(Math.abs(angle),Math.PI)));
+
 /** How far off a person's own facing a point is, in radians. */
 export function offBy(entity,point){
  const want=faceYaw(entity.position,point);

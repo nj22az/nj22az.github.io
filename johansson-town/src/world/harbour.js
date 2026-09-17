@@ -249,7 +249,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     part(new THREE.CylinderGeometry(.25,.21,.66,8),[0,1.17,0],color);part(new THREE.SphereGeometry(.22,10,8),[0,1.73,0],0xc79571);
     const legs=[-.14,.14].map(dx=>part(new THREE.BoxGeometry(.17,.65,.2),[dx,.53,0],0x354349));const arms=[-.33,.33].map(dx=>part(new THREE.BoxGeometry(.14,.55,.17),[dx,1.1,0],color));register(g,`Talk to ${name}`,()=>onAction('resident',name));people.push({g,legs,arms,x,z,index});
   });
-  const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);const cb=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.65),material(0xd0a471));cb.position.y=.28;cat.add(cb);const ch=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0xd0a471));ch.position.set(0,.49,-.3);cat.add(ch);for(const x of [-.11,.11]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.085,.18,3),material(0xd0a471));ear.position.set(x,.67,-.3);cat.add(ear);}register(cat,'Greet the cat',()=>onAction('cat'));
+  const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);
+  const catLast=cat.position.clone();let catFacing=0,catResting=true;const cb=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.65),material(0xd0a471));cb.position.y=.28;cat.add(cb);const ch=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0xd0a471));ch.position.set(0,.49,-.3);cat.add(ch);for(const x of [-.11,.11]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.085,.18,3),material(0xd0a471));ear.position.set(x,.67,-.3);cat.add(ear);}register(cat,'Greet the cat',()=>onAction('cat'));
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
@@ -276,11 +277,29 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       people.forEach(p=>{
         if(p.g.userData.scheduled)return;
         let desiredZ=p.z+Math.sin(time*.11+p.index)*2.2;if(playerPos){const dx=p.g.position.x-playerPos.x,dz=desiredZ-playerPos.z;if(dx*dx+dz*dz<.72*.72)desiredZ=p.g.position.z;}
+        const beforeZ=p.g.position.z;
         p.g.position.z=THREE.MathUtils.damp(p.g.position.z,desiredZ,7,dt);
-        if(p.g.userData.facePlayerUntil>now&&playerPos){p.g.lookAt(playerPos.x,p.g.position.y,playerPos.z);p.g.rotateY(Math.PI);}else p.g.rotation.y=Math.cos(time*.11+p.index)>0?Math.PI:0;
+        const movedZ=p.g.position.z-beforeZ;
+        if(p.g.userData.facePlayerUntil>now&&playerPos){p.g.lookAt(playerPos.x,p.g.position.y,playerPos.z);p.g.rotateY(Math.PI);}
+        else if(Math.abs(movedZ)>1e-5){
+          // Face the way they are actually going, and ease into it. This used to flip
+          // between two fixed angles from the phase of the patrol, but the position is
+          // damped and lags that phase, so at each end of the walk they turned round
+          // before they stopped and spent a moment travelling backwards.
+          const yaw=movedZ>0?Math.PI:0;
+          const angle=Math.atan2(Math.sin(yaw-p.g.rotation.y),Math.cos(yaw-p.g.rotation.y));
+          p.g.rotation.y+=angle*(1-Math.exp(-dt*6));
+        }
         p.legs.forEach((l,i)=>l.rotation.x=Math.sin(time*3+i*Math.PI)*.22);p.arms.forEach((l,i)=>l.rotation.x=-Math.sin(time*3+i*Math.PI)*.16);
       });
-      cat.rotation.y=Math.sin(time*.3)*.2;
+      // The cat's heading belongs to whoever is walking it (people/schedules.js turns it
+      // toward each place it visits). Overwriting it every frame with an absolute sway
+      // meant it spent most of the day travelling sideways or backwards. Sway only when
+      // it has actually stopped, and sway around where it is facing.
+      const catMoved=Math.hypot(cat.position.x-catLast.x,cat.position.z-catLast.z);
+      catLast.copy(cat.position);
+      if(catMoved>1e-4){catResting=false;catFacing=cat.rotation.y;}
+      else{if(!catResting){catResting=true;catFacing=cat.rotation.y;}cat.rotation.y=catFacing+Math.sin(time*.3)*.2;}
       if(wet){for(let i=0;i<rainCount;i++){positions[i*3+1]-=dt*12;if(positions[i*3+1]<0)positions[i*3+1]=16;}rainGeo.attributes.position.needsUpdate=true;}
     }
   };

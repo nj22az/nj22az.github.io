@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createFacing,occupied,faceYaw,turnToward,offBy,OCCUPIED_POSES} from '../src/people/facing.js';
+import {createFacing,occupied,faceYaw,turnToward,offBy,alignedStep,OCCUPIED_POSES} from '../src/people/facing.js';
 
 const person=(x,z,data={})=>{
  const g=new THREE.Group();g.position.set(x,0,z);g.userData={...data};
@@ -95,4 +95,17 @@ test('a far-off crowd costs nothing and nobody moves',()=>{
  pass.update(1/60);
  assert.deepEqual(crowd.map(p=>p.g.rotation.y),before);
  assert.equal(pass.stats.addressed,0);
+});
+
+test('nobody outruns their own turn',()=>{
+ // Full pace facing forward, nothing facing backward, cosine in between. Travelling
+ // at speed toward somewhere you have not turned to face is what reads as walking
+ // backwards, and it is what room-walk used to do on every corner.
+ assert.equal(alignedStep(0),1);
+ assert.ok(Math.abs(alignedStep(Math.PI/3)-.5)<1e-9);
+ assert.ok(alignedStep(Math.PI/2)<1e-9,'square on is a standstill');
+ assert.equal(alignedStep(Math.PI),0);
+ assert.equal(alignedStep(-Math.PI),0,'and it does not care which way round');
+ assert.equal(alignedStep(4*Math.PI),0,'nor about angles past half a turn');
+ assert.ok(alignedStep(.2)>.97,'a small correction barely slows you');
 });

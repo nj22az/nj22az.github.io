@@ -223,3 +223,21 @@ test('the passport records the visit, the card and the last receipt',async()=>{
  assert.equal(saved.konbini.visits,1);
  assert.deepEqual(saved.konbini.tried,['tea']);
 });
+
+test('Thuan stands clear of the shelves she is serving',async()=>{
+ const {SAKURA_LAYOUT,SAKURA_SHELVES,CLERK_CLEARANCE}=await import('../src/world/interiors/sakura-layout.js');
+ const {circleHitsRect}=await import('../physics.js');
+ const hits=(x,z,r)=>SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
+ /** The largest radius that still fits where she stands. */
+ const room=(x,z)=>{let lo=0,hi=1.5;for(let i=0;i<24;i++){const mid=(lo+hi)/2;if(hits(x,z,mid))hi=mid;else lo=mid;}return lo;};
+ const tight=[];
+ for(const [id,shelf] of Object.entries(SAKURA_SHELVES)){
+  const [x,,z]=shelf.stand;
+  const clear=room(x,z);
+  // Comfortably more than she takes up, so an apron and a pair of shoulders do not
+  // end up inside the goods — which is visible from the pavement now.
+  if(clear<CLERK_CLEARANCE+.12)tight.push(id+' '+clear.toFixed(3));
+ }
+ assert.deepEqual(tight,[],'Shelf stand points leave her inside the shelving');
+ assert.ok(CLERK_CLEARANCE>=.3,'and she is not modelled thinner than she walks');
+});

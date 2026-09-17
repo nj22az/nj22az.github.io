@@ -7,6 +7,7 @@ export const SAKURA_LAYOUT={
  // The glazing plane, in room coordinates. Both directions of the shop window use
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
+ clearance:.32,
  staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
  colliders:[
   rect(-1.5,1.33,6.05,1.23,1.5),rect(-.48,-1.16,4.08,1.23,1.5),
@@ -26,8 +27,35 @@ export const SAKURA_LAYOUT={
 export const AISLE_LEVELS=[.3553,.6683,.9813,1.2943];
 export const FRIDGE_LEVELS=[.34,.70,1.06,1.42,1.78];
 export const SAKURA_SHELVES={};
+
+/**
+ * Room for the clerk.
+ *
+ * The stand points were authored with about 0.36m to the nearest shelf, which is under
+ * half a metre of shoulder, apron and skirt: she stood inside the goods, and now that
+ * the shop is visible through its own window you can watch her do it from the
+ * pavement. Pushing every stand point back off its shelf buys a third more room and
+ * costs nothing.
+ *
+ * Her collision radius could not go up with it. The aisles are 1.26m across and the
+ * pathfinder stops finding routes to the far shelves above 0.32, so widening her only
+ * left her unable to restock. What is left to give, if she still touches anything, is
+ * in the shop's own geometry rather than in these numbers.
+ */
+export const CLERK_CLEARANCE=.32;
+/** How far back off its shelf every stand point is pushed. */
+const STAND_BACK=.12;
+
+/** Moves a stand point further from the shelf it serves, along the way it already faces. */
+function standBack(x,z,stand){
+ const dx=stand[0]-x,dz=stand[2]-z,d=Math.hypot(dx,dz);
+ if(!d)return stand;
+ return [+(stand[0]+dx/d*STAND_BACK).toFixed(4),stand[1],+(stand[2]+dz/d*STAND_BACK).toFixed(4)];
+}
+
 function aisle(low,high,x,z,yaw,stand){
- for(const [id,levels] of [[low,AISLE_LEVELS.slice(0,2)],[high,AISLE_LEVELS.slice(2)]])SAKURA_SHELVES[id]={x,z,levels,yaw,stand,spacing:.24,depth:.12};
+ const back=standBack(x,z,stand);
+ for(const [id,levels] of [[low,AISLE_LEVELS.slice(0,2)],[high,AISLE_LEVELS.slice(2)]])SAKURA_SHELVES[id]={x,z,levels,yaw,stand:back,spacing:.24,depth:.12};
 }
 aisle('rice','curry',-3.6,1.56,0,[-3.6,0,2.30]);
 aisle('biscuit','chips',-1.48,1.56,0,[-1.48,0,2.30]);
@@ -40,9 +68,9 @@ aisle('soup','peaches',.55,-.93,0,[.55,0,-.18]);
 aisle('soy','tuna',-1.48,-1.39,Math.PI,[-1.48,0,-2.14]);
 aisle('toothpaste','bread',.55,-1.39,Math.PI,[.55,0,-2.14]);
 for(const [column,ids] of [['tea','coffee'],['water','orange'],['beer','cola'],['milk','yogurt']].entries()){
- for(const [row,id] of ids.entries()){const x=-1.60+column*1.33;SAKURA_SHELVES[id]={x,z:-3.48,levels:FRIDGE_LEVELS.slice(row*2,row*2+2),yaw:0,stand:[x,0,-2.78],spacing:.19,depth:.13,fridge:column};}
+ for(const [row,id] of ids.entries()){const x=-1.60+column*1.33;SAKURA_SHELVES[id]={x,z:-3.48,levels:FRIDGE_LEVELS.slice(row*2,row*2+2),yaw:0,stand:standBack(x,-3.48,[x,0,-2.78]),spacing:.19,depth:.13,fridge:column};}
 }
-SAKURA_SHELVES.soda={x:-.27,z:-3.48,levels:[FRIDGE_LEVELS[4]],yaw:0,stand:[-.27,0,-2.78],spacing:.19,depth:.105,fridge:1};
-SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:[-5.58,0,1.515],spacing:.33,depth:.12};
+SAKURA_SHELVES.soda={x:-.27,z:-3.48,levels:[FRIDGE_LEVELS[4]],yaw:0,stand:standBack(-.27,-3.48,[-.27,0,-2.78]),spacing:.19,depth:.105,fridge:1};
+SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:standBack(-6.50,1.515,[-5.58,0,1.515]),spacing:.33,depth:.12};
 
 SAKURA_SHELVES.noodles.depth=.15;
