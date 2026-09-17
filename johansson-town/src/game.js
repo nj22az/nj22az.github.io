@@ -127,8 +127,11 @@ activities=createActivities({say,onInspectModel:item=>inspector.open(item),getRe
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
 characters=createCharacters({mobile,shadows,canJump:()=>!seated&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
-// Prioritise the shopkeeper visible from the opening bench.
-void preloadCharacter('Thuan');
+// Thuan is the heaviest single asset in the town and she is kept at full detail, so
+// fetching her before the first frame put nine megabytes in front of the chunks the
+// game needs to start: on a 1.6 Mbps link that was most of the wait. She is still the
+// first thing requested once the opening frame has painted, so she is in the window by
+// the time the player crosses the road, and the procedural stand-in covers the gap.
 
 inspector=createInspector({scene,camera,renderer,canvas,resetInput,onReturn:item=>{const o=content?.objects.get(item.id);if(o)o.visible=true;},onInspect:item=>{const o=content?.objects.get(item.id);if(o)o.visible=false;activities.inspectItem(item);if(item.id==='model')say(item.note,4);},onLink:()=>{},onContact:()=>{}});
 content={items:BUSINESS_CONTENT_CATALOGUE,objects:new Map()};
@@ -434,4 +437,4 @@ function renderOutdoor(){
 }
 advanceAbsentTown(activities.takeAbsence());
 // Allow the opening frame to paint before starting any district downloads.
-setTimeout(()=>{detailsStarted=true;},0);
+setTimeout(()=>{detailsStarted=true;void preloadCharacter('Thuan');},0);

@@ -24,7 +24,12 @@
 <link rel="stylesheet" href="./landing.css?v=board-3">
 <link rel="stylesheet" href="./sakura-ledger.css">
 <link rel="stylesheet" href="./dual-controls.css?v=1">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-COW6quf8.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-COn_g2r4.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-bench-BS2ccYE8.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/assets-DNfyrzgA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-OX5vGAZs.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/audio-BrCOdDNs.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -327,7 +332,7 @@ import {unlockTownAudio} from './runtime/audio-BrCOdDNs.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-COW6quf8.js');
+      await import('./runtime/boot-COn_g2r4.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
