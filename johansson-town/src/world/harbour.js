@@ -10,7 +10,7 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
-import {peninsulaActive} from './town-mode.js';
+
 import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
@@ -180,9 +180,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const seaPos=seaGeo.attributes.position;
 
   const warehouseWorld={group,colliders};
-  // The warehouse is a building, so the peninsula does without it for now; the quay,
-  // the pier and the water are the port.
-  const harbourWarehouse=peninsulaActive()?null:buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
+  // The warehouse stands at the quay in every layout. It was switched off while the
+  // peninsula was stripped back to its ground, and it is the first building back.
+  const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
   cyl(.045,2.3,[-7.3,1.15,-35],0x655444);obstacle(-7.3,-35,.12,.12);
 
