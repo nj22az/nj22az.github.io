@@ -19,7 +19,7 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  // Everything between the pavement and the wall is walkable at pavement level, which
  // is what it was not: the park was an island and the rest was scenery below the kerb.
  const off=[],steps=[];
- for(let x=MAIN_ROAD.pavementEast+.6;x<EAST_LAWN.maxX-.6;x+=.4)for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1.2){
+ for(let x=MAIN_ROAD.pavementEast;x<EAST_LAWN.maxX-.6;x+=.4)for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1.2){
   if(!routeAt(x,z,.4))off.push(x.toFixed(1)+','+z.toFixed(1));
   // Walking east must never be a step up. The park used to be a plinth with a
   // vertical face, and excluding its square from the lawn left a dead band one body
@@ -31,6 +31,15 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.deepEqual(off.slice(0,6),[],'Ground east of the road you still cannot stand on');
  assert.deepEqual(steps.slice(0,6),[],'The east side steps rather than slopes');
  assert.equal(routeAt(28,4).surface,'grass');
+ // And the kerb itself. The pavement gives up a body's radius short of its east edge
+ // and the lawn only began a radius past it, so the two together left a band 0.7m wide
+ // that both would have covered and neither would accept: twenty metres of invisible
+ // wall with grass on the far side of it. Walk across it at every metre of its length.
+ const kerb=[];
+ for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1)
+  for(let x=MAIN_ROAD.pavementEast-.6;x<=MAIN_ROAD.pavementEast+.6;x+=.15)
+   if(!routeAt(x,z,.32))kerb.push(x.toFixed(2)+','+z.toFixed(1));
+ assert.deepEqual(kerb.slice(0,6),[],'An invisible wall runs along the east kerb');
  // The park is asked first, so the lawn is the ground around its mound, not a lid.
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
@@ -48,7 +57,11 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const wall=colliders.filter(c=>c.id==='east-seawall');
  assert.equal(wall.length,2,'The wall returns along the south side to close the corner');
  for(const z of [-30,-10,10,20])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
- assert.ok(colliders.some(c=>c.id==='east-lawn-trees'),'The north end is left open onto unbuilt land');
+ // The north end is closed by something you can see rather than by ground that simply
+ // stops, so the treeline is solid and stands where the trees are drawn.
+ const trees=colliders.find(c=>c.id==='east-lawn-trees');
+ assert.ok(trees,'The north end is left open onto unbuilt land');
+ assert.ok(trees.z-trees.d/2>EAST_LAWN.maxZ-2.2,'The treeline eats the green it is meant to close');
 
  // Dry sand has to draw above the peninsula's own ground or the land shows through it,
  // and it has to reach below the water or the beach ends in a step.
@@ -102,4 +115,42 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
   const tints=lawn.shrubs.instanceColor.array;
   assert.ok([...tints].every(v=>v===1),'Per-instance greens still tint the park leaf');
  }finally{globalThis.fetch=original;}
+});
+
+test('every open patch of the east side can be walked to from the road',async()=>{
+ installDOM();globalThis.self=globalThis;
+ configureTownMode(TOWN_MODES.PENINSULA);
+ const {routeAt,groundHeight}=await import('../src/world/layout.js?east-reach');
+ const {createTown}=await import('../src/world/town.js');
+ const {createBusinesses}=await import('../src/world/businesses.js');
+ const sites=createBusinesses().filter(s=>['market','frontrow'].includes(s.id));
+ const {colliders}=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:false,
+  shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+
+ // Ground you can stand on but cannot get to is the same invisible wall seen from the
+ // other side, so the question is not whether routeAt says yes — it is whether a body
+ // of the player's width can walk there from the middle of the road, past every prop,
+ // without climbing anything. Flood the town and then ask the east side.
+ const STEP=.4,RADIUS=.32;
+ const open=(x,z)=>!!routeAt(x,z,RADIUS)&&!colliders.some(c=>circleHitsRect(x,z,RADIUS,c));
+ const key=(x,z)=>x.toFixed(1)+','+z.toFixed(1);
+ const start=[0,0];
+ assert.ok(open(...start),'The middle of the road is blocked');
+ const seen=new Set([key(...start)]),queue=[start];
+ while(queue.length){
+  const [x,z]=queue.pop();
+  for(const [dx,dz] of [[STEP,0],[-STEP,0],[0,STEP],[0,-STEP]]){
+   const nx=+(x+dx).toFixed(1),nz=+(z+dz).toFixed(1);
+   if(nx<-46||nx>50||nz<-74||nz>46||seen.has(key(nx,nz))||!open(nx,nz))continue;
+   if(Math.abs(groundHeight(nx,nz)-groundHeight(x,z))>.45)continue;
+   seen.add(key(nx,nz));queue.push([nx,nz]);
+  }
+ }
+ const stranded=[];
+ for(let x=EAST_LAWN.minX;x<=EAST_LAWN.maxX;x+=STEP)for(let z=EAST_LAWN.minZ;z<=EAST_LAWN.maxZ;z+=STEP){
+  const gx=+x.toFixed(1),gz=+z.toFixed(1);
+  if(open(gx,gz)&&!seen.has(key(gx,gz)))stranded.push(gx+','+gz);
+ }
+ assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
+ assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
 });

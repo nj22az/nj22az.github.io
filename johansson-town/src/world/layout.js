@@ -48,7 +48,32 @@ export const ROUTES = [
 export function activeRoutes(){return ROUTES.filter(route=>!shoppingDistrictActive()||!route.legacy);}
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
+/**
+ * Walkable ground, as the union of every region below.
+ *
+ * Each region is asked whether it holds a circle of the given radius on its own, which
+ * is the right question for a region standing in open ground and the wrong one wherever
+ * two of them meet. The pavement's east kerb and the lawn beside it are the same ground
+ * to look at and to stand on, but the pavement gives up a body's radius short of its
+ * edge and the lawn only starts a radius past it, so between them lay a band 0.7m wide
+ * that both regions would have covered and neither would accept: twenty metres of
+ * invisible wall along the kerb, with grass on the far side of it.
+ *
+ * So the strict answer is taken when there is one, and when there is not, the circle is
+ * tested against the union instead: the centre and eight points around its rim each
+ * have to land on some region, any region. On open ground that costs one call, because
+ * the strict test answers first; only within a radius of an edge is the rim walked.
+ */
+const RIM=[[1,0],[-1,0],[0,1],[0,-1],[.7071,.7071],[.7071,-.7071],[-.7071,.7071],[-.7071,-.7071]];
 export function routeAt(x,z,r=0){
+ const strict=regionAt(x,z,r);
+ if(strict||!(r>0))return strict;
+ const here=regionAt(x,z,0);
+ if(!here)return null;
+ for(const [dx,dz] of RIM)if(!regionAt(x+dx*r,z+dz*r,0))return null;
+ return here;
+}
+function regionAt(x,z,r=0){
  if(FULL_TOWN.active)return fullContains(x,z,r,parkHeight)?{id:'supplied-town',surface:'stone'}:null;
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
  if(!shoppingDistrictActive()&&inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
