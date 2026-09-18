@@ -21,14 +21,14 @@ export const TUNNEL=Object.freeze({
  // Beyond the road end, so there is a run of road between the bus stop and it. Close
  // enough to read from the platform, far enough that the shelter is not in the way.
  z:FOREST_EDGE.roadEndZ+3.4,
- width:21,
- height:10.6,
+ width:30,
+ height:11.8,
  /** Where the rock's sides stop being vertical and the crown starts. */
  shoulder:4.3,
  /** The face sits at the road's level, a little below it so no gap shows. */
  base:-.35,
- /** How thick the rock is, front to back. */
- depth:2.4,
+ /** How thick the rock is, front to back. It is a hillside, not a hoarding. */
+ depth:6.2,
  /** The painted opening, in metres. Comfortably wider than the road. */
  archWidth:8.4,
  archHeight:7.1
@@ -113,24 +113,29 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  parent.add(group);
 
  const rock=new THREE.MeshStandardMaterial({color:0x6d6a60,roughness:.97,flatShading:true});
- // A headland rather than a slab. Square across the top it read as a wall with a hole
- // painted on it; the crown is a half-period of a sine over the shoulders, which gives
- // the rock a skyline and leaves the painted arch sitting under a brow.
- const profile=new THREE.Shape();
+ // A hillside rather than a slab. Square across the top it read as a wall with a hole
+ // painted on it, and one clean dome read as a tent: the skyline is a big hump over
+ // the road with a smaller one to either side, which is how a hill is drawn rather
+ // than how one is measured. The arch ends up under the middle hump's brow.
+ const hump=(t,centre,width,height)=>
+  height*Math.max(0,Math.cos(Math.PI*Math.min(1,Math.abs(t-centre)/width))*.5+.5);
  const half=TUNNEL.width/2,crown=TUNNEL.height+TUNNEL.base-TUNNEL.shoulder;
+ const skyline=t=>TUNNEL.shoulder+hump(t,.5,.46,crown)+hump(t,.17,.2,crown*.44)+hump(t,.86,.17,crown*.31);
+ const profile=new THREE.Shape();
  profile.moveTo(-half,TUNNEL.base);
- profile.lineTo(-half,TUNNEL.shoulder);
- for(let i=1;i<=28;i++){
-  const t=i/28;profile.lineTo(-half+TUNNEL.width*t,TUNNEL.shoulder+crown*Math.sin(Math.PI*t));
- }
+ profile.lineTo(-half,TUNNEL.shoulder*.55);
+ for(let i=0;i<=40;i++){const t=i/40;profile.lineTo(-half+TUNNEL.width*t,skyline(t));}
+ profile.lineTo(half,TUNNEL.shoulder*.55);
  profile.lineTo(half,TUNNEL.base);
  profile.closePath();
  const face=new THREE.Mesh(new THREE.ExtrudeGeometry(profile,{depth:TUNNEL.depth,bevelEnabled:false,curveSegments:1}),rock);
  face.castShadow=shadows;face.receiveShadow=true;
  group.add(face);
 
- // Broken ground either side, so the face reads as rock rather than as a wall.
- for(const [x,y,z,s] of [[-6.6,1.5,-.4,2.6],[6.9,1.9,-.2,3.1],[-8.4,3.1,.6,3.6],[8.2,3.6,.5,3.2]]){
+ // Broken ground along the foot, spilling out onto the verge either side of the road,
+ // so the hill meets the ground it stands on instead of being set down on it.
+ for(const [x,y,z,s] of [[-6.6,1.5,-.6,2.6],[6.9,1.9,-.4,3.1],[-9.4,3.1,.4,3.9],[9.2,3.6,.3,3.4],
+  [-12.8,2.2,-1.4,3.2],[12.4,2.4,-1.1,2.9],[-4.9,.9,-2.1,1.5],[5.3,1.0,-2.3,1.7],[-15.6,1.6,-.6,2.4],[15.1,1.5,-.4,2.2]]){
   const boulder=new THREE.Mesh(new THREE.IcosahedronGeometry(s/2,0),rock);
   boulder.position.set(x,y-s/2+.4,z);
   boulder.rotation.set(x,y,z);
@@ -163,5 +168,13 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
    'goes on behind. The 17:10 bus uses it twice a day without any trouble.'));
  }
 
- return {group,face,paint};
+ /**
+  * True where the rock actually is, with a hand's margin. The bus road runs straight at
+  * it, so anyone running down the road arrives at speed; game.js uses this to tell a
+  * collision with the painting from any other wall it might have walked into.
+  */
+ const splat=(x,z)=>Math.abs(x-TUNNEL.x)<=TUNNEL.width/2+.4
+  &&Math.abs(z-(TUNNEL.z+TUNNEL.depth/2))<=TUNNEL.depth/2+.6;
+
+ return {group,face,paint,splat};
 }

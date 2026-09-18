@@ -51,6 +51,12 @@ export function routeAt(x,z,r=0){
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
  if(!shoppingDistrictActive()&&inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
  if(x>=BUS_STATION.minX+r&&x<=BUS_STATION.maxX-r&&z>=BUS_STATION.minZ+r&&z<=BUS_STATION.maxZ-r)return {id:BUS_STATION.id,surface:'stone'};
+ // The bus-only road past the terminal. It is signed for buses and there is a painted
+ // tunnel at the end of it, so of course people walk up it to look: leaving it off the
+ // walkable set meant you were stopped by nothing at all, thirty metres short of the
+ // one thing out here worth walking to.
+ if(peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
+  &&z>=MAIN_ROAD.maxZ&&z<=FOREST_EDGE.roadEndZ+3.4-r)return {id:'bus-forest-road',surface:'asphalt'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  // The park is asked first, so the lawn is the ground around its mound rather than a
  // lid over it, and its ramp keeps its own paving where the two overlap. Only the

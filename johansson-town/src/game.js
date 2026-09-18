@@ -363,15 +363,46 @@ function placeAtEntrance(s,leave=false){
  const [x,z]=findClear(x0+fwX*(leave?.6:0),z0+fwZ*(leave?.6:0));
  player.position.set(x,groundHeight(x,z),z);
 }
+/**
+ * Running into the painted tunnel.
+ *
+ * The bus road runs straight at it for thirty metres, so the one thing anybody is
+ * going to do with a tunnel that is not a tunnel is run at it. There is rock behind
+ * the paint: you bounce, the hill knocks, and you say so. Once per approach — the
+ * collision repeats every step you hold the key down against it.
+ */
+let paintedBumpAt=-99;
+function hitThePainting(x,z){
+ if(!world.tunnel?.splat?.(x,z)||elapsed-paintedBumpAt<2.4)return;
+ paintedBumpAt=elapsed;
+ // Far enough back to see what you hit. Stopping dead against the painting filled the
+ // screen with the painted dark, which is the one view that does not tell the joke.
+ player.position.addScaledVector(moveVec,-1.15);
+ if(pitch>-.2)pitch=THREE.MathUtils.clamp(pitch-.2,-1.25,1.15);
+ townAudio.play('clunk',.55);
+ say('いてっ！ · Ouch. There is rock behind the paint.',3);
+}
 function updatePlayer(dt){
  if(!seated)unstuckPlayer();
  const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
  ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
  let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
  let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
- if(seated){s=0;f=0;}move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();
+ if(seated){s=0;f=0;}
+ // Bounced off the painting: half a second of nobody being in charge, so the rebound
+ // is visible instead of being walked straight back out of by a held key.
+ if(elapsed-paintedBumpAt<.55){s=0;f=0;}
+ move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();
  fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);
- if(moveVec.lengthSq()>.0001){const speed=(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]||activities.state.sprintUntil>performance.now()?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;if(!collides(nx,player.position.z))player.position.x=nx;if(!collides(player.position.x,nz))player.position.z=nz;turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));}
+ if(moveVec.lengthSq()>.0001){
+  const running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
+  const speed=(running?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
+  const stoppedX=collides(nx,player.position.z),stoppedZ=collides(player.position.x,nz);
+  if(!stoppedX)player.position.x=nx;
+  if(!stoppedZ)player.position.z=nz;
+  if(running&&(stoppedX||stoppedZ))hitThePainting(nx,nz);
+  turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));
+ }
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);
  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
 }
