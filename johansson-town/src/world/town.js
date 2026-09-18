@@ -17,6 +17,7 @@ import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
+import {buildEastLawn} from './east-lawn.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
 
@@ -164,8 +165,13 @@ export function createTown(options){
   world.forestEdge=forestEdge;
   // The road out of town has to end somewhere, and on the peninsula it ends at a
   // tunnel that is painted on a rock face. See coyote-tunnel.js.
-  if(peninsulaActive())world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
-   register:options.register,onAction:options.onAction,shadows:options.shadows});
+  if(peninsulaActive()){
+   world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+    register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // The port is north, the shops are west; the east is the green side of the town.
+   world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
+    register:options.register,onAction:options.onAction});
+  }
   for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
     world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});

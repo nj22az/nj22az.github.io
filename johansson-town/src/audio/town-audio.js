@@ -27,7 +27,9 @@ export const townAudio={
   },
   setEnabled(value){enabled=value;if(!value)this.stopSpeech();unlockTownAudio();if(master)master.gain.setTargetAtTime(value?.38:0,ctx.currentTime,.1);},
   play(name,volume=.5){if(!enabled||!ctx)return;if(!buffers.has(name)){void loadSound(name).then(ready=>{if(ready)this.play(name,volume);});return;}const v=voice(name);if(v)v.gain.gain.value=volume;},
-  step(surface){this.play('steps-'+(surface==='asphalt'?'asphalt':surface==='wood'||surface==='timber'?'wood':'stone'),.27);},
+  // There is no grass recording, so the lawn borrows the stone one at about half the
+  // level rather than sounding like a pavement.
+  step(surface){this.play('steps-'+(surface==='asphalt'?'asphalt':surface==='wood'||surface==='timber'?'wood':'stone'),surface==='grass'?.13:.27);},
   update({player,yaw=0,minutes=1002,rain=false,inside=false,station=0,paused=false}){if(!ctx)return;const night=minutes%1440>=1140||minutes%1440<360;
     const sources=[['water',0,-54,.5,95],['cicadas',-28,24,night?0:.25,140],['crickets',-28,24,night?.25:0,140],['engine',6,-42,.27,22],['radio-'+station,-4,-15,.36,22]];
     for(const name of ['radio-0','radio-1','radio-2'])if(name!=='radio-'+station&&loops.has(name))loops.get(name).gain.gain.setTargetAtTime(0,ctx.currentTime,.12);
