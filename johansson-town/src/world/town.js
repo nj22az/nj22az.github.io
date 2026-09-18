@@ -21,6 +21,7 @@ import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
+import {createBusRun} from './bus.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -177,6 +178,9 @@ export function createTown(options){
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   // The bus, and the only way out of the town: it drives up the bus road and is shrunk
+   // onto the painting's vanishing point until it is gone. See bus.js.
+   world.bus=createBusRun({parent:world.group,shadows:options.shadows});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
     heightAt:groundHeight,register:options.register,onAction:options.onAction});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
@@ -218,6 +222,7 @@ export function createTown(options){
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.busStation?.update(minutes,day);
+    world.bus?.update(dt);
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);

@@ -81,8 +81,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false){
     const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,768,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,744,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='700 96px "Yu Gothic",system-ui';ctx.fillText(text,384,106,716);ctx.font='600 30px system-ui';ctx.fillText(sub,384,201,700);
     const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
-    const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05,side:THREE.DoubleSide});
-    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);return mesh;
+    const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05});
+    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);
+    // A plain panel behind it. These used to be double-sided, so walking round one —
+    // the bus-station board stands square across the tunnel road — showed the lettering
+    // through the back of the sign, reversed.
+    const back=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshStandardMaterial({color:new THREE.Color(bg).multiplyScalar(.78),roughness:.9}));
+    back.position.set(p[0]-Math.sin(angle)*.012,p[1],p[2]-Math.cos(angle)*.012);
+    back.rotation.y=angle+Math.PI;back.castShadow=false;back.receiveShadow=false;group.add(back);
+    return mesh;
   }
   function anchor(p,label,action){const a=new THREE.Object3D();a.position.set(...p);group.add(a);register(a,label,action);return a;}
   function obstacle(x,z,w,d){colliders.push({x,z,w,d});}

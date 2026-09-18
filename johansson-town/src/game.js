@@ -574,6 +574,7 @@ window.__JOHANSSON_POSE__={
  get x(){return player.position.x;},get y(){return player.position.y;},get z(){return player.position.z;},
  get yaw(){return yaw;},get pitch(){return pitch;},get inside(){return current?.id||null;},
  get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
+ get bus(){const run=world.bus;return run?{phase:run.phase,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
 };
 for(const detail of world.details||[])detailStream.add(detail);

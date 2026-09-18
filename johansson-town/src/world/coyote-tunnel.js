@@ -31,7 +31,13 @@ export const TUNNEL=Object.freeze({
  depth:6.2,
  /** The painted opening, in metres. Comfortably wider than the road. */
  archWidth:8.4,
- archHeight:7.1
+ archHeight:7.1,
+ /**
+  * Where the painting's perspective converges, as a fraction across and up the arch.
+  * Anything meant to drive away down the tunnel has to shrink onto this point and not
+  * onto the middle of the plane, or it slides sideways as it goes.
+  */
+ vanish:Object.freeze({u:.5,v:1-.52})
 });
 
 /**
@@ -70,29 +76,53 @@ function archTexture(){
 
  ctx.save();
  archPath(26);ctx.clip();
- // The dark is not flat — it fades as it "recedes".
- const depth=ctx.createLinearGradient(0,floor,0,h*.26);
- depth.addColorStop(0,'#443a35');depth.addColorStop(.45,'#1b1719');depth.addColorStop(1,'#0d0c0e');
- ctx.fillStyle=depth;ctx.fillRect(0,0,w,h);
+ // One-point perspective, drawn the way a painter fakes one: everything inside the
+ // arch runs to a single vanishing point on the road's centre line, and the point
+ // itself carries a little daylight so the tunnel reads as long rather than as a
+ // cupboard. The bus is scaled down onto exactly this point when it leaves.
+ const vx=w/2,vy=h*.52;
+ const dark=ctx.createLinearGradient(0,floor,0,vy);
+ dark.addColorStop(0,'#4a3f38');dark.addColorStop(.55,'#241f21');dark.addColorStop(1,'#14171c');
+ ctx.fillStyle=dark;ctx.fillRect(0,0,w,h);
 
- // The road carried on into the dark. Two kerbs converging, and a dashed centre line
- // whose dashes shorten as they go, which is the detail that sells it from the road.
- ctx.strokeStyle='#8e8577';ctx.lineWidth=5;
- for(const side of [-1,1]){
-  ctx.beginPath();
-  ctx.moveTo(w/2+side*172,floor);
-  ctx.lineTo(w/2+side*34,h*.44);
-  ctx.stroke();
+ const run=(x0,x1,fill)=>{ctx.beginPath();ctx.moveTo(x0,floor);ctx.lineTo(x1,floor);ctx.lineTo(vx,vy);ctx.closePath();ctx.fillStyle=fill;ctx.fill();};
+ run(40,472,'#2b2622');            // the far walls, a shade off the dark
+ run(96,416,'#3a332c');            // the footpaths either side
+ run(150,362,'#2f2b28');           // the carriageway
+ // Kerbs, drawn as lines rather than shapes: at this size a painted line is the kerb.
+ ctx.lineCap='butt';ctx.strokeStyle='#8e8577';ctx.lineWidth=5;
+ for(const x of [150,362]){ctx.beginPath();ctx.moveTo(x,floor);ctx.lineTo(vx,vy);ctx.stroke();}
+ ctx.strokeStyle='#5d564c';ctx.lineWidth=3;
+ for(const x of [96,416]){ctx.beginPath();ctx.moveTo(x,floor);ctx.lineTo(vx,vy);ctx.stroke();}
+ // Where the walls meet the roof, so there is a ceiling overhead and not just dark.
+ ctx.strokeStyle='#4a423a';ctx.lineWidth=4;
+ for(const x of [40,472]){ctx.beginPath();ctx.moveTo(x,h*.30);ctx.lineTo(vx,vy);ctx.stroke();}
+
+ // Lights down the middle of the roof, each one smaller and nearer the point.
+ for(let i=0,t=.12;i<9&&t<.92;i++,t+=(1-t)*.24){
+  const y=h*.30+(vy-h*.30)*t,wide=Math.max(1.5,26*(1-t)),tall=Math.max(1,6*(1-t));
+  ctx.fillStyle='rgba(255,236,186,'+(0.5*(1-t)+.08).toFixed(3)+')';
+  ctx.fillRect(vx-wide/2,y-tall/2,wide,tall);
  }
- ctx.strokeStyle='#e6dcc2';ctx.lineWidth=7;ctx.lineCap='round';
- let y=floor-10;
- for(let i=0;i<7&&y>h*.46;i++){
-  const length=34*Math.pow(.72,i);
-  ctx.lineWidth=7*Math.pow(.78,i);
-  ctx.beginPath();ctx.moveTo(w/2,y);ctx.lineTo(w/2,y-length);ctx.stroke();
-  y-=length+length*.85;
+ // The centre line, dashes shortening as they go.
+ ctx.strokeStyle='#e6dcc2';ctx.lineCap='round';
+ let y=floor-12;
+ for(let i=0;i<9&&y>vy+10;i++){
+  const length=Math.max(3,38*Math.pow(.74,i));
+  ctx.lineWidth=Math.max(1.5,8*Math.pow(.78,i));
+  ctx.beginPath();ctx.moveTo(vx,y);ctx.lineTo(vx,y-length);ctx.stroke();
+  y-=length+length*.9;
  }
+ // Daylight at the far end. Small, soft, and the thing the bus shrinks onto.
+ const glow=ctx.createRadialGradient(vx,vy,0,vx,vy,34);
+ glow.addColorStop(0,'rgba(226,230,214,.85)');glow.addColorStop(.35,'rgba(150,163,150,.35)');glow.addColorStop(1,'rgba(20,23,28,0)');
+ ctx.fillStyle=glow;ctx.beginPath();ctx.arc(vx,vy,34,0,Math.PI*2);ctx.fill();
  ctx.restore();
+
+ // A drawn line round the opening, because this is a painting of a tunnel and a
+ // painting has an edge. Without it the arch dissolves into the rock at distance.
+ archPath(26);ctx.strokeStyle='#2b2521';ctx.lineWidth=6;ctx.stroke();
+ archPath(16);ctx.strokeStyle='#3b342c';ctx.lineWidth=4;ctx.stroke();
 
  const texture=new THREE.CanvasTexture(canvas);
  texture.colorSpace=THREE.SRGBColorSpace;
