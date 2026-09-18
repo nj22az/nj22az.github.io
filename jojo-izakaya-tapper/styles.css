@@ -238,7 +238,7 @@ button:disabled {
   pointer-events: none;
   position: absolute;
   left: 50%;
-  bottom: max(5.5rem, env(safe-area-inset-bottom));
+  top: max(4.6rem, env(safe-area-inset-top));
   transform: translateX(-50%);
   display: none;
   border-radius: 999px;
@@ -251,7 +251,7 @@ button:disabled {
 }
 
 .quota.visible {
-  display: none;
+  display: block;
 }
 
 .veil {
@@ -404,6 +404,11 @@ button:disabled {
   gap: 4px;
 }
 
+.pad-row {
+  display: flex;
+  gap: 4px;
+}
+
 .pad-btn {
   display: flex;
   width: 48px;
@@ -450,6 +455,8 @@ button:disabled {
   }
   .quota.visible {
     display: block;
+    top: auto;
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
   .pad {
     display: none !important;

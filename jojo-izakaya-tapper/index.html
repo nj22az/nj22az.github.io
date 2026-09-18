@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#140C0A" />
-    <meta name="description" content="Last pour at JoJo Izakaya — slide drinks down four cedar bars before the queue reaches the tap." />
+    <meta name="description" content="Last pour at JoJo Izakaya — run the cedar, pour at the tap, catch every glass." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="JoJo Izakaya" />
     <meta property="og:title" content="JoJo Izakaya Tapper" />
-    <meta property="og:description" content="Four bars, red lanterns, and drinks sliding the length of the cedar. Serve them before they reach the tap." />
+    <meta property="og:description" content="You are Nao. Four bars, red lanterns, drinks sliding the cedar. Pour, knock them back, catch the glass." />
     <meta property="og:image" content="https://nj22az.github.io/jojo-izakaya-tapper/og.jpg" />
     <meta property="og:url" content="https://nj22az.github.io/jojo-izakaya-tapper/" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=3" />
   </head>
   <body>
     <div id="stage">
@@ -30,7 +30,7 @@
       <header class="hud-top">
         <div class="brand">
           <p class="title">JoJo Izakaya</p>
-          <p class="sub">Thuan · last pour</p>
+          <p class="sub">Nao · 奈緒</p>
         </div>
         <div class="hud-stats" id="hud-stats">
           <div class="stat">
@@ -69,11 +69,11 @@
           <p class="kicker">Harbour front · 居酒屋ジョジョ</p>
           <h1>JoJo Izakaya Tapper</h1>
           <p class="lede">
-            Four bars, red lanterns, and drinks sliding the length of the cedar. Serve them before they reach the tap.
-            Catch every empty tray.
+            You are Nao. Pour at the tap, slide the drink, knock them back toward the noren. Run the cedar to catch
+            every empty glass. Tips buy a kanpai — the floor pauses to drink.
           </p>
           <button class="primary" id="clock-in" type="button" disabled>Lighting the lanterns…</button>
-          <p class="hint">Tap a bar to serve · W/S change bar · Space to slide</p>
+          <p class="hint">Tap a bar to run · W/S hop · A/D along the cedar · Space to pour</p>
           <p class="best" id="best-title" hidden></p>
           <a class="home" href="https://nj22az.github.io/">The Office of Nils Johansson</a>
         </div>
@@ -112,14 +112,22 @@
             <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
           </button>
         </div>
-        <button class="slide" id="slide" type="button">Slide</button>
+        <div class="pad-row">
+          <button class="pad-btn" id="run-left" type="button" aria-label="Run left">
+            <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="pad-btn" id="run-right" type="button" aria-label="Run right">
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <button class="slide" id="slide" type="button">Pour</button>
       </div>
     </div>
 
     <script>
       globalThis.__SPRITE_ROOT = "sprites";
     </script>
-    <script src="./game.js"></script>
+    <script src="./game.js?v=3"></script>
     <script>
       (function () {
         const canvas = document.getElementById("game");
@@ -173,7 +181,7 @@
           for (let i = 0; i < 3; i++) ui.lives[i].classList.toggle("on", i < hud.lives);
           ui.comboN.textContent = String(hud.combo);
           ui.toastText.textContent = hud.toast || "";
-          ui.quota.textContent = hud.quotaDone + "/" + hud.quota + " served · " + hud.clock;
+          ui.quota.textContent = (hud.waveName || "Wave") + " · " + hud.quotaDone + "/" + hud.quota + " · " + hud.clock;
 
           if (hud.mode === "title") {
             ui.clockIn.disabled = !ready;
@@ -213,6 +221,19 @@
           e.preventDefault();
           JoJoIzakayaTapper.pulseLane(1);
         });
+        function hold(el, dir) {
+          const down = (e) => {
+            e.preventDefault();
+            JoJoIzakayaTapper.setAlongHeld(dir);
+          };
+          const up = () => JoJoIzakayaTapper.setAlongHeld(0);
+          el.addEventListener("pointerdown", down);
+          el.addEventListener("pointerup", up);
+          el.addEventListener("pointercancel", up);
+          el.addEventListener("pointerleave", up);
+        }
+        hold(document.getElementById("run-left"), -1);
+        hold(document.getElementById("run-right"), 1);
         document.getElementById("slide").addEventListener("pointerdown", (e) => {
           e.preventDefault();
           JoJoIzakayaTapper.pulseVirtualAction();
