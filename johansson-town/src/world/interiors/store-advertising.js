@@ -4,9 +4,9 @@ import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
 
 export const POSTER_SPECS=Object.freeze([
- {id:'tea',file:'nagi-tea.webp',title:'NAGI · お茶のひととき',position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
- {id:'coffee',file:'port88-coffee.webp',title:'PORT 88 · 港の朝に、一杯。',position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
- {id:'biscuit',file:'komorebi-biscuits.webp',title:'KOMOREBI · 午後のおともに。',position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
+ {id:'tea',file:'thuan-labels/golden-tea.webp',title:'GOLDEN MILK TEA · ゴールデンミルクティー',position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
+ {id:'coffee',file:'thuan-labels/night-shift.webp',title:'NIGHT SHIFT · ナイトシフト',position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
+ {id:'biscuit',file:'thuan-labels/stick-bites.webp',title:'STICK BITES · スティックバイツ',position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
 ]);
 export const ATLAS_COLS=4,ATLAS_ROWS=20;
 const COLS=ATLAS_COLS,ROWS=ATLAS_ROWS,TW=256,TH=128;
