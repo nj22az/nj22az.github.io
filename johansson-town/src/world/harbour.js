@@ -1,5 +1,6 @@
 import {buildHarbourOffice} from './harbour-office.js';
 import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
+import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
 import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
@@ -132,6 +133,14 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
+    // The alley units are a recessed door in the side of the supplied night-market
+    // kit. The peninsula does not build that kit, so on this layout a shop that has a
+    // west-pavement plot gets a building of its own instead of a door standing in the
+    // open air. See west-shops.js.
+    if(peninsulaActive()&&WEST_SHOPS[s.id]){
+      const shop=buildWestShop({parent:group,site:s,register,enter,label,colliders,shadows});
+      if(shop){harbourShops.push(shop);return;}
+    }
     if(ALLEY_SHOPS[s.id]){
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }

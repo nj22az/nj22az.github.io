@@ -12,6 +12,7 @@ import {buildStorefront} from '../src/world/storefront.js';
 import {buildStoreShell} from '../src/world/interiors/convenience.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
+import {WEST_SHOPS} from '../src/world/west-shops.js';
 
 function assertGlass(material){
  assert.equal(material.color.getHex(),0xffffff);
@@ -91,21 +92,21 @@ test('Minato stands beside Sakura with its door and NPC approach facing the road
  assert.deepEqual(restaurantPoint('ramen',2,3),[DINING.ramenX-3,DINING.ramenZ+2]);
 });
 
-test('on the peninsula Minato moves up the pavement, clear of the bigger konbini',async()=>{
+test('on the peninsula Minato stands next to the bookshop, clear of the konbini',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
- const southEdge=()=>Math.min(...[manifest.bounds.min[0],manifest.bounds.max[0]]
-  .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[1])));
- const eastFace=()=>Math.max(...[manifest.bounds.min[0],manifest.bounds.max[0]]
-  .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[0])));
+ const corners=key=>[manifest.bounds.min[0],manifest.bounds.max[0]]
+  .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[key]));
  try{
   configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
-  // The peninsula's konbini is SAKURA_FRONT.width along the street, centred on -26.8,
-  // so its north wall is where the izakaya used to stand.
-  const northWallOfSakura=-26.8+SAKURA_FRONT.width/2;
-  assert.ok(southEdge()>northWallOfSakura,'Minato is inside the konbini');
-  assert.ok(southEdge()-northWallOfSakura<1,'Minato is no longer beside the konbini');
-  // and it is still set back off the footway rather than standing on it.
-  assert.ok(eastFace()<MAIN_ROAD.pavementWest,'Minato stands on the pavement');
+  const northGable=Math.max(...corners(1)),southGable=Math.min(...corners(1)),eastFace=Math.max(...corners(0));
+  // The bookshop it was asked to be next to.
+  const books=WEST_SHOPS.frontrow,booksSouthWall=books.z-books.width/2;
+  assert.ok(northGable<booksSouthWall,'Minato is inside the bookshop');
+  assert.ok(booksSouthWall-northGable<1,'Minato is not next to the bookshop');
+  // and clear of the fourteen-metre konbini it used to stand inside.
+  assert.ok(southGable>-26.8+SAKURA_FRONT.width/2,'Minato is inside the konbini');
+  // and still set back off the footway rather than standing on it.
+  assert.ok(eastFace<MAIN_ROAD.pavementWest,'Minato stands on the pavement');
 
   // Everything that holds the door holds the same array, so it moved with the plot.
   assert.equal(IZAKAYA_DOOR[1],izakayaPlot().z);

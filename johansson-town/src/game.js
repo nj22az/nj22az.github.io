@@ -154,10 +154,16 @@ const uplight=new THREE.DirectionalLight(0xc9b9e0,.35);uplight.position.set(4,-1
 const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
 if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
-// The peninsula is the published layout for now: the konbini, the park, the port and
-// the road out to the bus stop. The other businesses stay defined and come back by
-// putting their ids back in this list.
-const PENINSULA_SITES=['market'];
+// The peninsula is the published layout: the konbini, the park, the port and the road
+// out to the bus stop. The other businesses stay defined and come back by putting
+// their ids back in this list, one at a time, once there is a building for them.
+//
+// Front-Row is the second. On the old street it is an alley unit — a recessed door in
+// the side of the supplied night-market kit — and that kit is not built here, so it
+// gets a frontage of its own on the west pavement (see west-shops.js) with Minato
+// next door to the south and Sakura beyond that. Minato is not in this list because
+// buildIzakaya supplies its own site.
+const PENINSULA_SITES=['market','frontrow'];
 const SITES=createBusinesses().filter(site=>PENINSULA_SITES.includes(site.id));
 
 const interactables=[],roomColliders=[],doors=new Map();

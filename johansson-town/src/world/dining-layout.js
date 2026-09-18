@@ -25,9 +25,12 @@ export const DINING=Object.freeze({
  *
  * On the old street it stands against Sakura's north wall, where the konbini is ten
  * metres wide. The peninsula's konbini is fourteen and it grew northward — its north
- * wall is at z -19.67 — so -20.4 is now three metres inside the shop. There it stands
- * two doors further up the same pavement, with an alley between the two buildings and
- * the same walk to the terminus.
+ * wall is at z -19.67 — so -20.4 is now three metres inside the shop.
+ *
+ * On the peninsula it stands next to the bookshop instead, which is where it was asked
+ * for: Front-Row's frontage runs to z -5.60, and Minato's north gable is half a metre
+ * short of it. Thuan comes out of Sakura, up the west pavement past Aya's window, and
+ * in.
  *
  * The door, its approach and the lane to it are live arrays rather than copies:
  * Thuan's evening, Nao's shift and the walkable route all hold these exact arrays, so
@@ -36,8 +39,8 @@ export const DINING=Object.freeze({
  */
 const IZAKAYA_PLOTS=Object.freeze({
  street:Object.freeze([-12.5,-20.4]),
- // South edge at -19.10, which is 0.57m clear of the big konbini's north wall.
- peninsula:Object.freeze([-12.5,-17.25]),
+ // North gable at -6.10, half a metre short of the bookshop's south wall at -5.60.
+ peninsula:Object.freeze([-12.5,-10.43]),
 });
 export const IZAKAYA_DOOR=[-7.05,-20.4];
 export const IZAKAYA_APPROACH=[-6.35,-20.4];
