@@ -3,7 +3,7 @@ import {GLTFLoader} from '../../../vendor/GLTFLoader.js';
 import {assetURL} from '../../assets.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
-import {createStoreAdvertising,getPosterMaterial} from './store-advertising.js';
+import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
 let model=null,pending=null;
@@ -93,9 +93,17 @@ export function buildSakuraInterior({room,reg,action,exit}){
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
  const ads=advertising.finish();
- for(const [id,file,x] of [['tea','nagi-tea.webp',-5.65],['coffee','port88-coffee.webp',-3.15],['biscuit','komorebi-biscuits.webp',3.10]]){
-  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.05,1.48),getPosterMaterial({id,file}));mesh.position.set(x,2.12,3.86);mesh.rotation.y=Math.PI;mesh.userData.sharedAsset=true;room.add(mesh);
-  anchor([x,2.0,3.65],'Read '+id+' poster',()=>action('inspect','Sakura · '+id,'Original fictional packaging and shop posters.'));
+ // The three posters in the window wall. They take their art from the one poster list
+ // rather than a second copy of it: this shop kept its own, so when the prints were
+ // changed the wall it changed was somebody else's and the window still advertised the
+ // packaging Sakura had stopped stocking.
+ for(const [i,spec] of POSTER_SPECS.entries()){
+  const x=[-5.65,-3.15,3.10][i];if(x===undefined)break;
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.05,1.48),getPosterMaterial(spec));mesh.name=spec.title;
+  mesh.position.set(x,2.12,3.86);mesh.rotation.y=Math.PI;mesh.userData.sharedAsset=true;room.add(mesh);
+  const item=SHOP_STOCK.find(s=>s.id===spec.id);
+  anchor([x,2.0,3.65],'Read '+spec.id+' poster',()=>action('inspect',spec.title,
+   item?item.name+' · ¥'+item.cost+'\nThuan\u2019s own label, printed for the shop.':'Thuan\u2019s own label, printed for the shop.'));
  }
  const ledger=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.20),new THREE.MeshStandardMaterial({color:0x436454,roughness:.8}));ledger.position.set(4.77,1.025,1.7);room.add(ledger);
  anchor([4.50,1.24,1.7],'Read Sakura sales ledger',()=>action('shop-ledger'));
