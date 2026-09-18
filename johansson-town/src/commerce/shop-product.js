@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {getLabelMaterial,packagingSlot} from '../world/interiors/store-advertising.js';
+import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS} from '../world/interiors/store-advertising.js';
 import {STORE_BRANDS} from './brands.js';
 const templates=new Map(),bodyMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62});
 export function shopProductTemplate(id){
@@ -9,7 +9,7 @@ export function shopProductTemplate(id){
  const part=(g,color,pos=[0,0,0])=>{g.translate(...pos);const c=new THREE.Color(color),a=new Float32Array(g.attributes.position.count*3);for(let i=0;i<a.length;i+=3)a.set(c.toArray(),i);g.setAttribute('color',new THREE.BufferAttribute(a,3));parts.push(g);};
  const box=(w,h,d,y,color)=>part(new THREE.BoxGeometry(w,h,d),color,[0,y,0]);
  const cyl=(r,h,y,color,rb=r)=>part(new THREE.CylinderGeometry(r,rb,h,20),color,[0,y,0]);
- const label=(g,y,z=0)=>{g.translate(0,y,z);const slot=packagingSlot(id),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%4+.025+uv.getX(i)*.95)/4,1-(Math.floor(slot/4)+.025+(1-uv.getY(i))*.95)/16);labels.push(g);};
+ const label=(g,y,z=0)=>{g.translate(0,y,z);const slot=packagingSlot(id),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%ATLAS_COLS+.025+uv.getX(i)*.95)/ATLAS_COLS,1-(Math.floor(slot/ATLAS_COLS)+.025+(1-uv.getY(i))*.95)/ATLAS_ROWS);labels.push(g);};
  const fronts=(w,h,d,y)=>{label(new THREE.PlaneGeometry(w,h),y,d/2+.001);label(new THREE.PlaneGeometry(w,h).rotateY(Math.PI),y,-d/2-.001);};
  if(['tea','water','cola','orange','soy','soda'].includes(id)){
   const color=({tea:0x657d3c,water:0xafd5d4,cola:0x443126,orange:0xe6a038,soy:0x392d23,soda:0xafd6da})[id],r=id==='soda'?.037:.046;
@@ -25,6 +25,11 @@ export function shopProductTemplate(id){
   const yogurt=id==='yogurt',r=yogurt?.048:.068,h=yogurt?.078:.13;
   cyl(r,h,h/2,brand.paper,r*.76);cyl(r+.003,.005,h+.002,brand.ink);
   label(new THREE.CylinderGeometry(r+.001,r*.76+.001,h*.9,20,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
+ }else if(id.startsWith('magazine')){
+  const w=.21,h=.245,d=.013;box(w,h,d,h/2,brand.paper);fronts(w*.97,h*.95,d,h/2);
+ }else if(id==='newspaper'){
+  const w=.285,h=.021,d=.205;box(w,h,d,h/2,brand.paper);
+  label(new THREE.PlaneGeometry(w*.95,d*.95).rotateX(-Math.PI/2),h+.001);
  }else if(id==='milk'){
   box(.093,.177,.093,.0885,brand.paper);
   part(new THREE.CylinderGeometry(0,.066,.055,4).rotateY(Math.PI/4),brand.paper,[0,.2045,0]);box(.082,.013,.006,.237,brand.ink);fronts(.086,.157,.093,.09);

@@ -32,6 +32,12 @@ export const STORE_BRANDS=Object.freeze({
  soda:{name:'AOZORA',jp:'あおぞら',line:'ラムネ',paper:'#d9eced',ink:'#25557e',accent:'#69aed0',symbol:'wave'},
  yogurt:{name:'ASAMORI',jp:'あさもり',line:'プレーンヨーグルト',paper:'#eef0df',ink:'#32638b',accent:'#81aa7d',symbol:'sun'},
  bread:{name:'KOMUGI',jp:'こむぎ',line:'ミルク食パン',paper:'#f1dcae',ink:'#6f422c',accent:'#c9924c',symbol:'leaf'},
+ // Printed matter for the rack under the window. None of it is stock: you read it
+ // standing up, the way you do, and the shop never charges for it.
+ 'magazine-sea':{name:'UMIKAZE',jp:'うみかぜ',line:'月刊 海風',paper:'#d7e5ec',ink:'#20496b',accent:'#3d7fa6',symbol:'wave'},
+ 'magazine-night':{name:'HOSHIZORA',jp:'ほしぞら',line:'週刊 星空',paper:'#2b3a5c',ink:'#f2e2b0',accent:'#c58a3a',symbol:'star'},
+ 'magazine-rod':{name:'KATSUO',jp:'かつお',line:'釣りと海',paper:'#f0e3c4',ink:'#2f5c45',accent:'#b5622f',symbol:'gull'},
+ newspaper:{name:'MINATO',jp:'みなと新聞',line:'夕刊',paper:'#e8e4d6',ink:'#3a3530',accent:'#8d3f31',symbol:'wave'},
 });
 
-export const BRAND_ATLAS_KEYS=Object.freeze(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','stock','buns','shop','chips','crackers','chocolate','candy','curry','soy','soup','peaches','tuna','detergent','tissues','toothpaste','orange','soda','yogurt','bread']);
+export const BRAND_ATLAS_KEYS=Object.freeze(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','stock','buns','shop','chips','crackers','chocolate','candy','curry','soy','soup','peaches','tuna','detergent','tissues','toothpaste','orange','soda','yogurt','bread','magazine-sea','magazine-night','magazine-rod','newspaper']);

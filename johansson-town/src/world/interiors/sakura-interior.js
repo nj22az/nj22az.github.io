@@ -5,13 +5,13 @@ import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 import {createStoreAdvertising,getPosterMaterial} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
-import {SAKURA_LAYOUT,SAKURA_SHELVES,SHELF_ISLANDS,SHELF_SPAN,REMOVED_SHELVING} from './sakura-layout.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
 let model=null,pending=null;
-// The middle gondola came out and the run that was left was split in two and turned a
-// quarter turn (SHELF_ISLANDS in sakura-layout.js says where each half goes). The shop
+// The gondolas were cut into three islands and each one turned a quarter turn
+// (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
 // model batches every aisle into two merged meshes, so there is no object to move or
 // hide: each half is lifted out as its own mesh over the same vertex buffer, and the
-// shelving that went altogether is dropped the way the park drops its bushes, by
+// shelving that was not kept is dropped the way the park drops its bushes, by
 // leaving its triangles out of the index. Measured against the model, every box below
 // holds whole triangles and cuts none of them, so nothing is left ragged.
 const SHELF_MESHES=['sakura-shelf','sakura-shelf-ends'];
@@ -27,7 +27,7 @@ export function rearrangeShelving(root){
   for(let i=0;i<indices.length;i+=3){
    const triangle=[indices[i],indices[i+1],indices[i+2]],corners=triangle.map(at);
    const holds=box=>corners.every(([x,y,z])=>within(box,x,y,z));
-   const half=Object.keys(SHELF_ISLANDS).find(id=>holds({...SHELF_SPAN,...SHELF_ISLANDS[id].from}));
+   const half=Object.keys(SHELF_ISLANDS).find(id=>holds(SHELF_ISLANDS[id].from));
    if(half)halves[half].push(...triangle);
    else if(REMOVED_SHELVING.some(holds))counts.dropped++;
    else kept.push(...triangle);
@@ -77,6 +77,20 @@ export function buildSakuraInterior({room,reg,action,exit}){
   const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw));
   for(const level of shelf.levels)advertising.label(spec.id==='bun'?'buns':spec.id,[shelf.x+front.x*(shelf.fridge!=null?.34:.12),level-.025,shelf.z+front.z*(shelf.fridge!=null?.34:.12)],.23,.075,{price:spec.id!=='bun',yaw:shelf.yaw});
   const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||'肉まん',text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
+ }
+ // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
+ // same way as the goods, but never restocked: none of it is for sale.
+ for(const piece of SAKURA_DRESSING){
+  const template=shopProductTemplate(piece.template),count=piece.levels.length*piece.columns*piece.rows;
+  const pair=[template.body,template.art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,materials[i],count);mesh.name='Sakura '+piece.id+(i?' print':' display');room.add(mesh);return mesh;});
+  let slot=0;
+  for(const level of piece.levels)for(let column=0;column<piece.columns;column++)for(let row=0;row<piece.rows;row++){
+   const along=(column-(piece.columns-1)/2)*piece.spacing,depth=(row-(piece.rows-1)/2)*piece.depth;
+   dummy.position.set(piece.x+Math.cos(piece.yaw)*along+Math.sin(piece.yaw)*depth,level+.002-template.bounds.min.y,piece.z-Math.sin(piece.yaw)*along+Math.cos(piece.yaw)*depth);
+   dummy.rotation.set(0,piece.yaw,0);dummy.updateMatrix();pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));slot++;
+  }
+  pair.forEach(m=>m.computeBoundingSphere());
+  if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
  const ads=advertising.finish();
  for(const [id,file,x] of [['tea','nagi-tea.webp',-5.65],['coffee','port88-coffee.webp',-3.15],['biscuit','komorebi-biscuits.webp',3.10]]){

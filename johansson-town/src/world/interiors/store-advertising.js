@@ -8,10 +8,13 @@ export const POSTER_SPECS=Object.freeze([
  {id:'coffee',file:'port88-coffee.webp',title:'PORT 88 · 港の朝に、一杯。',position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
  {id:'biscuit',file:'komorebi-biscuits.webp',title:'KOMOREBI · 午後のおともに。',position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
 ]);
-const COLS=4,ROWS=16,TW=256,TH=128;
+export const ATLAS_COLS=4,ATLAS_ROWS=20;
+const COLS=ATLAS_COLS,ROWS=ATLAS_ROWS,TW=256,TH=128;
 const slots=new Map(BRAND_ATLAS_KEYS.map((id,i)=>[id,i]));
 export const packagingSlot=id=>slots.get(id==='bun'?'buns':id);
-const priceSlot=id=>32+STORE_ITEMS.findIndex(item=>item.id===id);
+// Packaging takes the first rows, shelf prices the rest. The two printed overlays
+// only cover the first eight rows, so anything added after them is drawn here.
+const priceSlot=id=>BRAND_ATLAS_KEYS.length+STORE_ITEMS.findIndex(item=>item.id===id);
 const posterGeometry=new THREE.PlaneGeometry(1.06,1.59);
 let labelMaterial=null;const posterMaterials=new Map();
 

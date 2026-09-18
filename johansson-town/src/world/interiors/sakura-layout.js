@@ -25,12 +25,16 @@ export const CLERK_CLEARANCE=.36;
  * parallel to the window and two metres inside the door, so you walked in at the back
  * of a shelf and every aisle ran across your path rather than away from you.
  *
- * It is now two islands, each turned a quarter turn and stood either side of the door:
+ * It is now three islands, each turned a quarter turn and stood across the floor:
  * the aisles run from the window to the cold cabinets, which is the line a customer
  * walks anyway, and the widest of them is on the door's own centre line, so you come in
  * looking down the shop instead of at the back of a shelf. They sit clear of the
- * magazine rack under the west window, which would otherwise close the far aisle off
+ * magazine rack under the west window, which would otherwise close the far aisles off
  * from the front of the shop.
+ *
+ * Two of them are the halves of the run that faced the window. The third is one bay of
+ * the run that lay behind it, kept back rather than dropped: the shop is twice the size
+ * of a real konbini and the west end of the floor was bare without it.
  *
  * Products, stand points and colliders are all still authored in the run's own
  * coordinates and carried over by the same transform that carries its triangles, so
@@ -45,18 +49,19 @@ function island(from,centre,to){
   place:(x,z)=>[+(tx+(z-cz)).toFixed(4),+(tz-(x-cx)).toFixed(4)],
   offset:[+(tx-cz).toFixed(4),+(tz+cx).toFixed(4)]};
 }
-/** Where each half of the run came from, and where it stands now. Measured spans. */
+/** The two runs as modelled, in the coordinates their triangles are still stored in. */
+const FRONT_RUN={minY:-.1,maxY:1.6,minZ:.70,maxZ:1.96},BACK_RUN={minY:-.1,maxY:1.6,minZ:-1.80,maxZ:-.50};
+/** Where each island came from and where it stands now, west to east. Measured spans. */
 export const SHELF_ISLANDS={
- west:island({minX:-.465,maxX:2.20},[.832,1.3315],[-1.55,.33]),
- east:island({minX:-4.56,maxX:-.465},[-2.494,1.3315],[1.55,.05]),
+ west:island({...BACK_RUN,minX:-2.55,maxX:-.485},[-1.50,-1.16],[-4.05,.6165]),
+ middle:island({...FRONT_RUN,minX:-.465,maxX:2.20},[.832,1.3315],[-1.55,.33]),
+ east:island({...FRONT_RUN,minX:-4.56,maxX:-.465},[-2.494,1.3315],[1.55,.05]),
 };
-/** The height and depth of the run, shared by both halves. */
-export const SHELF_SPAN={minY:-.1,maxY:1.6,minZ:.70,maxZ:1.96};
-/** The second gondola, which made the middle of the floor a corridor. */
+/** The rest of the second gondola, which made the middle of the floor a corridor. */
 export const REMOVED_SHELVING=[{minX:-3.25,maxX:2.25,minY:-.1,maxY:1.6,minZ:-1.85,maxZ:-.5}];
 /** The run's own colliders, moved with it. A quarter turn swaps width for depth. */
 const turned=(id,r)=>{const [x,z]=SHELF_ISLANDS[id].place(r.x,r.z);return {x,z,w:r.d,d:r.w,height:r.height};};
-const GONDOLA=[['east',rect(-2.494,1.3315,4.046,1.223,1.5)],['west',rect(.5455,1.3315,2.021,1.223,1.5)],['west',rect(1.85,1.35,.57,1.2,1.55)]];
+const GONDOLA=[['east',rect(-2.494,1.3315,4.046,1.223,1.5)],['middle',rect(.5455,1.3315,2.021,1.223,1.5)],['middle',rect(1.85,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,2.02,1.22,1.5)]];
 export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
@@ -113,12 +118,14 @@ function bay(ids,site,x,z,yaw,stand){
   level+=take;
  }
 }
-bay(['rice','curry','noodles','bread'],'east',-3.6,1.56,0,[-3.6,0,2.38]);
-bay(['biscuit','chips','crackers'],'east',-1.48,1.56,0,[-1.48,0,2.38]);
-bay(['chocolate','candy','peaches'],'west',.55,1.56,0,[.55,0,2.38]);
-bay(['soap','detergent','toothpaste','tissues'],'east',-3.6,1.10,Math.PI,[-3.6,0,.28]);
-bay(['notebook','postcard','battery'],'east',-1.48,1.10,Math.PI,[-1.48,0,.28]);
-bay(['soy','tuna','soup'],'west',.55,1.10,Math.PI,[.55,0,.28]);
+bay(['rice','curry'],'east',-3.6,1.56,0,[-3.6,0,2.38]);
+bay(['biscuit','chips'],'east',-1.48,1.56,0,[-1.48,0,2.38]);
+bay(['chocolate','candy','peaches'],'middle',.55,1.56,0,[.55,0,2.38]);
+bay(['soap','detergent'],'east',-3.6,1.10,Math.PI,[-3.6,0,.28]);
+bay(['notebook','postcard'],'east',-1.48,1.10,Math.PI,[-1.48,0,.28]);
+bay(['soy','tuna','soup'],'middle',.55,1.10,Math.PI,[.55,0,.28]);
+bay(['noodles','crackers','bread'],'west',-1.48,-.93,0,[-1.48,0,-.11]);
+bay(['toothpaste','tissues','battery'],'west',-1.48,-1.39,Math.PI,[-1.48,0,-2.21]);
 for(const [column,ids] of [['tea','coffee'],['water','orange'],['beer','cola'],['milk','yogurt']].entries()){
  for(const [row,id] of ids.entries()){const x=-1.60+column*1.33;SAKURA_SHELVES[id]={x,z:-3.48,levels:FRIDGE_LEVELS.slice(row*2,row*2+2),yaw:0,stand:standBack(x,-3.48,[x,0,-2.78]),spacing:.19,depth:.13,fridge:column};}
 }
@@ -126,3 +133,33 @@ SAKURA_SHELVES.soda={x:-.27,z:-3.48,levels:[FRIDGE_LEVELS[4]],yaw:0,stand:standB
 SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:standBack(-6.50,1.515,[-5.58,0,1.515]),spacing:.33,depth:.12};
 
 SAKURA_SHELVES.noodles.depth=.15;
+
+/**
+ * Fittings the model came with that nothing ever stood on: the magazine rack under the
+ * west window, the wall shelf by the back room, and the end cap on the middle island.
+ * Empty shelving reads as an unfinished shop, and the rack across the whole window is
+ * the first thing you see from the pavement.
+ *
+ * None of it is stock. You cannot buy a magazine — you read it standing at the rack,
+ * the way you do — and the delivery cartons are the shop's own. So it is dressed here
+ * rather than listed in SAKURA_SHELVES: it never depletes and never needs restocking.
+ * Shelf heights and the depth each level actually has are measured off the model.
+ */
+function dressed(piece){
+ if(!piece.island)return piece;
+ const on=SHELF_ISLANDS[piece.island],[x,z]=on.place(piece.x,piece.z),[lx,lz]=on.place(piece.look[0],piece.look[2]);
+ return {...piece,x,z,yaw:piece.yaw+on.yaw,look:[lx,piece.look[1],lz]};
+}
+const MAGAZINES=[['magazine-rod',.267],['magazine-sea',.753],['magazine-night',1.240]];
+export const SAKURA_DRESSING=[
+ ...MAGAZINES.map(([template,level],i)=>({id:template,template,levels:[level],x:-4.665,z:3.50,yaw:Math.PI,columns:15,rows:1,spacing:.255,depth:.12,
+  look:i===1?[-4.665,1.38,3.32]:null,title:'Read the magazines',
+  text:'The rack under the window. 月刊 海風, 週刊 星空 and 釣りと海, and the evening paper folded on the bottom shelf.\nNobody minds how long you stand here.'})),
+ {id:'newspaper',template:'newspaper',levels:[.088],x:-4.665,z:3.42,yaw:Math.PI,columns:11,rows:1,spacing:.33,depth:.12,look:null},
+ {id:'delivery',template:'stock',levels:[.088,.357,.670,.983,1.296],x:-5.165,z:-2.28,yaw:0,columns:5,rows:1,spacing:.365,depth:.25,
+  look:[-5.165,1.44,-2.09],title:'Look over the delivery shelf',
+  text:'Cartons off the morning van, waiting to be priced up and put out. Thuan works down them after closing.'},
+ {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:1.87,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
+  look:[2.06,1.08,1.355],title:'Read the end-cap promotion',
+  text:'日の出カレールウ — the month\u2019s offer, stacked at the end of the aisle with a hand-lettered card.'},
+].map(dressed);

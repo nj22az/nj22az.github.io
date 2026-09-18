@@ -5,7 +5,7 @@ import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildSakuraInterior} from '../src/world/interiors/sakura-interior.js';
 const SHELF_MESHES=['sakura-shelf','sakura-shelf-ends'];
-import {SAKURA_LAYOUT,SHELF_ISLANDS,REMOVED_SHELVING} from '../src/world/interiors/sakura-layout.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES,SHELF_ISLANDS,REMOVED_SHELVING} from '../src/world/interiors/sakura-layout.js';
 import {SHOP_STOCK,restoreShopStock} from '../src/commerce/shop-stock.js';
 import {shopProductTemplate} from '../src/commerce/shop-product.js';
 
@@ -33,7 +33,7 @@ test('all 360 stocked products stand on real shelves with clear space above and 
  }finally{globalThis.fetch=old;}
 });
 
-test('the run is split, turned and clear of the aisles it used to block',async()=>{
+test('the shelving stands in three turned islands with a route to every shelf',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});const old=fetch;
  globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
@@ -61,14 +61,21 @@ test('the run is split, turned and clear of the aisles it used to block',async()
    for(const axis of ['x','z'])for(const side of ['min','max'])
     assert.ok(blocks.some(c=>Math.abs((side==='min'?c[axis]-(axis==='x'?c.w:c.d)/2:c[axis]+(axis==='x'?c.w:c.d)/2)-footprint[side][axis])<.06),id+' island oversteps its collider in '+side+' '+axis);
   }
+  // The shop's own collision and the walker's own router: every shelf she serves has a
+  // route to it from the door, at the width she walks.
   const {circleHitsRect}=await import('../physics.js');
+  const {suppliedRoomBoundsBlocked}=await import('../src/world/supplied-rooms.js');
+  const {createNavigation}=await import('../src/people/navmesh.js');
+  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)||SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
+  const nav=createNavigation(blocked,{step:.2,heightAt:()=>0,bounds:SAKURA_LAYOUT.bounds,radius:SAKURA_LAYOUT.clearance});
+  const from={x:SAKURA_LAYOUT.entrance[0],z:SAKURA_LAYOUT.entrance[2]},stranded=[];
+  for(const [name,[x,,z]] of [...Object.entries(SAKURA_SHELVES).map(([id,shelf])=>[id,shelf.stand]),['the till',SAKURA_LAYOUT.staff],['the stockroom',SAKURA_LAYOUT.stockroom]]){
+   const route=nav.path(from,{x,z}),end=route.at(-1);
+   if(!route.length||Math.hypot(end[0]-x,end[1]-z)>.25)stranded.push(name);
+  }
+  assert.deepEqual(stranded,[],'Nothing reaches these from the door');
+  // and the door looks down the shop rather than at the back of a shelf.
   const open=(x,z)=>!SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,SAKURA_LAYOUT.clearance,c));
-  // Each lane runs front to back until the fitting that closes it, and the widest of
-  // them is on the door's own centre line.
-  for(const [name,x,back,front] of [['west aisle',-2.72,-3.3,2.6],['door aisle',0,-2.7,2.9],['east aisle',2.72,-2.7,2.9]])
-   for(let z=back;z<=front;z+=.17)assert.ok(open(x,z),name+' is blocked at z='+z.toFixed(2));
-  // and they are joined at both ends, so neither island is a pocket.
-  for(const [name,z,from,to] of [['front of the shop',2.6,-2.2,2.7],['back of the shop',-2.5,-2.2,2.7]])
-   for(let x=from;x<=to;x+=.14)assert.ok(open(x,z),'The '+name+' is blocked at x='+x.toFixed(2));
+  for(let z=-2.7;z<=2.9;z+=.17)assert.ok(open(SAKURA_LAYOUT.entrance[0],z),'The door aisle is blocked at z='+z.toFixed(2));
  }finally{globalThis.fetch=old;}
 });
