@@ -130,6 +130,32 @@ function archTexture(){
 }
 
 /**
+ * The coyote in the verge. He was here before the paint was, he has seen the bus go
+ * through, and he has his own opinion about whether that is possible. Walk far enough
+ * up the road and he decides you are going his way.
+ */
+function buildCoyoteMesh(shadows){
+ const fur=new THREE.MeshStandardMaterial({color:0xb68a58,roughness:.92,flatShading:true});
+ const dark=new THREE.MeshStandardMaterial({color:0x4a3428,roughness:.95,flatShading:true});
+ const group=new THREE.Group();group.name='Coyote';
+ const body=new THREE.Mesh(new THREE.SphereGeometry(.22,8,6),fur);body.scale.set(1.85,.85,.9);body.position.set(0,.32,0);group.add(body);
+ const rump=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),fur);rump.scale.set(1.2,.85,1);rump.position.set(-.28,.3,0);group.add(rump);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.15,8,6),fur);head.position.set(.34,.46,0);group.add(head);
+ const muzzle=new THREE.Mesh(new THREE.SphereGeometry(.07,6,5),fur);muzzle.scale.set(1.5,.7,.7);muzzle.position.set(.48,.4,0);group.add(muzzle);
+ const nose=new THREE.Mesh(new THREE.SphereGeometry(.03,5,4),dark);nose.position.set(.56,.4,0);group.add(nose);
+ for(const side of [-1,1]){
+  const ear=new THREE.Mesh(new THREE.ConeGeometry(.055,.16,5),fur);ear.position.set(.3,.64,side*.09);ear.rotation.z=side*.18;ear.rotation.x=side*-.12;group.add(ear);
+  const inner=new THREE.Mesh(new THREE.ConeGeometry(.03,.1,5),new THREE.MeshStandardMaterial({color:0xd9b49a,roughness:.9,flatShading:true}));inner.position.set(.31,.6,side*.09);inner.rotation.copy(ear.rotation);group.add(inner);
+ }
+ const tail=new THREE.Mesh(new THREE.SphereGeometry(.09,7,5),fur);tail.scale.set(2.2,.7,.7);tail.position.set(-.55,.38,0);tail.rotation.z=.4;group.add(tail);
+ for(const [x,z] of [[.16,.1],[.16,-.1],[-.2,.1],[-.2,-.1]]){
+  const leg=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.28,5),fur);leg.position.set(x,.14,z);group.add(leg);
+ }
+ group.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=true;}});
+ return group;
+}
+
+/**
  * @param {object} options
  * @param {THREE.Object3D} options.parent
  * @param {Array} options.colliders
@@ -173,9 +199,28 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
   group.add(boulder);
  }
 
+ // The last few metres of carriageway, from where the public road gives up to the foot
+ // of the rock. Without it the painted road inside the arch started on a strip of
+ // verge, and a road that does not reach the tunnel it is painted into is the one seam
+ // that gives the whole thing away from thirty metres back.
+ const apron=TUNNEL.z-FOREST_EDGE.roadEndZ;
+ const run=new THREE.Mesh(new THREE.BoxGeometry(MAIN_ROAD.width,.09,apron+.1),
+  new THREE.MeshStandardMaterial({color:0x60645d,roughness:.94}));
+ run.name='tunnel approach';run.position.set(0,.005,-apron/2-.02);run.receiveShadow=true;group.add(run);
+ for(const side of [-1,1]){
+  const verge=new THREE.Mesh(new THREE.BoxGeometry(2.1,.055,apron+.1),
+   new THREE.MeshStandardMaterial({color:0x798062,roughness:1}));
+  verge.position.set(side*(MAIN_ROAD.width/2+1.05),.002,-apron/2-.02);verge.receiveShadow=true;group.add(verge);
+ }
+
  const paint=new THREE.Mesh(
   new THREE.PlaneGeometry(TUNNEL.archWidth,TUNNEL.archHeight),
-  new THREE.MeshBasicMaterial({map:archTexture(),toneMapped:true,transparent:true})
+  // depthWrite off: the canvas is transparent outside the arch, but a plane still
+  // lays its whole rectangle into the depth buffer, and the ink pass draws edges from
+  // depth — so the picture came with a faint rectangle ruled round it. Not writing
+  // depth keeps the painting out of the outline pass; it still tests depth, and it
+  // stands three centimetres proud of the rock, so it draws.
+  new THREE.MeshBasicMaterial({map:archTexture(),toneMapped:true,transparent:true,depthWrite:false})
  );
  paint.name='Painted tunnel mouth';
  // Proud of the rock by a few centimetres. It is paint, so it is not lit like rock —
@@ -189,13 +234,38 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  // The whole face stops you, arch and all.
  colliders.push({id:'painted-tunnel',x:TUNNEL.x,z:TUNNEL.z+TUNNEL.depth/2,w:TUNNEL.width,d:TUNNEL.depth,height:TUNNEL.height});
 
+ const coyote=buildCoyoteMesh(shadows);
+ coyote.position.set(TUNNEL.x+3.05,0,TUNNEL.z-2.2);
+ coyote.rotation.y=Math.PI*.15;
+ parent.add(coyote);
+ let follow=false,stride=0;
+ /** He trots after you, and like everyone else out here he stops at the rock. */
+ const update=(dt,player)=>{
+  if(!player)return;
+  const px=player.x??player.position?.x,pz=player.z??player.position?.z;
+  if(!Number.isFinite(px)||!Number.isFinite(pz))return;
+  const dx=px-coyote.position.x,dz=pz-coyote.position.z,dist=Math.hypot(dx,dz);
+  if(dist<16)follow=true;
+  if(!follow||dist<1.55){stride=0;return;}
+  const speed=dist>8?4.4:2.7,step=Math.min(dist-1.5,speed*dt);
+  const nx=coyote.position.x+dx/dist*step,nz=coyote.position.z+dz/dist*step;
+  if(splat(nx,nz))return;
+  coyote.position.x=nx;coyote.position.z=nz;
+  coyote.lookAt(px,coyote.position.y,pz);
+  stride+=dt*speed*2.4;
+  coyote.position.y=Math.abs(Math.sin(stride))*.04;
+ };
+
  if(register){
   const anchor=new THREE.Object3D();
   anchor.position.set(TUNNEL.x,1.3,TUNNEL.z-1.6);
   parent.add(anchor);
   register(anchor,'Inspect the tunnel',()=>onAction?.('inspect','Harbour Line tunnel',
-   'Painted. The arch, the kerbs, the dashes down the middle, all of it, and the rock '+
-   'goes on behind. The 17:10 bus uses it twice a day without any trouble.'));
+   'Painted. The arch, the kerbs, the lights, the dashes down the middle, all of it, '+
+   'and the rock goes on behind. The 17:10 bus uses it twice a day without any trouble.'));
+  register(coyote,'Greet the coyote',()=>onAction?.('inspect','Hill coyote',
+   'He lives in the verge by the tunnel. He has watched the bus go through and he has '+
+   'tried it himself, twice. Once you walk far enough he decides you are going his way.'));
  }
 
  /**
@@ -206,5 +276,5 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  const splat=(x,z)=>Math.abs(x-TUNNEL.x)<=TUNNEL.width/2+.4
   &&Math.abs(z-(TUNNEL.z+TUNNEL.depth/2))<=TUNNEL.depth/2+.6;
 
- return {group,face,paint,splat};
+ return {group,face,paint,coyote,splat,update};
 }

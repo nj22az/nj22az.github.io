@@ -223,6 +223,7 @@ export function createTown(options){
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.busStation?.update(minutes,day);
     world.bus?.update(dt);
+    world.tunnel?.update?.(dt,options.getPlayerPosition?.());
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);

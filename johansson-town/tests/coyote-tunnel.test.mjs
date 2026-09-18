@@ -49,3 +49,19 @@ test('the rock knows when it has been run into',()=>{
  assert.equal(splat(TUNNEL.x,TUNNEL.z-4),false,'The road in front of it counts as the rock');
  assert.equal(splat(TUNNEL.x-TUNNEL.width,TUNNEL.z+TUNNEL.depth/2),false,'Open ground beside the hill counts as the rock');
 });
+
+test('the coyote follows once you walk far enough, and stops where you do',()=>{
+ installDOM();
+ const parent=new THREE.Group();
+ const {coyote,update}=buildCoyoteTunnel({parent,colliders:[]});
+ const start=coyote.position.clone();
+ update(.2,{x:TUNNEL.x,z:TUNNEL.z-20});
+ assert.ok(coyote.position.distanceTo(start)<.05,'The coyote follows from the far end of the bus road');
+ // Walk up to the paint and he comes with you — and then he is in the same fix you
+ // are, because the rock is rock for him too.
+ for(let i=0;i<60;i++)update(.2,{x:TUNNEL.x,z:TUNNEL.z-2});
+ assert.ok(coyote.position.z>start.z,'The coyote stayed in the verge');
+ assert.ok(coyote.position.distanceTo(new THREE.Vector3(TUNNEL.x,coyote.position.y,TUNNEL.z-2))<1.7,'The coyote never caught up');
+ for(let i=0;i<60;i++)update(.2,{x:TUNNEL.x,z:TUNNEL.z+TUNNEL.depth/2});
+ assert.ok(!coyote.position.z||coyote.position.z<TUNNEL.z+.6,'The coyote walked into the painting');
+});

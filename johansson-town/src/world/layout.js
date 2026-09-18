@@ -5,6 +5,7 @@ import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
+import {TUNNEL} from './coyote-tunnel.js';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
@@ -55,7 +56,8 @@ export function routeAt(x,z,r=0){
  // The bus-only road past the terminal. It is signed for buses and there is a painted
  // tunnel at the end of it, so of course people walk up it to look: leaving it off the
  // walkable set meant you were stopped by nothing at all, thirty metres short of the
- // one thing out here worth walking to.
+ // one thing out here worth walking to. It ends at the rock, because the rock is where
+ // it ends — running the road through the arch gives the joke away before you get to it.
  if(peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
   &&z>=MAIN_ROAD.maxZ&&z<=FOREST_EDGE.roadEndZ+3.4-r)return {id:'bus-forest-road',surface:'asphalt'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
@@ -83,4 +85,4 @@ export function routeAt(x,z,r=0){
  return null;
 }
 export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
-export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:FOREST_EDGE.roadEndZ+1};
+export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:TUNNEL.z+TUNNEL.depth+1};

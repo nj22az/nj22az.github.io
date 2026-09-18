@@ -2,7 +2,11 @@ import * as THREE from '../../vendor/three.module.js';
 
 // One shoreline shared by the ground, visible retaining edge and visitor map.
 // A closed headland: water separates every edge from the distant islands.
-export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-10,39],[1,34],[13,35],[20,49],[35,51],[40,40],[45,29],[45,-43],[38,-50],[20,-50]];
+// The north-west shore runs out under the tunnel hill. It used to stop at z≈36, which
+// put the hill, its boulders and the last few metres of the bus road out over open
+// water: from the road you saw a band of sea at the foot of the cliff and the painting
+// floating above it. The headland now carries the rock it is holding up.
+export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-19,48],[12,48],[13,35],[20,49],[35,51],[40,40],[45,29],[45,-43],[38,-50],[20,-50]];
 export function buildPeninsula(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
  const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshStandardMaterial({color:0x8b9279,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
