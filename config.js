@@ -86,10 +86,10 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Sakura Tapper",
+      title: "JoJo Izakaya Tapper",
       description:
-        "A classic arcade tapper set in Sakura Shōten. Hop between four night tills, slide snacks down the counter, and catch every empty tray.",
-      url: "/sakura-tapper/",
+        "A classic arcade tapper behind the cedar at 居酒屋ジョジョ. Hop between four bars, slide drinks to the harbour queue, and catch every empty glass.",
+      url: "/jojo-izakaya-tapper/",
       icon: "joystick",
       tags: ["Arcade", "Playable Demo", "2D"],
       bento: "wide",
