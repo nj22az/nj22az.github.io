@@ -364,23 +364,20 @@ function placeAtEntrance(s,leave=false){
  player.position.set(x,groundHeight(x,z),z);
 }
 /**
- * Running into the painted tunnel.
+ * Running into the hill beside the tunnel.
  *
- * The bus road runs straight at it for thirty metres, so the one thing anybody is
- * going to do with a tunnel that is not a tunnel is run at it. There is rock behind
- * the paint: you bounce, the hill knocks, and you say so. Once per approach — the
- * collision repeats every step you hold the key down against it.
+ * The bus road runs straight at the opening for thirty metres. Missing the arch and
+ * hitting the rock is still a collision: you bounce, the hill knocks, and you say so.
+ * Once per approach — the collision repeats every step you hold the key down against it.
  */
 let paintedBumpAt=-99;
 function hitThePainting(x,z){
  if(!world.tunnel?.splat?.(x,z)||elapsed-paintedBumpAt<2.4)return;
  paintedBumpAt=elapsed;
- // Far enough back to see what you hit. Stopping dead against the painting filled the
- // screen with the painted dark, which is the one view that does not tell the joke.
  player.position.addScaledVector(moveVec,-1.15);
  if(pitch>-.2)pitch=THREE.MathUtils.clamp(pitch-.2,-1.25,1.15);
  townAudio.play('clunk',.55);
- say('いてっ！ · Ouch. There is rock behind the paint.',3);
+ say('いてっ！ · Ouch. That is the hill. The road is the hole.',3);
 }
 function updatePlayer(dt){
  if(!seated)unstuckPlayer();
@@ -389,7 +386,7 @@ function updatePlayer(dt){
  let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
  let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
  if(seated){s=0;f=0;}
- // Bounced off the painting: half a second of nobody being in charge, so the rebound
+ // Bounced off the hill: half a second of nobody being in charge, so the rebound
  // is visible instead of being walked straight back out of by a held key.
  if(elapsed-paintedBumpAt<.55){s=0;f=0;}
  move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();

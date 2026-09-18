@@ -170,7 +170,7 @@ export function createTown(options){
   const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
   world.forestEdge=forestEdge;
   // The road out of town has to end somewhere, and on the peninsula it ends at a
-  // tunnel that is painted on a rock face. See coyote-tunnel.js.
+  // tunnel through the hill. See coyote-tunnel.js.
   if(peninsulaActive()){
    world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
@@ -218,6 +218,7 @@ export function createTown(options){
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.busStation?.update(minutes,day);
+    world.tunnel?.update?.(dt,options.getPlayerPosition?.());
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
