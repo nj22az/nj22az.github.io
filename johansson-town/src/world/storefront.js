@@ -41,17 +41,31 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  // grouped on their own and hidden the moment the supplied interior is in place.
  const standIn=new THREE.Group();standIn.name='Sakura stand-in fittings';group.add(standIn);
  const keep=object=>{standIn.add(object);return object;};
+ // Everything here is measured off the frontage rather than written down, because the
+ // frontage is not one size any more: the canal lot is ten metres and the harbour shop
+ // is fourteen. The numbers below were authored for the ten, and at fourteen they left
+ // the shelves huddled in one corner with four metres of lit, empty floor beside them —
+ // which from the pavement reads as a shop that has been cleared out.
+ const runFrom=doorX+DOOR/2+.4,runTo=half-1.1,runWidth=Math.max(2.6,runTo-runFrom),runX=(runFrom+runTo)/2;
+ const bottles=Math.max(4,Math.round(runWidth/.52)),pitch=runWidth/bottles;
+ const shelfZ=-depth*.244,frontZ=shelfZ+.35,goodsZ=shelfZ+.18;
  for(const [row,y] of [.48,1.22,1.96].entries()){
-  keep(box([5.8,.055,.65],[1.25,y,-2.0],0xdcdcc9));keep(box([5.8,.07,.045],[1.25,y,-1.65],0xb84e45));
-  for(let n=0;n<10;n++){
-   const x=-1.2+n*.52,z=-1.82,color=[0x477454,0xb65241,0xd8b56e][row];
+  keep(box([runWidth,.055,.65],[runX,y,shelfZ],0xdcdcc9));keep(box([runWidth,.07,.045],[runX,y,frontZ],0xb84e45));
+  for(let n=0;n<bottles;n++){
+   const x=runFrom+(n+.5)*pitch,z=goodsZ,color=[0x477454,0xb65241,0xd8b56e][row];
    if(row===0){keep(round(.13,.30,[x,y+.18,z],color));for(const dy of [.035,.335])keep(round(.134,.023,[x,y+dy,z],0xc9ccbf));keep(round(.133,.10,[x,y+.19,z],0xf2e4c3));}
    else if(row===1){keep(round(.115,.30,[x,y+.18,z],color));keep(round(.057,.15,[x,y+.395,z],color));keep(round(.060,.045,[x,y+.485,z],0xe7d4a8));keep(round(.118,.11,[x,y+.19,z],0xf2e4c3));}
    else{keep(box([.30,.36,.25],[x,y+.21,z],color));keep(box([.27,.13,.01],[x,y+.23,z+.13],0xf2e4c3));keep(box([.12,.04,.25],[x,y+.41,z],0xe7d4a8));}
   }
  }
- for(const lx of [-2.8,1.8]){const light=box([.45,.06,2.8],[lx,3.64,-2.3],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
- keep(box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo'));keep(box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb));
+ // Two strips, spread over the floor they light rather than over the floor a smaller
+ // shop used to have, and long enough to reach the back of this one.
+ for(const lx of [doorX-.3,runX+.55])
+  {const light=box([.45,.06,depth*.34],[lx,3.64,-depth*.28],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
+ // The counter, on the door's side of the shop where the till goes.
+ const tillX=(-half+1.1+doorX-DOOR/2-.4)/2;
+ keep(box([Math.max(1.6,doorX-DOOR/2-.4-(-half+1.1)),1.0,.8],[tillX,.5,shelfZ-.6],0xc4ac84,'bamboo'));
+ keep(box([.55,.35,.45],[tillX,1.18,shelfZ-.55],0xe1d8bb));
  const mat=box([1.7,.035,.8],[doorX,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[half+.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  hangNoren(group,doorX,1.85,.07);

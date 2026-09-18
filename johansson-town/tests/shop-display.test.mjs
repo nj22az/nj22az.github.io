@@ -9,7 +9,7 @@ import {SAKURA_LAYOUT,SAKURA_SHELVES,SHELF_ISLANDS,REMOVED_SHELVING} from '../sr
 import {SHOP_STOCK,restoreShopStock} from '../src/commerce/shop-stock.js';
 import {shopProductTemplate} from '../src/commerce/shop-product.js';
 
-test('all 360 stocked products stand on real shelves with clear space above and beside them',async()=>{
+test('all 396 stocked products stand on real shelves with clear space above and beside them',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});const old=fetch;
  globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
@@ -28,7 +28,7 @@ test('all 360 stocked products stand on real shelves with clear space above and 
    }
   }
   for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const overlap=boxes[i].box.clone().intersect(boxes[j].box).getSize(new T.Vector3());if(Math.min(overlap.x,overlap.y,overlap.z)>.003)failures.push(boxes[i].id+' overlaps '+boxes[j].id);}
-  assert.equal(SHOP_STOCK.length,30);assert.equal(boxes.length,360);assert.deepEqual(failures,[]);
+  assert.equal(SHOP_STOCK.length,33);assert.equal(boxes.length,396);assert.deepEqual(failures,[]);
   display.refrigerator.open(0);display.refrigerator.update(1);assert.ok(display.refrigerator.doors[0].amount>.9);display.refrigerator.update(8);assert.ok(display.refrigerator.doors[0].amount<.01);
  }finally{globalThis.fetch=old;}
 });

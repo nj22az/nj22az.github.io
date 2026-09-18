@@ -33,6 +33,27 @@ export function shopProductTemplate(id){
  }else if(id==='milk'){
   box(.093,.177,.093,.0885,brand.paper);
   part(new THREE.CylinderGeometry(0,.066,.055,4).rotateY(Math.PI/4),brand.paper,[0,.2045,0]);box(.082,.013,.006,.237,brand.ink);fronts(.086,.157,.093,.09);
+ }else if(id==='bento'){
+  // A lidded tray, seen from above on the top shelf, so the print goes on the lid.
+  const w=.19,h=.052,d=.135;
+  box(w,h*.62,d,h*.31,brand.ink);                        // the black tray
+  box(w+.004,h*.42,d+.004,h*.79,brand.paper);            // the paper lid band
+  label(new THREE.PlaneGeometry(w*.9,d*.86).rotateX(-Math.PI/2),h+.001);
+  box(w*.42,.004,d*.9,h+.002,brand.accent);              // the band across the lid
+ }else if(id==='sandwich'){
+  // The wedge pack: a triangular prism on its side, cut corner up, which is the one
+  // silhouette on a konbini shelf you recognise before you can read it.
+  const r=.082,t=.052;
+  const wedge=new THREE.CylinderGeometry(r,r,t,3).rotateX(Math.PI/2).rotateZ(Math.PI);
+  part(wedge,brand.paper,[0,r*.62,0]);
+  label(new THREE.PlaneGeometry(r*1.05,r*.78),r*.66,t/2+.001);
+  label(new THREE.PlaneGeometry(r*1.05,r*.78).rotateY(Math.PI),r*.66,-t/2-.001);
+ }else if(id==='pudding'){
+  // A tapered cup under a foil lid, which is how a pudding came in 1988 and still does.
+  const r=.038,h=.062;
+  cyl(r,h,h/2,brand.paper,r*.72);
+  cyl(r+.003,.004,h+.001,0xd8cfae);                      // the foil rim
+  label(new THREE.CylinderGeometry(r+.001,r*.72+.001,h*.82,20,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
  }else if(['chips','crackers','candy','bread','bun','rice'].includes(id)){
   const bread=id==='bread',small=id==='rice'||id==='bun',w=small?.15:bread?.19:.16,h=small?.12:bread?.235:.22,d=small?.09:bread?.12:.07;
   const g=new THREE.BoxGeometry(w,h,d,1,4,1),p=g.attributes.position;

@@ -70,9 +70,12 @@ const STOP_Z=BUS_STATION.queue[1]-1.4,MOUTH_Z=TUNNEL.z-1.2;
 /**
  * @param {object} options
  * @param {THREE.Object3D} options.parent
+ * @param {Array} [options.colliders] the town's collider list. The bus is eight and a
+ *   half metres of vehicle standing on a road you walk up, so it gets an entry like
+ *   any other solid thing; without one you walked straight through it at the stop.
  * @returns {{bus:THREE.Group,update:(dt:number)=>void,get phase:string}}
  */
-export function createBusRun({parent,shadows=false}={}){
+export function createBusRun({parent,shadows=false,colliders}={}){
  const bus=buildBus({shadows});
  bus.position.set(MAIN_ROAD.x,0,STOP_Z);
  parent.add(bus);
@@ -93,11 +96,34 @@ export function createBusRun({parent,shadows=false}={}){
  };
  park();
 
+ // What stops you walking through it. The box follows the bus and turns with it — an
+ // axis-aligned rect cannot rotate, so it takes the extent of the turned body instead,
+ // which is exact at the two headings it spends all but two seconds at.
+ //
+ // It comes off the moment the bus starts shrinking onto the painting: by then it is
+ // not a vehicle in the road any more, it is a picture of one, and a collider there
+ // would be an invisible wall across the mouth of the tunnel.
+ const solid=colliders?{id:'harbour-bus',x:bus.position.x,z:bus.position.z,w:BODY.width,d:BODY.length,height:BODY.floor+BODY.height}:null;
+ if(solid)colliders.push(solid);
+ const trackSolid=()=>{
+  if(!solid)return;
+  const away=!bus.visible||bus.scale.x<.98;
+  if(away){solid.w=0;solid.d=0;return;}
+  const sin=Math.abs(Math.sin(bus.rotation.y)),cos=Math.abs(Math.cos(bus.rotation.y));
+  solid.x=bus.position.x;solid.z=bus.position.z;
+  solid.w=BODY.length*sin+BODY.width*cos;
+  solid.d=BODY.length*cos+BODY.width*sin;
+ };
+ trackSolid();
+
  return {
   bus,
   get phase(){return phase;},
   update(dt){
    if(!(dt>0))return;
+   try{this.step(dt);}finally{trackSolid();}
+  },
+  step(dt){
    if(phase==='waiting'){
     if((timer-=dt)<=0){phase='leaving';}
     return;

@@ -135,10 +135,39 @@ bay(['notebook','postcard'],'east',-1.48,1.10,Math.PI,[-1.48,0,.28]);
 bay(['soy','tuna','soup'],'middle',.55,1.10,Math.PI,[.55,0,.28]);
 bay(['noodles','crackers','bread'],'west',-1.48,-.93,0,[-1.48,0,-.11]);
 bay(['toothpaste','tissues','battery'],'west',-1.48,-1.39,Math.PI,[-1.48,0,-2.21]);
-for(const [column,ids] of [['tea','coffee'],['water','orange'],['beer','cola'],['milk','yogurt']].entries()){
- for(const [row,id] of ids.entries()){const x=-1.60+column*1.33;SAKURA_SHELVES[id]={x,z:-3.48,levels:FRIDGE_LEVELS.slice(row*2,row*2+2),yaw:0,stand:standBack(x,-3.48,[x,0,-2.78]),spacing:.19,depth:.13,fridge:column};}
+/**
+ * The cold cabinet: four columns, five levels apiece.
+ *
+ * The drinks only ever reached the fourth level, so the top of three of the four
+ * columns held nothing — from the door, a metre-wide band of empty glass across the
+ * back of the shop. It is filled with what a konbini actually sells off the morning
+ * van, and each line is put at the height you can see it from: you look down on a
+ * bento tray and a pudding cup, so they go on the bottom shelf, and the drinks above
+ * them shift up one; you look up at a bottle, a carton or a sandwich wedge, so those
+ * take the top. Ramune already had one top shelf and keeps it.
+ */
+const COLD_CABINET=[
+ {column:0,floor:'bento',drinks:['coffee','tea']},
+ {column:1,drinks:['water','orange'],top:'soda'},
+ {column:2,drinks:['beer','cola'],top:'sandwich'},
+ {column:3,floor:'pudding',drinks:['yogurt','milk']},
+];
+/** The bottom and top shelves hold one line each; the drinks take two levels apiece. */
+const CHILLED={
+ bento:{spacing:.22,depth:.155,columns:4},
+ pudding:{spacing:.13,depth:.13,columns:6},
+ sandwich:{spacing:.22,depth:.13,columns:4},
+ soda:{spacing:.19,depth:.105},
+};
+for(const {column,floor,drinks,top} of COLD_CABINET){
+ const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
+ const place=(id,levels)=>{SAKURA_SHELVES[id]={x,z:-3.48,levels,yaw:0,stand,spacing:.19,depth:.13,...CHILLED[id],fridge:column};};
+ // A floored column pushes its drinks up a shelf, which is the whole point of it.
+ const first=floor?1:0;
+ if(floor)place(floor,[FRIDGE_LEVELS[0]]);
+ drinks.forEach((id,row)=>place(id,FRIDGE_LEVELS.slice(first+row*2,first+row*2+2)));
+ if(top)place(top,[FRIDGE_LEVELS[4]]);
 }
-SAKURA_SHELVES.soda={x:-.27,z:-3.48,levels:[FRIDGE_LEVELS[4]],yaw:0,stand:standBack(-.27,-3.48,[-.27,0,-2.78]),spacing:.19,depth:.105,fridge:1};
 SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:standBack(-6.50,1.515,[-5.58,0,1.515]),spacing:.33,depth:.12};
 
 SAKURA_SHELVES.noodles.depth=.15;

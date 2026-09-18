@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createBusRun,vanishingPoint} from '../src/world/bus.js';
 import {TUNNEL} from '../src/world/coyote-tunnel.js';
+import {circleHitsRect} from '../physics.js';
 
 /** Runs the service until it reaches a phase, or gives up. */
 function until(run,phase,seconds=200,dt=1/30){
@@ -47,4 +48,32 @@ test('the bus leaves by being shrunk onto the painting, and comes back the same 
  for(const phase of ['arriving','returning','turning'])assert.ok(seen.includes(phase),'The bus skips '+phase);
  assert.equal(run.bus.scale.x,1);
  assert.ok(Math.abs(run.bus.rotation.y)<1e-6,'The bus waits facing the wrong way');
+});
+
+test('the bus is solid while it is a bus, and not once it is a picture of one',()=>{
+ const parent=new THREE.Group(),colliders=[],run=createBusRun({parent,colliders});
+ const solid=colliders.find(c=>c.id==='harbour-bus');
+ assert.ok(solid,'You walk through the bus at the stop');
+
+ // Standing at the terminus it is eight and a half metres of vehicle across the road.
+ const nose=run.bus.position.z+3.5;
+ assert.ok(circleHitsRect(run.bus.position.x,nose,.36,solid),'You can walk into the side of the waiting bus');
+ assert.ok(!circleHitsRect(run.bus.position.x+4,run.bus.position.z,.36,solid),'The bus stops you from the next lane');
+ assert.ok(solid.d>solid.w,'The waiting bus is as wide as it is long');
+
+ // It carries its box up the road with it.
+ assert.ok(until(run,'leaving'),'The bus never leaves');
+ for(let t=0;t<2;t+=1/30){run.update(1/30);if(run.phase!=='leaving')break;}
+ assert.ok(Math.abs(solid.z-run.bus.position.z)<1e-6,'The box stayed at the stop');
+
+ // and drops it the moment it stops being a vehicle in the road. A collider left on
+ // the shrinking bus is an invisible wall across the mouth of the tunnel.
+ assert.ok(until(run,'gone'),'The bus never goes');
+ assert.equal(solid.w,0);assert.equal(solid.d,0);
+ assert.ok(!circleHitsRect(TUNNEL.x,TUNNEL.z-2,.36,solid),'The departed bus still blocks the tunnel mouth');
+
+ // Turning at the terminus it sweeps the road, so the box turns with it.
+ assert.ok(until(run,'turning',400),'The bus never turns');
+ for(let t=0;t<1;t+=1/30){run.update(1/30);if(run.phase!=='turning')break;}
+ assert.ok(solid.w>2.5&&solid.d>2.5,'The turning bus keeps a box it is not inside');
 });

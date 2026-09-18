@@ -32,4 +32,9 @@ export const GROCERY_ITEMS=Object.freeze([...STORE_ITEMS,...[
  {id:'soda',name:'Ramune soda',jp:STORE_BRANDS.soda.line,cost:100,color:0xe5d9bc,text:'AOZORA · Ramune soda'},
  {id:'yogurt',name:'Plain yogurt',jp:STORE_BRANDS.yogurt.line,cost:110,color:0xe5d9bc,text:'ASAMORI · Plain yogurt'},
  {id:'bread',name:'Milk bread',jp:STORE_BRANDS.bread.line,cost:150,color:0xe5d9bc,text:'KOMUGI · Milk bread'},
+ // The daily-delivery top shelf of the cold cabinet. Dearer than the rest of the
+ // aisle, because it was made this morning and will not keep.
+ {id:'bento',name:'Makunouchi bento',jp:STORE_BRANDS.bento.line,cost:420,color:0xe5d9bc,text:'MINATOYA · Makunouchi bento'},
+ {id:'sandwich',name:'Egg sandwiches',jp:STORE_BRANDS.sandwich.line,cost:210,color:0xe5d9bc,text:'KOMUGI · Egg sandwiches'},
+ {id:'pudding',name:'Custard pudding',jp:STORE_BRANDS.pudding.line,cost:130,color:0xe5d9bc,text:'ASAMORI · Custard pudding'},
 ].map(item=>({...item,brand:STORE_BRANDS[item.id].name,brandJp:STORE_BRANDS[item.id].jp}))]);

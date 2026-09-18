@@ -32,6 +32,12 @@ export const STORE_BRANDS=Object.freeze({
  soda:{name:'AOZORA',jp:'あおぞら',line:'ラムネ',paper:'#d9eced',ink:'#25557e',accent:'#69aed0',symbol:'wave'},
  yogurt:{name:'ASAMORI',jp:'あさもり',line:'プレーンヨーグルト',paper:'#eef0df',ink:'#32638b',accent:'#81aa7d',symbol:'sun'},
  bread:{name:'KOMUGI',jp:'こむぎ',line:'ミルク食パン',paper:'#f1dcae',ink:'#6f422c',accent:'#c9924c',symbol:'leaf'},
+ // The chilled top shelf. A konbini's cold cabinet runs to the ceiling and the top
+ // level is where the made-up-this-morning food goes: the bento, the sandwiches and
+ // the puddings, all delivered daily and all gone by evening.
+ bento:{name:'MINATOYA',jp:'みなとや',line:'幕の内弁当',paper:'#e4d7b6',ink:'#4a3a2a',accent:'#9d4a34',symbol:'rice'},
+ sandwich:{name:'KOMUGI',jp:'こむぎ',line:'たまごサンド',paper:'#f4ecd8',ink:'#6f422c',accent:'#c9924c',symbol:'leaf'},
+ pudding:{name:'ASAMORI',jp:'あさもり',line:'カスタードプリン',paper:'#f6e0ab',ink:'#8a5a24',accent:'#c98f3c',symbol:'sun'},
  // Printed matter for the rack under the window. None of it is stock: you read it
  // standing up, the way you do, and the shop never charges for it.
  'magazine-sea':{name:'UMIKAZE',jp:'うみかぜ',line:'月刊 海風',paper:'#d7e5ec',ink:'#20496b',accent:'#3d7fa6',symbol:'wave'},
@@ -40,4 +46,4 @@ export const STORE_BRANDS=Object.freeze({
  newspaper:{name:'MINATO',jp:'みなと新聞',line:'夕刊',paper:'#e8e4d6',ink:'#3a3530',accent:'#8d3f31',symbol:'wave'},
 });
 
-export const BRAND_ATLAS_KEYS=Object.freeze(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','stock','buns','shop','chips','crackers','chocolate','candy','curry','soy','soup','peaches','tuna','detergent','tissues','toothpaste','orange','soda','yogurt','bread','magazine-sea','magazine-night','magazine-rod','newspaper']);
+export const BRAND_ATLAS_KEYS=Object.freeze(['tea','coffee','rice','biscuit','soap','notebook','postcard','battery','cola','water','beer','noodles','milk','stock','buns','shop','chips','crackers','chocolate','candy','curry','soy','soup','peaches','tuna','detergent','tissues','toothpaste','orange','soda','yogurt','bread','bento','sandwich','pudding','magazine-sea','magazine-night','magazine-rod','newspaper']);
