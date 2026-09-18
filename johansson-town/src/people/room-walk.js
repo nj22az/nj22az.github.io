@@ -1,9 +1,9 @@
 import {alignedStep} from './facing.js';
-import {createNavigation} from './navmesh.js?snappy=1';
+import {createNavigation,NAV_MARGIN} from './navmesh.js?snappy=1';
 
 // Routes share the player's furniture collision geometry. No timeout teleports.
 export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8,maxZ:8},smoothTurn=false,radius=.3}={}){
- const nav=createNavigation(blocked,{step:.2,heightAt:()=>0,bounds}),routes=new Map();
+ const nav=createNavigation(blocked,{step:.2,heightAt:()=>0,bounds,radius:Math.max(radius,NAV_MARGIN)}),routes=new Map();
  return {move(person,target,dt){
   const g=person.g,tag=target.join(',');
   if(Math.hypot(g.position.x-target[0],g.position.z-target[2])<.12)return true;
