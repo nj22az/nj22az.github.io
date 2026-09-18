@@ -86,6 +86,16 @@ const CONFIG = {
       featured: true,
     },
     {
+      title: "Sakura Tapper",
+      description:
+        "A classic arcade tapper set in Sakura Shōten. Hop between four night tills, slide snacks down the counter, and catch every empty tray.",
+      url: "/sakura-tapper/",
+      icon: "joystick",
+      tags: ["Arcade", "Playable Demo", "2D"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
@@ -223,6 +233,8 @@ const CONFIG = {
       "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",
     printer3d:
       "M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z",
+    joystick:
+      "M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2ZM6 15v-2a6 6 0 0 1 12 0v2M12 9V7M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
     package:
       "M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
   },

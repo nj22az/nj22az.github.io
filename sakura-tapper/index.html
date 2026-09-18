@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a1216" />
+    <meta name="description" content="Night shift at Sakura Shōten — four tills, cherry blossoms on the glass, snacks sliding down the counter." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sakura Tapper" />
+    <meta property="og:title" content="Sakura Tapper" />
+    <meta property="og:description" content="A classic arcade tapper set in Sakura Shōten. Serve the harbour queue before they reach the till." />
+    <meta property="og:image" content="https://nj22az.github.io/sakura-tapper/og.jpg" />
+    <meta property="og:url" content="https://nj22az.github.io/sakura-tapper/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Sakura Tapper</title>
+    <base href="/sakura-tapper/" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="game" aria-label="Sakura Tapper"></canvas>
+
+      <header class="hud-top">
+        <div class="brand">
+          <p class="title">Sakura Tapper</p>
+          <p class="sub">Thuan · night tills</p>
+        </div>
+        <div class="hud-stats" id="hud-stats">
+          <div class="stat">
+            <p class="label">Wave</p>
+            <p class="value" id="stat-wave">1</p>
+          </div>
+          <div class="stat">
+            <p class="label">Till</p>
+            <p class="value" id="stat-yen">¥0</p>
+          </div>
+          <div class="lives">
+            <p class="label">Lives</p>
+            <div class="lives-dots" id="lives" aria-label="Lives remaining">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <button class="icon-btn" id="mute" type="button" aria-label="Mute">
+            <svg id="icon-vol" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
+            <svg id="icon-mute" viewBox="0 0 24 24" hidden><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+          </button>
+          <button class="icon-btn" id="pause" type="button" aria-label="Pause">
+            <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="combo" id="combo">
+        <p class="label">Combo</p>
+        <p class="n" id="combo-n">0</p>
+      </div>
+      <div class="toast" id="toast"><p id="toast-text"></p></div>
+      <div class="quota" id="quota"></div>
+
+      <div class="veil visible" id="title">
+        <div class="panel">
+          <p class="kicker">Sakura Shōten · night shift</p>
+          <h1>Sakura Tapper</h1>
+          <p class="lede">
+            Four tills, a harbour queue, and snacks sliding the length of the counter. Serve them before they reach you.
+            Catch every empty tray.
+          </p>
+          <button class="primary" id="clock-in" type="button" disabled>Opening the shop…</button>
+          <p class="hint">Tap a till to serve · W/S change till · Space to slide</p>
+          <p class="best" id="best-title" hidden></p>
+          <a class="home" href="https://nj22az.github.io/">The Office of Nils Johansson</a>
+        </div>
+      </div>
+
+      <div class="veil" id="over">
+        <div class="panel">
+          <p class="kicker">Till counted</p>
+          <h2>Night closed</h2>
+          <ul class="scores">
+            <li><span>Takings</span><b id="over-yen">¥0</b></li>
+            <li><span>Served</span><b id="over-served">0</b></li>
+            <li><span>Wave</span><b id="over-wave">1</b></li>
+            <li><span>Best</span><b id="over-best">¥0</b></li>
+          </ul>
+          <button class="primary" id="next-night" type="button">Next night</button>
+          <a class="home" href="https://nj22az.github.io/">Home</a>
+        </div>
+      </div>
+
+      <div class="veil" id="paused">
+        <div class="panel">
+          <h2>Paused</h2>
+          <p class="lede">The tills wait.</p>
+          <button class="primary" id="resume" type="button">Resume</button>
+          <a class="home" href="https://nj22az.github.io/">Home</a>
+        </div>
+      </div>
+
+      <div class="pad" id="pad">
+        <div class="pad-col">
+          <button class="pad-btn" id="till-up" type="button" aria-label="Till up">
+            <svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+          </button>
+          <button class="pad-btn" id="till-down" type="button" aria-label="Till down">
+            <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <button class="slide" id="slide" type="button">Slide</button>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__SPRITE_ROOT = "sprites";
+    </script>
+    <script src="./game.js"></script>
+    <script>
+      (function () {
+        const canvas = document.getElementById("game");
+        canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+        const ui = {
+          stats: document.getElementById("hud-stats"),
+          wave: document.getElementById("stat-wave"),
+          yen: document.getElementById("stat-yen"),
+          lives: document.getElementById("lives").children,
+          combo: document.getElementById("combo"),
+          comboN: document.getElementById("combo-n"),
+          toast: document.getElementById("toast"),
+          toastText: document.getElementById("toast-text"),
+          quota: document.getElementById("quota"),
+          title: document.getElementById("title"),
+          over: document.getElementById("over"),
+          paused: document.getElementById("paused"),
+          pad: document.getElementById("pad"),
+          clockIn: document.getElementById("clock-in"),
+          bestTitle: document.getElementById("best-title"),
+          overYen: document.getElementById("over-yen"),
+          overServed: document.getElementById("over-served"),
+          overWave: document.getElementById("over-wave"),
+          overBest: document.getElementById("over-best"),
+          iconVol: document.getElementById("icon-vol"),
+          iconMute: document.getElementById("icon-mute"),
+        };
+
+        let api = null;
+        let ready = false;
+
+        function show(el, on) {
+          el.classList.toggle("visible", on);
+        }
+
+        function render(hud) {
+          ready = true;
+          const playing = hud.mode === "playing" || hud.mode === "paused";
+          show(ui.stats, playing);
+          show(ui.title, hud.mode === "title");
+          show(ui.over, hud.mode === "gameOver");
+          show(ui.paused, hud.mode === "paused");
+          show(ui.pad, playing);
+          show(ui.combo, hud.mode === "playing" && hud.combo > 1);
+          show(ui.toast, Boolean(hud.toast) && hud.mode !== "title");
+          show(ui.quota, hud.mode === "playing");
+
+          ui.wave.textContent = String(hud.wave);
+          ui.yen.textContent = "¥" + hud.yen;
+          for (let i = 0; i < 3; i++) ui.lives[i].classList.toggle("on", i < hud.lives);
+          ui.comboN.textContent = String(hud.combo);
+          ui.toastText.textContent = hud.toast || "";
+          ui.quota.textContent = hud.quotaDone + "/" + hud.quota + " served · " + hud.clock;
+
+          ui.clockIn.disabled = !ready;
+          ui.clockIn.textContent = ready ? "Clock in" : "Opening the shop…";
+          if (hud.best > 0) {
+            ui.bestTitle.hidden = false;
+            ui.bestTitle.textContent = "Best night ¥" + hud.best;
+          }
+
+          ui.overYen.textContent = "¥" + hud.yen;
+          ui.overServed.textContent = String(hud.served);
+          ui.overWave.textContent = String(hud.wave);
+          ui.overBest.textContent = "¥" + hud.best;
+        }
+
+        api = SakuraTapper.createGame(canvas, render);
+
+        document.getElementById("clock-in").addEventListener("click", () => {
+          SakuraTapper.unlockAudio();
+          api.start();
+        });
+        document.getElementById("next-night").addEventListener("click", () => api.start());
+        document.getElementById("resume").addEventListener("click", () => api.togglePause());
+        document.getElementById("pause").addEventListener("click", () => api.togglePause());
+        document.getElementById("mute").addEventListener("click", () => {
+          const muted = SakuraTapper.toggleMute();
+          ui.iconVol.hidden = muted;
+          ui.iconMute.hidden = !muted;
+          document.getElementById("mute").setAttribute("aria-label", muted ? "Unmute" : "Mute");
+        });
+        document.getElementById("till-up").addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          SakuraTapper.pulseLane(-1);
+        });
+        document.getElementById("till-down").addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          SakuraTapper.pulseLane(1);
+        });
+        document.getElementById("slide").addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          SakuraTapper.pulseVirtualAction();
+        });
+      })();
+    </script>
+  </body>
+</html>
