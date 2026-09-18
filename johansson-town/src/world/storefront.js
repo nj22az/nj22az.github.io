@@ -102,6 +102,11 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  const door=buildSlidingDoor({group,doorX,width:DOOR,glazing,box});
  site.shopDoor=door;
+ // Where you stand to come in, and which way you are facing when you do. The shopfront
+ // faces along its own +z, so the placement yaw is the heading of somebody walking in
+ // through it — which is what carries a heading across the threshold.
+ site.entryFacing=yaw;
+ site.approachPosition=[door.mat.x,0,door.mat.z];
  return Object.assign(group,{shopDoor:door});
 }
 

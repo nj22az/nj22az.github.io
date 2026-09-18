@@ -21,6 +21,26 @@ t=np.arange(SR*5)/SR
 save('train',(.12*np.sin(2*np.pi*293.66*t)+.1*np.sin(2*np.pi*369.99*t)+noise(len(t),650)*.2)*np.sin(np.pi*t/5)**2)
 for name,cut,freq in [('steps-asphalt',2200,95),('steps-wood',900,175),('steps-stone',3500,270),('clunk',2000,123),('click',1800,380)]:
  t=np.arange(SR*.35)/SR;d=(noise(len(t),cut)*.7+.27*np.sin(2*np.pi*freq*t))*np.exp(-t*(18 if name=='clunk' else 32));save(name,d)
+# The shop-door chime.
+#
+# Two struck notes a fifth apart and falling, which is what a 1988 konbini door says
+# when it opens: pin-pon. Struck bell partials rather than a sine pair — a pure two-
+# tone reads as a lift announcement, and it is the inharmonic partials above the
+# fourth that make a thing sound hit rather than switched on.
+#
+# A little silence in front of it so save()'s fade-in lands on the silence instead of
+# sanding the attack off, which is the whole character of a strike.
+def strike(freq,seconds,decay):
+ tt=np.arange(int(SR*seconds))/SR
+ partials=[(1,1,1),(2.01,.52,1.9),(2.76,.3,2.6),(5.43,.13,4.1),(8.16,.06,6.2)]
+ out=sum(a*np.sin(2*np.pi*freq*r*tt)*np.exp(-tt*decay*d) for r,a,d in partials)
+ return out*np.minimum(1,tt/.0022)
+LEAD=int(SR*.03)
+chime=np.zeros(LEAD+int(SR*2.1))
+for start,freq,seconds,decay in [(0,987.77,2.0,3.0),(.33,659.26,1.8,2.5)]:
+ s_=strike(freq,seconds,decay);i=LEAD+int(start*SR);n=min(len(s_),len(chime)-i);chime[i:i+n]+=s_[:n]
+save('door-chime',chime)
+
 # Three original pentatonic phrases, using decaying harmonics rather than UI tones.
 for station,notes in enumerate([[0,7,12,7,4,2,0,2],[0,2,7,9,12,9,7,2],[7,7,9,12,9,4,2,0]]):
  beat=.55;out=np.zeros(int(SR*beat*len(notes)))

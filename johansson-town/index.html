@@ -11,7 +11,7 @@
 <meta name="description" content="Johansson Town public information board. A first-person shopping district and working harbour, 1988.">
 <style>:root,html,body{margin:0;background:#0b171b!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?h=7e064c7f">
+<link rel="stylesheet" href="./styles.css?h=f933a859">
 <link rel="stylesheet" href="./polish.css?h=f02f77bf">
 <link rel="stylesheet" href="./viewport-fix.css?h=4e2ebec6">
 <link rel="stylesheet" href="./character-controls.css?h=957b6eee">
@@ -24,16 +24,17 @@
 <link rel="stylesheet" href="./landing.css?h=c67dad56">
 <link rel="stylesheet" href="./sakura-ledger.css?h=4e4e9fb5">
 <link rel="stylesheet" href="./dual-controls.css?h=718c3ab8">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-LnYf5w3x.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-bench-z8u96frg.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BZDfpgqR.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-bench-DiEaTztB.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/assets-DNfyrzgA.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CVUsh7X6.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-B6FFf4n5.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/audio-D-bB4NP7.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
+<div id="threshold"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
 <section id="start">
   <a class="sr-only" href="#board">Skip to notice board</a>
@@ -335,7 +336,7 @@ import {unlockTownAudio} from './runtime/audio-D-bB4NP7.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-LnYf5w3x.js');
+      await import('./runtime/boot-BZDfpgqR.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

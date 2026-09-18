@@ -3,6 +3,7 @@ import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
 import {elapsedTownAbsence} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
+import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
@@ -200,7 +201,7 @@ player.visible=false;
 const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};if(!interactables.includes(o))interactables.push(o)};
 function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on');subtitleTimer=sec}
 
- const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:enterRoom,getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
 assignWorkplaces(world,SITES);
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])doors.set(place.id,new THREE.Vector3(...place.exitPosition));
@@ -297,6 +298,89 @@ function roomShell(s){
  throw Error('No interior defined for '+s.id);
 }
 
+
+/**
+ * Doorways.
+ *
+ * A building used to be a room you teleported into: the screen cut, you were put on a
+ * fixed spot, and your heading was thrown away and replaced with the room's. Walking
+ * out did the same in reverse. That is what makes an interior read as somewhere else
+ * rather than as the inside of the thing you were just looking at.
+ *
+ * Three things fix most of it without moving the rooms into world space. The heading
+ * survives the door, the crossing is a step rather than a cut, and you walk through
+ * instead of standing at a prompt.
+ */
+const DOOR_REACH=1.35,THRESHOLD_HOLD=1.1;
+let doorwayArmed=true,doorwayCooldown=0;
+/**
+ * The way back out, remembered on the way in.
+ *
+ * Not every interior has a layout to ask: the izakaya builds its room in addRoomProps
+ * and leaves activeRoomLayout null, so reading the exit off the layout meant you could
+ * walk into Minato and never walk out of it.
+ */
+let roomDoorway=null;
+
+/**
+ * The one rotation that maps between a building's street frame and its room frame.
+ *
+ * A door faces `entryFacing` in the world and `layout.yaw` in the room, so the two
+ * frames differ by exactly that angle — inside and outside, both ways.
+ */
+/** Everything the player could walk into, which is every site the town gave a door. */
+function doorwayUnderfoot(){
+ const p=player.position,forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+ if(current){
+  if(!roomDoorway)return null;
+  const {x:ox,z:oz,inward}=roomDoorway;
+  if(Math.hypot(p.x-ox,p.z-oz)>DOOR_REACH)return null;
+  // Facing the door, not merely standing by it: you pass this spot walking in as well.
+  const outward=inward+Math.PI;
+  return forward.dot(new THREE.Vector3(-Math.sin(outward),0,-Math.cos(outward)))>.4?{leave:true}:null;
+ }
+ for(const s of SITES){
+  const d=s.approachPosition||s.door;if(!d)continue;
+  const dx=d[0],dz=d[2]??d[1];
+  if(Math.hypot(p.x-dx,p.z-dz)>DOOR_REACH)continue;
+  const facing=s.entryFacing??0;
+  if(forward.dot(new THREE.Vector3(-Math.sin(facing),0,-Math.cos(facing)))<.4)continue;
+  return {site:s};
+ }
+ return null;
+}
+
+/**
+ * The crossing itself: chime, a short veil over the swap, and the heading carried
+ * across. The veil also covers a room that has to stream its model in, which used to
+ * be a frozen street and the word "Opening…".
+ */
+async function crossThreshold(run){
+ const veil=$('#threshold');
+ townAudio.play('door-chime',.42);
+ veil.classList.add('on');
+ await new Promise(r=>setTimeout(r,150));
+ try{await run();}finally{
+  await new Promise(r=>setTimeout(r,60));
+  veil.classList.remove('on');
+  doorwayCooldown=THRESHOLD_HOLD;doorwayArmed=false;
+ }
+}
+
+/** Called once a frame from the player update. */
+function updateDoorways(dt){
+ if(doorwayCooldown>0)doorwayCooldown=Math.max(0,doorwayCooldown-dt);
+ if(roomLoading||seated||activities.paused||inspector?.active)return;
+ const at=doorwayUnderfoot();
+ if(!at){doorwayArmed=true;return;}
+ if(!doorwayArmed||doorwayCooldown>0)return;
+ // Only when actually walking at it. Standing in a doorway is not going through one.
+ if(moveVec.lengthSq()<.0004)return;
+ doorwayArmed=false;
+ if(at.leave)void crossThreshold(async()=>leaveRoom());
+ else void crossThreshold(()=>enterRoom(at.site));
+}
+
 let roomLoading=false;
 async function enterRoom(s){
  if(roomLoading)return;
@@ -314,8 +398,21 @@ async function enterRoom(s){
   try{[ready]=await preloadSuppliedRooms([s.id]);}finally{roomLoading=false;}
   if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
- parkSeat=null;seated=false;activities.close();activities.visit(s.id);current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});player.position.set(...(activeRoomLayout?.spawn||[0,0,4.3]));unstuckPlayer();workplaceResidents.enter(s,minutes);yaw=activeRoomLayout?.yaw??0;pitch=0;$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;current=null;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);unstuckPlayer(true);$('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
+ parkSeat=null;seated=false;activities.close();activities.visit(s.id);
+ const streetYaw=yaw,streetPitch=pitch;
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
+ player.position.set(...spawn);unstuckPlayer();workplaceResidents.enter(s,minutes);
+ roomDoorway={x:spawn[0],z:spawn[2]??spawn[1],inward:activeRoomLayout?.yaw??0};
+ // The heading goes through the door with you. Snapping to the room's own yaw and a
+ // level pitch is the single thing that most makes an interior read as a different
+ // place: you walk in looking where you were looking, not where the room says.
+ yaw=streetToRoom(streetYaw,s,activeRoomLayout);
+ pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
+function leaveRoom(){if(!current)return;showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;roomDoorway=null;current=null;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
+ // and back out again the same way, by the same rotation: you leave facing where you
+ // were facing inside, which for somebody who walked at the door is the street.
+ if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);}
+ $('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent='ヨハンソン町 · HARBOUR DISTRICT';$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5)}
 
 function welcomeAtCounter(forward){
   if(storeWelcomed||!storeClerk?.visible||storeClerk.userData.visualReady===false||current?.id!=='market')return;
@@ -409,6 +506,7 @@ function updatePlayer(dt){
   if(running&&(stoppedX||stoppedZ))hitThePainting(nx,nz);
   turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));
  }
+ updateDoorways(dt);
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);
  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
 }
@@ -416,7 +514,7 @@ function updatePlayer(dt){
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
 function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();townSky.update(camera,day,weather,!!current);const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient*CEL_FILL;bounce.intensity=(.55+day*.85)*(weather?.8:1);renderer.toneMappingExposure=air.exposure;pipeline?.setExposure(air.exposure*CEL_EXPOSURE);$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
-$('#exitRoomButton').onclick=()=>leaveRoom();
+$('#exitRoomButton').onclick=()=>crossThreshold(async()=>leaveRoom());
 function syncView(){
  document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
  room.traverse(o=>{if(o.userData.cutaway)o.layers.set(0);});
