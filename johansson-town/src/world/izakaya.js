@@ -1,6 +1,6 @@
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
-import {DINING,restaurantCollider,restaurantApproach} from './dining-layout.js';
+import {DINING,restaurantCollider,restaurantApproach,izakayaPlot} from './dining-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -20,9 +20,11 @@ function asset(kind,parent){
  const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=!o.userData.clearWindow;o.receiveShadow=!o.userData.clearWindow;}});parent.add(model);return true;
 }
 export function buildIzakaya(world,options){
- const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:DINING.izakayaX,z:DINING.izakayaZ,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[DINING.izakayaDoor[0],0,DINING.izakayaDoor[1]],opens:'16:00'};
- const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=DINING.izakayaYaw;
- options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(DINING.izakayaX,0,DINING.izakayaZ);exterior.rotation.y=DINING.izakayaYaw;world.group.add(exterior);
+ // Where it stands depends on the layout: see IZAKAYA_PLOTS in dining-layout.js.
+ const plot=izakayaPlot();
+ const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
+ const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
+ options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
  const suppliedExterior=asset('exterior',exterior);
  if(!suppliedExterior){
   const fallback=new THREE.Mesh(new THREE.BoxGeometry(5.22,4,6.82),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.set(-.91,2,1.11);exterior.add(fallback);
@@ -36,7 +38,7 @@ export function buildIzakaya(world,options){
  world.colliders.push(
   ...[{x:-.91,z:1.11,w:5.22,d:6.82,height:9.05},{x:-3.92,z:-1.54,w:.85,d:.85,height:1.08},{x:-3.74,z:-.90,w:.50,d:.50,height:.36}].map(c=>restaurantCollider('izakaya',c)));
 
- if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:DINING.izakayaX,z:DINING.izakayaZ,radius:48,load:async()=>{
+ if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:plot.x,z:plot.z,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;
   const fallback=exterior.children[0];asset('exterior',exterior);fallback.removeFromParent();sign.visible=false;return true;
  }});

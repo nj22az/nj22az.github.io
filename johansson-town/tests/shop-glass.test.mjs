@@ -5,10 +5,13 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {createShopGlass,prepareIzakayaGlass} from '../src/world/shop-glass.js';
-import {DINING,restaurantPoint,restaurantApproach} from '../src/world/dining-layout.js';
+import {DINING,restaurantPoint,restaurantApproach,izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
+import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
+import {SAKURA_FRONT} from '../src/world/interiors/sakura-layout.js';
 import {buildStorefront} from '../src/world/storefront.js';
 import {buildStoreShell} from '../src/world/interiors/convenience.js';
 import {RESIDENTS} from '../src/people/residents.js';
+import {MAIN_ROAD} from '../src/world/main-road.js';
 
 function assertGlass(material){
  assert.equal(material.color.getHex(),0xffffff);
@@ -83,7 +86,33 @@ test('Minato stands beside Sakura with its door and NPC approach facing the road
  const approach=restaurantApproach('izakaya');
  assert.ok(approach[0]>DINING.izakayaDoor[0]);
  assert.equal(approach[1],DINING.izakayaDoor[1]);
- assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,DINING.izakayaDoor);
+ assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,IZAKAYA_DOOR);
  assert.deepEqual(RESIDENTS.find(p=>p.name==='Thuan').evening,approach);
  assert.deepEqual(restaurantPoint('ramen',2,3),[DINING.ramenX-3,DINING.ramenZ+2]);
+});
+
+test('on the peninsula Minato moves up the pavement, clear of the bigger konbini',async()=>{
+ const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
+ const southEdge=()=>Math.min(...[manifest.bounds.min[0],manifest.bounds.max[0]]
+  .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[1])));
+ const eastFace=()=>Math.max(...[manifest.bounds.min[0],manifest.bounds.max[0]]
+  .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[0])));
+ try{
+  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+  // The peninsula's konbini is SAKURA_FRONT.width along the street, centred on -26.8,
+  // so its north wall is where the izakaya used to stand.
+  const northWallOfSakura=-26.8+SAKURA_FRONT.width/2;
+  assert.ok(southEdge()>northWallOfSakura,'Minato is inside the konbini');
+  assert.ok(southEdge()-northWallOfSakura<1,'Minato is no longer beside the konbini');
+  // and it is still set back off the footway rather than standing on it.
+  assert.ok(eastFace()<MAIN_ROAD.pavementWest,'Minato stands on the pavement');
+
+  // Everything that holds the door holds the same array, so it moved with the plot.
+  assert.equal(IZAKAYA_DOOR[1],izakayaPlot().z);
+  assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,IZAKAYA_DOOR);
+  assert.deepEqual(RESIDENTS.find(p=>p.name==='Thuan').evening,restaurantApproach('izakaya'));
+ }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ // and back on the old street it is where it always was.
+ assert.equal(izakayaPlot().z,DINING.izakayaZ);
+ assert.equal(IZAKAYA_DOOR[1],DINING.izakayaDoor[1]);
 });

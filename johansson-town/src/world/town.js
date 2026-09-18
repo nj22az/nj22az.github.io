@@ -17,6 +17,7 @@ import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
+import {izakayaPlot} from './dining-layout.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
@@ -164,7 +165,7 @@ function addStreetLife(world,options,factory){
 function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
 
 export function createTown(options){
-  const mode=configureTownMode(options.townMode);
+  const mode=configureTownMode(options.townMode);izakayaPlot();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
@@ -203,7 +204,15 @@ export function createTown(options){
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   // The peninsula keeps the park and the port; the dining lane and the izakaya are
   // switched off with the rest of the buildings.
-  if(!peninsulaActive()){buildDiningStreet(world,options);buildIzakaya(world,options);}
+  // The dining lane belongs to the old street plan and would run through the west
+  // yard, but the izakaya is a building on the west pavement and comes back with it:
+  // it is where Thuan has a beer between closing the shop and the last bus home.
+  // The dining lane belongs to the old street plan and would run through the west
+  // yard, so it stays off. The izakaya is a building on the west pavement and comes
+  // back on its own: it is where Thuan has a beer between closing Sakura and the last
+  // bus home, and it stands at whichever plot this layout gives it.
+  if(!peninsulaActive())buildDiningStreet(world,options);
+  buildIzakaya(world,options);
   buildPark(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{

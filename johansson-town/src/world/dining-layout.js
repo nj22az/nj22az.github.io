@@ -1,4 +1,5 @@
 import {DINING_FOOTPRINTS} from './dining-footprints.js';
+import {peninsulaActive} from './town-mode.js';
 // Unfold the two sides of the supplied alley into two Main Street shop rows.
 // A–D form the west block facing east; E–H form the east block facing west.
 export const DINING_ROWS=Object.freeze([
@@ -15,11 +16,45 @@ export const DINING=Object.freeze({
  // Next to Sakura's north wall; retain the full-size konbini and clear footway.
  // Set back from the west pavement: at -11.97 the east face landed at -7.45,
  // 0.10 inside the pavement edge, which blocked the south shop crossing.
+ // See IZAKAYA_PLOTS below: the peninsula stands it further up the same pavement.
  izakayaX:-12.5,izakayaZ:-20.4,izakayaYaw:Math.PI/2,izakayaDoor:Object.freeze([-7.05,-20.4]),
  ramenX:5.45,ramenZ:-12.8,ramenYaw:-Math.PI/2,ramenDoor:Object.freeze([.75,-12.15]),crystalDoor:Object.freeze([.75,-15.6]),
 });
+/**
+ * The izakaya's plot, which is not in the same place in every layout.
+ *
+ * On the old street it stands against Sakura's north wall, where the konbini is ten
+ * metres wide. The peninsula's konbini is fourteen and it grew northward — its north
+ * wall is at z -19.67 — so -20.4 is now three metres inside the shop. There it stands
+ * two doors further up the same pavement, with an alley between the two buildings and
+ * the same walk to the terminus.
+ *
+ * The door, its approach and the lane to it are live arrays rather than copies:
+ * Thuan's evening, Nao's shift and the walkable route all hold these exact arrays, so
+ * moving the plot moves them too. Anything that reads the plot syncs them on the way
+ * past, and createTown asks for it once as soon as the layout is chosen.
+ */
+const IZAKAYA_PLOTS=Object.freeze({
+ street:Object.freeze([-12.5,-20.4]),
+ // South edge at -19.10, which is 0.57m clear of the big konbini's north wall.
+ peninsula:Object.freeze([-12.5,-17.25]),
+});
+export const IZAKAYA_DOOR=[-7.05,-20.4];
+export const IZAKAYA_APPROACH=[-6.35,-20.4];
+export const IZAKAYA_LANE=[[0,-20.4],IZAKAYA_DOOR];
+export function izakayaPlot(){
+ const [x,z]=IZAKAYA_PLOTS[peninsulaActive()?'peninsula':'street'];
+ IZAKAYA_DOOR[1]=z;IZAKAYA_APPROACH[1]=z;IZAKAYA_LANE[0][1]=z;
+ return {x,z,yaw:DINING.izakayaYaw,door:IZAKAYA_DOOR};
+}
+const restaurantPlot=kind=>kind==='izakaya'?izakayaPlot()
+ :{x:DINING[kind+'X'],z:DINING[kind+'Z'],yaw:DINING[kind+'Yaw'],door:DINING[kind+'Door']};
 // Cardinal rotations are exact so entrance and collision coordinates agree.
-const restaurantRotation=kind=>{const yaw=DINING[kind+'Yaw'];return [Math.round(Math.cos(yaw)),Math.round(Math.sin(yaw))];};
-export const restaurantPoint=(kind,x,z)=>{const [c,s]=restaurantRotation(kind);return [DINING[kind+'X']+x*c+z*s,DINING[kind+'Z']-x*s+z*c];};
+const restaurantRotation=kind=>{const yaw=restaurantPlot(kind).yaw;return [Math.round(Math.cos(yaw)),Math.round(Math.sin(yaw))];};
+export const restaurantPoint=(kind,x,z)=>{const p=restaurantPlot(kind),[c,s]=restaurantRotation(kind);return [p.x+x*c+z*s,p.z-x*s+z*c];};
 export const restaurantCollider=(kind,{x,z,w,d,...rest})=>{const [wx,wz]=restaurantPoint(kind,x,z),[c,s]=restaurantRotation(kind);return {x:wx,z:wz,w:Math.abs(c)*w+Math.abs(s)*d,d:Math.abs(s)*w+Math.abs(c)*d,...rest};};
-export const restaurantApproach=kind=>{const [x,z]=DINING[kind+'Door'],[c,s]=restaurantRotation(kind);return [x+.7*s,z+.7*c];};
+export const restaurantApproach=kind=>{
+ const p=restaurantPlot(kind),[c,s]=restaurantRotation(kind),[x,z]=p.door;
+ if(kind!=='izakaya')return [x+.7*s,z+.7*c];
+ IZAKAYA_APPROACH[0]=x+.7*s;IZAKAYA_APPROACH[1]=z+.7*c;return IZAKAYA_APPROACH;
+};

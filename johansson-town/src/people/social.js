@@ -1,14 +1,16 @@
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
-import {DINING} from '../world/dining-layout.js';
+import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {BUS_STATION} from '../world/bus-station.js';
-import {commuterPhase,shiftActive} from './commuter-schedule.js';
-export const IZAKAYA_DOOR=[...DINING.izakayaDoor];
+import {commuterPhase,shiftActive,shiftFor} from './commuter-schedule.js';
+// The live array, not a copy: the izakaya does not stand in the same place in every
+// layout, and a copy taken at import time would point at the old plot forever.
+export {IZAKAYA_DOOR};
 export const RAMEN_DOOR=[...DINING.ramenDoor];
 export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
@@ -20,6 +22,20 @@ export const NIGHT_PATROL=[[0,28],[0,SHOP_CROSSING_Z],[0,-16],[0,-36],[0,-44],[0
 export function thuanVisitsIzakaya(minutes){
  const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
  return day%2===0&&minute>=1220&&minute<1290;
+}
+/**
+ * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
+ *
+ * She has an hour between closing Sakura and the last Harbour Line service. She spends
+ * three quarters of it two doors up the pavement and the rest walking to the stop.
+ * Rain sends her straight to the bus; so does a night the izakaya is shut.
+ */
+export const THUAN_BUS_MARGIN=15;
+export function thuanAtMinato(profile,minutes,rain=false){
+ const shift=shiftFor(profile);
+ if(rain||!shift||shift.permanent)return false;
+ const m=minuteOfDay(minutes);
+ return izakayaOpen(m)&&inTimeRange(m,shift.finish,shift.departure-THUAN_BUS_MARGIN);
 }
 export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
@@ -75,6 +91,14 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  const phase=commuterPhase(profile,minutes),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
  if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
+ // Thuan's own hour between locking up and the last bus. It has to be read before the
+ // generic departing rule, which sends everybody straight to the queue — which is why
+ // she has been walking past Minato's door every evening for the whole of her shift.
+ if(profile.name==='Thuan'&&phase==='departing'){
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
+  if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer at Minato before the last bus'};
+ }
  if(phase==='departing')return bus('walking to the Harbour Line for departure');
  if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};

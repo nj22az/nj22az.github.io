@@ -1,7 +1,7 @@
 import {householdFor} from './households.js';
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
-import {DINING,restaurantApproach} from '../world/dining-layout.js';
+import {DINING,restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
 // Thuan's saved home fields remain for compatibility with archived saves; the
@@ -22,7 +22,7 @@ const NEIGHBOURHOOD={
 export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  const source=name==='Thuan'?THUAN_PROFILE:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
- return {...source,...NEIGHBOURHOOD[name],work:({Aya:TOWN_DESTINATIONS.books,Kenji:TOWN_DESTINATIONS.workshop,Reiko:TOWN_DESTINATIONS.books,Tetsuo:TOWN_DESTINATIONS.workshop,'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:DINING.izakayaDoor})[name]||diningPoint(source.work),evening:({Aya:[.15,18.7],Kenji:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:DINING.izakayaDoor})[name]||diningPoint(source.evening),...residentialHome(name)};
+ return {...source,...NEIGHBOURHOOD[name],work:({Aya:TOWN_DESTINATIONS.books,Kenji:TOWN_DESTINATIONS.workshop,Reiko:TOWN_DESTINATIONS.books,Tetsuo:TOWN_DESTINATIONS.workshop,'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Aya:[.15,18.7],Kenji:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
 });
 export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);

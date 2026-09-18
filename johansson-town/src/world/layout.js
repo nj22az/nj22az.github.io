@@ -1,4 +1,4 @@
-import {DINING,NIGHT_LANE,inDiningLane} from './dining-layout.js';
+import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {RESIDENTIAL,inResidential,residentialContains,residentialHeight} from './residential-layout.js';
 import {FULL_TOWN,fullHeight,fullContains} from './full-town-state.js';
 import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
@@ -23,7 +23,7 @@ export const ROUTES = [
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
  {id:'west-alley',legacy:true,width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
- {id:'izakaya-door',width:3,surface:'asphalt',points:[[0,DINING.izakayaDoor[1]],DINING.izakayaDoor]},
+ {id:'izakaya-door',width:3,surface:'asphalt',points:IZAKAYA_LANE},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
  {id:'crystal-door',legacy:true,width:2.4,surface:'stone',points:[[0,DINING.crystalDoor[1]],DINING.crystalDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
