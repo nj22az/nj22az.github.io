@@ -18,15 +18,18 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  const {routeAt,groundHeight}=await import('../src/world/layout.js?east-lawn');
  // Everything between the pavement and the wall is walkable at pavement level, which
  // is what it was not: the park was an island and the rest was scenery below the kerb.
- const off=[],onPark=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.45&&Math.abs(z-PARK.z)<=PARK.half+.45;
- for(let x=MAIN_ROAD.pavementEast+.6;x<EAST_LAWN.maxX-.6;x+=.8)for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1.2){
-  const route=routeAt(x,z,.4);
-  // The mound and its ramp are the park's, not the lawn's.
-  if(onPark(x,z))continue;
-  if(!route)off.push(x.toFixed(1)+','+z.toFixed(1));
-  else if(route.id===EAST_LAWN.id&&groundHeight(x,z)!==0)off.push('stepped at '+x.toFixed(1)+','+z.toFixed(1));
+ const off=[],steps=[];
+ for(let x=MAIN_ROAD.pavementEast+.6;x<EAST_LAWN.maxX-.6;x+=.4)for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1.2){
+  if(!routeAt(x,z,.4))off.push(x.toFixed(1)+','+z.toFixed(1));
+  // Walking east must never be a step up. The park used to be a plinth with a
+  // vertical face, and excluding its square from the lawn left a dead band one body
+  // wide at its foot: you walked into an invisible wall on open grass.
+  else if(routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+   &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
+   steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
  assert.deepEqual(off.slice(0,6),[],'Ground east of the road you still cannot stand on');
+ assert.deepEqual(steps.slice(0,6),[],'The east side steps rather than slopes');
  assert.equal(routeAt(28,4).surface,'grass');
  // The park is asked first, so the lawn is the ground around its mound, not a lid.
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
@@ -81,9 +84,17 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
   const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
   assert.equal(lawn.useParkGreenery({grass,bush}),true);
   assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');
-  assert.equal(lawn.lawn.material.color.getHex(),0xffffff,'A tint over the park\u2019s own colour');
+  // Brought down, not left white: the supplied green is bright enough that the town's
+  // sun and the grade together push it past white over an area this size.
+  const tint=lawn.lawn.material.color;
+  assert.ok(tint.getHex()!==0xffffff&&tint.g>tint.r&&tint.g>tint.b,'The turf is not toned down toward grass');
   assert.notEqual(lawn.lawn.material.map,grass,'The lawn tiles the park\u2019s own texture object');
-  assert.ok(lawn.lawn.material.map.repeat.x>1&&lawn.lawn.material.map.repeat.y>1,'One tile stretched over the whole green');
+  // The tiling lives in the lawn's own UVs, in metres, so it holds wherever the
+  // ground goes rather than only over a flat rectangle.
+  const uv=lawn.lawn.geometry.attributes.uv;let spanX=0,spanZ=0;
+  for(let i=0;i<uv.count;i++){spanX=Math.max(spanX,Math.abs(uv.getX(i)));spanZ=Math.max(spanZ,Math.abs(uv.getY(i)));}
+  assert.ok(spanX>4&&spanZ>4,'One tile stretched over the whole green');
+  assert.deepEqual([lawn.lawn.material.map.repeat.x,lawn.lawn.material.map.repeat.y],[1,1]);
   assert.equal(lawn.shrubs.material.map,bush,'The shrubs kept a colour of their own');
   assert.equal(lawn.shrubs.instanceColor,null,'Per-instance greens still tint the park leaf');
  }finally{globalThis.fetch=original;}

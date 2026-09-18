@@ -537,6 +537,14 @@ function updateContextControls(){
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
 const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;
+// Where the player is standing and what they are standing on. Read-only, and the same
+// answer the simulation uses, so a screenshot can be tied to a place on the ground.
+window.__JOHANSSON_POSE__={
+ get x(){return player.position.x;},get y(){return player.position.y;},get z(){return player.position.z;},
+ get yaw(){return yaw;},get pitch(){return pitch;},get inside(){return current?.id||null;},
+ get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
+ get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
+};
 for(const detail of world.details||[])detailStream.add(detail);
 characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
 detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:38,load:()=>world.warehouse?.load()});

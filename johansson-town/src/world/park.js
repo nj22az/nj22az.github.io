@@ -3,10 +3,26 @@ import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
-import {PARK,PARK_BENCH,parkHeight,activePark,parkBench} from './park-layout.js';
+import {PARK,PARK_BENCH,parkHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
+import {peninsulaActive} from './town-mode.js';
 let source=null;
 /** The lawn and the shrubs in the supplied park. Its meshes are named after materials. */
 const PARK_TURF='mtParkGround00t_mat',PARK_BUSH='mtParkBush00t_mat';
+/**
+ * Brings the supplied ground textures down out of the highlights. See TURF_TINT: under
+ * this town's sun they clip, and the mound rendered as a cream dome with its paths
+ * lost in it. Idempotent, so it can run on every clone of the shared materials.
+ */
+function toneGround(model){
+ model.traverse(o=>{
+  if(!o.isMesh)return;
+  const name=o.material?.name||o.name;
+  // The blade cards are grass too, and they blow out worse than the ground does
+  // because nothing else is competing for those pixels.
+  if(!/^mtPark(Ground|Grass)0/.test(name))return;
+  o.material.color.setHex(/Grass|00t|03t/.test(name)?TURF_TINT:PARK_PATH_TINT);
+ });
+}
 /**
  * The park's own planting, for ground outside the park that should match it — the east
  * lawn runs right up to the mound, and two different greens meeting along that edge
@@ -32,7 +48,7 @@ export function buildPark(world,options){
  const s=p.scale||1;
  const group=new THREE.Group();group.name='Harbour Park';group.position.set(p.x,p.lift,p.z);if(s!==1)group.scale.setScalar(s);world.group.add(group);
  const visuals=new THREE.Group();group.add(visuals);
- if(source){const model=source.clone(true);model.userData.sharedAsset=true;model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;if(/Leaf|Bush|Grass|TreePlane/.test(o.material.name)){o.material.alphaTest=.35;o.material.transparent=false;o.material.depthWrite=true;o.material.side=THREE.DoubleSide;}}});visuals.add(model);}
+ if(source){const model=source.clone(true);model.userData.sharedAsset=true;model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;if(/Leaf|Bush|Grass|TreePlane/.test(o.material.name)){o.material.alphaTest=.35;o.material.transparent=false;o.material.depthWrite=true;o.material.side=THREE.DoubleSide;}}});toneGround(model);visuals.add(model);}
  else{
   const vertices=[],indices=[];for(let z=0;z<=56;z++)for(let x=0;x<=56;x++)vertices.push(x*.5-14,(parkHeight(p.x+(x*.5-14)*s,p.z+(z*.5-14)*s)-p.lift)/s,z*.5-14);
   for(let z=0;z<56;z++)for(let x=0;x<56;x++){const i=z*57+x;indices.push(i,i+57,i+1,i+1,i+57,i+58);}
@@ -42,9 +58,12 @@ export function buildPark(world,options){
  if(!source)registerDetail(world,{id:'park',x:p.x,z:p.z,radius:38,load:async()=>{
   if(!await preloadPark())return false;const model=source.clone(true);model.userData.sharedAsset=true;
   model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;if(/Leaf|Bush|Grass|TreePlane/.test(o.material.name)){o.material.alphaTest=.35;o.material.transparent=false;o.material.depthWrite=true;o.material.side=THREE.DoubleSide;}}});
-  visuals.clear();visuals.add(model);world.park.loaded=true;return true;
+  toneGround(model);visuals.clear();visuals.add(model);world.park.loaded=true;return true;
  }});
- const edge=[],indices=[];for(const [a,b] of [[[-14,-14],[14,-14]],[[14,-14],[14,14]],[[14,14],[-14,14]],[[-14,14],[-14,-14]]])for(let i=0;i<56;i++){
+ // The plinth's vertical face. On the peninsula the lawn grades the mound's foot into
+ // the ground around it (parkSkirtHeight), so the face would stand inside that slope
+ // and there is nothing for it to close off.
+ const edge=[],indices=[];if(!peninsulaActive())for(const [a,b] of [[[-14,-14],[14,-14]],[[14,-14],[14,14]],[[14,14],[-14,14]],[[-14,14],[-14,-14]]])for(let i=0;i<56;i++){
   const base=edge.length/3;for(const t of [i/56,(i+1)/56]){const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;edge.push(x,-p.lift/s,z,x,(parkHeight(p.x+x*s,p.z+z*s)-p.lift)/s,z);}indices.push(base,base+1,base+2,base+2,base+1,base+3);
  }
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(edge,3));geo.setIndex(indices);geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x858474,roughness:1,side:THREE.DoubleSide})));

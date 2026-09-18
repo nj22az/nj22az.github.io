@@ -134,9 +134,14 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
-  addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
-  addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
-  inspect([BOOKSHOP_BICYCLE.x-.8,.9,BOOKSHOP_BICYCLE.z],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
+  // The bicycle belongs to the bookshop alley. With the shops switched off it stands
+  // against the konbini's glazing instead, in front of the one window the town is
+  // meant to be read through, so the peninsula does without it until the shops return.
+  if(!peninsulaActive()){
+    addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
+    addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
+    inspect([BOOKSHOP_BICYCLE.x-.8,.9,BOOKSHOP_BICYCLE.z],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
+  }
 
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
@@ -170,7 +175,7 @@ export function createTown(options){
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town.
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
-    register:options.register,onAction:options.onAction});
+    heightAt:groundHeight,register:options.register,onAction:options.onAction});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.

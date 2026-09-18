@@ -41,5 +41,5 @@ test('park shortcut has continuous walkable ground matching its visible ramp',()
 
 test('lane boundaries leave walking routes and junctions open',()=>{
  const edges=laneEdges();assert.ok(edges.length>0);
- for(const e of edges){assert.equal(routeAt(e.x,e.z),undefined);assert.ok(Number.isFinite(e.y));}
+ for(const e of edges){assert.ok(!routeAt(e.x,e.z),'A lane boundary stands on walkable ground');assert.ok(Number.isFinite(e.y));}
 });

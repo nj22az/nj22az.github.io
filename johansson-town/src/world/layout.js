@@ -1,7 +1,7 @@
 import {DINING,NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {RESIDENTIAL,inResidential,residentialContains,residentialHeight} from './residential-layout.js';
 import {FULL_TOWN,fullHeight,fullContains} from './full-town-state.js';
-import {PARK,parkHeight,parkApproachHeight} from './park-layout.js';
+import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
@@ -55,11 +55,6 @@ export function routeAt(x,z,r=0){
  // The park is asked first, so the lawn is the ground around its mound rather than a
  // lid over it, and its ramp keeps its own paving where the two overlap. Only the
  // peninsula has an east side clear enough to stand on.
- // ...and the mound's own footprint is left out of it altogether, or a body narrow
- // enough to stand on the lawn but too wide for the park's edge test would be offered
- // flat ground on a slope.
- if(peninsulaActive()&&eastLawnAt(x,z,r)&&parkApproachHeight(x,z)===null
-  &&!(Math.abs(x-PARK.x)<=PARK.half&&Math.abs(z-PARK.z)<=PARK.half))return EAST_LAWN;
  // Match the ends of the actual decks, without round route caps over water.
  if(x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast-r&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ-r){
   if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
@@ -67,7 +62,15 @@ export function routeAt(x,z,r=0){
  }
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
- return LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
+ const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
+ if(route)return route;
+ // The lawn is asked last, so the park's mound, its ramp and every authored path keep
+ // their own surface and the green is simply whatever is left over. Asking it earlier
+ // cut holes it then had to patch: each one left a dead band a body wide where neither
+ // the lawn nor what it deferred to would have you, and on open grass that is an
+ // invisible wall.
+ if(peninsulaActive()&&eastLawnAt(x,z,r))return EAST_LAWN;
+ return null;
 }
-export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
+export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
 export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:FOREST_EDGE.roadEndZ+1};

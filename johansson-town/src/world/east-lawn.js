@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
+import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -65,18 +66,52 @@ function groundTexture(base,marks,strokes){
  return texture;
 }
 
+/** Roughly how wide one cell of the lawn's grid is. */
+const CELL=1.2;
+
 /**
  * @param {object} options
  * @param {THREE.Object3D} options.parent
  * @param {Array} options.colliders  the wall and the treeline are solid.
+ * @param {(x:number,z:number)=>number} [options.heightAt]  the walkable ground, so the
+ *   lawn's surface is the surface the player's feet are put on — in particular the
+ *   graded foot of the park mound, which used to be a vertical face you walked into.
  */
-export function buildEastLawn({parent,colliders=[],shadows=false,register=()=>{},onAction=()=>{}}={}){
+export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,register=()=>{},onAction=()=>{}}={}){
  const group=new THREE.Group();group.name='East lawn, seawall and beach';parent.add(group);
  const {wall,beach}=EAST_LAWN;
  const width=EAST_LAWN.maxX-EAST_LAWN.minX,depth=EAST_LAWN.maxZ-EAST_LAWN.minZ;
- const lawn=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),new THREE.MeshStandardMaterial({color:BARE_TURF,roughness:1}));
- lawn.name='east-lawn-grass';lawn.position.set((EAST_LAWN.minX+EAST_LAWN.maxX)/2,.01,(EAST_LAWN.minZ+EAST_LAWN.maxZ)/2);
- lawn.receiveShadow=!!shadows;group.add(lawn);
+
+ // A grid rather than one slab: the mound's foot is graded into the lawn now, so the
+ // green has to follow the ground the player actually walks on. Cells wholly inside
+ // the park square are left out — the park's own model stands there.
+ // The grid lines carry the park square's own edges, so every cell lies either wholly
+ // on the mound or wholly off it. Without that the cells that straddled the boundary
+ // rose to the mound's height at their inner corners and fought the model's surface
+ // for the same pixels — a bright green seam all the way round the park.
+ const lines=(from,to,...keep)=>{
+  const set=new Set([from,to,...keep.filter(v=>v>from+.05&&v<to-.05)]);
+  for(let v=from;v<to;v+=CELL)set.add(v);
+  return [...set].sort((a,b)=>a-b);
+ };
+ const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half);
+ const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half);
+ const height=(x,z)=>heightAt?heightAt(x,z):0;
+ const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
+ const vertices=[],turfUV=[],faces=[];
+ for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+.02,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
+ for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
+  const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
+  if(onMound(mx,mz))continue;
+  const a=j*xs.length+i,b=a+1,c=a+xs.length,d=c+1;
+  faces.push(a,c,b,b,c,d);
+ }
+ const turf=new THREE.BufferGeometry();
+ turf.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+ turf.setAttribute('uv',new THREE.Float32BufferAttribute(turfUV,2));
+ turf.setIndex(faces);turf.computeVertexNormals();
+ const lawn=new THREE.Mesh(turf,new THREE.MeshStandardMaterial({color:BARE_TURF,roughness:1}));
+ lawn.name='east-lawn-grass';lawn.receiveShadow=!!shadows;group.add(lawn);
 
  // The parapet. Low enough to see the water over, solid enough to stop at.
  const stone=new THREE.MeshStandardMaterial({color:0xa8a293,roughness:.92});
@@ -154,10 +189,12 @@ export function buildEastLawn({parent,colliders=[],shadows=false,register=()=>{}
   */
  const useParkGreenery=({grass,bush}={})=>{
   if(!grass?.image)return false;
-  const turf=grass.clone();turf.needsUpdate=true;
-  turf.wrapS=turf.wrapT=THREE.RepeatWrapping;turf.repeat.set(width/TURF_METRES,depth/TURF_METRES);
-  turf.anisotropy=Math.max(turf.anisotropy,4);
-  lawn.material.map=turf;lawn.material.color.setHex(0xffffff);lawn.material.needsUpdate=true;
+  // The tiling is in the lawn's own UVs, in metres, so the texture repeats once per
+  // TURF_METRES wherever the ground goes.
+  const map=grass.clone();map.needsUpdate=true;
+  map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(1,1);
+  map.anisotropy=Math.max(map.anisotropy,4);
+  lawn.material.map=map;lawn.material.color.setHex(TURF_TINT);lawn.material.needsUpdate=true;
   if(bush?.image){
    // The park's shrubs are one merged clump, so the lawn borrows the leaf rather than
    // the geometry. The per-instance greens go: the texture is the colour now.

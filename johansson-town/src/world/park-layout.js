@@ -1,5 +1,15 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {FULL_TOWN} from './full-town-state.js';
+/**
+ * What the supplied park's ground textures are multiplied by.
+ *
+ * They are bright spring greens and near-white paving, and the town's sun, its 1.75
+ * fill and the grade's exposure together push them past white: the mound came out as
+ * a cream dome with the paths lost in it. Bringing the materials' own colour down puts
+ * the textures back inside the range the ramp can band. The lawn outside the park uses
+ * the same green, so the two are one field.
+ */
+export const TURF_TINT=0x93a878,PARK_PATH_TINT=0xa19c8b;
 export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
 export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}
@@ -17,6 +27,39 @@ export function parkHeight(x,z){
  const a=PARK_HEIGHTS[iz*57+ix]*(1-u)+PARK_HEIGHTS[iz*57+ix+1]*u,b=PARK_HEIGHTS[(iz+1)*57+ix]*(1-u)+PARK_HEIGHTS[(iz+1)*57+ix+1]*u;
  return p.lift+(a*(1-v)+b*v)*s;
 }
+/**
+ * How far the mound's foot is graded out into the ground around it.
+ *
+ * The park was modelled as a plinth: a heightfield with a vertical face all round, so
+ * from the lawn it was a 0.65m step on one side and a 1.4m wall on another, and the
+ * only way up was the one authored ramp. The skirt grades the edge height down to the
+ * surrounding ground over this distance, so the mound can be walked up from anywhere.
+ */
+export const PARK_SKIRT=4.5;
+/**
+ * Except toward the town, where the pavement's east kerb is only 2.76m from the
+ * square: run the skirt under an authored paved route and it lifts the player off
+ * the paving. The mound's low side faces that way, so the short skirt is the gentle
+ * one anyway.
+ */
+export const PARK_SKIRT_WEST=2.7;
+/**
+ * The graded ground just outside the park square. It meets parkHeight exactly at the
+ * square's edge, so the two together are one continuous surface.
+ */
+export function parkSkirtHeight(x,z){
+ const p=activePark();if(p.plaza)return null;
+ const ex=Math.min(Math.max(x,p.x-p.half),p.x+p.half),ez=Math.min(Math.max(z,p.z-p.half),p.z+p.half);
+ const d=Math.hypot(x-ex,z-ez);
+ if(d<=0)return null;
+ // The reach turns with the outward direction rather than switching at the face, or
+ // the skirt would step by its own width along the corner where the rule flipped.
+ const west=d?Math.max(0,(ex-x)/d):0;
+ const reach=PARK_SKIRT+(PARK_SKIRT_WEST-PARK_SKIRT)*west;
+ if(d>=reach)return null;
+ const edge=parkHeight(ex,ez);
+ return edge===null?null:edge*(1-d/reach);
+}
 export function parkApproachHeight(x,z){
  const p=activePark();if(p.plaza)return null;
  const edge=p.x-p.half,start=edge-2.8;
@@ -27,7 +70,12 @@ export function parkApproachHeight(x,z){
  if(x<start||x>=edge||across>3)return null;
  const lateral=Math.min(1,Math.max(0,(3-across)/1.5));
  const target=parkHeight(edge,z);
- return target==null?0:((x-start)/(edge-start))*target*lateral;
+ if(target==null)return 0;
+ // Fade out into the skirt rather than to nothing. Fading to zero was right while the
+ // ground around the mound was flat; now that the skirt grades the whole foot, fading
+ // to zero put a step back beside the ramp it was added to remove.
+ const base=parkSkirtHeight(x,z)??0;
+ return base+(((x-start)/(edge-start))*target-base)*lateral;
 }
 export function parkBench(p=activePark()){
  if(p.plaza)return {position:[p.x,0,p.z+.35],eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
