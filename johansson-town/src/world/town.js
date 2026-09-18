@@ -219,11 +219,22 @@ export function createTown(options){
   world.beats=createLivingProps(world,factory);
   if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
+  // Reused every frame rather than rebuilt: the doors only need to know where people
+  // are, and this runs at frame rate.
+  const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.busStation?.update(minutes,day);
     world.bus?.update(dt);
     world.tunnel?.update?.(dt,options.getPlayerPosition?.());
+    // The shop doors open for whoever walks up to them. Everybody who is outdoors
+    // counts, so a customer arriving is a door opening rather than a person ending.
+    if(world.shopDoors?.length){
+     doorTraffic.length=0;
+     const here=options.getPlayerPosition?.();if(here)doorTraffic.push(here);
+     for(const p of world.people)if(p.g.visible&&!p.g.userData.indoors)doorTraffic.push(p.g.position);
+     for(const door of world.shopDoors)door.update(dt,doorTraffic);
+    }
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);

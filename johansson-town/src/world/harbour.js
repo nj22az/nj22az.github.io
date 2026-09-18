@@ -21,7 +21,7 @@ import * as THREE from '../../vendor/three.module.js';
 // Static geometry is instanced by geometry/material; interaction anchors stay independent.
 export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition,harbourCellSize=48,harbourBatching=true}) {
   const group=new THREE.Group();scene.add(group);
-  const harbourShops=[],plantSites=[],details=[];
+  const harbourShops=[],plantSites=[],details=[],shopDoors=[];
   const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],people=[],water=[],wetMeshes=[];
 
   const bands=new Uint8Array([
@@ -146,12 +146,12 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // where the interior's own door is.
       if(peninsulaActive()){
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
-       buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
+       shopDoors.push(buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}}).shopDoor);
        s.x=front;s.door=[front+1.95,0,centre];
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;
       }
-      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:front,z:s.z,yaw:Math.PI/2,scale:1}});
+      shopDoors.push(buildStorefront({parent:group,site:s,register,enter,label,placement:{x:front,z:s.z,yaw:Math.PI/2,scale:1}}).shopDoor);
       s.x=front;s.door=[-5.5,0,s.z+2.5];
       obstacle(-11.65,s.z,8.2,10);return;
     }
@@ -287,7 +287,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   return {
     group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,
     landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
-    harbourShops,boardwalk,plantSites,
+    harbourShops,boardwalk,plantSites,shopDoors:shopDoors.filter(Boolean),
     setRain(value){
       boardwalk.setRain(value);
       wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;seaMat.color.set(value?0x345b66:0x426f79);
