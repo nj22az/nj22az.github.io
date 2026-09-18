@@ -71,6 +71,12 @@ test('the bus is solid while it is a bus, and not once it is a picture of one',(
  assert.ok(until(run,'gone'),'The bus never goes');
  assert.equal(solid.w,0);assert.equal(solid.d,0);
  assert.ok(!circleHitsRect(TUNNEL.x,TUNNEL.z-2,.36,solid),'The departed bus still blocks the tunnel mouth');
+ // and it is parked out of the world rather than shrunk to nothing where it stood.
+ // A 0x0 rect is not "no collider": circleHitsRect compares against half the width
+ // plus the walker's radius, so a zero box still stops anyone who comes within 0.36m
+ // of its centre — an invisible post at whatever spot the bus faded out on.
+ assert.ok(Math.hypot(solid.x,solid.z)>1e5,'The departed bus left an invisible post behind it');
+ assert.ok(circleHitsRect(solid.x,solid.z,.36,{x:solid.x,z:solid.z,w:0,d:0}),'A zero-size rect does not stop anyone, so parking it away is pointless');
 
  // Turning at the terminus it sweeps the road, so the box turns with it.
  assert.ok(until(run,'turning',400),'The bus never turns');

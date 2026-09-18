@@ -51,6 +51,7 @@ import { createCharacters, preloadCharacter } from './people/characters.js?snapp
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
+import { createInkRecovery } from './render/ink-recovery.js';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -77,26 +78,50 @@ const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.vi
 // Both halves fail soft — if the pipeline cannot be built the town renders exactly as
 // it did before, which matters more than the look does.
 const celPass=createCelPass();
+/**
+ * How the town is drawn, and what happens when the driver says no.
+ *
+ * The ink and the grade are the look. They used to be given up for the whole session
+ * on the strength of one bad frame: a single throw disposed the pipeline, set it to
+ * null and left the town rendering plain until reload. On a phone that is the wrong
+ * trade. iOS drops and restores WebGL contexts under memory pressure and when a tab
+ * is backgrounded, so the frame that fails is usually a moment rather than a verdict,
+ * and what the player sees is the cel shading vanishing mid-walk and never returning.
+ *
+ * So a failure now costs a few seconds instead of the session. The pipeline is rebuilt
+ * after a cooling-off that lengthens each time, a few times over, and a restored
+ * context resets that immediately. A driver that truly cannot do it settles into the
+ * plain path after the retries, which is where it used to start.
+ */
+const INK_OPTIONS={
+ // Supersampling is what keeps the line work clean, and it is also the most
+ // expensive thing here. renderDpr already holds a phone's draw buffer well below
+ // its screen, so a modest factor there costs little and is what stops the ink
+ // stair-stepping when the small buffer is scaled back up to a 3x display.
+ superScale:mobile?(tabletLike?1.4:1.25):1.5,
+ pixelBudget:mobile?2.4e6:4.6e6,
+ // FXAA is a single pass and it is the one that resolves the line work, so it is
+ // worth having on the devices whose buffers need it most.
+ fxaa:true,
+ // Sakura Crossing grades flat painted colour. This town is built on photographed
+ // concrete and timber, which starts darker and busier, so the darks are tinted
+ // less heavily and lifted further than the reference does — otherwise the street
+ // goes to mud rather than to violet.
+ gradeOptions:{shadowTint:0xd4cfe8,lift:.07,saturation:1.18}
+};
+const inkRecovery=createInkRecovery({retries:4,cooldown:3500});
 let pipeline=null;
-try{
- pipeline=createInkPipeline(renderer,{
-  // Supersampling is what keeps the line work clean, and it is also the most
-  // expensive thing here. renderDpr already holds a phone's draw buffer well below
-  // its screen, so a modest factor there costs little and is what stops the ink
-  // stair-stepping when the small buffer is scaled back up to a 3x display.
-  superScale:mobile?(tabletLike?1.4:1.25):1.5,
-  pixelBudget:mobile?2.4e6:4.6e6,
-  // FXAA is a single pass and it is the one that resolves the line work, so it is
-  // worth having on the devices whose buffers need it most.
-  fxaa:true,
-  // Sakura Crossing grades flat painted colour. This town is built on photographed
-  // concrete and timber, which starts darker and busier, so the darks are tinted
-  // less heavily and lifted further than the reference does — otherwise the street
-  // goes to mud rather than to violet.
-  gradeOptions:{shadowTint:0xd4cfe8,lift:.07,saturation:1.18}
- });
-}catch(error){console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
-window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},cel:celPass.stats,
+/** Plain output, for while the ink is away. */
+function renderPlain(){renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
+function buildInk(){
+ try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;return true;}
+ catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
+}
+buildInk();
+// A restored context is the one case worth trying again at once: the old pipeline's
+// targets died with the context and the new one will be built against a live driver.
+renderer.domElement.addEventListener('webglcontextrestored',()=>inkRecovery.restored(),false);
+window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
  get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
@@ -121,17 +146,21 @@ sweepCel(0);
  * beats being drawn.
  */
 function present(draw,view=camera){
- if(!pipeline){draw(renderer);return;}
+ if(!pipeline){
+  if(inkRecovery.ready())buildInk();
+  if(!pipeline){draw(renderer);return;}
+ }
  pipeline.setCamera(view);
  try{pipeline.render(draw);}
  catch(error){
-  console.warn('Ink pipeline failed, rendering plain:',error.message);
+  const again=inkRecovery.failed();
+  console.warn('Ink pipeline failed, rendering plain'+(again?', retrying shortly':' for good')+':',error.message);
   try{pipeline.dispose();}catch{}
   pipeline=null;
   // Whatever threw may well be the call that unbinds the target, so this one is
   // allowed to fail too rather than take the frame down with it.
   try{renderer.setRenderTarget?.(null);}catch{}
-  renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;
+  renderPlain();
   draw(renderer);
  }
 }

@@ -101,3 +101,22 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
 });
+
+
+test('every caller gets the same routine, however it asks',()=>{
+ // The bug this guards: the shop's own "should she still be here?" check calls
+ // residentPlan without naming a mode. It used to be handed the archived street's
+ // routine while the schedule was handed the commuter one, so the two disagreed all
+ // afternoon and the shop won — she stood at her counter through her own walk.
+ configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ try{
+  const asked=residentPlan(THUAN,THUAN_WALK_START+20,false,{},true);
+  const unasked=residentPlan(THUAN,THUAN_WALK_START+20,false,{});
+  assert.equal(unasked.place,asked.place,'The layout answers differently depending on who asks');
+  assert.notEqual(unasked.place,'market','The shop would keep her through her own walk');
+  // The same holds for the evening, which is the other thing the shop could swallow.
+  assert.equal(residentPlan(THUAN,shift.finish+10,false,{}).place,'izakaya');
+ }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ // and the archived street still gets the archived routine when nobody names a mode.
+ assert.notEqual(residentPlan(THUAN,THUAN_WALK_START+20,false,{}).place,'park');
+});

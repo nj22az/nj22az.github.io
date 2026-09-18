@@ -78,7 +78,7 @@ const CELL=1.2;
  *   lawn's surface is the surface the player's feet are put on — in particular the
  *   graded foot of the park mound, which used to be a vertical face you walked into.
  */
-export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,register=()=>{},onAction=()=>{}}={}){
+export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,anisotropy=4,register=()=>{},onAction=()=>{}}={}){
  const group=new THREE.Group();group.name='East lawn, seawall and beach';parent.add(group);
  const {wall,beach}=EAST_LAWN;
  const width=EAST_LAWN.maxX-EAST_LAWN.minX,depth=EAST_LAWN.maxZ-EAST_LAWN.minZ;
@@ -209,13 +209,23 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,r
   // TURF_METRES wherever the ground goes.
   const map=grass.clone();map.needsUpdate=true;
   map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(1,1);
-  map.anisotropy=Math.max(map.anisotropy,4);
+  // You almost never look down at a lawn; you look along it, and along is where a
+  // texture smears. Anisotropy is the one setting that fixes that, and it was pinned
+  // at 4 while the rest of the town takes whatever the device will give.
+  map.anisotropy=Math.max(map.anisotropy,anisotropy);
   lawn.material.map=map;lawn.material.color.setHex(TURF_TINT);lawn.material.needsUpdate=true;
   if(bush?.image){
    // The park's shrubs are one merged clump, so the lawn borrows the leaf rather than
    // the geometry. The per-instance greens go: the texture is the colour now.
    clumpMat.map=bush;clumpMat.needsUpdate=true;
-   shrubs.instanceColor=null;
+   // White, not nothing. Dropping the attribute outright is what a mesh cannot do
+   // once anything has looked at it: the section renderer decides whether there are
+   // per-instance colours when it is built and then reads them every frame, so a null
+   // here threw out of the render loop and cost the whole cel look. White is the same
+   // picture — it lets the leaf texture through untinted — and the attribute survives.
+   const white=new THREE.Color(0xffffff);
+   for(let i=0;i<shrubs.count;i++)shrubs.setColorAt(i,white);
+   if(shrubs.instanceColor)shrubs.instanceColor.needsUpdate=true;
   }
   return true;
  };

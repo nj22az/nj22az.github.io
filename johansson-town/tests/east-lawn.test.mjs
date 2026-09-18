@@ -96,6 +96,10 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
   assert.ok(spanX>4&&spanZ>4,'One tile stretched over the whole green');
   assert.deepEqual([lawn.lawn.material.map.repeat.x,lawn.lawn.material.map.repeat.y],[1,1]);
   assert.equal(lawn.shrubs.material.map,bush,'The shrubs kept a colour of their own');
-  assert.equal(lawn.shrubs.instanceColor,null,'Per-instance greens still tint the park leaf');
+  // The greens go white rather than away: the attribute has to survive, because the
+  // section renderer reads it every frame once it has seen it.
+  assert.ok(lawn.shrubs.instanceColor,'Dropping the attribute outright crashes the section renderer');
+  const tints=lawn.shrubs.instanceColor.array;
+  assert.ok([...tints].every(v=>v===1),'Per-instance greens still tint the park leaf');
  }finally{globalThis.fetch=original;}
 });

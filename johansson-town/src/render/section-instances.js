@@ -18,7 +18,12 @@ export function createSectionInstances(mesh){
    signature=key;count=selected.length;
    selected.forEach(({index},i)=>{
     matrix.array.set(mesh.instanceMatrix.array.subarray(index*16,index*16+16),i*16);
-    if(color)color.array.set(mesh.instanceColor.array.subarray(index*3,index*3+3),i*3);
+    // Asked of the mesh each time rather than trusting the decision made when this
+    // was built: a mesh can lose its per-instance colours long after that — the east
+    // lawn drops its greens the moment the park's own leaf texture arrives — and the
+    // stale answer here dereferenced a null every frame, threw out of the render, and
+    // took the ink and the grade down with it for the rest of the session.
+    if(color&&mesh.instanceColor)color.array.set(mesh.instanceColor.array.subarray(index*3,index*3+3),i*3);
    });
    matrix.needsUpdate=true;if(color)color.needsUpdate=true;
   }

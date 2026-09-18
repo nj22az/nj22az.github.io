@@ -182,7 +182,7 @@ export function createTown(options){
    // The bus, and the only way out of the town: it drives up the bus road and is shrunk
    // onto the painting's vanishing point until it is gone. See bus.js.
    world.bus=createBusRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
+   world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,register:options.register,onAction:options.onAction});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further

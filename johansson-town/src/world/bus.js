@@ -107,8 +107,12 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  if(solid)colliders.push(solid);
  const trackSolid=()=>{
   if(!solid)return;
+  // Parked out of the world rather than shrunk to nothing where it stood. A zero-size
+  // rect is not "no collider": circleHitsRect compares against half the width plus the
+  // walker's radius, so a 0x0 box still stops anyone who comes within 0.36m of it, and
+  // the bus left an invisible post at whatever spot it happened to fade out on.
   const away=!bus.visible||bus.scale.x<.98;
-  if(away){solid.w=0;solid.d=0;return;}
+  if(away){solid.w=0;solid.d=0;solid.x=1e6;solid.z=1e6;return;}
   const sin=Math.abs(Math.sin(bus.rotation.y)),cos=Math.abs(Math.cos(bus.rotation.y));
   solid.x=bus.position.x;solid.z=bus.position.z;
   solid.w=BODY.length*sin+BODY.width*cos;
