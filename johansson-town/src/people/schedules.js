@@ -87,15 +87,52 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    g.rotation.y+=Math.abs(delta)>2.1?delta*.55:delta*(1-Math.exp(-dt*11));
   }
  }
+
+ /** True while the Harbour Line is standing at the terminus with its doors to you. */
+ const atTheStop=()=>{const run=world.bus;return !run||['waiting','turning'].includes(run.phase);};
+ /**
+  * Somebody who has been waiting has got on once the bus they were waiting for has
+  * pulled away. Without the memory they would blink out the moment their shift ended
+  * whenever the service happened to be up the road, which is the thing this replaces.
+  */
+ const seenAtStop=new WeakSet();
+ function boarded(g){
+  const run=world.bus;
+  if(!run)return true;                                   // No service modelled: as before.
+  if(atTheStop()){seenAtStop.add(g);return false;}        // It is here; you are still getting on.
+  return seenAtStop.has(g);                               // It has gone, and you were here for it.
+ }
+ /** The kerb beside the bus's own door, so people step off it rather than out of it. */
+ const alightingPoint=()=>{
+  const run=world.bus;
+  if(!run)return BUS_STATION.arrival;
+  // The platform is north of where the bus stands and the door is on the kerb side,
+  // so you step off towards the shelter rather than into the carriageway.
+  return [run.bus.position.x-1.9,run.bus.position.z+1.2];
+ };
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const phase=transit?commuterPhase(v,minutes):'legacy';
-   if(transit&&phase==='away'){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
-   if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){g.position.set(BUS_STATION.arrival[0],groundHeight(...BUS_STATION.arrival),BUS_STATION.arrival[1]);g.visible=true;delete g.userData.commuterAwayDay;routes.delete(g);}
+   // They leave on the bus, not by ceasing to exist at the kerb. While the service is
+   // somewhere up the road they wait in the queue, and they only go once there has
+   // been a bus standing there for them to go in.
+   const holdForBus=transit&&phase==='away'&&!boarded(g);
+   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   // Coming back is the same in reverse: nobody is put down on the platform until the
+   // bus they would have been on is at it.
+   if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){
+    if(!atTheStop())continue;
+    const step=alightingPoint();
+    g.position.set(step[0],groundHeight(step[0],step[1]),step[1]);g.visible=true;
+    delete g.userData.commuterAwayDay;routes.delete(g);
+   }
    const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
+   // Still on the platform: the plan has written them off as away, so put them back in
+   // the queue rather than sending them walking up the bus road on foot.
+   if(holdForBus){g.visible=true;target=BUS_STATION.queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the Harbour Line';}
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
     if(Math.hypot(g.position.x-patrol[index][0],g.position.z-patrol[index][1])<.85)index=(index+1)%patrol.length;

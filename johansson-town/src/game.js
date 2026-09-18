@@ -576,6 +576,10 @@ window.__JOHANSSON_POSE__={
  get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
  get bus(){const run=world.bus;return run?{phase:run.phase,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
  get doors(){return (world.shopDoors||[]).map(d=>+d.amount.toFixed(3));},
+ // Who is at the terminus and who has gone, so the boarding can be watched rather
+ // than inferred from where somebody was standing a moment ago.
+ get transit(){return world.people.filter(p=>['bus','away','station'].includes(p.g.userData.place))
+  .map(p=>p.profile.name+':'+p.g.userData.place+(p.g.visible?'':' (gone)'));},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
 };
 for(const detail of world.details||[])detailStream.add(detail);
