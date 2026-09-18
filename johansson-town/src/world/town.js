@@ -18,6 +18,7 @@ import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {buildEastLawn} from './east-lawn.js';
+import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
 
@@ -173,7 +174,9 @@ export function createTown(options){
   if(peninsulaActive()){
    world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
-   // The port is north, the shops are west; the east is the green side of the town.
+   // The port is north, the shops are west; the east is the green side of the town and
+   // the west is the working one, with the shop and the warehouse standing on it.
+   world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
     heightAt:groundHeight,register:options.register,onAction:options.onAction});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs

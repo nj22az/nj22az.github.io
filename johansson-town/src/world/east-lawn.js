@@ -42,11 +42,12 @@ const TURF_METRES=2.4;
 const BARE_TURF=0x6f8a55;
 
 /**
- * Sand, drawn rather than fetched: nothing in the town supplies one, and a flat beach
- * reads as a sheet of card at this scale. A couple of passes of soft blotches over a
- * scratch of grain is enough at walking height.
+ * Ground drawn rather than fetched, for the surfaces the town supplies no photograph
+ * of: sand, and the gravel of the yard on the other side of the road. A flat fill
+ * reads as a sheet of card at this scale, and a couple of passes of soft blotches over
+ * a scratch of grain is enough at walking height.
  */
-function groundTexture(base,marks,strokes){
+export function groundTexture(base,marks,strokes){
  if(typeof document==='undefined')return null;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
  const ctx=canvas.getContext('2d');ctx.fillStyle=base;ctx.fillRect(0,0,256,256);

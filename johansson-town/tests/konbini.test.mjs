@@ -254,3 +254,24 @@ test('the shopfront is cut for the shop that is actually inside it',async()=>{
  assert.ok(SAKURA_FRONT.width-(bounds.maxX-bounds.minX)<1.2,'The frontage is a hangar');
  assert.ok(SAKURA_FRONT.depth-(frontZ-bounds.minZ)<1.2,'The frontage is a hangar');
 });
+
+test('the shop stands in a yard you can walk round, with a back to look at',async()=>{
+ const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
+ configureTownMode(TOWN_MODES.PENINSULA);
+ const {routeAt}=await import('../src/world/layout.js?west-yard');
+ const {SAKURA_FRONT}=await import('../src/world/interiors/sakura-layout.js');
+ const front=-7.45,centre=-28+1.2,half=SAKURA_FRONT.width/2;
+ // Only the frontage used to meet walkable ground: the shop stood in an invisible box
+ // and the one building the town is about could not be walked round.
+ for(const [side,x,z] of [
+  ['north',front-SAKURA_FRONT.depth/2,centre+half+1.4],
+  ['south',front-SAKURA_FRONT.depth/2,centre-half-1.4],
+  ['behind',front-SAKURA_FRONT.depth-1.6,centre],
+  ['in front',front+1.2,centre],
+ ])assert.ok(routeAt(x,z,.32),'You cannot stand '+side+' of the shop');
+ // and the yard is closed by something rather than simply stopping.
+ assert.ok(!routeAt(front-SAKURA_FRONT.depth-9,centre,.32),'The yard runs on past its wall');
+ configureTownMode(TOWN_MODES.LEGACY);
+ assert.ok(!routeAt(front-SAKURA_FRONT.depth-1.6,centre,.32),'Only the peninsula has the room for a yard');
+ configureTownMode(TOWN_MODES.PENINSULA);
+});

@@ -7,6 +7,7 @@ import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
+import {WEST_YARD,westYardAt} from './west-yard.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -76,6 +77,9 @@ export function routeAt(x,z,r=0){
  // the lawn nor what it deferred to would have you, and on open grass that is an
  // invisible wall.
  if(peninsulaActive()&&eastLawnAt(x,z,r))return EAST_LAWN;
+ // ...and the same on the shop side, where the konbini stood in an invisible box with
+ // only its frontage on ground you could stand on.
+ if(peninsulaActive()&&westYardAt(x,z,r))return WEST_YARD;
  return null;
 }
 export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}

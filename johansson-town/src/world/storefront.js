@@ -55,6 +55,27 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  const mat=box([1.7,.035,.8],[doorX,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[half+.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  hangNoren(group,doorX,1.85,.07);
+ // The back of house. It was never seen while the shop stood in an invisible box with
+ // only its frontage on walkable ground; now that you can walk round it, a blank wall
+ // the size of the building is the thing you notice.
+ if(span){
+  // Everything here is dark for its own good: under this town's sun a mid grey renders
+  // as cream, and a fitting the colour of the wall it is bolted to is not a fitting.
+  const wall=back-.19,door=.9;
+  box([1.32,2.32,.1],[door,1.16,wall+.02],0x6b6154);             // door surround
+  box([1.05,2.1,.12],[door,1.05,wall-.03],0x42514a);             // the stockroom door
+  box([.1,.05,.06],[door+.38,1.0,wall-.11],0xb9b2a0);            // its handle
+  box([.1,2.9,.14],[door-1.5,1.45,wall-.06],0x5b5548);           // downpipe
+  box([.66,.8,.32],[door-2.5,1.42,wall-.17],0x7a7164);           // meter cupboard
+  box([.58,.1,.34],[door-2.5,1.84,wall-.18],0x5d564a);           // its lid
+  box([1.2,.86,.5],[-half+2.8,2.3,wall-.26],0x6d736d);           // extractor
+  for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.3],0x4a4f4a);
+  for(const [i,lx] of [-half+4.9,-half+5.8,half-3.1].entries()){
+   const h=.44+(i%2)*.2;
+   box([.78,h,.62],[lx,h/2,wall-.44],[0x7d5f3f,0x5b6650,0x7a4f45][i%3]);
+  }
+  box([.9,.06,.7],[half-4.4,.03,wall-.52],0x5d5a50);             // a pallet, flat
+ }
  site.standInFittings=standIn;
  const [ax,az]=localToWorld(x,z,yaw,scale,doorX,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
