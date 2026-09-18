@@ -7,7 +7,9 @@ import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {PARK_BENCH} from '../world/park-layout.js';
 import {commuterPhase,shiftActive,shiftFor} from './commuter-schedule.js';
+import {shoppingDistrictActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
@@ -23,6 +25,42 @@ export function thuanVisitsIzakaya(minutes){
  const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
  return day%2===0&&minute>=1220&&minute<1290;
 }
+/**
+ * Thuan's afternoon walk.
+ *
+ * The shop is hers and the middle of the afternoon is the quiet of it, so she puts the
+ * blind down and goes out: over the road to the park, a sit on the bench above the
+ * rooftops, then down the east lawn to the sea wall and along it before she walks back.
+ * Every place on it is somewhere the town already had. What is new is that she goes.
+ *
+ * The legs are timed rather than triggered because the walking is the point and it
+ * takes as long as it takes: she covers 1.25 m/s and a town minute is a second, so the
+ * loop is about a hundred metres of walking and needs the ninety minutes it is given.
+ *
+ * Two of the legs are 'stroll' and two are 'park'. Only the first is a place the town
+ * activity system will act on, and that is deliberate: on a stroll she stops at
+ * whatever is nearby and uses it, which is how she ends up sitting on the park bench
+ * without being told to, and also how she would end up sitting on the bench outside
+ * her own shop thirty seconds after setting off. So the legs that are meant to be a
+ * walk are a walk, and the legs where she has arrived somewhere worth stopping are
+ * the ones that let her stop.
+ */
+export const THUAN_WALK_START=840,THUAN_WALK_END=930;
+const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
+const THUAN_WALK=Object.freeze([
+ {until:862,place:'park',target:PARK_STAND,activity:'walking up to the park'},
+ {until:890,place:'stroll',target:PARK_STAND,activity:'sitting in the park'},
+ {until:912,place:'park',target:[30.4,-9.5],activity:'walking down to the sea wall'},
+ {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall'},
+].map(Object.freeze));
+/** The leg of the walk she is on, or null when she is not on it. */
+export function thuanAfternoon(profile,minutes,rain=false){
+ if(rain||profile?.name!=='Thuan')return null;
+ const m=minuteOfDay(minutes);
+ if(m<THUAN_WALK_START||m>=THUAN_WALK_END)return null;
+ return THUAN_WALK.find(leg=>m<leg.until)||null;
+}
+
 /**
  * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
  *
@@ -110,14 +148,34 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Thuan'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
+  // Her afternoon walk, read before the shift so that being on shift does not simply
+  // put her back behind her own counter for the whole of it.
+  const walk=thuanAfternoon(profile,minutes,rain);
+  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity};
   if(shiftActive(profile,minutes))return {place:'market',target:profile.work,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  return bus('waiting for the next Harbour Line departure');
 }
+/**
+ * Where somebody should be, on whichever layout the town is running.
+ *
+ * Every caller has to get the same answer to this or the town argues with itself. The
+ * shop's own "should she still be here?" check asked without a mode, so it was handed
+ * the archived street's routine, while the schedule asked with one and was handed the
+ * commuter routine. They disagreed for the whole of every afternoon, and it was
+ * invisible because when they disagree about a room the room simply wins: Thuan stood
+ * at her counter through a walk the schedule thought she was taking.
+ *
+ * So the layout answers when the caller does not name one, and only an explicit false
+ * forces the archived routine. The peninsula counts as a commuter layout for the same
+ * reason the shopping district does — the bus is how people arrive and leave.
+ */
 export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
- const commuter=mode===true||mode==='shopping-district'||state?.townMode==='shopping-district';
+ const commuter=mode===false?false
+  :mode!=null&&mode!==''?true
+  :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
  return commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
 }
 export const GOSSIP=[

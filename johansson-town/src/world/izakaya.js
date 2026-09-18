@@ -26,8 +26,34 @@ export function buildIzakaya(world,options){
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
  const suppliedExterior=asset('exterior',exterior);
+ // Something behind the glass.
+ //
+ // prepareIzakayaGlass lifts the window triangles out of the wall and covers the holes
+ // with near-invisible glazing so you can see in. On the old street there was always
+ // another building behind Minato; on the peninsula there is the west yard and then
+ // the open sea, so from the pavement its windows read as holes you can watch the
+ // horizon through. The interior is a separate room and cannot stand in for it, so
+ // what goes behind the glazing is this: a dim warm box the size of the ground floor,
+ // inward-facing, which is what a bar looks like from outside at any hour.
+ {
+  // A solid block rather than an inward-facing shell: a shell's near wall is culled,
+  // so from the pavement you look straight into it and it fills the view. And darker
+  // than it looks it should be — under this town's exposure 0x2c2018 came back as
+  // terracotta, which is the same lift that turned the park and the east lawn cream.
+  const inside=new THREE.Mesh(new THREE.BoxGeometry(5.4,3.2,5.8),
+   new THREE.MeshStandardMaterial({color:0x140d09,roughness:.97}));
+  inside.name='Minato window backing';inside.position.set(-1.24,1.6,.8);
+  inside.castShadow=false;inside.receiveShadow=false;exterior.add(inside);
+ }
+ // Held by name rather than by position in the child list: the streamed model used to
+ // retire this by removing the group's first child, which is only the placeholder for
+ // as long as nothing is ever added before it. Add anything -- the window backing
+ // above, say -- and the load quietly removed that instead, leaving the orange block
+ // standing in the street with the real building around it.
+ let placeholder=null;
  if(!suppliedExterior){
-  const fallback=new THREE.Mesh(new THREE.BoxGeometry(5.22,4,6.82),new THREE.MeshStandardMaterial({color:0x965332}));fallback.position.set(-.91,2,1.11);exterior.add(fallback);
+  placeholder=new THREE.Mesh(new THREE.BoxGeometry(5.22,4,6.82),new THREE.MeshStandardMaterial({color:0x965332}));
+  placeholder.name='Minato placeholder';placeholder.position.set(-.91,2,1.11);exterior.add(placeholder);
  }
  // Warm readable bilingual sign remains a runtime canvas so it does not require font textures in GLB.
  const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
@@ -40,7 +66,7 @@ export function buildIzakaya(world,options){
 
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:plot.x,z:plot.z,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;
-  const fallback=exterior.children[0];asset('exterior',exterior);fallback.removeFromParent();sign.visible=false;return true;
+  asset('exterior',exterior);placeholder?.removeFromParent();placeholder=null;sign.visible=false;return true;
  }});
  return site;
 }

@@ -168,7 +168,22 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,r
  // A white base so the park's leaf texture, once it arrives, is the colour rather than
  // a tint over one; until then the per-instance greens stand in for it.
  const clumpMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1});
- const shrubs=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),clumpMat,Math.max(1,clumps.length));
+ // Round the normals off the shape itself.
+ //
+ // A polyhedron arrives with one normal per face, and the ink pass draws a line
+ // wherever normals break — so a flat-shaded ball is delivered to the lawn with every
+ // one of its eighty facets outlined, which reads as a bag of green rocks rather than
+ // as planting. For a sphere the smooth normal is just the direction from the centre.
+ const clumpGeometry=new THREE.IcosahedronGeometry(1,2);
+ {
+  const p=clumpGeometry.attributes.position,normals=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){
+   const x=p.getX(i),y=p.getY(i),z=p.getZ(i),length=Math.hypot(x,y,z)||1;
+   normals[i*3]=x/length;normals[i*3+1]=y/length;normals[i*3+2]=z/length;
+  }
+  clumpGeometry.setAttribute('normal',new THREE.BufferAttribute(normals,3));
+ }
+ const shrubs=new THREE.InstancedMesh(clumpGeometry,clumpMat,Math.max(1,clumps.length));
  if(clumps.length){
   const dummy=new THREE.Object3D(),colour=new THREE.Color();
   clumps.forEach((c,i)=>{

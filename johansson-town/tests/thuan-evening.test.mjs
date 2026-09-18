@@ -2,7 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
-import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN} from '../src/people/social.js';
+import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END} from '../src/people/social.js';
+import {PARK_BENCH} from '../src/world/park-layout.js';
+import {EAST_LAWN} from '../src/world/east-lawn.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
@@ -46,4 +48,56 @@ test('the beer is a commuter habit, not something bolted onto every layout',()=>
  assert.notEqual(legacy.place,'bus','The legacy street has no commuter bus to catch');
  // Somebody without a shift is not given one.
  assert.equal(thuanAtMinato({name:'Harbour master'},shift.finish+5,false),false);
+});
+
+
+test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop',()=>{
+ configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ try{
+  // On shift either side of it she is behind her own counter.
+  assert.equal(plan(THUAN_WALK_START-5).place,'market');
+  assert.equal(plan(THUAN_WALK_END+5).place,'market');
+
+  const legs=[];
+  for(let m=THUAN_WALK_START;m<THUAN_WALK_END;m++){
+   const leg=thuanAfternoon(THUAN,m,false);
+   assert.ok(leg,'She is back in the shop at '+m);
+   if(legs.at(-1)?.activity!==leg.activity)legs.push(leg);
+   assert.equal(plan(m).activity,leg.activity,'The plan disagrees with the walk at '+m);
+  }
+  assert.equal(legs.length,4,'The walk is not four legs');
+  assert.match(legs[0].activity,/park/i);
+  assert.match(legs[3].activity,/sea wall/i);
+
+  // She goes to the park bench itself, not to the middle of the lawn.
+  assert.deepEqual(legs[0].target,[PARK_BENCH.stand[0],PARK_BENCH.stand[2]]);
+  // Only the legs where she has arrived somewhere let the activity system stop her,
+  // or she sits down on the first bench she passes and never reaches the park.
+  assert.deepEqual(legs.map(l=>l.place),['park','stroll','park','stroll']);
+  // and the sea wall legs are on the lawn, inside it, not out over the water.
+  for(const leg of legs.slice(2)){
+   const [x,z]=leg.target;
+   assert.ok(x>EAST_LAWN.minX&&x<EAST_LAWN.maxX,'Off the lawn at x='+x);
+   assert.ok(z>EAST_LAWN.minZ&&z<EAST_LAWN.maxZ,'Off the lawn at z='+z);
+   assert.ok(x>EAST_LAWN.maxX-6,'The sea wall leg is nowhere near the sea wall');
+  }
+
+  // Rain keeps her in, and nobody else gets her walk.
+  assert.equal(thuanAfternoon(THUAN,THUAN_WALK_START+10,true),null);
+  assert.equal(residentPlan(THUAN,THUAN_WALK_START+10,true,{},true).place,'market');
+  assert.equal(thuanAfternoon({name:'Aya'},THUAN_WALK_START+10,false),null);
+ }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+});
+
+test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
+ configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ try{
+  const seen=[];
+  for(let m=510;m<1290;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
+  const order=seen.map(s=>s.place);
+  // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
+  assert.deepEqual(order,['bus','market','park','stroll','park','stroll','market','izakaya','bus','away']);
+  // and every one of those is somewhere she can actually stand.
+  for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
+ }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
 });

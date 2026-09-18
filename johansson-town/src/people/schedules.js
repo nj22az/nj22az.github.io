@@ -47,7 +47,10 @@ for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
- const commuterMode=()=>world.townMode==='shopping-district'||state()?.townMode==='shopping-district';
+ // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
+ // the archived residential street is not.
+ const COMMUTER_LAYOUTS=['shopping-district','peninsula'];
+ const commuterMode=()=>COMMUTER_LAYOUTS.includes(world.townMode)||COMMUTER_LAYOUTS.includes(state()?.townMode);
  for(const person of world.people)person.g.userData.scheduled=true;
  const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||THUAN_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
