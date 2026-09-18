@@ -3,20 +3,37 @@ import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {localToWorld} from './landmark-lots.js';
 // Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.
-export function buildStorefront({parent,site,register,enter,label,placement}){
+/**
+ * @param {object} options
+ * @param {{width:number,depth:number,doorX:number}} [options.span] how big the shop is
+ *   and where its door is, in metres. The default is the frontage the canal-quarter lot
+ *   was cut for. The harbour street asks for one the size of the supplied interior, so
+ *   what you see through the glass is the shop you walk into rather than a smaller copy
+ *   of it — see WINDOW_FIT in sakura-shop.js.
+ */
+export function buildStorefront({parent,site,register,enter,label,placement,span}){
+ const width=span?.width??10,depth=span?.depth??8.2,doorX=span?.doorX??-2.5;
+ const half=width/2,mid=-depth/2,back=-depth;
  const x=placement?.x??site.side*7.55,z=placement?.z??site.z;
  const yaw=placement?.yaw??-site.side*Math.PI/2,scale=placement?.scale??1;
  const sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
  const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(x,0,z);group.rotation.y=yaw;group.scale.set(sx,sy,sz);parent.add(group);
  const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
- box([10,.18,8.2],[0,.09,-4.1],0xdad9c8,'plaster');box([10,3.7,.18],[0,1.85,-8.1],0xeee7d1,'plaster');
- for(const wall of [-5,5])box([.18,3.8,8.2],[wall,1.9,-4.1],0xd9d7c9,'plaster');
- box([10.5,.22,8.7],[0,3.9,-4.1],0xd5d0bd);box([10.3,.8,.45],[0,3.25,.12],0xb84e45);
- for(const y of [2.88,3.61])box([10.32,.10,.49],[0,y,.13],0xf5d791);
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS',wp.toArray(),6.0*sx,.62*sy,yaw,'#f6e8bb','#a6333c');
+ box([width,.18,depth],[0,.09,mid],0xdad9c8,'plaster');box([width,3.7,.18],[0,1.85,back-.09],0xeee7d1,'plaster');
+ for(const wall of [-1,1])box([.18,3.8,depth],[wall*(half+.09),1.9,mid],0xd9d7c9,'plaster');
+ box([width+.5,.22,depth+.5],[0,3.9,mid],0xd5d0bd);box([width+.3,.8,.45],[0,3.25,.12],0xb84e45);
+ for(const y of [2.88,3.61])box([width+.32,.10,.49],[0,y,.13],0xf5d791);
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f6e8bb','#a6333c');
  const glazing=createShopGlass();
- for(const [lx,width] of [[-4.2,1.5],[-2.5,1.7],[1.15,5.4]]){const pane=new THREE.Mesh(new THREE.PlaneGeometry(width,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*width/2,1.47,.055],0x879692);box([width,.08,.09],[lx,.15,.055],0x879692);}
- box([10,.1,.1],[0,2.82,.05],0x84938d);for(const lx of [-2.9,-2.1])box([.035,.5,.12],[lx,1.4,.12],0x465854);
+ // Glass to either side of the doorway, whatever the frontage is: a pane list authored
+ // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
+ const DOOR=1.9,JAMB=.15,panes=[[doorX,DOOR]];
+ for(const side of [-1,1]){
+  const outer=side*(half-JAMB),inner=doorX+side*DOOR/2,run=Math.abs(outer-inner);
+  if(run>.7)panes.push([(outer+inner)/2,run]);
+ }
+ for(const [lx,paneWidth] of panes){const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*paneWidth/2,1.47,.055],0x879692);box([paneWidth,.08,.09],[lx,.15,.055],0x879692);}
+ box([width,.1,.1],[0,2.82,.05],0x84938d);for(const lx of [doorX-.4,doorX+.4])box([.035,.5,.12],[lx,1.4,.12],0x465854);
  const cylinder=new THREE.CylinderGeometry(1,1,1,10);
  function round(radius,height,pos,color){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.55}));const m=new THREE.Mesh(cylinder,materials.get(color));m.scale.set(radius,height,radius);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;}
  // Stand-in shelves, for when the real interior has not arrived yet. They read as a
@@ -35,11 +52,11 @@ export function buildStorefront({parent,site,register,enter,label,placement}){
  }
  for(const lx of [-2.8,1.8]){const light=box([.45,.06,2.8],[lx,3.64,-2.3],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
  keep(box([2.0,1.0,.8],[-3.0,.5,-2.6],0xc4ac84,'bamboo'));keep(box([.55,.35,.45],[-3,1.18,-2.55],0xe1d8bb));
- const mat=box([1.7,.035,.8],[-2.5,.21,.55],0x777064);mat.userData.storeEntrance=true;
- const flag=box([.06,2.4,.42],[5.05,2.15,.22],0xb84e45);flag.userData.banner=true;
- hangNoren(group,-2.5,1.85,.07);
+ const mat=box([1.7,.035,.8],[doorX,.21,.55],0x777064);mat.userData.storeEntrance=true;
+ const flag=box([.06,2.4,.42],[half+.05,2.15,.22],0xb84e45);flag.userData.banner=true;
+ hangNoren(group,doorX,1.85,.07);
  site.standInFittings=standIn;
- const [ax,az]=localToWorld(x,z,yaw,scale,-2.5,.85);
+ const [ax,az]=localToWorld(x,z,yaw,scale,doorX,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  return group;
 }

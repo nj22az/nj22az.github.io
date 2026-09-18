@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
+import {peninsulaActive} from '../world/town-mode.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk} from './retail-clerk.js';
@@ -49,8 +50,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   * the window we show the fittings inside it and leave the building to the building.
   */
  const shell=()=>group.getObjectByName('sakura-building');
- /** What the interior scales to so it sits inside the shopfront's own walls. */
- const WINDOW_FIT=.7;
+ /**
+  * What the interior scales to behind the glass.
+  *
+  * One wherever the frontage is built to the interior's own measurements, so the shop
+  * you look into is the shop you walk into. On the street proper the frontage is the
+  * smaller one the shops either side of it leave room for, and the interior has to be
+  * fitted to its own window: without that its ends stand outside the side walls, in
+  * daylight, as two black slabs either side of the fascia.
+  */
+ const WINDOW_FIT=peninsulaActive()?1:.7;
  /**
   * Strip lights, so the aisles are legible from the pavement. A shop lit only by what
   * gets past its own ceiling is a dark hole, which is not what a konbini looks like
@@ -91,11 +100,6 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   street(parent,frontage){
    if(!parent||!frontage?.position)return false;
    parent.add(group);
-   // The supplied interior is 13.6m by 10.7m; the shopfront that stands for it on the
-   // street is 10m by 8.2m. That mismatch predates this, and it cannot be fixed by
-   // growing the facade — the izakaya is against its shoulder. So the shop is fitted
-   // to its own window instead: without this its ends stand outside the side walls,
-   // in daylight, as two black slabs either side of the fascia.
    const fit=WINDOW_FIT;
    group.scale.setScalar(fit);
    group.rotation.set(0,frontage.yaw,0);

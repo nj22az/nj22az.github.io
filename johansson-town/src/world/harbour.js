@@ -10,6 +10,8 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {buildStorefront} from './storefront.js?snappy=1';
+import {SAKURA_FRONT} from './interiors/sakura-layout.js';
+import {peninsulaActive} from './town-mode.js';
 
 import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
@@ -127,8 +129,23 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
-      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:-7.45,z:s.z,yaw:Math.PI/2,scale:1}});
-      s.x=-7.45;s.door=[-5.5,0,s.z+2.5];
+      const front=-7.45;
+      // Big enough for the shop that is actually inside it. The supplied interior is
+      // 13.7m by 10.8m and the frontage that stood for it is 10 by 8.2, so the shop
+      // seen through its own window had to be shrunk to fit and read as a model of
+      // itself. The full-size frontage only fits where the shops either side of it are
+      // switched off: on the street proper the izakaya is against its shoulder, which
+      // is why this was never simply made bigger. The door moves to the middle with it,
+      // where the interior's own door is.
+      if(peninsulaActive()){
+       const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
+       buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
+       s.x=front;s.door=[front+1.95,0,centre];
+       // Turned a quarter: the frontage runs along z and the shop runs back along -x.
+       obstacle(front-span.depth/2,centre,span.depth,span.width);return;
+      }
+      buildStorefront({parent:group,site:s,register,enter,label,placement:{x:front,z:s.z,yaw:Math.PI/2,scale:1}});
+      s.x=front;s.door=[-5.5,0,s.z+2.5];
       obstacle(-11.65,s.z,8.2,10);return;
     }
     throw Error('No street frontage defined for '+s.id);

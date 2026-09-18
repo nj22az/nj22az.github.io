@@ -21,6 +21,15 @@ const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 export const CLERK_CLEARANCE=.36;
 
 /**
+ * The shopfront that stands for this interior on the street, in metres.
+ *
+ * Measured off the supplied model rather than chosen: it spans x -6.86..6.87 and runs
+ * back from its glazing at z 3.91 to z -6.93. A frontage smaller than that can only
+ * show a shrunken copy of the shop through its own window.
+ */
+export const SAKURA_FRONT=Object.freeze({width:14.26,depth:11.0});
+
+/**
  * The shop was modelled with one 6.6m gondola lying across the middle of the floor,
  * parallel to the window and two metres inside the door, so you walked in at the back
  * of a shelf and every aisle ran across your path rather than away from you.

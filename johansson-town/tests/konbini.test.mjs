@@ -241,3 +241,16 @@ test('Thuan stands clear of the shelves she is serving',async()=>{
  assert.deepEqual(tight,[],'Shelf stand points leave her inside the shelving');
  assert.ok(CLERK_CLEARANCE>=.3,'and she is not modelled thinner than she walks');
 });
+
+test('the shopfront is cut for the shop that is actually inside it',async()=>{
+ const {SAKURA_LAYOUT,SAKURA_FRONT}=await import('../src/world/interiors/sakura-layout.js');
+ const {bounds,frontZ}=SAKURA_LAYOUT;
+ // The frontage stands for the interior on the street, and the interior is shown
+ // through its window unscaled. Anything narrower or shallower than the room can only
+ // show a shrunk copy of it, which is what it did.
+ assert.ok(SAKURA_FRONT.width>=bounds.maxX-bounds.minX,'The frontage is narrower than the shop');
+ assert.ok(SAKURA_FRONT.depth>=frontZ-bounds.minZ,'The frontage is shallower than the shop');
+ // and not so much wider that the room rattles around inside it.
+ assert.ok(SAKURA_FRONT.width-(bounds.maxX-bounds.minX)<1.2,'The frontage is a hangar');
+ assert.ok(SAKURA_FRONT.depth-(frontZ-bounds.minZ)<1.2,'The frontage is a hangar');
+});
