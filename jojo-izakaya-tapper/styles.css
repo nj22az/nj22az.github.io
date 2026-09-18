@@ -1,12 +1,12 @@
 :root {
-  --bg: #1a1216;
-  --surface: #2a1f22;
-  --surface-2: #3a2c30;
-  --fg: #f7ebe3;
-  --muted: #c4a8a0;
-  --subtle: #8a736c;
-  --accent: #c45c6a;
-  --border: color-mix(in oklab, #f7ebe3 14%, transparent);
+  --bg: #140c0a;
+  --surface: #2a1812;
+  --surface-2: #3d241c;
+  --fg: #f3e6d4;
+  --muted: #c9a07a;
+  --subtle: #8a6a52;
+  --accent: #c44536;
+  --border: color-mix(in oklab, #f3e6d4 14%, transparent);
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
 }
@@ -150,7 +150,7 @@ button:disabled {
 }
 
 .lives-dots span.on {
-  background: var(--fg);
+  background: var(--accent);
 }
 
 .icon-btn {
