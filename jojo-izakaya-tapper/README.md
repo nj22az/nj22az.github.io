@@ -1,6 +1,6 @@
 # JoJo Izakaya Tapper
 
-Arcade tapper behind the cedar at **居酒屋ジョジョ**, Nao's harbour izakaya in Johansson Town.
+Arcade tapper behind the cedar at **居酒屋ジョジョ**, Thuan's harbour izakaya (Sakura Shōten shopkeeper · night barkeep) in Johansson Town.
 
 Four bars. Hop with W/S or tap a lane, Space / Slide to send drinks, catch every empty glass. High score stays in this browser.
 
