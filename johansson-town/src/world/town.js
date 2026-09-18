@@ -1,7 +1,7 @@
 import {buildDiningStreet} from './dining-street.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
-import {buildPark} from './park.js?snappy=1';
+import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
@@ -171,6 +171,11 @@ export function createTown(options){
    // The port is north, the shops are west; the east is the green side of the town.
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,
     register:options.register,onAction:options.onAction});
+   // The lawn wears the supplied park's own grass, so the green and the mound it runs
+   // up to are one field. The park model is streamed, and the lawn reaches further
+   // north than the park's own radius, so it asks for the asset on its own account.
+   if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
+    await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }
   for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
     const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);

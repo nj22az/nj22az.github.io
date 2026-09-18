@@ -34,11 +34,16 @@ export const eastLawnAt=(x,z,r=0)=>
 const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
 /** Lighter than the treeline: these read as shrubs on grass, not rocks. */
 const CLUMP_LEAVES=[0x6d9159,0x7c9c60,0x618751];
+/** How many metres of lawn one tile of the park's grass covers. */
+const TURF_METRES=2.4;
+
+/** The green the lawn shows until the park's own grass arrives (see useParkGrass). */
+const BARE_TURF=0x6f8a55;
 
 /**
- * Mown grass, drawn rather than fetched: a flat green field reads as a billiard table
- * at this scale, and the town has no grass photograph to tile. Two passes of soft
- * blotches give the mower's stripes something to break up.
+ * Sand, drawn rather than fetched: nothing in the town supplies one, and a flat beach
+ * reads as a sheet of card at this scale. A couple of passes of soft blotches over a
+ * scratch of grain is enough at walking height.
  */
 function groundTexture(base,marks,strokes){
  if(typeof document==='undefined')return null;
@@ -69,9 +74,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,register=()=>{}
  const group=new THREE.Group();group.name='East lawn, seawall and beach';parent.add(group);
  const {wall,beach}=EAST_LAWN;
  const width=EAST_LAWN.maxX-EAST_LAWN.minX,depth=EAST_LAWN.maxZ-EAST_LAWN.minZ;
- const turf=groundTexture('#6f8a55',[['#748e59',300,7],['#697f4f',260,8],['#7b9460',180,5]],'#647c4c');
- if(turf)turf.repeat.set(width/1.6,depth/1.6);
- const lawn=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),new THREE.MeshStandardMaterial({color:turf?0xffffff:0x6f8a55,map:turf,roughness:1}));
+ const lawn=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),new THREE.MeshStandardMaterial({color:BARE_TURF,roughness:1}));
  lawn.name='east-lawn-grass';lawn.position.set((EAST_LAWN.minX+EAST_LAWN.maxX)/2,.01,(EAST_LAWN.minZ+EAST_LAWN.maxZ)/2);
  lawn.receiveShadow=!!shadows;group.add(lawn);
 
@@ -115,30 +118,53 @@ export function buildEastLawn({parent,colliders=[],shadows=false,register=()=>{}
  }
  colliders.push({id:'east-lawn-trees',x:(first+last)/2,z:treeZ+.35,w:last-first+2.2,d:1.5,height:5.4});
 
- // Clumps over the open green, so it reads as ground rather than a carpet. They are
- // kept off the park mound and off the line people walk from the pavement to it.
+ // Shrubs banked against the two closed edges, so the green itself stays open. They
+ // are kept off the park mound and off the lines people walk to reach it.
  const clumps=[],park={minX:6.6,maxX:25,minZ:-33,maxZ:-14};
  let seed=8817;const random=()=>(seed=seed*1103515245+12345&0x7fffffff)/0x7fffffff;
- for(let i=0;i<110;i++){
+ for(let i=0;i<150&&clumps.length<52;i++){
   const x=EAST_LAWN.minX+1.6+random()*(wall.x-EAST_LAWN.minX-3.4),z=EAST_LAWN.minZ+1.6+random()*(treeZ-EAST_LAWN.minZ-3.6);
   if(x>park.minX&&x<park.maxX&&z>park.minZ&&z<park.maxZ)continue;
   if(Math.abs(z+36)<2.2||Math.abs(z+18)<2.2)continue;
-  clumps.push({x,z,size:.42+random()*.36,tint:Math.floor(random()*CLUMP_LEAVES.length)});
+  if(wall.x-x>7&&treeZ-z>7)continue;
+  clumps.push({x,z,size:.5+random()*.42,tint:Math.floor(random()*CLUMP_LEAVES.length)});
  }
+ // A white base so the park's leaf texture, once it arrives, is the colour rather than
+ // a tint over one; until then the per-instance greens stand in for it.
+ const clumpMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1});
+ const shrubs=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),clumpMat,Math.max(1,clumps.length));
  if(clumps.length){
-  // A white base so the per-instance colour is the colour, not a tint on top of one.
-  const clumpMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1});
-  const bush=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),clumpMat,clumps.length),dummy=new THREE.Object3D();
-  const colour=new THREE.Color();
+  const dummy=new THREE.Object3D(),colour=new THREE.Color();
   clumps.forEach((c,i)=>{
    dummy.position.set(c.x,c.size*.5,c.z);dummy.scale.set(c.size*1.15,c.size*.95,c.size*1.05);
-   dummy.rotation.set(0,i*1.9,0);dummy.updateMatrix();bush.setMatrixAt(i,dummy.matrix);
-   bush.setColorAt(i,colour.setHex(CLUMP_LEAVES[c.tint]));
+   dummy.rotation.set(0,i*1.9,0);dummy.updateMatrix();shrubs.setMatrixAt(i,dummy.matrix);
+   shrubs.setColorAt(i,colour.setHex(CLUMP_LEAVES[c.tint]));
   });
-  bush.name='East lawn planting';bush.castShadow=!!shadows;bush.receiveShadow=!!shadows;group.add(bush);
+  shrubs.name='East lawn planting';shrubs.castShadow=!!shadows;shrubs.receiveShadow=!!shadows;group.add(shrubs);
  }
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
- return {group,lawn,shore};
+ /**
+  * Lay the supplied park's own grass and leaf over the green, so the lawn and the mound
+  * it runs up to are one field rather than two parks meeting along an edge. The model
+  * is fetched by the detail stream, so this is called again once it arrives; until then
+  * the lawn is the flat green above.
+  * @returns {boolean} whether the grass was there to use.
+  */
+ const useParkGreenery=({grass,bush}={})=>{
+  if(!grass?.image)return false;
+  const turf=grass.clone();turf.needsUpdate=true;
+  turf.wrapS=turf.wrapT=THREE.RepeatWrapping;turf.repeat.set(width/TURF_METRES,depth/TURF_METRES);
+  turf.anisotropy=Math.max(turf.anisotropy,4);
+  lawn.material.map=turf;lawn.material.color.setHex(0xffffff);lawn.material.needsUpdate=true;
+  if(bush?.image){
+   // The park's shrubs are one merged clump, so the lawn borrows the leaf rather than
+   // the geometry. The per-instance greens go: the texture is the colour now.
+   clumpMat.map=bush;clumpMat.needsUpdate=true;
+   shrubs.instanceColor=null;
+  }
+  return true;
+ };
+ return {group,lawn,shore,shrubs,useParkGreenery};
 }

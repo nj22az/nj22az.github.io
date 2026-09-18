@@ -5,6 +5,22 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {PARK,PARK_BENCH,parkHeight,activePark,parkBench} from './park-layout.js';
 let source=null;
+/** The lawn and the shrubs in the supplied park. Its meshes are named after materials. */
+const PARK_TURF='mtParkGround00t_mat',PARK_BUSH='mtParkBush00t_mat';
+/**
+ * The park's own planting, for ground outside the park that should match it — the east
+ * lawn runs right up to the mound, and two different greens meeting along that edge
+ * looked like two different parks. Both are null until the model has been fetched.
+ */
+export function parkFoliage(){
+ const found={grass:null,bush:null};
+ source?.traverse(o=>{
+  if(!o.isMesh)return;const name=o.material?.name||o.name;
+  if(name===PARK_TURF)found.grass??=o.material?.map||null;
+  else if(name===PARK_BUSH)found.bush??=o.material?.map||null;
+ });
+ return found;
+}
 export async function preloadPark(){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
  try{const r=await fetch(assetURL('models/park/park-spring.glb'),{signal:controller.signal});if(!r.ok)throw Error(r.status);source=prepareParkScenery((await new GLTFLoader().parseAsync(await r.arrayBuffer(),'')).scene);return true;}

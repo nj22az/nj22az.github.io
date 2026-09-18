@@ -1,7 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import {readFile} from 'node:fs/promises';
 import {installDOM} from './fixtures.mjs';
+import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK} from '../src/world/park-layout.js';
@@ -59,4 +61,30 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const ray=new THREE.Raycaster();
  ray.set(new THREE.Vector3((EAST_LAWN.beach.profile[1][0]+EAST_LAWN.beach.profile[2][0])/2,6,0),new THREE.Vector3(0,-1,0));
  assert.equal(ray.intersectObject(shore).length,1,'No sand above the beach');
+});
+
+test('the lawn wears the supplied park\u2019s own grass rather than a green of its own',async()=>{
+ installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
+ const original=fetch;
+ globalThis.fetch=async url=>String(url).startsWith('blob:')?original(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
+ try{
+  const bare=buildEastLawn({parent:new THREE.Group(),colliders:[]});
+  // Before the model arrives the lawn is a plain green, and says so rather than
+  // quietly claiming it dressed itself.
+  assert.equal(bare.useParkGreenery(parkFoliage()),false);
+  assert.equal(bare.lawn.material.map,null);
+
+  assert.equal(await preloadPark(),true);
+  const {grass,bush}=parkFoliage();
+  assert.ok(grass?.image,'The park model carries no lawn texture');
+  assert.ok(bush?.image,'The park model carries no shrub texture');
+  const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
+  assert.equal(lawn.useParkGreenery({grass,bush}),true);
+  assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');
+  assert.equal(lawn.lawn.material.color.getHex(),0xffffff,'A tint over the park\u2019s own colour');
+  assert.notEqual(lawn.lawn.material.map,grass,'The lawn tiles the park\u2019s own texture object');
+  assert.ok(lawn.lawn.material.map.repeat.x>1&&lawn.lawn.material.map.repeat.y>1,'One tile stretched over the whole green');
+  assert.equal(lawn.shrubs.material.map,bush,'The shrubs kept a colour of their own');
+  assert.equal(lawn.shrubs.instanceColor,null,'Per-instance greens still tint the park leaf');
+ }finally{globalThis.fetch=original;}
 });
