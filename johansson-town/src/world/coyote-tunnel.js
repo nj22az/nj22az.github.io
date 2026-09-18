@@ -23,6 +23,12 @@ export const TUNNEL=Object.freeze({
  z:FOREST_EDGE.roadEndZ+3.4,
  width:21,
  height:10.6,
+ /** Where the rock's sides stop being vertical and the crown starts. */
+ shoulder:4.3,
+ /** The face sits at the road's level, a little below it so no gap shows. */
+ base:-.35,
+ /** How thick the rock is, front to back. */
+ depth:2.4,
  /** The painted opening, in metres. Comfortably wider than the road. */
  archWidth:8.4,
  archHeight:7.1
@@ -38,10 +44,16 @@ function archTexture(){
  const ctx=canvas.getContext('2d');
  const floor=h-6;
 
- // The rock it is painted on, so the edges of the plane disappear into the cliff.
- ctx.fillStyle='#6d6a60';ctx.fillRect(0,0,w,h);
+ // Nothing outside the painting. Filling the canvas with rock left the plane's own
+ // rectangle showing against the cliff: the paint is unlit and the rock is not, so the
+ // two greys never matched at any hour.
 
- const arch=(inset,fill)=>{
+ // The opening's outline: straight jambs and a half-round head, as a path on its own
+ // so it can be filled or clipped to. It used to be fill-only, and the dark inside was
+ // laid in with a source-atop gradient over the whole canvas — which is every pixel,
+ // the rock included, so the arch never appeared and the painting was one dark
+ // rectangle the size of its plane.
+ const archPath=inset=>{
   const left=inset,right=w-inset,top=inset*1.5+22,radius=(right-left)/2;
   ctx.beginPath();
   ctx.moveTo(left,floor);
@@ -49,17 +61,19 @@ function archTexture(){
   ctx.arc(left+radius,top+radius,radius,Math.PI,0);
   ctx.lineTo(right,floor);
   ctx.closePath();
-  ctx.fillStyle=fill;ctx.fill();
  };
+ const arch=(inset,fill)=>{archPath(inset);ctx.fillStyle=fill;ctx.fill();};
 
  // A pale rim first: the painter went round the opening in whitewash.
  arch(16,'#cfc7b0');
  arch(26,'#241f21');
+
+ ctx.save();
+ archPath(26);ctx.clip();
  // The dark is not flat — it fades as it "recedes".
  const depth=ctx.createLinearGradient(0,floor,0,h*.26);
  depth.addColorStop(0,'#443a35');depth.addColorStop(.45,'#1b1719');depth.addColorStop(1,'#0d0c0e');
- ctx.save();arch(26,'#000');ctx.globalCompositeOperation='source-atop';
- ctx.fillStyle=depth;ctx.fillRect(0,0,w,h);ctx.restore();
+ ctx.fillStyle=depth;ctx.fillRect(0,0,w,h);
 
  // The road carried on into the dark. Two kerbs converging, and a dashed centre line
  // whose dashes shorten as they go, which is the detail that sells it from the road.
@@ -78,6 +92,7 @@ function archTexture(){
   ctx.beginPath();ctx.moveTo(w/2,y);ctx.lineTo(w/2,y-length);ctx.stroke();
   y-=length+length*.85;
  }
+ ctx.restore();
 
  const texture=new THREE.CanvasTexture(canvas);
  texture.colorSpace=THREE.SRGBColorSpace;
@@ -98,8 +113,19 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  parent.add(group);
 
  const rock=new THREE.MeshStandardMaterial({color:0x6d6a60,roughness:.97,flatShading:true});
- const face=new THREE.Mesh(new THREE.BoxGeometry(TUNNEL.width,TUNNEL.height,2.4),rock);
- face.position.set(0,TUNNEL.height/2-.35,1.2);
+ // A headland rather than a slab. Square across the top it read as a wall with a hole
+ // painted on it; the crown is a half-period of a sine over the shoulders, which gives
+ // the rock a skyline and leaves the painted arch sitting under a brow.
+ const profile=new THREE.Shape();
+ const half=TUNNEL.width/2,crown=TUNNEL.height+TUNNEL.base-TUNNEL.shoulder;
+ profile.moveTo(-half,TUNNEL.base);
+ profile.lineTo(-half,TUNNEL.shoulder);
+ for(let i=1;i<=28;i++){
+  const t=i/28;profile.lineTo(-half+TUNNEL.width*t,TUNNEL.shoulder+crown*Math.sin(Math.PI*t));
+ }
+ profile.lineTo(half,TUNNEL.base);
+ profile.closePath();
+ const face=new THREE.Mesh(new THREE.ExtrudeGeometry(profile,{depth:TUNNEL.depth,bevelEnabled:false,curveSegments:1}),rock);
  face.castShadow=shadows;face.receiveShadow=true;
  group.add(face);
 
@@ -114,19 +140,19 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
 
  const paint=new THREE.Mesh(
   new THREE.PlaneGeometry(TUNNEL.archWidth,TUNNEL.archHeight),
-  new THREE.MeshBasicMaterial({map:archTexture(),toneMapped:true})
+  new THREE.MeshBasicMaterial({map:archTexture(),toneMapped:true,transparent:true})
  );
  paint.name='Painted tunnel mouth';
  // Proud of the rock by a few centimetres. It is paint, so it is not lit like rock —
  // an unlit material keeps the black of the "opening" black at every hour, which is
  // exactly the flatness that gives it away when you stand close.
- paint.position.set(0,TUNNEL.archHeight/2-.35,-.03);
+ paint.position.set(0,TUNNEL.archHeight/2+TUNNEL.base,-.03);
  // A plane faces +z, which here is into the rock. It is painted on the town side.
  paint.rotation.y=Math.PI;
  group.add(paint);
 
  // The whole face stops you, arch and all.
- colliders.push({id:'painted-tunnel',x:TUNNEL.x,z:TUNNEL.z+1.2,w:TUNNEL.width,d:2.4,height:TUNNEL.height});
+ colliders.push({id:'painted-tunnel',x:TUNNEL.x,z:TUNNEL.z+TUNNEL.depth/2,w:TUNNEL.width,d:TUNNEL.depth,height:TUNNEL.height});
 
  if(register){
   const anchor=new THREE.Object3D();
