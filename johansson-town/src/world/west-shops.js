@@ -2,32 +2,18 @@ import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
+import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
+import {GROUND_LAYER} from './ground-layers.js';
 
-/**
- * The shops on the west pavement.
- *
- * The peninsula switched every shop off while the core was sorted out, and they were
- * meant to come back one at a time. The konbini came back first and grew to fourteen
- * metres; the izakaya came back next, two doors up. This is the third: the bookshop
- * that stands between them, so that Thuan walks out of her own shop, past Aya's, and
- * into Minato for a beer — and so that "next to the bookshop" means something again.
- *
- * The old street built it as an alley shop, a recessed door in the side of the
- * supplied night-market kit. That kit is not here, so it gets a building of its own:
- * plastered flank walls, a tiled pitch, a glazed frontage onto the pavement and the
- * same sliding door the alley units use. The interior is untouched — Aya's shelves,
- * Reiko's press and the reading chair are built by buildCompactShop from the room in
- * business-layout.js, which is a set of dimensions and does not care where the
- * building stands.
+/** West-facing business row: the bookshop, press and workshop share one shell.
+ * The interior dimensions fit this building and the lane beside Minato stays open.
  */
 
 /** Front faces sit here, a hand's width clear of the west kerb. */
 export const WEST_FRONT=-7.8;
 
 export const WEST_SHOPS=Object.freeze({
- // On its own door, which the alley layout already put on this pavement at z -2.89.
- // Minato's north gable stops at -6.10, half a metre short of this frontage.
- frontrow:Object.freeze({z:-2.89,width:6.2,depth:4.6}),
+ frontrow:BOOKSHOP_WORKSHOP_PLOT,
 });
 
 /**
@@ -50,6 +36,9 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
   m.position.set(...pos);m.castShadow=!!shadows;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;
  };
  const HEIGHT=5.2;
+ // A visible route from the pavement to the open yard between these buildings.
+ const passage=solid([WEST_FRONT-back+2,.06,2.4],[(WEST_FRONT+back)/2,GROUND_LAYER.apron-.03,-4.6],'concrete',0x8e8a7c);
+ passage.name='Bookshop–Minato passage';
  // Shell. The frontage faces east onto the pavement, so the building runs back in -x.
  //
  // Everything here is darker than the colour it stands for. This town's sun and grade

@@ -1,12 +1,13 @@
 import {sakuraStock,saleProblem,sellToSakura} from '../commerce/sakura-economy.js';
 import {WORKSHOP_MODELS,workshopModel,modelTicket} from './catalogue.js';
 import {printProblem,startPrint,collectPrint,canSellAtSakura} from './production.js';
+import {isWorkshopSite} from '../world/businesses.js';
 
 export function createWorkshopUI({state,show,close,save,say,note,getContext,getMinutes,preview,body,modal}){
  let embedded=null;
- const inWorkshop=()=>getContext().inside==='form3d';
+ const inWorkshop=()=>isWorkshopSite(getContext().inside);
  const selection=()=>workshopModel(state.workshop.selected)||WORKSHOP_MODELS[0];
- function unavailable(){show('Workshop','Use the printer at Kenji & Tetsuo Repairs.',[['Back',close]]);}
+ function unavailable(){show('Workshop','Use the printer at the workshop bench.',[['Back',close]]);}
  function choose(model,next){state.workshop.selected=model.id;save();next();}
  function openTool(tool){
   if(!inWorkshop()){unavailable();return;}

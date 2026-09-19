@@ -10,7 +10,7 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {BUS_STATION} from '../world/bus-station.js';
 import {PARK_BENCH} from '../world/park-layout.js';
 import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
-import {shoppingDistrictActive} from '../world/town-mode.js';
+import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
@@ -122,6 +122,7 @@ export function visitsMarket(profile,minutes,state=null){
 }
 export const ramenOpen=m=>inTimeRange(m,540,1260);
 export function visitsRamen(profile,minutes){
+ if(peninsulaActive())return false; // This layout has no ramen building to enter.
  const visit=RAMEN_VISITS[profile.name];
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
 }
@@ -168,7 +169,7 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Nao')return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'running Minato Izakaya'}:bus('travelling to the next shift');
  if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a shopping errand at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
- if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};
+ if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return profile.workSite==='warehouse'?{place:'work',target:profile.work,activity:'checking the quay stores'}:{place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};
  if(profile.name==='Thuan'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
