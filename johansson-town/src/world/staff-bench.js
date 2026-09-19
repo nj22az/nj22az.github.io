@@ -33,13 +33,17 @@ export const STAFF_BENCH=Object.freeze({
 /**
  * The path to it. Peninsula only, because the yard and the bench are.
  *
- * It runs clear of the shop's north wall by a hand's width, turns down the back at
- * x -20.4, and ends a foot past the bench. Nothing beyond it: the point of a service
- * path round the back is that it goes one place.
+ * It runs clear of the shop's north wall by a hand's width, turns down the back, and
+ * ends a foot past the bench. Nothing beyond it: the point of a service path round the
+ * back is that it goes one place.
+ *
+ * The turn is at x -19.9 so the paving reaches to within 15cm of the back wall and the
+ * bench stands on it. Half a metre further out and the bench sat on gravel with the
+ * path stopping short of it, which reads as a path to near the bench.
  */
 export const STAFF_YARD_ROUTE=Object.freeze({
  id:'staff-yard',peninsula:true,width:2.6,surface:'stone',
- points:Object.freeze([[-8.6,-18.7],[-20.4,-18.7],[-20.4,STAFF_BENCH.z]]),
+ points:Object.freeze([[-8.6,-18.7],[-19.9,-18.7],[-19.9,STAFF_BENCH.z]]),
 });
 
 /**
