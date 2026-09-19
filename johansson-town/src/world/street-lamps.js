@@ -22,13 +22,15 @@ export const POLE_HEIGHT=4.2;
  * crossing at -18, and utility poles at z=-32,11,17.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // Shopping street — 8 arm lamps
- {x:-7.35,z:-26,side:'west'},
- {x:0.6,z:-26,side:'east'},
+ // Shopping street — 8 arm lamps. Keep clear of shop doors:
+ // Front-Row Books door ~z=1.6 (plot width 8.8 → avoid z in [-2.8, 6.0] on west),
+ // Sakura door ~z=-28.5 (keep ≥3.5 m).
+ {x:-7.35,z:-23.5,side:'west'},
+ {x:0.6,z:-23.5,side:'east'},
  {x:-7.35,z:-12,side:'west'},
  {x:0.6,z:-12,side:'east'},
- {x:-7.35,z:2,side:'west'},
- {x:0.6,z:2,side:'east'},
+ {x:-7.35,z:8.5,side:'west'},
+ {x:0.6,z:8.5,side:'east'},
  {x:-7.35,z:15,side:'west'},
  {x:0.6,z:15,side:'east'},
  // Quay approach — 4, clear of harbour lanterns at [-17.1,-48]/[16.3,-47.2]
@@ -39,13 +41,22 @@ export const STREET_LAMP_PLACEMENTS=Object.freeze([
 ]);
 
 const UTILITY_POLE_Z=new Set([-32,11,17]);
+/** Known peninsula shop door Z centers (must stay clear on the shop-side footway). */
+export const SHOP_DOOR_CLEARANCE=Object.freeze([
+ {id:'frontrow',z:1.6,halfWidth:4.4,side:'west'},
+ {id:'market',z:-28.5,halfWidth:2.2,side:'west'},
+]);
 
-/** Sanity: placements stay off junctions and existing utility poles. */
+/** Sanity: placements stay off junctions, utility poles, and shop doorways. */
 export function placementsClearOfInfrastructure(placements=STREET_LAMP_PLACEMENTS){
  for(const p of placements){
   if(UTILITY_POLE_Z.has(p.z))return false;
   if(Math.abs(p.z-SHOP_CROSSING_Z)<1.2)return false;
   if(Math.abs(p.z+18)<1.2)return false;
+  for(const door of SHOP_DOOR_CLEARANCE){
+   if(p.side!==door.side)continue;
+   if(Math.abs(p.z-door.z)<door.halfWidth+1.2)return false;
+  }
  }
  return true;
 }

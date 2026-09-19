@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {
- buildStreetLamps,STREET_LAMP_PLACEMENTS,placementsClearOfInfrastructure,
+ buildStreetLamps,STREET_LAMP_PLACEMENTS,placementsClearOfInfrastructure,SHOP_DOOR_CLEARANCE,
  LAMP_BASE_GLOW,LAMP_GLOW_SCALE,LAMP_EMISSIVE,POLE_HEIGHT,
 } from '../src/world/street-lamps.js';
 import {lanternGlow} from '../src/render/dusk.js';
@@ -73,4 +73,19 @@ test('harbour wires street lamps into the dusk tick without new PointLights',asy
  assert.match(mod,/pointLights=0/);
  assert.match(mod,/dynamicProp=true/);
  assert.match(mod,/applyCelShading/);
+});
+
+test('no west-footway pole sits in a shop doorway band',()=>{
+ assert.ok(placementsClearOfInfrastructure());
+ for(const door of SHOP_DOOR_CLEARANCE){
+  for(const p of STREET_LAMP_PLACEMENTS){
+   if(p.side!==door.side)continue;
+   assert.ok(
+    Math.abs(p.z-door.z)>=door.halfWidth+1.2,
+    `lamp z=${p.z} too close to ${door.id} door z=${door.z}`
+   );
+  }
+ }
+ // Regression: the live bug was west lamp at z=2 on Front-Row Books (z=1.6)
+ assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>p.side==='west'&&Math.abs(p.z-1.6)<5.6));
 });
