@@ -27,6 +27,14 @@ test('the actual Meshy rig turns its head smoothly, keeps its body still and ret
   assert.ok(actor.customerGaze.yaw>.5&&actor.customerGaze.yaw<=.65);assert.ok(entity.quaternion.equals(body)&&entity.position.equals(position));assert.ok(head.quaternion.toArray().every(Number.isFinite));
   entity.userData.lookTarget=entity.localToWorld(new T.Vector3(0,1.6,2)).toArray();for(let i=0;i<120;i++)controller.update(1/60);assert.ok(Math.abs(actor.customerGaze.yaw)<.001,'The gaze relaxes for someone behind her');
   const idleFrames=Math.round(actor.actions.get('Idle_Neutral').getClip().duration*60);
-  delete entity.userData.lookTarget;for(let i=0;i<idleFrames;i++)controller.update(1/60);const rest=head.quaternion.clone();for(let i=0;i<idleFrames*2;i++)controller.update(1/60);assert.ok(head.quaternion.angleTo(rest)<.001,'No accumulated head rotation across complete idle loops');
+  delete entity.userData.lookTarget;for(let i=0;i<idleFrames;i++)controller.update(1/60);
+  // What is under test here is drift: one take, played round and round, must come back
+  // to the same head rotation. She now also moves between alternate takes of the idle,
+  // which changes the head on purpose, so hold her on this one for the measurement.
+  actor.idleHold=Number.MAX_SAFE_INTEGER;
+  const rest=head.quaternion.clone(),take=actor.current;
+  for(let i=0;i<idleFrames*2;i++)controller.update(1/60);
+  assert.equal(actor.current,take,'The idle take changed while drift was being measured');
+  assert.ok(head.quaternion.angleTo(rest)<.001,'No accumulated head rotation across complete idle loops');
  }finally{globalThis.fetch=previous;}
 });

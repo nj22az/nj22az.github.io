@@ -20,6 +20,8 @@ import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
+/** Alternate takes of an idle, tried in order after the unsuffixed one. */
+const IDLE_TAKES=Object.freeze(['','.1','.2']);
 const SOURCES=[...LOW_POLY,'yuri-merged'];
 const loaded=new Map();let pending=null;
 const modelPending=new Map();
@@ -128,6 +130,13 @@ export function createLocalCharacters({shadows=false}={}){
     }
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
+    // A cheap repeatable sequence per actor: idle variation is cosmetic, but two
+    // people shifting their weight on the same frame is worse than neither doing it.
+    {
+      let seed=(Math.imul(actors.length+11,2654435761)^0x9e3779b9)>>>0;
+      actor.idleNoise=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+      actor.idleFamily=null;actor.idleTake='';actor.idleHold=0;
+    }
     actor.floorOffset=model.position.y;actor.seatSupport=null;
     try{
     if(actions.has('Sit')){
@@ -192,7 +201,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
-      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink'].includes(entity.userData.socialPose);
+      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink','Sleep'].includes(entity.userData.socialPose);
       const chairTransition=actor.chairMotion&&Number.isFinite(entity.userData.chairBlend);
       actor.seatBlend=chairTransition?THREE.MathUtils.clamp(entity.userData.chairBlend,0,1):THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
       if(seated)actor.lastSeatHeight=entity.userData.seatHeight;
@@ -221,8 +230,24 @@ export function createLocalCharacters({shadows=false}={}){
       }
       const travelling=actor.speed>3.5?'Run':actor.moving?(actor.strolling&&actions.has('Stroll')?'Stroll':'Walk'):'Idle_Neutral';
       const requested=(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||travelling;
-      const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
-      if(!clip)continue;
+      const family=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
+      if(!family)continue;
+      // Standing still is not one pose held for eleven hours.
+      //
+      // Where a rig carries alternate takes of an idle -- 'CounterIdle', 'CounterIdle.1',
+      // 'CounterIdle.2' -- move between them every few seconds instead of looping the
+      // first one all day. Each take stands with the weight somewhere else and breathes
+      // on its own cadence, so the counter stops reading as a photograph of a shopkeeper.
+      let clip=family;
+      if(actions.has(family+'.1')){
+        if(actor.idleFamily!==family){actor.idleFamily=family;actor.idleTake=family;actor.idleHold=6+actor.idleNoise()*7;}
+        if((actor.idleHold-=dt)<=0){
+          const takes=IDLE_TAKES.map(suffix=>family+suffix).filter(name=>actions.has(name)&&name!==actor.idleTake);
+          actor.idleTake=takes[Math.floor(actor.idleNoise()*takes.length)]||family;
+          actor.idleHold=7+actor.idleNoise()*9;
+        }
+        clip=actor.idleTake;
+      }else actor.idleFamily=null;
       if(chairTransition){
         // The chair controller owns the weight transfer, including reversal
         // for standing. Do not run a second, shorter mixer fade over it.
@@ -230,7 +255,15 @@ export function createLocalCharacters({shadows=false}={}){
         actions.get('Sit').setEffectiveWeight(blend);actions.get('Idle_Neutral').setEffectiveWeight(1-blend);actor.current=blend>.5?'Sit':'Idle_Neutral';
       }else{
         if(actor.chairTransition){mixer.stopAllAction();actor.current=null;}
-        if(actor.current!==clip){const previous=actions.get(actor.current),next=actions.get(clip);next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();if(previous)previous.crossFadeTo(next,.24,false);actor.current=clip;}
+        if(actor.current!==clip){
+          const previous=actions.get(actor.current),next=actions.get(clip);
+          // Shifting weight takes longer than changing what you are doing, and a slow
+          // fade is also what keeps the hands from stepping between the two takes.
+          const settling=!!actor.idleFamily&&!!actor.current&&actor.current.startsWith(actor.idleFamily);
+          next.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).play();
+          if(previous)previous.crossFadeTo(next,settling?.6:.24,false);
+          actor.current=clip;
+        }
       }
       actor.chairTransition=chairTransition;
       const locomotion=actions.get(actor.current);

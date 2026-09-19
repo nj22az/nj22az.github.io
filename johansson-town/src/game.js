@@ -60,7 +60,13 @@ const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=70
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;// The near plane sets how much of the depth buffer the first metre eats, and at 7cm
+// it was eating most of it: a phone could not tell two centimetres apart at the far
+// end of the street, and the harbour came back from one as flashing texture. Nothing
+// gets within 15cm of the eye -- collision keeps the camera a third of a metre off
+// any wall -- so the tighter plane bought nothing and cost better than twice the
+// precision everywhere else.
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.15,220);
 const bands=new Uint8Array([48,48,48,255,115,115,115,255,184,184,184,255,255,255,255,255]),gradient=new THREE.DataTexture(bands,4,1,THREE.RGBAFormat);gradient.needsUpdate=true;gradient.magFilter=THREE.NearestFilter;gradient.minFilter=THREE.NearestFilter;
 const outlineMat=new THREE.MeshBasicMaterial({color:0x252821,side:THREE.BackSide}),boxCache=new Map();
 const toon=(c,map=null)=>new THREE.MeshStandardMaterial({color:c,map,roughness:.82});
@@ -718,7 +724,7 @@ window.__JOHANSSON_POSE__={
  get x(){return player.position.x;},get y(){return player.position.y;},get z(){return player.position.z;},
  get yaw(){return yaw;},get pitch(){return pitch;},get inside(){return current?.id||null;},
  get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
- get bus(){const run=world.bus;return run?{phase:run.phase,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
+ get bus(){const run=world.bus;return run?{phase:run.phase,service:run.service??null,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
  get doors(){return (world.shopDoors||[]).map(d=>+d.amount.toFixed(3));},
  /** The town clock, in minutes past midnight, so a routine can be watched against it. */
  get minutes(){return Math.round(minutes);},
@@ -727,6 +733,24 @@ window.__JOHANSSON_POSE__={
  get transit(){return world.people.filter(p=>['bus','away','station'].includes(p.g.userData.place))
   .map(p=>p.profile.name+':'+p.g.userData.place+(p.g.visible?'':' (gone)'));},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
+};
+// What each of the cast is actually playing. Which animation a body has chosen is
+// invisible from a screenshot -- a weight shift and a loop look identical in a still --
+// so there is otherwise no way to check from outside that anyone is using more than
+// the first take of an idle.
+window.__JOHANSSON_CAST__={
+ get takes(){return (characters?.actors||[]).map(a=>({
+  name:a.entity?.userData?.name||'?',clip:a.current||null,
+  moving:!!a.moving,speed:+(a.speed||0).toFixed(2)}));},
+};
+// Sakura's books, live rather than as last saved. The shop's day is settled on the
+// town clock whether or not anybody is standing in it, and the saved copy lags, so
+// there was no way to see from outside whether the meter had actually run.
+window.__JOHANSSON_SHOP__={
+ get books(){const shop=activities?.state?.sakura;return shop?{
+  cash:shop.cash,sales:shop.sales,result:shop.profit,overheads:shop.overheads,
+  drawings:shop.drawings,stockSpent:shop.stockSpent,settledDay:shop.settledDay,
+  entries:shop.journal.length,kinds:[...new Set(shop.journal.map(r=>r.kind))]}:null;},
 };
 for(const detail of world.details||[])detailStream.add(detail);
 characters.streamDetails(detailStream,invalidateDetails,()=>player.position);

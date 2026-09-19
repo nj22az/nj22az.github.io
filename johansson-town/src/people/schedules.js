@@ -9,6 +9,7 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {STAFF_BENCH} from '../world/staff-bench.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 export const DIALOGUE={
@@ -118,10 +119,18 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?commuterPhase(v,minutes):'legacy';
+   const phase=transit?commuterPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
+   // Somebody who was already away when the game loaded is away.
+   //
+   // The hold below exists so that nobody blinks out at the kerb while you are
+   // watching them, and there is nothing to preserve for a person you have never seen.
+   // Held from the first frame, they spawn on the plan's target instead -- which for
+   // 'away' is the far end of the bus road -- and stand in a clump at the mouth of the
+   // tunnel until the next service, which is now as much as two and a half hours.
+   if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
    const holdForBus=transit&&phase==='away'&&!boarded(g);
    if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
@@ -134,6 +143,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }
    const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
+   // Off the bench: the break is over, or a customer is worth waking up for.
+   if(plan.place!=='nap'&&g.userData.napping){
+    delete g.userData.napping;delete g.userData.seatHeight;delete g.userData.sleeping;
+    delete g.userData.socialPose;routes.delete(g);
+   }
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
    if(holdForBus){g.visible=true;target=BUS_STATION.queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the Harbour Line';}
@@ -169,6 +183,21 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(!g.userData.indoors)g.userData.justArrived=true;
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
     g.userData.activity=tag==='home'?homeRoutine(v,minutes).activity+' at home':plan.activity;
+   }else if(tag==='nap'){
+    // She sits down when she gets there, and is asleep for as long as the leg lasts.
+    //
+    // The entity stays on the ground at the seat: models.js puts the pelvis on the
+    // cushion itself from the rig's own measured seat support, so moving the body up
+    // here would sit her in the air above her own bench.
+    if(arrived()){
+     if(!g.userData.napping){
+      g.userData.napping=true;
+      g.position.set(STAFF_BENCH.seat[0],groundHeight(...STAFF_BENCH.seat),STAFF_BENCH.seat[1]);
+      g.rotation.y=STAFF_BENCH.yaw;routes.delete(g);
+     }
+     g.userData.seatHeight=.56;g.userData.socialPose='Sleep';g.userData.sleeping=true;
+    }
+    outside.push(p);
    }else outside.push(p);
    const home=world.homes?.get(v.name);if(home)home.occupied=g.userData.indoors==='home';
   }

@@ -210,6 +210,13 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  
  toon.depthWrite=material.depthWrite;
  toon.depthTest=material.depthTest;
+ // A flush decal -- a board seam, a painted line -- relies on a polygon offset to win
+ // the depth test against the surface it is painted on. Dropping the offset here put
+ // the decal back in the same plane as its host and left the two flickering against
+ // each other, which is the one thing the offset exists to prevent.
+ toon.polygonOffset=material.polygonOffset;
+ toon.polygonOffsetFactor=material.polygonOffsetFactor;
+ toon.polygonOffsetUnits=material.polygonOffsetUnits;
  toon.name=material.name;
  toon.userData={...material.userData,celFrom:material};
  // The town's architectural surfaces take their UVs from a box projection in the

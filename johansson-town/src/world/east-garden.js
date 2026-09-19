@@ -26,6 +26,7 @@ uniform float uSmallWavesElev;
 uniform float uSmallWavesFreq;
 uniform float uSmallWavesSpeed;
 uniform float uSmallWavesIterations;
+uniform float uMaxDepth;
 varying float vElevation;
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
@@ -74,6 +75,8 @@ void main(){
  for(float i=1.0;i<=uSmallWavesIterations;i++){
   elevation-=abs(cnoise(vec3(modelPosition.xz*uSmallWavesFreq*i,uTime*uSmallWavesSpeed))*uSmallWavesElev/i);
  }
+ // The pond sits on the lawn. Troughs must stay above its grass surface.
+ elevation=max(elevation,-uMaxDepth);
  modelPosition.y+=elevation;
  gl_Position=projectionMatrix*viewMatrix*modelPosition;
  vElevation=elevation;
@@ -132,7 +135,7 @@ export function buildEastGarden({parent,colliders=[],shadows=false,heightAt=null
  const {x,z,radius}=EAST_GARDEN;
  const y0=heightAt?heightAt(x,z):0;
  const rim=new THREE.Mesh(new THREE.TorusGeometry(radius,.11,8,24),new THREE.MeshStandardMaterial({color:0x7a7468,roughness:.9}));
- rim.rotation.x=Math.PI/2;rim.position.set(x,y0+.06,z);rim.castShadow=!!shadows;group.add(rim);
+ rim.rotation.x=Math.PI/2;rim.position.set(x,y0+.10,z);rim.castShadow=!!shadows;group.add(rim);
  const waterMat=new THREE.ShaderMaterial({
   vertexShader:WATER_VERT,fragmentShader:WATER_FRAG,transparent:true,
   uniforms:{
@@ -144,14 +147,17 @@ export function buildEastGarden({parent,colliders=[],shadows=false,heightAt=null
    uSmallWavesFreq:{value:1.8},
    uSmallWavesSpeed:{value:.22},
    uSmallWavesIterations:{value:3},
+   uMaxDepth:{value:.10},
    uDepthColor:{value:new THREE.Color(0x1a3a3c)},
    uSurfaceColor:{value:new THREE.Color(0x4a7a72)},
    uColorOffset:{value:.08},
    uColorMultiplier:{value:4.2},
   },
  });
- const pond=new THREE.Mesh(new THREE.CircleGeometry(radius-.08,28),waterMat);
- pond.name='east-garden-pond';pond.rotation.x=-Math.PI/2;pond.position.set(x,y0+.03,z);group.add(pond);
+ // Concentric rings give the wave shader interior vertices, rather than stretching
+ // every ripple across a single triangle from the bank to the centre.
+ const pond=new THREE.Mesh(new THREE.RingGeometry(0,radius-.08,28,8),waterMat);
+ pond.name='east-garden-pond';pond.rotation.x=-Math.PI/2;pond.position.set(x,y0+.16,z);group.add(pond);
  colliders.push({id:EAST_GARDEN.id,x,z,w:radius*2+.15,d:radius*2+.15,height:.35});
 
  for(const [lx,lz] of EAST_GARDEN.lanterns){

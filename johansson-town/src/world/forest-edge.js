@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
+import {GROUND_LAYER} from './ground-layers.js';
 
 // The public road ends at a dense tree line. The final segment is deliberately
 // visual-only: the Harbour Line continues beyond the trees, while the player
@@ -8,6 +9,13 @@ export const FOREST_EDGE=Object.freeze({
  id:'forest-edge',
  roadX:MAIN_ROAD.x,
  wallZ:33.8,
+ /**
+  * Where the bus road begins, which is where the terminus apron stops paving the
+  * ground -- BUS_STATION.maxZ is defined from this. The road used to start back at
+  * the shopping street and run the length of the apron underneath it, two slabs a
+  * centimetre apart over the whole platform.
+  */
+ roadStartZ:29.3,
  roadEndZ:36.6,
  minX:-15.5,
  maxX:8.5,
@@ -27,11 +35,12 @@ function signTexture(title,sub){
  */
 export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{},shadows=false,trees=true}={}){
  const group=new THREE.Group();group.name='Forest wall and bus-only road';parent.add(group);
- const road=new THREE.Mesh(new THREE.BoxGeometry(MAIN_ROAD.width,.09,FOREST_EDGE.roadEndZ-MAIN_ROAD.maxZ),new THREE.MeshStandardMaterial({color:0x60645d,roughness:.94}));
- road.name='bus-only forest road';road.position.set(FOREST_EDGE.roadX,.005,(FOREST_EDGE.roadEndZ+MAIN_ROAD.maxZ)/2);road.receiveShadow=!!shadows;group.add(road);
+ const roadLength=FOREST_EDGE.roadEndZ-FOREST_EDGE.roadStartZ,roadMiddle=(FOREST_EDGE.roadEndZ+FOREST_EDGE.roadStartZ)/2;
+ const road=new THREE.Mesh(new THREE.BoxGeometry(MAIN_ROAD.width,.09,roadLength),new THREE.MeshStandardMaterial({color:0x60645d,roughness:.94}));
+ road.name='bus-only forest road';road.position.set(FOREST_EDGE.roadX,GROUND_LAYER.apron-.045,roadMiddle);road.receiveShadow=!!shadows;group.add(road);
  const vergeMat=new THREE.MeshStandardMaterial({color:0x798062,roughness:1});
  for(const side of [-1,1]){
-  const verge=new THREE.Mesh(new THREE.BoxGeometry(2.1,.055,FOREST_EDGE.roadEndZ-MAIN_ROAD.maxZ+.4),vergeMat);verge.position.set(FOREST_EDGE.roadX+side*(MAIN_ROAD.width/2+1.05),.002,(FOREST_EDGE.roadEndZ+MAIN_ROAD.maxZ)/2);verge.receiveShadow=!!shadows;group.add(verge);
+  const verge=new THREE.Mesh(new THREE.BoxGeometry(2.1,.055,roadLength+.4),vergeMat);verge.position.set(FOREST_EDGE.roadX+side*(MAIN_ROAD.width/2+1.05),GROUND_LAYER.grass-.0275,roadMiddle);verge.receiveShadow=!!shadows;group.add(verge);
  }
  const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
  const leafMats=[0x42634b,0x4f7650,0x5b7f53].map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));

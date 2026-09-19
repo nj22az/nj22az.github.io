@@ -1,10 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {FOREST_EDGE} from './forest-edge.js';
+import {GROUND_LAYER} from './ground-layers.js';
 
 export const BUS_STATION=Object.freeze({
  id:'bus-station',x:MAIN_ROAD.x,z:24.9,
- minX:-10.6,maxX:5.4,minZ:MAIN_ROAD.maxZ,maxZ:29.3,
+ minX:-10.6,maxX:5.4,minZ:MAIN_ROAD.maxZ,maxZ:FOREST_EDGE.roadStartZ,
  queue:Object.freeze([MAIN_ROAD.x,23.05]),
  /**
   * Where you stand on the platform, as opposed to where you queue to board.
@@ -22,8 +23,20 @@ export const BUS_STATION=Object.freeze({
 });
 export const BUS_STATION_ROUTES=Object.freeze([
  {id:'bus-approach',width:6,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
- {id:'bus-platform',width:3.8,surface:'stone',points:[[-9.7,BUS_STATION.queue[1]],[2.2,BUS_STATION.queue[1]]]},
+ {id:'bus-platform',width:3.8,surface:'stone',points:[[-8.7,BUS_STATION.queue[1]],[2.2,BUS_STATION.queue[1]]]},
 ]);
+
+/**
+ * True where the terminus lays its own ground: the apron, and the bus road beyond it.
+ *
+ * Both are built to their own heights, so the lane surfacing must not pave the same
+ * patch a second time -- that left the approach, the platform and the road stacked in
+ * four sheets a centimetre apart, flashing against each other across the whole
+ * northern end of the town.
+ */
+export const pavedByTerminus=(x,z)=>z>MAIN_ROAD.maxZ&&(
+ x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z<=BUS_STATION.maxZ
+ ||Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2+2.1&&z<=FOREST_EDGE.roadEndZ);
 
 // A modest terminus closes the shopping street. The bus itself remains an
 // implied off-screen service: residents walk to the queue, board, and disappear
@@ -41,7 +54,7 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  const cyl=(radius,height,pos,material)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,10),material);m.position.set(...pos);m.castShadow=!!shadows;m.receiveShadow=!!shadows;group.add(m);return m;};
  const anchor=(pos,text,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,text,fn);return a;};
 
- box([BUS_STATION.maxX-BUS_STATION.minX,.06,BUS_STATION.maxZ-BUS_STATION.minZ],[(BUS_STATION.minX+BUS_STATION.maxX)/2,.03,(BUS_STATION.minZ+BUS_STATION.maxZ)/2],paving,false);
+ box([BUS_STATION.maxX-BUS_STATION.minX,.06,BUS_STATION.maxZ-BUS_STATION.minZ],[(BUS_STATION.minX+BUS_STATION.maxX)/2,GROUND_LAYER.apron-.03,(BUS_STATION.minZ+BUS_STATION.maxZ)/2],paving,false);
  box([BUS_STATION.maxX-BUS_STATION.minX,.13,.18],[(BUS_STATION.minX+BUS_STATION.maxX)/2,.07,BUS_STATION.minZ+.15],concrete);
  box([BUS_STATION.maxX-BUS_STATION.minX,.08,.12],[(BUS_STATION.minX+BUS_STATION.maxX)/2,.08,BUS_STATION.maxZ-.18],concrete);
  // Shelter on the east side leaves the approach and boarding line open.
@@ -56,7 +69,7 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  const pole=cyl(.07,2.75,[-7.9,1.38,centreZ-.35],steel);box([.95,.12,.12],[-7.9,2.75,centreZ-.35],steel);
  label('バス乗場','HARBOUR LINE TERMINAL · DEPARTURES',[-7.9,3.18,centreZ-.24],3.8,.62,0,'#e5dcc0','#3d514e',true);
  for(const x of [-7.4,4.2]){const bulb=cyl(.11,.18,[x,2.63,centreZ+.99],lampMat);lamps.push(bulb);}
- box([.08,.05,4.2],[MAIN_ROAD.x,.075,BUS_STATION.queue[1]],steel,false);
+ box([.08,.05,4.2],[MAIN_ROAD.x,GROUND_LAYER.apron+.025,BUS_STATION.queue[1]],steel,false);
  label('港町線','SHOPPING DISTRICT → HARBOUR',[MAIN_ROAD.x,2.28,BUS_STATION.z+3.6],3.2,.46,0,'#d9d0b3','#405653');
  anchor([-7.2,1,BUS_STATION.queue[1]-.05],'Read Harbour Line timetable',()=>onAction('bus'));
  anchor([-2.7,1,BUS_STATION.queue[1]-.2],'Wait for the Harbour Line',()=>onAction('bus'));

@@ -2,13 +2,14 @@ import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visit
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
+import {STAFF_BENCH} from '../world/staff-bench.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
 import {shoppingDistrictActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
@@ -57,10 +58,20 @@ const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
  * one that plays: see sourceGait in gait.js and the Stroll alias.
  */
 const STROLLING=.72;
+const BENCH_STAND=[STAFF_BENCH.stand[0],STAFF_BENCH.stand[1]];
 const THUAN_WALK=Object.freeze([
- {until:862,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
- {until:890,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
- {until:912,place:'park',target:[30.4,-9.5],activity:'walking down to the sea wall',pace:STROLLING},
+ // Round the back first. The yard behind the shop is out of sight of the pavement,
+ // which is the whole point of it: she has run the counter alone since nine.
+ //
+ // This leg keeps the town's ordinary walking pace, and it is twenty-six minutes long
+ // for a twenty-two minute walk. The only door is on the street, so getting to the
+ // yard is twenty-seven metres out and round -- and the clock runs at a minute a
+ // second, so at a stroll that is thirty-seven minutes and she arrived after her own
+ // nap had finished. She dawdles once she is somewhere, not on the way to it.
+ {until:866,place:'nap',target:BENCH_STAND,activity:'going round the back for her break'},
+ {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
+ {until:912,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:922,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
  {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
 ].map(Object.freeze));
 /** The leg of the walk she is on, or null when she is not on it. */
@@ -83,7 +94,10 @@ export function thuanAtMinato(profile,minutes,rain=false){
  const shift=shiftFor(profile);
  if(rain||!shift||shift.permanent)return false;
  const m=minuteOfDay(minutes);
- return izakayaOpen(m)&&inTimeRange(m,shift.finish,shift.departure-THUAN_BUS_MARGIN);
+ // Against the bus she is actually going home on: staying for a beer is what moves
+ // her off the nine o'clock and onto the ten, so measuring her evening against the
+ // nine would send her to the queue at a quarter to, halfway down her drink.
+ return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
 }
 export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
@@ -136,7 +150,7 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
 function commuterPlan(profile,minutes,rain=false,state=null){
- const phase=commuterPhase(profile,minutes),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
+ const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
  if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
  // Thuan's own hour between locking up and the last bus. It has to be read before the
@@ -161,7 +175,10 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   // Her afternoon walk, read before the shift so that being on shift does not simply
   // put her back behind her own counter for the whole of it.
   const walk=thuanAfternoon(profile,minutes,rain);
-  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity};
+  // Carry the leg's pace through. Dropping it here is what kept her break at the
+  // town's errand speed of 1.25 m/s, which is above the handover between her walk and
+  // her stroll -- so the unhurried cycle her model carries was never once played.
+  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace};
   if(shiftActive(profile,minutes))return {place:'market',target:profile.work,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }

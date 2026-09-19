@@ -4,6 +4,8 @@ import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {shoppingDistrictActive} from './town-mode.js';
+import {GROUND_LAYER} from './ground-layers.js';
+import {pavedByTerminus} from './bus-station.js';
 
 // Low garden boundaries make the authored walking network legible. Leave every
 // junction open, including routes supplied by the shopping and dining models.
@@ -41,6 +43,7 @@ export function lanePatches(routes=activeRoutes().slice(3)) {
     if(!shoppingDistrictActive()&&inResidential(x,z)||inDiningLane(x,z))continue;
     if(x>MAIN_ROAD.pavementWest&&x<MAIN_ROAD.pavementEast&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
     if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
+    if(pavedByTerminus(x,z))continue;
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
     if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
   }
@@ -55,7 +58,7 @@ export function buildLaneSurfaces(parent,library) {
   const quad=(surface,points)=>{
     if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
     const b=batches.get(surface),n=b.positions.length/3;
-    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+.04,z);b.uv.push(x/4,z/4);}
+    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+GROUND_LAYER.lane,z);b.uv.push(x/4,z/4);}
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
   // A patch is laid as a grid rather than as one quad, because the ground under it is

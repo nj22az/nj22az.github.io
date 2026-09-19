@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
-import {preloadModels,createLocalCharacters,characterSource} from '../src/people/models.js?snappy=1';
+import {preloadModels,preloadModel,createLocalCharacters,characterSource} from '../src/people/models.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 import {PROFILES} from '../src/people/profiles.js';
 
@@ -79,5 +79,101 @@ test('residents retain independent motion and seating with Thuan on her supplied
    }
   }
   yuri.mixer.stopAllAction();yuri.current=null;yuri.entity.userData.carrying=true;models.update(.4);assert.equal(yuri.current,'CarryIdle');
+ }finally{globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;}
+});
+
+test('Thuan changes how she stands instead of looping one take all day',async()=>{
+ const previous={fetch:globalThis.fetch,bitmap:globalThis.createImageBitmap,self:globalThis.self};
+ installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return previous.fetch(input);
+  return new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));};
+ try{
+  await preloadModel('yuri-merged');
+  const models=createLocalCharacters(),scene=new THREE.Scene();
+  const entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);
+  const actor=models.attach(entity,'Thuan',1.64);
+  assert.ok(actor,'Thuan did not attach');
+
+  // The alternate takes have to exist, and be different takes rather than copies.
+  for(const family of ['Idle_Neutral','CounterIdle']){
+   const takes=['','.1','.2'].map(s=>family+s);
+   for(const name of takes)assert.ok(actor.actions.has(name),'Missing idle take '+name);
+   const lengths=new Set(takes.map(n=>actor.actions.get(n).getClip().duration));
+   assert.equal(lengths.size,takes.length,family+' takes share a cadence, so they will loop in step');
+  }
+
+  // Standing at the counter for a couple of minutes, she should use more than one.
+  entity.userData.socialPose='CounterIdle';
+  const used=new Set();
+  for(let i=0;i<120*60;i++){models.update(1/60);if(actor.current)used.add(actor.current);}
+  assert.ok(used.size>1,'She held one take for two minutes: '+[...used]);
+  for(const name of used)assert.ok(name.startsWith('CounterIdle'),'Idle variation reached outside the family: '+name);
+
+  // And it must be a settle, not a snap: the hands may not step between takes.
+  const hand=actor.model.getObjectByName('LeftHand');
+  let last=null,worst=0;
+  for(let i=0;i<90*60;i++){
+   models.update(1/60);entity.updateWorldMatrix(true,true);
+   const here=entity.worldToLocal(hand.getWorldPosition(new THREE.Vector3()));
+   if(last)worst=Math.max(worst,here.distanceTo(last));
+   last=here;
+  }
+  assert.ok(worst<.02,'A hand jumped '+(worst*100).toFixed(1)+'cm in one frame between takes');
+
+  // Her weight moves; her feet do not. The legs hang off the pelvis, so tilting it
+  // swings everything below and drags the toes across the floor unless the same
+  // rotation is taken back out of the thighs.
+  for(const family of ['Idle_Neutral','CounterIdle']){
+   const planted={};
+   for(const suffix of ['','.1','.2']){
+    const action=actor.actions.get(family+suffix),clip=action.getClip();
+    actor.mixer.stopAllAction();action.reset().play();
+    for(const fraction of [0,.34,.67]){
+     actor.mixer.setTime(clip.duration*fraction);
+     entity.updateWorldMatrix(true,true);actor.model.updateMatrixWorld(true);
+     for(const foot of ['LeftToeBase','RightToeBase']){
+      const bone=actor.model.getObjectByName(foot);if(!bone)continue;
+      const here=entity.worldToLocal(bone.getWorldPosition(new THREE.Vector3()));
+      (planted[foot]||=[]).push(here);
+     }
+    }
+   }
+   for(const [foot,points] of Object.entries(planted)){
+    let spread=0;
+    for(const a of points)for(const b of points)spread=Math.max(spread,a.distanceTo(b));
+    assert.ok(spread<.015,family+' drags the '+foot+' '+(spread*100).toFixed(1)+'cm between takes');
+   }
+  }
+  actor.mixer.stopAllAction();actor.current=null;
+
+  // The low-poly cast gets takes of its own, baked the same way and with the same two
+  // things to get wrong: a body that sinks, and feet that slide.
+  await preloadModel('female_casual');
+  const other=new THREE.Group();other.userData.name='Aya';scene.add(other);
+  const aya=models.attach(other,'Aya');
+  for(const suffix of ['.1','.2'])assert.ok(aya.actions.has('Idle_Neutral'+suffix),'Aya has no '+suffix+' take');
+  for(const suffix of ['','.1','.2']){
+   const action=aya.actions.get('Idle_Neutral'+suffix),clip=action.getClip();
+   aya.mixer.stopAllAction();action.reset().play();
+   const head=aya.model.getObjectByName('Head'),foot=aya.model.getObjectByName('FootL');
+   const heights=[],toes=[];
+   for(const fraction of [0,.25,.5,.75,1]){
+    aya.mixer.setTime(clip.duration*fraction);
+    other.updateWorldMatrix(true,true);aya.model.updateMatrixWorld(true);
+    heights.push(other.worldToLocal(head.getWorldPosition(new THREE.Vector3())).y);
+    toes.push(other.worldToLocal(foot.getWorldPosition(new THREE.Vector3())));
+   }
+   // Nothing the source idle leaves alone may accumulate across the loop.
+   const sink=Math.max(...heights)-Math.min(...heights);
+   assert.ok(sink<.03,'Idle_Neutral'+suffix+' sinks '+(sink*100).toFixed(1)+'cm over one loop');
+   let slide=0;for(const a of toes)for(const b of toes)slide=Math.max(slide,a.distanceTo(b));
+   assert.ok(slide<.02,'Idle_Neutral'+suffix+' slides a foot '+(slide*100).toFixed(1)+'cm');
+  }
+  aya.mixer.stopAllAction();
+
+  // Somebody who is walking is not idling, and must not be given an idle take.
+  entity.userData.socialPose=undefined;delete entity.userData.socialPose;
+  for(let i=0;i<60;i++){entity.position.x+=1.25/60;models.update(1/60);}
+  assert.ok(['Walk','Stroll'].includes(actor.current),'Walking picked '+actor.current);
  }finally{globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;}
 });
