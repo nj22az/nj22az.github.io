@@ -29,7 +29,7 @@ import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
   const $=s=>document.querySelector(s);
@@ -378,6 +378,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function konbiniCounter(){
     const lines=basketLines(state);
     if(!lines.length){receipt('Sakura Shōten','Your basket is empty.');return;}
+    // Same presence gate as Form 3 sell: posted hours alone must not ring an empty till.
+    if(getSocialContext().thuanAvailable===false&&sakuraHoursOpen(getMinutes())){
+      receipt('Sakura Shōten',SAKURA_AWAY_MESSAGE);return;
+    }
     const listing=lines.map(l=>`${l.jp} ${l.name}${l.count>1?' ×'+l.count:''} · ¥${l.cost*l.count}`).join('\n');
     const warmable=warmableInBasket(state);
     if(warmable.length&&counterWarm===null){
@@ -401,7 +405,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   function payAtCounter(){
-    const result=checkout(state,{warm:counterWarm===true,bag:counterBag!==false},getMinutes());
+    const result=checkout(state,{warm:counterWarm===true,bag:counterBag!==false},getMinutes(),getSocialContext().thuanAvailable!==false);
     counterWarm=null;counterBag=null;
     if(!result.ok){receipt('Sakura Shōten',result.message);return;}
     save();
