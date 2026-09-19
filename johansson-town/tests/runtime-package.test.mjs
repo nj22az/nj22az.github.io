@@ -24,7 +24,11 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  assert.ok(Object.keys(manifest).length<=8,'Bound the JavaScript request count');
  const audioCode=await readFile(new URL(audio.file,base),'utf8');assert.match(audioCode,/unlockTownAudio/,'Title screen retains its audio unlock export');
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
- assert.ok(game.imports.some(key=>manifest[key].file===audio.file),'Game and title share one audio context');
+ const dependencies=entry=>{const result=new Set([entry.file]);for(const key of entry.imports||[])for(const file of dependencies(manifest[key]))result.add(file);return result;};
+ const gameFiles=dependencies(game),audioFiles=dependencies(audio),contexts=[];
+ for(const file of new Set([...gameFiles,...audioFiles]))if(/(?:window\.)?AudioContext/.test(await readFile(new URL(file,base),'utf8')))contexts.push(file);
+ assert.equal(contexts.length,1,'One audio implementation in the entry graph');
+ assert.ok(gameFiles.has(contexts[0])&&audioFiles.has(contexts[0]),'Game and title share one audio context');
 });
 
 test('every stylesheet link carries a hash of the file it points at',async()=>{

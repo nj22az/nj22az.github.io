@@ -23,10 +23,11 @@ import * as THREE from '../../vendor/three.module.js';
 export const STAFF_BENCH=Object.freeze({
  x:-19.1,z:-23,
  /** Facing west, out into the yard, with the shop wall behind her. */
- yaw:-Math.PI/2,
+ yaw:Math.PI/2,
  /** The seat, and where she stands up to. */
  seat:Object.freeze([-19.25,-23]),
  stand:Object.freeze([-20.5,-23]),
+ height:.47,
  eyeY:1.12,
 });
 
@@ -56,6 +57,8 @@ export const STAFF_YARD_ROUTE=Object.freeze({
 export function buildStaffBench({parent,factory,colliders=[],shadows=false,register,onAction}={}){
  const {x,z,yaw}=STAFF_BENCH;
  const built=factory.bench(x,z,yaw);
+ // A normal bench height above the yard paving, rather than the factory's tall .62m seat.
+ built.object.scale.y=STAFF_BENCH.height/.62;
  built.object.name='sakura-staff-bench';
  built.object.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=!!shadows;mesh.receiveShadow=true;}});
  parent.add(built.object);
@@ -64,7 +67,7 @@ export function buildStaffBench({parent,factory,colliders=[],shadows=false,regis
  const turned=Math.abs(Math.round(Math.cos(yaw)))===0;
  colliders.push({id:'sakura-staff-bench',x,z,
   w:turned?built.collider.d:built.collider.w,
-  d:turned?built.collider.w:built.collider.d,height:.95});
+  d:turned?built.collider.w:built.collider.d,height:.95*built.object.scale.y});
 
  // A crate to put a cup on, because nobody drinks tea holding the cup the whole time.
  const crate=new THREE.Mesh(new THREE.BoxGeometry(.42,.34,.36),
@@ -73,6 +76,8 @@ export function buildStaffBench({parent,factory,colliders=[],shadows=false,regis
  crate.castShadow=!!shadows;crate.receiveShadow=true;crate.userData.staticProp=true;parent.add(crate);
 
  const seat=new THREE.Object3D();seat.name='sakura-staff-bench-seat';
+ // Thuan's scheduled break owns this seat; passing residents use public benches.
+ seat.userData.npcInteraction=false;
  seat.position.set(STAFF_BENCH.seat[0],1.05,STAFF_BENCH.seat[1]);parent.add(seat);
  seat.userData.seat={position:[STAFF_BENCH.seat[0],0,STAFF_BENCH.seat[1]],
   stand:[STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]],eyeY:STAFF_BENCH.eyeY,yaw,pitch:-.04};
