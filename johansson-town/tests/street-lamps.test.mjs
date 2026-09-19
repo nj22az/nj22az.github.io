@@ -20,6 +20,8 @@ test('two west-corner poles clear of Sakura south storefront',()=>{
  assert.ok(placementsClearOfShopDoors());
  // Regression: never plant on quay-facing Sakura south opening / warehouse sign
  assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+34)<2&&Math.abs(p.x+7.3)<0.5));
+ // Sakura facade band ≈ [-33.93, -19.67] — no west lamp on the shop face
+ assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>p.side==='west'&&p.z>=-33.93&&p.z<=-19.67));
  assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+35)<1.2&&Math.abs(p.x+7.3)<0.4));
  for(const p of STREET_LAMP_PLACEMENTS){
   assert.ok(Math.abs(p.z-SHOP_CROSSING_Z)>=1.2);
@@ -28,7 +30,7 @@ test('two west-corner poles clear of Sakura south storefront',()=>{
  }
  assert.deepEqual(
   STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z})),
-  [{x:-7.25,z:-21.0},{x:-7.25,z:-3.05}]
+  [{x:-7.25,z:-15.0},{x:-7.25,z:-3.05}]
  );
 });
 
