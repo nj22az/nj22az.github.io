@@ -3,6 +3,7 @@ import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
 import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
+import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
@@ -198,6 +199,9 @@ export function createTown(options){
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
+  // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
+  if(peninsulaActive())buildStaffBench({parent:world.group,factory,colliders:world.colliders,
+   shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}

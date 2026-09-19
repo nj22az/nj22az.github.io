@@ -201,7 +201,7 @@ export function createLocalCharacters({shadows=false}={}){
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
-      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink'].includes(entity.userData.socialPose);
+      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink','Sleep'].includes(entity.userData.socialPose);
       const chairTransition=actor.chairMotion&&Number.isFinite(entity.userData.chairBlend);
       actor.seatBlend=chairTransition?THREE.MathUtils.clamp(entity.userData.chairBlend,0,1):THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
       if(seated)actor.lastSeatHeight=entity.userData.seatHeight;

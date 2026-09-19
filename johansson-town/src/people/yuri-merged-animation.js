@@ -33,11 +33,13 @@ function worldPalm(forward,normal,side){
  return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z)).multiply(localBasis.invert());
 }
 
-function worldDelta(bone,euler){
+/** Turn a bone by a rotation expressed in world space, not in its parent's. */
+function worldTwist(bone,rotation){
  const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());
- bone.quaternion.premultiply(parent.clone().invert().multiply(new THREE.Quaternion().setFromEuler(euler)).multiply(parent)).normalize();
+ bone.quaternion.premultiply(parent.clone().invert().multiply(rotation).multiply(parent)).normalize();
  bone.updateWorldMatrix(false,true);
 }
+function worldDelta(bone,euler){worldTwist(bone,new THREE.Quaternion().setFromEuler(euler));}
 
 /**
  * How somebody stands when they are not doing anything.
@@ -67,7 +69,19 @@ function poseShopkeeper(pose,kind,t,duration,variant=0){
                {hip:-.055,roll:-.028,turn:-.05,glance:.14,hand:.035},
                {hip:.042,roll:.052,turn:.058,glance:-.10,hand:-.022}];
  const w=WEIGHT[variant%WEIGHT.length];
- if(hips)worldDelta(hips,new THREE.Euler(0,w.hip*.6,w.hip));
+ if(hips&&(w.hip||0)!==0){
+  // Tilt the pelvis, then put the legs back.
+  //
+  // The legs hang off the pelvis, so turning it swings everything below it and drags
+  // the feet across the floor -- 5.3cm of toe, measured, on a body that is supposed to
+  // be standing still. A real weight shift is the pelvis moving and the legs taking
+  // up the difference, so the same rotation is taken back out of each thigh in world
+  // space. What is left is the few millimetres the hip joints themselves travel.
+  const twist=new THREE.Quaternion().setFromEuler(new THREE.Euler(0,w.hip*.6,w.hip));
+  worldTwist(hips,twist);
+  const back=twist.clone().invert();
+  for(const leg of ['LeftUpLeg','RightUpLeg']){const bone=pose.getObjectByName(leg);if(bone)worldTwist(bone,back);}
+ }
  if(spine)worldDelta(spine,new THREE.Euler(.012*breath+lean-.018,w.turn,w.roll+.012*shift));
  if(head)worldDelta(head,new THREE.Euler(.012*breath,.018*shift+w.glance,-.018-w.roll*.4));
  const hip=pose.getObjectByName('LeftUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(.05,.88,0);
@@ -84,7 +98,10 @@ function poseShopkeeper(pose,kind,t,duration,variant=0){
 function bakeIdle(asset,source,name,kind,duration,variant=0){
  const pose=clone(asset.scene),clip=source.clone();clip.name=name;clip.duration=duration;
  const samples=source.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
- const names=['Hips','Spine','Head','LeftShoulder','RightShoulder','LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand'];
+ // The thighs are here because the weight shift takes its own pelvis rotation back
+ // out of them; leave them off the list and the correction is computed and thrown
+ // away, and the feet swing with the hips.
+ const names=['Hips','Spine','Head','LeftShoulder','RightShoulder','LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand','LeftUpLeg','RightUpLeg'];
  const times=Array.from({length:61},(_,i)=>i*duration/60),values=new Map(names.map(n=>[n,[]]));
  for(const t of times){
   // The six-second baked loop must not inherit the four-second hold's seam.
@@ -107,6 +124,62 @@ function bakeIdle(asset,source,name,kind,duration,variant=0){
  };
  clip.tracks=clip.tracks.filter(track=>!/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(track.name));
  clip.tracks.push(...fingerTracks(asset.scene,times,fidget));
+ return clip;
+}
+
+/**
+ * Asleep sitting up, which is what a break on a bench actually looks like.
+ *
+ * Sleep used to be the standing idle under another name: she dozed bolt upright with
+ * her eyes shut. This is baked on the seated take instead -- the legs come from the
+ * chair, and the upper body does what a body does when it stops holding itself up.
+ * The chin goes down onto the chest, the shoulders drop, the hands give up and lie in
+ * the lap, and the whole thing breathes at about a third of waking rate with a slow
+ * nod riding on top of it.
+ */
+function bakeDoze(asset,source,name,duration){
+ const pose=clone(asset.scene),clip=source.clone();clip.name=name;clip.duration=duration;
+ const samples=source.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
+ const names=['Spine','Spine01','Spine02','neck','Head','LeftShoulder','RightShoulder',
+  'LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand'];
+ const times=Array.from({length:37},(_,i)=>i*duration/36),values=new Map(names.map(n=>[n,[]]));
+ // Whatever the seated take does not animate must be restored each sample, or the
+ // slump lands on top of the last one and she folds through her own knees.
+ const tracked=new Set(source.tracks.map(track=>track.name));
+ const held=names.filter(n=>!tracked.has(n+'.quaternion')).map(n=>pose.getObjectByName(n)).filter(Boolean)
+  .map(bone=>({bone,rest:bone.quaternion.clone()}));
+ for(const t of times){
+  // One held frame of the chair, so the legs stop moving: she is asleep on them.
+  for(const {sample,binding} of samples)binding.setValue(sample.evaluate(0),0);
+  for(const {bone,rest} of held)bone.quaternion.copy(rest);
+  pose.updateMatrixWorld(true);
+  const breath=Math.sin(t/duration*Math.PI*2),drift=Math.sin(t/duration*Math.PI*2+.9);
+  for(const [bone,euler] of [
+   ['Spine',new THREE.Euler(.085+.010*breath,.02,.022)],
+   ['Spine01',new THREE.Euler(.075+.008*breath,0,.016)],
+   ['Spine02',new THREE.Euler(.06+.006*breath,0,.01)],
+   ['neck',new THREE.Euler(.16+.012*drift,.03,-.02)],
+   ['Head',new THREE.Euler(.26+.018*drift,.05,-.045)],
+   ['LeftShoulder',new THREE.Euler(.05,0,.03)],
+   ['RightShoulder',new THREE.Euler(.05,0,-.03)],
+  ]){const target=pose.getObjectByName(bone);if(target)worldDelta(target,euler);}
+  // Hands lying in the lap, a little apart, wrists limp.
+  const hips=pose.getObjectByName('Hips')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(0,.62,0);
+  const lap=hips.clone().add(new THREE.Vector3(0,-.02+.004*breath,.17));
+  const limpPalm=side=>worldPalm(new THREE.Vector3(side*.42,-.55,.72),new THREE.Vector3(0,1,.18),side);
+  solveArm(pose,'Left',lap.clone().add(new THREE.Vector3(.10,0,0)),new THREE.Vector3(.34,-.30,-.26),limpPalm(1));
+  solveArm(pose,'Right',lap.clone().add(new THREE.Vector3(-.10,0,0)),new THREE.Vector3(-.34,-.30,-.26),limpPalm(-1));
+  for(const n of names){const bone=pose.getObjectByName(n);if(bone)values.get(n).push(...bone.quaternion.toArray());}
+ }
+ for(const {binding} of samples)binding.unbind();
+ for(const n of names){
+  if(!values.get(n).length)continue;
+  clip.tracks=clip.tracks.filter(track=>track.name!==n+'.quaternion');
+  clip.tracks.push(new THREE.QuaternionKeyframeTrack(n+'.quaternion',times,values.get(n)));
+ }
+ // Fingers loosely curled and still: asleep is the one pose with no fidget in it.
+ clip.tracks=clip.tracks.filter(track=>!/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(track.name));
+ clip.tracks.push(...fingerTracks(asset.scene,[0,duration],()=>.42));
  return clip;
 }
 
@@ -187,6 +260,6 @@ export function prepareMergedYuriAnimations(asset){
  for(const [source,names] of [[sit,['Eat','Drink']],[idle,['DrinkStanding','EatStanding','CarryIdle']],[clips.find(c=>c.name==='Walk'),['CarryWalk']]])for(const name of names){const clip=source.clone();clip.name=name;clips.push(clip);}
  stillFingers(asset,clips.find(c=>c.name==='CarryIdle'),.95);
  stillFingers(asset,clips.find(c=>c.name==='CarryWalk'),.95);
- const sleep=idle.clone();sleep.name='Sleep';clips.push(sleep);
+ clips.push(bakeDoze(asset,sit,'Sleep',9));
  return clips;
 }

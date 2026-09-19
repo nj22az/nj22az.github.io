@@ -159,6 +159,14 @@ test('every open patch of the east side can be walked to from the road',async()=
  }
  assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
  assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
+
+ // Thuan's break is round the back of the shop, which is only a break if she can
+ // walk to it: the yard behind Sakura is reached the long way, out of the front and
+ // round, so a wall or a prop across that route strands her on her own schedule.
+ const {STAFF_BENCH}=await import('../src/world/staff-bench.js');
+ const near=(x,z)=>key(+(Math.round(x/STEP)*STEP).toFixed(1),+(Math.round(z/STEP)*STEP).toFixed(1));
+ assert.ok(seen.has(near(...STAFF_BENCH.stand)),'Thuan cannot walk to her own bench');
+ assert.ok(colliders.some(c=>c.id==='sakura-staff-bench'),'The staff bench is not solid');
 });
 
 test('the paths across the green lie on the ground rather than through it',async()=>{

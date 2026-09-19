@@ -2,6 +2,7 @@ import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visit
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
+import {STAFF_BENCH} from '../world/staff-bench.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
@@ -57,10 +58,14 @@ const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
  * one that plays: see sourceGait in gait.js and the Stroll alias.
  */
 const STROLLING=.72;
+const BENCH_STAND=[STAFF_BENCH.stand[0],STAFF_BENCH.stand[1]];
 const THUAN_WALK=Object.freeze([
- {until:862,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
- {until:890,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
- {until:912,place:'park',target:[30.4,-9.5],activity:'walking down to the sea wall',pace:STROLLING},
+ // Round the back first. The yard behind the shop is out of sight of the pavement,
+ // which is the whole point of it: she has run the counter alone since nine.
+ {until:852,place:'nap',target:BENCH_STAND,activity:'going round the back for her break',pace:STROLLING},
+ {until:882,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop',pace:STROLLING},
+ {until:898,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:914,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
  {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
 ].map(Object.freeze));
 /** The leg of the walk she is on, or null when she is not on it. */
@@ -161,7 +166,10 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   // Her afternoon walk, read before the shift so that being on shift does not simply
   // put her back behind her own counter for the whole of it.
   const walk=thuanAfternoon(profile,minutes,rain);
-  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity};
+  // Carry the leg's pace through. Dropping it here is what kept her break at the
+  // town's errand speed of 1.25 m/s, which is above the handover between her walk and
+  // her stroll -- so the unhurried cycle her model carries was never once played.
+  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace};
   if(shiftActive(profile,minutes))return {place:'market',target:profile.work,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }

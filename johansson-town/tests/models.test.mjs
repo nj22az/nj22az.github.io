@@ -120,6 +120,57 @@ test('Thuan changes how she stands instead of looping one take all day',async()=
   }
   assert.ok(worst<.02,'A hand jumped '+(worst*100).toFixed(1)+'cm in one frame between takes');
 
+  // Her weight moves; her feet do not. The legs hang off the pelvis, so tilting it
+  // swings everything below and drags the toes across the floor unless the same
+  // rotation is taken back out of the thighs.
+  for(const family of ['Idle_Neutral','CounterIdle']){
+   const planted={};
+   for(const suffix of ['','.1','.2']){
+    const action=actor.actions.get(family+suffix),clip=action.getClip();
+    actor.mixer.stopAllAction();action.reset().play();
+    for(const fraction of [0,.34,.67]){
+     actor.mixer.setTime(clip.duration*fraction);
+     entity.updateWorldMatrix(true,true);actor.model.updateMatrixWorld(true);
+     for(const foot of ['LeftToeBase','RightToeBase']){
+      const bone=actor.model.getObjectByName(foot);if(!bone)continue;
+      const here=entity.worldToLocal(bone.getWorldPosition(new THREE.Vector3()));
+      (planted[foot]||=[]).push(here);
+     }
+    }
+   }
+   for(const [foot,points] of Object.entries(planted)){
+    let spread=0;
+    for(const a of points)for(const b of points)spread=Math.max(spread,a.distanceTo(b));
+    assert.ok(spread<.015,family+' drags the '+foot+' '+(spread*100).toFixed(1)+'cm between takes');
+   }
+  }
+  actor.mixer.stopAllAction();actor.current=null;
+
+  // The low-poly cast gets takes of its own, baked the same way and with the same two
+  // things to get wrong: a body that sinks, and feet that slide.
+  await preloadModel('female_casual');
+  const other=new THREE.Group();other.userData.name='Aya';scene.add(other);
+  const aya=models.attach(other,'Aya');
+  for(const suffix of ['.1','.2'])assert.ok(aya.actions.has('Idle_Neutral'+suffix),'Aya has no '+suffix+' take');
+  for(const suffix of ['','.1','.2']){
+   const action=aya.actions.get('Idle_Neutral'+suffix),clip=action.getClip();
+   aya.mixer.stopAllAction();action.reset().play();
+   const head=aya.model.getObjectByName('Head'),foot=aya.model.getObjectByName('FootL');
+   const heights=[],toes=[];
+   for(const fraction of [0,.25,.5,.75,1]){
+    aya.mixer.setTime(clip.duration*fraction);
+    other.updateWorldMatrix(true,true);aya.model.updateMatrixWorld(true);
+    heights.push(other.worldToLocal(head.getWorldPosition(new THREE.Vector3())).y);
+    toes.push(other.worldToLocal(foot.getWorldPosition(new THREE.Vector3())));
+   }
+   // Nothing the source idle leaves alone may accumulate across the loop.
+   const sink=Math.max(...heights)-Math.min(...heights);
+   assert.ok(sink<.03,'Idle_Neutral'+suffix+' sinks '+(sink*100).toFixed(1)+'cm over one loop');
+   let slide=0;for(const a of toes)for(const b of toes)slide=Math.max(slide,a.distanceTo(b));
+   assert.ok(slide<.02,'Idle_Neutral'+suffix+' slides a foot '+(slide*100).toFixed(1)+'cm');
+  }
+  aya.mixer.stopAllAction();
+
   // Somebody who is walking is not idling, and must not be given an idle take.
   entity.userData.socialPose=undefined;delete entity.userData.socialPose;
   for(let i=0;i<60;i++){entity.position.x+=1.25/60;models.update(1/60);}
