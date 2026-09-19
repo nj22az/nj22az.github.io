@@ -22,12 +22,10 @@ export const POLE_HEIGHT=4.2;
  * not mid-block or in doorways). Arms still reach the carriageway.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // Sakura Shōten west corners (facade centre ≈-27.3, half≈7.13)
- {x:-7.55,z:-34.5,side:'west'},
- {x:-7.55,z:-20.2,side:'west'},
- // Front-Row Books & Workshop west corners (plot z=1.6, half=4.4)
- {x:-7.55,z:-2.8,side:'west'},
- {x:-7.55,z:6.8,side:'west'}, // just north of facade corner; clear of SHOP_CROSSING_Z=5.1
+ // CityArchitect 3-pole plan: west facade corners only (emissive heads, no PointLights).
+ {x:-7.70,z:-34.0,side:'west'}, // Sakura south corner
+ {x:-7.70,z:-21.0,side:'west'}, // Sakura north corner (clear of south crossing ≈[-19.5,-16.5])
+ {x:-7.70,z:-3.05,side:'west'}, // Front-Row south gable (off Bookshop–Minato passage at -4.6)
 ]);
 
 const UTILITY_POLE_Z=new Set([-32,11,17]);
@@ -37,10 +35,10 @@ const UTILITY_POLE_Z=new Set([-32,11,17]);
  * West-pavement doors only — east kerb lamps sit past MAIN_ROAD.east and miss these.
  */
 export const DOOR_KEEP_CLEAR=Object.freeze([
- // Door leaf only — poles belong at facade corners, not mid-door.
- {id:'frontrow',x:MAIN_ROAD.pavementWest+0.65,z:BOOKSHOP_WORKSHOP_PLOT.z,w:1.8,d:2.4},
- {id:'market',x:MAIN_ROAD.pavementWest+0.65,z:-27.3,w:1.8,d:2.4},
- {id:'izakaya',x:MAIN_ROAD.pavementWest+0.5,z:-10.43,w:1.8,d:2.4},
+ // Narrow door-leaf bands — corners must stay legal; market uses live Sakura door.
+ {id:'frontrow',x:MAIN_ROAD.pavementWest+0.65,z:BOOKSHOP_WORKSHOP_PLOT.z,w:1.6,d:1.6},
+ {id:'market',x:-5.5,z:-26.8,w:1.6,d:1.6}, // live Sakura door ≈ (-5.5, -26.8)
+ {id:'izakaya',x:MAIN_ROAD.pavementWest+0.5,z:-10.43,w:1.6,d:1.6},
 ]);
 
 /** Sanity: placements stay off junctions and existing utility poles. */
