@@ -1,46 +1,50 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Shippori+Mincho:wght@500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho:wght@400;500;700&display=swap");
 
-/* Johansson Town entry board.
-   Built on the design language of AsagaoUI by Hiroshi ISOBE (MIT), which follows
-   Japan's Digital Agency design system: its grey and blue ramps, type scale, 8px
-   spacing and rounding, and the yellow-on-black focus ring. The tokens below are
-   ported rather than the 105KB framework, because this page sits in front of the
-   town and every kilobyte here delays entering it. Licence and source are recorded
-   in assets/ATTRIBUTION.md. */
+/* Johansson Town entry board — Toraya-inspired harbour visitor page.
+   Tokens adapted from awesome-design-md-jp design-md/toraya/DESIGN.md
+   (deep navy #27455c, mincho headings, gothic body, cream surfaces, pill CTA).
+   Not a Toraya clone: harbour vermillion + sakura pastel for Johansson Town. */
 :root {
-  /* Grey ramp */
-  --aui-grey-900: #1a1a1a;
-  --aui-grey-700: #4d4d4d;
-  --aui-grey-536: #767676;
-  --aui-grey-420: #949494;
-  --aui-grey-200: #cccccc;
-  --aui-grey-100: #e6e6e6;
-  --aui-grey-50: #f2f2f2;
-  --aui-white: #ffffff;
-  /* Blue: the primary action */
-  --aui-blue-1200: #000060;
-  --aui-blue-1000: #00118f;
-  --aui-blue-900: #0017c1;
-  --aui-blue-50: #e8f1fe;
-  --aui-yellow-300: #ffd43d;
-  --aui-red-1000: #a90000;
-  --aui-green-1000: #0c472a;
-  /* Spacing: 0.5rem base, as in the system */
+  --harbour-navy: #27455c;
+  --harbour-navy-deep: #1c3344;
+  --ink: #111111;
+  --ink-muted: #777777;
+  --paper: #ffffff;
+  --paper-warm: #f7f5f2;
+  --surface: #f2f1f1;
+  --line: #cccccc;
+  --sakura: #eee0e9;
+  --matcha: #d6e2db;
+  --vermillion: #c41230;
   --sp-1: .25rem;
   --sp-2: .5rem;
   --sp-3: 1rem;
   --sp-4: 1.5rem;
   --sp-5: 2.5rem;
   --sp-6: 4rem;
-  /* Rounding */
-  --rd-s: 4px;
-  --rd-m: 8px;
-  --rd-l: 12px;
-  --gothic: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", system-ui, sans-serif;
-  --mincho: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
-  /* Retained from the town's own identity, used sparingly */
-  --vermillion: #c41230;
+  --rd-s: 0;
+  --rd-m: 0;
+  --rd-l: 0;
+  --rd-pill: 1.5rem;
+  --gothic: "Yu Gothic Medium", "Yu Gothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+  --mincho: "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --aui-grey-900: var(--ink);
+  --aui-grey-700: #444444;
+  --aui-grey-536: var(--ink-muted);
+  --aui-grey-420: #999999;
+  --aui-grey-200: var(--line);
+  --aui-grey-100: var(--surface);
+  --aui-grey-50: var(--paper-warm);
+  --aui-white: var(--paper);
+  --aui-blue-1200: var(--harbour-navy-deep);
+  --aui-blue-1000: var(--harbour-navy-deep);
+  --aui-blue-900: var(--harbour-navy);
+  --aui-blue-50: var(--matcha);
+  --aui-yellow-300: #e8d48b;
+  --aui-red-1000: var(--vermillion);
+  --aui-green-1000: #3a7c4f;
 }
+
 
 #start {
   position: fixed;
@@ -52,11 +56,14 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  background: var(--aui-grey-50);
-  color: var(--aui-grey-900);
+  background: var(--paper-warm);
+  color: var(--ink);
   font-family: var(--gothic);
   font-size: 1rem;
-  line-height: 1.7;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: normal;
+  font-feature-settings: normal;
   -webkit-font-smoothing: antialiased;
   -webkit-user-select: text;
   user-select: text;
@@ -68,8 +75,8 @@
    the white cards and the grey page. */
 #start :is(a, button, [tabindex]):focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--aui-yellow-300), 0 0 0 6px #000;
-  border-radius: var(--rd-s);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 5px var(--harbour-navy);
+  border-radius: 2px;
 }
 
 .sr-only {
@@ -86,10 +93,11 @@
 .board-frame {
   max-width: 68rem;
   margin: 0 auto;
-  background: var(--aui-white);
-  border: 1px solid var(--aui-grey-200);
-  border-radius: var(--rd-l);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0;
   overflow: hidden;
+  box-shadow: none;
 }
 /* The printed board's crop marks belong to the old treatment. */
 .crop-marks { display: none; }
@@ -112,19 +120,22 @@
   color: var(--aui-grey-536); margin: 0 0 var(--sp-1);
 }
 .board-jp {
-  font-family: var(--mincho); font-size: 1.125rem; letter-spacing: .16em;
-  color: var(--aui-grey-700); margin: 0 0 var(--sp-1);
+  margin: 0 0 var(--sp-1);
+  font-family: var(--mincho); font-size: clamp(1.5rem, 5.5vw, 2.25rem);
+  font-weight: 400; line-height: 1.5; letter-spacing: normal;
+  color: var(--ink);
 }
 .board-hero h1 {
   margin: 0 0 var(--sp-2);
-  font-size: clamp(1.75rem, 6.5vw, 3rem);
-  font-weight: 700; line-height: 1.4; letter-spacing: .01rem;
-  color: var(--aui-grey-900);
+  font-family: var(--mincho);
+  font-size: clamp(1.75rem, 6.5vw, 2.75rem); font-weight: 400;
+  line-height: 1.35; letter-spacing: normal;
+  color: var(--ink);
 }
-.board-hero h1 span { color: var(--aui-blue-900); }
+.board-hero h1 span { color: var(--harbour-navy); }
 .board-lede {
-  margin: 0; max-width: 46rem;
-  font-size: .9375rem; line-height: 1.6; color: var(--aui-grey-700);
+  margin: 0; max-width: 36rem;
+  color: var(--ink); font-size: 1rem; line-height: 1.6;
 }
 /* On a phone the point of this page is the button. The seal and edition block is
    decoration that repeats the kicker, so it waits until there is room for it. */
@@ -143,45 +154,47 @@
 .admit {
   margin: 0 0 var(--sp-3);
   padding: var(--sp-4);
-  background: var(--aui-blue-50);
-  border: 1px solid var(--aui-grey-200);
-  border-radius: var(--rd-m);
+  background: var(--sakura);
+  border: none;
+  border-radius: 0;
 }
 .admit h2 {
   margin: 0 0 var(--sp-2);
-  font-size: 1.5rem; font-weight: 700; line-height: 1.5; letter-spacing: .02rem;
+  font-family: var(--mincho);
+  font-size: clamp(1.25rem, 4vw, 1.75rem); font-weight: 400; line-height: 1.5; letter-spacing: normal;
+  color: var(--ink);
 }
 .admit > p {
   margin: 0 0 var(--sp-3); max-width: 44rem;
-  color: var(--aui-grey-700); font-size: .9375rem; line-height: 1.75;
+  color: var(--ink); font-size: 1rem; line-height: 1.6;
 }
 #enter {
   display: inline-flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
-  min-height: 3rem; min-width: 12rem; width: 100%; max-width: 22rem;
-  padding: var(--sp-2) var(--sp-3);
-  border: none; border-radius: var(--rd-m);
-  background: var(--aui-blue-900); color: var(--aui-white);
-  font-family: inherit; font-size: 1rem; font-weight: 700; letter-spacing: .02rem;
+  min-height: 3rem; min-width: min(100%, 18rem); width: 100%; max-width: 22rem;
+  padding: .65rem 1.25rem;
+  border: 2px solid var(--harbour-navy); border-radius: var(--rd-pill);
+  background: var(--harbour-navy); color: var(--paper);
+  font-family: var(--gothic); font-size: .9375rem; font-weight: 700; letter-spacing: normal;
   cursor: pointer; box-shadow: none;
-  transition: background-color .12s ease;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
-#enter:hover { background: var(--aui-blue-1000); text-decoration: underline; }
-#enter:active { background: var(--aui-blue-1200); }
-#enter:disabled { background: var(--aui-grey-420); cursor: progress; }
-#enter small { display: block; font-size: .75rem; font-weight: 400; opacity: .85; letter-spacing: .16em; }
-#enter b { display: block; font-size: 1rem; }
+#enter:hover { background: var(--harbour-navy-deep); border-color: var(--harbour-navy-deep); text-decoration: none; }
+#enter:active { background: var(--ink); border-color: var(--ink); }
+#enter:disabled { background: var(--line); border-color: var(--line); color: var(--ink-muted); cursor: progress; }
+#enter small { display: block; font-size: .7rem; font-weight: 400; opacity: .9; letter-spacing: .12em; font-family: var(--mincho); }
+#enter b { display: block; font-size: 1rem; letter-spacing: .04em; }
 #enter .arrow { font-size: 1.25rem; }
 #bootStatus {
   margin-top: var(--sp-2);
-  font-size: .75rem; font-weight: 700; letter-spacing: .02rem;
-  color: var(--aui-grey-536);
+  font-size: .8125rem; font-weight: 700; letter-spacing: normal;
+  color: var(--harbour-navy);
 }
 
 /* ---------- Status strip ---------- */
 .board-status {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px; background: var(--aui-grey-100);
-  border: 1px solid var(--aui-grey-100); border-radius: var(--rd-m); overflow: hidden;
+  gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: 0; overflow: hidden;
 }
 .board-status > div { background: var(--aui-white); padding: var(--sp-3); }
 .board-status span {
@@ -194,11 +207,11 @@
 /* ---------- Panels ---------- */
 .board-split { display: grid; gap: var(--sp-3); padding: 0 var(--sp-3) var(--sp-3); }
 .clock-panel, .controls-panel {
-  border: 1px solid var(--aui-grey-420); border-radius: var(--rd-m);
-  padding: var(--sp-3); background: var(--aui-white);
+  border: 1px solid var(--line); border-radius: 0;
+  padding: var(--sp-3); background: var(--paper);
 }
 .clock-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-3); }
-.clock-head h2 { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: .02rem; }
+.clock-head h2 { margin: 0; font-family: var(--mincho); font-size: 1.35rem; font-weight: 400; letter-spacing: normal; }
 .clock-head p { margin: 0; text-align: right; font-size: .75rem; color: var(--aui-grey-536); }
 .clock-head small { display: block; font-weight: 700; color: var(--aui-green-1000); letter-spacing: .02rem; }
 .clock-body { display: grid; gap: var(--sp-3); justify-items: center; margin-top: var(--sp-3); }
@@ -217,7 +230,7 @@
 .clock-modes button b { display: block; font-size: .9375rem; font-weight: 700; }
 .clock-modes button span { display: block; font-size: .6875rem; color: var(--aui-grey-536); }
 .clock-modes button[aria-pressed="true"] {
-  background: var(--aui-blue-900); border-color: var(--aui-blue-900); color: var(--aui-white);
+  background: var(--harbour-navy); border-color: var(--harbour-navy); color: var(--paper);
 }
 .clock-modes button[aria-pressed="true"] span { color: rgba(255, 255, 255, .85); }
 
@@ -235,7 +248,7 @@
 .section-bar {
   display: flex; justify-content: space-between; align-items: flex-end; gap: var(--sp-3);
   padding: var(--sp-3) 0 var(--sp-2);
-  border-bottom: 2px solid var(--aui-grey-900);
+  border-bottom: 2px solid var(--harbour-navy);
   margin-bottom: var(--sp-3);
 }
 .section-bar h2 { margin: 0; font-size: 1.375rem; font-weight: 700; letter-spacing: .02rem; }
@@ -303,13 +316,15 @@
 .section-bar.paper { background: none; }
 
 .board-foot {
-  padding: var(--sp-4) var(--sp-3);
-  border-top: 1px solid var(--aui-grey-100);
-  background: var(--aui-grey-50);
-  font-size: .8125rem; color: var(--aui-grey-700);
+  padding: var(--sp-5) var(--sp-3);
+  background: var(--harbour-navy);
+  border-top: none;
+  color: var(--paper);
+  font-size: .875rem;
 }
 .board-foot p { margin: 0 0 var(--sp-2); }
-.board-foot .jp { font-family: var(--mincho); color: var(--aui-grey-536); }
+.board-foot .jp { font-family: var(--mincho); color: rgba(255,255,255,.78); }
+.board-foot a { color: var(--paper); }
 
 /* Small or short screens: the button has to be reachable without scrolling, so the
    framing tightens rather than the content going away. */
@@ -340,4 +355,28 @@
 @media (prefers-reduced-motion: reduce) {
   #enter { transition: none; }
   .hand-second { display: none; }
+}
+
+/* Responsive polish — Toraya harbour board */
+@media (max-width: 26rem) {
+  .board-wrap {
+    padding:
+      max(var(--sp-2), env(safe-area-inset-top))
+      max(var(--sp-2), env(safe-area-inset-right))
+      max(var(--sp-5), env(safe-area-inset-bottom))
+      max(var(--sp-2), env(safe-area-inset-left));
+  }
+  .admit { padding: var(--sp-3); }
+  #enter { max-width: none; }
+}
+@media (min-width: 48rem) {
+  .board-hero { display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-4); align-items: start; }
+  .board-vert {
+    display: block; writing-mode: vertical-rl; font-family: var(--mincho);
+    font-size: 1rem; font-weight: 400; letter-spacing: .35em; color: var(--harbour-navy);
+    margin: 0; padding-top: var(--sp-1);
+  }
+  .board-stamp { display: block; }
+  .board-status { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .board-split { grid-template-columns: 1.1fr .9fr; }
 }
