@@ -67,6 +67,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    destinations.set(key,point);return point;
   }return target;
  }
+ function faceStep(g,dx,dz,dt){
+  const heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
+  g.rotation.y+=THREE.MathUtils.clamp(delta,-2.6*dt,2.6*dt);
+  return Math.abs(delta)<.35;
+ }
  function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
@@ -88,10 +93,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(escape!==null)break;
    }
    if(escape!==null){
+    if(person===thuan&&!faceStep(g,Math.sin(escape),Math.cos(escape),dt))return;
     // The step itself is not collision-checked, because every step from in here fails
     // that check -- that is the whole problem. Worst case it crosses something thin on
     // the way out, which beats standing in a bench until the end of the day.
-    const out=Math.min(.4,dt*2.4),x=g.position.x+Math.sin(escape)*out,z=g.position.z+Math.cos(escape)*out;
+    const out=Math.min(.4,dt*(person===thuan?.9:2.4)),x=g.position.x+Math.sin(escape)*out,z=g.position.z+Math.cos(escape)*out;
     g.position.set(x,groundHeight(x,z),z);routes.delete(g);
    }
    return;
@@ -107,7 +113,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.
-  const step=Math.min(d,dt*(pace||(person.profile?.age>65?.75:1.25))),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
+  const paceLimit=pace||(person.profile?.age>65?.75:1.25);
+  const speed=person===thuan?Math.min(paceLimit,(route.speed||0)+dt*1.8):paceLimit;
+  const step=Math.min(d,dt*speed),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
    if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
@@ -115,9 +123,21 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   });
   const candidates=[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
   const beforeX=g.position.x,beforeZ=g.position.z;
-  for(const [x,z] of candidates)if(clearOfPeople(x,z)&&!collides(x,z,.3)&&Math.abs(groundHeight(x,z)-g.position.y)<=step*.65+.025){g.position.set(x,groundHeight(x,z),z);break;}
+  for(const [x,z] of candidates){
+   if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;
+   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>step*.65+.025)continue;
+   // Face the actual clear step, including a detour, before advancing. Turning after
+   // translation lets the walk clip carry her backwards or sideways around corners.
+   if(person===thuan&&!faceStep(g,x-beforeX,z-beforeZ,dt)){
+    // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
+    // a grid point behind her and make her turn back and forth without leaving it.
+    route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
+   }
+   g.position.set(x,groundHeight(x,z),z);route.speed=speed;break;
+  }
   const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
-  if(Math.hypot(movedX,movedZ)>.0001){
+  if(person===thuan){if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;}
+  else if(Math.hypot(movedX,movedZ)>.0001){
    const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
    // Sidestepping round an obstacle used to leave someone walking a direction their
    // body was not facing for the best part of a second, which reads as a glide. Turn

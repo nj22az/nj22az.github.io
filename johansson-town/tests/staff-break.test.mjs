@@ -27,7 +27,7 @@ async function afternoon(){
   staffBench:built.staffBench,townMode:'peninsula'};
  const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations:{}}),
   paused:()=>false,collides,getObserverPosition:()=>player.position});
- const run=(from,to)=>{for(let m=from;m<to;m+=1/60)ai.update(1/60,m,false);};
+ const run=(from,to,observe=()=>{})=>{for(let m=from;m<to;m+=1/60){const before=g.position.clone(),yaw=g.rotation.y;ai.update(1/60,m,false);observe(before,yaw);}};
  return {g,collides,run};
 }
 
@@ -63,7 +63,13 @@ test('nobody put inside a collider is stuck there for good',async()=>{
  run(838,900);
  assert.equal(g.userData.napping,undefined,'She is still on her break');
  g.position.set(STAFF_BENCH.x,0,STAFF_BENCH.z);
+ g.rotation.y=0;
  assert.equal(collides(g.position.x,g.position.z,.3),true,'The bench stopped being solid');
- run(900,904);
+ run(900,904,(before,yaw)=>{
+  const dx=g.position.x-before.x,dz=g.position.z-before.z,distance=Math.hypot(dx,dz);
+  const turn=Math.abs(Math.atan2(Math.sin(g.rotation.y-yaw),Math.cos(g.rotation.y-yaw)));
+  assert.ok(turn<=2.6/60+1e-8,'Recovery turns without snapping');
+  if(distance>.0001)assert.ok((-Math.sin(g.rotation.y)*dx-Math.cos(g.rotation.y)*dz)/distance>.93,'Recovery walks forwards');
+ });
  assert.equal(collides(g.position.x,g.position.z,.3),false,'She cannot get out of something she is standing in');
 });

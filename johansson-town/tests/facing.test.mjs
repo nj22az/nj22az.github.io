@@ -60,6 +60,15 @@ test('someone mid-task keeps their body where it was and only looks',()=>{
  assert.equal(pass.stats.addressed,1);
 });
 
+test('speaking to a walking Thuan cannot turn her body away from her route',()=>{
+ const her=person(0,0,{name:'Thuan',playerConversation:true,character:{moving:true}});
+ const pass=createFacing({world:world([her]),getPlayerPosition:()=>at(0,3)});
+ for(let i=0;i<60;i++)pass.update(1/60);
+ assert.equal(her.g.rotation.y,0,'The active gait owns her body direction');
+ assert.equal(pass.stats.turning,0);
+ assert.deepEqual(her.g.userData.lookTarget,[0,1.66,3],'She can still acknowledge the speaker with her gaze');
+});
+
 test('standing near someone earns a glance, not a pirouette',()=>{
  const him=person(0,0,{name:'Kenji'});
  him.g.rotation.y=Math.PI;

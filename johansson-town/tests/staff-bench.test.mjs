@@ -104,8 +104,18 @@ test('the complete shop controller receives Thuan back at the till after her ben
   const shop=createSakuraShop({world,scene,state,ledger,register,action(){},exit(){},getMinutes:()=>minutes,getPlayerPosition:()=>player.position,isInside:()=>false,onBorrow:activities.release});
   const phases=new Set();let returned=false;
   for(;minutes<1000;minutes+=1/60){
+   const before=thuan.g.position.clone(),parent=thuan.g.parent,yaw=thuan.g.rotation.y,chair=thuan.g.userData.chairBlend;
    ai.update(1/60,minutes,false);shop.update(1/60);world.update(1/60,minutes,1,minutes);
    const data=thuan.g.userData;
+   const dx=thuan.g.position.x-before.x,dz=thuan.g.position.z-before.z,distance=Math.hypot(dx,dz);
+   // Room transfers change coordinate frames; sitting shifts weight over the seat.
+   // Every ordinary footstep, including the shop exit and outdoor detours, faces ahead.
+   if(thuan.g.parent===parent&&distance>.0001&&distance<.1&&!Number.isFinite(chair)&&!Number.isFinite(data.chairBlend)){
+    const forward=(-Math.sin(thuan.g.rotation.y)*dx-Math.cos(thuan.g.rotation.y)*dz)/distance;
+    assert.ok(forward>.93,`Thuan walks forwards during ${data.activity} at ${minutes}: ${forward}`);
+    const turn=Math.abs(Math.atan2(Math.sin(thuan.g.rotation.y-yaw),Math.cos(thuan.g.rotation.y-yaw)));
+    assert.ok(turn<=2.6/60+1e-8,'Walking turns remain continuous');
+   }
    if(data.staffBenchPhase)phases.add(data.staffBenchPhase);
    if(!data.staffBenchPhase&&!data.indoors&&!data.usingTownObject)assert.equal(blocked(thuan.g.position.x,thuan.g.position.z,.3),false);
    if(minutes>930&&data.inMarket&&data.roomTransition)returned=true;
