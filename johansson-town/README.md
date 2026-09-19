@@ -17,7 +17,7 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 
 At **Kenji & Tetsuo Repairs**, use the Form 3D printer to make five collectible
 models. StepWise is available at the same bench. Carry one of each design,
-inspect it from the Field book, and talk to Yuri at Sakura Konbini to sell it for
+inspect it from the Field book, and talk to Thuan at Sakura Konbini to sell it for
 town yen during her working hours. Printing and inventory survive reloads.
 See `docs/WORKSHOP-PRINTING.md` for the full loop and regeneration instructions.
 
@@ -54,9 +54,9 @@ This is still **not a finished Shenmue/Yakuza-like slice**: the character faces,
 
 Kenji’s editable Blender source, actual model renders and reproducible export instructions are in `art/characters/kenji/README.md`. This establishes the anatomical character pipeline; it does not make the rest of the cast or city finished.
 
-Sakura Shōten now has Yui, an adult Blender-authored clerk, eight selectable goods, a hinged cooler, till, radio and service bell. A disabled Shopify Storefront adapter supports future approved product mappings and explicit real-money checkout. See `docs/SAKURA_STORE.md`. No live Shopify store or payment flow has been activated.
+Sakura Shōten now has Thuan, the adult Blender-authored konbini lead, eight selectable goods, a hinged cooler, till, radio and service bell. A disabled Shopify Storefront adapter supports future approved product mappings and explicit real-money checkout. See `docs/SAKURA_STORE.md`. No live Shopify store or payment flow has been activated.
 
-The Sakura visual revision clears the daytime fog, revises Yuri’s face and outfit, and rebuilds her shop frontage and stocked interior. See `docs/SAKURA_VISUAL_REVIEW.md` for actual geometry renders and remaining visual limits. This is not a completed whole-town AAA upgrade.
+The Sakura visual revision clears the daytime fog, revises Thuan’s face and outfit, and rebuilds her shop frontage and stocked interior. See `docs/SAKURA_VISUAL_REVIEW.md` for actual geometry renders and remaining visual limits. This is not a completed whole-town AAA upgrade.
 
 
 ### Outdoor sections and startup recovery
@@ -129,9 +129,9 @@ GPU rendering still require a device check.
 
 ## Direct character appearances and bookshop frontage
 
-Ordinary residents now use the five local, palette-coloured Quaternius low-poly bodies. Each body is one skinned mesh with no texture downloads; residents retain independent clothing colours and animation. Yuri keeps the supplied Meshy rig, Aya keeps her authored model, and Reiko keeps the supplied Nozomi model. No VRoid model or VRoid texture is requested by the active character pipeline.
+Ordinary residents now use the five local, palette-coloured Quaternius low-poly bodies. Each body is one skinned mesh with no texture downloads; residents retain independent clothing colours and animation. Thuan keeps the supplied Meshy rig, Aya keeps her authored model, and Reiko keeps the supplied Nozomi model. No VRoid model or VRoid texture is requested by the active character pipeline.
 
-The opening gate starts Yuri’s download alongside the street assets without increasing the three-second gate. Residents mount only their selected appearance. Until that appearance is ready, the logical character retains its schedule but has no visible substitute, interaction target or player collision. Shared models download once; successful late loads mount promptly, and failed requests remain eligible for bounded retries. The low-poly rigs retain their native walk, run and greeting clips and have seated, eating and drinking clips fitted to their own skeletons.
+The opening gate starts Thuan’s download alongside the street assets without increasing the three-second gate. Residents mount only their selected appearance. Until that appearance is ready, the logical character retains its schedule but has no visible substitute, interaction target or player collision. Shared models download once; successful late loads mount promptly, and failed requests remain eligible for bounded retries. The low-poly rigs retain their native walk, run and greeting clips and have seated, eating and drinking clips fitted to their own skeletons.
 
 Front-Row Books has one visible timber doorway; the redundant source-model sliding panel is enclosed by a plaster wall. The bookshop bicycle is parked beside the frontage, clear of the entrance. Bicycles now have a complete frame, spokes, fork, pedals, mudguards, basket and rear carrier, merged into one render mesh. The oversized triple rack is replaced by a single modest stand.
 

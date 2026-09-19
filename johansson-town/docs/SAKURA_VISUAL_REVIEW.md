@@ -4,7 +4,7 @@ This revision responds to the live-play feedback about heavy fog, the clerk's ge
 
 ## Clerk first
 
-The clerk's display name is now **Yuri**. Existing `yui` asset filenames remain stable. The Blender source changes facial proportions and adds a restrained smile with MakeHuman's Asian expression units; it also changes hair to near-black, reduces the glasses, builds a sewn collar and cloth tie, fits a brimmed hat, and adjusts the body proportions. Covered scalp geometry is kept beneath the hat. The photos guide the design; they are not embedded as facial textures or represented as a scan. The same anatomical CC0 base and authoring dependencies remain in use.
+The clerk's display name is **Thuan**. Existing `yui` / `yuri*` asset filenames remain stable until a later rename pass. The Blender source changes facial proportions and adds a restrained smile with MakeHuman's Asian expression units; it also changes hair to near-black, reduces the glasses, builds a sewn collar and cloth tie, fits a brimmed hat, and adjusts the body proportions. Covered scalp geometry is kept beneath the hat. The photos guide the design; they are not embedded as facial textures or represented as a scan. The same anatomical CC0 base and authoring dependencies remain in use.
 
 The model is still a modest-polygon authored asset with scripted motion. Hair, costume tailoring and animation need continued art work; the entire cast has not been replaced.
 

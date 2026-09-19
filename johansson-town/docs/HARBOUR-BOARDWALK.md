@@ -6,10 +6,10 @@ The owner's Quiet City Block replaces the four southern shop exteriors in place.
 | --- | --- |
 | Timber shop with lanterns | Harbour Evening Press (`journal`) |
 | Three-storey grey shop | Electronics (`electronics`) |
-| Blue convenience store | Sakura / Yuri (`market`) |
+| Blue convenience store | Sakura / Thuan (`market`) |
 | Stone shop | Harbour Records (`career`) |
 
-Each exterior has its own collider, readable destination sign and entrance connected to the existing interior. Site IDs and save data remain compatible. First-person movement, running, jumping, Yuri, opening hours and quest-gated travel use the existing game systems. Low deck lights replace the overhead poles along this section.
+Each exterior has its own collider, readable destination sign and entrance connected to the existing interior. Site IDs and save data remain compatible. First-person movement, running, jumping, Thuan, opening hours and quest-gated travel use the existing game systems. Low deck lights replace the overhead poles along this section.
 
 ## Runtime asset
 
