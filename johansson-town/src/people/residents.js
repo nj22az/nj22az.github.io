@@ -22,7 +22,12 @@ const NEIGHBOURHOOD={
 export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  const source=name==='Thuan'?THUAN_PROFILE:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
- return {...source,...NEIGHBOURHOOD[name],work:({Aya:TOWN_DESTINATIONS.books,Kenji:TOWN_DESTINATIONS.workshop,Reiko:TOWN_DESTINATIONS.books,Tetsuo:TOWN_DESTINATIONS.workshop,'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Aya:[.15,18.7],Kenji:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
+ const shopFloor={Aya:'books',Reiko:'books',Kenji:'workshop',Tetsuo:'workshop'}[name];
+ const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Aya:[.15,18.7],Kenji:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Nao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
+ // The shop staff stand at their own shop's door, and where that door is depends on
+ // the layout, which is not known yet. Read it when somebody asks.
+ if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
+ return profile;
 });
 export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);

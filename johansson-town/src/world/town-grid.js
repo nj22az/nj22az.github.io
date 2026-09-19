@@ -1,4 +1,5 @@
 import {ALLEY_BOOKS,ALLEY_WORKSHOP} from './business-layout.js';
+import {westShopDoor} from './west-shops.js';
 import {consolidateBusinesses} from './businesses.js';
 import {BUS_STATION} from './bus-station.js';
 import {PARK} from './park-layout.js';
@@ -9,7 +10,13 @@ export const SHOP_ADDRESSES=Object.freeze({
 export const TEA_HOUSE=Object.freeze({x:8.4,z:13.4,door:[8.4,0,18.4]});
 export const TOWN_DESTINATIONS=Object.freeze({
  bus:[...BUS_STATION.queue],busArrival:[...BUS_STATION.arrival],busDriver:[...BUS_STATION.driver],
- workshop:[ALLEY_WORKSHOP.door[0],ALLEY_WORKSHOP.door[2]],books:[ALLEY_BOOKS.door[0],ALLEY_BOOKS.door[2]],pier:[-1.6,-62],
+ // Read rather than stored: which layout is running is not settled when this module
+ // is first read, and on the peninsula these two shops stand on the west pavement
+ // instead of in the night-market alley. Kenji and Tetsuo worked at the alley's door
+ // for as long as it was stored -- out on the boardwalk, nowhere near their shop.
+ get workshop(){return westShopDoor('form3d')||[ALLEY_WORKSHOP.door[0],ALLEY_WORKSHOP.door[2]];},
+ get books(){return westShopDoor('frontrow')||[ALLEY_BOOKS.door[0],ALLEY_BOOKS.door[2]];},
+ pier:[-1.6,-62],
 });
 export function applyShopAddresses(sites){
  consolidateBusinesses(sites);

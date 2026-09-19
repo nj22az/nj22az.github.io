@@ -1,5 +1,6 @@
 import {ITEMS} from '../../../content-data.js';
 import {makeContentObject} from '../../../content-items.js';
+import {peninsulaActive} from '../town-mode.js';
 
 const positions={
  frontrow:{
@@ -12,8 +13,12 @@ const positions={
 export const BUSINESS_CONTENT=Object.freeze(positions);
 export const BUSINESS_CONTENT_CATALOGUE=ITEMS.map(item=>{
  const siteId=Object.keys(positions).find(id=>positions[id][item.id]);
- const place={frontrow:'Front-Row Books & Press · shopping alley',form3d:'Kenji & Tetsuo Repairs · shopping alley',office:'Johansson Harbour Office · quay'}[siteId];
- return {...item,siteId,place};
+ // Read on access: the alley is the old street's, and on the peninsula both of these
+ // shops front the shopping street instead. Which layout is running is not settled
+ // when this module is first read.
+ const street=()=>peninsulaActive()?'shopping street':'shopping alley';
+ const place=()=>({frontrow:'Front-Row Books & Press · '+street(),form3d:'Kenji & Tetsuo Repairs · '+street(),office:'Johansson Harbour Office · quay'})[siteId];
+ return {...item,siteId,get place(){return place();}};
 });
 export function buildBusinessContent({site,room,register,onInspect,onAction}){
  const entries=positions[site.id]||{},objects=new Map();

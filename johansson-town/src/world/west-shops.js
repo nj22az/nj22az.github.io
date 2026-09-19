@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
+import {peninsulaActive} from './town-mode.js';
 
 /**
  * The shops on the west pavement.
@@ -12,8 +13,14 @@ import {buildShopDoor} from './shop-door.js';
  * that stands between them, so that Thuan walks out of her own shop, past Aya's, and
  * into Minato for a beer — and so that "next to the bookshop" means something again.
  *
- * The old street built it as an alley shop, a recessed door in the side of the
- * supplied night-market kit. That kit is not here, so it gets a building of its own:
+ * The fourth is the repair workshop. It had been the worst off of the lot: a business
+ * with two staff, an interior full of printed models and a line of Kenji's dialogue
+ * pointing at it, and no building at all. Its door stood at 0.4, -6.7 -- out on the
+ * boardwalk beside a lamp post, because that is where the night-market kit's alley put
+ * it -- so the town offered you a way into a shop that was not there.
+ *
+ * The old street built these as alley shops, a recessed door in the side of the
+ * supplied night-market kit. That kit is not here, so they get buildings of their own:
  * plastered flank walls, a tiled pitch, a glazed frontage onto the pavement and the
  * same sliding door the alley units use. The interior is untouched — Aya's shelves,
  * Reiko's press and the reading chair are built by buildCompactShop from the room in
@@ -28,7 +35,24 @@ export const WEST_SHOPS=Object.freeze({
  // On its own door, which the alley layout already put on this pavement at z -2.89.
  // Minato's north gable stops at -6.10, half a metre short of this frontage.
  frontrow:Object.freeze({z:-2.89,width:6.2,depth:4.6}),
+ // North of the shop crossing, which runs at z 3.6 to 6.6 and has to stay walkable.
+ // The next thing up the pavement is the payphone at 17.2 and the arcade gantry's west
+ // post at 18.7, so this sits in the clear stretch between them, and the street mirror
+ // and the parked bicycle end up outside a repair shop, where they belong.
+ form3d:Object.freeze({z:9.4,width:6.6,depth:4.8}),
 });
+
+/**
+ * Where a west-pavement shop's door lands, for anything that needs to know before the
+ * building is built -- its staff's working day, the escort that walks you to it.
+ *
+ * Only the peninsula builds these, so elsewhere this says nothing and the alley kit's
+ * own door stands.
+ */
+export function westShopDoor(id){
+ const plot=peninsulaActive()&&WEST_SHOPS[id];
+ return plot?[MAIN_ROAD.pavementWest+.65,plot.z]:null;
+}
 
 /**
  * @param {object} options

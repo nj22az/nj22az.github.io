@@ -3,6 +3,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {alleyBusinessLayout} from '../business-layout.js';
 import {buildShopDoor} from '../shop-door.js';
+import {peninsulaActive} from '../town-mode.js';
 
 export const TEA_ROOM={width:6.6,depth:5.8,bounds:{minX:-3.3,maxX:3.3,minZ:-2.9,maxZ:2.9},doorX:0,spawn:[0,0,2.25],exit:[0,1.1,2.78],yaw:0};
 export function compactRoomLayout(id){return id==='tea-house'?TEA_ROOM:alleyBusinessLayout(id)?.room;}
@@ -30,7 +31,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  for(const z of [-hd,hd])box('Wall skirting',[w,.14,.08],[0,.1,z],dark);
  for(const x of [-hw,hw])box('Wall skirting',[.08,.14,d],[x,.1,0],dark);
  const door=buildShopDoor(room,{name:site.id+'-inside-door',width:1.0});door.group.position.set(doorX,0,hd-.02);door.group.rotation.y=Math.PI;
- anchor(layout.exit,'Exit to '+(site.id==='tea-house'?'North Street':'the shopping alley'),'exit');
+ anchor(layout.exit,'Exit to '+(site.id==='tea-house'?'North Street':peninsulaActive()?'the street':'the shopping alley'),'exit');
  // A small illuminated shop window gives the front wall a clear street orientation.
  const windowX=doorX<0?Math.min(hw-.65,doorX+2):Math.max(-hw+.65,doorX-1.8);
  box('Window surround',[1.08,1.22,.06],[windowX,1.75,hd-.02],dark);
