@@ -68,6 +68,34 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }return target;
  }
  function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
+  // Somebody standing inside a collider can never leave it. Every step out of one is
+  // still in one, so the walker refuses all of them -- and the route it would have
+  // followed comes back empty anyway, because the path starts in an obstacle. Getting
+  // up off the staff bench did exactly this, and she played out the rest of her day
+  // from inside the bench. So before anything else: if the ground underfoot is already
+  // blocked, walk whichever way has the most room, which can only be out.
+  if(collides(g.position.x,g.position.z,.3)){
+   // The nearest direction with room to stand in, searched outwards. A probe close in
+   // is no use: clearing a bench means getting a body's width past it, so half a metre
+   // of looking finds nothing and decides there is nowhere to go.
+   let escape=null;
+   for(const reach of [.35,.7,1.05,1.4,1.75]){
+    for(let i=0;i<8;i++){
+     const angle=i*Math.PI/4,px=g.position.x+Math.sin(angle)*reach,pz=g.position.z+Math.cos(angle)*reach;
+     if(collides(px,pz,.3)||Math.abs(groundHeight(px,pz)-g.position.y)>.4)continue;
+     escape=angle;break;
+    }
+    if(escape!==null)break;
+   }
+   if(escape!==null){
+    // The step itself is not collision-checked, because every step from in here fails
+    // that check -- that is the whole problem. Worst case it crosses something thin on
+    // the way out, which beats standing in a bench until the end of the day.
+    const out=Math.min(.4,dt*2.4),x=g.position.x+Math.sin(escape)*out,z=g.position.z+Math.cos(escape)*out;
+    g.position.set(x,groundHeight(x,z),z);routes.delete(g);
+   }
+   return;
+  }
   let route=routes.get(g);if(!route||route.tag!==tag){route={tag,points:navigation.path(g.position,{x:target[0],z:target[1]}),at:0,stalled:0,checkpoint:g.position.clone()};routes.set(g,route);}
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
