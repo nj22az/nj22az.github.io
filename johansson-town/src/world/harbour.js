@@ -259,7 +259,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Rail only on far sides so the fishing position remains open and readable.
   for(const start of [-17,8])for(let x=start;x<start+9;x+=2.25){cyl(.06,1,[x,.63,-49.05],0x4b5c60);if(x<start+7)beam([x,1.02,-49.05],[x+2.25,1.02,-49.05],.045,0x4b5c60);}
-  label('港町','HARBOUR · FISHING PIER',[0,2.5,-44.15],3.8,.75);anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
+  // The quay's own board is gone too: it stood two and a half metres up on nothing at
+  // all, in the middle of the one open view the town has of the water.
+  anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // A couple of benches moved away from warehouse geometry.
   for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}

@@ -54,7 +54,7 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
   if(!best)return;
   let {a,b,authored}=best;
   if(authored&&a.profile.name!==authored[0])[a,b]=[b,a];
-  const general=rain?['You brought the rain with you.','I thought it belonged to the harbour.','Let us blame the gulls.']:(minutes%1440<360||minutes%1440>=1320)?['Still awake?','The town sounds different at night.','Listen. Even the gulls have gone home.']:[['How has your day been?','Busy. I have earned a proper supper.','Nao will find you a chair.'],['Have you seen Tama?','He went past looking terribly important.','Another inspection of the fish crates.'],['The harbour is looking peaceful.','Give the delivery trolley a moment.','I shall stand well clear.']][sequence++%3];
+  const general=rain?['You brought the rain with you.','I thought it belonged to the harbour.','Let us blame the gulls.']:(minutes%1440<360||minutes%1440>=1320)?['Still awake?','The town sounds different at night.','Listen. Even the gulls have gone home.']:[['How has your day been?','Busy. I have earned a proper supper.','Nao will find you a chair.'],['Have you seen Tama?','He went past looking terribly important.','Another inspection of the fish crates.'],['The harbour is looking peaceful.','Wait until Kenji comes through with the parcels.','I shall stand well clear.']][sequence++%3];
   active={pair:[a,b],lines:authored?.[2]||general,start:clock,signatures:[signature(a,minutes,rain),signature(b,minutes,rain)],speaker:a,text:(authored?.[2]||general)[0]};
   update(0,minutes,rain);
  }

@@ -70,7 +70,9 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  label('バス乗場','HARBOUR LINE TERMINAL · DEPARTURES',[-7.9,3.18,centreZ-.24],3.8,.62,0,'#e5dcc0','#3d514e',true);
  for(const x of [-7.4,4.2]){const bulb=cyl(.11,.18,[x,2.63,centreZ+.99],lampMat);lamps.push(bulb);}
  box([.08,.05,4.2],[MAIN_ROAD.x,GROUND_LAYER.apron+.025,BUS_STATION.queue[1]],steel,false);
- label('港町線','SHOPPING DISTRICT → HARBOUR',[MAIN_ROAD.x,2.28,BUS_STATION.z+3.6],3.2,.46,0,'#d9d0b3','#405653');
+ // No board across the bus road. It hung in the air over the carriageway with nothing
+ // holding it up, square across the view of the tunnel, and the terminal sign on its
+ // pole already says where the line goes.
  anchor([-7.2,1,BUS_STATION.queue[1]-.05],'Read Harbour Line timetable',()=>onAction('bus'));
  anchor([-2.7,1,BUS_STATION.queue[1]-.2],'Wait for the Harbour Line',()=>onAction('bus'));
  anchor([4.2,1,centreZ+.7],'Inspect bus station shelter',()=>onAction('inspect','Harbour Line bus station','The shelter timetable lists the shopping district, quay, and the last northern departure. The glass is marked by salt and rain.'));

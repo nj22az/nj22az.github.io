@@ -13,15 +13,37 @@ import * as THREE from '../../vendor/three.module.js';
  * The shop's footprint is 14.26 by 11.0 turned a quarter, so its back wall stands at
  * x -18.45 and the west yard runs on to -24.6. The bench sits a hand's width off the
  * wall with its back to it, facing out across the yard.
+ *
+ * It used to stand further down the wall with nothing but gravel leading to it, so the
+ * only way to find it was to walk round the shop on the chance there was something
+ * there. STAFF_YARD_ROUTE is the path that now goes to it: off the pavement at the
+ * shop's north corner, down the back, and it stops at the bench. A dead end with one
+ * thing at the end of it, which is what the back of a shop looks like.
  */
 export const STAFF_BENCH=Object.freeze({
- x:-19.1,z:-24.5,
+ x:-19.1,z:-23,
  /** Facing west, out into the yard, with the shop wall behind her. */
  yaw:-Math.PI/2,
  /** The seat, and where she stands up to. */
- seat:Object.freeze([-19.25,-24.5]),
- stand:Object.freeze([-20.5,-24.5]),
+ seat:Object.freeze([-19.25,-23]),
+ stand:Object.freeze([-20.5,-23]),
  eyeY:1.12,
+});
+
+/**
+ * The path to it. Peninsula only, because the yard and the bench are.
+ *
+ * It runs clear of the shop's north wall by a hand's width, turns down the back, and
+ * ends a foot past the bench. Nothing beyond it: the point of a service path round the
+ * back is that it goes one place.
+ *
+ * The turn is at x -19.9 so the paving reaches to within 15cm of the back wall and the
+ * bench stands on it. Half a metre further out and the bench sat on gravel with the
+ * path stopping short of it, which reads as a path to near the bench.
+ */
+export const STAFF_YARD_ROUTE=Object.freeze({
+ id:'staff-yard',peninsula:true,width:2.6,surface:'stone',
+ points:Object.freeze([[-8.6,-18.7],[-19.9,-18.7],[-19.9,STAFF_BENCH.z]]),
 });
 
 /**
@@ -55,6 +77,7 @@ export function buildStaffBench({parent,factory,colliders=[],shadows=false,regis
  seat.userData.seat={position:[STAFF_BENCH.seat[0],0,STAFF_BENCH.seat[1]],
   stand:[STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]],eyeY:STAFF_BENCH.eyeY,yaw,pitch:-.04};
  register?.(seat,'Sit on the staff bench',()=>onAction?.('seat','Staff bench',
-  'Thuan’s bench, behind the shop. Gravel, a wall, and twenty minutes of nobody wanting anything.'));
+  'Thuan’s bench, at the end of the path round the back. A wall, a strip of sky, and '+
+  'twenty minutes of nobody wanting anything.'));
  return {group:built.object,seat};
 }

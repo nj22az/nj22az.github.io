@@ -133,9 +133,6 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.deliveryTrolley(-7.5,-34.5,.02));
-  inspect([-6.8,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
-
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
   read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
 
@@ -258,7 +255,6 @@ export function createTown(options){
      const gap=p.g.position.distanceTo(world.bus.bus.position);
      return gap>2.4&&gap<14;
     }));
-    world.tunnel?.update?.(dt,options.getPlayerPosition?.());
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){
