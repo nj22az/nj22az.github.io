@@ -9,12 +9,14 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {STAFF_BENCH} from '../world/staff-bench.js';
+import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 export const DIALOGUE={
  Thuan:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
- Kenji:[['delivery','This trolley steers beautifully towards whichever ankle is nearest.'],['folio','Harbour office tray, unless the wind took it. Look for the blue tape.'],['game','One perfect Star Port run and I will show you the workshop. No charge for directions.'],['book','I delivered those books. My back now has a historical perspective.','book'],['part','A keychain without keys. Sensible. Nothing to lose yet.','keychain'],['map','Our repair workshop is in the shopping alley, opposite Books & Press.'],['weather','Rain is just the harbour making a delivery inland.'],['model','Don’t drop it. We’re inside.']],
+ Kenji:[['delivery','The morning round is parcels for half the arcade, and every one of them is heavier than it looks.'],['folio','Harbour office tray, unless the wind took it. Look for the blue tape.'],['game','One perfect Star Port run and I will show you the workshop. No charge for directions.'],['book','I delivered those books. My back now has a historical perspective.','book'],['part','A keychain without keys. Sensible. Nothing to lose yet.','keychain'],['map','Our repair workshop is in the shopping alley, opposite Books & Press.'],['weather','Rain is just the harbour making a delivery inland.'],['model','Don’t drop it. We’re inside.']],
  'Mrs Sato':[['stock','I sell many useful things. You seem determined to pick up paper.'],['shifts','The ramen counter keeps its own timetable. I arrive before the lunch rush and stay until the last bowl.'],['bligh','A captain is easier to judge from a dry chair.','bligh'],['fish','That fish is not becoming fresher while we discuss it.'],['food','Umeboshi rice ball. Eighty yen. Twenty seconds of renewed purpose.'],['book','Six books? He should charge by the kilogram.'],['weather','The noren is not an umbrella. Visitors continue to test this.'],['home','Leave things where you found them. A town runs on this small miracle.']],
  'Harbour master':[['obvious','Did you check the obvious thing twice? Good. Now check the connector.'],['folio','It is a document, not a relic. Put it back in the tray.'],['pattern','I still prefer a wooden pattern and a sharp pencil.','keychain'],['bligh','Read the Bligh paper? Command is not the same thing as shouting.','bligh'],['commission','Commissioning: prove it works before everyone goes home.'],['diagnostics','A useful fault report begins with what happened. Not what you hoped happened.'],['tide','The tide has not read the work order. Allow for this.'],['radio','Harbour Service, 82.1. Clear instructions. Mostly clear reception.']],
  'Bus driver':[['time','The timetable is optimistic. I admire that in paper.'],['stop','This is the Harbour Line. The bus is the part currently missing.'],['book','Those Swedish books need their own ticket.','book'],['cv','Two bases? I have two stops. It is not quite the same.','cv'],['rain','A wet timetable is still wrong.'],['route','Station that way. Harbour the other way. I keep it simple.']],
@@ -28,7 +30,7 @@ for(const archived of PROFILES){
 // Kenji's own voice: friendly 1980s American slang, still grounded in his job.
 DIALOGUE.Kenji=[
  ['hello','Yo, bro! How’s it going? Just keeping this old workshop running.'],
- ['delivery','Hey, dude, watch your ankles. This trolley’s got a mind of its own.'],
+ ['delivery','Parcels for the whole arcade, bro. Half of them are books. My back keeps a list.'],
  ['folio','Yo, bro, try the harbour office tray. Blue tape on the folder. Can’t miss it.'],
  ['game','One clean Star Port run? That’s totally rad. Then I’ll show you the workshop.'],
  ['book','Dude, I hauled those books over here. My back’s still talking about it.','book'],
@@ -52,6 +54,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const COMMUTER_LAYOUTS=['shopping-district','peninsula'];
  const commuterMode=()=>COMMUTER_LAYOUTS.includes(world.townMode)||COMMUTER_LAYOUTS.includes(state()?.townMode);
  for(const person of world.people)person.g.userData.scheduled=true;
+ const thuan=world.people.find(p=>p.profile?.name==='Thuan');
+ const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
+  const p=getObserverPosition();return p&&Math.hypot(p.x-STAFF_BENCH.seat[0],p.z-STAFF_BENCH.seat[1])<.9;
+ }}):null;
  const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||THUAN_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
@@ -61,7 +67,41 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    destinations.set(key,point);return point;
   }return target;
  }
- function move(person,target,dt,tag,pace=0){const g=person.g;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<.7)return;
+ function faceStep(g,dx,dz,dt){
+  const heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
+  g.rotation.y+=THREE.MathUtils.clamp(delta,-2.6*dt,2.6*dt);
+  return Math.abs(delta)<.35;
+ }
+ function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
+  // Somebody standing inside a collider can never leave it. Every step out of one is
+  // still in one, so the walker refuses all of them -- and the route it would have
+  // followed comes back empty anyway, because the path starts in an obstacle. Getting
+  // up off the staff bench did exactly this, and she played out the rest of her day
+  // from inside the bench. So before anything else: if the ground underfoot is already
+  // blocked, walk whichever way has the most room, which can only be out.
+  if(collides(g.position.x,g.position.z,.3)){
+   // The nearest direction with room to stand in, searched outwards. A probe close in
+   // is no use: clearing a bench means getting a body's width past it, so half a metre
+   // of looking finds nothing and decides there is nowhere to go.
+   let escape=null;
+   for(const reach of [.35,.7,1.05,1.4,1.75]){
+    for(let i=0;i<8;i++){
+     const angle=i*Math.PI/4,px=g.position.x+Math.sin(angle)*reach,pz=g.position.z+Math.cos(angle)*reach;
+     if(collides(px,pz,.3)||Math.abs(groundHeight(px,pz)-g.position.y)>.4)continue;
+     escape=angle;break;
+    }
+    if(escape!==null)break;
+   }
+   if(escape!==null){
+    if(person===thuan&&!faceStep(g,Math.sin(escape),Math.cos(escape),dt))return;
+    // The step itself is not collision-checked, because every step from in here fails
+    // that check -- that is the whole problem. Worst case it crosses something thin on
+    // the way out, which beats standing in a bench until the end of the day.
+    const out=Math.min(.4,dt*(person===thuan?.9:2.4)),x=g.position.x+Math.sin(escape)*out,z=g.position.z+Math.cos(escape)*out;
+    g.position.set(x,groundHeight(x,z),z);routes.delete(g);
+   }
+   return;
+  }
   let route=routes.get(g);if(!route||route.tag!==tag){route={tag,points:navigation.path(g.position,{x:target[0],z:target[1]}),at:0,stalled:0,checkpoint:g.position.clone()};routes.set(g,route);}
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
@@ -71,9 +111,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const points=detour.path(g.position,{x:target[0],z:target[1]});
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
   }
-  const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.16){route.at++;return;}
+  const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.
-  const step=Math.min(d,dt*(pace||(person.profile?.age>65?.75:1.25))),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
+  const paceLimit=pace||(person.profile?.age>65?.75:1.25);
+  const speed=person===thuan?Math.min(paceLimit,(route.speed||0)+dt*1.8):paceLimit;
+  const step=Math.min(d,dt*speed),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
    if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
@@ -81,9 +123,21 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   });
   const candidates=[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
   const beforeX=g.position.x,beforeZ=g.position.z;
-  for(const [x,z] of candidates)if(clearOfPeople(x,z)&&!collides(x,z,.3)&&Math.abs(groundHeight(x,z)-g.position.y)<=step*.65+.025){g.position.set(x,groundHeight(x,z),z);break;}
+  for(const [x,z] of candidates){
+   if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;
+   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>step*.65+.025)continue;
+   // Face the actual clear step, including a detour, before advancing. Turning after
+   // translation lets the walk clip carry her backwards or sideways around corners.
+   if(person===thuan&&!faceStep(g,x-beforeX,z-beforeZ,dt)){
+    // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
+    // a grid point behind her and make her turn back and forth without leaving it.
+    route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
+   }
+   g.position.set(x,groundHeight(x,z),z);route.speed=speed;break;
+  }
   const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
-  if(Math.hypot(movedX,movedZ)>.0001){
+  if(person===thuan){if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;}
+  else if(Math.hypot(movedX,movedZ)>.0001){
    const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
    // Sidestepping round an obstacle used to leave someone walking a direction their
    // body was not facing for the best part of a second, which reads as a glide. Turn
@@ -117,11 +171,23 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
+   if(p===thuan&&staffBreak?.active){
+    staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
+    routes.delete(g);outside.push(p);continue;
+   }
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?commuterPhase(v,minutes):'legacy';
+   const phase=transit?commuterPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
+   // Somebody who was already away when the game loaded is away.
+   //
+   // The hold below exists so that nobody blinks out at the kerb while you are
+   // watching them, and there is nothing to preserve for a person you have never seen.
+   // Held from the first frame, they spawn on the plan's target instead -- which for
+   // 'away' is the far end of the bus road -- and stand in a clump at the mouth of the
+   // tunnel until the next service, which is now as much as two and a half hours.
+   if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
    const holdForBus=transit&&phase==='away'&&!boarded(g);
    if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
@@ -147,7 +213,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
@@ -161,6 +227,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
+   if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);

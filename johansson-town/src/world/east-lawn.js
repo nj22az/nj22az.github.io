@@ -1,6 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
+import {GROUND_LAYER} from './ground-layers.js';
+import {buildEastGarden} from './east-garden.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -108,7 +110,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
- for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+.02,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
+ for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
   const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
   if(onMound(mx,mz))continue;
@@ -204,6 +206,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
+ const garden=buildEastGarden({parent:group,colliders,shadows,heightAt,register,onAction});
  /**
   * Lay the supplied park's own grass and leaf over the green, so the lawn and the mound
   * it runs up to are one field rather than two parks meeting along an edge. The model
@@ -249,5 +252,5 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
   }
   return true;
  };
- return {group,lawn,shore,shrubs,useParkGreenery};
+ return {group,lawn,shore,shrubs,garden,useParkGreenery,tick:garden.tick};
 }

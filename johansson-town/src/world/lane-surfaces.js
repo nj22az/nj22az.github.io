@@ -4,6 +4,8 @@ import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {shoppingDistrictActive} from './town-mode.js';
+import {GROUND_LAYER} from './ground-layers.js';
+import {pavedByTerminus} from './bus-station.js';
 
 // Low garden boundaries make the authored walking network legible. Leave every
 // junction open, including routes supplied by the shopping and dining models.
@@ -41,6 +43,7 @@ export function lanePatches(routes=activeRoutes().slice(3)) {
     if(!shoppingDistrictActive()&&inResidential(x,z)||inDiningLane(x,z))continue;
     if(x>MAIN_ROAD.pavementWest&&x<MAIN_ROAD.pavementEast&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
     if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
+    if(pavedByTerminus(x,z))continue;
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
     if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
   }
@@ -55,18 +58,29 @@ export function buildLaneSurfaces(parent,library) {
   const quad=(surface,points)=>{
     if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
     const b=batches.get(surface),n=b.positions.length/3;
-    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+.04,z);b.uv.push(x/4,z/4);}
+    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+GROUND_LAYER.lane,z);b.uv.push(x/4,z/4);}
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
   // A patch is laid as a grid rather than as one quad, because the ground under it is
-  // not flat. A single quad takes its height from its four corners and runs straight
-  // between them, while the east lawn beside it follows the ground on a 1.2m grid --
-  // so over the graded foot of the park mound the grass rose through the middle of the
-  // path and came out as green wedges lying on the paving. Same cell, same ground,
-  // and the four centimetres of clearance then hold all the way across.
-  const CELL=.6;
+  // not always flat. A single quad takes its height from its four corners and runs
+  // straight between them, while the east lawn beside it follows the ground on a 1.2m
+  // grid -- so over the graded foot of the park mound the grass rose through the middle
+  // of the path and came out as green wedges lying on the paving.
+  //
+  // How finely a patch is cut up follows the ground under it rather than a constant.
+  // Most of this town is dead flat, and there one quad is exactly right; the 30cm grid
+  // that the park's skirt needs costs nothing where nothing is sloping. A fixed 60cm
+  // grid was both -- too coarse at the mound, where the paving still sank 7mm into the
+  // grass, and three thousand triangles of nothing everywhere else.
+  const FINE=.3,LEVEL=.001,PROBES=5;
   for(const p of lanePatches()){
-    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/CELL)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/CELL));
+    let low=Infinity,high=-Infinity;
+    for(let i=0;i<=PROBES;i++)for(let j=0;j<=PROBES;j++){
+      const h=groundHeight(p.x0+(p.x1-p.x0)*i/PROBES,p.z0+(p.z1-p.z0)*j/PROBES);
+      if(h<low)low=h;if(h>high)high=h;
+    }
+    const cell=high-low<LEVEL?Math.max(p.x1-p.x0,p.z1-p.z0):FINE;
+    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/cell)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/cell));
     for(let i=0;i<columns;i++)for(let j=0;j<rows;j++){
       const x0=p.x0+(p.x1-p.x0)*i/columns,x1=p.x0+(p.x1-p.x0)*(i+1)/columns;
       const z0=p.z0+(p.z1-p.z0)*j/rows,z1=p.z0+(p.z1-p.z0)*(j+1)/rows;

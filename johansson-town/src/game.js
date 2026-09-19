@@ -1,7 +1,7 @@
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
-import {elapsedTownAbsence} from './people/town-absence.js';
+import {elapsedTownAbsence,createTownCatchup} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
@@ -48,7 +48,7 @@ import { createTown } from './world/town.js?snappy=1';
 import { createActivities } from '../activities.js?snappy=1';
 import { createInspector } from '../inspect-3d.js';
 import { createCastAI } from './people/schedules.js?snappy=1';
-import { createCharacters, preloadCharacter } from './people/characters.js?snappy=1';
+import { createCharacters } from './people/characters.js?snappy=1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
@@ -61,7 +61,13 @@ const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=70
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.07,220);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;// The near plane sets how much of the depth buffer the first metre eats, and at 7cm
+// it was eating most of it: a phone could not tell two centimetres apart at the far
+// end of the street, and the harbour came back from one as flashing texture. Nothing
+// gets within 15cm of the eye -- collision keeps the camera a third of a metre off
+// any wall -- so the tighter plane bought nothing and cost better than twice the
+// precision everywhere else.
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.15,220);
 const bands=new Uint8Array([48,48,48,255,115,115,115,255,184,184,184,255,255,255,255,255]),gradient=new THREE.DataTexture(bands,4,1,THREE.RGBAFormat);gradient.needsUpdate=true;gradient.magFilter=THREE.NearestFilter;gradient.minFilter=THREE.NearestFilter;
 const outlineMat=new THREE.MeshBasicMaterial({color:0x252821,side:THREE.BackSide}),boxCache=new Map();
 const toon=(c,map=null)=>new THREE.MeshStandardMaterial({color:c,map,roughness:.82});
@@ -465,7 +471,7 @@ function welcomeAtCounter(forward){
 }
 function interaction(){if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand up':ramenPlayerService?.order?'Order on its way · Stand up':'Order food · Stand up'):'Stand up';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();say('You stand up.',2);}
-function doInteract(){if(roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
+function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
@@ -675,18 +681,22 @@ function simulate(frameDt,playerPaused=false){
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}
 }
+const absence=createTownCatchup({advance:(dt,pending)=>{
+ activities.state.pendingTownMinutes=pending;advanceTown(dt,true);
+}});
 function advanceAbsentTown(seconds){
- if(seconds<1)return;catchingUp=true;
- try{for(let remaining=seconds;remaining>0;){const dt=Math.min(.2,remaining);advanceTown(dt,true);remaining-=dt;}}
- finally{catchingUp=false;}
- activities.save();
+ absence.add(seconds);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
+}
+function catchUpFrame(){
+ absence.tick();catchingUp=absence.pending>0;
+ if(!catchingUp){activities.save();clock.getDelta();}
 }
 
 function updateController(dt){
  let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
  controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
  if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
- if(!started||document.hidden)return;
+ if(!started||document.hidden||catchingUp)return;
  if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
  const direction=menuRepeat(f,dt);
  if(inspector?.active){
@@ -740,7 +750,7 @@ window.__JOHANSSON_POSE__={
  get x(){return player.position.x;},get y(){return player.position.y;},get z(){return player.position.z;},
  get yaw(){return yaw;},get pitch(){return pitch;},get inside(){return current?.id||null;},
  get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
- get bus(){const run=world.bus;return run?{phase:run.phase,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
+ get bus(){const run=world.bus;return run?{phase:run.phase,service:run.service??null,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
  get doors(){return (world.shopDoors||[]).map(d=>+d.amount.toFixed(3));},
  /** The town clock, in minutes past midnight, so a routine can be watched against it. */
  get minutes(){return Math.round(minutes);},
@@ -749,6 +759,24 @@ window.__JOHANSSON_POSE__={
  get transit(){return world.people.filter(p=>['bus','away','station'].includes(p.g.userData.place))
   .map(p=>p.profile.name+':'+p.g.userData.place+(p.g.visible?'':' (gone)'));},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
+};
+// What each of the cast is actually playing. Which animation a body has chosen is
+// invisible from a screenshot -- a weight shift and a loop look identical in a still --
+// so there is otherwise no way to check from outside that anyone is using more than
+// the first take of an idle.
+window.__JOHANSSON_CAST__={
+ get takes(){return (characters?.actors||[]).map(a=>({
+  name:a.entity?.userData?.name||'?',clip:a.current||null,
+  moving:!!a.moving,speed:+(a.speed||0).toFixed(2)}));},
+};
+// Sakura's books, live rather than as last saved. The shop's day is settled on the
+// town clock whether or not anybody is standing in it, and the saved copy lags, so
+// there was no way to see from outside whether the meter had actually run.
+window.__JOHANSSON_SHOP__={
+ get books(){const shop=activities?.state?.sakura;return shop?{
+  cash:shop.cash,sales:shop.sales,result:shop.profit,overheads:shop.overheads,
+  drawings:shop.drawings,stockSpent:shop.stockSpent,settledDay:shop.settledDay,
+  entries:shop.journal.length,kinds:[...new Set(shop.journal.map(r=>r.kind))]}:null;},
 };
 for(const detail of world.details||[])detailStream.add(detail);
 characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
@@ -762,7 +790,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused)facing.update(frameDt);}if(!paused)chatBubble.render(conversationChat()||neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused)facing.update(frameDt);}if(!paused)chatBubble.render(conversationChat()||neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
@@ -770,4 +798,4 @@ function renderOutdoor(){
 }
 advanceAbsentTown(activities.takeAbsence());
 // Allow the opening frame to paint before starting any district downloads.
-setTimeout(()=>{detailsStarted=true;void preloadCharacter('Thuan');},0);
+requestAnimationFrame(()=>requestAnimationFrame(()=>{detailsStarted=true;}));

@@ -243,7 +243,8 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   painted([.03,.22,.03],[0,-.11,0],0x2b231a,undefined,hang);
   const body=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.44,12,1,true),
    new THREE.MeshStandardMaterial({color:0x9c3730,emissive:0xd8562e,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
-  body.position.y=-.45;body.userData.staticProp=true;hang.add(body);
+  // The clock changes this material; a static batch would freeze a cloned copy.
+  body.position.y=-.45;body.userData.dynamicProp=true;hang.add(body);
   lanterns.push(body);
   for(const y of [-.24,-.66])painted([.38,.035,.38],[0,y,0],0x241c14,undefined,hang);
   hang.rotation.z=(i-1)*.015;
@@ -257,7 +258,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
     new THREE.MeshStandardMaterial({map,emissiveMap:map,emissive:0xffffff,emissiveIntensity:0,roughness:.85}),
     paint(0x2b1d17)]);
   board.position.set(southX+.2,2.05,front+.34);board.castShadow=!!shadows;board.userData.staticProp=true;group.add(board);
-  board.userData.minatoSign=true;lanterns.push(board.material[4]);
+  board.userData.minatoSign=true;lanterns.push(board);
   painted([.09,2.2,.09],[southX+.2,1.1,front+.62],0x33281d);
  }
  {
@@ -306,7 +307,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   group.traverse(o=>{if(o.userData.minatoGlow)o.material.emissiveIntensity=glow;});
   const lanternI=open?.35+paper*1.35:0;
   for(const item of lanterns){
-   const mat=item.isMesh?item.material:item;
+   const mat=Array.isArray(item.material)?item.material[4]:item.material;
    if(mat)mat.emissiveIntensity=lanternI;
   }
   noren.visible=open;

@@ -39,7 +39,7 @@ export function buildHomes(world,options){
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
  const material=new THREE.MeshStandardMaterial({map:texture,roughness:.9,emissiveMap:texture,emissive:0xffdcac,emissiveIntensity:.02});
  const nameplates=new THREE.Mesh(mergeGeometries(plates,false),material);nameplates.name='resident-home-nameplates';world.group.add(nameplates);plates.forEach(g=>g.dispose());
- world.homes=homes;world.updateHomes=minutes=>{material.emissiveIntensity=.02+windowGlow(minutes)*.28;nameplates.visible=world.residential.ready;};
+ world.homes=homes;world.updateHomes=minutes=>{nameplates.material.emissiveIntensity=.02+windowGlow(minutes)*.28;nameplates.visible=world.residential.ready;};
  nameplates.visible=world.residential.ready;
  return homes;
 }

@@ -96,7 +96,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function anchor(p,label,action){const a=new THREE.Object3D();a.position.set(...p);group.add(a);register(a,label,action);return a;}
   function obstacle(x,z,w,d){colliders.push({x,z,w,d});}
   function lantern(x,z){
-    const lm=material(0xf0a65c,null,.12),m=new THREE.Mesh(new THREE.SphereGeometry(.25,12,10),lm);m.scale.set(.8,1.4,.8);m.position.set(x,2.55,z);m.castShadow=false;group.add(m);lamps.push(m.material);box([.26,.05,.26],[x,2.91,z],0x3c3430);
+    const lm=material(0xf0a65c,null,.12),m=new THREE.Mesh(new THREE.SphereGeometry(.25,12,10),lm);m.scale.set(.8,1.4,.8);m.position.set(x,2.55,z);m.castShadow=false;group.add(m);lamps.push(m);box([.26,.05,.26],[x,2.91,z],0x3c3430);
     if(shadows){const light=new THREE.PointLight(0xffb96e,0,8,2);light.position.set(x,2.55,z);group.add(light);lampLights.push(light);}
   }
   function glassPanel(x,y,z,w,h,angle){
@@ -260,7 +260,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Rail only on far sides so the fishing position remains open and readable.
   for(const start of [-17,8])for(let x=start;x<start+9;x+=2.25){cyl(.06,1,[x,.63,-49.05],0x4b5c60);if(x<start+7)beam([x,1.02,-49.05],[x+2.25,1.02,-49.05],.045,0x4b5c60);}
-  label('港町','HARBOUR · FISHING PIER',[0,2.5,-44.15],3.8,.75);anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
+  // The quay's own board is gone too: it stood two and a half metres up on nothing at
+  // all, in the middle of the one open view the town has of the water.
+  anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // A couple of benches moved away from warehouse geometry.
   for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
@@ -306,7 +308,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
       for(let i=0;i<seaPos.count;i++){const x=seaPos.getX(i),y=seaPos.getY(i);seaPos.setZ(i,Math.sin(x*.17+time*.72)*.035+Math.sin(y*.12-time*.47)*.024);}seaPos.needsUpdate=true;
       const lantern=lanternGlow(minutes),glass=windowGlow(minutes);
-      for(const m of lamps){m.emissive.set(0xf0a65c);m.emissiveIntensity=.12+lantern*.82;}
+      for(const m of lamps){m.material.emissive.set(0xf0a65c);m.material.emissiveIntensity=.12+lantern*.82;}
       lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});

@@ -43,6 +43,9 @@ test('different rigs bring food to the mouth, lower it and carry a plate on thei
    entity.position.x+=.35;entity.rotation.y+=.8;step(.1);assert.ok(tray.getWorldPosition(new T.Vector3()).distanceTo(motion.arms.R.contact)<.13);assert.equal(actor.current,'CarryWalk');
    delete entity.userData.carrying;delete entity.userData.carriedTray;step(1);
   }
+  // Drift, not variation: hold whichever idle take is running, because moving between
+  // takes moves the hands on purpose and would be read here as an accumulating offset.
+  actor.idleHold=Number.MAX_SAFE_INTEGER;
   const rest=motion.arms.R.hand.getWorldPosition(new T.Vector3());step(12);assert.ok(motion.arms.R.hand.getWorldPosition(new T.Vector3()).distanceTo(rest)<.035,name+' does not accumulate pose offsets');
  }}finally{globalThis.fetch=previous;}
 });

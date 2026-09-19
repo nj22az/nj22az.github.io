@@ -9,9 +9,12 @@ import {TUNNEL} from './coyote-tunnel.js';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
+import {STAFF_YARD_ROUTE} from './staff-bench.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
+/** The seaward edge of the quay, where its slab gives way to the outer pier. */
+export const QUAY_SOUTH=-50;
 const boardwalkRoute={id:'harbour-boardwalk',width:BOARDWALK.width,surface:'wood',points:[[BOARDWALK.x,BOARDWALK.maxZ],[BOARDWALK.x,BOARDWALK.minZ]]};
 export const ROUTES = [
  {id:'shotengai',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,MAIN_ROAD.minZ]]},
@@ -44,8 +47,10 @@ export const ROUTES = [
  {id:'west-service',legacy:true,width:3,surface:'stone',points:[[-8.5,-20],[-8.5,31]]},
  {id:'east-service',legacy:true,width:3,surface:'stone',points:[[26,-44],[26,SHOP_CROSSING_Z]]},
  {id:'east-market-cut',legacy:true,width:3,surface:'stone',points:[[0,-33.5],[16,-33.5]]},
+ STAFF_YARD_ROUTE,
 ];
-export function activeRoutes(){return ROUTES.filter(route=>!shoppingDistrictActive()||!route.legacy);}
+export function activeRoutes(){return ROUTES.filter(route=>
+ (!shoppingDistrictActive()||!route.legacy)&&(!route.peninsula||peninsulaActive()));}
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
 /**

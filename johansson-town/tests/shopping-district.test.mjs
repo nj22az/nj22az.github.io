@@ -28,12 +28,16 @@ test('shopping district has a northern bus terminus and no residential route dep
 });
 
 test('commuters arrive, work late, and leave through the Harbour Line',()=>{
- assert.deepEqual(COMMUTER_SHIFTS.Thuan,{arrival:510,start:540,finish:1200,departure:1260});
+ // She has two ways home: the nine o'clock, or the ten when she has been at Minato.
+ assert.deepEqual(COMMUTER_SHIFTS.Thuan,{arrival:510,start:540,finish:1200,departure:1260,lateDeparture:1320});
  assert.equal(commuterPhase(profile('Thuan'),515),'arriving');
  assert.equal(commuterPhase(profile('Thuan'),550),'town');
  assert.equal(shiftActive(profile('Thuan'),1000),true);
  assert.equal(commuterPhase(profile('Thuan'),1200),'departing');
- assert.equal(commuterPhase(profile('Thuan'),1260),'away');
+ // Nine o'clock only takes her home if she is not at Minato. Rain is what decides.
+ assert.equal(commuterPhase(profile('Thuan'),1260,true),'away','She misses the nine in the rain');
+ assert.equal(commuterPhase(profile('Thuan'),1260,false),'departing','She is on the nine after a beer');
+ assert.equal(commuterPhase(profile('Thuan'),1320,false),'away','She misses the ten as well');
  assert.equal(residentPlan(profile('Reiko'),1300,false,state).place,'work');
  assert.equal(residentPlan(profile('Tetsuo'),1300,false,state).place,'work');
  assert.equal(residentPlan(profile('Nao'),1000,false,state).place,'izakaya');
@@ -41,7 +45,10 @@ test('commuters arrive, work late, and leave through the Harbour Line',()=>{
  assert.equal(residentPlan(profile('Mrs Sato'),1230,false,state).place,'ramen');
  assert.equal(residentPlan(profile('Harbour master'),0,false,state).place,'work');
  assert.equal(residentPlan(profile('Bus driver'),0,false,state).place,'station');
- assert.equal(residentPlan(profile('Thuan'),1250,false,state).target[0],BUS_STATION.queue[0]);
+ // At ten to nine, dry, she is still at Minato; in the rain she is at the stop.
+ assert.equal(residentPlan(profile('Thuan'),1250,false,state).place,'izakaya');
+ assert.equal(residentPlan(profile('Thuan'),1250,true,state).target[0],BUS_STATION.queue[0]);
+ assert.equal(residentPlan(profile('Thuan'),1310,false,state).target[0],BUS_STATION.queue[0]);
 });
 
 test('bus station exposes a boarding queue, timetable interactions, and departures',()=>{

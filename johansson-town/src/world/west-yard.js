@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {groundTexture} from './east-lawn.js';
+import {GROUND_LAYER} from './ground-layers.js';
 
 /**
  * The yard on the shop side of the street.
@@ -43,7 +44,11 @@ export function buildWestYard({parent,colliders=[],shadows=false}={}){
   // as a sheet of paper.
   new THREE.MeshStandardMaterial({color:grit?0x8a8576:0x6f6a5d,roughness:1,map:grit}));
  ground.name='west-yard-gravel';
- ground.position.set((WEST_YARD.minX+WEST_YARD.maxX)/2,.01,(WEST_YARD.minZ+WEST_YARD.maxZ)/2);
+ // Two centimetres under the paved routes, the same clearance the east lawn keeps.
+ // The yard used to sit at exactly the height the lane surfacing draws at, so gravel
+ // and pavement shared a plane the whole length of the shop frontage and the two
+ // flickered against each other wherever they met.
+ ground.position.set((WEST_YARD.minX+WEST_YARD.maxX)/2,GROUND_LAYER.gravel-.03,(WEST_YARD.minZ+WEST_YARD.maxZ)/2);
  ground.receiveShadow=!!shadows;group.add(ground);
 
  const stone=new THREE.MeshStandardMaterial({color:0x8b8779,roughness:.94});

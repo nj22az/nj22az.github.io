@@ -121,6 +121,8 @@ export const PALETTE=Object.freeze({
 });
 
 export function sunColor(minutes){
+ const h=hourOf(minutes);
+ if(h>=20&&h<20.5)return mixHex(PALETTE.sunDusk,PALETTE.sunNight,smooth((h-20)/.5));
  const day=daylight(minutes);
  const dusk=duskAmount(minutes);
  if(dusk>0)return mixHex(PALETTE.sunDay,PALETTE.sunDusk,dusk);
@@ -133,6 +135,7 @@ export function skyColor(minutes,rain=false){
  const day=daylight(minutes);
  const dusk=duskAmount(minutes);
  const h=hourOf(minutes);
+ if(h>=20&&h<20.5)return mixHex(PALETTE.skyDuskViolet,PALETTE.skyNight,smooth((h-20)/.5));
  if(dusk>0){
   // Apricot on the way in, violet as the hour deepens past 18:30.
   const violet=h<18.5?0:smooth((h-18.5)/1.5);
@@ -144,6 +147,8 @@ export function skyColor(minutes,rain=false){
 }
 
 export function skyFill(minutes){
+ const h=hourOf(minutes);
+ if(h>=20&&h<20.5)return mixHex(PALETTE.fillDusk,PALETTE.fillNight,smooth((h-20)/.5));
  const day=daylight(minutes);
  const dusk=duskAmount(minutes);
  if(dusk>0)return mixHex(PALETTE.fillDay,PALETTE.fillDusk,dusk);
@@ -152,6 +157,8 @@ export function skyFill(minutes){
 }
 
 export function groundFill(minutes){
+ const h=hourOf(minutes);
+ if(h>=20&&h<20.5)return mixHex(PALETTE.groundDusk,PALETTE.groundNight,smooth((h-20)/.5));
  const day=daylight(minutes);
  const dusk=duskAmount(minutes);
  if(dusk>0)return mixHex(PALETTE.groundDay,PALETTE.groundDusk,dusk);

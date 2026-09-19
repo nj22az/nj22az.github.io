@@ -32,6 +32,8 @@ add extra ramp bands and turn anime cel into muddy low-poly.
   is open (09:00–20:00), then 0.35 night-security. It never warms toward lantern orange.
 - **Grade warmth** is `0.05 + duskAmount * 0.07`. Ink thickness, shadow tint and
   flatten stay on their cel defaults.
+- Sky, sun and hemisphere colours fade from dusk to night during 20:00–20:30,
+  including the exact 20:30 boundary.
 
 ## Cel hard rules
 
@@ -62,8 +64,19 @@ Do:
 - `homes.js` `updateHomes` — nameplates
 - `izakaya.js` hourly + `minato-facade.js` `lit(open, day, lantern)` — akachochin
 - `harbour.js` — existing globe emissives and (already present) night PointLights
+- `sakura-shop.js` hourly + `sakura-interior.js` — existing strip lights, room fill
+  and supplied fluorescent meshes; tubes get their own materials so stock does not glow
+- Clock-driven meshes use their current materials after cel conversion. Minato's
+  three lanterns stay out of static batching so the displayed material can change.
 
 ## Live site
 
-Pages serves hashed `runtime/`. Source on this branch does not change the published
-town until `npm run build:runtime`.
+Pages serves hashed `runtime/`. This integration includes the rebuilt runtime,
+manifest, source receipt and updated entry-point links. Future source changes still
+require `npm run build:runtime` before publication; verify with
+`node --test tests/runtime-package.test.mjs`.
+
+The integration preserves main's pier dimensions, garden build/tick hooks, staff
+bench geometry and Thuan's turn-before-walking behaviour. Regression coverage checks
+the actual garden clock, visible cel materials, Sakura's opening/closing lights,
+shop service, bench return route and forward-facing movement.

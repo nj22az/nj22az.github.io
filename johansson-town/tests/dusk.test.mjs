@@ -121,3 +121,19 @@ test('town wiring drives windows, lanterns and nameplates from the clock',async(
  assert.match(files.game,/uWarmth:c\.gradeWarmth/);
  assert.doesNotMatch(files.game,/new THREE\.PointLight/);
 });
+
+test('all dusk colours reach night without a jump at 20:30',()=>{
+ for(const key of ['sky','sun','skyFill','groundFill']){
+  const before=clock(at(20,30)-.001)[key],after=clock(at(20,30))[key];
+  for(const shift of [0,8,16])assert.ok(Math.abs(((before>>shift)&255)-((after>>shift)&255))<=1,key+' must fade into night');
+  const start=clock(at(20))[key],middle=clock(at(20,15))[key],end=clock(at(20,30))[key];
+  assert.notEqual(middle,start,key+' must not stay stuck at dusk');
+  assert.notEqual(middle,end,key+' must not snap early to night');
+ }
+ for(const minutes of [0,300,420,1020,1110,1200,1230,1440]){
+  for(const key of ['sky','sun','skyFill','groundFill']){
+   const a=clock(minutes-.001)[key],b=clock(minutes+.001)[key];
+   for(const shift of [0,8,16])assert.ok(Math.abs(((a>>shift)&255)-((b>>shift)&255))<=1,key+' at '+minutes);
+  }
+ }
+});

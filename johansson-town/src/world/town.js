@@ -3,10 +3,11 @@ import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
 import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
+import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
-import {OUTER_PIER,groundHeight} from './layout.js?snappy=1';
+import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -57,10 +58,14 @@ function addWithCollider(group,colliders,entry){
 
 function addWalkablePier(world,options,factory){
   const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
-  factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.003-.19,OUTER_PIER.z],concrete,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[-4.02,-.18,-57.3],dark,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[4.02,-.18,-57.3],dark,null,options.shadows);
-  factory.box(group,[8.2,.58,.42],[0,-.18,-64.84],dark,null,options.shadows);
+  // The block is the pier's mass; the detailed deck is a separate plane laid on top,
+  // and the two used to be three millimetres apart. Sink the block far enough that the
+  // deck plainly wins, and let the deck and the two rails cover its top between them,
+  // so the face underneath is never the one you see.
+  factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.025-.19,OUTER_PIER.z],concrete,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[-4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
+  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,-64.84],dark,null,options.shadows);
   const posts=[];
   for(const side of [-1,1]){
     for(const z of [-51.1,-53.7,-62.2,-64.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
@@ -129,9 +134,6 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.deliveryTrolley(-7.5,-34.5,.02));
-  inspect([-6.8,1,-33.95],'Inspect delivery trolley','Delivery trolley','Cardboard parcels are addressed to several shops in the arcade. The handwriting and string ties suit the late-Shōwa setting.');
-
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
   read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
 
@@ -199,6 +201,9 @@ export function createTown(options){
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
+  // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
+  if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
+   shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
@@ -221,8 +226,11 @@ export function createTown(options){
   }});
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
-  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.05,OUTER_PIER.length-.05),surfaces.worldMaterial('concrete',0xc0beb5,2));
-  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,OUTER_PIER.z);pierSurface.receiveShadow=true;world.group.add(pierSurface);
+  // The deck runs from the pier head to the quay's own edge and no further: its last
+  // third of a metre lies under the quay slab, which is the surface you walk on there.
+  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=QUAY_SOUTH;
+  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.5,deckTo-deckFrom),surfaces.worldMaterial('concrete',0xc0beb5,2));
+  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,(deckFrom+deckTo)/2);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
@@ -234,9 +242,20 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
+    world.eastLawn?.tick?.(time,minutes);
     world.busStation?.update(minutes,day);
-    world.bus?.update(dt);
-    world.tunnel?.update?.(dt,options.getPlayerPosition?.());
+    // The Harbour Line runs to a timetable and holds for anyone still walking up to
+    // it -- somebody the schedule has sent to the stop, close enough that the driver
+    // would wait rather than pull out in front of them.
+    //
+    // Close enough matters. Without the radius it also held for people who had just
+    // left work on the other side of town for a bus two services later: the 19:00
+    // stood for its full twelve minutes because Kenji had set off for the 20:00.
+    world.bus?.update(dt,minutes,world.people.some(p=>{
+     if(!p.g.visible||p.g.userData.indoors||p.g.userData.place!=='bus')return false;
+     const gap=p.g.position.distanceTo(world.bus.bus.position);
+     return gap>2.4&&gap<14;
+    }));
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){

@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {BUS_STATION} from './bus-station.js';
 import {TUNNEL} from './coyote-tunnel.js';
+import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 
 /**
  * The Harbour Line bus, and the trick it does at the end of the road.
@@ -81,9 +82,22 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  parent.add(bus);
  const vanish=vanishingPoint(),entry=new THREE.Vector3(MAIN_ROAD.x,0,MOUTH_Z);
 
- // Seconds. Long enough at the stop that catching it feels like catching it.
- const WAIT=26,GONE=15,SPEED=6.4,FADE=1.5,TURN=2.2;
- let phase='waiting',timer=WAIT,fade=0,turn=0;
+ const SPEED=6.4,FADE=1.5,TURN=2.2;
+ /**
+  * How long the approach takes, in town minutes -- which is also seconds, because the
+  * clock runs at one minute a second. The bus leaves the far end this far ahead of its
+  * time so that it is standing at the terminus, turned and with its doors open, on the
+  * minute the timetable says.
+  */
+ const DRIVE=(MOUTH_Z-STOP_Z)/SPEED,APPROACH=FADE+DRIVE+TURN;
+ /**
+  * The longest it will hold past its departure time for somebody still walking up.
+  * A driver waits for a regular he can see coming; he does not wait all night for one
+  * who has got himself stuck behind a bench.
+  */
+ const HOLD=8;
+ let phase='away',fade=0,turn=0,service=null;
+ const since=m=>((m-service)%1440+1440)%1440;
 
  /** Somewhere between the mouth of the tunnel and the painted daylight at its far end. */
  const recede=t=>{
@@ -95,6 +109,8 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   bus.position.set(MAIN_ROAD.x,0,STOP_Z);bus.scale.setScalar(1);bus.visible=true;bus.rotation.y=0;
  };
  park();
+ // It starts the day somewhere else, like a bus.
+ bus.visible=false;
 
  // What stops you walking through it. The box follows the bus and turns with it — an
  // axis-aligned rect cannot rotate, so it takes the extent of the turned body instead,
@@ -123,13 +139,30 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  return {
   bus,
   get phase(){return phase;},
-  update(dt){
+  /** Which service it is working, so a timetable can be read off the running game. */
+  get service(){return service;},
+  /**
+   * @param {number} dt seconds
+   * @param {number} minutes the town clock
+   * @param {boolean} inbound whether anybody is still walking up to the stop
+   */
+  update(dt,minutes=0,inbound=false){
    if(!(dt>0))return;
-   try{this.step(dt);}finally{trackSolid();}
+   try{this.step(dt,minutes,inbound);}finally{trackSolid();}
   },
-  step(dt){
+  step(dt,minutes=0,inbound=false){
+   if(phase==='away'){
+    const due=nextService(minutes);
+    if(due.wait<=APPROACH){
+     service=due.service;phase='arriving';fade=1;bus.visible=true;bus.rotation.y=Math.PI;
+    }
+    return;
+   }
    if(phase==='waiting'){
-    if((timer-=dt)<=0){phase='leaving';}
+    // It goes when its time is up, and not before. A passenger still on their way
+    // holds it, up to a point: see HOLD.
+    const waited=since(minutes);
+    if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD))phase='leaving';
     return;
    }
    if(phase==='leaving'){
@@ -140,11 +173,7 @@ export function createBusRun({parent,shadows=false,colliders}={}){
    if(phase==='vanishing'){
     fade+=dt/FADE;
     recede(Math.min(1,fade));
-    if(fade>=1){bus.visible=false;phase='gone';timer=GONE;}
-    return;
-   }
-   if(phase==='gone'){
-    if((timer-=dt)<=0){phase='arriving';fade=1;bus.visible=true;bus.rotation.y=Math.PI;}
+    if(fade>=1){bus.visible=false;phase='away';service=null;}
     return;
    }
    if(phase==='arriving'){
@@ -163,7 +192,7 @@ export function createBusRun({parent,shadows=false,colliders}={}){
    // north has to do it somewhere, and a snap at the stop is the one place you watch.
    turn+=dt/TURN;
    bus.rotation.y=Math.PI*(1-Math.min(1,turn));
-   if(turn>=1){park();phase='waiting';timer=WAIT;}
+   if(turn>=1){park();phase='waiting';}
   },
  };
 }
