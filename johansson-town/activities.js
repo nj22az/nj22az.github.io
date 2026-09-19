@@ -1,4 +1,4 @@
-import {elapsedTownAbsence} from './src/people/town-absence.js';
+import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,buySakuraItem} from './src/commerce/sakura-economy.js';
@@ -38,7 +38,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   try {
     const saved=readSave(localStorage);
-    if(saved&&typeof saved==='object'){pendingAbsence=elapsedTownAbsence(saved.savedAt);
+    if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);

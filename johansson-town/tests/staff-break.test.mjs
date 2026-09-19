@@ -21,9 +21,12 @@ async function afternoon(){
  const profile=RESIDENTS.find(p=>p.name==='Thuan'),g=new THREE.Group();
  g.userData={name:'Thuan',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
  const player=new THREE.Group();player.position.set(0,0,-30);
- const world={people:[{g,profile}],homes:new Map(),bus:built.bus,busStation:built.busStation};
+ // staffBench is what hands her break to the bench routine; without it she walks to
+ // the yard and stands there, which is not a break.
+ const world={people:[{g,profile}],homes:new Map(),bus:built.bus,busStation:built.busStation,
+  staffBench:built.staffBench,townMode:'peninsula'};
  const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations:{}}),
-  paused:()=>false,collides});
+  paused:()=>false,collides,getObserverPosition:()=>player.position});
  const run=(from,to)=>{for(let m=from;m<to;m+=1/60)ai.update(1/60,m,false);};
  return {g,collides,run};
 }
@@ -46,7 +49,7 @@ test('Thuan takes her break and comes back from it',async()=>{
 
  // And she goes somewhere with the rest of her afternoon.
  const left=g.position.clone();
- run(900,935);
+ run(900,940);
  assert.ok(g.position.distanceTo(left)>8,'She got up but never walked away from the bench');
  assert.equal(g.userData.indoors,'market','She never made it back behind her own counter');
 });

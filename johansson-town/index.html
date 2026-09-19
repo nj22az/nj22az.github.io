@@ -24,12 +24,10 @@
 <link rel="stylesheet" href="./landing.css?h=c67dad56">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=718c3ab8">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DozBurGw.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-bench-CbtfoNMg.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/assets-DNfyrzgA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-C6mZvB5o.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Cl9b63v5.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/audio-D-bB4NP7.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-D9cKFygH.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-Byd8MLTL.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -298,7 +296,7 @@
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./landing.js?v=board-2"></script>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-D-bB4NP7.js';
+import {unlockTownAudio} from './runtime/audio-BhdKDVvj.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -336,7 +334,7 @@ import {unlockTownAudio} from './runtime/audio-D-bB4NP7.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-DozBurGw.js');
+      await import('./runtime/boot-C6mZvB5o.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

@@ -1,7 +1,7 @@
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
-import {elapsedTownAbsence} from './people/town-absence.js';
+import {elapsedTownAbsence,createTownCatchup} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
@@ -47,7 +47,7 @@ import { createTown } from './world/town.js?snappy=1';
 import { createActivities } from '../activities.js?snappy=1';
 import { createInspector } from '../inspect-3d.js';
 import { createCastAI } from './people/schedules.js?snappy=1';
-import { createCharacters, preloadCharacter } from './people/characters.js?snappy=1';
+import { createCharacters } from './people/characters.js?snappy=1';
 import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
@@ -470,7 +470,7 @@ function welcomeAtCounter(forward){
 }
 function interaction(){if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand up':ramenPlayerService?.order?'Order on its way · Stand up':'Order food · Stand up'):'Stand up';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();say('You stand up.',2);}
-function doInteract(){if(roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
+function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
@@ -659,18 +659,22 @@ function simulate(frameDt,playerPaused=false){
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}
 }
+const absence=createTownCatchup({advance:(dt,pending)=>{
+ activities.state.pendingTownMinutes=pending;advanceTown(dt,true);
+}});
 function advanceAbsentTown(seconds){
- if(seconds<1)return;catchingUp=true;
- try{for(let remaining=seconds;remaining>0;){const dt=Math.min(.2,remaining);advanceTown(dt,true);remaining-=dt;}}
- finally{catchingUp=false;}
- activities.save();
+ absence.add(seconds);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
+}
+function catchUpFrame(){
+ absence.tick();catchingUp=absence.pending>0;
+ if(!catchingUp){activities.save();clock.getDelta();}
 }
 
 function updateController(dt){
  let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
  controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
  if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
- if(!started||document.hidden)return;
+ if(!started||document.hidden||catchingUp)return;
  if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
  const direction=menuRepeat(f,dt);
  if(inspector?.active){
@@ -764,7 +768,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused)facing.update(frameDt);}if(!paused)chatBubble.render(conversationChat()||neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);if(current?.id==='form3d')activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused)facing.update(frameDt);}if(!paused)chatBubble.render(conversationChat()||neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
@@ -772,4 +776,4 @@ function renderOutdoor(){
 }
 advanceAbsentTown(activities.takeAbsence());
 // Allow the opening frame to paint before starting any district downloads.
-setTimeout(()=>{detailsStarted=true;void preloadCharacter('Thuan');},0);
+requestAnimationFrame(()=>requestAnimationFrame(()=>{detailsStarted=true;}));

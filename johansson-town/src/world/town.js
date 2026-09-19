@@ -201,7 +201,7 @@ export function createTown(options){
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
-  if(peninsulaActive())buildStaffBench({parent:world.group,factory,colliders:world.colliders,
+  if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
@@ -241,6 +241,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
+    world.eastLawn?.tick?.(time,minutes);
     world.busStation?.update(minutes,day);
     // The Harbour Line runs to a timetable and holds for anyone still walking up to
     // it -- somebody the schedule has sent to the stop, close enough that the driver
