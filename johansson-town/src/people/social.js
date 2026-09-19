@@ -62,10 +62,16 @@ const BENCH_STAND=[STAFF_BENCH.stand[0],STAFF_BENCH.stand[1]];
 const THUAN_WALK=Object.freeze([
  // Round the back first. The yard behind the shop is out of sight of the pavement,
  // which is the whole point of it: she has run the counter alone since nine.
- {until:852,place:'nap',target:BENCH_STAND,activity:'going round the back for her break',pace:STROLLING},
- {until:882,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop',pace:STROLLING},
- {until:898,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
- {until:914,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
+ //
+ // This leg keeps the town's ordinary walking pace, and it is twenty-six minutes long
+ // for a twenty-two minute walk. The only door is on the street, so getting to the
+ // yard is twenty-seven metres out and round -- and the clock runs at a minute a
+ // second, so at a stroll that is thirty-seven minutes and she arrived after her own
+ // nap had finished. She dawdles once she is somewhere, not on the way to it.
+ {until:866,place:'nap',target:BENCH_STAND,activity:'going round the back for her break'},
+ {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
+ {until:912,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:922,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
  {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
 ].map(Object.freeze));
 /** The leg of the walk she is on, or null when she is not on it. */

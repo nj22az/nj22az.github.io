@@ -4,6 +4,7 @@ import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
 import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END} from '../src/people/social.js';
 import {departureFor} from '../src/people/commuter-schedule.js';
+import {installDOM} from './fixtures.mjs';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
@@ -79,12 +80,15 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   assert.match(legs[1].activity,/asleep/i);
   assert.match(legs[2].activity,/park/i);
   assert.match(legs.at(-1).activity,/sea wall/i);
-  // The pace has to survive into the plan, or the break is walked at the town's
-  // errand speed and the unhurried cycle her model carries never plays at all.
-  for(const m of [THUAN_WALK_START+2,THUAN_WALK_START+50,THUAN_WALK_END-3]){
-   const walking=plan(m);
-   assert.ok(walking.pace>0&&walking.pace<1,'The break is planned at '+walking.pace+' m/s');
-  }
+  // The pace has to survive into the plan, or the leisurely legs are walked at the
+  // town's errand speed and the unhurried cycle her model carries never plays at all.
+  // The legs whose point is getting somewhere keep the ordinary pace: see the walk to
+  // the bench, which is twenty-seven metres out and round.
+  const strolling=legs.filter(leg=>leg.place==='stroll'||leg.place==='park');
+  assert.ok(strolling.length,'No leisurely legs at all');
+  for(const leg of strolling)assert.ok(leg.pace>0&&leg.pace<1,leg.activity+' is planned at '+leg.pace+' m/s');
+  assert.equal(plan(THUAN_WALK_END-3).pace,strolling.at(-1).pace,'The pace is dropped on the way to the plan');
+  for(const leg of legs.filter(l=>l.place==='nap'))assert.equal(leg.pace,undefined,leg.activity+' dawdles on the way there');
   assert.equal(plan(THUAN_WALK_START-5).pace,undefined,'A working shift is not a stroll');
 
   // The nap happens on the bench behind the shop, not in the middle of the yard.
@@ -145,4 +149,45 @@ test('every caller gets the same routine, however it asks',()=>{
  }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
  // and the archived street still gets the archived routine when nobody names a mode.
  assert.notEqual(residentPlan(THUAN,THUAN_WALK_START+20,false,{}).place,'park');
+});
+
+test('her break allows enough time to walk to the places it sends her',async()=>{
+ installDOM();globalThis.self=globalThis;
+ configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ try{
+  const THREE=await import('../vendor/three.module.js');
+  const {createTown}=await import('../src/world/town.js');
+  const {createBusinesses}=await import('../src/world/businesses.js');
+  const {createNavigation}=await import('../src/people/navmesh.js');
+  const {routeAt}=await import('../src/world/layout.js?break-pace');
+  const {circleHitsRect}=await import('../physics.js');
+  const sites=createBusinesses().filter(s=>['market','frontrow'].includes(s.id));
+  const world=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:false,
+   shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+  const nav=createNavigation((x,z,r=.32)=>!routeAt(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)));
+
+  // The clock runs at a minute a second and this town is twenty-seven metres wide at
+  // the back, so a leg's length in minutes has to cover its walk in metres at its own
+  // pace. Setting the first leg of her break to a stroll is what sent her round the
+  // back at 0.72 m/s with twelve minutes to do a thirty-seven minute walk: she reached
+  // the bench after her own nap had ended, and never slept at all.
+  const market=sites.find(s=>s.id==='market');
+  let from={x:market.door[0],z:market.door[2]};
+  let clock=THUAN_WALK_START;
+  const short=[];
+  for(let m=THUAN_WALK_START;m<THUAN_WALK_END;m++){
+   const leg=thuanAfternoon(THUAN,m,false);
+   if(!leg||leg.until<=clock)continue;
+   const to={x:leg.target[0],z:leg.target[1]};
+   const path=nav.path(from,to);
+   let metres=0;
+   for(let i=1;i<path.length;i++)metres+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
+   const pace=leg.pace||1.25,needs=metres/pace,has=leg.until-clock;
+   // Only the legs whose point is arriving somewhere: a stroll that ends where it was
+   // going to end anyway is allowed to run out of minutes on the way.
+   if(leg.place==='nap'&&needs>has)short.push(leg.activity+': '+has+' min for a '+needs.toFixed(0)+' min walk');
+   from=to;clock=leg.until;
+  }
+  assert.deepEqual(short,[],'A leg of her break is shorter than the walk it asks for');
+ }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
 });
