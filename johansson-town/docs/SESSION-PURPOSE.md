@@ -33,6 +33,8 @@ Bench → stand → one print→sell with Thuan → one notice/paper → one eve
 
 **Soft-quest dayKey (TownAudit):** meta `YYYY-MM-DD` in Europe/Stockholm rolls soft nudges only (notice / Form 3 Thuan / quay-before-press); diegetic clock and 14 Sep 1988 fiction stay unchanged — no real-world dates in player-facing copy.
 
+**TownWhy (PR #76 / 6046b7ad):** calendar dayKey for soft quests supersedes prior diegetic-as-primary for soft quests only; diegetic `floor(townMinutes/1440)` remains for talks_today, schedules, and sold_form_day silence.
+
 ## Out of scope for v1
 
 - New districts

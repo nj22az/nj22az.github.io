@@ -1,4 +1,5 @@
 import {sellToSakura} from '../commerce/sakura-economy.js';
+import {recordFormSale} from '../progression/soft-quests.js';
 import {WORKSHOP_MODELS,workshopModel} from './catalogue.js';
 
 export const BAG_LIMIT=100;
@@ -39,7 +40,7 @@ export function collectPrint(state){
 }
 export function sellPrint(state,id){
  const model=workshopModel(id);if(!model)return {ok:false,message:'Choose a workshop model.'};
- return sellToSakura(state,model.name);
+ const result=sellToSakura(state,model.name);if(result.ok)recordFormSale(state,state.minutes||0);return result;
 }
 export function canSellAtSakura(context,minutes){
  const time=((minutes%1440)+1440)%1440;

@@ -30,6 +30,7 @@ import {createIndoorResidents} from './people/indoor-residents.js?konbini-1';
 import {buildSuppliedRoom,suppliedRoomBoundsBlocked,preloadSuppliedRooms,suppliedRoomReady,isSuppliedRoom} from './world/supplied-rooms.js?snappy=1';
 import {FULL_TOWN} from './world/full-town-state.js';
 import {travelProgress} from './progression/travel.js';
+import {ensureDailyQuests,form3NudgeAllowed,hasDailyQuest,isDailyDone,markDailyDone,FORM3_NUDGE,QUAY_NUDGE,RADIO_821} from './progression/soft-quests.js';
 import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
 import {controlVisibility} from './interact/control-visibility.js';
@@ -208,8 +209,7 @@ const SITES=createPeninsulaBusinesses();
 const interactables=[],roomColliders=[],doors=new Map();
 let catchingUp=false,hiddenAt=0;
 let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPlayerService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
-// PURPOSE BRIEF soft-guides: one-shot coaches (stand / Thuan Form 3D). Never Yuri.
-let spineCoach={thuanAfterStand:false,quayBeforePress:false};
+// PURPOSE BRIEF soft-guides: calendar dayKey soft quests (stand Form 3 / quay / notice).
 // Contextual touch-control state. Declared with the rest of the player state because
 // starting play stamps the touch clock, and that can happen while this module runs.
 let controlsMovingUntil=0,controlsTargetUntil=0,controlsTouchedAt=0;
@@ -463,7 +463,7 @@ function welcomeAtCounter(forward){
   storeWelcomed=true;characters.gesture(storeClerk);
 }
 function interaction(){if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d;if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
-function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();if(!spineCoach.thuanAfterStand){spineCoach.thuanAfterStand=true;say('Sakura — Thuan buys Form 3D prints.',6);}else say('You stand up.',2);}
+function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
 function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
@@ -606,7 +606,7 @@ function updateDirectory(){
  (world.landmarks||[]).forEach(s=>destination(s));
  section('Residents');world.people.forEach(p=>row(p.g.userData.name,p.g.userData.activity||'On the street',()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);}));
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
-  section('Signals');[['82.1 Harbour Service','Harbour notices'],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Harbour Line','Northern bus terminal']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a+' · '+b,4);}));
+  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Harbour Line','Northern bus terminal']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
 // The peninsula omits the parked-bicycle interaction; its seven other street
 // activities remain required. Archived layouts retain the bicycle as the eighth.
@@ -737,12 +737,15 @@ function updateContextControls(){
   element.classList.toggle('control-off',!visible);
  }
  if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
- // PURPOSE BRIEF C: quay before evening press (~18:30), once, if quay not yet visited.
- if(started&&!spineCoach.quayBeforePress&&minutes>=1110){
-  const visited=activities?.state?.visited||[];
-  const sawQuay=visited.some(id=>['office','warehouse','pier','harbour','quay'].includes(id));
-  if(!sawQuay){spineCoach.quayBeforePress=true;say('Quay before evening press.',6);}
-  else spineCoach.quayBeforePress=true;
+ // Soft quest: quay before evening press (~18:30), once per calendar dayKey if picked.
+ if(started&&activities?.state&&minutes>=1110){
+  ensureDailyQuests(activities.state);
+  if(hasDailyQuest(activities.state,'quay_before_press')&&!isDailyDone(activities.state,'quay_before_press')){
+   const visited=activities.state.visited||[];
+   const sawQuay=visited.some(id=>['office','warehouse','pier','harbour','quay'].includes(id));
+   markDailyDone(activities.state,'quay_before_press');activities.save();
+   if(!sawQuay)say(QUAY_NUDGE,6);
+  }
  }
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};

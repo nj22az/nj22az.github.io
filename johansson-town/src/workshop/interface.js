@@ -1,6 +1,7 @@
 import {sakuraStock,saleProblem,sellToSakura} from '../commerce/sakura-economy.js';
 import {WORKSHOP_MODELS,workshopModel,modelTicket} from './catalogue.js';
 import {printProblem,startPrint,collectPrint,canSellAtSakura} from './production.js';
+import {recordFormSale} from '../progression/soft-quests.js';
 import {isWorkshopSite} from '../world/businesses.js';
 
 export function createWorkshopUI({state,show,close,save,say,note,getContext,getMinutes,preview,body,modal}){
@@ -53,6 +54,7 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
    ...offers.map(offer=>['Sell '+offer.name+' · +¥'+offer.price,()=>{
     if(!canSellAtSakura(getContext(),getMinutes())){selling();return;}
     const result=sellToSakura(state,offer.name,getMinutes());if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}
+    if(offer.model)recordFormSale(state,getMinutes());
     save();note('Sold '+offer.name+' to Thuan for ¥'+offer.price+'.');
     show('Thuan · Thank you',offer.name+' sold for ¥'+offer.price+'.\n\nShop funds remaining: ¥'+state.sakura.cash+'.'+(offer.model?' You can make another now that there is room in your bag.':''),[['Sell another item',selling],['See you soon, Thuan',close]]);
    },!!saleProblem(state,offer.name)]),['Keep my items',close],

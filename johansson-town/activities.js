@@ -11,6 +11,7 @@ import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workboo
 import {STORE_MENU} from './src/people/store-service.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
+import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
@@ -45,10 +46,12 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
       state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;state.quickTravelNotified=saved.quickTravelNotified===true;
+      if(typeof saved.lastDayKey==='string')state.lastDayKey=saved.lastDayKey;if(Array.isArray(saved.dailyQuests))state.dailyQuests=saved.dailyQuests;if(saved.dailyDone&&(typeof saved.dailyDone==='object'))state.dailyDone=saved.dailyDone;
     }
   } catch {}
 
   state.story=restoreStory(state.story);
+  ensureDailyQuests(state);
   state.konbini=restoreKonbini(state.konbini);
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
@@ -320,7 +323,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function toggleSound(){state.sound=!state.sound;townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';save();}
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
-  function read(name,detail){show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
+  function read(name,detail){if(/harbour notice/i.test(String(name))&&hasDailyQuest(state,'notice')&&!isDailyDone(state,'notice')){markDailyDone(state,'notice');save();say(NOTICE_NUDGE,6);}show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
   function operate(name,detail){
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
@@ -430,7 +433,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   function radio(name,detail){
     const stations=[
-      '82.1 Harbour Service — fictional relay: Sweden, cool rain; Nam Phuoc, warm showers. Check the moorings.',
+      RADIO_821,
       '89.4 JOJO — tonight’s request: '+JOURNAL[Math.floor(getMinutes())%JOURNAL.length][1]+'. A title from the journal, for the late shift.',
       '95.7 Sports — fictional prefectural score: Harbour '+Math.floor(getMinutes()/30)%8+', Mountain '+Math.floor(getMinutes()/47)%6+'.'
     ];
