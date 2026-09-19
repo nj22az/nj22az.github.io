@@ -30,7 +30,7 @@ export function createStaffBenchRoutine({entity,seat,isOccupied=()=>false}){
  function clearPose(){for(const key of ['seatHeight','chairBlend','socialPose','sleeping','napping'])delete data[key];}
  return {get active(){return phase!=='idle';},get phase(){return phase;},update(dt,wantsBreak){
   if(phase==='idle'){
-   if(!wantsBreak||!seat||seat.userData.reservedBy||isOccupied()||Math.hypot(entity.position.x-STAFF_BENCH.stand[0],entity.position.z-STAFF_BENCH.stand[1])>1)return false;
+   if(!wantsBreak||!seat||seat.userData.reservedBy||isOccupied()||Math.hypot(entity.position.x-STAFF_BENCH.stand[0],entity.position.z-STAFF_BENCH.stand[1])>STAFF_BENCH.approachRadius)return false;
    seat.userData.reservedBy=data.name||'Thuan';data.usingTownObject=true;data.staffBenchPhase=phase='approach';data.floorHeight=GROUND_LAYER.lane;
   }
   data.place='nap';

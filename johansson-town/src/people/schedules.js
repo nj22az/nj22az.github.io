@@ -67,7 +67,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    destinations.set(key,point);return point;
   }return target;
  }
- function move(person,target,dt,tag,pace=0){const g=person.g;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<.7)return;
+ function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
   // followed comes back empty anyway, because the path starts in an obstacle. Getting
@@ -105,7 +105,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const points=detour.path(g.position,{x:target[0],z:target[1]});
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
   }
-  const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.16){route.at++;return;}
+  const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.
   const step=Math.min(d,dt*(pace||(person.profile?.age>65?.75:1.25))),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
