@@ -19,11 +19,11 @@ export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8
   if(smooth){const yaw=Math.atan2(-dx,-dz),angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,angle));const desired=Math.abs(angle)>.35?0:Math.min(.9,Math.sqrt(2*1.8*d));route.speed+=Math.max(-dt*2.4,Math.min(dt*1.8,desired-route.speed));if(Math.abs(angle)>.35)return false;speed=route.speed;}
   let step=Math.min(d,dt*speed);
   if(!smooth){
-   // Turn first, then travel. This used to step at full pace and turn afterwards, so
-   // every corner and every new path sent someone walking backwards for a quarter of
-   // a second with the walk clip playing forwards.
+   // Match outdoor schedules faceStep: no translate until roughly aligned, then
+   // scale residual step with alignedStep (Konbini door / aisle corners).
    const yaw=Math.atan2(-dx,-dz),angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));
    g.rotation.y+=Math.max(-dt*3.4,Math.min(dt*3.4,angle));
+   if(Math.abs(angle)>=.35)return false;
    step*=alignedStep(angle);
   }
   if(step<=0)return false;
