@@ -2,6 +2,7 @@ import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visit
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
+import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
@@ -128,14 +129,14 @@ export function visitsRamen(profile,minutes){
 }
 function legacyResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes);
- if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a snack at Sakura'};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a snack at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Thuan'){
-  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
-  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
-  if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:profile.work,activity:profile.role};
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
+  if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(thuanVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
   const slot=thuanEveningPlace(minutes);
@@ -158,8 +159,8 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  // generic departing rule, which sends everybody straight to the queue — which is why
  // she has been walking past Minato's door every evening for the whole of her shift.
  if(profile.name==='Thuan'&&phase==='departing'){
-  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
-  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer at Minato before the last bus'};
  }
  if(phase==='departing')return bus('walking to the Harbour Line for departure');
@@ -167,12 +168,12 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
  if(profile.name==='Nao')return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'running Minato Izakaya'}:bus('travelling to the next shift');
- if(visitsMarket(profile,minutes,state))return {place:'market',target:RESIDENTS.find(p=>p.name==='Thuan').work,activity:'a shopping errand at Sakura'};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return profile.workSite==='warehouse'?{place:'work',target:profile.work,activity:'checking the quay stores'}:{place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};
  if(profile.name==='Thuan'){
-  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:profile.work,activity:'restocking after closing'};
-  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:profile.work,activity:'checking closing stock'};
+  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
+  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   // Her afternoon walk, read before the shift so that being on shift does not simply
   // put her back behind her own counter for the whole of it.
   const walk=thuanAfternoon(profile,minutes,rain);
@@ -180,7 +181,7 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   // town's errand speed of 1.25 m/s, which is above the handover between her walk and
   // her stroll -- so the unhurried cycle her model carries was never once played.
   if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace};
-  if(shiftActive(profile,minutes))return {place:'market',target:profile.work,activity:profile.role};
+  if(shiftActive(profile,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
