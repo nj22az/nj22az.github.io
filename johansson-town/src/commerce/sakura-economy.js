@@ -10,7 +10,7 @@ export const TOWN_FINDS=Object.freeze([
 const money=n=>Number.isSafeInteger(n)&&n>=0?Math.min(n,999999):0;
 export function restoreSakura(saved){
  const rows=Array.isArray(saved?.journal)?saved.journal.filter(r=>r&&Number.isFinite(r.minute)&&typeof r.kind==='string'&&typeof r.item==='string'&&[r.quantity,r.revenue,r.cost,r.cash].every(n=>Number.isSafeInteger(n)&&n>=0)).slice(-400).map(r=>({...r,buyer:String(r.buyer||'').slice(0,80),item:r.item.slice(0,120),profit:Number.isSafeInteger(r.profit)?r.profit:0})):[];
- return {restockedDay:Number.isSafeInteger(saved?.restockedDay)?saved.restockedDay:-1,playerClaim:saved?.playerClaim&&['bun','rice','tea'].includes(saved.playerClaim.item)?{item:saved.playerClaim.item}:null,cash:money(saved?.cash),sales:money(saved?.sales),bought:money(saved?.bought),profit:Number.isSafeInteger(saved?.profit)?saved.profit:0,stockSpent:money(saved?.stockSpent),openingSales:money(saved?.openingSales??(saved?.journal?saved?.openingSales:saved?.sales)),receipts:Array.isArray(saved?.receipts)?saved.receipts.filter(s=>typeof s==='string').slice(-128):[],stock:restoreShopStock(saved?.stock),journal:rows,deliveries:Array.isArray(saved?.deliveries)?saved.deliveries.filter(d=>SHOP_STOCK.some(i=>i.id===d.item)&&Number.isFinite(d.due)&&Number.isSafeInteger(d.quantity)&&d.quantity>0&&d.quantity<=12).map(d=>({...d})):[],nextDelivery:Number.isFinite(saved?.nextDelivery)?saved.nextDelivery:0};
+ return {restockedDay:Number.isSafeInteger(saved?.restockedDay)?saved.restockedDay:-1,settledDay:Number.isSafeInteger(saved?.settledDay)?saved.settledDay:-1,overheads:money(saved?.overheads),drawings:money(saved?.drawings),playerClaim:saved?.playerClaim&&['bun','rice','tea'].includes(saved.playerClaim.item)?{item:saved.playerClaim.item}:null,cash:money(saved?.cash),sales:money(saved?.sales),bought:money(saved?.bought),profit:Number.isSafeInteger(saved?.profit)?saved.profit:0,stockSpent:money(saved?.stockSpent),openingSales:money(saved?.openingSales??(saved?.journal?saved?.openingSales:saved?.sales)),receipts:Array.isArray(saved?.receipts)?saved.receipts.filter(s=>typeof s==='string').slice(-128):[],stock:restoreShopStock(saved?.stock),journal:rows,deliveries:Array.isArray(saved?.deliveries)?saved.deliveries.filter(d=>SHOP_STOCK.some(i=>i.id===d.item)&&Number.isFinite(d.due)&&Number.isSafeInteger(d.quantity)&&d.quantity>0&&d.quantity<=12).map(d=>({...d})):[],nextDelivery:Number.isFinite(saved?.nextDelivery)?saved.nextDelivery:0};
 }
 const till=state=>state.sakura??=restoreSakura();
 export function shopEntry(state,{minute=state.minutes||0,kind,item,buyer='',quantity=1,revenue=0,cost=0,profit=0}){
@@ -32,8 +32,76 @@ export function buySakuraItem(state,item,minutes){
  const claim=takeShopStock(state,item.id);if(!claim)return {ok:false,message:'Thuan: '+SOLD_OUT};
  state.yen-=item.cost;state.inventory.push(item.name);recordSakuraSale(state,item.cost,null,{minute:minutes,item:item.name,buyer:'Johansson',unitCost:claim.unitCost});return {ok:true};
 }
+/**
+ * What the shop costs to keep open for a day, and what Thuan takes out of it.
+ *
+ * Until now the ledger only ever went up: every entry was a sale, a delivery or a
+ * restock, so "gross profit" was a scoreboard rather than a question. A shop has a
+ * meter running whether anybody comes in or not.
+ *
+ * The figures are the shop's own scale, not 1988 Tokyo's. Sakura serves five
+ * neighbours a day, which is about ¥694 of trade and ¥312 of gross profit, and the
+ * day's costs are set just under that on purpose. On the neighbours alone the shop
+ * only washes its face; every line the player buys is about ¥62 of margin on top, so
+ * your custom is the difference between a thin week and a good one. That is the
+ * question the Sales sheet is supposed to ask.
+ */
+export const SHOP_OVERHEADS=300;
+/** The most Thuan takes for herself in a day, once the till can spare it. */
+export const SHOP_DRAWING=400;
+/**
+ * What stays in the till regardless.
+ *
+ * She is the owner, not an employee, so her pay is a drawing rather than a wage: she
+ * takes what is left after the bills and never the float, because the float is what
+ * pays the wholesaler. That is also why no bill here can empty the till and stall the
+ * restocking — a shop that cannot reorder is a broken shop, not a poor one.
+ */
+export const SHOP_FLOAT=2000;
+
+/**
+ * Post a closed trading day's standing costs, once each.
+ *
+ * Overheads are an expense and come off the shop's result. A drawing is not — it is
+ * the owner taking a share of a profit already made — so it leaves the till without
+ * touching gross profit, and the ledger shows the two separately.
+ *
+ * @param {number} minutes the town clock
+ */
+export function settleTradingDay(state,minutes){
+ if(!Number.isFinite(minutes))return;
+ const shop=till(state),today=Math.floor(minutes/1440),m=((minutes%1440)+1440)%1440;
+ // A day is settled after it has closed, so today only counts from 20:00.
+ const closed=m>=1200?today:today-1;
+ if(closed<0)return;
+ // A long absence catches up at most a week, rather than posting a hundred entries
+ // nobody will read.
+ let day=Math.max(shop.settledDay,closed-7);
+ while(day<closed){
+  day++;
+  const at=day*1440+1200;
+  // Only what the till can actually pay, and the books record exactly that. A shop
+  // this size settles in cash; there is no account to run up arrears on, and billing
+  // more than was paid would put a number in the ledger that never left the drawer.
+  const bill=Math.min(SHOP_OVERHEADS,shop.cash);
+  if(bill>0){
+   shop.cash-=bill;shop.overheads=Math.min(999999,shop.overheads+bill);shop.profit-=bill;
+   shopEntry(state,{minute:at,kind:'Overheads',item:'Electricity, water and the shop\u2019s standing charges',
+    buyer:'Harbour utilities',quantity:1,cost:bill,profit:-bill});
+  }
+  const spare=shop.cash-SHOP_FLOAT;
+  const draw=Math.max(0,Math.min(SHOP_DRAWING,spare));
+  if(draw>0){
+   shop.cash-=draw;shop.drawings=Math.min(999999,shop.drawings+draw);
+   shopEntry(state,{minute:at,kind:'Drawing',item:'Thuan\u2019s day',buyer:'Thuan',quantity:1,cost:draw});
+  }
+ }
+ shop.settledDay=closed;
+}
+
 export function advanceDeliveries(state,minutes){
  const shop=till(state);
+ settleTradingDay(state,minutes);
  for(const delivery of [...shop.deliveries])if(minutes>=delivery.due){
   shop.stock[delivery.item].reserve+=delivery.quantity;shop.deliveries.splice(shop.deliveries.indexOf(delivery),1);
   shopEntry(state,{minute:minutes,kind:'Delivery',item:SHOP_STOCK.find(i=>i.id===delivery.item).name,buyer:'Wholesaler',quantity:delivery.quantity});

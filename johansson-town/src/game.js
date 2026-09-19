@@ -728,6 +728,15 @@ window.__JOHANSSON_POSE__={
   .map(p=>p.profile.name+':'+p.g.userData.place+(p.g.visible?'':' (gone)'));},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
 };
+// Sakura's books, live rather than as last saved. The shop's day is settled on the
+// town clock whether or not anybody is standing in it, and the saved copy lags, so
+// there was no way to see from outside whether the meter had actually run.
+window.__JOHANSSON_SHOP__={
+ get books(){const shop=activities?.state?.sakura;return shop?{
+  cash:shop.cash,sales:shop.sales,result:shop.profit,overheads:shop.overheads,
+  drawings:shop.drawings,stockSpent:shop.stockSpent,settledDay:shop.settledDay,
+  entries:shop.journal.length,kinds:[...new Set(shop.journal.map(r=>r.kind))]}:null;},
+};
 for(const detail of world.details||[])detailStream.add(detail);
 characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
 detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:38,load:()=>world.warehouse?.load()});
