@@ -22,8 +22,8 @@ export const POLE_HEIGHT=4.2;
  * facade (x≈-7.25 (street of facades)), never inside the wall. Arms reach the carriageway.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // CityArchitect 3-pole plan: west facade corners only (emissive heads, no PointLights).
- {x:-7.25,z:-34.0,side:'west'}, // Sakura south corner — street-side of front -7.45
+ // Two west-corner poles. Sakura south (z≈-34) dropped — it sat in the quay-facing
+ // storefront opening next to the warehouse signpost at (-7.3,-35).
  {x:-7.25,z:-21.0,side:'west'}, // Sakura north corner — street-side of front -7.45
  {x:-7.25,z:-3.05,side:'west'}, // Front-Row south gable — street-side of WEST_FRONT -7.8
 ]);
