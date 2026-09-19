@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildCoyoteTunnel,TUNNEL} from '../src/world/coyote-tunnel.js';
+import {FOREST_EDGE} from '../src/world/forest-edge.js';
+import {BUS_STATION} from '../src/world/bus-station.js';
 import {circleHitsRect} from '../physics.js';
 
 test('the rock is a headland with the painting under its brow, not a slab with a hole',()=>{
@@ -48,4 +50,10 @@ test('the rock knows when it has been run into',()=>{
  assert.equal(splat(TUNNEL.x,TUNNEL.z+TUNNEL.depth/2),true,'Running at the painting is not a collision with it');
  assert.equal(splat(TUNNEL.x,TUNNEL.z-4),false,'The road in front of it counts as the rock');
  assert.equal(splat(TUNNEL.x-TUNNEL.width,TUNNEL.z+TUNNEL.depth/2),false,'Open ground beside the hill counts as the rock');
+});
+
+test('NPC away/exit waypoint stays clear of the painted tunnel mouth',()=>{
+ assert.ok(BUS_STATION.exit[1]<FOREST_EDGE.roadStartZ,'exit must not enter the forest bus road');
+ assert.ok(BUS_STATION.exit[1]<TUNNEL.z-1.2,'exit must stay south of the bus mouth');
+ assert.deepEqual(BUS_STATION.exit,BUS_STATION.platform,'away staging is the platform, not the arch');
 });

@@ -94,8 +94,8 @@ test('nobody who was already away is left standing at the terminus',async()=>{
   const player=new THREE.Group();player.position.set(0,0,0);
   const world={people,homes:new Map(),bus};
   // The save the player actually reloads. snapshot() records an away resident at
-  // BUS_STATION.exit, which is a waypoint at the far end of the bus road rather than
-  // anywhere a person would stand, so this is where they all come back to.
+  // BUS_STATION.exit (platform, clear of the painted tunnel mouth). They must not
+  // reappear in a heap at the coyote arch or on the forest bus road.
   const residentLocations=Object.fromEntries(people.map(p=>
    [p.profile.name,{position:[...BUS_STATION.exit],indoors:null,place:'away'}]));
   const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations}),
