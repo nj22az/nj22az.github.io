@@ -21,14 +21,15 @@ test('three CityArchitect west-corner poles next to shop facades',()=>{
  for(const p of STREET_LAMP_PLACEMENTS){
   assert.ok(Math.abs(p.z-SHOP_CROSSING_Z)>=1.2);
   assert.ok(![-32,11,17].includes(p.z));
-  // tucked next to west facade, not mid-road
-  assert.ok(p.x<=-7.4);
+  // street-side of Sakura front (-7.45) and Front-Row WEST_FRONT (-7.8); not mid-road
+  assert.ok(p.x>-7.45);
+  assert.ok(p.x<-6.8);
  }
  const tips=STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z}));
  assert.deepEqual(tips,[
-  {x:-7.70,z:-34.0},
-  {x:-7.70,z:-21.0},
-  {x:-7.70,z:-3.05},
+  {x:-7.35,z:-34.0},
+  {x:-7.35,z:-21.0},
+  {x:-7.35,z:-3.05},
  ]);
 });
 
@@ -81,4 +82,11 @@ test('harbour wires street lamps into the dusk tick without new PointLights',asy
  const mod=await readFile(new URL('../src/world/street-lamps.js',import.meta.url),'utf8');
  assert.doesNotMatch(mod,/new THREE\.PointLight/);
  assert.match(mod,/pointLights=0/);
+});
+
+test('poles stay street-side of Sakura and Front-Row facades',()=>{
+ for(const p of STREET_LAMP_PLACEMENTS){
+  assert.ok(p.x>-7.45, `lamp x=${p.x} must be east of Sakura front -7.45`);
+  assert.ok(p.x>-7.8+0.25, `lamp x=${p.x} must clear Front-Row WEST_FRONT`);
+ }
 });
