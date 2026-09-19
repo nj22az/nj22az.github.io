@@ -9,7 +9,7 @@ cooldown for both participants. No services or additional assets are required.
 Outdoor residents smoothly face each other and exchange a small greeting wave.
 Speakers have bounded mouth movement and a warmer expression; listeners nod.
 Seated guests retain their furniture alignment and turn only their heads.
-Yuri retains her existing supplied rig, without inventing facial morph targets.
+Thuan retains her existing supplied rig, without inventing facial morph targets.
 The exchanges are text with animation; no new recorded or synthesised voices
 are included.
 
@@ -18,7 +18,7 @@ head. It is hidden off-screen, behind colliders, while distant, or while any
 player menu/conversation is open. The encounter cancels if an actor disappears,
 changes schedule, changes room, or starts interacting with the player. Kenji's
 active escort is excluded. Movement resumes afterwards; no actor teleporting or
-player camera movement is introduced. Yuri's street visibility is now controlled
+player camera movement is introduced. Thuan's street visibility is now controlled
 by her schedule rather than the legacy shop-only interaction rule.
 
 Candidate checks run every two seconds against the existing visible cast.

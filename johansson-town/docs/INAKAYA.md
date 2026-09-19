@@ -21,7 +21,7 @@ Validation: production build passed. Nine focused tests passed, including the
 CPU game startup, entry/exit for every registered interior, door approaches,
 crystal-room interaction reachability, retry/caching and asset integrity. The
 boot test was updated for the existing separate Sakura facade, current clerk
-position and Yuri bedroom entry facing. No browser or iPad rendering/performance
+position and Thuan bedroom entry facing. No browser or iPad rendering/performance
 claim is made. The broader suite has three existing failing tests (legacy full
 supplied overworld, harbour-block shop count and Japanese-town shop count),
 reproduced on the unchanged ad0f893 baseline.
@@ -44,7 +44,7 @@ remain available.
 
 Nine active residents have staggered visits between 09:15 and 20:55, with at
 most two seated diners. They alternate sitting, eating and drinking and retain
-individual seats as other guests leave. Yuri keeps her after-work stop and
+individual seats as other guests leave. Thuan keeps her after-work stop and
 standing greeting rig, with ramen-specific conversation. Existing actors are
 reused indoors; outdoor schedules approach the ramen door, and completed visits
 resume outside it. Interior population follows the schedule when entering a room

@@ -4,7 +4,7 @@ The supplied Street 2 frontage forms the west side of Main Street, facing the sh
 
 | Entrance | Household | Interior |
 | --- | --- | --- |
-| 1 | Yuri and Nao | Supplied apartment, separate beds and belongings |
+| 1 | Thuan and Nao | Supplied apartment, separate beds and belongings |
 | 2 | Aya and Reiko | Shared flat, separate futons, wardrobes and notes |
 | 3 | Kenji and Tetsuo | Shared flat, separate futons, wardrobes and notes |
 | 4A | Mrs Sato | Own flat |
@@ -14,7 +14,7 @@ The supplied Street 2 frontage forms the west side of Main Street, facing the sh
 
 Seven homes use five street interaction targets. The two entrances with separate flats offer a flat selector. Every home stays open overnight. The existing ten actors are borrowed independently into rooms only when they have reached home; roommates retain their individual sleep, work, meal and departure times. Former Nao, Reiko and Tetsuo home IDs migrate to the surviving shared-home IDs without changing individual inventories or schedules.
 
-Yuri retains her low-poly body and pink palette. The rigid apron panel is removed; fitted eyes, softer brows, blinking, a small smile and dialogue mouth movements share her original skeleton. Her original soft model remains a static collectible. The office now has one CRT workstation, a straightened chair, wrists aligned to the keyboard, a nameplate beside the working area, and fitted filing shelves. Existing spreadsheet viewing and downloads remain available.
+Thuan retains her low-poly body and pink palette. The rigid apron panel is removed; fitted eyes, softer brows, blinking, a small smile and dialogue mouth movements share her original skeleton. Her original soft model remains a static collectible. The office now has one CRT workstation, a straightened chair, wrists aligned to the keyboard, a nameplate beside the working area, and fitted filing shelves. Existing spreadsheet viewing and downloads remain available.
 
 ## Asset processing
 
@@ -22,7 +22,7 @@ The 72.94 MB upload is cropped at authored party walls, scaled uniformly by 0.02
 
 Rebuild with `node tools/pack-main-street.mjs /path/to/street_2.glb`, then `python tools/frontage-collisions.py /path/to/street_2.glb src/world/main-street-colliders.js`. `tools/refit-interiors.py` applies the documented furniture removal to the original packed office/apartment exports. Generated files preserve source credit and hashes.
 
-54 superseded GLBs and their unused pack resources were removed (77.06 MB). The active five resident bases, soft Yuri collectible, supplied apartment and models still referenced by the separate historical overworld are retained.
+54 superseded GLBs and their unused pack resources were removed (77.06 MB). The active five resident bases, soft Thuan collectible, supplied apartment and models still referenced by the separate historical overworld are retained.
 
 ## Verification
 

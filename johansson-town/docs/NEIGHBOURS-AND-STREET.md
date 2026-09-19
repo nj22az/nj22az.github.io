@@ -10,7 +10,7 @@ Concrete, stone paving and bamboo textures from OpenGameArt add detail to walls,
 
 Fifteen detailed Polygonal Mind potted plants replace spherical foliage and dress the supplied harbour shops. The two-part model uses alpha-tested leaves and 512px textures. Nearby plants share instanced draws in 32-metre cells. A bounded loader keeps a missing decorative asset from blocking startup.
 
-The existing harbour shops and boardwalk, first-person controls, Yuri's supplied model and greeting, doors, interiors, NPC subjects/schedules, v4 saves and quest-gated travel remain connected. The older cast stays in the repository for rollback.
+The existing harbour shops and boardwalk, first-person controls, Thuan's supplied model and greeting, doors, interiors, NPC subjects/schedules, v4 saves and quest-gated travel remain connected. The older cast stays in the repository for rollback.
 
 ## Sources and reproduction
 
@@ -38,7 +38,7 @@ The builder supports `--only resident-02,resident-07` for targeted edits. The pa
 
 ## Validation and budget
 
-`npm test` covers 54 cases, including real GLB geometry/animation loading, all seven clips across all 21 residents, normalized blended skin weights, bounded deformations and grounded soles. It also covers plant loading/batching, texture scaling after batching, collision-free routes, interiors, quest progression, v4 saves, first-person movement, Yuri and drink interactions. The production Vite build passes with the existing large JavaScript chunk warning.
+`npm test` covers 54 cases, including real GLB geometry/animation loading, all seven clips across all 21 residents, normalized blended skin weights, bounded deformations and grounded soles. It also covers plant loading/batching, texture scaling after batching, collision-free routes, interiors, quest progression, v4 saves, first-person movement, Thuan and drink interactions. The production Vite build passes with the existing large JavaScript chunk warning.
 
 Studio CPU renders of four packed production characters were inspected in walking, running and seated poses. The final images and before/after scene estimates are in `art/neighbours/`. These renders use studio lighting outside the game. The scene estimator stubs image decoding and excludes shadows, interiors, GPU timing and the held/player objects; its fixed starting cast is used across viewpoints.
 

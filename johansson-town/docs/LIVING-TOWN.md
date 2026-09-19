@@ -2,14 +2,14 @@
 
 Development review · Nils Johansson · 8 September 2026
 
-The strongest direction is to make one social neighbourhood rewarding to revisit: memorable people, changing conversations, objects with a purpose, and a welcoming place to spend an evening. Yuri is the accepted character reference. Expanding the map alone would spread the existing visual weaknesses across a larger area.
+The strongest direction is to make one social neighbourhood rewarding to revisit: memorable people, changing conversations, objects with a purpose, and a welcoming place to spend an evening. Thuan is the accepted character reference. Expanding the map alone would spread the existing visual weaknesses across a larger area.
 
 This branch implements that direction around **Minato Izakaya**, reached along the eastern lane, opposite the existing Sato Ramen building. It opens at 16:00 and closes at 23:30. The original street ramen stall, Sakura, quests, portfolio objects and save migration remain available.
 
 ## What is playable
 
 - Nao welcomes visitors to a new Blender-built izakaya. The room contains a cedar counter, shared tables, stools, bottle shelves, paper lanterns, a kitchen and prepared dishes.
-- Residents have individual personalities, friendships, visual briefs, personal dialogue and exploration clues. Nao joins the existing twenty residents; Yuri retains her separate Sakura role and supplied asset.
+- Residents have individual personalities, friendships, visual briefs, personal dialogue and exploration clues. Nao joins the existing twenty residents; Thuan retains her separate Sakura role and supplied asset.
 - Adults visit for supper after their own shifts. The roster changes over the evening. Existing scene entities are temporarily moved into the room; their street state and interaction ownership are restored on leaving.
 - Guests have seated, eating and drinking animation clips. A drinking guest carries a small cup. Food prices are fictional game prices. Purchasing a plate spends town yen, advances eight town minutes and records a memory.
 - The table offers different gossip when the relevant friends are present. Its clues point towards existing activities, people and objects rather than requiring a visit to a website page.
@@ -27,7 +27,7 @@ The assets were generated with the available **Blender 4.2.23 LTS** installation
 | Minato interior | `art/izakaya/minato-interior.blend` | `assets/models/izakaya/minato-interior.glb` |
 | 21 resident prototypes | `art/living-cast/resident-00.blend` through `resident-20.blend` | `assets/characters/living/` |
 
-**The new cast remains prototype artwork.** It gives the town a consistent, softer cast with distinct styling, but does not yet match Yuri's detailed face, hair, clothing or character appeal. These are not approved final character replacements, AAA assets or a claim that the user's character-quality request is finished. Yuri's GLB and animation implementation are unchanged. The branch remains a draft for this reason and for the device-testing gap below.
+**The new cast remains prototype artwork.** It gives the town a consistent, softer cast with distinct styling, but does not yet match Thuan's detailed face, hair, clothing or character appeal. These are not approved final character replacements, AAA assets or a claim that the user's character-quality request is finished. Thuan's GLB and animation implementation are unchanged (paths may still use legacy `yuri*` filenames). The branch remains a draft for this reason and for the device-testing gap below.
 
 The Blender review image uses exported GLBs and selected seated poses. It is an offline lighting review, not an in-game screenshot. The runtime sign lettering and hand-held cup are separate Three.js details and are not included in that image. The standalone cast strip samples five prototypes; it is not a visual review of every frame of every resident.
 
@@ -43,13 +43,13 @@ The user-supplied screenshots and the inspected repository are the primary evide
 
 ## Verification and remaining work
 
-- **49 tests pass**, including existing saves, quests, Yuri's greeting, every registered interior in forced first person, navigation, independent character rigs, purchases, guest restoration and finite grounded poses across every resident clip.
+- **49 tests pass**, including existing saves, quests, Thuan's greeting, every registered interior in forced first person, navigation, independent character rigs, purchases, guest restoration and finite grounded poses across every resident clip.
 - The **Vite production build passes**. It retains a warning for a JavaScript chunk over 500 kB.
 - Static Sakura stock batching removes **93 estimated draws** from the otherwise identical new street scene. The full updated start-view estimate, including the exported izakaya exterior, is **575 mesh draws and 200,690 submitted triangles**. It remains over budget.
 - The measurement tool loads the actual exterior GLB and all 24 preloaded character sources. Counts are CPU/frustum estimates, excluding shadow passes, points, the player, held objects, interiors and GPU timings. They are not FPS results. The new cast also increases asset download volume.
 - No browser rendering, touch-device run, shader compilation, sound playback or iPad frame-rate test was performed. Blender renders and CPU checks cannot establish those results.
 
-Before a production merge, compare the new cast with Yuri in-game, refine the approved character direction, test portrait and landscape room framing and tapping, and measure street and supper scenes on the intended iPad. The next performance target is the remaining individual static meshes and delivery cost, using actual renderer counters and frame times.
+Before a production merge, compare the new cast with Thuan in-game, refine the approved character direction, test portrait and landscape room framing and tapping, and measure street and supper scenes on the intended iPad. The next performance target is the remaining individual static meshes and delivery cost, using actual renderer counters and frame times.
 
 ## Rebuild
 
@@ -67,8 +67,8 @@ node tools/measure-art-scene.mjs
 
 The source of resident identity data is `src/people/profiles.json`; its generated JavaScript module must be kept synchronised. Construction and runtime asset reports record geometry and clip counts.
 
-## Follow-up: Yuri after hours and dialogue proportions
+## Follow-up: Thuan after hours and dialogue proportions
 
-Yuri visits Minato on alternate town days from 20:20 to 21:30, after Sakura closes at 20:00. The first town evening is a visit evening. After work she also rotates through Sato Ramen (while it is open), a canal walk and lingering near her own door, then goes in at 23:30. Rain sends her home. The saved town clock determines the schedule, so reloading does not reroll it. Her existing actor is reused, with her original model, scale, idle and greeting; she stands by the table at Minato, at a ramen stool, or beside her bed. On return to Sakura she resumes her counter position.
+Thuan visits Minato on alternate town days from 20:20 to 21:30, after Sakura closes at 20:00. The first town evening is a visit evening. After work she also rotates through Sato Ramen (while it is open), a canal walk and lingering near her own door, then goes in at 23:30. Rain sends her home. The saved town clock determines the schedule, so reloading does not reroll it. Her existing actor is reused, with her original model, scale, idle and greeting; she stands by the table at Minato, at a ramen stool, or beside her bed. On return to Sakura she resumes her counter position.
 
 The dialogue canvas now respects renderer-owned dimensions. The previous fullscreen CSS forcibly stretched the reserved scene viewport across the entire display, widening characters. CPU regression checks cover camera/canvas proportions and the visit/return lifecycle. A real-browser CSS fixture is included at `tests/conversation-layout.html`; the cloud review browser blocked both local and embedded test pages, so that fixture and iPad compositing have not been visually verified.

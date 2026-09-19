@@ -1,6 +1,6 @@
 # Harbour instance colour consolidation
 
-Based on main `b75b1d8` (includes Yuri's readable greeting, PR #21).
+Based on main `b75b1d8` (includes Thuan's readable greeting, PR #21).
 
 The harbour shape builder previously separated otherwise compatible instance batches by base colour. `createHarbourInstances` now carries that colour in `instanceColor`, matching all other serialized material properties and texture identities. It partitions immutable shapes into 48-metre XZ cells and computes instance bounds. It does not change geometry, UVs or transforms. The road keeps its original material reference so rain changes its roughness. Shared source materials are never whitened or otherwise modified.
 
@@ -37,8 +37,8 @@ Full measurements for all four variants, including rainy night and contributor c
 
 ## Validation and remaining gate
 
-All 32 tests pass, including transform/colour equivalence, material/cell separation, mutable-road updates, original anchors/colliders, all nine interior entry/exit cycles, resident navigation and Yuri's existing greeting. Vite production build passes.
+All 32 tests pass, including transform/colour equivalence, material/cell separation, mutable-road updates, original anchors/colliders, all nine interior entry/exit cycles, resident navigation and Thuan's existing greeting. Vite production build passes.
 
 The cloud browser rejected both local preview addresses with `net::ERR_BLOCKED_BY_CLIENT`. This is a preview-access failure; WebGL availability was not tested in this session. No rendered gameplay, GPU timings or device FPS is claimed.
 
-Before merging, compare the baseline and this branch on desktop and iPad using actual renderer draw/triangle counters and p95 frame times. Walk start → street → quay → outer pier and the shrine approach; include rain/night, enter/exit the market and other interiors, and check Yuri's greeting. Confirm colour/texture parity, shadows, no culling pop-in, road wetness and interactions. Retain 48-metre cells unless measured device results justify changing them.
+Before merging, compare the baseline and this branch on desktop and iPad using actual renderer draw/triangle counters and p95 frame times. Walk start → street → quay → outer pier and the shrine approach; include rain/night, enter/exit the market and other interiors, and check Thuan's greeting. Confirm colour/texture parity, shadows, no culling pop-in, road wetness and interactions. Retain 48-metre cells unless measured device results justify changing them.

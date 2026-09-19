@@ -4,7 +4,7 @@ Kenji & Tetsuo Repairs now contains a Form 3D printer on the existing rear bench
 and a usable StepWise calculator. The current shop footprint, staff, arcade and
 entrance are retained. Approach either tool and use E or the touch action.
 
-1. Select a pattern at the printer. StepWise shows its material cost, Yuri's
+1. Select a pattern at the printer. StepWise shows its material cost, Thuan's
    buying price and the resulting earnings. The actual StepWise app can also be
    opened inside the game from the estimate. Form 3D Studio can be opened from
    the printer. Closing either tool returns to the workshop without navigation.
@@ -14,11 +14,11 @@ entrance are retained. Approach either tool and use E or the touch action.
 3. Return to collect the finished model. A full bag leaves it on the printer.
    Only one of each design can be carried. The Field book offers a rotatable 3D
    inspection of each model in the bag.
-4. Talk to Yuri inside Sakura Konbini and choose **Sell my workshop models**.
-   She must be present and working, 09:00–20:00. Each sale removes the model and
+4. Talk to Thuan inside Sakura Konbini and choose **Sell my workshop models**.
+   Thuan must be present and working, 09:00–20:00. Each sale removes the model and
    credits its displayed price. A replacement can then be printed.
 
-| Form 3D pattern | Materials | Yuri pays | Time |
+| Form 3D pattern | Materials | Thuan pays | Time |
 | --- | ---: | ---: | ---: |
 | Johansson cable ring | ¥40 | ¥120 | 8 s |
 | Johansson pencil capsule | ¥100 | ¥280 | 16 s |

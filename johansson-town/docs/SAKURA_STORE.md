@@ -1,8 +1,8 @@
-# Sakura Shōten and Yui
+# Sakura Shōten and Thuan
 
-Yui is an original adult Japanese clerk, age 26, 1.62 m tall. Her dusty-pink outfit, cream collar, glasses and ribboned hat take their art direction from the supplied references. Those photographs are not included in the repository, used as game textures, or represented as a scanned likeness.
+Thuan is an original adult Japanese clerk, age 26, 1.62 m tall. Her dusty-pink outfit, cream collar, glasses and ribboned hat take their art direction from the supplied references. Those photographs are not included in the repository, used as game textures, or represented as a scanned likeness.
 
-The existing market doorway now leads to Sakura Shōten, open 09:00–20:00. Yui has five bilingual dialogue topics. The dedicated clerk is instantiated once and reused across visits; the outside population remains unchanged. She becomes unavailable when the till closes.
+The existing market doorway now leads to Sakura Shōten, open 09:00–20:00. Thuan has five bilingual dialogue topics. The dedicated clerk is instantiated once and reused across visits; the outside population remains unchanged. She becomes unavailable when the till closes.
 
 Eight individually selectable goods support inspection and purchase with town yen: tea, coffee, rice balls, biscuits, soap, notebooks, postcards and batteries. Drinks can use the existing held-can flow. Shelf purchases update the existing saved inventory and wallet. The cooler door pivots in-world; the till, radio, service bell and mail-order book are also interactive. These are modular in-engine shop props; they are not claimed to be detailed Blender hero assets.
 
