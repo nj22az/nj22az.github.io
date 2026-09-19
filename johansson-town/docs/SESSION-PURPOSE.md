@@ -8,8 +8,8 @@ First-person visitor on **14 September 1988** in a compact harbour shopping dist
 
 ## Glossary
 
-- **Thuan** — only Form 3D / sell-finished-piece contact at Sakura (hard code: `canSellAtSakura` + `thuanAvailable`, workshop UI, tests).
-- **Yuri** — separate Sakura shop identity if present; **not** the locked sell NPC. Mentions of Yuri as the workshop buyer in `WORKSHOP-PRINTING.md` / README are stale docs.
+- **Thuan** — only lead and Form 3D / sell-finished-piece contact at Sakura (hard code: `canSellAtSakura` + `thuanAvailable`, workshop UI, tests). There is no separate Sakura shopkeeper character.
+- **Yuri** — retired / legacy naming only. User canon: Yuri does not exist. **NameClean** owns scrubbing remaining Yuri strings in docs and code; purpose design does not treat Yuri as a live identity.
 
 ## Locked session spine
 
@@ -40,11 +40,13 @@ Bench → stand → one print→sell with Thuan → one notice/paper → one eve
 - Blender body art (Shenmue pipeline)
 - Redesigning the Phase D route
 - New quest chains beyond the Thuan / notice hook
+- Reviving Yuri as a character (NameClean scrub only)
 
 ## Hand-off notes
 
 - **NpcPulse / ThuanLead / TalkFun:** Thuan present for Form 3 / sell; hours + notice hook only.
 - **TownUI:** soft prompts for stand, Thuan, quay-before-press — no clutter.
 - **WalkFix:** spine walkability only; no locomotion redesign in this brief.
+- **NameClean:** scrub legacy Yuri naming; do not invent a second Sakura lead.
 
 No further purpose revisions unless the director or user changes the spine.
