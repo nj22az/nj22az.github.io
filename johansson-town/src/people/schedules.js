@@ -9,6 +9,7 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii} from './thuan-commute-yield.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
@@ -67,6 +68,15 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
   const p=getObserverPosition();return p&&Math.hypot(p.x-STAFF_BENCH.seat[0],p.z-STAFF_BENCH.seat[1])<.9;
  }}):null;
+ const thuanCommutePriority=()=>thuanHasCommutePriority(thuan?.g,thuan?commuterPhase(thuan.profile,clockMinutes):null);
+ const yieldAsideForThuan=person=>{
+  if(person===thuan||!thuanCommutePriority())return null;
+  const tg=thuan.g,g=person.g;
+  if(g.userData.indoors||g.userData.inMarket||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome)return null;
+  const point=yieldAsideTarget([g.position.x,g.position.z],[tg.position.x,tg.position.z],tg.rotation.y,
+   (x,z)=>collides(x,z,.32),(x,z)=>Math.abs(groundHeight(x,z)-g.position.y)<.45);
+  return point?clearOfTunnelMouth(point):null;
+ };
  const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
@@ -133,6 +143,13 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const clearOfPeople=(x,z)=>world.people.every(p=>{
    if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
+   // Thuan commute priority: others treat her as a wide impassable; she may ease past them
+   // while they yield (sidestep below). Does not change faceStep / alignedStep.
+   if(thuanCommutePriority()){
+    if(person===thuan&&p===thuan)return true;
+    const radius=commuteCrowdRadii(person===thuan,p===thuan);
+    if(p===thuan||person===thuan)return next>=radius||(old<radius&&next>old+.00001);
+   }
    return next>=.61||(old<.61&&next>old+.00001);
   });
   // Near the Konbini door, lateral sidesteps into the frontage collider read as a
@@ -250,7 +267,13 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
-   if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
+   const yieldTarget=p!==thuan?yieldAsideForThuan(p):null;
+   if(yieldTarget){
+    // Idle chats must not pin someone in Thuan's morning path.
+    delete g.userData.chatHold;delete g.userData.chat;
+    g.userData.activity='making way for Thuan';
+    move(p,yieldTarget,dt,'yield-thuan');
+   }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
    if(transit&&tag==='bus'&&phase==='departing'&&arrived()){world.busStation?.board(v.name,minutes);g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';g.visible=false;routes.delete(g);continue;}
    if(indoor&&(g.userData.indoors===tag||arrived())){
     if(!g.userData.indoors)g.userData.justArrived=true;
