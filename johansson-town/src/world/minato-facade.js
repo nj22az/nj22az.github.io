@@ -297,12 +297,18 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   * The frontage after dark and when the bar is open.
   * @param {boolean} open whether Nao has the place running
   * @param {number} day 1 at noon, 0 at night
+  * @param {number} [lantern] paper-lantern glow 0–1 from the dusk clock; falls back to 1−day
   */
- const lit=(open,day)=>{
+ const lit=(open,day,lantern)=>{
   const dusk=1-THREE.MathUtils.clamp(day,0,1);
+  const paper=lantern==null?dusk:THREE.MathUtils.clamp(lantern,0,1);
   const glow=open?.12+dusk*.95:dusk*.06;
   group.traverse(o=>{if(o.userData.minatoGlow)o.material.emissiveIntensity=glow;});
-  for(const material of lanterns)material.emissiveIntensity=open?.35+dusk*1.35:0;
+  const lanternI=open?.35+paper*1.35:0;
+  for(const item of lanterns){
+   const mat=item.isMesh?item.material:item;
+   if(mat)mat.emissiveIntensity=lanternI;
+  }
   noren.visible=open;
  };
  lit(false,1);

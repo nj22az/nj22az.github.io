@@ -16,6 +16,7 @@ import {peninsulaActive} from './town-mode.js';
 
 import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
+import {lanternGlow, windowGlow} from '../render/dusk.js';
 import * as THREE from '../../vendor/three.module.js';
 
 // Johansson Town original harbour geometry, using the shared PBR surface maps.
@@ -301,12 +302,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       boardwalk.setRain(value);
       wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;seaMat.color.set(value?0x345b66:0x426f79);
     },
-    update(dt,time,day){
+    update(dt,time,day,minutes=1002){
       boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
       for(let i=0;i<seaPos.count;i++){const x=seaPos.getX(i),y=seaPos.getY(i);seaPos.setZ(i,Math.sin(x*.17+time*.72)*.035+Math.sin(y*.12-time*.47)*.024);}seaPos.needsUpdate=true;
-      for(const m of lamps){m.emissive.set(0xf0a65c);m.emissiveIntensity=.12+(1-day)*.82;}
-      lampLights.forEach((l,i)=>l.intensity=(1-day)*(l.userData.nightIntensity||6));
-      shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+(1-day)*.31;m.material.roughness=wet?.18:.24;});
+      const lantern=lanternGlow(minutes),glass=windowGlow(minutes);
+      for(const m of lamps){m.emissive.set(0xf0a65c);m.emissiveIntensity=.12+lantern*.82;}
+      lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
+      shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});
       const playerPos=getPlayerPosition?.(),now=performance.now();
       people.forEach(p=>{

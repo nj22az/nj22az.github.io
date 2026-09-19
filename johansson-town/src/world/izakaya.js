@@ -8,6 +8,7 @@ import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
+import {daylight, lanternGlow} from '../render/dusk.js';
 const assets=new Map();
 export async function preloadIzakaya(kinds=['exterior','interior']){
  const loader=new GLTFLoader();await Promise.allSettled(kinds.filter(kind=>!assets.has(kind)).map(async kind=>{
@@ -83,8 +84,7 @@ export function buildIzakaya(world,options){
   // town's own updateHours, so this follows the clock rather than the frame.
   (world.hourly||(world.hourly=[])).push(minutes=>{
    const h=((minutes%1440)+1440)%1440,open=h>=960||h<180;
-   const hour=h/60,day=hour<5||hour>=20?0:hour<7?(hour-5)/2:hour<17?1:(20-hour)/3;
-   built.lit(open,day);
+   built.lit(open,daylight(minutes),lanternGlow(minutes));
   });
  }
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:plot.x,z:plot.z,radius:48,load:async()=>{
