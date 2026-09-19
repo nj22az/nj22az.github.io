@@ -31,6 +31,8 @@ Bench → stand → one print→sell with Thuan → one notice/paper → one eve
 2. **Trade** — notice → Thuan → Form 3 print / sell.
 3. **Clock** — day minutes matter; evening/harbour beat before the press soft-closes the session feel.
 
+**Soft-quest dayKey (TownAudit):** meta `YYYY-MM-DD` in Europe/Stockholm rolls soft nudges only (notice / Form 3 Thuan / quay-before-press); diegetic clock and 14 Sep 1988 fiction stay unchanged — no real-world dates in player-facing copy.
+
 ## Out of scope for v1
 
 - New districts
@@ -48,5 +50,6 @@ Bench → stand → one print→sell with Thuan → one notice/paper → one eve
 - **TownUI:** soft prompts for stand, Thuan, quay-before-press — no clutter.
 - **WalkFix:** spine walkability only; no locomotion redesign in this brief.
 - **NameClean:** scrub legacy Yuri naming; do not invent a second Sakura lead.
+- **TownAudit:** soft quests from the three-loop pool only; calendar dayKey as above.
 
 No further purpose revisions unless the director or user changes the spine.
