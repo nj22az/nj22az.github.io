@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {restoreSakura} from '../src/commerce/sakura-economy.js';
 import {konbiniItem,defaultKonbini,restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,
- warmableInBasket,checkoutQuote,checkout,receiptText,tenderFor,STAMP_PER_YEN,CARD_STAMPS,WARMABLE} from '../src/commerce/konbini.js';
+ warmableInBasket,checkoutQuote,checkout,receiptText,tenderFor,STAMP_PER_YEN,CARD_STAMPS,WARMABLE,sakuraHoursOpen,SAKURA_AWAY_MESSAGE} from '../src/commerce/konbini.js';
 
 /** A shopper standing in Sakura at 10:00 with a full shelf and money. */
 const shopper=({yen=5000,stamps=0}={})=>{
@@ -90,6 +90,25 @@ test('a checkout that cannot complete puts every item back',()=>{
  assert.equal(state.sakura.stock.tea.shelf,before.tea,'The tea went back on the shelf');
  assert.equal(state.sakura.stock.rice.shelf,before.rice);
  assert.equal(basketTotal(state)>0,true,'The basket is still yours to put back');
+});
+
+test('checkout refuses while Thuan is away mid-hours but still works when she is at the counter',()=>{
+ const away=shopper();fill(away);addToBasket(away,'tea');
+ // Afternoon walk window (~14:10): hours open, clerk not available.
+ assert.equal(sakuraHoursOpen(850),true);
+ const refused=checkout(away,{},850,false);
+ assert.equal(refused.ok,false);
+ assert.equal(refused.message,SAKURA_AWAY_MESSAGE);
+ assert.equal(away.yen,5000,'Away refusal must not take money');
+ assert.equal(basketTotal(away)>0,true,'Basket stays until she returns');
+ // Same minute with her present still rings through.
+ const present=shopper();fill(present);addToBasket(present,'tea');
+ const ok=checkout(present,{},850,true);
+ assert.equal(ok.ok,true);
+ assert.equal(present.yen<5000,true);
+ // Overnight closed stays the closed message, even if availability were false.
+ const night=shopper();fill(night);addToBasket(night,'tea');
+ assert.match(checkout(night,{},1300,false).message,/till is closed/);
 });
 
 test('the till is shut outside trading hours and short money is refused',()=>{
