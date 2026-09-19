@@ -22,9 +22,9 @@ export const POLE_HEIGHT=4.2;
  * facade (x≈-7.25 (street of facades)), never inside the wall. Arms reach the carriageway.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // Two west-corner poles. Sakura south (z≈-34) dropped — it sat in the quay-facing
- // storefront opening next to the warehouse signpost at (-7.3,-35).
- {x:-7.25,z:-21.0,side:'west'}, // Sakura north corner — street-side of front -7.45
+ // Two west poles. Sakura-face zs dropped (south -34 quay opening; north -21 still on facade).
+ // Gap Minato↔Sakura at -15.0: ≥1.5 m north of crossing strip end -16.5, south of Minato gable.
+ {x:-7.25,z:-15.0,side:'west'}, // Minato↔Sakura gap
  {x:-7.25,z:-3.05,side:'west'}, // Front-Row south gable — street-side of WEST_FRONT -7.8
 ]);
 
