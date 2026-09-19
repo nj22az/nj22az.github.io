@@ -58,7 +58,7 @@ const CONFIG = {
     {
       title: "Thuan's Storage",
       description:
-        "Work in progress. Play as Thuan in a third-person stockroom maze at Sakura Shōten — collect sakura charms among the cartons and find the shop floor.",
+        "Work in progress. Walk Thuan through Sakura Shōten's stockroom, pick the day's list, and restock the konbini.",
       url: "/thuans-storage/",
       icon: "joystick",
       image: "/thuans-storage/cover.jpg",

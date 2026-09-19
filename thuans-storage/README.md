@@ -2,8 +2,6 @@
 
 Work in progress.
 
-A playable third-person stockroom maze starring Thuan from Johansson Town.
-Walk the aisles of Sakura Shōten, collect sakura charms, and find the noren
-back to the shop floor.
+Walk Thuan through Sakura Shōten's stockroom, pick the day's list, and restock the konbini. Johansson Town WASD + look. A playable demo from Johansson Town.
 
 Play it at [nj22az.github.io/thuans-storage](https://nj22az.github.io/thuans-storage/).
