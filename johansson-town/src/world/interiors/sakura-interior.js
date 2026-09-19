@@ -6,6 +6,7 @@ import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-prod
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
+import {PALETTE,fluorescent} from '../../render/dusk.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -112,9 +113,24 @@ export function buildSakuraInterior({room,reg,action,exit}){
  anchor(layout.exit,'Exit to street',exit);
  // Stock cartons carry the same generated Sakura label as delivered cartons.
  const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [-4.6,-3.7,-2.8,-1.9]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
- room.add(new THREE.HemisphereLight(0xfff1d3,0x66715c,1.2));
+ const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0x66715c,1.2);room.add(fill);
+ let lightLevel=1;const tubes=[];
+ const updateLighting=minutes=>{
+  lightLevel=fluorescent(minutes);fill.intensity=1.2*lightLevel;
+  for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
+   mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
+  }
+ };
  let mounted=false,last='';
- return {layout,unitPositions,unitApproaches,refrigerator,accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){room.add(model.clone(true));mounted=true;}return ok;},
+ return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+   const interior=model.clone(true);
+   interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
+    const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
+    // The supplied model shares its material with stock and walls. Only the tubes glow.
+    o.material=Array.isArray(o.material)?o.material.map(prepare):prepare(o.material);tubes.push(o);
+   }});
+   room.add(interior);mounted=true;
+  }return ok;},
   updateStock(stock){const key=JSON.stringify(Object.values(stock).map(s=>s.shelf));if(last===key)return;last=key;for(const {spec,pair,matrices} of batches)for(const mesh of pair){for(let i=0;i<spec.capacity;i++)mesh.setMatrixAt(i,i<(stock[spec.id]?.shelf||0)?matrices[i]:zero);mesh.instanceMatrix.needsUpdate=true;}},
  };
 }

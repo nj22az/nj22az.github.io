@@ -36,7 +36,8 @@ import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
-import {atmosphere} from './render/atmosphere.js?town-light-1';
+import {atmosphere} from './render/atmosphere.js?dusk-1';
+import {clock as duskClock, daylight} from './render/dusk.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-2';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -549,8 +550,29 @@ function updatePlayer(dt){
 }
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
-const daylight=m=>{const h=(m/60)%24;return h>=7&&h<17?1:h>=17&&h<20?1-(h-17)/3:h>=5&&h<7?(h-5)/2:0};
-function setTime(){world.updateHours?.(minutes);const h=(minutes/60)%24,day=daylight(minutes);sun.intensity=(.22+day*3.25)*(weather?.62:1);ambient.intensity=scene.environment?.28+day*.55:.55+day*.95;scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);sun.color.set(h>=17&&h<20?0xffad72:0xffddb0);const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();townSky.update(camera,day,weather,!!current);const air=atmosphere(day,weather,!!current);scene.background.set(air.sky);scene.fog=air.fog;ambient.intensity=air.ambient*CEL_FILL;bounce.intensity=(.55+day*.85)*(weather?.8:1);renderer.toneMappingExposure=air.exposure;pipeline?.setExposure(air.exposure*CEL_EXPOSURE);$('.timecard small').textContent=h<7?'EARLY MORNING':h<17?'AFTERNOON':h<20?'EVENING':'NIGHT';return day;}
+function setTime(){
+ world.updateHours?.(minutes);
+ const c=duskClock(minutes,{rain:weather,inside:!!current});
+ const day=c.day;
+ sun.intensity=c.sunIntensity;
+ sun.color.set(c.sun);
+ ambient.color.set(c.skyFill);
+ ambient.groundColor.set(c.groundFill);
+ scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:1);
+ const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;
+ sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();
+ townSky.update(camera,day,weather,!!current,c.sky);
+ const air=atmosphere(day,weather,!!current,minutes);
+ scene.background.set(air.sky);scene.fog=air.fog;
+ ambient.intensity=air.ambient*CEL_FILL;
+ bounce.intensity=c.bounce;
+ renderer.toneMappingExposure=air.exposure;
+ pipeline?.setExposure(air.exposure*CEL_EXPOSURE);
+ // Warmth only. Ink, shadow tint and flatten stay on their cel defaults.
+ pipeline?.tune({uWarmth:c.gradeWarmth});
+ $('.timecard small').textContent=c.period;
+ return day;
+}
 $('#exitRoomButton').onclick=()=>crossThreshold(async()=>leaveRoom());
 function syncView(){
  document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();

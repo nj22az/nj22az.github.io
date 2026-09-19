@@ -9,6 +9,7 @@ import {createRetailClerk} from './retail-clerk.js';
 import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
 import {returnShopStock} from '../commerce/shop-stock.js';
+import {PALETTE,fluorescent} from '../render/dusk.js';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
 export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
@@ -66,6 +67,12 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   * from the street at any hour.
   */
  let strip=null;
+ const updateLighting=minutes=>{
+  display.updateLighting(minutes);
+  for(const lamp of strip?.children||[])lamp.intensity=lamp.userData.openIntensity*fluorescent(minutes);
+ };
+ (world.hourly||(world.hourly=[])).push(updateLighting);
+ updateLighting(getMinutes());
  const lit=on=>{
   if(on&&!strip){
    strip=new THREE.Group();strip.name='Sakura shopfront strip lights';
@@ -73,11 +80,12 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // is evenly lit end to end. Distances are in room units, which the window fit scales
    // along with everything else.
    for(const [x,z,power] of [[1.2,1.1,150],[-3.2,-1.6,110]]){
-    const lamp=new THREE.PointLight(0xfff1d2,power,17,2);
+    const lamp=new THREE.PointLight(PALETTE.sakuraTube,power,17,2);lamp.userData.openIntensity=power;
     lamp.position.set(x,2.6,z);strip.add(lamp);
    }
    group.add(strip);
   }else if(!on&&strip){strip.traverse(o=>o.dispose?.());strip.removeFromParent();strip=null;}
+  updateLighting(getMinutes());
  };
 
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,

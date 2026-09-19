@@ -19,5 +19,5 @@ export function createTownSky(scene){
  const material=new THREE.MeshBasicMaterial({map:texture,side:THREE.BackSide,depthWrite:false,fog:false,toneMapped:false});
  const mesh=new THREE.Mesh(new THREE.SphereGeometry(180,32,16),material);mesh.name='Open harbour sky';mesh.renderOrder=-1000;mesh.frustumCulled=false;scene.add(mesh);
  const night=new THREE.Color(0x33465e),daylight=new THREE.Color(0xffffff),wet=new THREE.Color(0xa7b2bc);
- return {mesh,update(camera,day,rain,inside){mesh.visible=!inside;mesh.position.copy(camera.position);material.color.copy(night).lerp(daylight,day);if(rain)material.color.multiply(wet);}};
+ return {mesh,update(camera,day,rain,inside,tint){mesh.visible=!inside;mesh.position.copy(camera.position);if(tint!=null)material.color.set(tint);else{material.color.copy(night).lerp(daylight,day);if(rain)material.color.multiply(wet);}}};
 }

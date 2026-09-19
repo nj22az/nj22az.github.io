@@ -5,6 +5,7 @@ import {RESIDENTS} from '../people/residents.js';
 import {THUAN_HOME_DOOR} from '../people/social.js';
 import {RESIDENTIAL_ENTRIES} from './residential-layout.js';
 import {buildResidentialStreet} from './residential-street.js';
+import {windowGlow} from '../render/dusk.js';
 
 // Home gameplay belongs to the authored thresholds, independent of model loading.
 // No old house kit, procedural doors or gardens are overlaid on the supplied street.
@@ -38,7 +39,7 @@ export function buildHomes(world,options){
  const texture=new THREE.CanvasTexture(atlas);texture.colorSpace=THREE.SRGBColorSpace;
  const material=new THREE.MeshStandardMaterial({map:texture,roughness:.9,emissiveMap:texture,emissive:0xffdcac,emissiveIntensity:.02});
  const nameplates=new THREE.Mesh(mergeGeometries(plates,false),material);nameplates.name='resident-home-nameplates';world.group.add(nameplates);plates.forEach(g=>g.dispose());
- world.homes=homes;world.updateHomes=minutes=>{const m=((minutes%1440)+1440)%1440;material.emissiveIntensity=m>=1080||m<420?.3:.02;nameplates.visible=world.residential.ready;};
+ world.homes=homes;world.updateHomes=minutes=>{nameplates.material.emissiveIntensity=.02+windowGlow(minutes)*.28;nameplates.visible=world.residential.ready;};
  nameplates.visible=world.residential.ready;
  return homes;
 }
