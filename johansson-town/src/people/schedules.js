@@ -10,6 +10,7 @@ import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
+import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 export const DIALOGUE={
@@ -53,6 +54,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const COMMUTER_LAYOUTS=['shopping-district','peninsula'];
  const commuterMode=()=>COMMUTER_LAYOUTS.includes(world.townMode)||COMMUTER_LAYOUTS.includes(state()?.townMode);
  for(const person of world.people)person.g.userData.scheduled=true;
+ const thuan=world.people.find(p=>p.profile?.name==='Thuan');
+ const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
+  const p=getObserverPosition();return p&&Math.hypot(p.x-STAFF_BENCH.seat[0],p.z-STAFF_BENCH.seat[1])<.9;
+ }}):null;
  const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||THUAN_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
@@ -118,6 +123,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
+   if(p===thuan&&staffBreak?.active){
+    staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
+    routes.delete(g);outside.push(p);continue;
+   }
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const phase=transit?commuterPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
@@ -143,11 +152,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }
    const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
-   // Off the bench: the break is over, or a customer is worth waking up for.
-   if(plan.place!=='nap'&&g.userData.napping){
-    delete g.userData.napping;delete g.userData.seatHeight;delete g.userData.sleeping;
-    delete g.userData.socialPose;routes.delete(g);
-   }
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
    if(holdForBus){g.visible=true;target=BUS_STATION.queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the Harbour Line';}
@@ -161,7 +165,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
@@ -175,6 +179,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
+   if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
@@ -183,21 +188,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(!g.userData.indoors)g.userData.justArrived=true;
     g.userData.indoors=tag;g.visible=false;routes.delete(g);
     g.userData.activity=tag==='home'?homeRoutine(v,minutes).activity+' at home':plan.activity;
-   }else if(tag==='nap'){
-    // She sits down when she gets there, and is asleep for as long as the leg lasts.
-    //
-    // The entity stays on the ground at the seat: models.js puts the pelvis on the
-    // cushion itself from the rig's own measured seat support, so moving the body up
-    // here would sit her in the air above her own bench.
-    if(arrived()){
-     if(!g.userData.napping){
-      g.userData.napping=true;
-      g.position.set(STAFF_BENCH.seat[0],groundHeight(...STAFF_BENCH.seat),STAFF_BENCH.seat[1]);
-      g.rotation.y=STAFF_BENCH.yaw;routes.delete(g);
-     }
-     g.userData.seatHeight=.56;g.userData.socialPose='Sleep';g.userData.sleeping=true;
-    }
-    outside.push(p);
    }else outside.push(p);
    const home=world.homes?.get(v.name);if(home)home.occupied=g.userData.indoors==='home';
   }
