@@ -119,7 +119,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?commuterPhase(v,minutes):'legacy';
+   const phase=transit?commuterPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.

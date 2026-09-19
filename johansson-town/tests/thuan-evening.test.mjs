@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
 import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END} from '../src/people/social.js';
+import {departureFor} from '../src/people/commuter-schedule.js';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
@@ -28,12 +29,18 @@ test('Thuan has a beer at Minato between closing the shop and the last bus',()=>
   assert.match(after.activity,/beer/i);
   assert.ok(izakayaOpen(shift.finish+5),'Minato is shut when she gets there');
 
-  // She leaves herself time to walk up, and she does not miss the bus.
-  assert.equal(plan(shift.departure-THUAN_BUS_MARGIN-1).place,'izakaya');
-  const leaving=plan(shift.departure-THUAN_BUS_MARGIN);
+  // The beer is what moves her onto the ten o'clock: she measures her evening against
+  // the bus she is actually going home on, not the one she is skipping.
+  const last=departureFor(THUAN,false);
+  assert.ok(last>shift.departure,'A beer buys her no more time than going straight home');
+  assert.equal(plan(shift.departure).place,'izakaya','She left for the nine after all');
+  assert.equal(plan(last-THUAN_BUS_MARGIN-1).place,'izakaya');
+  const leaving=plan(last-THUAN_BUS_MARGIN);
   assert.equal(leaving.place,'bus');
   assert.deepEqual(leaving.target,BUS_STATION.queue);
-  assert.equal(plan(shift.departure-1).place,'bus','She is still drinking when her bus goes');
+  assert.equal(plan(last-1).place,'bus','She is still drinking when her bus goes');
+  // and in the rain she takes the earlier one instead.
+  assert.equal(departureFor(THUAN,true),shift.departure);
 
   // Rain sends her straight to the stop.
   assert.equal(residentPlan(THUAN,shift.finish+5,true,{},true).place,'bus');
@@ -111,7 +118,8 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
  try{
   const seen=[];
-  for(let m=510;m<1290;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
+  // Out to the ten o'clock, which is the bus a beer at Minato puts her on.
+  for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
   // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
   assert.deepEqual(order,['bus','market','nap','park','stroll','market','izakaya','bus','away']);

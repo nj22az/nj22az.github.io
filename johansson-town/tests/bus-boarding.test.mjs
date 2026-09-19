@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createBusRun} from '../src/world/bus.js';
+import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 
 /**
@@ -20,15 +21,20 @@ function gate(run){
   },
  };
 }
-const step=(run,seconds,dt=1/30)=>{for(let t=0;t<seconds;t+=dt)run.update(dt);};
-const until=(run,phase,seconds=400,dt=1/30)=>{for(let t=0;t<seconds;t+=dt){if(run.phase===phase)return true;run.update(dt);}return false;};
+// The bus is on the town clock now, and it runs at a minute a second, so the seconds
+// wound on here are also the minutes. Each run gets its own clock, started a little
+// before the first service so the bus comes in rather than being parked all day.
+const clocks=new WeakMap();
+const clockFor=run=>{if(!clocks.has(run))clocks.set(run,{minutes:HARBOUR_LINE[0]-12});return clocks.get(run);};
+const step=(run,seconds,dt=1/30)=>{const c=clockFor(run);for(let t=0;t<seconds;t+=dt){c.minutes+=dt;run.update(dt,c.minutes);}};
+const until=(run,phase,seconds=1600,dt=1/30)=>{const c=clockFor(run);for(let t=0;t<seconds;t+=dt){if(run.phase===phase)return true;c.minutes+=dt;run.update(dt,c.minutes);}return false;};
 
 test('a resident leaves on the bus rather than at the kerb',()=>{
  const run=createBusRun({parent:new THREE.Group()}),g={};
  const {boarded}=gate(run);
 
  // The bus is at the terminus: they are queueing, not gone.
- assert.equal(run.phase,'waiting');
+ assert.ok(until(run,'waiting'),'The bus never came in for its first service');
  assert.equal(boarded(g),false,'They vanished while the bus was still standing there');
 
  // It pulls out, and now they are on it.
@@ -48,8 +54,9 @@ test('a resident leaves on the bus rather than at the kerb',()=>{
 test('nobody is put down on the platform unless the bus is at it',()=>{
  const run=createBusRun({parent:new THREE.Group()});
  const {atTheStop}=gate(run);
+ assert.ok(until(run,'waiting'),'The bus never came in for its first service');
  assert.equal(atTheStop(),true,'The bus starts away from its own terminus');
- assert.ok(until(run,'gone'),'The bus never goes');
+ assert.ok(until(run,'away'),'The bus never goes');
  assert.equal(atTheStop(),false,'A departed bus still counts as standing at the stop');
 
  // and where they step off is beside the bus, on the platform, not inside the bus.

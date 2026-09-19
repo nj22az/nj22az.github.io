@@ -9,7 +9,7 @@ import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
 import {shoppingDistrictActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
@@ -88,7 +88,10 @@ export function thuanAtMinato(profile,minutes,rain=false){
  const shift=shiftFor(profile);
  if(rain||!shift||shift.permanent)return false;
  const m=minuteOfDay(minutes);
- return izakayaOpen(m)&&inTimeRange(m,shift.finish,shift.departure-THUAN_BUS_MARGIN);
+ // Against the bus she is actually going home on: staying for a beer is what moves
+ // her off the nine o'clock and onto the ten, so measuring her evening against the
+ // nine would send her to the queue at a quarter to, halfway down her drink.
+ return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
 }
 export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
@@ -141,7 +144,7 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
 function commuterPlan(profile,minutes,rain=false,state=null){
- const phase=commuterPhase(profile,minutes),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
+ const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
  if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
  // Thuan's own hour between locking up and the last bus. It has to be read before the
