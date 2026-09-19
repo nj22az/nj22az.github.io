@@ -22,6 +22,19 @@ function fixture({visible=true,saved=null}={}){
 }
 function visibleInstances(group){let count=0;const matrix=new T.Matrix4();group.traverse(mesh=>{if(mesh.isInstancedMesh)for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,matrix);if(Math.abs(matrix.determinant())>1e-8)count++;}});return count;}
 
+test('the town clock dims existing Sakura strip lights at closing without advancing staff jobs',()=>{
+ const f=fixture();f.shop.street(f.shop.group.parent,{position:[0,0,0],yaw:0});
+ const strip=f.shop.group.getObjectByName('Sakura shopfront strip lights');assert.equal(strip.children.length,2);
+ const phase=f.shop.service.phase,position=f.world.people[0].g.position.clone();
+ for(const [minutes,level] of [[540,1],[1110,1],[1200,.35],[1440,.35]]){
+  f.time(minutes);for(const update of f.world.hourly)update(minutes);
+  assert.deepEqual(strip.children.map(l=>l.intensity),[150*level,110*level]);
+  for(const lamp of strip.children)assert.equal(lamp.color.getHex(),0xfff1ce);
+ }
+ assert.equal(f.shop.service.phase,phase);assert.ok(f.world.people[0].g.position.equals(position));
+ f.shop.enter(f.shop.group.parent);assert.equal(f.shop.group.getObjectByName('Sakura shopfront strip lights'),undefined);
+});
+
 test('a customer picks visible goods, waits for the till, pays once and funds an actual delivery and restock',()=>{
  const f=fixture(),customer=f.world.people[1],clerk=f.world.people[0].g;
  // Reiko chooses a notebook; its next replacement must be bought, not created.
