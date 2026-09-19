@@ -9,6 +9,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {applyCelShading} from '../render/cel.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
 
 /** Head emissive matches harbour.js lantern globes. */
 export const LAMP_EMISSIVE=0xf0a65c;
@@ -18,27 +19,34 @@ export const POLE_HEIGHT=4.2;
 
 /**
  * West footway ~pavementWest+0.2, east footway just past the east kerb.
- * Arms reach toward the carriageway. zs skip SHOP_CROSSING_Z, the south
- * crossing at -18, and utility poles at z=-32,11,17.
+ * Sparse mid-block zs only — skip shop frontages (DOOR_KEEP_CLEAR), 
+ * SHOP_CROSSING_Z, south crossing at -18, utility poles at z=-32,11,17.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // Shopping street — 8 arm lamps
- {x:-7.35,z:-26,side:'west'},
- {x:0.6,z:-26,side:'east'},
- {x:-7.35,z:-12,side:'west'},
- {x:0.6,z:-12,side:'east'},
- {x:-7.35,z:2,side:'west'},
- {x:0.6,z:2,side:'east'},
- {x:-7.35,z:15,side:'west'},
- {x:0.6,z:15,side:'east'},
- // Quay approach — 4, clear of harbour lanterns at [-17.1,-48]/[16.3,-47.2]
- {x:-7.2,z:-40,side:'west'},
- {x:0.8,z:-40,side:'east'},
- {x:-7.2,z:-46,side:'west'},
- {x:0.8,z:-46,side:'east'},
+ // Sparse mid-block only — never on Sakura / Front-Row / Minato frontages.
+ {x:-7.35,z:-16.5,side:'west'},
+ {x:0.6,z:-16.5,side:'east'},
+ {x:-7.35,z:12,side:'west'},
+ {x:0.6,z:12,side:'east'},
+ // Quay — one pair mid-quay (was four)
+ {x:-7.2,z:-43,side:'west'},
+ {x:0.8,z:-43,side:'east'},
 ]);
 
 const UTILITY_POLE_Z=new Set([-32,11,17]);
+
+/**
+ * Footway rectangles that must stay free of lamp poles (center x/z, full w/d metres).
+ * West-pavement doors only — east kerb lamps sit past MAIN_ROAD.east and miss these.
+ */
+export const DOOR_KEEP_CLEAR=Object.freeze([
+ // Full facade bands on the west footway (d = building frontage + margin).
+ {id:'frontrow',x:MAIN_ROAD.pavementWest+0.2,z:BOOKSHOP_WORKSHOP_PLOT.z,w:1.6,d:10},
+ // Sakura storefront ~14 m wide; door centre market.z+1.2
+ {id:'market',x:MAIN_ROAD.pavementWest+0.2,z:-27.3,w:1.6,d:16},
+ // Minato Izakaya west pavement door
+ {id:'izakaya',x:MAIN_ROAD.pavementWest+0.5,z:-10.43,w:1.6,d:8},
+]);
 
 /** Sanity: placements stay off junctions and existing utility poles. */
 export function placementsClearOfInfrastructure(placements=STREET_LAMP_PLACEMENTS){
@@ -46,6 +54,16 @@ export function placementsClearOfInfrastructure(placements=STREET_LAMP_PLACEMENT
   if(UTILITY_POLE_Z.has(p.z))return false;
   if(Math.abs(p.z-SHOP_CROSSING_Z)<1.2)return false;
   if(Math.abs(p.z+18)<1.2)return false;
+ }
+ return placementsClearOfShopDoors(placements);
+}
+
+/** Fail if any lamp sits inside a shop doorway / sidewalk-entrance keep-clear. */
+export function placementsClearOfShopDoors(placements=STREET_LAMP_PLACEMENTS,zones=DOOR_KEEP_CLEAR){
+ for(const p of placements){
+  for(const zone of zones){
+   if(Math.abs(p.x-zone.x)<=zone.w/2&&Math.abs(p.z-zone.z)<=zone.d/2)return false;
+  }
  }
  return true;
 }
