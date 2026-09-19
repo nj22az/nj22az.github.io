@@ -174,7 +174,7 @@ import {SAVE_KEY} from '../src/save.js';
 import {STORE_ITEMS} from '../src/commerce/catalogue.js';
 
 const counter=async()=>{
- const dom=installDOM();
+ globalThis.navigator??={vibrate(){}};const dom=installDOM();
  const {createActivities}=await import('../activities.js?konbini='+Math.random());
  let minutes=600;
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes,
@@ -296,7 +296,7 @@ test('the shop stands in a yard you can walk round, with a back to look at',asyn
 });
 
 test('Examine opens the 3D inspector with Buy · Talk · Put back and baskets on Buy',async()=>{
- installDOM();
+ globalThis.navigator??={vibrate(){}};installDOM();
  const {createInspector}=await import('../inspect-3d.js');
  const {createActivities}=await import('../activities.js?examine='+Math.random());
  const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');
@@ -348,7 +348,7 @@ test('the till backbar places impulse props behind Thuan without new SKUs',async
   assert.ok(prop.x>SAKURA_LAYOUT.staff[0],'Props sit on the wall behind the clerk');
   assert.ok(prop.x<6.7,'and stay inside the east wall');
  }
- installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ globalThis.navigator??={vibrate(){}};installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  const old=fetch;const {readFile}=await import('node:fs/promises');
  globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{

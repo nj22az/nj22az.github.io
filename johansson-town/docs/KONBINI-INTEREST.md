@@ -116,6 +116,6 @@ One short lift line per examined good in v1 (product- or Thuan-flavoured, not me
 ## Success criteria
 
 - [x] Design brief checked in under `johansson-town/docs/KONBINI-INTEREST.md`.
-- [ ] First implementation lands on its own branch/PR; TownQC before main.
-- [ ] Examine of a v1 good orbits in 3D, then Buy or Put back works against existing sakura stock.
-- [ ] Backbar reads from the till approach without blocking Thuan’s checkout work.
+- [x] First implementation lands on its own branch/PR; TownQC before main.
+- [x] Examine of a v1 good orbits in 3D, then Buy or Put back works against existing sakura stock.
+- [x] Backbar reads from the till approach without blocking Thuan’s checkout work.
