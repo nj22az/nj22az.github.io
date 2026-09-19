@@ -11,8 +11,8 @@ import * as THREE from '../../vendor/three.module.js';
  * somewhere to sit down and close her eyes for twenty minutes.
  *
  * The shop's footprint is 14.26 by 11.0 turned a quarter, so its back wall stands at
- * x -18.45 and the west yard runs on to -24.6. The bench sits a hand's width off the
- * wall with its back to it, facing out across the yard.
+ * x -18.45 and the west yard runs on to -24.6. Keep space between the bench and
+ * the wall fittings, with its back towards the shop and its seat facing the yard.
  *
  * It used to stand further down the wall with nothing but gravel leading to it, so the
  * only way to find it was to walk round the shop on the chance there was something
@@ -21,12 +21,13 @@ import * as THREE from '../../vendor/three.module.js';
  * thing at the end of it, which is what the back of a shop looks like.
  */
 export const STAFF_BENCH=Object.freeze({
- x:-19.1,z:-23,
+ x:-19.9,z:-23,
  /** Facing west, out into the yard, with the shop wall behind her. */
  yaw:Math.PI/2,
  /** The seat, and where she stands up to. */
- seat:Object.freeze([-19.25,-23]),
- stand:Object.freeze([-20.5,-23]),
+ seat:Object.freeze([-20.05,-23]),
+ stand:Object.freeze([-21.3,-23]),
+ approachRadius:.12,
  height:.47,
  eyeY:1.12,
 });
@@ -38,13 +39,12 @@ export const STAFF_BENCH=Object.freeze({
  * ends a foot past the bench. Nothing beyond it: the point of a service path round the
  * back is that it goes one place.
  *
- * The turn is at x -19.9 so the paving reaches to within 15cm of the back wall and the
- * bench stands on it. Half a metre further out and the bench sat on gravel with the
- * path stopping short of it, which reads as a path to near the bench.
+ * The walking line ends at the clear standing point in front of the seat. It must
+ * not aim at the bench centre and send someone through the backrest on arrival.
  */
 export const STAFF_YARD_ROUTE=Object.freeze({
  id:'staff-yard',peninsula:true,width:2.6,surface:'stone',
- points:Object.freeze([[-8.6,-18.7],[-19.9,-18.7],[-19.9,STAFF_BENCH.z]]),
+ points:Object.freeze([[-8.6,-18.7],[STAFF_BENCH.stand[0],-18.7],STAFF_BENCH.stand]),
 });
 
 /**
