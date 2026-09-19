@@ -24,9 +24,9 @@
 <link rel="stylesheet" href="./landing.css?h=c67dad56">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=718c3ab8">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-BZmN3BD7.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DssUiGO7.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-B9BY46Jj.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-CD__mj6I.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-Byd8MLTL.js">
 </head>
 <body>
@@ -219,12 +219,12 @@
           <article class="notice-card">
             <p class="notice-no">NOTICE B-07</p>
             <h3>Evening paper</h3>
-            <p>Reiko locks the press at Front-Row after eighteen-thirty. Copy is posted on the alley board.</p>
+            <p>Reiko works the evening press inside Front-Row Books & Workshop until 00:30. Newspapers are available at Aya’s counter.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE C-02</p>
             <h3>Form 3D printer</h3>
-            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Thuan at Sakura to sell a finished piece.</p>
+            <p>Five collectible patterns at the shared bookshop workshop. Speak to Thuan at Sakura to sell a finished piece.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE D-11</p>
@@ -294,7 +294,7 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=board-2"></script>
+<script src="./landing.js?v=books-workshop-3"></script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-BhdKDVvj.js';
 (() => {
@@ -334,7 +334,7 @@ import {unlockTownAudio} from './runtime/audio-BhdKDVvj.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-BZmN3BD7.js');
+      await import('./runtime/boot-DssUiGO7.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

@@ -92,17 +92,18 @@ test('Minato stands beside Sakura with its door and NPC approach facing the road
  assert.deepEqual(restaurantPoint('ramen',2,3),[DINING.ramenX-3,DINING.ramenZ+2]);
 });
 
-test('on the peninsula Minato stands next to the bookshop, clear of the konbini',async()=>{
+test('on the peninsula Minato leaves a passage beside the bookshop and clears the konbini',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
  const corners=key=>[manifest.bounds.min[0],manifest.bounds.max[0]]
   .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[key]));
  try{
   configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
   const northGable=Math.max(...corners(1)),southGable=Math.min(...corners(1)),eastFace=Math.max(...corners(0));
-  // The bookshop it was asked to be next to.
-  const books=WEST_SHOPS.frontrow,booksSouthWall=books.z-books.width/2;
+  // Include the outer corner posts (.24 m beyond the nominal footprint).
+  const books=WEST_SHOPS.frontrow,booksSouthWall=books.z-books.width/2-.24;
   assert.ok(northGable<booksSouthWall,'Minato is inside the bookshop');
-  assert.ok(booksSouthWall-northGable<1,'Minato is not next to the bookshop');
+  const passageWidth=booksSouthWall-northGable;
+  assert.ok(passageWidth>=3&&passageWidth<3.5,'Keep the three-metre passage to the west yard');
   // and clear of the fourteen-metre konbini it used to stand inside.
   assert.ok(southGable>-26.8+SAKURA_FRONT.width/2,'Minato is inside the konbini');
   // and still set back off the footway rather than standing on it.

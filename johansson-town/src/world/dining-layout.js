@@ -28,8 +28,8 @@ export const DINING=Object.freeze({
  * wall is at z -19.67 — so -20.4 is now three metres inside the shop.
  *
  * On the peninsula it stands next to the bookshop instead, which is where it was asked
- * for: Front-Row's frontage runs to z -5.60, and Minato's north gable is half a metre
- * short of it. Thuan comes out of Sakura, up the west pavement past Aya's window, and
+ * for: Minato's north gable is at z -6.10 and the relocated bookshop's
+ * south wall is at -3.02, leaving a walkable passage between them. Thuan comes out of Sakura, up the west pavement past Aya's window, and
  * in.
  *
  * The door, its approach and the lane to it are live arrays rather than copies:
@@ -39,7 +39,7 @@ export const DINING=Object.freeze({
  */
 const IZAKAYA_PLOTS=Object.freeze({
  street:Object.freeze([-12.5,-20.4]),
- // North gable at -6.10, half a metre short of the bookshop's south wall at -5.60.
+ // North gable at -6.10; the bookshop is separated by a three-metre passage.
  peninsula:Object.freeze([-12.5,-10.43]),
 });
 export const IZAKAYA_DOOR=[-7.05,-20.4];

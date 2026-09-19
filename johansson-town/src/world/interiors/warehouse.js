@@ -3,14 +3,14 @@ import {createMaterials} from '../../render/materials.js?snappy=1';
 import {buildShopDoor} from '../shop-door.js';
 import {batchStaticProps} from '../../render/static-props.js';
 
-export const WAREHOUSE_ROOM=Object.freeze({bounds:{minX:-2.8,maxX:2.8,minZ:-5.1,maxZ:5.1},spawn:[0,0,3.6],yaw:0,exit:[0,1.15,4.8]});
+export const WAREHOUSE_ROOM=Object.freeze({bounds:{minX:-2.8,maxX:2.8,minZ:-5.1,maxZ:5.1},spawn:[0,0,3.6],yaw:0,exit:[0,1.15,4.8],staff:{'Mrs Sato':[.55,0,-3.35]}});
 
 export function buildWarehouseInterior({room,reg,collider,action,exit}){
  room.name='Harbour Warehouse interior';
  const surfaces=createMaterials(),concrete=surfaces.worldMaterial('concrete',0xada89a,2),wood=surfaces.material('timber',0x8c7455),dark=surfaces.material('timber',0x514335);
  const steel=new THREE.MeshStandardMaterial({color:0x475b59,roughness:.66,metalness:.2}),rope=new THREE.MeshStandardMaterial({color:0xa08d64,roughness:1});
  function box(size,pos,mat,name){const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);mesh.position.set(...pos);mesh.receiveShadow=true;mesh.userData.staticProp=true;if(name)mesh.name=name;room.add(mesh);return mesh;}
- function inspect(pos,title,text){const a=new THREE.Object3D();a.position.set(...pos);room.add(a);reg(a,'Inspect '+title,()=>action('inspect',title,text),true);}
+ function inspect(pos,title,text){const a=new THREE.Object3D();a.position.set(...pos);a.userData.workers=['Mrs Sato'];room.add(a);reg(a,'Inspect '+title,()=>action('inspect',title,text),true);}
  box([5.8,.16,10.4],[0,-.08,0],concrete,'warehouse-floor');
  box([5.8,3.6,.18],[0,1.8,-5.2],wood);for(const x of [-2.9,2.9])box([.18,3.6,10.4],[x,1.8,0],wood);
  box([5.8,.16,10.4],[0,3.65,0],dark,'warehouse-ceiling');

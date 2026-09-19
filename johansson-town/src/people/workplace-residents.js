@@ -4,7 +4,7 @@ import {createTownActivities} from './town-activities.js';
 
 // Workplaces are assigned to people, so two residents can share one real room.
 export function createWorkplaceResidents({world,parent,getTargets,collides,getPlayerPosition,getState,ledger,onBorrow=()=>{},getEntrance=()=>[0,0,5.2],getLayout=()=>null}){
- const borrowed=new Map();let site=null,interactions=null,walker=null,clock=0;
+ const borrowed=new Map();let site=null,interactions=null,walker=null,clock=0,departing=null;
  const occupied=(x,z,person)=>{
   const player=getPlayerPosition();if(player&&Math.hypot(player.x-x,player.z-z)<.72)return true;
   return [...borrowed.keys()].some(other=>other!==person&&Math.hypot(other.g.position.x-x,other.g.position.z-z)<.68);
@@ -15,6 +15,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
   for(const key of ['inWorkplace','indoors','usingTownObject','socialPose','seatHeight','heldItem','roomTransition'])delete g.userData[key];
   if(residentPlan(person.profile,clock,false,getState()).place==='work'&&person.profile.workSite){g.userData.indoors='work';g.visible=false;}
   borrowed.delete(person);
+  if(departing===person)departing=null;
  }
  function walk(person,target,dt){
   const before=person.g.position.clone(),arrived=walker.move(person,target,dt);
@@ -24,9 +25,14 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
  function update(dt,minutes,rain,initial=false){
   clock=minutes;if(!site)return;
   const working=p=>residentPlan(p.profile,minutes,rain,getState()).place==='work'&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
-  for(const person of [...borrowed.keys()])if(!working(person)){
+  // One worker uses the narrow exit at a time. Otherwise two converging routes
+  // can stop shoulder to shoulder, each rejecting the other's next step forever.
+  const leaving=[...borrowed.keys()].filter(person=>!working(person));
+  if(!leaving.includes(departing))departing=null;
+  if(!departing){const entrance=getEntrance();departing=leaving.sort((a,b)=>Math.hypot(a.g.position.x-entrance[0],a.g.position.z-entrance[2])-Math.hypot(b.g.position.x-entrance[0],b.g.position.z-entrance[2]))[0]||null;}
+  for(const person of leaving){
    interactions.release(person,minutes);person.g.userData.roomTransition=true;person.g.userData.activity='leaving work';
-   if(walk(person,getEntrance(),dt))restore(person);
+   if(person===departing&&walk(person,getEntrance(),dt))restore(person);
   }
   const staff=world.people.filter(p=>p.profile.workSite===site.id),layout=getLayout();
   for(const worker of staff){
@@ -50,7 +56,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
    walk(person,[plan.target[0],0,plan.target[1]],dt);
   }
  }
- function leave(){for(const person of [...borrowed.keys()])restore(person);interactions?.dispose();interactions=null;walker?.clear();walker=null;site=null;}
+ function leave(){for(const person of [...borrowed.keys()])restore(person);interactions?.dispose();interactions=null;walker?.clear();walker=null;site=null;departing=null;}
  return {enter(next,minutes){leave();if(!world.people.some(p=>p.profile.workSite===next.id))return;site=next;
   walker=createRoomWalk(collides,{bounds:getLayout()?.bounds});
   interactions=createTownActivities({getTargets,collides,getPlayerPosition,getState,ledger,inside:true});update(0,minutes,false,true);

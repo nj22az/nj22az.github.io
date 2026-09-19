@@ -1,3 +1,4 @@
+import {isWorkshopSite} from './src/world/businesses.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -444,7 +445,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     switch(kind){
       case 'workshop':workshopUI.printer();break;
       case 'town-cleanup':{const result=collectTownFind(state,name);if(!result.ok){receipt('Town clean-up',result.message);break;}save();receipt('Street tidied',result.name+' is in your bag. Thuan offers ¥'+result.price+' when the shop has enough takings.');break;}
-      case 'stepwise':if(getSocialContext().inside==='form3d')inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
+      case 'stepwise':if(isWorkshopSite(getSocialContext().inside))inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
