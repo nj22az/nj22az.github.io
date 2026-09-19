@@ -728,6 +728,15 @@ window.__JOHANSSON_POSE__={
   .map(p=>p.profile.name+':'+p.g.userData.place+(p.g.visible?'':' (gone)'));},
  get surface(){return routeAt(player.position.x,player.position.z)?.surface||null;},
 };
+// What each of the cast is actually playing. Which animation a body has chosen is
+// invisible from a screenshot -- a weight shift and a loop look identical in a still --
+// so there is otherwise no way to check from outside that anyone is using more than
+// the first take of an idle.
+window.__JOHANSSON_CAST__={
+ get takes(){return (characters?.actors||[]).map(a=>({
+  name:a.entity?.userData?.name||'?',clip:a.current||null,
+  moving:!!a.moving,speed:+(a.speed||0).toFixed(2)}));},
+};
 // Sakura's books, live rather than as last saved. The shop's day is settled on the
 // town clock whether or not anybody is standing in it, and the saved copy lags, so
 // there was no way to see from outside whether the meter had actually run.

@@ -39,26 +39,49 @@ function worldDelta(bone,euler){
  bone.updateWorldMatrix(false,true);
 }
 
-function poseShopkeeper(pose,kind,t,duration){
- const spine=pose.getObjectByName('Spine'),head=pose.getObjectByName('Head');
- const breath=Math.sin(t/duration*Math.PI*2),shift=Math.sin(t/duration*Math.PI*2+1.1);
- // Slow breathing and a small asymmetric upper-body settle, without moving
- // the planted feet or dropping the pelvis into the source crouch animation.
+/**
+ * How somebody stands when they are not doing anything.
+ *
+ * Nobody stands one way for eleven hours. Thuan's counter is where the player spends
+ * most of their time with her, and until now she looped a single six-second take there
+ * from opening to close: the same breath, the same settle, the same glance, four
+ * hundred times over a trading day. One loop is what makes a person read as furniture.
+ *
+ * So the same pose is baked more than once, with the weight somewhere else each time.
+ * The feet cannot move -- they come from the rest pose and the legs are not animated --
+ * but weight is mostly readable from the hips and the spine above them, so a few
+ * degrees of pelvis with the chest counter-leaning over it is enough to say she has
+ * shifted onto her other foot. The head goes with it, and the resting hand changes
+ * height, because a hand that never moves is the other half of the problem.
+ *
+ * @param {number} variant which way she is standing; 0 is the original take
+ */
+function poseShopkeeper(pose,kind,t,duration,variant=0){
+ const spine=pose.getObjectByName('Spine'),head=pose.getObjectByName('Head'),hips=pose.getObjectByName('Hips');
+ // Each variant breathes on its own phase, so two of them never fall into step.
+ const phase=variant*1.7;
+ const breath=Math.sin(t/duration*Math.PI*2+phase),shift=Math.sin(t/duration*Math.PI*2+1.1+phase);
  const lean=kind==='counter'?.065:0;
- if(spine)worldDelta(spine,new THREE.Euler(.012*breath+lean-.018,.022,.035+.012*shift));
- if(head)worldDelta(head,new THREE.Euler(.012*breath,.018*shift,-.018));
+ // Weight, glance and the slow drift of a body that is standing rather than posed.
+ const WEIGHT=[{hip:0,roll:.035,turn:.022,glance:0,hand:0},
+               {hip:-.055,roll:-.028,turn:-.05,glance:.14,hand:.035},
+               {hip:.042,roll:.052,turn:.058,glance:-.10,hand:-.022}];
+ const w=WEIGHT[variant%WEIGHT.length];
+ if(hips)worldDelta(hips,new THREE.Euler(0,w.hip*.6,w.hip));
+ if(spine)worldDelta(spine,new THREE.Euler(.012*breath+lean-.018,w.turn,w.roll+.012*shift));
+ if(head)worldDelta(head,new THREE.Euler(.012*breath,.018*shift+w.glance,-.018-w.roll*.4));
  const hip=pose.getObjectByName('LeftUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(.05,.88,0);
  const rightHip=pose.getObjectByName('RightUpLeg')?.getWorldPosition(new THREE.Vector3())||new THREE.Vector3(-.06,.88,0);
  // Rest beside and slightly in front of the dress. A wrist at the hip joint
  // buries the palm and downward-pointing fingers inside the flared skirt.
- const leftWrist=hip.clone().add(new THREE.Vector3(.20,.105+.006*breath,.16));
- const rightWrist=kind==='counter'?new THREE.Vector3(-.10,1.09,.50):rightHip.clone().add(new THREE.Vector3(-.20,.045,.14+.005*shift));
+ const leftWrist=hip.clone().add(new THREE.Vector3(.20,.105+.006*breath+w.hand,.16-w.hand*.5));
+ const rightWrist=kind==='counter'?new THREE.Vector3(-.10,1.09+w.hand*.4,.50):rightHip.clone().add(new THREE.Vector3(-.20,.045-w.hand,.14+.005*shift));
  const relaxedPalm=side=>worldPalm(new THREE.Vector3(side*.10,-1,.12),new THREE.Vector3(-side,.08,.10),side);
  solveArm(pose,'Left',leftWrist,new THREE.Vector3(.20,-.18,-.22),relaxedPalm(1));
  solveArm(pose,'Right',rightWrist,kind==='counter'?new THREE.Vector3(-.22,-.32,.25):new THREE.Vector3(-.20,-.18,-.20),kind==='counter'?worldPalm(new THREE.Vector3(.06,-.18,1),new THREE.Vector3(0,-1,.04),-1):relaxedPalm(-1));
 }
 
-function bakeIdle(asset,source,name,kind,duration){
+function bakeIdle(asset,source,name,kind,duration,variant=0){
  const pose=clone(asset.scene),clip=source.clone();clip.name=name;clip.duration=duration;
  const samples=source.tracks.map(track=>({sample:track.createInterpolant(),binding:THREE.PropertyBinding.create(pose,track.name)}));
  const names=['Hips','Spine','Head','LeftShoulder','RightShoulder','LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand'];
@@ -67,7 +90,7 @@ function bakeIdle(asset,source,name,kind,duration){
   // The six-second baked loop must not inherit the four-second hold's seam.
   for(const {sample,binding} of samples)binding.setValue(sample.evaluate(0),0);
   pose.updateMatrixWorld(true);
-  poseShopkeeper(pose,kind,t,duration);
+  poseShopkeeper(pose,kind,t,duration,variant);
   for(const n of names){const bone=pose.getObjectByName(n);if(bone)values.get(n).push(...bone.quaternion.toArray());}
  }
  for(const {binding} of samples)binding.unbind();
@@ -79,8 +102,8 @@ function bakeIdle(asset,source,name,kind,duration){
  const fidget=(t,side,finger,segment)=>{
   const onDesk=kind==='counter'&&side==='Right';
   const rest=onDesk?.20:.26;
-  const wave=Math.sin((t/duration*Math.PI*2)+(side==='Left'?0:1.3)+segment*.4)*.025;
-  return rest+wave;
+  const wave=Math.sin((t/duration*Math.PI*2)+(side==='Left'?0:1.3)+segment*.4+variant*1.7)*.025;
+  return rest+wave*(1+variant*.35);
  };
  clip.tracks=clip.tracks.filter(track=>!/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(track.name));
  clip.tracks.push(...fingerTracks(asset.scene,times,fidget));
@@ -123,6 +146,14 @@ export function prepareMergedYuriAnimations(asset){
  }
  const idle=bakeIdle(asset,hold,'Idle_Neutral','hip',6);clips.push(idle);
  const counter=bakeIdle(asset,hold,'CounterIdle','counter',6);clips.push(counter);
+ // Two more ways of standing, for each of the two places she stands. The actor moves
+ // between them after a while rather than looping one take all day; see IDLE_VARIANTS
+ // in models.js. They are baked at a different length as well as a different weight,
+ // so even the cadence of the breathing changes when she shifts.
+ for(const [i,seconds] of [[1,7.5],[2,6.8]]){
+  clips.push(bakeIdle(asset,hold,'Idle_Neutral.'+i,'hip',seconds,i));
+  clips.push(bakeIdle(asset,hold,'CounterIdle.'+i,'counter',seconds,i));
+ }
  alias('Walking','Walk');alias('Running','Run');alias('Big_Wave_Hello','Wave');
  // Three takes shipped in this model and were never given a name the game asks for.
  //
