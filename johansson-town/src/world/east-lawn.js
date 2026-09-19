@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {buildEastGarden} from './east-garden.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -205,6 +206,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
+ const garden=buildEastGarden({parent:group,colliders,shadows,heightAt,register,onAction});
  /**
   * Lay the supplied park's own grass and leaf over the green, so the lawn and the mound
   * it runs up to are one field rather than two parks meeting along an edge. The model
@@ -250,5 +252,5 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
   }
   return true;
  };
- return {group,lawn,shore,shrubs,useParkGreenery};
+ return {group,lawn,shore,shrubs,garden,useParkGreenery,tick:garden.tick};
 }

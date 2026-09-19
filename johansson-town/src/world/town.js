@@ -241,6 +241,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
+    world.eastLawn?.tick?.(time,minutes);
     world.busStation?.update(minutes,day);
     // The Harbour Line runs to a timetable and holds for anyone still walking up to
     // it -- somebody the schedule has sent to the stop, close enough that the driver
