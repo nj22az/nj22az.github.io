@@ -153,6 +153,7 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
 }
 function commuterPlan(profile,minutes,rain=false,state=null){
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
+ // exit is the platform (clear of the painted tunnel mouth) — never roadEndZ/arch.
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
  if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
  // Thuan's own hour between locking up and the last bus. It has to be read before the

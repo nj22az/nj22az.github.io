@@ -49,6 +49,13 @@ DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the
 // leave a published subtitle disagreeing with the audio it plays.
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.ja+'\n'+clip.en;row[3]=clip.id;}}
 export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
+ // Keep scheduled targets off the forest bus road and painted coyote-tunnel mouth.
+ // WalkFix owns how they walk there; we only refuse the arch as a stand/queue point.
+ const clearOfTunnelMouth=target=>{
+  if(!target||!Number.isFinite(target[0])||!Number.isFinite(target[1]))return target;
+  if(target[1]<=BUS_STATION.maxZ-0.35)return target;
+  return [...BUS_STATION.platform];
+ };
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
  // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
@@ -211,7 +218,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.position.set(step[0],groundHeight(step[0],step[1]),step[1]);g.visible=true;
     delete g.userData.commuterAwayDay;routes.delete(g);
    }
-   const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
+   const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=clearOfTunnelMouth(plan.target),tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
@@ -233,7 +240,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     // Indoor saves name a place, whose threshold may have moved since saving.
     // If its schedule has changed, the resident leaves that door and walks onward.
     const rememberedDoor=transit&&remembered?.indoors==='home'?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!transit&&!collides(...remembered.position,.32);
-    const spawn=rememberedDoor||(savedWalk?remembered.position:transit&&phase==='arriving'?BUS_STATION.arrival:target);
+    const spawn=rememberedDoor||(savedWalk?clearOfTunnelMouth(remembered.position):transit&&phase==='arriving'?BUS_STATION.arrival:clearOfTunnelMouth(target));
     delete g.userData.indoors;
     if(rememberedDoor)g.userData.indoors=remembered.indoors;
     else if(!savedWalk&&indoorDoor(v,tag))g.userData.indoors=tag;
