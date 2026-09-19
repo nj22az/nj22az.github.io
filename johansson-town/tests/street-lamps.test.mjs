@@ -13,8 +13,8 @@ import {BOOKSHOP_WORKSHOP_PLOT} from '../src/world/bookshop-workshop-layout.js';
 
 const at=(h,m=0)=>h*60+m;
 
-test('four corner poles on the west pavement next to shop facades',()=>{
- assert.equal(STREET_LAMP_PLACEMENTS.length,4);
+test('three CityArchitect west-corner poles next to shop facades',()=>{
+ assert.equal(STREET_LAMP_PLACEMENTS.length,3);
  assert.ok(STREET_LAMP_PLACEMENTS.every(p=>p.side==='west'));
  assert.ok(placementsClearOfInfrastructure());
  assert.ok(placementsClearOfShopDoors());
@@ -24,36 +24,41 @@ test('four corner poles on the west pavement next to shop facades',()=>{
   // tucked next to west facade, not mid-road
   assert.ok(p.x<=-7.4);
  }
+ const tips=STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z}));
+ assert.deepEqual(tips,[
+  {x:-7.70,z:-34.0},
+  {x:-7.70,z:-21.0},
+  {x:-7.70,z:-3.05},
+ ]);
 });
 
 test('poles sit at Sakura and Front-Row corners, not in door leaves',()=>{
- assert.ok(DOOR_KEEP_CLEAR.some(z=>z.id==='frontrow'&&z.d<=3));
+ assert.ok(DOOR_KEEP_CLEAR.some(z=>z.id==='frontrow'&&z.d<=2&&z.z===BOOKSHOP_WORKSHOP_PLOT.z));
+ assert.ok(DOOR_KEEP_CLEAR.some(z=>z.id==='market'&&z.x===-5.5&&z.z===-26.8&&z.d<=2));
+ assert.ok(DOOR_KEEP_CLEAR.some(z=>z.id==='izakaya'&&Math.abs(z.z+10.43)<1e-9&&z.d<=2));
  assert.ok(placementsClearOfShopDoors());
  const zs=STREET_LAMP_PLACEMENTS.map(p=>p.z).sort((a,b)=>a-b);
- // Sakura corners ≈ -34.4 / -20.2; Front-Row ≈ -2.8 / ~6.8
- assert.ok(zs[0]<-33);
- assert.ok(zs[1]>-21&&zs[1]<-19);
- assert.ok(Math.abs(zs[2]-(-2.8))<0.2);
- assert.ok(zs[3]>6.2);
- // never mid-door
+ // tip zs: Sakura south -34.0, Sakura north -21.0, Front-Row south -3.05
+ assert.deepEqual(zs,[-34.0,-21.0,-3.05]);
+ // never mid-door (narrow leaf bands + live Sakura door)
  assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z-BOOKSHOP_WORKSHOP_PLOT.z)<1.2));
- assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+27.3)<1.2));
+ assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+26.8)<1.2));
 });
 
 test('buildStreetLamps adds visible poles, colliders, and zero PointLights',()=>{
  const parent=new THREE.Group(),colliders=[];
  const lamps=buildStreetLamps({parent,colliders,shadows:true,mobile:false});
- assert.equal(lamps.count,4);
- assert.equal(lamps.heads.length,4);
+ assert.equal(lamps.count,3);
+ assert.equal(lamps.heads.length,3);
  assert.equal(lamps.pointLights,0);
- assert.equal(colliders.length,4);
+ assert.equal(colliders.length,3);
  let points=0,heads=0;
  lamps.group.traverse(o=>{
   if(o.isPointLight)points++;
   if(o.userData?.streetLampHead)heads++;
  });
  assert.equal(points,0);
- assert.equal(heads,4);
+ assert.equal(heads,3);
  assert.equal(POLE_HEIGHT,4.2);
 });
 
