@@ -1,4 +1,5 @@
 import {isWorkshopSite} from './src/world/businesses.js';
+import {harbourTimetable} from './src/people/commuter-schedule.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -34,7 +35,7 @@ import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warm
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Harbour Line last departure: 21:00.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let pendingAbsence=0,ledgerView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
@@ -285,7 +286,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     const lines={
       Kenji:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
-      'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line leaves at 21:00.',
+      'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line timetable is at the northern terminal.',
       'Harbour master':'There are sea bream off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
     };
     show(name,lines[name]||'The resident nods politely.',[
@@ -504,7 +505,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'radio':radio(name,detail);break;
       case 'ramen':if(getTableService())tableService();else show('Sato Ramen','Take a counter seat to order ramen, onigiri, steamed buns or tea. The cook prepares your meal and serves it at your place.',[['Take a seat',close]]);break;
        case 'phone':show('Public telephone','A handwritten card lists the harbour office.',[['Call harbour office · ¥10',()=>{if(spend(10)&&!onPhone())receipt('Harbour office','“The Harbour Line runs to the northern terminal. Port operations continue through the night. Speak to the harbour master if you want to sell a catch.”');}],['Hang up',close]]);break;
-       case 'bus':receipt('Harbour Line timetable','Shopping District → Harbour Line terminal\n07:00 · 09:30 · 12:00 · 15:00 · 18:30 · 21:00');break;
+       case 'bus':receipt('Harbour Line timetable',harbourTimetable(getMinutes()));break;
       case 'shrine':show('Neighbourhood shrine','The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);show('Set an intention','A bell note hangs above the roofs. Choose one thing to carry back into the street.',['Book','Work','Home'].map(intent=>[intent,()=>{state.shrineIntent=intent;note('Shrine intention: '+intent+'.');receipt('A quiet moment',intent+'. Noted.');}]));}}],['Leave',close]]);break;
     }
   }

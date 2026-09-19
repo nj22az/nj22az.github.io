@@ -7,7 +7,7 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
 /**
  * The Harbour Line bus, and the trick it does at the end of the road.
  *
- * The tunnel is a painting on a rock face. The bus goes through it twice a day anyway,
+ * The tunnel is a painting on a rock face. The bus goes through it on each service,
  * which is the joke, and the joke only works if you watch it happen: the bus drives up
  * the bus-only road, reaches the arch, and from there it is not driving any more — it
  * is being shrunk onto the painting's own vanishing point, which is the one place on a
@@ -96,8 +96,7 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   * who has got himself stuck behind a bench.
   */
  const HOLD=8;
- let phase='away',fade=0,turn=0,service=null;
- const since=m=>((m-service)%1440+1440)%1440;
+ let phase='away',fade=0,turn=0,service=null,serviceAt=null,lastMinutes=null;
 
  /** Somewhere between the mouth of the tunnel and the painted daylight at its far end. */
  const recede=t=>{
@@ -148,20 +147,32 @@ export function createBusRun({parent,shadows=false,colliders}={}){
    */
   update(dt,minutes=0,inbound=false){
    if(!(dt>0))return;
-   try{this.step(dt,minutes,inbound);}finally{trackSolid();}
+   try{
+    // Loading during a stop restores that service. Returning from an interior or
+    // skipping time discards old trips instead of replaying them back to back.
+    if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){
+     phase='away';service=null;serviceAt=null;bus.visible=false;
+     const day=Math.floor(minutes/1440),m=minutes-day*1440;
+     const current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
+     if(current!==undefined){service=current;serviceAt=day*1440+current;park();phase='waiting';}
+    }
+    lastMinutes=minutes;
+    this.step(dt,minutes,inbound);
+   }finally{trackSolid();}
   },
   step(dt,minutes=0,inbound=false){
    if(phase==='away'){
     const due=nextService(minutes);
     if(due.wait<=APPROACH){
-     service=due.service;phase='arriving';fade=1;bus.visible=true;bus.rotation.y=Math.PI;
+     service=due.service;serviceAt=minutes+due.wait;phase='arriving';fade=1;
+     recede(1);bus.visible=true;bus.rotation.y=Math.PI;
     }
     return;
    }
    if(phase==='waiting'){
     // It goes when its time is up, and not before. A passenger still on their way
     // holds it, up to a point: see HOLD.
-    const waited=since(minutes);
+    const waited=minutes-serviceAt;
     if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD))phase='leaving';
     return;
    }

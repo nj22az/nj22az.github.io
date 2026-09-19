@@ -46,9 +46,8 @@ export const pavedByTerminus=(x,z)=>z>MAIN_ROAD.maxZ&&(
  x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z<=BUS_STATION.maxZ
  ||Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2+2.1&&z<=FOREST_EDGE.roadEndZ);
 
-// A modest terminus closes the shopping street. The bus itself remains an
-// implied off-screen service: residents walk to the queue, board, and disappear
-// through the northern exit rather than being teleported to a house.
+// A modest terminus closes the shopping street. Residents queue here for the
+// scheduled bus and leave when it pulls out along the northern road.
 export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{},label=()=>{},shadows=false}={}){
  const group=new THREE.Group();group.name='Harbour Line bus station';parent.add(group);
  const concrete=new THREE.MeshStandardMaterial({color:0x9b9c91,roughness:.9});

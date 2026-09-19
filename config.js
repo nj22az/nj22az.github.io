@@ -98,16 +98,6 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "JoJo Izakaya Tapper",
-      description:
-        "A classic arcade tapper behind the cedar at 居酒屋ジョジョ. Hop between four bars, slide drinks to the harbour queue, and catch every empty glass.",
-      url: "/jojo-izakaya-tapper/",
-      icon: "joystick",
-      tags: ["Arcade", "Playable Demo", "2D"],
-      bento: "wide",
-      featured: true,
-    },
-    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",

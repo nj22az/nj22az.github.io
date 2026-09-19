@@ -209,7 +209,7 @@ export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
  return commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
 }
 export const GOSSIP=[
- {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last bus.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Look for her at the terminal before 21:00.'},
+ {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last bus.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
  {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and commute in for their shifts.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the northern terminal.'},
