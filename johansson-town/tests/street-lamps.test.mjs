@@ -27,9 +27,9 @@ test('three CityArchitect west-corner poles next to shop facades',()=>{
  }
  const tips=STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z}));
  assert.deepEqual(tips,[
-  {x:-7.35,z:-34.0},
-  {x:-7.35,z:-21.0},
-  {x:-7.35,z:-3.05},
+  {x:-7.25,z:-34.0},
+  {x:-7.25,z:-21.0},
+  {x:-7.25,z:-3.05},
  ]);
 });
 

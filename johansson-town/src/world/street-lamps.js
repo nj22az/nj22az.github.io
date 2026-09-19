@@ -19,13 +19,13 @@ export const POLE_HEIGHT=4.2;
 
 /**
  * Poles sit at building corners on the west footway — street-side of the
- * facade (x≈pavementWest+0.2), never inside the wall. Arms reach the carriageway.
+ * facade (x≈-7.25 (street of facades)), never inside the wall. Arms reach the carriageway.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
  // CityArchitect 3-pole plan: west facade corners only (emissive heads, no PointLights).
- {x:-7.35,z:-34.0,side:'west'}, // Sakura south corner — street-side of front -7.45
- {x:-7.35,z:-21.0,side:'west'}, // Sakura north corner — street-side of front -7.45
- {x:-7.35,z:-3.05,side:'west'}, // Front-Row south gable — street-side of WEST_FRONT -7.8
+ {x:-7.25,z:-34.0,side:'west'}, // Sakura south corner — street-side of front -7.45
+ {x:-7.25,z:-21.0,side:'west'}, // Sakura north corner — street-side of front -7.45
+ {x:-7.25,z:-3.05,side:'west'}, // Front-Row south gable — street-side of WEST_FRONT -7.8
 ]);
 
 const UTILITY_POLE_Z=new Set([-32,11,17]);
