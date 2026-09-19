@@ -13,6 +13,7 @@ import {STAFF_BENCH} from '../world/staff-bench.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
+import {alignedStep} from './facing.js';
 export const DIALOGUE={
  Thuan:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -93,11 +94,16 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(escape!==null)break;
    }
    if(escape!==null){
-    if(person===thuan&&!faceStep(g,Math.sin(escape),Math.cos(escape),dt))return;
+    const escapeDx=Math.sin(escape),escapeDz=Math.cos(escape);
+    const escapeHeading=Math.atan2(-escapeDx,-escapeDz);
+    const escapeAngle=Math.atan2(Math.sin(escapeHeading-g.rotation.y),Math.cos(escapeHeading-g.rotation.y));
+    if(!faceStep(g,escapeDx,escapeDz,dt))return;
     // The step itself is not collision-checked, because every step from in here fails
     // that check -- that is the whole problem. Worst case it crosses something thin on
     // the way out, which beats standing in a bench until the end of the day.
-    const out=Math.min(.4,dt*(person===thuan?.9:2.4)),x=g.position.x+Math.sin(escape)*out,z=g.position.z+Math.cos(escape)*out;
+    const out=Math.min(.4,dt*(person===thuan?.9:2.4)*alignedStep(escapeAngle));
+    if(out<=0)return;
+    const x=g.position.x+escapeDx*out,z=g.position.z+escapeDz*out;
     g.position.set(x,groundHeight(x,z),z);routes.delete(g);
    }
    return;
@@ -127,23 +133,26 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;
    if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>step*.65+.025)continue;
    // Face the actual clear step, including a detour, before advancing. Turning after
-   // translation lets the walk clip carry her backwards or sideways around corners.
-   if(person===thuan&&!faceStep(g,x-beforeX,z-beforeZ,dt)){
+   // translation lets the walk clip carry them backwards or sideways around corners.
+   const stepDx=x-beforeX,stepDz=z-beforeZ;
+   const stepHeading=Math.atan2(-stepDx,-stepDz);
+   const stepAngle=Math.atan2(Math.sin(stepHeading-g.rotation.y),Math.cos(stepHeading-g.rotation.y));
+   if(!faceStep(g,stepDx,stepDz,dt)){
     // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
-    // a grid point behind her and make her turn back and forth without leaving it.
+    // a grid point behind them and make them turn back and forth without leaving it.
     route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
    }
-   g.position.set(x,groundHeight(x,z),z);route.speed=speed;break;
+   const travel=alignedStep(stepAngle);
+   if(travel<=0){route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;}
+   const ax=beforeX+stepDx*travel,az=beforeZ+stepDz*travel;
+   if(travel<1&&(!clearOfPeople(ax,az)||collides(ax,az,.3))){
+    route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
+   }
+   g.position.set(ax,groundHeight(ax,az),az);route.speed=speed;break;
   }
   const movedX=g.position.x-beforeX,movedZ=g.position.z-beforeZ;
-  if(person===thuan){if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;}
-  else if(Math.hypot(movedX,movedZ)>.0001){
-   const heading=Math.atan2(-movedX,-movedZ),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
-   // Sidestepping round an obstacle used to leave someone walking a direction their
-   // body was not facing for the best part of a second, which reads as a glide. Turn
-   // faster, and when they are heading more or less backwards stop easing and commit.
-   g.rotation.y+=Math.abs(delta)>2.1?delta*.55:delta*(1-Math.exp(-dt*11));
-  }
+  // Facing during outdoor schedule walks is owned by faceStep above.
+  if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;
  }
 
  /** True while the Harbour Line is standing at the terminus with its doors to you. */
