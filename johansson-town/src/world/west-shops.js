@@ -89,6 +89,9 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  solid([.30,.16,width+.25],[WEST_FRONT-.03,HEIGHT-.02,z],'timber',frame).name='Front crossbeam';
  for(const side of [-1,1]){
   const outer=z+side*(half-.24),inner=z+side*(DOOR/2+.14),run=Math.abs(outer-inner),bay=(outer+inner)/2;
+  // Join the outer window stile to the corner post with solid cedar. Without this
+  // infill their different offsets leave a vertical slit through the frontage.
+  solid([.22,2.70,.30],[WEST_FRONT-.11,1.35,z+side*(half-.10)],'timber',cedar).name='Cedar corner infill';
   solid([.16,.66,run],[WEST_FRONT-.08,.35,bay],'timber',cedar).name='Timber window apron';
   const recess=solid([.08,1.94,run],[WEST_FRONT-.12,1.65,bay],'timber',0x302c24);recess.name='Display window recess';
   for(const y of [.68,2.63])solid([.24,.12,run+.12],[WEST_FRONT+.01,y,bay],'timber',frame).name='Display window rail';

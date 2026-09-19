@@ -42,14 +42,39 @@ Integrated with main at 3f15ed5, retaining the dusk lighting, garden and
 Thuan's current movement and bench routines. Live workshop destinations
 resolve to the combined entrance before and after world construction.
 
-Validation: 91 focused checks pass, including complete-town door routes,
-passage sweeps, four-person interior movement and departures, loaded office
-staff activity, warehouse staffing, content preservation, save aliases,
-printing, dusk and garden behaviour, Thuan’s bench/return-to-work routine,
-and runtime/source parity. The older office.test.mjs actor-count assertion
-also fails on unchanged main because it expects loaded actors without
-loading their models. The loaded office-workplace checks pass.
-The timber exterior also passes the shared-room, frontage, roof, ground
-clearance and runtime checks. The runtime has been rebuilt with the source.
-The review browser cannot access the local preview (ERR_BLOCKED_BY_CLIENT),
-so GPU appearance and device frame rate remain unverified.
+Audit corrections close the 14 cm vertical gaps between both outer display
+window stiles and the corner posts. Raycasts across both joints, at four
+heights, now hit the solid frontage instead of the rear wall. The Minato
+layout check measures the intended three-metre passage including the outer
+corner posts.
+
+The CPU game walkthrough now follows the published peninsula: one shared
+street entrance, all five current interiors, four workers in the combined
+room, an actual StepWise-to-Form-3D print and collection, old workshop-address
+resolution, overnight access, and a complete unattended town day. It awaits
+the real doorway transitions and drives the bounded catch-up worker. The
+startup diagnostic expects the peninsula's seven street activities, and the
+walkthrough checks every named action; the parked bicycle remains an eighth
+requirement in archived layouts.
+
+Validation after audit corrections:
+
+| Revision | Tests | Passed | Failed |
+| --- | ---: | ---: | ---: |
+| Main 3f15ed5 | 417 | 411 | 6 |
+| Combined building before corrections | 421 | 414 | 7 |
+| Combined building after corrections | 422 | 417 | 5 |
+
+The remaining failing tests also fail on unchanged main: full-town,
+office, residential-street, sea-cave and supplied-buildings. The archived
+full-town fixture still reports blocked door spawns, including the restored
+office on this branch; the loaded peninsula walkthrough passes all current
+interior entries, exits and startup checks. The office fixture expects
+rendered actors without preloading their models; the loaded office-workplace
+checks pass. These remaining failures are not attributed to network access.
+
+The runtime rebuild succeeds and source-parity checks pass. The review
+browser cannot access the local preview (ERR_BLOCKED_BY_CLIENT), so GPU
+appearance and device frame rate remain unverified. No GitHub checks were
+recorded on the PR at review time. Changes remain in draft PR #75; main and
+the live site have not been changed.
