@@ -1,15 +1,14 @@
 const shifts={
- // She finishes at eight and there is a bus at nine. If she goes for a beer at
- // Minato first she stays for the ten o'clock instead, which is the last one that
- // gets her home; in the rain she does not bother and takes the nine.
- Thuan:{arrival:510,start:540,finish:1200,departure:1260,lateDeparture:1320},
- Aya:{arrival:510,start:540,finish:1110,departure:1200},
- Kenji:{arrival:510,start:540,finish:1140,departure:1200},
+ // Day staff share the evening service; night staff return on the morning bus.
+ // Work hours stay unchanged. Departure identifies the service's arrival time.
+ Thuan:{arrival:510,start:540,finish:1200,departure:1320},
+ Aya:{arrival:510,start:540,finish:1110,departure:1320},
+ Kenji:{arrival:510,start:540,finish:1140,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
- Reiko:{arrival:870,start:900,finish:1470,departure:1530},
- Tetsuo:{arrival:990,start:1020,finish:1440,departure:1530},
- Nao:{arrival:870,start:960,finish:1620,departure:1680},
- 'Officer Mori':{arrival:1140,start:1200,finish:1800,departure:1860},
+ Reiko:{arrival:870,start:900,finish:1470,departure:1950},
+ Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
+ Nao:{arrival:870,start:960,finish:1620,departure:1950},
+ 'Officer Mori':{arrival:870,start:1200,finish:1800,departure:1950},
  'Harbour master':{permanent:true},
  'Bus driver':{permanent:true},
 };
@@ -34,27 +33,18 @@ export function departureFor(profile,rain=false){
 /**
  * The Harbour Line timetable, in minutes past midnight.
  *
- * Eleven daily calls, at least an hour apart. Residents share a service where
- * possible: Aya with Kenji, Nao with Reiko, and Tetsuo with Reiko after midnight.
- * These are arrival times; the bus normally departs BUS_DWELL minutes later.
+ * Three daily calls: morning, afternoon and evening. Residents share services.
+ * These are arrival times; the bus waits BUS_DWELL minutes before returning.
  * The bus model, commuters and stop notice all use this schedule.
  */
 export const HARBOUR_LINE=Object.freeze([
-  90,  //  01:30  Reiko and Tetsuo off nights
- 240,  //  04:00  Nao, after the izakaya closes
- 420,  //  07:00  Officer Mori comes off patrol
- 510,  //  08:30  the shop workers arrive
- 720,  //  12:00  midday
- 870,  //  14:30  Reiko and Nao
- 990,  //  16:30  Tetsuo
-1140,  //  19:00  Officer Mori for the night shift
-1200,  //  20:00  Aya and Kenji home
-1260,  //  21:00  Thuan home, unless she is at Minato
-1320,  //  22:00  Mrs Sato, and Thuan when she is
+ 510,  //  08:30  day staff arrive; night staff go home
+ 870,  //  14:30  late-shift staff arrive
+1320,  //  22:00  day staff go home
 ]);
 
 /** How long the bus stands at the terminus with its doors open, in town minutes. */
-export const BUS_DWELL=4;
+export const BUS_DWELL=15;
 
 /** Minutes until the next service, and which one it is. */
 export function nextService(minutes){
@@ -73,8 +63,9 @@ export function harbourTimetable(minutes){
  const status=current===undefined
   ?'Next arrival: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
   :'Scheduled stop: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Harbour Line · Daily arrivals (town time)\n'+HARBOUR_LINE.map(serviceTime).join(' · ')
-  +'\n\nFour-minute stop; brief hold for boarding passengers.\n'+status;
+ return 'Harbour Line · Three services daily (town time)\nArrival → Departure\n'
+  +HARBOUR_LINE.map(s=>serviceTime(s)+' → '+serviceTime(s+BUS_DWELL)).join('\n')
+  +'\n\nThe bus waits '+BUS_DWELL+' town minutes at each stop.\n'+status;
 }
 export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);

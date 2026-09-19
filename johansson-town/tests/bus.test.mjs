@@ -100,7 +100,7 @@ test('the bus is solid while it is a bus, and not once it is a picture of one',(
  assert.ok(solid.w>2.5&&solid.d>2.5,'The turning bus keeps a box it is not inside');
 });
 
-test('the Harbour Line runs to a timetable, and holds for somebody still walking up',async()=>{
+test('the Harbour Line runs three services daily and stops for fifteen minutes',async()=>{
  const {COMMUTER_SHIFTS,departureFor,nextService}=await import('../src/people/commuter-schedule.js');
  const minuteOfDay=m=>((m%1440)+1440)%1440;
 
@@ -115,10 +115,11 @@ test('the Harbour Line runs to a timetable, and holds for somebody still walking
  assert.deepEqual(stranded,[],'No service for these shift changes');
  assert.deepEqual([...HARBOUR_LINE].sort((a,b)=>a-b),[...HARBOUR_LINE],'The timetable is out of order');
  assert.equal(new Set(HARBOUR_LINE).size,HARBOUR_LINE.length,'The timetable runs the same service twice');
- assert.equal(HARBOUR_LINE.length,11,'The quiet line has eleven daily calls');
+ assert.deepEqual([...HARBOUR_LINE],[510,870,1320],'Only morning, afternoon and evening services');
+ assert.equal(BUS_DWELL,15,'Each stop lasts fifteen town minutes');
  for(let i=0;i<HARBOUR_LINE.length;i++){
   const next=i===HARBOUR_LINE.length-1?HARBOUR_LINE[0]+1440:HARBOUR_LINE[i+1];
-  assert.ok(next-HARBOUR_LINE[i]>=60,'Services must be at least one town hour apart');
+  assert.ok(next-HARBOUR_LINE[i]>=360,'Services must be at least six town hours apart');
  }
 
  // It works every service in the day, and is not at the stop the rest of the time.
@@ -135,7 +136,7 @@ test('the Harbour Line runs to a timetable, and holds for somebody still walking
  const dwellMinutes=standing.length*.25;
  assert.ok(dwellMinutes<2*HARBOUR_LINE.length*(BUS_DWELL+3),'The bus is parked at the stop all day: '+dwellMinutes.toFixed(0)+' min');
 
- // And it waits for a regular the driver can see coming, but not forever.
+ // A passenger approaching does not change the fixed fifteen-minute stop.
  const timed=inbound=>{
   const service=HARBOUR_LINE[0],r=createBusRun({parent:new THREE.Group()});
   let m=service-12,arrived=null;
@@ -148,8 +149,11 @@ test('the Harbour Line runs to a timetable, and holds for somebody still walking
  };
  const alone=timed(false),held=timed(true);
  assert.ok(alone&&held,'The bus never pulled away');
- assert.ok(held.left>alone.left+3,'The bus pulls away from somebody still walking to it');
- assert.ok(held.left-held.arrived<30,'The bus waits all night for one passenger');
+ assert.equal(held.left,alone.left,'A passenger extended the scheduled stop');
+ for(const trip of [alone,held]){
+  assert.ok(trip.left-trip.arrived>=15,'The bus left before waiting fifteen minutes');
+  assert.ok(trip.left-trip.arrived<15.25,'The bus waited longer than fifteen minutes');
+ }
  assert.equal(nextService(HARBOUR_LINE.at(-1)+1).service,HARBOUR_LINE[0],'The last service does not roll round to the first');
 });
 
@@ -184,9 +188,12 @@ test('the stop notice shows the actual timetable, next arrival and midnight roll
  const text=document.querySelector('#activityBody').firstChild.textContent;
  assert.equal(text,harbourTimetable(minutes));
  for(const m of HARBOUR_LINE)assert.ok(text.includes(serviceTime(m)));
- assert.match(text,/Next arrival: 12:00 · in 20 town minutes/);
+ assert.match(text,/08:30 → 08:45/);
+ assert.match(text,/14:30 → 14:45/);
+ assert.match(text,/22:00 → 22:15/);
+ assert.match(text,/Next arrival: 14:30 · in 170 town minutes/);
  minutes=511;activities.action('bus');
- assert.match(document.querySelector('#activityBody').firstChild.textContent,/Scheduled stop: 08:30–08:34/);
- assert.match(harbourTimetable(1430),/Next arrival: 01:30 · in 100 town minutes/);
+ assert.match(document.querySelector('#activityBody').firstChild.textContent,/Scheduled stop: 08:30–08:45/);
+ assert.match(harbourTimetable(1430),/Next arrival: 08:30 · in 520 town minutes/);
  assert.equal(harbourTimetable(1440+700),harbourTimetable(700));
 });

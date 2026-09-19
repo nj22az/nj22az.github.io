@@ -86,18 +86,15 @@ export function thuanAfternoon(profile,minutes,rain=false){
 /**
  * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
  *
- * She has an hour between closing Sakura and the last Harbour Line service. She spends
- * three quarters of it two doors up the pavement and the rest walking to the stop.
- * Rain sends her straight to the bus; so does a night the izakaya is shut.
+ * She spends the evening after closing at Minato, then walks to the shared 22:00
+ * service. Rain sends her straight to the stop to wait for the same bus.
  */
 export const THUAN_BUS_MARGIN=15;
 export function thuanAtMinato(profile,minutes,rain=false){
  const shift=shiftFor(profile);
  if(rain||!shift||shift.permanent)return false;
  const m=minuteOfDay(minutes);
- // Against the bus she is actually going home on: staying for a beer is what moves
- // her off the nine o'clock and onto the ten, so measuring her evening against the
- // nine would send her to the queue at a quarter to, halfway down her drink.
+ // Leave time to walk to the stop before the evening bus arrives.
  return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
 }
 export function thuanEveningPlace(minutes){

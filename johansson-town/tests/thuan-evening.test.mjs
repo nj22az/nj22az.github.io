@@ -30,17 +30,16 @@ test('Thuan has a beer at Minato between closing the shop and the last bus',()=>
   assert.match(after.activity,/beer/i);
   assert.ok(izakayaOpen(shift.finish+5),'Minato is shut when she gets there');
 
-  // The beer is what moves her onto the ten o'clock: she measures her evening against
-  // the bus she is actually going home on, not the one she is skipping.
+  // The single evening service leaves time for Minato and the walk to the stop.
   const last=departureFor(THUAN,false);
-  assert.ok(last>shift.departure,'A beer buys her no more time than going straight home');
-  assert.equal(plan(shift.departure).place,'izakaya','She left for the nine after all');
+  assert.equal(last,1320,'She uses the shared evening service');
+  assert.equal(plan(1260).place,'izakaya','There is no extra nine o’clock bus');
   assert.equal(plan(last-THUAN_BUS_MARGIN-1).place,'izakaya');
   const leaving=plan(last-THUAN_BUS_MARGIN);
   assert.equal(leaving.place,'bus');
   assert.deepEqual(leaving.target,BUS_STATION.queue);
   assert.equal(plan(last-1).place,'bus','She is still drinking when her bus goes');
-  // and in the rain she takes the earlier one instead.
+  // Rain changes her evening activity, not the bus schedule.
   assert.equal(departureFor(THUAN,true),shift.departure);
 
   // Rain sends her straight to the stop.
@@ -122,7 +121,7 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
  try{
   const seen=[];
-  // Out to the ten o'clock, which is the bus a beer at Minato puts her on.
+  // Out to the shared ten o'clock service.
   for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
   // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.

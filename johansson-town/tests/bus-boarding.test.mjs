@@ -81,8 +81,8 @@ test('nobody who was already away is left standing at the terminus',async()=>{
 
  configureTownMode(TOWN_MODES.PENINSULA);
  try{
-  // Three in the morning. Every shop worker went home hours ago, the last service was
-  // at half past one and the next is at four, and the player has just opened the page.
+  // Three in the morning. Day staff left on the evening service. Reiko and Tetsuo
+  // have finished work and wait for the morning service alongside the night staff.
   const NIGHT=188;
   const parent=new THREE.Group();
   const people=STREET_CAST_NAMES.map(name=>{
@@ -110,7 +110,7 @@ test('nobody who was already away is left standing at the terminus',async()=>{
   // and that they are standing in a heap on one spot at the terminus.
   const out=people.filter(p=>p.g.visible!==false);
   const named=out.map(p=>p.profile.name+' ('+p.g.userData.place+')').join(', ');
-  const working=['Officer Mori','Harbour master','Bus driver','Nao'];
+  const working=['Officer Mori','Harbour master','Bus driver','Nao','Reiko','Tetsuo'];
   const loitering=out.filter(p=>!working.includes(p.profile.name))
    .map(p=>p.profile.name+' at '+p.g.position.x.toFixed(1)+','+p.g.position.z.toFixed(1));
   assert.deepEqual(loitering,[],'People are standing about in the middle of the night: '+named);

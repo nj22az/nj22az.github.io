@@ -90,12 +90,6 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   * minute the timetable says.
   */
  const DRIVE=(MOUTH_Z-STOP_Z)/SPEED,APPROACH=FADE+DRIVE+TURN;
- /**
-  * The longest it will hold past its departure time for somebody still walking up.
-  * A driver waits for a regular he can see coming; he does not wait all night for one
-  * who has got himself stuck behind a bench.
-  */
- const HOLD=8;
  let phase='away',fade=0,turn=0,service=null,serviceAt=null,lastMinutes=null;
 
  /** Somewhere between the mouth of the tunnel and the painted daylight at its far end. */
@@ -143,9 +137,8 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   /**
    * @param {number} dt seconds
    * @param {number} minutes the town clock
-   * @param {boolean} inbound whether anybody is still walking up to the stop
    */
-  update(dt,minutes=0,inbound=false){
+  update(dt,minutes=0){
    if(!(dt>0))return;
    try{
     // Loading during a stop restores that service. Returning from an interior or
@@ -157,10 +150,10 @@ export function createBusRun({parent,shadows=false,colliders}={}){
      if(current!==undefined){service=current;serviceAt=day*1440+current;park();phase='waiting';}
     }
     lastMinutes=minutes;
-    this.step(dt,minutes,inbound);
+    this.step(dt,minutes);
    }finally{trackSolid();}
   },
-  step(dt,minutes=0,inbound=false){
+  step(dt,minutes=0){
    if(phase==='away'){
     const due=nextService(minutes);
     if(due.wait<=APPROACH){
@@ -170,10 +163,9 @@ export function createBusRun({parent,shadows=false,colliders}={}){
     return;
    }
    if(phase==='waiting'){
-    // It goes when its time is up, and not before. A passenger still on their way
-    // holds it, up to a point: see HOLD.
+    // Every service waits fifteen town minutes, without an extra passenger hold.
     const waited=minutes-serviceAt;
-    if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD))phase='leaving';
+    if(waited>=BUS_DWELL)phase='leaving';
     return;
    }
    if(phase==='leaving'){
@@ -203,7 +195,7 @@ export function createBusRun({parent,shadows=false,colliders}={}){
    // north has to do it somewhere, and a snap at the stop is the one place you watch.
    turn+=dt/TURN;
    bus.rotation.y=Math.PI*(1-Math.min(1,turn));
-   if(turn>=1){park();phase='waiting';}
+   if(turn>=1){park();serviceAt=Math.max(serviceAt,minutes);phase='waiting';}
   },
  };
 }

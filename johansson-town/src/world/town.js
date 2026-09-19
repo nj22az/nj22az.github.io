@@ -244,18 +244,8 @@ export function createTown(options){
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.eastLawn?.tick?.(time,minutes);
     world.busStation?.update(minutes,day);
-    // The Harbour Line runs to a timetable and holds for anyone still walking up to
-    // it -- somebody the schedule has sent to the stop, close enough that the driver
-    // would wait rather than pull out in front of them.
-    //
-    // Close enough matters. Without the radius it also held for people who had just
-    // left work on the other side of town for a bus two services later: the 19:00
-    // stood for its full twelve minutes because Kenji had set off for the 20:00.
-    world.bus?.update(dt,minutes,world.people.some(p=>{
-     if(!p.g.visible||p.g.userData.indoors||p.g.userData.place!=='bus')return false;
-     const gap=p.g.position.distanceTo(world.bus.bus.position);
-     return gap>2.4&&gap<14;
-    }));
+    // Three daily services, each with a fifteen-minute stop.
+    world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){
