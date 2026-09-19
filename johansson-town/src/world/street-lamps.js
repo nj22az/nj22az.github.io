@@ -18,19 +18,16 @@ export const LAMP_GLOW_SCALE=0.85;
 export const POLE_HEIGHT=4.2;
 
 /**
- * West footway ~pavementWest+0.2, east footway just past the east kerb.
- * Sparse mid-block zs only — skip shop frontages (DOOR_KEEP_CLEAR), 
- * SHOP_CROSSING_Z, south crossing at -18, utility poles at z=-32,11,17.
+ * Poles tuck into building corners on the west footway (next to the facade,
+ * not mid-block or in doorways). Arms still reach the carriageway.
  */
 export const STREET_LAMP_PLACEMENTS=Object.freeze([
- // Sparse mid-block only — never on Sakura / Front-Row / Minato frontages.
- {x:-7.35,z:-16.5,side:'west'},
- {x:0.6,z:-16.5,side:'east'},
- {x:-7.35,z:12,side:'west'},
- {x:0.6,z:12,side:'east'},
- // Quay — one pair mid-quay (was four)
- {x:-7.2,z:-43,side:'west'},
- {x:0.8,z:-43,side:'east'},
+ // Sakura Shōten west corners (facade centre ≈-27.3, half≈7.13)
+ {x:-7.55,z:-34.5,side:'west'},
+ {x:-7.55,z:-20.2,side:'west'},
+ // Front-Row Books & Workshop west corners (plot z=1.6, half=4.4)
+ {x:-7.55,z:-2.8,side:'west'},
+ {x:-7.55,z:6.8,side:'west'}, // just north of facade corner; clear of SHOP_CROSSING_Z=5.1
 ]);
 
 const UTILITY_POLE_Z=new Set([-32,11,17]);
@@ -40,12 +37,10 @@ const UTILITY_POLE_Z=new Set([-32,11,17]);
  * West-pavement doors only — east kerb lamps sit past MAIN_ROAD.east and miss these.
  */
 export const DOOR_KEEP_CLEAR=Object.freeze([
- // Full facade bands on the west footway (d = building frontage + margin).
- {id:'frontrow',x:MAIN_ROAD.pavementWest+0.2,z:BOOKSHOP_WORKSHOP_PLOT.z,w:1.6,d:10},
- // Sakura storefront ~14 m wide; door centre market.z+1.2
- {id:'market',x:MAIN_ROAD.pavementWest+0.2,z:-27.3,w:1.6,d:16},
- // Minato Izakaya west pavement door
- {id:'izakaya',x:MAIN_ROAD.pavementWest+0.5,z:-10.43,w:1.6,d:8},
+ // Door leaf only — poles belong at facade corners, not mid-door.
+ {id:'frontrow',x:MAIN_ROAD.pavementWest+0.65,z:BOOKSHOP_WORKSHOP_PLOT.z,w:1.8,d:2.4},
+ {id:'market',x:MAIN_ROAD.pavementWest+0.65,z:-27.3,w:1.8,d:2.4},
+ {id:'izakaya',x:MAIN_ROAD.pavementWest+0.5,z:-10.43,w:1.8,d:2.4},
 ]);
 
 /** Sanity: placements stay off junctions and existing utility poles. */
