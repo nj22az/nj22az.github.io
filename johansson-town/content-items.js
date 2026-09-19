@@ -1,6 +1,7 @@
 import {makeWorkshopModel} from './src/workshop/models.js';
 import * as THREE from './vendor/three.module.js';
 import {ITEMS} from './content-data.js?warehouse=1';
+import {createShopProduct} from './src/commerce/shop-product.js';
 
 export function textTexture(title,body,scale=1){
   const c=document.createElement('canvas');c.width=1024*scale;c.height=1440*scale;
@@ -22,6 +23,13 @@ function ring(g,r,t,pos,color){const m=new THREE.Mesh(new THREE.TorusGeometry(r,
 // The same mesh builder supplies shelf objects and their temporary held copies.
 export function makeContentObject(item,{pageScale=1}={}){
   const g=new THREE.Group();g.name='content-'+item.id;
+  if(item.kind==='shop-good'){
+    const product=createShopProduct(item.productId||item.id);
+    product.scale.setScalar(4.5);
+    g.add(product);
+    g.userData.reader={setPage(){},next(){},open(){},flip(){},update(){},get page(){return 1;}};
+    return g;
+  }
   const page=new THREE.Mesh(new THREE.PlaneGeometry(.70,.98),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
   page.position.set(0,0,.065);g.add(page);
   let current=0,flip=0;
