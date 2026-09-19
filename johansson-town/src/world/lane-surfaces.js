@@ -62,14 +62,25 @@ export function buildLaneSurfaces(parent,library) {
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
   // A patch is laid as a grid rather than as one quad, because the ground under it is
-  // not flat. A single quad takes its height from its four corners and runs straight
-  // between them, while the east lawn beside it follows the ground on a 1.2m grid --
-  // so over the graded foot of the park mound the grass rose through the middle of the
-  // path and came out as green wedges lying on the paving. Same cell, same ground,
-  // and the four centimetres of clearance then hold all the way across.
-  const CELL=.6;
+  // not always flat. A single quad takes its height from its four corners and runs
+  // straight between them, while the east lawn beside it follows the ground on a 1.2m
+  // grid -- so over the graded foot of the park mound the grass rose through the middle
+  // of the path and came out as green wedges lying on the paving.
+  //
+  // How finely a patch is cut up follows the ground under it rather than a constant.
+  // Most of this town is dead flat, and there one quad is exactly right; the 30cm grid
+  // that the park's skirt needs costs nothing where nothing is sloping. A fixed 60cm
+  // grid was both -- too coarse at the mound, where the paving still sank 7mm into the
+  // grass, and three thousand triangles of nothing everywhere else.
+  const FINE=.3,LEVEL=.001,PROBES=5;
   for(const p of lanePatches()){
-    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/CELL)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/CELL));
+    let low=Infinity,high=-Infinity;
+    for(let i=0;i<=PROBES;i++)for(let j=0;j<=PROBES;j++){
+      const h=groundHeight(p.x0+(p.x1-p.x0)*i/PROBES,p.z0+(p.z1-p.z0)*j/PROBES);
+      if(h<low)low=h;if(h>high)high=h;
+    }
+    const cell=high-low<LEVEL?Math.max(p.x1-p.x0,p.z1-p.z0):FINE;
+    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/cell)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/cell));
     for(let i=0;i<columns;i++)for(let j=0;j<rows;j++){
       const x0=p.x0+(p.x1-p.x0)*i/columns,x1=p.x0+(p.x1-p.x0)*(i+1)/columns;
       const z0=p.z0+(p.z1-p.z0)*j/rows,z1=p.z0+(p.z1-p.z0)*(j+1)/rows;

@@ -9,7 +9,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {createActivities} from '../activities.js?snappy=1';
 import {createCharacters} from '../src/people/characters.js?snappy=1';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js?snappy=1';
-import {ROUTES,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
+import {ROUTES,activeRoutes,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
@@ -24,7 +24,10 @@ const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({sce
 
 test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-65.2,.28),true);
- for(const route of ROUTES)for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
+ // activeRoutes rather than ROUTES: a route the current mode does not build has no
+ // ground under it by design -- the staff path round the back of the shop exists only
+ // where the west yard does. The peninsula's own tests walk that one.
+ for(const route of activeRoutes())for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
  for(const yaw of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const f={x:-Math.sin(yaw),z:-Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};assert.ok(Math.abs(f.x*right.x+f.z*right.z)<1e-10);assert.ok(f.x*right.z-f.z*right.x>.99);}
  assert.equal(groundHeight(0,0),0);assert.equal(groundHeight(32,47),0);
 });

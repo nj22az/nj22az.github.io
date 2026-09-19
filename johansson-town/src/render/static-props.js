@@ -7,7 +7,7 @@ export function batchStaticProps(root,cellSize=24){
  root.updateMatrixWorld(true);const inverse=new THREE.Matrix4().copy(root.matrixWorld).invert(),buckets=new Map(),sources=[];
  root.traverse(o=>{
   if(!o.isMesh||!o.userData.staticProp||o.isInstancedMesh||o.isSkinnedMesh||Array.isArray(o.material)||o.material.transparent)return;
-  for(let p=o;p&&p!==root;p=p.parent)if(p.name==='prop:delivery-trolley'||p.userData.dynamicProp)return;
+  for(let p=o;p&&p!==root;p=p.parent)if(p.userData.dynamicProp)return;
   const mat=o.material,world=o.getWorldPosition(new THREE.Vector3()),key=[Math.floor(world.x/cellSize),Math.floor(world.z/cellSize),mat.type,mat.map?.uuid,mat.normalMap?.uuid,mat.roughness,mat.metalness,mat.emissive?.getHex(),mat.emissiveIntensity,mat.side,o.castShadow,o.receiveShadow,o.renderOrder].join('/');
   if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);
  });

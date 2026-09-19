@@ -14,10 +14,10 @@ test('normal smoothing retains geometry and sharp corners',()=>{
 test('merchant roofs have finite geometry and distinct bounded silhouettes',()=>{
  const counts=[];for(const kind of ['hipped','curved-gable','low-gable']){const geometry=merchantRoofGeometry(kind);geometry.computeBoundingBox();assert.ok(geometry.attributes.position.array.every(Number.isFinite));assert.ok(geometry.attributes.normal.array.every(Number.isFinite));assert.ok(geometry.boundingBox.min.x>=-4.61&&geometry.boundingBox.max.x<=4.61);assert.ok(geometry.boundingBox.min.z>=-5.41&&geometry.boundingBox.max.z<=5.41);assert.ok(geometry.boundingBox.max.y<=1.53);counts.push(geometry.attributes.position.count);}assert.equal(new Set(counts).size,3);
 });
-test('static batching preserves transformed vertices and interaction anchors; trolley stays live',()=>{
+test('static batching preserves transformed vertices and interaction anchors; moving props stay live',()=>{
  const root=new THREE.Group();root.position.set(3,0,2);const prop=new THREE.Group();prop.position.set(2,0,2);prop.rotation.y=.4;root.add(prop);const material=new THREE.MeshStandardMaterial({color:0x887766}),objects=[],expected=[];
  for(let i=0;i<3;i++){const mesh=new THREE.Mesh(new THREE.BoxGeometry(1,.5,.5),material);mesh.userData.staticProp=true;mesh.userData.hit={label:'Inspect',fn(){}};mesh.position.set(i,1,0);mesh.scale.set(1,1.2,1);prop.add(mesh);objects.push(mesh);}
- const trolley=new THREE.Group();trolley.name='prop:delivery-trolley';root.add(trolley);const moving=objects[0].clone();moving.userData.staticProp=true;trolley.add(moving);
+ const cart=new THREE.Group();cart.userData.dynamicProp=true;root.add(cart);const moving=objects[0].clone();moving.userData.staticProp=true;cart.add(moving);
  root.updateMatrixWorld(true);for(const mesh of objects){const geometry=mesh.geometry.toNonIndexed(),p=geometry.attributes.position;for(let i=0;i<p.count;i++)expected.push(root.worldToLocal(mesh.localToWorld(new THREE.Vector3().fromBufferAttribute(p,i))));}
  const report=batchStaticProps(root);assert.equal(report.sourceMeshes,3);assert.equal(report.drawsSaved,2);assert.ok(moving.layers.test(new THREE.Layers()));
  for(const o of objects){assert.equal(o.visible,true);assert.equal(o.userData.hit.label,'Inspect');assert.equal(o.layers.test(new THREE.Layers()),false);}

@@ -3,8 +3,8 @@
     "file": "assets-DNfyrzgA.js",
     "name": "assets"
   },
-  "_sakura-bench-DdrVQIGS.js": {
-    "file": "sakura-bench-DdrVQIGS.js",
+  "_sakura-bench-CbtfoNMg.js": {
+    "file": "sakura-bench-CbtfoNMg.js",
     "name": "sakura-bench",
     "imports": [
       "_assets-DNfyrzgA.js"
@@ -20,12 +20,12 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-D35MpUt2.js",
+    "file": "boot-CeJ8GFDd.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_sakura-bench-DdrVQIGS.js",
+      "_sakura-bench-CbtfoNMg.js",
       "_assets-DNfyrzgA.js"
     ],
     "dynamicImports": [
@@ -36,12 +36,12 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-etyF90DG.js",
+    "file": "game-Bl-jkztV.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_sakura-bench-DdrVQIGS.js",
+      "_sakura-bench-CbtfoNMg.js",
       "_assets-DNfyrzgA.js",
       "src/audio/town-audio.js?snappy=1"
     ]
