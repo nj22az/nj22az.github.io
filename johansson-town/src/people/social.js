@@ -47,11 +47,21 @@ export function thuanVisitsIzakaya(minutes){
  */
 export const THUAN_WALK_START=840,THUAN_WALK_END=930;
 const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
+/**
+ * The afternoon off, and the one pace in the town that is not the pace of an errand.
+ *
+ * pace is metres per second. At 1.25 everybody in this town crosses it at the same
+ * brisk clip whatever they are doing, which is why an hour spent by the sea looked
+ * like an hour spent late for something. At 0.72 she is under the handover between
+ * her walk and her stroll, so the unhurried cycle her model has always carried is the
+ * one that plays: see sourceGait in gait.js and the Stroll alias.
+ */
+const STROLLING=.72;
 const THUAN_WALK=Object.freeze([
- {until:862,place:'park',target:PARK_STAND,activity:'walking up to the park'},
- {until:890,place:'stroll',target:PARK_STAND,activity:'sitting in the park'},
- {until:912,place:'park',target:[30.4,-9.5],activity:'walking down to the sea wall'},
- {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall'},
+ {until:862,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:890,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
+ {until:912,place:'park',target:[30.4,-9.5],activity:'walking down to the sea wall',pace:STROLLING},
+ {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
 ].map(Object.freeze));
 /** The leg of the walk she is on, or null when she is not on it. */
 export function thuanAfternoon(profile,minutes,rain=false){

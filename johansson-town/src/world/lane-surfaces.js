@@ -58,7 +58,21 @@ export function buildLaneSurfaces(parent,library) {
     for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+.04,z);b.uv.push(x/4,z/4);}
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
-  for(const p of lanePatches())quad(p.surface,[[p.x0,p.z0],[p.x1,p.z0],[p.x0,p.z1],[p.x1,p.z1]]);
+  // A patch is laid as a grid rather than as one quad, because the ground under it is
+  // not flat. A single quad takes its height from its four corners and runs straight
+  // between them, while the east lawn beside it follows the ground on a 1.2m grid --
+  // so over the graded foot of the park mound the grass rose through the middle of the
+  // path and came out as green wedges lying on the paving. Same cell, same ground,
+  // and the four centimetres of clearance then hold all the way across.
+  const CELL=.6;
+  for(const p of lanePatches()){
+    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/CELL)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/CELL));
+    for(let i=0;i<columns;i++)for(let j=0;j<rows;j++){
+      const x0=p.x0+(p.x1-p.x0)*i/columns,x1=p.x0+(p.x1-p.x0)*(i+1)/columns;
+      const z0=p.z0+(p.z1-p.z0)*j/rows,z1=p.z0+(p.z1-p.z0)*(j+1)/rows;
+      quad(p.surface,[[x0,z0],[x1,z0],[x0,z1],[x1,z1]]);
+    }
+  }
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
     const material=surface==='residential'?new THREE.MeshStandardMaterial({color:0xb9b5a5,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;

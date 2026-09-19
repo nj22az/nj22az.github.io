@@ -123,6 +123,17 @@ buildInk();
 renderer.domElement.addEventListener('webglcontextrestored',()=>inkRecovery.restored(),false);
 window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
  get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
+ // What the east lawn's planting is actually wearing. The shrubs take the park's own
+ // leaf once the model streams in, and when that hand-over goes wrong they render as
+ // white blobs on the grass with nothing in the console to say so.
+ get planting(){
+  let found=null;
+  scene.traverse(o=>{if(found||o.name!=='East lawn planting')return;
+   found={count:o.count,uv:!!o.geometry.attributes.uv,map:!!o.material.map,
+    image:!!o.material.map?.image,tint:'#'+o.material.color.getHexString(),
+    instance:o.instanceColor?[...o.instanceColor.array.slice(0,3)].map(v=>+v.toFixed(2)):null};});
+  return found;
+ },
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
  flatten:v=>celPass.setFlatten(v),

@@ -203,8 +203,11 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
   emissive:material.emissive?material.emissive.clone():new THREE.Color(0x000000),
   emissiveMap:material.emissiveMap||null,
   emissiveIntensity:material.emissiveIntensity??1,
-  flatShading:material.flatShading===true
  });
+ // flatShading is deliberately not carried across. MeshToonMaterial has no such
+ // property, and passing it made three.js warn once per material — four hundred
+ // lines of console on a cold load, enough to bury a real message in it.
+ 
  toon.depthWrite=material.depthWrite;
  toon.depthTest=material.depthTest;
  toon.name=material.name;

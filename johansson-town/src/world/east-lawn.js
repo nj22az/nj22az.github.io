@@ -40,6 +40,14 @@ const TURF_METRES=2.4;
 
 /** The green the lawn shows until the park's own grass arrives (see useParkGrass). */
 const BARE_TURF=0x6f8a55;
+/**
+ * What the shrubs are tinted once they are wearing the park's leaf.
+ *
+ * The park's own bushes wear this texture untinted, so matching them means staying
+ * close to white — but not reaching it, because white with no texture is exactly what
+ * a failed hand-over looks like and there is nothing else to tell the two apart.
+ */
+const LEAF_TINT=0xdfe6d6;
 
 /**
  * Ground drawn rather than fetched, for the surfaces the town supplies no photograph
@@ -216,16 +224,28 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
   lawn.material.map=map;lawn.material.color.setHex(TURF_TINT);lawn.material.needsUpdate=true;
   if(bush?.image){
    // The park's shrubs are one merged clump, so the lawn borrows the leaf rather than
-   // the geometry. The per-instance greens go: the texture is the colour now.
-   clumpMat.map=bush;clumpMat.needsUpdate=true;
-   // White, not nothing. Dropping the attribute outright is what a mesh cannot do
-   // once anything has looked at it: the section renderer decides whether there are
-   // per-instance colours when it is built and then reads them every frame, so a null
-   // here threw out of the render loop and cost the whole cel look. White is the same
-   // picture — it lets the leaf texture through untinted — and the attribute survives.
-   const white=new THREE.Color(0xffffff);
-   for(let i=0;i<shrubs.count;i++)shrubs.setColorAt(i,white);
-   if(shrubs.instanceColor)shrubs.instanceColor.needsUpdate=true;
+   // the geometry.
+   //
+   // Write it to the material the mesh is actually wearing, not to the one built here.
+   // By the time the park streams in, the cel pass has replaced every material in the
+   // town with a MeshToonMaterial of its own and kept the original only as
+   // userData.celFrom. Setting the map on the closed-over clumpMat dressed an orphan
+   // nothing renders, and the whitening below — which is set on the mesh, not the
+   // material — landed anyway. Twenty-nine white blobs on a green lawn, and not a
+   // word in the console.
+   const wearing=[shrubs.material,shrubs.material?.userData?.celFrom,clumpMat].filter(Boolean);
+   for(const material of new Set(wearing)){material.map=bush;material.needsUpdate=true;}
+   // And only give up the authored greens once the leaf is demonstrably on. The tint
+   // multiplies the texture, so this has to be light to let the leaf read — but never
+   // white, because white is what a failed hand-over looks like.
+   if(shrubs.material?.map&&shrubs.instanceColor){
+    const through=new THREE.Color(LEAF_TINT);
+    for(let i=0;i<shrubs.count;i++)shrubs.setColorAt(i,through);
+    // The attribute survives. Dropping it outright is what a mesh cannot do once
+    // anything has looked at it: the section renderer reads it every frame, so a null
+    // here threw out of the render loop and cost the whole cel look.
+    shrubs.instanceColor.needsUpdate=true;
+   }
   }
   return true;
  };

@@ -13,6 +13,7 @@ import {createMealMotion} from './meal-motion.js';
 import {createThuanChairMotion} from './thuan-chair-motion.js';
 import {createThuanSeatDrape} from './thuan-seat-drape.js';
 import {prepareResidentAnimations} from './resident-animation.js';
+import {sourceGait} from './gait.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {clone} from '../../vendor/SkeletonUtils.js';
@@ -114,6 +115,17 @@ export function createLocalCharacters({shadows=false}={}){
     const hands=createResidentHands(model),cup=hands?.holder||null;
     const motion=asset.parser.json.extras||{};
     const actor={cup,hands,lowPoly,style,face,officeHands:name==='Harbour master'?createOfficeHands(model):null,sleepEyes:null,bedAccessories,walkSpeed:1.25,runSpeed:4,entity,model,mixer,actions,current:null,last:entity.position.clone(),gestureTime:0,speed:0,isThuan:name==='Thuan',isAya:name==='Aya'||name==='Aiko',isNozomi:name==='Reiko'||name==='Nozomi',moving:false,wasVisible:true,height:targetHeight,eyeCentres:motion.eyeCentres};
+    // What each locomotion clip is actually worth on the ground, in world metres per
+    // second. Measured once per source model and scaled to this body: playing a walk
+    // at a rate taken from a constant is what makes a character skate (see gait.js).
+    {
+      const forward=scale*(lowPoly?Math.sqrt(style.width||1):1);
+      actor.gait={};
+      for(const [name,speed] of Object.entries(sourceGait(asset)))actor.gait[name]=speed*forward;
+      // The stroll and the walk hand over halfway between the two, so which one plays
+      // follows how fast she is actually going rather than a number typed in here.
+      actor.strollBelow=actor.gait.Stroll&&actor.gait.Walk?(actor.gait.Stroll+actor.gait.Walk)/2:0;
+    }
     // Measure the support surface of this rig's seated pelvis, in entity space.
     // Standing height alone cannot predict where different bodies sit.
     actor.floorOffset=model.position.y;actor.seatSupport=null;
@@ -191,7 +203,24 @@ export function createLocalCharacters({shadows=false}={}){
       if(chairTransition)actor.model.position.y+=.075*Math.sin(Math.PI*blend)**2;
       const waving=!!(entity.userData.chat?.greeting||actor.gestureTime);
       const pose=entity.userData.socialPose;
-      const requested=(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||(actor.speed>3.5?'Run':actor.moving?'Walk':'Idle_Neutral');
+      // A walk and a stroll are different motions, not the same motion at two rates.
+      //
+      // Hysteresis around the handover, or she flickers between them at the boundary,
+      // and a dwell before taking it up: everybody is below a walking pace for the
+      // first tenth of a second they move, and swapping gait for that moment puts a
+      // visible jump through the arms on the way in and again on the way out. You
+      // change gait because you are dawdling, not because you have just set off.
+      if(actor.strollBelow){
+        // Only time spent actually moving slowly counts. Standing still is below a
+        // walking pace too, so counting it meant the dwell was always already spent
+        // and the first few frames of setting off played as a stroll before snapping
+        // to the walk -- the jump through the arms this was meant to prevent.
+        const slow=actor.moving&&actor.speed<actor.strollBelow*(actor.strolling?1.15:.87);
+        actor.strollFor=slow?(actor.strollFor||0)+dt:0;
+        actor.strolling=actor.strolling?slow:actor.strollFor>.45;
+      }
+      const travelling=actor.speed>3.5?'Run':actor.moving?(actor.strolling&&actions.has('Stroll')?'Stroll':'Walk'):'Idle_Neutral';
+      const requested=(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||travelling;
       const clip=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!clip)continue;
       if(chairTransition){
@@ -206,7 +235,12 @@ export function createLocalCharacters({shadows=false}={}){
       actor.chairTransition=chairTransition;
       const locomotion=actions.get(actor.current);
       const {walkSpeed,runSpeed}=actor;
-      if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
+      // Play the cycle at the rate the ground is passing. The measured speed is the
+      // clip's own; the constants are the fallback for a rig we could not measure.
+      const ground=actor.gait?.[actor.current];
+      if(locomotion&&ground>0)locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/ground,.32,2.6);
+      else if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);
+      else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
       if(seated&&actor.seatBlend===1){
         entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);let bottom=Infinity;

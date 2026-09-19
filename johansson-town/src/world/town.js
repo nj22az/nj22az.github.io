@@ -222,7 +222,7 @@ export function createTown(options){
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
   const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.05,OUTER_PIER.length-.05),surfaces.worldMaterial('concrete',0xc0beb5,2));
   pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,OUTER_PIER.z);pierSurface.receiveShadow=true;world.group.add(pierSurface);
-  world.isOpen=isOpen;world.updateHours=minutes=>{for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
+  world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);

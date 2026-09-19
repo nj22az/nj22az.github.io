@@ -61,7 +61,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    destinations.set(key,point);return point;
   }return target;
  }
- function move(person,target,dt,tag){const g=person.g;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<.7)return;
+ function move(person,target,dt,tag,pace=0){const g=person.g;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<.7)return;
   let route=routes.get(g);if(!route||route.tag!==tag){route={tag,points:navigation.path(g.position,{x:target[0],z:target[1]}),at:0,stalled:0,checkpoint:g.position.clone()};routes.set(g,route);}
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
@@ -72,7 +72,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.16){route.at++;return;}
-  const step=Math.min(d,dt*(person.profile?.age>65?.75:1.25)),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
+  // A leg may ask for its own pace: an afternoon by the sea is not an errand.
+  const step=Math.min(d,dt*(pace||(person.profile?.age>65?.75:1.25))),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
    if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
@@ -162,7 +163,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
-   if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag);
+   if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
    if(transit&&tag==='bus'&&phase==='departing'&&arrived()){world.busStation?.board(v.name,minutes);g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';g.visible=false;routes.delete(g);continue;}
    if(indoor&&(g.userData.indoors===tag||arrived())){
     if(!g.userData.indoors)g.userData.justArrived=true;

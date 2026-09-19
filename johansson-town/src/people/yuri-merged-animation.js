@@ -124,9 +124,22 @@ export function prepareMergedYuriAnimations(asset){
  const idle=bakeIdle(asset,hold,'Idle_Neutral','hip',6);clips.push(idle);
  const counter=bakeIdle(asset,hold,'CounterIdle','counter',6);clips.push(counter);
  alias('Walking','Walk');alias('Running','Run');alias('Big_Wave_Hello','Wave');
+ // Three takes shipped in this model and were never given a name the game asks for.
+ //
+ // Casual_Walk is a real unhurried walk, three cycles of it, and at 0.45 m/s on the
+ // ground it is what she should be doing on the way to the park rather than the
+ // 0.63 m/s march slowed down until the feet drag. Catching_Breath is the stop at the
+ // end of it. Big_Heart_Gesture is a second greeting, so that saying hello twice is
+ // not the same five seconds twice.
+ alias('Casual_Walk','Stroll');
+ alias('Catching_Breath','Rest');
+ alias('Big_Heart_Gesture','Greet');
  stillFingers(asset,clips.find(c=>c.name==='Walk'),.78);
  stillFingers(asset,clips.find(c=>c.name==='Run'),.7);
  stillFingers(asset,clips.find(c=>c.name==='Wave'),.45);
+ stillFingers(asset,clips.find(c=>c.name==='Stroll'),.74);
+ stillFingers(asset,clips.find(c=>c.name==='Rest'),.6);
+ stillFingers(asset,clips.find(c=>c.name==='Greet'),.5);
  const sit=alias('Chair_Sit_Idle_F','Sit');
  // The full take crosses the legs and folds the chest onto a raised hand.
  // Keep its relaxed opening, with a seamless, slow return through the same

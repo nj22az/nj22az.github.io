@@ -109,11 +109,17 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
   assert.ok(spanX>4&&spanZ>4,'One tile stretched over the whole green');
   assert.deepEqual([lawn.lawn.material.map.repeat.x,lawn.lawn.material.map.repeat.y],[1,1]);
   assert.equal(lawn.shrubs.material.map,bush,'The shrubs kept a colour of their own');
-  // The greens go white rather than away: the attribute has to survive, because the
-  // section renderer reads it every frame once it has seen it.
+  // The attribute has to survive, because the section renderer reads it every frame
+  // once it has seen it. What it must never hold is white: in the running game the
+  // cel pass had already swapped the shrubs' material for a MeshToonMaterial of its
+  // own, so the leaf went onto an orphan and only the whitening landed, and the lawn
+  // grew twenty-nine white blobs. A light green reads as planting either way.
   assert.ok(lawn.shrubs.instanceColor,'Dropping the attribute outright crashes the section renderer');
-  const tints=lawn.shrubs.instanceColor.array;
-  assert.ok([...tints].every(v=>v===1),'Per-instance greens still tint the park leaf');
+  const tints=[...lawn.shrubs.instanceColor.array];
+  assert.ok(!tints.every(v=>v===1),'The shrubs go white when the leaf fails to land');
+  // Colours are held in linear working space, so these are not the sRGB bytes.
+  assert.ok(tints.every(v=>v>.6),'The tint is too dark to let the park leaf read through it');
+  for(let i=0;i<tints.length;i+=3)assert.ok(tints[i+1]>tints[i]&&tints[i+1]>tints[i+2],'A shrub is not tinted green');
  }finally{globalThis.fetch=original;}
 });
 
@@ -153,4 +159,37 @@ test('every open patch of the east side can be walked to from the road',async()=
  }
  assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
  assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
+});
+
+test('the paths across the green lie on the ground rather than through it',async()=>{
+ installDOM();globalThis.self=globalThis;
+ configureTownMode(TOWN_MODES.PENINSULA);
+ const {groundHeight}=await import('../src/world/layout.js?lane-clearance');
+ const {buildLaneSurfaces}=await import('../src/world/lane-surfaces.js?lane-clearance');
+ const {createMaterials}=await import('../src/render/materials.js?lane-clearance');
+ const parent=new THREE.Group();
+ buildLaneSurfaces(parent,createMaterials());
+
+ // The paved routes draw 4cm above the ground and the lawn 2cm, so the path is on top
+ // of the grass everywhere -- at its corners. Each patch used to be laid as one quad,
+ // which runs straight between those corners while the lawn beside it follows the
+ // ground, so over the graded foot of the park mound the grass came up through the
+ // middle of the path by as much as 8cm and lay on it in green wedges.
+ const sunk=[];let checked=0;
+ for(const mesh of parent.children){
+  if(!mesh.isMesh||!mesh.name.startsWith('grid-lanes'))continue;
+  const position=mesh.geometry.attributes.position,index=mesh.geometry.index;
+  for(let t=0;t<index.count;t+=3){
+   const corners=[index.getX(t),index.getX(t+1),index.getX(t+2)];
+   const x=corners.reduce((s,i)=>s+position.getX(i),0)/3;
+   const y=corners.reduce((s,i)=>s+position.getY(i),0)/3;
+   const z=corners.reduce((s,i)=>s+position.getZ(i),0)/3;
+   checked++;
+   // 2cm is where the lawn draws; anything at or below that shows through it.
+   const clearance=y-(groundHeight(x,z)+.02);
+   if(clearance<-.005)sunk.push(x.toFixed(1)+','+z.toFixed(1)+' by '+(-clearance*100).toFixed(1)+'cm');
+  }
+ }
+ assert.ok(checked>1200,'The lanes are not subdivided at all: '+checked+' triangles');
+ assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });

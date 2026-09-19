@@ -2,6 +2,8 @@ import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
 import {DINING,restaurantCollider,restaurantApproach,izakayaPlot} from './dining-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
+import {buildMinatoFacade} from './minato-facade.js';
+import {peninsulaActive} from './town-mode.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -23,10 +25,21 @@ export function buildIzakaya(world,options){
  // Where it stands depends on the layout: see IZAKAYA_PLOTS in dining-layout.js.
  const plot=izakayaPlot();
  const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
+ const facadeColliders=[];
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
- const suppliedExterior=asset('exterior',exterior);
- // Something behind the glass.
+ // The peninsula gets the built frontage; the archived street keeps the supplied model
+ // it was measured against, along with the glazing pass and the tests that read it.
+ //
+ // The supplied exterior was a flat glazed box with no eave, no lantern and nothing to
+ // say what was behind it — an office frontage with a bar's name on it. See
+ // minato-facade.js for what stands there now.
+ const built=peninsulaActive()
+  ? buildMinatoFacade({parent:exterior,shadows:options.shadows,anisotropy:options.maxAnisotropy,colliders:facadeColliders})
+  : null;
+ const suppliedExterior=built?true:asset('exterior',exterior);
+ // Something behind the glass, for the supplied model only: the built frontage has
+ // solid walls behind its own windows and needs no backing block.
  //
  // prepareIzakayaGlass lifts the window triangles out of the wall and covers the holes
  // with near-invisible glazing so you can see in. On the old street there was always
@@ -35,7 +48,7 @@ export function buildIzakaya(world,options){
  // horizon through. The interior is a separate room and cannot stand in for it, so
  // what goes behind the glazing is this: a dim warm box the size of the ground floor,
  // inward-facing, which is what a bar looks like from outside at any hour.
- {
+ if(!built){
   // A solid block rather than an inward-facing shell: a shell's near wall is culled,
   // so from the pavement you look straight into it and it fills the view. And darker
   // than it looks it should be — under this town's exposure 0x2c2018 came back as
@@ -61,9 +74,19 @@ export function buildIzakaya(world,options){
  const entrance=new THREE.Object3D();entrance.position.set(...site.door);entrance.position.y=1.2;world.group.add(entrance);options.register(entrance,'Come into Minato Izakaya',()=>options.enter(site));
  // The new facade has a recessed closed door and an asymmetric footprint.
  // Stop at the visible step; the entrance prompt opens the existing dining room.
- world.colliders.push(
-  ...[{x:-.91,z:1.11,w:5.22,d:6.82,height:9.05},{x:-3.92,z:-1.54,w:.85,d:.85,height:1.08},{x:-3.74,z:-.90,w:.50,d:.50,height:.36}].map(c=>restaurantCollider('izakaya',c)));
+ world.colliders.push(...(built?facadeColliders
+  :[{x:-.91,z:1.11,w:5.22,d:6.82,height:9.05},{x:-3.92,z:-1.54,w:.85,d:.85,height:1.08},{x:-3.74,z:-.90,w:.50,d:.50,height:.36}]
+ ).map(c=>restaurantCollider('izakaya',c)));
 
+ if(built){
+  // Lanterns on after dark, noren out while Nao is open. world.hourly is run by the
+  // town's own updateHours, so this follows the clock rather than the frame.
+  (world.hourly||(world.hourly=[])).push(minutes=>{
+   const h=((minutes%1440)+1440)%1440,open=h>=960||h<180;
+   const hour=h/60,day=hour<5||hour>=20?0:hour<7?(hour-5)/2:hour<17?1:(20-hour)/3;
+   built.lit(open,day);
+  });
+ }
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:plot.x,z:plot.z,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;
   asset('exterior',exterior);placeholder?.removeFromParent();placeholder=null;sign.visible=false;return true;

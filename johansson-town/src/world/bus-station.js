@@ -6,6 +6,16 @@ export const BUS_STATION=Object.freeze({
  id:'bus-station',x:MAIN_ROAD.x,z:24.9,
  minX:-10.6,maxX:5.4,minZ:MAIN_ROAD.maxZ,maxZ:29.3,
  queue:Object.freeze([MAIN_ROAD.x,23.05]),
+ /**
+  * Where you stand on the platform, as opposed to where you queue to board.
+  *
+  * The queue point is in the bus's own bay, which is right for boarding and wrong for
+  * everything else: once the Harbour Line had a collider it covered that point, so the
+  * station's doorway spawned you inside the bus and the boot-time stability check has
+  * been reporting "door spawn bus-station" ever since. This is the same platform, two
+  * metres west of the bus's flank, which is where somebody waiting actually stands.
+  */
+ platform:Object.freeze([MAIN_ROAD.x-2.3,23.05]),
  arrival:Object.freeze([-6.1,22.45]),
  driver:Object.freeze([4.1,23.35]),
  exit:Object.freeze([MAIN_ROAD.x,FOREST_EDGE.roadEndZ]),
@@ -51,7 +61,7 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  anchor([-7.2,1,BUS_STATION.queue[1]-.05],'Read Harbour Line timetable',()=>onAction('bus'));
  anchor([-2.7,1,BUS_STATION.queue[1]-.2],'Wait for the Harbour Line',()=>onAction('bus'));
  anchor([4.2,1,centreZ+.7],'Inspect bus station shelter',()=>onAction('inspect','Harbour Line bus station','The shelter timetable lists the shopping district, quay, and the last northern departure. The glass is marked by salt and rain.'));
- const place={id:BUS_STATION.id,title:'Harbour Line Bus Station',jp:'バス乗場',sub:'ARRIVALS · DEPARTURES',x:BUS_STATION.x,z:BUS_STATION.z,line:'The northern terminus for the shopping district and harbour service.',door:[BUS_STATION.queue[0],0,BUS_STATION.queue[1]],exitPosition:[BUS_STATION.queue[0],0,BUS_STATION.queue[1]],entryFacing:Math.PI};
+ const place={id:BUS_STATION.id,title:'Harbour Line Bus Station',jp:'バス乗場',sub:'ARRIVALS · DEPARTURES',x:BUS_STATION.x,z:BUS_STATION.z,line:'The northern terminus for the shopping district and harbour service.',door:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],exitPosition:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],entryFacing:Math.PI};
  const departures=[];
  return {group,place,queue:[...BUS_STATION.queue],arrival:[...BUS_STATION.arrival],driver:[...BUS_STATION.driver],exit:[...BUS_STATION.exit],departures,
   board(name,minutes){departures.push({name,minutes});if(departures.length>24)departures.shift();},
