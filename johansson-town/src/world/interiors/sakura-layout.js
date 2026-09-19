@@ -201,3 +201,20 @@ export const SAKURA_DRESSING=[
   look:[2.06,1.08,1.355],title:'Read the end-cap promotion',
   text:'日の出カレールウ — the month\u2019s offer, stacked at the end of the aisle with a hand-lettered card.'},
 ].map(dressed);
+
+/**
+ * Impulse props on the register wall behind Thuan. Dressing only — no new SKUs.
+ * Eye / mid / low bands stay clear of her checkout yaw toward the customer side.
+ * Ledger and service bell stay on the counter where sakura-interior places them.
+ */
+export const SAKURA_BACKBAR=Object.freeze([
+  {id:'ferry-tickets',band:'eye',x:6.42,y:1.52,z:1.62,note:'Ferry punch cards'},
+  {id:'phone-cards',band:'eye',x:6.42,y:1.50,z:1.32,note:'Phone cards'},
+  {id:'stamps',band:'eye',x:6.42,y:1.48,z:1.05,note:'Sakura postage stamps'},
+  {id:'gum',band:'eye',x:6.42,y:1.42,z:.78,note:'Chewing gum'},
+  {id:'matches',band:'eye',x:6.42,y:1.38,z:.52,note:'Matches and lighter'},
+  {id:'osusume',band:'mid',x:6.40,y:1.12,z:1.15,note:'本日のおすすめ'},
+  {id:'postcard-stand',band:'mid',x:6.40,y:.78,z:.90,note:'Harbour postcard stand'},
+  {id:'radio',band:'low',x:6.40,y:.48,z:.55,note:'Shop radio'},
+  {id:'batteries',band:'low',x:6.40,y:.42,z:.78,note:'Spare batteries face-out'},
+]);

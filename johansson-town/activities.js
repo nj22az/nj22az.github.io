@@ -32,7 +32,7 @@ import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Harbour Line last departure: 21:00.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -357,7 +357,36 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   // A konbini is not a vending machine: things go in the basket and are paid for at the
   // counter, where Thuan rings them through.
+  // TalkFun one-liners on lift — Thuan's voice, never Yuri's.
+  const EXAMINE_LINES=Object.freeze({
+    tea:'Back of the cooler is colder. Front ones cooked.',
+    coffee:'Harbour walk fuel. Don\'t shake it.',
+    rice:'Wrapped this afternoon. Plum\'s in the middle.',
+    biscuit:'Corner folded so they don\'t rattle.',
+    soap:'Smells like the pink paper, not the flower.',
+    notebook:'For tide times. Or excuses.',
+    postcard:'Old breakwater. Photographer still owes me change.',
+    battery:'For the radio. Ask before you open the hatch.',
+  });
   function storeItem(item){
+    // Prefer the Field-book orbit when the game wired an inspector; tests keep the dialogue path.
+    if(typeof onInspectShopGood==='function'){
+      const brand=item.brand||'',jp=item.jp||'',name=item.name||item.id;
+      const caption=[brand,jp,name].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(' · ')+' · ¥'+item.cost;
+      onInspectShopGood({
+        kind:'shop-good',id:'shop-'+item.id,productId:item.id,title:name+' · ¥'+item.cost,caption,
+        liftLine:EXAMINE_LINES[item.id]||'Shelf price is the price.',
+        canTalk:()=>getSocialContext().inside==='market'&&getSocialContext().thuanAvailable!==false,
+        onBuy:()=>{
+          const result=addToBasket(state,item);save();
+          receipt(result.ok?'Basket':'Sakura Shōten',result.ok
+            ?result.message+' '+basketLines(state).reduce((n,l)=>n+l.count,0)+' item(s), ¥'+basketTotal(state)+'. Pay at the counter.'
+            :result.message);
+        },
+        onTalk:()=>{action('resident','Thuan');},
+      });
+      return;
+    }
     const available=state.sakura.stock[item.id]?.shelf||0;
     const held=state.konbini.basket.filter(id=>id===item.id).length;
     const carrying=state.konbini.basket.length;
