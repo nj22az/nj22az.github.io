@@ -73,3 +73,53 @@ test('with no bus modelled at all, people come and go as they always did',()=>{
  assert.equal(boarded({}),true,'A town without a service strands its commuters');
  assert.equal(atTheStop(),true);
 });
+
+test('nobody who was already away is left standing at the terminus',async()=>{
+ const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
+ const {createCastAI}=await import('../src/people/schedules.js');
+ const {RESIDENTS,STREET_CAST_NAMES}=await import('../src/people/residents.js');
+
+ configureTownMode(TOWN_MODES.PENINSULA);
+ try{
+  // Three in the morning. Every shop worker went home hours ago, the last service was
+  // at half past one and the next is at four, and the player has just opened the page.
+  const NIGHT=188;
+  const parent=new THREE.Group();
+  const people=STREET_CAST_NAMES.map(name=>{
+   const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();
+   g.userData={name,visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);
+   parent.add(g);return {g,profile};
+  });
+  const bus=createBusRun({parent:new THREE.Group()});
+  const player=new THREE.Group();player.position.set(0,0,0);
+  const world={people,homes:new Map(),bus};
+  // The save the player actually reloads. snapshot() records an away resident at
+  // BUS_STATION.exit, which is a waypoint at the far end of the bus road rather than
+  // anywhere a person would stand, so this is where they all come back to.
+  const residentLocations=Object.fromEntries(people.map(p=>
+   [p.profile.name,{position:[...BUS_STATION.exit],indoors:null,place:'away'}]));
+  const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations}),
+   paused:()=>false,collides:()=>false});
+  for(let i=0;i<180;i++){bus.update(1/60,NIGHT+i/60,false);ai.update(1/60,NIGHT+i/60,false);}
+
+  // Anyone still on their feet is somebody with a reason to be out: the night patrol
+  // and the harbour office. Everybody else went home hours ago.
+  //
+  // The hold rewrites their place to 'bus' while they queue, so asking whether they
+  // are 'away' does not catch this -- what catches it is that they are drawn at all,
+  // and that they are standing in a heap on one spot at the terminus.
+  const out=people.filter(p=>p.g.visible!==false);
+  const named=out.map(p=>p.profile.name+' ('+p.g.userData.place+')').join(', ');
+  const working=['Officer Mori','Harbour master','Bus driver','Nao'];
+  const loitering=out.filter(p=>!working.includes(p.profile.name))
+   .map(p=>p.profile.name+' at '+p.g.position.x.toFixed(1)+','+p.g.position.z.toFixed(1));
+  assert.deepEqual(loitering,[],'People are standing about in the middle of the night: '+named);
+  // and nobody is stacked on top of anybody, which is what a queue for a bus that is
+  // an hour away looks like.
+  for(const a of out)for(const b of out){
+   if(a===b)continue;
+   assert.ok(a.g.position.distanceTo(b.g.position)>.6,
+    a.profile.name+' and '+b.profile.name+' are standing in the same place');
+  }
+ }finally{configureTownMode(TOWN_MODES.LEGACY);}
+});

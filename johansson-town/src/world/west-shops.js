@@ -67,7 +67,11 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
   shape.lineTo(half+.42,-.2);shape.lineTo(0,.95);shape.lineTo(-half-.42,-.2);shape.closePath();
   const roof=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:depth+.5,bevelEnabled:false}),
    surfaces.worldMaterial('roof',0x5c625c));
-  roof.rotation.y=Math.PI/2;roof.position.set(WEST_FRONT+.25,HEIGHT+.1,z);
+  // Extruded back over the building, not forward over the road. A quarter turn the
+  // other way ran the whole pitch out across the pavement and the carriageway, where
+  // it hung in the air with nothing under it -- five metres of roof over the street
+  // and none over the shop.
+  roof.rotation.y=-Math.PI/2;roof.position.set(WEST_FRONT+.25,HEIGHT+.1,z);
   roof.castShadow=!!shadows;roof.receiveShadow=true;group.add(roof);
  }
  // Frontage: a glazed bay each side of the doorway, under a painted fascia.

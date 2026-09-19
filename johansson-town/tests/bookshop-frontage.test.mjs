@@ -25,3 +25,32 @@ test('the bookshop has one visible doorway and the bicycle leaves its approach c
   for(let x=4.4;x<=7.0;x+=.1)assert.equal(circleHitsRect(x,30,.32,bike.collider),false,'Bookshop entrance approach stays clear');
  }finally{globalThis.fetch=original;}
 });
+
+test('the bookshop roof sits on the bookshop rather than over the road',async()=>{
+ installDOM();globalThis.self=globalThis;
+ const THREE=await import('../vendor/three.module.js');
+ const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
+ const {buildWestShop,WEST_SHOPS,WEST_FRONT}=await import('../src/world/west-shops.js?roof');
+ configureTownMode(TOWN_MODES.PENINSULA);
+ try{
+  const parent=new THREE.Group(),colliders=[];
+  buildWestShop({parent,site:{id:'frontrow',title:'Front-Row Books',jp:'前列書房'},
+   colliders,register(){},enter(){},label(){}});
+  parent.updateMatrixWorld(true);
+  const plot=WEST_SHOPS.frontrow,back=WEST_FRONT-plot.depth;
+  const roofs=[];
+  parent.traverse(o=>{if(o.isMesh&&o.geometry?.type==='ExtrudeGeometry')roofs.push(o);});
+  assert.equal(roofs.length,1,'The bookshop has '+roofs.length+' pitched roofs');
+  const box=new THREE.Box3().setFromObject(roofs[0]);
+  // A pitch is extruded along one axis and it is easy to send it along the wrong one.
+  // Turned the wrong quarter, this one ran five metres out across the pavement and the
+  // carriageway and hung there with nothing under it, while the shop stood bare.
+  assert.ok(box.min.x<WEST_FRONT,'The roof starts in front of the shop it belongs to');
+  assert.ok(box.max.x<=WEST_FRONT+.6,'The roof hangs out over the road');
+  assert.ok(box.min.x>=back-.6,'The roof runs out past the back wall');
+  // and it covers the building rather than clipping a corner of it.
+  const covered=Math.min(box.max.x,WEST_FRONT)-Math.max(box.min.x,back);
+  assert.ok(covered>plot.depth*.9,'The roof covers only '+covered.toFixed(1)+'m of a '+plot.depth+'m building');
+  assert.ok(box.min.y>2,'The roof is on the floor');
+ }finally{configureTownMode(TOWN_MODES.LEGACY);}
+});

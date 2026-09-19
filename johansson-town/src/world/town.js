@@ -7,7 +7,7 @@ import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
-import {OUTER_PIER,groundHeight} from './layout.js?snappy=1';
+import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -57,10 +57,14 @@ function addWithCollider(group,colliders,entry){
 
 function addWalkablePier(world,options,factory){
   const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
-  factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.003-.19,OUTER_PIER.z],concrete,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[-4.02,-.18,-57.3],dark,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[4.02,-.18,-57.3],dark,null,options.shadows);
-  factory.box(group,[8.2,.58,.42],[0,-.18,-64.84],dark,null,options.shadows);
+  // The block is the pier's mass; the detailed deck is a separate plane laid on top,
+  // and the two used to be three millimetres apart. Sink the block far enough that the
+  // deck plainly wins, and let the deck and the two rails cover its top between them,
+  // so the face underneath is never the one you see.
+  factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.025-.19,OUTER_PIER.z],concrete,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[-4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
+  factory.box(group,[.34,.56,15.45],[4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
+  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,-64.84],dark,null,options.shadows);
   const posts=[];
   for(const side of [-1,1]){
     for(const z of [-51.1,-53.7,-62.2,-64.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
@@ -224,8 +228,11 @@ export function createTown(options){
   }});
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
-  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.05,OUTER_PIER.length-.05),surfaces.worldMaterial('concrete',0xc0beb5,2));
-  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,OUTER_PIER.z);pierSurface.receiveShadow=true;world.group.add(pierSurface);
+  // The deck runs from the pier head to the quay's own edge and no further: its last
+  // third of a metre lies under the quay slab, which is the surface you walk on there.
+  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=QUAY_SOUTH;
+  const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.5,deckTo-deckFrom),surfaces.worldMaterial('concrete',0xc0beb5,2));
+  pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,(deckFrom+deckTo)/2);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}for(const m of districts.windows)m.material.emissiveIntensity=minutes%1440>=1080? .8:.02;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);

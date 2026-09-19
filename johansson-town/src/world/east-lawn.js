@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
+import {GROUND_LAYER} from './ground-layers.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -108,7 +109,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
- for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+.02,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
+ for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
   const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
   if(onMound(mx,mz))continue;

@@ -49,7 +49,9 @@ export function buildWarehouse(world,options={}){
  const group=new THREE.Group();group.name='Harbour Warehouse';world.group.add(group);
  world.colliders.push(...warehouseColliders());
  const footing=new THREE.Mesh(new THREE.BoxGeometry(6.4,.6,11.35),new THREE.MeshStandardMaterial({color:0x999b94,roughness:.95}));
- footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.19,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
+ // A centimetre and a half over the quay was not enough to keep the two apart on a
+ // phone; three makes the plinth read as a plinth and settles the depth test with it.
+ footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
  const fallback=new THREE.Group();fallback.name='Warehouse loading fallback';group.add(fallback);
  const wallMat=new THREE.MeshStandardMaterial({color:0xbfbdb1,roughness:.94}),roofMat=new THREE.MeshStandardMaterial({color:0x65594c,roughness:.9});
  const wall=new THREE.Mesh(new THREE.BoxGeometry(6.08,4.1,10.97),wallMat);wall.position.set(WAREHOUSE.x,2.15,WAREHOUSE.z);fallback.add(wall);

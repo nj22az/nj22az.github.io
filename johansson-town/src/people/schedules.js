@@ -123,6 +123,14 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
+   // Somebody who was already away when the game loaded is away.
+   //
+   // The hold below exists so that nobody blinks out at the kerb while you are
+   // watching them, and there is nothing to preserve for a person you have never seen.
+   // Held from the first frame, they spawn on the plan's target instead -- which for
+   // 'away' is the far end of the bus road -- and stand in a clump at the mouth of the
+   // tunnel until the next service, which is now as much as two and a half hours.
+   if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
    const holdForBus=transit&&phase==='away'&&!boarded(g);
    if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
