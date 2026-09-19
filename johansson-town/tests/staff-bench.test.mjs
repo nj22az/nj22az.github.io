@@ -10,6 +10,12 @@ import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
 import {circleHitsRect,townBoundsBlocked} from '../physics.js';
+import {createPropFactory} from '../prop-factory.js';
+import {createTownActivities} from '../src/people/town-activities.js';
+import {createSakuraShop} from '../src/people/sakura-shop.js';
+import {createResidentLedger} from '../src/people/resident-personalities.js';
+import {restoreSakura} from '../src/commerce/sakura-economy.js';
+import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
 
 function fixture(){
  const entity=new T.Group(),seat=new T.Object3D();entity.userData.name='Thuan';entity.position.set(STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]);
@@ -48,6 +54,27 @@ test('she waits when the player or another reservation occupies the seat',()=>{
  assert.equal(routine.update(.1,true),false);occupied=false;seat.userData.reservedBy='visitor';assert.equal(routine.update(.1,true),false);
  delete seat.userData.reservedBy;assert.equal(routine.update(.1,true),true);
 });
+test('she reaches the clear approach before taking control of the seat',()=>{
+ const {entity,seat,routine}=fixture();
+ // Within the former one-metre trigger, but still beside the bench rather than in front.
+ entity.position.z+=.85;
+ assert.equal(routine.update(1/60,true),false);
+ assert.equal(seat.userData.reservedBy,undefined);
+ assert.equal(entity.userData.usingTownObject,undefined);
+ entity.position.set(STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]);
+ assert.equal(routine.update(1/60,true),true);
+});
+test('the rendered backrest faces the shop and leaves a clear standing point in the yard',()=>{
+ installDOM();const parent=new T.Group(),colliders=[];
+ const {group}=buildStaffBench({parent,colliders,factory:createPropFactory({shadows:false})});
+ parent.updateMatrixWorld(true);
+ const back=group.children.filter(o=>o.isMesh&&o.position.y>.7);
+ assert.ok(back.length>0);
+ for(const rail of back)assert.ok(rail.getWorldPosition(new T.Vector3()).x>STAFF_BENCH.seat[0],'The backrest stays on the shop side');
+ const bounds=new T.Box3().setFromObject(group);
+ assert.ok(bounds.max.x< -19.5,'Bench clears the shop wall and its rear fittings');
+ assert.equal(colliders.some(c=>circleHitsRect(...STAFF_BENCH.stand,.32,c)),false);
+});
 test('the real schedule wakes and clears Thuan before morning navigation resumes',()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  try{
@@ -59,6 +86,47 @@ test('the real schedule wakes and clears Thuan before morning navigation resumes
   ai.update(1/60,594,false);assert.equal(entity.userData.staffBenchPhase,'wake');assert.ok(entity.userData.seatHeight);
   for(let i=0;i<500;i++)ai.update(1/60,594,false);
   assert.equal(entity.userData.staffBenchPhase,undefined);assert.equal(entity.userData.seatHeight,undefined);assert.equal(seat.userData.reservedBy,undefined);assert.equal(entity.userData.place,'market');
+ }finally{configureTownMode(TOWN_MODES.LEGACY);}
+});
+
+test('the complete shop controller receives Thuan back at the till after her bench break',()=>{
+ installDOM();configureTownMode(TOWN_MODES.PENINSULA);
+ try{
+  const scene=new T.Scene(),player=new T.Group(),targets=[],state={inventory:[],sakura:restoreSakura(),townMode:'peninsula'};
+  const register=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};targets.push(o);};
+  let minutes=830;
+  const world=createTown({scene,sites:createBusinesses(),townMode:'peninsula',shadows:false,register,enter(){},onAction(){},getPlayerPosition:()=>player.position});
+  const thuan=world.people.find(p=>p.profile.name==='Thuan');world.cat=null;
+  const blocked=(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
+  const ledger=createResidentLedger(()=>state);
+  const activities=createTownActivities({getTargets:()=>targets,collides:blocked,getPlayerPosition:()=>player.position,ledger,getState:()=>state});
+  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:blocked,activities});
+  const shop=createSakuraShop({world,scene,state,ledger,register,action(){},exit(){},getMinutes:()=>minutes,getPlayerPosition:()=>player.position,isInside:()=>false,onBorrow:activities.release});
+  const phases=new Set();let returned=false;
+  for(;minutes<1000;minutes+=1/60){
+   const before=thuan.g.position.clone(),parent=thuan.g.parent,yaw=thuan.g.rotation.y,chair=thuan.g.userData.chairBlend;
+   ai.update(1/60,minutes,false);shop.update(1/60);world.update(1/60,minutes,1,minutes);
+   const data=thuan.g.userData;
+   const dx=thuan.g.position.x-before.x,dz=thuan.g.position.z-before.z,distance=Math.hypot(dx,dz);
+   // Room transfers change coordinate frames; sitting shifts weight over the seat.
+   // Every ordinary footstep, including the shop exit and outdoor detours, faces ahead.
+   if(thuan.g.parent===parent&&distance>.0001&&distance<.1&&!Number.isFinite(chair)&&!Number.isFinite(data.chairBlend)){
+    const forward=(-Math.sin(thuan.g.rotation.y)*dx-Math.cos(thuan.g.rotation.y)*dz)/distance;
+    assert.ok(forward>.93,`Thuan walks forwards during ${data.activity} at ${minutes}: ${forward}`);
+    const turn=Math.abs(Math.atan2(Math.sin(thuan.g.rotation.y-yaw),Math.cos(thuan.g.rotation.y-yaw)));
+    assert.ok(turn<=2.6/60+1e-8,'Walking turns remain continuous');
+   }
+   if(data.staffBenchPhase)phases.add(data.staffBenchPhase);
+   if(!data.staffBenchPhase&&!data.indoors&&!data.usingTownObject)assert.equal(blocked(thuan.g.position.x,thuan.g.position.z,.3),false);
+   if(minutes>930&&data.inMarket&&data.roomTransition)returned=true;
+  }
+  for(const phase of ['sit','sleep','wake','stand','leave'])assert.ok(phases.has(phase),phase);
+  assert.ok(returned,'She walks in through the shop entrance');
+  assert.equal(thuan.g.userData.inMarket,true);
+  assert.ok(thuan.g.position.distanceTo(new T.Vector3(...SAKURA_LAYOUT.staff))<.12,'She reaches the till');
+  assert.equal(thuan.g.userData.staffBenchPhase,undefined);
+  assert.equal(thuan.g.userData.usingTownObject,undefined);
+  assert.equal(world.staffBench.seat.userData.reservedBy,undefined);
  }finally{configureTownMode(TOWN_MODES.LEGACY);}
 });
 

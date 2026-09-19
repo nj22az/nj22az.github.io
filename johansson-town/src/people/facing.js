@@ -76,7 +76,7 @@ export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.6
    const near=Math.hypot(entity.position.x-player.x,entity.position.z-player.z)<=range;
    // Standing next to someone is not the same as talking to them, so proximity only
    // earns a look when they have nothing else on.
-   const busy=occupied(data,!!data.walking);
+   const busy=occupied(data,!!data.walking||!!data.character?.moving);
    if(!talking&&!(near&&!busy)){
     if(data.facingPlayer){delete data.facingPlayer;if(data.lookSource==='facing')delete data.lookTarget;}
     continue;
