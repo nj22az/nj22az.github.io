@@ -10,6 +10,7 @@ import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
+import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -59,7 +60,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
   const p=getObserverPosition();return p&&Math.hypot(p.x-STAFF_BENCH.seat[0],p.z-STAFF_BENCH.seat[1])<.9;
  }}):null;
- const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?(world.people.find(p=>p.profile.name==='Thuan')?.profile.work||THUAN_PROFILE.work):place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -127,7 +128,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
    return next>=.61||(old<.61&&next>old+.00001);
   });
-  const candidates=[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
+  // Near the Konbini door, lateral sidesteps into the frontage collider read as a
+  // glide/moonwalk through the opening. Prefer forward/axis probes only.
+  const atMarketDoor=tag==='market'&&d<2.8;
+  const candidates=atMarketDoor?[[nx,nz],[nx,g.position.z],[g.position.x,nz]]:[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
   const beforeX=g.position.x,beforeZ=g.position.z;
   for(const [x,z] of candidates){
    if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;

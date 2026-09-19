@@ -63,7 +63,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     }else if(saved.phase==='leaving'){
      if(walker.move(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walker.move(p,seat.stand,dt))saved.phase='sitting';
+     if(walker.move(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase='sitting';}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
