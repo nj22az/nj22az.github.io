@@ -369,7 +369,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     notebook:'For tide times. Or excuses.',
     postcard:'Old breakwater. Photographer still owes me change.',
     battery:'For the radio. Ask before you open the hatch.',
-  });
+    bun:'Steam still on the bag if you are early.',
+    soda:'Ramune. Marble is supposed to stay in.',
+    bento:'Makunouchi. Eat it before the rice remembers the fridge.',  });
   function storeItem(item){
     // Prefer the Field-book orbit when the game wired an inspector; tests keep the dialogue path.
     if(typeof onInspectShopGood==='function'){

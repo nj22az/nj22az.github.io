@@ -6,6 +6,7 @@ import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-prod
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
+import {dressSakuraLinger} from './sakura-linger.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
@@ -143,6 +144,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  anchor([4.50,1.24,1.7],'Read Sakura sales ledger',()=>action('shop-ledger'));
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
+ dressSakuraLinger(room,anchor,action);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
  anchor(layout.exit,'Exit to street',exit);
  // Back-room cartons: open Thuan's Storage restock (navigate, not iframe).
