@@ -4624,6 +4624,10 @@ var Dd = new Set([
   `Space`,
   `KeyR`,
 ]);
+/** Pace scale when facing is not yet aligned with travel (WalkFix). Full forward, zero backward. */
+function alignedStep(angle) {
+  return Math.max(0, Math.cos(Math.min(Math.abs(angle), Math.PI)));
+}
 function Od(e, t, n = 0.15) {
   let r = Math.hypot(e, t);
   if (r < n) return { x: 0, y: 0 };
@@ -4651,6 +4655,7 @@ function kd() {
     c = 0,
     l = { x: 0, y: 0 },
     u = !1,
+    sprintPointerId = null,
     d = null,
     f = [],
     p = (n) => (t ? t.includes(n) : e.has(n)),
@@ -4660,8 +4665,13 @@ function kd() {
     h = (t) => {
       e.delete(t.code);
     },
+    clearSprint = () => {
+      u = false;
+      sprintPointerId = null;
+      n.sprint = false;
+    },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false; c = 0;
+      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; a = false; c = 0;
       r = i = 0;
       Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
@@ -4691,12 +4701,17 @@ function kd() {
     y = (e) => {
       ((a = !1), e.currentTarget?.releasePointerCapture?.(e.pointerId));
     },
+    onSprintPointerEnd = (ev) => {
+      if (sprintPointerId != null && ev.pointerId === sprintPointerId) clearSprint();
+    },
     b = (e) => {
       ((d = e),
         window.addEventListener(`keydown`, m),
         window.addEventListener(`keyup`, h),
         window.addEventListener(`blur`, g),
         document.addEventListener(`visibilitychange`, g),
+        window.addEventListener(`pointerup`, onSprintPointerEnd),
+        window.addEventListener(`pointercancel`, onSprintPointerEnd),
         e.addEventListener(`pointerdown`, _),
         e.addEventListener(`pointermove`, v),
         e.addEventListener(`pointerup`, y),
@@ -4707,6 +4722,8 @@ function kd() {
             window.removeEventListener(`keyup`, h),
             window.removeEventListener(`blur`, g),
             document.removeEventListener(`visibilitychange`, g),
+            window.removeEventListener(`pointerup`, onSprintPointerEnd),
+            window.removeEventListener(`pointercancel`, onSprintPointerEnd),
             e.removeEventListener(`pointerdown`, _),
             e.removeEventListener(`pointermove`, v),
             e.removeEventListener(`pointerup`, y),
@@ -4749,11 +4766,13 @@ function kd() {
         (n.moveY = t),
         (n.lookHoldX = Math.max(-1, Math.min(1, r))),
         (n.lookHoldY = Math.max(-1, Math.min(1, i))),
+        // Hold-to-run only: Shift, touch Run button, or gamepad shoulder — never stick magnitude.
         (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o));
     };
   return {
     actions: n,
     reset: g,
+    clearSprint,
     attach: b,
     detach: () => {
       for (let e of f) e();
@@ -4781,8 +4800,13 @@ function kd() {
       // Touch look pad: amplify small flicks so the pad feels as quick as a mouse flick.
       ((r += e * 1.15), (i += t * 1.15));
     },
-    setTouchSprint: (e) => {
-      u = e;
+    setTouchSprint: (pressed, pointerId = null) => {
+      if (pressed) {
+        u = true;
+        if (pointerId != null) sprintPointerId = pointerId;
+      } else {
+        clearSprint();
+      }
     },
     tryPointerLock: (canvas) => {
       if (c > 6 || typeof canvas.requestPointerLock !== 'function' || window.matchMedia?.('(pointer: coarse)').matches) return;
@@ -5142,9 +5166,12 @@ function Yp(maze) {
   const materials = {
     wall: new co({color:0xe9e2d4}), steel: new co({color:0x5a7074}),
     shelf: new co({color:0xc4c9bc}), wood: new co({color:0xa9845c}),
-    tape: new co({color:0xe8c86a}), dark: new co({color:0x4a5556}),
+    tape: new co({color:0xe8c86a,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),
+    dark: new co({color:0x4a5556}),
     lamp: new co({color:0xfff3dc,emissive:0xfff0d2,emissiveIntensity:0.72}),
-    sakura: new co({color:0xf3d0d8}), cream: new co({color:0xf7f1e6}),
+    // Decals/end-caps/posters: bias depth so they do not z-fight coplanar hosts.
+    sakura: new co({color:0xf3d0d8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
+    cream: new co({color:0xf7f1e6,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),
   };
   const productMaps = Ap();
   for (const def of ad) materials[def.id] = new co({map:productMaps.get(def.id)});
@@ -5167,14 +5194,14 @@ function Yp(maze) {
   for(let r=0;r<maze.rows;r++) for(let c=0;c<maze.cols;c++) {
     if(maze.cells[r*maze.cols+c]!==1) continue;
     const p=gd(c,r,maze);box('wall',p.x,cd/2,p.z,sd,cd,sd);
-    box('dark',p.x,0.18,p.z,sd+0.01,0.36,sd+0.01);
+    box('dark',p.x,0.19,p.z,sd+0.01,0.34,sd+0.01);
   }
   const random=ud(maze.seed^711);
   for(const bank of maze.shelves) {
     const centre=gd(bank.c+(bank.w-1)/2,bank.r+(bank.h-1)/2,maze);
     const width=bank.w*sd, depth=bank.h*sd;
     // Collision and visible rack extents agree, including the bottom plinth.
-    box('dark',centre.x,0.08,centre.z,width,0.16,depth);
+    box('dark',centre.x,0.09,centre.z,width,0.14,depth);
     for(const sx of [-1,1]) for(const sz of [-1,1]) {
       box('steel',centre.x+sx*(width/2-0.045),1.05,centre.z+sz*(depth/2-0.045),0.09,2.1,0.09);
     }
@@ -5188,27 +5215,35 @@ function Yp(maze) {
         const vertical=bank.h>bank.w;
         const x=cell.x+(vertical?(side?0.39:-0.39):0);
         const z=cell.z+(vertical?0:(side?0.39:-0.39));
-        box(def.id,x,0.45+level*0.62,z,vertical?0.58:1.15,0.4,vertical?1.15:0.58);
+        box(def.id,x,0.46+level*0.62,z,vertical?0.58:1.15,0.4,vertical?1.15:0.58);
       }
     }
     const signTexture=Sp(od[bank.zone].label,od[bank.zone].color);textures.push(signTexture);
     const sign=Wp(od[bank.zone].label,od[bank.zone].color,signTexture);
-    sign.position.set(centre.x,2.3,centre.z-depth/2-0.025);sign.rotation.y=Math.PI;group.add(sign);
-    // Warm cream + sakura end-cap plaques (late-Shōwa konbini stockroom charm).
-    box('cream',centre.x-width/2-0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
-    box('sakura',centre.x+width/2+0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+    sign.position.set(centre.x,2.3,centre.z-depth/2-0.07);sign.rotation.y=Math.PI;group.add(sign);
+    // Warm cream + sakura end-cap plaques — offset off the rack so faces are not coplanar.
+    box('cream',centre.x-width/2-0.045,1.15,centre.z,0.035,0.55,Math.min(depth,0.9));
+    box('sakura',centre.x+width/2+0.045,1.15,centre.z,0.035,0.55,Math.min(depth,0.9));
   }
   // Soft wall posters — cream cards with sakura trim, never horror.
+  // Sit on the aisle face of the wall (not coplanar with the wall volume).
   const posterSpots=[[2,4],[18,4],[2,16],[18,16],[10,1]];
   for(const [c,r] of posterSpots){
     if(maze.cells[r*maze.cols+c]!==1) continue;
     const p=gd(c,r,maze);
-    box('cream',p.x,1.55,p.z,0.08,0.7,0.55);
-    box('sakura',p.x,1.55,p.z+(r<10?0.02:-0.02),0.02,0.62,0.48);
+    let ix=0,iz=0;
+    for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nc=c+dc,nr=r+dr;
+      if(nc<0||nr<0||nc>=maze.cols||nr>=maze.rows) continue;
+      if(maze.cells[nr*maze.cols+nc]===0){ix=dc;iz=dr;break;}
+    }
+    const face=sd/2+0.03;
+    box('cream',p.x+ix*face,1.55,p.z+iz*face,ix?0.04:0.55,0.7,iz?0.04:0.55);
+    box('sakura',p.x+ix*(face+0.025),1.55,p.z+iz*(face+0.025),ix?0.02:0.48,0.62,iz?0.02:0.48);
   }
   // Continuous clear transport lanes, rather than a hazard border on every tile.
   for(const c of [8.8,11.2]) {
-    const p=gd(c,12,maze);box('tape',p.x,0.009,p.z,0.045,0.012,14*sd);
+    const p=gd(c,12,maze);box('tape',p.x,0.014,p.z,0.045,0.01,14*sd);
   }
   const receiving=maze.rooms[0],dispatch=maze.rooms[1];
   for(const room of [receiving,dispatch]) {
@@ -5241,7 +5276,14 @@ function Yp(maze) {
     carton.scale.set(0.45/1.6,0.48/1.6,0.45/1.6);carton.position.y=-0.26/1.6;mesh.add(carton);
     const labelTex=Sp(item.def.short||item.def.name,item.def.accent||0xf3d0d8);textures.push(labelTex);
     const label=Wp(item.def.short||item.def.name,item.def.accent||0xf3d0d8,labelTex);
-    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.28);mesh.add(label);
+    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.36);mesh.add(label);
+    label.traverse(node=>{
+      const mats=node.material?(Array.isArray(node.material)?node.material:[node.material]):[];
+      for(const mat of mats){
+        mat.polygonOffset=true;mat.polygonOffsetFactor=-2;mat.polygonOffsetUnits=-2;
+        if(mat.transparent)mat.depthWrite=false;
+      }
+    });
     mesh.position.set(x,0.5,z);mesh.scale.setScalar(1.6);group.add(mesh);
     return {...item,mesh,taken:false,name:item.def.name,x,z};
   });
@@ -5358,6 +5400,21 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
     lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
+    // Forward look: character heading. Face toward travel before stepping (no moonwalk).
+    const faceTowardTravel=(tx,tz)=>{
+      const travel=Math.hypot(tx,tz);
+      if(travel<1e-4)return {x:0,z:0,yaw:character.getHeading()};
+      const travelYaw=Math.atan2(-tx,-tz);
+      character.setHeading(travelYaw);
+      const facing=character.getHeading();
+      let delta=travelYaw-facing;
+      while(delta>Math.PI)delta-=Math.PI*2;
+      while(delta<-Math.PI)delta+=Math.PI*2;
+      // Turn in place when facing away; otherwise scale pace by alignment.
+      if(Math.abs(delta)>=0.9)return {x:0,z:0,yaw:travelYaw};
+      const align=alignedStep(delta);
+      return {x:tx*align,z:tz*align,yaw:travelYaw};
+    };
     if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
@@ -5366,17 +5423,24 @@ function om({canvas,minimap,onHud,gltf=null}) {
         if(route.length){
           const dx=route[0].x-px,dz=route[0].z-pz,distance=Math.hypot(dx,dz);
           const pace=Math.min(STORAGE_WALK_SPEED,distance/dt);
-          targetX=dx/distance*pace;targetZ=dz/distance*pace;
-          if(!look.x&&!input.lookHoldX)yaw=Sd(yaw,Math.atan2(-dx,-dz),1-Math.exp(-2.3*dt));
+          const faced=faceTowardTravel(dx/distance*pace,dz/distance*pace);
+          targetX=faced.x;targetZ=faced.z;
+          if(!look.x&&!input.lookHoldX)yaw=Sd(yaw,faced.yaw,1-Math.exp(-2.3*dt));
         }
       }
       vx=targetX;vz=targetZ;
     } else {
       const pace=input.sprint?STORAGE_RUN_SPEED:STORAGE_WALK_SPEED;
-      targetX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
-      targetZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
-      vx=X(vx,targetX,16,dt);vz=X(vz,targetZ,16,dt);
-      if(Math.hypot(targetX,targetZ)<0.01&&Math.hypot(vx,vz)<0.025)vx=vz=0;
+      const rawX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
+      const rawZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
+      const faced=faceTowardTravel(rawX,rawZ);
+      targetX=faced.x;targetZ=faced.z;
+      // No residual slide while turning in place — that was reading as a moonwalk.
+      if(Math.hypot(targetX,targetZ)<0.01){vx=vz=0;}
+      else {
+        vx=X(vx,targetX,16,dt);vz=X(vz,targetZ,16,dt);
+        if(Math.hypot(vx,vz)<0.025)vx=vz=0;
+      }
     }
     const oldX=px,oldZ=pz,next=moveStoragePlayer(px,pz,vx*dt,vz*dt,maze);
     px=next.x;pz=next.z;
@@ -5391,7 +5455,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     idleTime=speed<0.08?idleTime+dt:0;
     time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
-      phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
+      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
@@ -5456,12 +5520,14 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
-    sound.unlock();controls.reset();accumulator=0;lastFrame=performance.now();
+    sound.unlock();controls.reset();controls.clearSprint();accumulator=0;lastFrame=performance.now();
     if(phase==='title'||phase==='paused'||phase==='restocking')phase='playing';
     automatic=auto;assisted ||= auto;route=[];autoTarget=null;character.setWave(false);cameraInitial=true;
+    // Leave the title pose: face into the stockroom (yaw), snap so she does not moonwalk on the first step.
+    character.setHeading(yaw,true);
     say(auto?'I will collect the list. You can take over at any time.':'Tea, biscuits, and a little order. Let us begin.',4);emitHud();
   }
   resetPosition();resize();
@@ -5490,8 +5556,8 @@ function om({canvas,minimap,onHud,gltf=null}) {
   emitHud();
   return {
     start:()=>start(false),autoRestock:()=>start(true),pause,
-    resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
-    takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
+    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();character.setHeading(yaw,true);phase='playing';emitHud();}},
+    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();character.setHeading(yaw,true);say('Your turn. I have the list.');emitHud();},
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
@@ -5785,10 +5851,10 @@ function yg() {
                     children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Shift to run · walk up to marked goods to collect`,
+                    children: `Hold Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry`,
+                    children: `Touch: Move and Look pads · hold Run to hurry (release to walk)`,
                   }),
                 ],
               }),
@@ -5987,10 +6053,10 @@ function yg() {
             (0, $.jsx)(`button`, {
               type: `button`,
               className: `absolute right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl border border-paper/15 bg-ink/55 px-4 text-sm font-semibold`,
-              onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchSprint(!0); },
-              onPointerUp: () => n.current?.setTouchSprint(!1),
-              onPointerCancel: () => n.current?.setTouchSprint(!1),
-              onLostPointerCapture: () => n.current?.setTouchSprint(!1),
+              onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchSprint(!0, event.pointerId); },
+              onPointerUp: (event) => n.current?.setTouchSprint(!1, event.pointerId),
+              onPointerCancel: (event) => n.current?.setTouchSprint(!1, event.pointerId),
+              onLostPointerCapture: (event) => n.current?.setTouchSprint(!1, event?.pointerId),
               style: {touchAction:"none",userSelect:"none"},
               children: `Run`,
             }),

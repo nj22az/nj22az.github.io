@@ -284,10 +284,10 @@ function yg() {
                     children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Shift to run · walk up to marked goods to collect`,
+                    children: `Hold Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry`,
+                    children: `Touch: Move and Look pads · hold Run to hurry (release to walk)`,
                   }),
                 ],
               }),
@@ -486,10 +486,10 @@ function yg() {
             (0, $.jsx)(`button`, {
               type: `button`,
               className: `absolute right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl border border-paper/15 bg-ink/55 px-4 text-sm font-semibold`,
-              onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchSprint(!0); },
-              onPointerUp: () => n.current?.setTouchSprint(!1),
-              onPointerCancel: () => n.current?.setTouchSprint(!1),
-              onLostPointerCapture: () => n.current?.setTouchSprint(!1),
+              onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchSprint(!0, event.pointerId); },
+              onPointerUp: (event) => n.current?.setTouchSprint(!1, event.pointerId),
+              onPointerCancel: (event) => n.current?.setTouchSprint(!1, event.pointerId),
+              onLostPointerCapture: (event) => n.current?.setTouchSprint(!1, event?.pointerId),
               style: {touchAction:"none",userSelect:"none"},
               children: `Run`,
             }),
