@@ -1,6 +1,6 @@
-# Sakura Konbini interest — backbar + RE-PS1 examine
+# Sakura Konbini interest — backbar + RE-PS1 examine + linger density
 
-**Status:** Design brief (approved direction). Branch/PR only — never merge without TownQC.
+**Status:** Design brief + first implementation on `main`. Linger-density pass is a follow-up branch/PR — never merge without TownQC.
 **Owner:** KonbiniLab · reports to Johansson Town
 **Canon:** Thuan is the only lead clerk at Sakura. Yuri does not exist (NameClean).
 
@@ -101,7 +101,23 @@ One short lift line per examined good in v1 (product- or Thuan-flavoured, not me
    - Wire shelf Examine → existing `inspect-3d` orbit with **Buy · Put back · Talk to Thuan** if in range.
    - Thin impulse backbar behind Thuan (props list above).
    - No new SKUs; one lift caption string (TalkFun can polish later).
-3. **Defer:** full endcap rebuild, magazine polish, deep TalkFun line set, new economy items.
+3. **Linger density (this pass):** port the photoreal lab's packed-fridge / red-tape / お惣菜-board read into Sakura **without** PointLights or new SKUs. Canvas facings + one standee collider. See v2 below.
+4. **Defer:** full endcap rebuild, magazine polish, deep TalkFun line set, new economy items.
+
+## v2 — linger density (lab → town)
+
+The Grok Konbini lab rebuilt Thuan's shop as a walk-in with packed photographic fridge doors, red floor tape, a cardboard お惣菜 standee and an age plate. Town lighting is cel: `dusk.js` forbids extra PointLights. This pass keeps the *read* and redraws it in cream-and-vermillion canvas.
+
+| Lab move | Town landing | Why this shape |
+|----------|--------------|----------------|
+| Photoreal fridge JPG | `SAKURA_FRIDGE_BACKING` canvas of house-brand cans behind the glass | Fills empty glass from the pavement; real SKUs still sit in front and still deplete. |
+| お惣菜 standee | `SAKURA_STANDEE` at `[-2.20, 2.55]`, yaw `π/2` | Door-left, aisle-facing, clear of magazines/gondolas/Thuan. One new collider. |
+| Red aisle tape | `SAKURA_TAPE` door-aisle + till-approach stripes | Spatial language; no collision. Stops short of the east gondola. |
+| Age plate | `SAKURA_AGE_SIGN` on the beer/cola door | Labels the column a 1988 konbini would. |
+| Bun-case point light | MeshBasic warm strip at the bun warmer | Cel-safe glow, no extra light. |
+| Interior noren | **Not ported** | Automatic door already uses a short valance; a curtain across the opening cut customers in half. |
+
+Lift lines added for the remaining v1 goods: `bun`, `soda`, `bento`.
 
 ## Coordination
 
@@ -119,3 +135,4 @@ One short lift line per examined good in v1 (product- or Thuan-flavoured, not me
 - [x] First implementation lands on its own branch/PR; TownQC before main.
 - [x] Examine of a v1 good orbits in 3D, then Buy or Put back works against existing sakura stock.
 - [x] Backbar reads from the till approach without blocking Thuan’s checkout work.
+- [ ] Linger density (standee, tape, fridge facing, age plate) on its own branch/PR; TownQC before main.

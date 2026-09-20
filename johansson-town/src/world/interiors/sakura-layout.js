@@ -89,6 +89,8 @@ export const SAKURA_LAYOUT={
   rect(-4.02,-3.2,.12,1.53),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
+  // お惣菜 standee, door-left. Measured clear of gondolas, magazines and the door aisle.
+  rect(-2.20,2.55,.70,.20,1.58),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite
@@ -218,3 +220,20 @@ export const SAKURA_BACKBAR=Object.freeze([
   {id:'radio',band:'low',x:6.40,y:.48,z:.55,note:'Shop radio'},
   {id:'batteries',band:'low',x:6.40,y:.42,z:.78,note:'Spare batteries face-out'},
 ]);
+
+/**
+ * Linger dressing from the Konbini lab (photoreal walk-in). Canvas and geometry
+ * only — no PointLights (cel doctrine in dusk.js), no new SKUs.
+ *
+ * Standee sits door-left as you walk in looking −Z, facing the aisle (+X) so the
+ * お惣菜 face is the first thing you read. Tape marks the door aisle and the last
+ * steps to the till, stopping short of the east gondola. Age sign sits on the
+ * beer/cola fridge door, which is the column a 1988 konbini would label.
+ */
+export const SAKURA_STANDEE=Object.freeze({x:-2.20,z:2.55,w:.64,d:.08,h:1.58,yaw:Math.PI/2});
+export const SAKURA_TAPE=Object.freeze([
+ {id:'aisle',x:0,z:.35,w:.055,d:5.6},
+ {id:'till',x:2.95,z:.85,w:1.4,d:.055},
+]);
+export const SAKURA_AGE_SIGN=Object.freeze({x:2.35,y:2.08,z:-3.12});
+export const SAKURA_FRIDGE_BACKING=Object.freeze({x:.395,y:1.13,z:-3.82,w:5.2,h:1.82});

@@ -363,3 +363,52 @@ test('the till backbar places impulse props behind Thuan without new SKUs',async
   assert.ok(backbar>=5,'Backbar meshes are in the room');
  }finally{globalThis.fetch=old;}
 });
+
+test('linger dressing sits door-left, keeps the aisle and adds no SKUs or lights',async()=>{
+ const {SAKURA_LAYOUT,SAKURA_STANDEE,SAKURA_TAPE,SAKURA_AGE_SIGN,SAKURA_SHELVES,SAKURA_BACKBAR}=await import('../src/world/interiors/sakura-layout.js');
+ const {circleHitsRect}=await import('../physics.js');
+ const {SHOP_STOCK}=await import('../src/commerce/shop-stock.js');
+ const hits=(x,z,r)=>SAKURA_LAYOUT.colliders.filter(c=>circleHitsRect(x,z,r,c));
+ // The standee collider is the only thing at its own point; magazines and gondolas miss it.
+ const self=hits(SAKURA_STANDEE.x,SAKURA_STANDEE.z,.01);
+ assert.equal(self.length,1,'Standee has a collider');
+ assert.ok(Math.abs(self[0].x-SAKURA_STANDEE.x)<.001);
+ assert.equal(hits(0,3.2,.32).length,0,'Door spawn still walks');
+ assert.equal(hits(0,2.0,.32).length,0,'Door aisle still walks');
+ assert.ok(SAKURA_STANDEE.x<-1.6,'Standee is door-left, not in the centre aisle');
+ assert.ok(SAKURA_STANDEE.x<SAKURA_LAYOUT.staff[0],'Standee is nowhere near Thuan');
+ for(const strip of SAKURA_TAPE){
+  assert.ok(strip.w<.2||strip.d<.2,'Tape is a floor stripe, not a barrier');
+ }
+ assert.ok(SAKURA_AGE_SIGN.z<-3,'Age sign is on the fridge glass');
+ assert.ok(SAKURA_SHELVES.beer,'Beer column exists for the age sign to label');
+ const stockIds=SHOP_STOCK.map(s=>s.id);
+ assert.equal(stockIds.length,new Set(stockIds).size);
+ assert.ok(!stockIds.includes('standee'));
+ assert.ok(SAKURA_BACKBAR.every(p=>!stockIds.includes(p.id)||p.id==='batteries'||p.id==='postcard-stand'));
+ globalThis.navigator??={vibrate(){}};installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ const old=fetch;const {readFile}=await import('node:fs/promises');
+ globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
+ try{
+  const THREE=await import('../vendor/three.module.js');
+  const {buildSakuraInterior}=await import('../src/world/interiors/sakura-interior.js?linger='+Math.random());
+  const room=new THREE.Group(),hits=[];
+  buildSakuraInterior({room,reg:(o,label)=>hits.push(label),action(){},exit(){}});
+  assert.ok(hits.includes('Read the specials board'));
+  assert.ok(hits.includes('Read the age restriction'));
+  assert.ok(hits.includes('Look over the till backbar'),'Backbar linger kept');
+  const names=[];room.traverse(o=>{if(o.name)names.push(o.name);});
+  assert.ok(names.includes('Sakura specials standee'));
+  assert.ok(names.includes('Sakura aisle tape aisle'));
+  assert.ok(names.includes('Sakura fridge facing'));
+  assert.ok(names.includes('Sakura bun warmer glow'));
+  room.traverse(o=>{if(o.isPointLight)assert.equal(o.parent?.name,'forbidden','Linger added a PointLight');});
+ }finally{globalThis.fetch=old;}
+});
+
+test('v1 examine goods all have a TalkFun lift line',async()=>{
+ const src=await import('node:fs/promises').then(fs=>fs.readFile(new URL('../activities.js',import.meta.url),'utf8'));
+ for(const id of ['coffee','rice','soda','bento','postcard','notebook','battery','bun']){
+  assert.match(src,new RegExp(id+":'"),'Missing lift line for '+id);
+ }
+});
