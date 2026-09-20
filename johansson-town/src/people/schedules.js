@@ -15,7 +15,7 @@ import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
-import {alignedStep} from './facing.js';
+import {alignedStep,FACE_ALIGN} from './facing.js';
 export const DIALOGUE={
  Thuan:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -89,7 +89,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  function faceStep(g,dx,dz,dt){
   const heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
   g.rotation.y+=THREE.MathUtils.clamp(delta,-2.6*dt,2.6*dt);
-  return Math.abs(delta)<.35;
+  return Math.abs(delta)<FACE_ALIGN;
  }
  function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is

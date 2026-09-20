@@ -1,4 +1,5 @@
 import {createRoomWalk,atDestination} from './room-walk.js';
+import {snapFaceTravel} from './facing.js';
 import {residentPlan} from './social.js';
 import {createTownActivities} from './town-activities.js';
 
@@ -32,7 +33,10 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
   if(!departing){const entrance=getEntrance();departing=leaving.sort((a,b)=>Math.hypot(a.g.position.x-entrance[0],a.g.position.z-entrance[2])-Math.hypot(b.g.position.x-entrance[0],b.g.position.z-entrance[2]))[0]||null;}
   for(const person of leaving){
    interactions.release(person,minutes);person.g.userData.roomTransition=true;person.g.userData.activity='leaving work';
-   if(person===departing&&walk(person,getEntrance(),dt))restore(person);
+   if(person===departing){
+    if(!person.g.userData._facedExit){snapFaceTravel(person.g,getEntrance());person.g.userData._facedExit=true;}
+    if(walk(person,getEntrance(),dt)){delete person.g.userData._facedExit;restore(person);}
+   }else delete person.g.userData._facedExit;
   }
   const staff=world.people.filter(p=>p.profile.workSite===site.id),layout=getLayout();
   for(const worker of staff){
@@ -45,6 +49,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
    const g=worker.g;onBorrow(worker,minutes);borrowed.set(worker,{parent:g.parent,position:g.position.clone(),rotation:g.quaternion.clone(),inside:g.userData.hit.inside,stand,arriving:!alreadyInside});
    parent.add(g);g.position.set(...(alreadyInside?stand:entrance));g.userData.hit.inside=true;g.userData.inWorkplace=site.id;g.userData.indoors='work';g.userData.place=site.id;g.visible=true;
    if(alreadyInside)g.rotation.y=0;
+   else snapFaceTravel(g,stand);
   }
   for(const [person,saved] of borrowed){
    if(!working(person))continue;

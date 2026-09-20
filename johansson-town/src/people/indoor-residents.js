@@ -3,6 +3,7 @@ import {RAMEN_GUEST_SEATS,RAMEN_THUAN_SPOT,RAMEN_LAYOUT} from '../world/interior
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
+import {snapFaceTravel} from './facing.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
@@ -44,8 +45,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     else{
      const stand=seat.stand||seat.position;
      g.position.set(...entrance);
-     const dx=stand[0]-entrance[0],dz=stand[2]-entrance[2];
-     g.rotation.set(0,Math.hypot(dx,dz)>.001?Math.atan2(-dx,-dz):seat.yaw,0);
+     snapFaceTravel(g,stand);
     }
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
@@ -53,13 +53,16 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    const seat=saved.seat;
    // Staff can be at a break chair or carrying an order when their shift ends.
    // Let the service finish standing/returning before the exit walker takes over.
-   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=saved.phase==='seated'&&Number.isFinite(seat.height)?'standing':'leaving';
+   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p)){
+    saved.phase=saved.phase==='seated'&&Number.isFinite(seat.height)?'standing':'leaving';
+    if(saved.phase==='leaving')snapFaceTravel(g,entrance);
+   }
    if(saved.phase!=='seated'){
     g.userData.roomTransition=true;
     for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray','shopGoods','shopReach','shopping'])delete g.userData[key];
     g.userData.activity=['standing','leaving'].includes(saved.phase)?'leaving '+place:'walking to '+(seat.staff?'work':'a seat');
     if(saved.phase==='standing'){
-     saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0)saved.phase='leaving';
+     saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0){snapFaceTravel(g,entrance);saved.phase='leaving';}
     }else if(saved.phase==='leaving'){
      if(walker.move(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
