@@ -4360,6 +4360,59 @@ function md(e, t, n, r) {
   }
   return i;
 }
+
+const HARBOUR_GUESTS = [
+  { id: 'reiko', name: 'Reiko', accent: 0xc45c78, lines: [
+    'Oh — Thuan’s back room! It smells like tea and cardboard.',
+    'Don’t mind me. I’m only admiring the biscuit aisle.',
+    'Tell Sakura the harbour says hello.',
+  ]},
+  { id: 'kenji', name: 'Kenji', accent: 0x3a6f8a, lines: [
+    'Need a hand with a carton? I’ve got workshop gloves.',
+    'Thuan runs a neat stockroom. Neater than my bench.',
+    'I’ll stay off your list. Promise.',
+  ]},
+  { id: 'aya', name: 'Aya', accent: 0xd4a06a, lines: [
+    'I ducked in for quiet. The street is chatty today.',
+    'Those notebooks look soft. Soft for paper, I mean.',
+    'Go on — I’ll wave when you pass with the tea.',
+  ]},
+  { id: 'nao', name: 'Nao', accent: 0x6b8f71, lines: [
+    'Izakaya tip: never stack soy over the pink curtain.',
+    'Thuan would notice. She notices everything.',
+    'I’m only browsing. Not stealing the onigiri. Mostly.',
+  ]},
+];
+
+/** Place one guest off every shortest restock path (~1/3 of seeds). Guests yield (no collision). */
+function placeHarbourGuest(maze, random) {
+  if (random() > 0.36) return null;
+  const critical = new Set();
+  const mark = path => { for (const p of path) critical.add(`${p.c},${p.r}`); };
+  mark(storageRoute(maze, maze.start, maze.exit));
+  for (const item of maze.items) {
+    if (!item.needed) continue;
+    mark(storageRoute(maze, maze.start, item));
+    mark(storageRoute(maze, item, maze.exit));
+  }
+  const candidates = [];
+  for (let r = 1; r < maze.rows - 1; r++) for (let c = 1; c < maze.cols - 1; c++) {
+    if (maze.cells[r * maze.cols + c] !== 0) continue;
+    const key = `${c},${r}`;
+    if (critical.has(key)) continue;
+    if (maze.items.some(item => item.c === c && item.r === r)) continue;
+    const nearShelf = [[1,0],[-1,0],[0,1],[0,-1]].some(([dc, dr]) => {
+      const rr = r + dr, cc = c + dc;
+      return rr >= 0 && cc >= 0 && rr < maze.rows && cc < maze.cols && maze.cells[rr * maze.cols + cc] === 2;
+    });
+    if (nearShelf) candidates.push({ c, r });
+  }
+  if (!candidates.length) return null;
+  const spot = candidates[Math.floor(random() * candidates.length)];
+  const who = HARBOUR_GUESTS[Math.floor(random() * HARBOUR_GUESTS.length)];
+  return { c: spot.c, r: spot.r, id: who.id, name: who.name, accent: who.accent, lines: who.lines.slice() };
+}
+
 // A warehouse footprint with a receiving bay, dispatch bay and four stock
 // departments. Shelf banks change orientation and position with the daily seed;
 // the central spine and cross-aisles remain clear in every layout.
@@ -4418,7 +4471,9 @@ function hd(seed = 1988, required = 6) {
     used.add(`${position.c},${position.r}`);
     return { ...position, id: def.id, def, needed: needed.has(def.id) };
   });
-  return { cols, rows, cells, rooms, shelves, start, exit, items, seed };
+  const guest = placeHarbourGuest({ cols, rows, cells, rooms, shelves, start, exit, items, seed }, random);
+  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest };
+
 }
 
 // Breadth-first routing is shared by automatic restocking and regression tests.
@@ -4606,8 +4661,9 @@ function kd() {
       e.delete(t.code);
     },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false;
-      r = i = 0; Object.assign(n, {moveX:0,moveY:0,sprint:false,lookHoldX:0,lookHoldY:0});
+      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false; c = 0;
+      r = i = 0;
+      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
     _ = (e) => {
       (e.pointerType !== `mouse` || e.button === 0 || e.button === 2) &&
@@ -4722,7 +4778,8 @@ function kd() {
       l = Od(e, t, 0.08);
     },
     setTouchLook: (e, t) => {
-      ((r += e), (i += t));
+      // Touch look pad: amplify small flicks so the pad feels as quick as a mouse flick.
+      ((r += e * 1.15), (i += t * 1.15));
     },
     setTouchSprint: (e) => {
       u = e;
@@ -5061,13 +5118,33 @@ function ep(e,t=0,n=0){return new co({color:e,emissive:t,emissiveIntensity:n})}f
 function Yp(maze) {
   const group = new ur();
   group.name = 'Sakura stockroom';
+  function createHarbourGuestMesh(guest) {
+    const root = new ur();
+    root.name = 'harbour-guest-' + (guest.id || 'friend');
+    const skin = new co({color:0xf0c9b0});
+    const coat = new co({color:guest.accent || 0xc45c78});
+    const hair = new co({color:0x3a2f2a});
+    const body = new q(new Ha(0.42, 0.78, 0.28), coat);
+    body.position.y = 0.95; root.add(body);
+    const head = new q(new Ha(0.28, 0.28, 0.28), skin);
+    head.position.y = 1.48; root.add(head);
+    const bangs = new q(new Ha(0.3, 0.1, 0.3), hair);
+    bangs.position.y = 1.62; root.add(bangs);
+    const legs = new q(new Ha(0.36, 0.55, 0.24), new co({color:0x4a5556}));
+    legs.position.y = 0.35; root.add(legs);
+    const pin = new q(new Ha(0.06, 0.06, 0.04), new co({color:0xf3d0d8}));
+    pin.position.set(0.16, 1.1, 0.16); root.add(pin);
+    return { mesh: root };
+  }
+
   const textures = [], batches = new Map();
   const boxGeometry = new Ha(1, 1, 1), matrix = new lr();
   const materials = {
-    wall: new co({color:0xd7d5ca}), steel: new co({color:0x506467}),
-    shelf: new co({color:0xb1b8ad}), wood: new co({color:0x9b7952}),
-    tape: new co({color:0xe4ba48}), dark: new co({color:0x374244}),
-    lamp: new co({color:0xfbf0d3,emissive:0xfbf0d3,emissiveIntensity:0.6}),
+    wall: new co({color:0xe9e2d4}), steel: new co({color:0x5a7074}),
+    shelf: new co({color:0xc4c9bc}), wood: new co({color:0xa9845c}),
+    tape: new co({color:0xe8c86a}), dark: new co({color:0x4a5556}),
+    lamp: new co({color:0xfff3dc,emissive:0xfff0d2,emissiveIntensity:0.72}),
+    sakura: new co({color:0xf3d0d8}), cream: new co({color:0xf7f1e6}),
   };
   const productMaps = Ap();
   for (const def of ad) materials[def.id] = new co({map:productMaps.get(def.id)});
@@ -5076,13 +5153,13 @@ function Yp(maze) {
     batches.get(material).push([x,y,z,w,h,d,rotation]);
   }
   const floorTexture = Np((ctx,size) => {
-    ctx.fillStyle = '#969a92'; ctx.fillRect(0,0,size,size);
+    ctx.fillStyle = '#a8a899'; ctx.fillRect(0,0,size,size);
     const random = ud(90);
     for(let i=0;i<900;i++) {
       ctx.fillStyle = i%2 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.04)';
       ctx.fillRect(random()*size,random()*size,2+random()*5,2);
     }
-    ctx.strokeStyle = '#7f867f';ctx.lineWidth=2;ctx.strokeRect(1,1,size-2,size-2);
+    ctx.strokeStyle = '#8e9488';ctx.lineWidth=2;ctx.strokeRect(1,1,size-2,size-2);
   },256);
   floorTexture.repeat.set(maze.cols/2,maze.rows/2);textures.push(floorTexture);
   const floor = new q(new qa(maze.cols*sd,maze.rows*sd),new co({map:floorTexture}));
@@ -5117,6 +5194,17 @@ function Yp(maze) {
     const signTexture=Sp(od[bank.zone].label,od[bank.zone].color);textures.push(signTexture);
     const sign=Wp(od[bank.zone].label,od[bank.zone].color,signTexture);
     sign.position.set(centre.x,2.3,centre.z-depth/2-0.025);sign.rotation.y=Math.PI;group.add(sign);
+    // Warm cream + sakura end-cap plaques (late-Shōwa konbini stockroom charm).
+    box('cream',centre.x-width/2-0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+    box('sakura',centre.x+width/2+0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+  }
+  // Soft wall posters — cream cards with sakura trim, never horror.
+  const posterSpots=[[2,4],[18,4],[2,16],[18,16],[10,1]];
+  for(const [c,r] of posterSpots){
+    if(maze.cells[r*maze.cols+c]!==1) continue;
+    const p=gd(c,r,maze);
+    box('cream',p.x,1.55,p.z,0.08,0.7,0.55);
+    box('sakura',p.x,1.55,p.z+(r<10?0.02:-0.02),0.02,0.62,0.48);
   }
   // Continuous clear transport lanes, rather than a hazard border on every tile.
   for(const c of [8.8,11.2]) {
@@ -5151,6 +5239,9 @@ function Yp(maze) {
     const x=p.x+direction[0]*0.42,z=p.z+direction[1]*0.42;
     const carton = new q(boxGeometry,materials.wood);
     carton.scale.set(0.45/1.6,0.48/1.6,0.45/1.6);carton.position.y=-0.26/1.6;mesh.add(carton);
+    const labelTex=Sp(item.def.short||item.def.name,item.def.accent||0xf3d0d8);textures.push(labelTex);
+    const label=Wp(item.def.short||item.def.name,item.def.accent||0xf3d0d8,labelTex);
+    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.28);mesh.add(label);
     mesh.position.set(x,0.5,z);mesh.scale.setScalar(1.6);group.add(mesh);
     return {...item,mesh,taken:false,name:item.def.name,x,z};
   });
@@ -5163,11 +5254,20 @@ function Yp(maze) {
     });
     mesh.instanceMatrix.needsUpdate=true;group.add(mesh);
   }
-  group.add(new Jo(0xfff4df,0x65746a,1.7),new ms(0xffffff,0.55));
-  const key=new ps(0xffedca,1.15);key.position.set(-6,14,8);group.add(key);
-  const fill=new ps(0xb4d5db,0.45);fill.position.set(8,9,-6);group.add(fill);
-  const motes=new da(new qa(0.035,0.045),new Oi({color:0xd3c7ab,transparent:true,opacity:0.12,depthWrite:false}),28);group.add(motes);
-  return {group,items,exit:{...exitPosition,mesh:curtain},lanterns,motes,dispose(){
+  group.add(new Jo(0xfff6e8,0x7a8476,1.85),new ms(0xfff8ef,0.48));
+  const key=new ps(0xffefd4,1.05);key.position.set(-6,14,8);group.add(key);
+  const fill=new ps(0xf0d8dc,0.42);fill.position.set(8,9,-6);group.add(fill);
+  const soft=new ps(0xfff5e6,0.28);soft.position.set(0,6,0);group.add(soft);
+  const motes=new da(new qa(0.035,0.045),new Oi({color:0xe8dcc4,transparent:true,opacity:0.14,depthWrite:false}),28);group.add(motes);
+  let guest=null;
+  if(maze.guest){
+    const gp=gd(maze.guest.c,maze.guest.r,maze);
+    guest=createHarbourGuestMesh(maze.guest);
+    guest.mesh.position.set(gp.x,0,gp.z);
+    group.add(guest.mesh);
+    guest={...maze.guest,x:gp.x,z:gp.z,mesh:guest.mesh};
+  }
+  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,dispose(){
     const geometries=new Set(),mats=new Set();
     group.traverse(node=>{if(node instanceof q){geometries.add(node.geometry);for(const material of Array.isArray(node.material)?node.material:[node.material])mats.add(material);}});
     geometries.forEach(value=>value.dispose());mats.forEach(value=>value.dispose());textures.forEach(value=>value.dispose());
@@ -5182,8 +5282,8 @@ function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,1.75));
   renderer.outputColorSpace=yt;renderer.toneMapping=4;renderer.toneMappingExposure=1.1;
-  const scene=new yr();scene.background=new K(0x929b90);scene.fog=new vr(0x929b90,0.012);
-  const camera=new os(52,1,0.06,80);scene.add(camera);
+  const scene=new yr();scene.background=new K(0xb8b4a6);scene.fog=new vr(0xc4bfb0,0.0085);
+  const camera=new os(50,1,0.06,80);scene.add(camera);
   const controls=kd();controls.attach(canvas);
   const rawSound=id();
   // Audio restrictions must never prevent starting, walking or collecting.
@@ -5200,6 +5300,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let reaction='',reactionTime=0,route=[],autoTarget=null,autoWait=0;
   let collectedBefore=0,explored=new Set(),lastPickup='';
   let simTime=0,cameraInitial=true;
+  let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
   const dust=Array.from({length:28},(_,i)=>({x:(i*7%29)-14,z:(i*11%29)-14,y:0.6+(i%8)*0.2}));
   function say(text,seconds=3) {reaction=text;reactionTime=seconds;}
@@ -5208,7 +5309,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     px=start.x;pz=start.z;vx=vz=speed=0;yaw=Math.PI;pitch=-0.36;
     time=0;simTime=0;idleTime=0;automatic=false;assisted=false;autoWait=0;route=[];autoTarget=null;
     explored=new Set();collectedBefore=0;lastPickup='';reaction='';reactionTime=0;
-    cameraInitial=true;character.group.position.set(px,0,pz);character.setHeading(yaw,true);
+    cameraInitial=true;boomLength=3.55;lookIdle=0.5;guestLine=0;guestCooldown=0;guestPrompt='';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
     character.setCelebrate(false);character.setWave(true);controls.reset();reveal();
   }
   function reveal() {
@@ -5221,7 +5322,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
       readyToStock:collected===required.length,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
-      explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length});
+      explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
     const from=_d(px,pz,maze),remaining=world.items.filter(item=>item.needed&&!item.taken);
@@ -5251,8 +5352,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const look=controls.consumeLook();
     const input=controls.actions;
     if(automatic&&(Math.hypot(input.moveX,input.moveY)>0.12)){automatic=false;route=[];say('Your turn. I have the list.');}
-    yaw-=look.x*0.0038+input.lookHoldX*2.1*dt;
-    pitch=Math.max(-0.85,Math.min(-0.06,pitch-look.y*0.0029-input.lookHoldY*1.5*dt));
+    // Orbit look — slightly snappier stick feel, pitch clamped like a soft third-person shoulder cam.
+    yaw-=look.x*0.0045+input.lookHoldX*2.35*dt;
+    pitch=Math.max(-0.72,Math.min(-0.08,pitch-look.y*0.0033-input.lookHoldY*1.65*dt));
+    const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
+    lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
     if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
@@ -5279,36 +5383,80 @@ function om({canvas,minimap,onHud,gltf=null}) {
     // Animation uses the distance actually travelled, not the requested speed.
     vx=(px-oldX)/dt;vz=(pz-oldZ)/dt;speed=Math.hypot(vx,vz);
     if(speed>0.08)character.setHeading(Math.atan2(-vx,-vz));
+    // Snap camera behind when walking without active look input (shoulder recenter).
+    if(!automatic&&speed>0.35&&lookIdle>0.28){
+      yaw=Sd(yaw,Math.atan2(-vx,-vz),1-Math.exp(-3.4*dt));
+    }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
-    time+=dt;reveal();collect();
+    time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
       phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
   }
+  function talkToGuest(dt) {
+    guestCooldown=Math.max(0,guestCooldown-dt);
+    guestPrompt='';
+    const guest=world.guest;if(!guest||phase!=='playing')return;
+    const near=Math.hypot(guest.x-px,guest.z-pz)<1.15;
+    if(!near){guestLine=0;return;}
+    guestPrompt='Talk with '+guest.name;
+    if(guestCooldown>0)return;
+    // Auto-chat on linger — short TalkFun lines, then yield so routes stay clear.
+    if(idleTime>0.45||near){
+      const line=guest.lines[Math.min(guestLine,guest.lines.length-1)];
+      say(guest.name+': '+line,3.4);
+      guestLine=Math.min(guestLine+1,guest.lines.length);
+      guestCooldown=guestLine>=guest.lines.length?8:2.6;
+    }
+  }
   function updateCamera(dt) {
-    let cameraYaw=yaw,cameraPitch=pitch,boom=3.8;
-    if(phase==='title'){cameraYaw=-Math.PI/2;cameraPitch=-0.14;boom=3.45;character.setHeading(-Math.PI/2,true);}
+    let cameraYaw=yaw,cameraPitch=pitch,boom=boomLength;
+    if(phase==='title'){cameraYaw=-Math.PI/2;cameraPitch=-0.14;boom=3.35;character.setHeading(-Math.PI/2,true);}
     if(phase==='won'){cameraYaw=yaw+Math.sin(simTime*0.32)*0.65;cameraPitch=-0.22;}
-    focus.set(px,0.96,pz);
+    focus.set(px,0.98,pz);
     const dx=Math.sin(cameraYaw)*Math.cos(cameraPitch)*boom;
     const dz=Math.cos(cameraYaw)*Math.cos(cameraPitch)*boom;
     const dy=-Math.sin(cameraPitch)*boom;
-    const distance=Math.hypot(dx,dy,dz);
+    const distance=Math.hypot(dx,dy,dz)||1;
     const safe=xd(focus.x,focus.y,focus.z,dx,dy,dz,distance,maze);
     desired.set(focus.x+dx/distance*safe,focus.y+dy/distance*safe,focus.z+dz/distance*safe);
     if(cameraInitial){cameraPosition.copy(desired);cameraInitial=false;}
-    else cameraPosition.lerp(desired,1-Math.exp(-11*dt));
+    else cameraPosition.lerp(desired,1-Math.exp(-7.5*dt)); // softer follow
     const offset=cameraPosition.clone().sub(focus),length=offset.length();
     const clipped=xd(focus.x,focus.y,focus.z,offset.x,offset.y,offset.z,length,maze);
     if(clipped<length)cameraPosition.copy(focus).addScaledVector(offset.normalize(),clipped);
     camera.position.copy(cameraPosition);camera.lookAt(focus);
+    // Soft FOV breath with boom zoom (third-person, not FPS head-bob).
+    const targetFov=48+(boomLength-2.6)*1.1;
+    camera.fov+=(targetFov-camera.fov)*(1-Math.exp(-6*dt));
+    camera.updateProjectionMatrix();
+  }
+  function onWheel(event){
+    if(phase!=='playing'&&phase!=='title')return;
+    event.preventDefault();
+    boomLength=Math.max(2.55,Math.min(5.1,boomLength+Math.sign(event.deltaY)*0.18));
+  }
+  let pinchStart=0;
+  function onTouchStart(event){
+    if(event.touches?.length===2){
+      const a=event.touches[0],b=event.touches[1];
+      pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    }
+  }
+  function onTouchMove(event){
+    if(event.touches?.length!==2||!pinchStart)return;
+    const a=event.touches[0],b=event.touches[1];
+    const dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    const delta=(pinchStart-dist)*0.01;
+    pinchStart=dist;
+    boomLength=Math.max(2.55,Math.min(5.1,boomLength+delta));
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;controls.reset();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
     sound.unlock();controls.reset();accumulator=0;lastFrame=performance.now();
@@ -5319,6 +5467,9 @@ function om({canvas,minimap,onHud,gltf=null}) {
   resetPosition();resize();
   const observer=new ResizeObserver(resize);observer.observe(canvas);
   window.addEventListener('resize',resize);window.addEventListener('blur',pause);document.addEventListener('visibilitychange',visibility);
+  canvas.addEventListener('wheel',onWheel,{passive:false});
+  canvas.addEventListener('touchstart',onTouchStart,{passive:true});
+  canvas.addEventListener('touchmove',onTouchMove,{passive:true});
   renderer.setAnimationLoop(()=>{
     if(disposed)return;
     const now=performance.now(),dt=Math.min((now-lastFrame)/1000,0.1);lastFrame=now;
@@ -5344,7 +5495,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
-    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
+    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }
 
@@ -5456,7 +5607,7 @@ var sm=e=>{let t,n=new Set,r=(e,r)=>{let i=typeof e==`function`?e(t):e;if(!Objec
         r = e.clientY - p.current.y;
       ((p.current.x = e.clientX),
         (p.current.y = e.clientY),
-        n.current?.setTouchLook(t * 1.6, r * 1.6),
+        n.current?.setTouchLook(t * 2.15, r * 2.15),
         h((e) => ({
           x: Math.max(-1, Math.min(1, e.x + t / 48)),
           y: Math.max(-1, Math.min(1, e.y + r / 48)),
@@ -5481,6 +5632,7 @@ var sm=e=>{let t,n=new Set,r=(e,r)=>{let i=typeof e==`function`?e(t):e;if(!Objec
         },
       }),
       S && r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.reaction}),
+      S && r.guestPrompt && !r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.guestPrompt}),
       S && r.autoRestocking && (0,$.jsx)('button', {className:'storage-handover',onClick:()=>n.current?.takeControl(),children:'Thuan is restocking · Take control'}),
       i === 'error' && (0,$.jsxs)('div', {className:'storage-error',role:'alert',children:[
         (0,$.jsx)('p',{children:'This browser could not start the 3D stockroom. Open it in a browser with WebGL enabled, then reload.'}),
@@ -5593,7 +5745,7 @@ var sm=e=>{let t,n=new Set,r=(e,r)=>{let i=typeof e==`function`?e(t):e;if(!Objec
                 className: `storage-help mt-4 space-y-1.5 text-sm text-paper-dim`,
                 children: [
                   (0, $.jsx)(`li`, {
-                    children: `WASD / arrows to walk · drag to look`,
+                    children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
                     children: `Shift to run · walk up to marked goods to collect`,
