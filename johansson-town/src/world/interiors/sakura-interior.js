@@ -145,6 +145,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
  anchor(layout.exit,'Exit to street',exit);
+ // Back-room cartons: open Thuan's Storage restock (navigate, not iframe).
+ const stock=layout.stockroom;anchor([stock[0],1.15,stock[2]],'Open stockroom restock',()=>action('storage-restock'));
  // Stock cartons carry the same generated Sakura label as delivered cartons.
  const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [-4.6,-3.7,-2.8,-1.9]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0x66715c,1.2);room.add(fill);

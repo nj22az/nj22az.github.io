@@ -1,3 +1,28 @@
+
+const STORAGE_WON_KEY = 'johansson-town:storage-won';
+function storageBridgeParams() {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    return {
+      fromTown: q.get('from') === 'johansson-town',
+      mode: q.get('mode') === 'auto' ? 'auto' : q.get('mode') === 'play' ? 'play' : null,
+      day: Number.isFinite(Number(q.get('day'))) ? Number(q.get('day')) : null,
+    };
+  } catch {
+    return { fromTown: false, mode: null, day: null };
+  }
+}
+function writeStorageWonHandshake({ day, assisted }) {
+  try {
+    localStorage.setItem(
+      STORAGE_WON_KEY,
+      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, t: Date.now() }),
+    );
+  } catch {}
+}
+function returnToJohanssonTown() {
+  window.location.href = '/johansson-town/';
+}
 function yg() {
   let e = (0, C.useRef)(null),
     t = (0, C.useRef)(null),
@@ -32,6 +57,12 @@ function yg() {
                 onHud: (e) => {
                   let t = hm.getState();
                   (t.setHud(e), e.phase === `won` && !e.assisted && t.saveBest(e.time));
+                  if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
+                    window.__storageWonPosted = true;
+                    const bridge = storageBridgeParams();
+                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted });
+                    returnToJohanssonTown();
+                  }
                 },
               });
               if (o) {
@@ -39,6 +70,12 @@ function yg() {
                 return;
               }
               ((n.current = t), a(`ready`));
+              const bridge = storageBridgeParams();
+              if (bridge.fromTown && bridge.mode === `auto`) {
+                queueMicrotask(() => n.current?.autoRestock());
+              } else if (bridge.fromTown && bridge.mode === `play`) {
+                queueMicrotask(() => n.current?.start());
+              }
             } catch (e) {
               console.error(`Stockroom failed to boot`, e);
               a(`error`);
