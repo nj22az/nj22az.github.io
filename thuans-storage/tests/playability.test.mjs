@@ -51,8 +51,8 @@ test('real Thuan skin animates both legs through wave, walk, run and idle',()=>{
 test('keyboard, touch and focus loss feed and clear movement',()=>{
   const input=api.kd();input.attach(env.canvas());
   env.window.dispatch('keydown',{code:'KeyW'});input.consumeLook();assert.equal(input.actions.moveY,1);
-  env.window.dispatch('keyup',{code:'KeyW'});input.setTouchMove(1,1);input.setTouchSprint(true);input.setTouchMoonwalk(true);input.consumeLook();assert.ok(input.actions.moveX>0.6);assert.equal(input.actions.sprint,true);assert.equal(input.actions.moonwalk,true);
-  env.window.dispatch('blur');input.consumeLook();assert.equal(input.actions.moveX,0);assert.equal(input.actions.moveY,0);assert.equal(input.actions.sprint,false);assert.equal(input.actions.moonwalk,false);
+  env.window.dispatch('keyup',{code:'KeyW'});input.setTouchMove(1,1);input.setTouchSprint(true);input.consumeLook();assert.ok(input.actions.moveX>0.6);assert.equal(input.actions.sprint,true);
+  env.window.dispatch('blur');input.consumeLook();assert.equal(input.actions.moveX,0);assert.equal(input.actions.moveY,0);assert.equal(input.actions.sprint,false);
   assert.doesNotThrow(()=>input.tryPointerLock(env.canvas()));input.detach();
 });
 
@@ -136,13 +136,7 @@ test('alignedStep matches town WalkFix; start does not moonwalk into the stockro
   let hud;const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:v=>{hud=v;}});
   // Title poses Thuan sideways; starting play must snap facing into the room before steps.
   env.advance(0.2);
-  const before=env.rendered().character;
-  const headingBefore=before.rotation.y;
   game.start();
-  const actorHeading=(()=>{
-    // Character group rotation includes the mesh forward offset (+π).
-    return env.rendered().character.rotation.y;
-  })();
   // After start, advance a short moment with no input — she should stay put (not slide).
   const origin=env.rendered().character.position.clone();
   env.advance(0.5);
@@ -150,7 +144,6 @@ test('alignedStep matches town WalkFix; start does not moonwalk into the stockro
   // Auto-restock: first beats may turn in place; displacement should not be opposite facing.
   game.autoRestock();
   const startPos=env.rendered().character.position.clone();
-  const startFacing=env.rendered().character.rotation.y;
   env.advance(0.35);
   const moved=env.rendered().character.position.clone().sub(startPos);
   const dist=Math.hypot(moved.x,moved.z);
@@ -166,60 +159,18 @@ test('alignedStep matches town WalkFix; start does not moonwalk into the stockro
   game.dispose();
 });
 
-test('optional moonwalk faces opposite travel; default and auto stay face-before-step',()=>{
-  const input=api.kd();input.attach(env.canvas());
-  input.setTouchMoonwalk(true,3);input.consumeLook();assert.equal(input.actions.moonwalk,true);
-  input.setTouchMoonwalk(false,3);input.consumeLook();assert.equal(input.actions.moonwalk,false,'Moonwalk release clears');
-  env.window.dispatch('keydown',{code:'KeyM'});input.consumeLook();assert.equal(input.actions.moonwalk,true);
-  env.window.dispatch('keyup',{code:'KeyM'});input.consumeLook();assert.equal(input.actions.moonwalk,false);
-  input.detach();
-
-  let hud;const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:v=>{hud=v;}});
-  game.start();
-  // Give face-before-step a beat to align, then measure a full second of travel.
-  game.setTouchMove(0,1);env.advance(0.35);
+test('holding reverse walks a straight return path without the camera rotating the input',()=>{
+  const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud(){}});
+  game.restart(1988);game.start();game.setTouchMove(0,1);env.advance(2);
+  game.setTouchMove(0,-1);env.advance(0.5);
   const from=env.rendered().character.position.clone();
-  env.advance(1);
-  const moved=env.rendered().character.position.clone().sub(from);
-  const dist=Math.hypot(moved.x,moved.z);
-  assert.ok(dist>1.0,'should walk forward without moonwalk');
-  {
-    const travelYaw=Math.atan2(-moved.x,-moved.z);
-    const faceYaw=env.rendered().character.rotation.y - Math.PI;
-    let delta=travelYaw-faceYaw;
-    while(delta>Math.PI)delta-=Math.PI*2;
-    while(delta<-Math.PI)delta+=Math.PI*2;
-    assert.ok(Math.abs(delta)<Math.PI/2,`default should face travel: delta=${delta}`);
-  }
-  game.setTouchMoonwalk(true);game.setTouchMove(0,1);env.advance(0.2);
-  const mwFrom=env.rendered().character.position.clone();
-  env.advance(1);
-  const mwMoved=env.rendered().character.position.clone().sub(mwFrom);
-  const mwDist=Math.hypot(mwMoved.x,mwMoved.z);
-  assert.ok(mwDist>1.0,'moonwalk still translates');
-  {
-    const travelYaw=Math.atan2(-mwMoved.x,-mwMoved.z);
-    const faceYaw=env.rendered().character.rotation.y - Math.PI;
-    let delta=travelYaw-faceYaw;
-    while(delta>Math.PI)delta-=Math.PI*2;
-    while(delta<-Math.PI)delta+=Math.PI*2;
-    assert.ok(Math.abs(Math.abs(delta)-Math.PI)<0.6,`moonwalk should face opposite travel: delta=${delta}`);
-  }
-  game.pause();game.resume();
-  game.setTouchMoonwalk(true);
-  game.autoRestock();
-  const autoFrom=env.rendered().character.position.clone();
   env.advance(0.8);
-  const autoMoved=env.rendered().character.position.clone().sub(autoFrom);
-  const autoDist=Math.hypot(autoMoved.x,autoMoved.z);
-  if(autoDist>0.08){
-    const travelYaw=Math.atan2(-autoMoved.x,-autoMoved.z);
-    const faceYaw=env.rendered().character.rotation.y - Math.PI;
-    let delta=travelYaw-faceYaw;
-    while(delta>Math.PI)delta-=Math.PI*2;
-    while(delta<-Math.PI)delta+=Math.PI*2;
-    assert.ok(Math.abs(delta)<Math.PI/2,`auto restock must not moonwalk: delta=${delta}`);
-  }
+  const to=env.rendered().character.position.clone(),delta=to.clone().sub(from);
+  assert.ok(delta.z < -1.2,`reverse should progress back down the aisle: ${delta.z}`);
+  assert.ok(Math.abs(delta.x)<0.1,`camera steered the held reverse input sideways: ${delta.x}`);
+  const yaw=env.rendered().character.rotation.y-Math.PI;
+  assert.ok((-Math.sin(yaw)*delta.x-Math.cos(yaw)*delta.z)>delta.length()*0.8,'Thuan must face actual travel');
+  game.pause();game.resume();env.advance(0.1);
+  assert.ok(Math.abs(env.rendered().character.rotation.y-Math.PI-yaw)<0.05,'resume must preserve her facing');
   game.dispose();
 });
-
