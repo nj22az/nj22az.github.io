@@ -4,6 +4,7 @@ import {homeRoutine,homeLayoutFor} from './home-life.js';
 import {householdNames} from './households.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {createRoomWalk,atDestination} from './room-walk.js';
+import {snapFaceTravel} from './facing.js';
 import {createSleepCover} from './sleep-cover.js';
 import {residentPersonality} from './resident-personalities.js';
 
@@ -27,8 +28,14 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
    const alreadyHome=g.userData.indoors==='home'&&!g.userData.justArrived;
    onBorrow(person,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside};parent.add(g);
    cover=createSleepCover(parent,layout,residentPersonality(person.profile.name).top);
-   g.position.set(...layout.door);g.rotation.set(0,0,0);g.userData.inHome=true;g.userData.indoors='home';g.userData.hit.inside=true;g.visible=true;
-   if(alreadyHome){sleepBlend=homeRoutine(person.profile,minutes).id==='sleep'?1:0;g.position.set(...layout.bedside);rest=['sleep','wake','bedtime'].includes(homeRoutine(person.profile,minutes).id)?1:0;}
+   g.position.set(...layout.door);g.userData.inHome=true;g.userData.indoors='home';g.userData.hit.inside=true;g.visible=true;
+   if(alreadyHome){sleepBlend=homeRoutine(person.profile,minutes).id==='sleep'?1:0;g.position.set(...layout.bedside);rest=['sleep','wake','bedtime'].includes(homeRoutine(person.profile,minutes).id)?1:0;g.rotation.set(0,0,0);}
+   else{
+    // Face the first indoor waypoint (bed or table) — never start aimed out the door.
+    const first=homeRoutine(person.profile,minutes);
+    const aim=['sleep','wake','bedtime'].includes(first.id)?layout.bedside:layout.table;
+    snapFaceTravel(g,aim);
+   }
   }
   const routine=homeRoutine(person.profile,minutes),bedtime=plan.place==='home'&&['sleep','wake','bedtime'].includes(routine.id);
   g.userData.place=site.id;g.userData.activity=plan.place==='home'?routine.activity:'leaving home';

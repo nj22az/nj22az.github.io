@@ -27,8 +27,31 @@ export function occupied(data={},moving=false){
  return OCCUPIED_POSES.includes(data.socialPose);
 }
 
-/** The yaw that puts `from` face-on to `to`, in the convention the town walks in. */
+/**
+ * Character forward look (town convention).
+ *
+ * `entity.rotation.y === 0` faces world −Z. The same heading is used by outdoor
+ * `faceStep`, indoor `room-walk`, and every room threshold: walk only after the
+ * body faces the travel direction so nobody moonwalks backward into a room.
+ */
 export const faceYaw=(from,to)=>Math.atan2(from.x-to.x,from.z-to.z);
+
+/** Heading from point A toward B. Accepts `{x,z}`, `[x,z]`, or `[x,y,z]`. */
+export function travelYaw(from,to){
+ const fx=from.x??from[0],fz=from.z??(from.length>2?from[2]:from[1]);
+ const tx=to.x??to[0],tz=to.z??(to.length>2?to[2]:to[1]);
+ return Math.atan2(-(tx-fx),-(tz-fz));
+}
+
+/** Snap body yaw to face `to` immediately (threshold spawn / turn-in-place). */
+export function snapFaceTravel(entity,to){
+ const tx=to.x??to[0],tz=to.z??(to.length>2?to[2]:to[1]);
+ const dx=tx-entity.position.x,dz=tz-entity.position.z;
+ if(Math.hypot(dx,dz)>.001)entity.rotation.y=Math.atan2(-dx,-dz);
+}
+
+/** Radians: outdoor faceStep and indoor room-walk refuse to translate beyond this. */
+export const FACE_ALIGN=.35;
 
 /** One damped step of a turn, taking the short way round. */
 export function turnToward(current,target,dt,rate=6){
