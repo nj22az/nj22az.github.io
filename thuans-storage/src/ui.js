@@ -143,7 +143,7 @@ function yg() {
         r = e.clientY - p.current.y;
       ((p.current.x = e.clientX),
         (p.current.y = e.clientY),
-        n.current?.setTouchLook(t * 1.6, r * 1.6),
+        n.current?.setTouchLook(t * 2.15, r * 2.15),
         h((e) => ({
           x: Math.max(-1, Math.min(1, e.x + t / 48)),
           y: Math.max(-1, Math.min(1, e.y + r / 48)),
@@ -168,6 +168,7 @@ function yg() {
         },
       }),
       S && r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.reaction}),
+      S && r.guestPrompt && !r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.guestPrompt}),
       S && r.autoRestocking && (0,$.jsx)('button', {className:'storage-handover',onClick:()=>n.current?.takeControl(),children:'Thuan is restocking · Take control'}),
       i === 'error' && (0,$.jsxs)('div', {className:'storage-error',role:'alert',children:[
         (0,$.jsx)('p',{children:'This browser could not start the 3D stockroom. Open it in a browser with WebGL enabled, then reload.'}),
@@ -280,7 +281,7 @@ function yg() {
                 className: `storage-help mt-4 space-y-1.5 text-sm text-paper-dim`,
                 children: [
                   (0, $.jsx)(`li`, {
-                    children: `WASD / arrows to walk · drag to look`,
+                    children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
                     children: `Shift to run · walk up to marked goods to collect`,

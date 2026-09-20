@@ -3,13 +3,33 @@
 function Yp(maze) {
   const group = new ur();
   group.name = 'Sakura stockroom';
+  function createHarbourGuestMesh(guest) {
+    const root = new ur();
+    root.name = 'harbour-guest-' + (guest.id || 'friend');
+    const skin = new co({color:0xf0c9b0});
+    const coat = new co({color:guest.accent || 0xc45c78});
+    const hair = new co({color:0x3a2f2a});
+    const body = new q(new Ha(0.42, 0.78, 0.28), coat);
+    body.position.y = 0.95; root.add(body);
+    const head = new q(new Ha(0.28, 0.28, 0.28), skin);
+    head.position.y = 1.48; root.add(head);
+    const bangs = new q(new Ha(0.3, 0.1, 0.3), hair);
+    bangs.position.y = 1.62; root.add(bangs);
+    const legs = new q(new Ha(0.36, 0.55, 0.24), new co({color:0x4a5556}));
+    legs.position.y = 0.35; root.add(legs);
+    const pin = new q(new Ha(0.06, 0.06, 0.04), new co({color:0xf3d0d8}));
+    pin.position.set(0.16, 1.1, 0.16); root.add(pin);
+    return { mesh: root };
+  }
+
   const textures = [], batches = new Map();
   const boxGeometry = new Ha(1, 1, 1), matrix = new lr();
   const materials = {
-    wall: new co({color:0xd7d5ca}), steel: new co({color:0x506467}),
-    shelf: new co({color:0xb1b8ad}), wood: new co({color:0x9b7952}),
-    tape: new co({color:0xe4ba48}), dark: new co({color:0x374244}),
-    lamp: new co({color:0xfbf0d3,emissive:0xfbf0d3,emissiveIntensity:0.6}),
+    wall: new co({color:0xe9e2d4}), steel: new co({color:0x5a7074}),
+    shelf: new co({color:0xc4c9bc}), wood: new co({color:0xa9845c}),
+    tape: new co({color:0xe8c86a}), dark: new co({color:0x4a5556}),
+    lamp: new co({color:0xfff3dc,emissive:0xfff0d2,emissiveIntensity:0.72}),
+    sakura: new co({color:0xf3d0d8}), cream: new co({color:0xf7f1e6}),
   };
   const productMaps = Ap();
   for (const def of ad) materials[def.id] = new co({map:productMaps.get(def.id)});
@@ -18,13 +38,13 @@ function Yp(maze) {
     batches.get(material).push([x,y,z,w,h,d,rotation]);
   }
   const floorTexture = Np((ctx,size) => {
-    ctx.fillStyle = '#969a92'; ctx.fillRect(0,0,size,size);
+    ctx.fillStyle = '#a8a899'; ctx.fillRect(0,0,size,size);
     const random = ud(90);
     for(let i=0;i<900;i++) {
       ctx.fillStyle = i%2 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.04)';
       ctx.fillRect(random()*size,random()*size,2+random()*5,2);
     }
-    ctx.strokeStyle = '#7f867f';ctx.lineWidth=2;ctx.strokeRect(1,1,size-2,size-2);
+    ctx.strokeStyle = '#8e9488';ctx.lineWidth=2;ctx.strokeRect(1,1,size-2,size-2);
   },256);
   floorTexture.repeat.set(maze.cols/2,maze.rows/2);textures.push(floorTexture);
   const floor = new q(new qa(maze.cols*sd,maze.rows*sd),new co({map:floorTexture}));
@@ -59,6 +79,17 @@ function Yp(maze) {
     const signTexture=Sp(od[bank.zone].label,od[bank.zone].color);textures.push(signTexture);
     const sign=Wp(od[bank.zone].label,od[bank.zone].color,signTexture);
     sign.position.set(centre.x,2.3,centre.z-depth/2-0.025);sign.rotation.y=Math.PI;group.add(sign);
+    // Warm cream + sakura end-cap plaques (late-Shōwa konbini stockroom charm).
+    box('cream',centre.x-width/2-0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+    box('sakura',centre.x+width/2+0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+  }
+  // Soft wall posters — cream cards with sakura trim, never horror.
+  const posterSpots=[[2,4],[18,4],[2,16],[18,16],[10,1]];
+  for(const [c,r] of posterSpots){
+    if(maze.cells[r*maze.cols+c]!==1) continue;
+    const p=gd(c,r,maze);
+    box('cream',p.x,1.55,p.z,0.08,0.7,0.55);
+    box('sakura',p.x,1.55,p.z+(r<10?0.02:-0.02),0.02,0.62,0.48);
   }
   // Continuous clear transport lanes, rather than a hazard border on every tile.
   for(const c of [8.8,11.2]) {
@@ -93,6 +124,9 @@ function Yp(maze) {
     const x=p.x+direction[0]*0.42,z=p.z+direction[1]*0.42;
     const carton = new q(boxGeometry,materials.wood);
     carton.scale.set(0.45/1.6,0.48/1.6,0.45/1.6);carton.position.y=-0.26/1.6;mesh.add(carton);
+    const labelTex=Sp(item.def.short||item.def.name,item.def.accent||0xf3d0d8);textures.push(labelTex);
+    const label=Wp(item.def.short||item.def.name,item.def.accent||0xf3d0d8,labelTex);
+    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.28);mesh.add(label);
     mesh.position.set(x,0.5,z);mesh.scale.setScalar(1.6);group.add(mesh);
     return {...item,mesh,taken:false,name:item.def.name,x,z};
   });
@@ -105,11 +139,20 @@ function Yp(maze) {
     });
     mesh.instanceMatrix.needsUpdate=true;group.add(mesh);
   }
-  group.add(new Jo(0xfff4df,0x65746a,1.7),new ms(0xffffff,0.55));
-  const key=new ps(0xffedca,1.15);key.position.set(-6,14,8);group.add(key);
-  const fill=new ps(0xb4d5db,0.45);fill.position.set(8,9,-6);group.add(fill);
-  const motes=new da(new qa(0.035,0.045),new Oi({color:0xd3c7ab,transparent:true,opacity:0.12,depthWrite:false}),28);group.add(motes);
-  return {group,items,exit:{...exitPosition,mesh:curtain},lanterns,motes,dispose(){
+  group.add(new Jo(0xfff6e8,0x7a8476,1.85),new ms(0xfff8ef,0.48));
+  const key=new ps(0xffefd4,1.05);key.position.set(-6,14,8);group.add(key);
+  const fill=new ps(0xf0d8dc,0.42);fill.position.set(8,9,-6);group.add(fill);
+  const soft=new ps(0xfff5e6,0.28);soft.position.set(0,6,0);group.add(soft);
+  const motes=new da(new qa(0.035,0.045),new Oi({color:0xe8dcc4,transparent:true,opacity:0.14,depthWrite:false}),28);group.add(motes);
+  let guest=null;
+  if(maze.guest){
+    const gp=gd(maze.guest.c,maze.guest.r,maze);
+    guest=createHarbourGuestMesh(maze.guest);
+    guest.mesh.position.set(gp.x,0,gp.z);
+    group.add(guest.mesh);
+    guest={...maze.guest,x:gp.x,z:gp.z,mesh:guest.mesh};
+  }
+  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,dispose(){
     const geometries=new Set(),mats=new Set();
     group.traverse(node=>{if(node instanceof q){geometries.add(node.geometry);for(const material of Array.isArray(node.material)?node.material:[node.material])mats.add(material);}});
     geometries.forEach(value=>value.dispose());mats.forEach(value=>value.dispose());textures.forEach(value=>value.dispose());

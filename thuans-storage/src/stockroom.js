@@ -133,6 +133,59 @@ function md(e, t, n, r) {
   }
   return i;
 }
+
+const HARBOUR_GUESTS = [
+  { id: 'reiko', name: 'Reiko', accent: 0xc45c78, lines: [
+    'Oh — Thuan’s back room! It smells like tea and cardboard.',
+    'Don’t mind me. I’m only admiring the biscuit aisle.',
+    'Tell Sakura the harbour says hello.',
+  ]},
+  { id: 'kenji', name: 'Kenji', accent: 0x3a6f8a, lines: [
+    'Need a hand with a carton? I’ve got workshop gloves.',
+    'Thuan runs a neat stockroom. Neater than my bench.',
+    'I’ll stay off your list. Promise.',
+  ]},
+  { id: 'aya', name: 'Aya', accent: 0xd4a06a, lines: [
+    'I ducked in for quiet. The street is chatty today.',
+    'Those notebooks look soft. Soft for paper, I mean.',
+    'Go on — I’ll wave when you pass with the tea.',
+  ]},
+  { id: 'nao', name: 'Nao', accent: 0x6b8f71, lines: [
+    'Izakaya tip: never stack soy over the pink curtain.',
+    'Thuan would notice. She notices everything.',
+    'I’m only browsing. Not stealing the onigiri. Mostly.',
+  ]},
+];
+
+/** Place one guest off every shortest restock path (~1/3 of seeds). Guests yield (no collision). */
+function placeHarbourGuest(maze, random) {
+  if (random() > 0.36) return null;
+  const critical = new Set();
+  const mark = path => { for (const p of path) critical.add(`${p.c},${p.r}`); };
+  mark(storageRoute(maze, maze.start, maze.exit));
+  for (const item of maze.items) {
+    if (!item.needed) continue;
+    mark(storageRoute(maze, maze.start, item));
+    mark(storageRoute(maze, item, maze.exit));
+  }
+  const candidates = [];
+  for (let r = 1; r < maze.rows - 1; r++) for (let c = 1; c < maze.cols - 1; c++) {
+    if (maze.cells[r * maze.cols + c] !== 0) continue;
+    const key = `${c},${r}`;
+    if (critical.has(key)) continue;
+    if (maze.items.some(item => item.c === c && item.r === r)) continue;
+    const nearShelf = [[1,0],[-1,0],[0,1],[0,-1]].some(([dc, dr]) => {
+      const rr = r + dr, cc = c + dc;
+      return rr >= 0 && cc >= 0 && rr < maze.rows && cc < maze.cols && maze.cells[rr * maze.cols + cc] === 2;
+    });
+    if (nearShelf) candidates.push({ c, r });
+  }
+  if (!candidates.length) return null;
+  const spot = candidates[Math.floor(random() * candidates.length)];
+  const who = HARBOUR_GUESTS[Math.floor(random() * HARBOUR_GUESTS.length)];
+  return { c: spot.c, r: spot.r, id: who.id, name: who.name, accent: who.accent, lines: who.lines.slice() };
+}
+
 // A warehouse footprint with a receiving bay, dispatch bay and four stock
 // departments. Shelf banks change orientation and position with the daily seed;
 // the central spine and cross-aisles remain clear in every layout.
@@ -191,7 +244,9 @@ function hd(seed = 1988, required = 6) {
     used.add(`${position.c},${position.r}`);
     return { ...position, id: def.id, def, needed: needed.has(def.id) };
   });
-  return { cols, rows, cells, rooms, shelves, start, exit, items, seed };
+  const guest = placeHarbourGuest({ cols, rows, cells, rooms, shelves, start, exit, items, seed }, random);
+  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest };
+
 }
 
 // Breadth-first routing is shared by automatic restocking and regression tests.
@@ -379,8 +434,9 @@ function kd() {
       e.delete(t.code);
     },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false;
-      r = i = 0; Object.assign(n, {moveX:0,moveY:0,sprint:false,lookHoldX:0,lookHoldY:0});
+      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false; c = 0;
+      r = i = 0;
+      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
     _ = (e) => {
       (e.pointerType !== `mouse` || e.button === 0 || e.button === 2) &&
@@ -495,7 +551,8 @@ function kd() {
       l = Od(e, t, 0.08);
     },
     setTouchLook: (e, t) => {
-      ((r += e), (i += t));
+      // Touch look pad: amplify small flicks so the pad feels as quick as a mouse flick.
+      ((r += e * 1.15), (i += t * 1.15));
     },
     setTouchSprint: (e) => {
       u = e;
