@@ -10,6 +10,7 @@ import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';
+import {onParkWalkway,PARK_WALKWAY} from './park-walkway-layout.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -72,11 +73,11 @@ export const LANDINGS=[];
 const RIM=[[1,0],[-1,0],[0,1],[0,-1],[.7071,.7071],[.7071,-.7071],[-.7071,.7071],[-.7071,-.7071]];
 export function routeAt(x,z,r=0){
  const strict=regionAt(x,z,r);
- if(strict||!(r>0))return strict;
+ if(strict||!(r>0))return strict===EAST_LAWN&&onParkWalkway(x,z)?PARK_WALKWAY:strict;
  const here=regionAt(x,z,0);
  if(!here)return null;
  for(const [dx,dz] of RIM)if(!regionAt(x+dx*r,z+dz*r,0))return null;
- return here;
+ return here===EAST_LAWN&&onParkWalkway(x,z)?PARK_WALKWAY:here;
 }
 function regionAt(x,z,r=0){
  if(FULL_TOWN.active)return fullContains(x,z,r,parkHeight)?{id:'supplied-town',surface:'stone'}:null;
