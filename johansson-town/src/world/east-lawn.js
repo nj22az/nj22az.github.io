@@ -3,6 +3,8 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
+import {buildParkWalkway} from './park-walkway.js';
+import {onParkWalkway,PARK_LAMP_PLACEMENTS} from './park-walkway-layout.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -173,6 +175,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
   if(x>park.minX&&x<park.maxX&&z>park.minZ&&z<park.maxZ)continue;
   if(Math.abs(z+36)<2.2||Math.abs(z+18)<2.2)continue;
   if(wall.x-x>7&&treeZ-z>7)continue;
+  if(onParkWalkway(x,z,1.1)||PARK_LAMP_PLACEMENTS.some(([lx,lz])=>Math.hypot(x-lx,z-lz)<1.3))continue;
   clumps.push({x,z,size:.5+random()*.42,tint:Math.floor(random()*CLUMP_LEAVES.length)});
  }
  // A white base so the park's leaf texture, once it arrives, is the colour rather than
@@ -207,6 +210,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
  const garden=buildEastGarden({parent:group,colliders,shadows,heightAt,register,onAction});
+ const walkway=buildParkWalkway({parent:group,colliders,shadows,heightAt});
  /**
   * Lay the supplied park's own grass and leaf over the green, so the lawn and the mound
   * it runs up to are one field rather than two parks meeting along an edge. The model
@@ -252,5 +256,6 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
   }
   return true;
  };
- return {group,lawn,shore,shrubs,garden,useParkGreenery,tick:garden.tick};
+ const tick=(time,minutes=1002)=>{garden.tick(time,minutes);walkway.update(minutes);};
+ return {group,lawn,shore,shrubs,garden,walkway,useParkGreenery,tick};
 }

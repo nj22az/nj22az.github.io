@@ -64,6 +64,10 @@ Do:
 - `homes.js` `updateHomes` — nameplates
 - `izakaya.js` hourly + `minato-facade.js` `lit(open, day, lantern)` — akachochin
 - `harbour.js` — existing globe emissives and (already present) night PointLights
+- `east-lawn.js` / `park-walkway.js` — thirteen instanced park posts and a 1.8 m
+  paved route from the street to the bench and around the pond. `lanternGlow` drives
+  the heads, a faint paving emission, and terrain-following warm ground spill.
+  Seven meshes, no new PointLights or shadow maps; the spill stops at the seawall.
 - `sakura-shop.js` hourly + `sakura-interior.js` — existing strip lights, room fill
   and supplied fluorescent meshes; tubes get their own materials so stock does not glow
 - Clock-driven meshes use their current materials after cel conversion. Minato's
