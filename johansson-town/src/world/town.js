@@ -25,6 +25,7 @@ import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
 import {createBusRun} from './bus.js';
 import {windowGlow} from '../render/dusk.js';
+import {isOceanMaterial,tickOcean} from './ocean.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -165,7 +166,7 @@ function addStreetLife(world,options,factory){
   return {interactions,lights};
 }
 
-function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
+function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Peninsula surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
 export function createTown(options){
   const mode=configureTownMode(options.townMode);izakayaPlot();
@@ -235,7 +236,7 @@ export function createTown(options){
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);
-  if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
+  if(sea?.material&&!isOceanMaterial(sea.material)){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
   // Reused every frame rather than rebuilt: the doors only need to know where people
   // are, and this runs at frame rate.
@@ -257,7 +258,10 @@ export function createTown(options){
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day,minutes);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
-    if(sea){const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
+    if(sea){
+      if(isOceanMaterial(sea.material))tickOcean(time);
+      else{const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
+    }
   };
   world.resources=factory.resources;
   world.quality={
