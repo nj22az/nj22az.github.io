@@ -97,7 +97,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
       const align=alignedStep(delta);
       return {x:tx*align,z:tz*align,yaw:travelYaw};
     };
+    // Optional Moonwalk is player-only; auto restock always uses face-before-step.
+    const moonwalking=!automatic&&!!input.moonwalk;
     if(automatic) {
+      if(input.moonwalk)controls.clearMoonwalk();
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
         if(!route.length)chooseRoute();
@@ -115,8 +118,15 @@ function om({canvas,minimap,onHud,gltf=null}) {
       const pace=input.sprint?STORAGE_RUN_SPEED:STORAGE_WALK_SPEED;
       const rawX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
       const rawZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
-      const faced=faceTowardTravel(rawX,rawZ);
-      targetX=faced.x;targetZ=faced.z;
+      if(moonwalking){
+        // Classic moonwalk: translate while facing opposite of travel (toward the camera).
+        targetX=rawX;targetZ=rawZ;
+        const travel=Math.hypot(rawX,rawZ);
+        if(travel>1e-4)character.setHeading(Math.atan2(-rawX,-rawZ)+Math.PI);
+      } else {
+        const faced=faceTowardTravel(rawX,rawZ);
+        targetX=faced.x;targetZ=faced.z;
+      }
       // No residual slide while turning in place — that was reading as a moonwalk.
       if(Math.hypot(targetX,targetZ)<0.01){vx=vz=0;}
       else {
@@ -128,7 +138,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
     px=next.x;pz=next.z;
     // Animation uses the distance actually travelled, not the requested speed.
     vx=(px-oldX)/dt;vz=(pz-oldZ)/dt;speed=Math.hypot(vx,vz);
-    if(speed>0.08)character.setHeading(Math.atan2(-vx,-vz));
+    if(speed>0.08){
+      const travelYaw=Math.atan2(-vx,-vz);
+      character.setHeading(moonwalking?travelYaw+Math.PI:travelYaw);
+    }
     // Snap camera behind when walking without active look input (shoulder recenter).
     if(!automatic&&speed>0.35&&lookIdle>0.28){
       yaw=Sd(yaw,Math.atan2(-vx,-vz),1-Math.exp(-3.4*dt));
@@ -137,7 +150,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     idleTime=speed<0.08?idleTime+dt:0;
     time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
-      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();releasePointer();
+      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();controls.clearMoonwalk();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
@@ -202,10 +215,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();controls.clearMoonwalk();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
-    sound.unlock();controls.reset();controls.clearSprint();accumulator=0;lastFrame=performance.now();
+    sound.unlock();controls.reset();controls.clearSprint();controls.clearMoonwalk();accumulator=0;lastFrame=performance.now();
     if(phase==='title'||phase==='paused'||phase==='restocking')phase='playing';
     automatic=auto;assisted ||= auto;route=[];autoTarget=null;character.setWave(false);cameraInitial=true;
     // Leave the title pose: face into the stockroom (yaw), snap so she does not moonwalk on the first step.
@@ -238,11 +251,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
   emitHud();
   return {
     start:()=>start(false),autoRestock:()=>start(true),pause,
-    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();character.setHeading(yaw,true);phase='playing';emitHud();}},
-    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();character.setHeading(yaw,true);say('Your turn. I have the list.');emitHud();},
-    restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
+    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();controls.clearMoonwalk();character.setHeading(yaw,true);phase='playing';emitHud();}},
+    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();controls.clearMoonwalk();character.setHeading(yaw,true);say('Your turn. I have the list.');emitHud();},
+    restart(seed){sound.unlock();controls.reset();controls.clearSprint();controls.clearMoonwalk();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
-    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
+    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:(value,pointerId)=>controls.setTouchSprint(value,pointerId),setTouchMoonwalk:(value,pointerId)=>controls.setTouchMoonwalk(value,pointerId),requestLock:()=>controls.tryPointerLock(canvas),
     dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }

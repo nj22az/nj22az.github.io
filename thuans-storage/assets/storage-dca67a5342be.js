@@ -4623,6 +4623,7 @@ var Dd = new Set([
   `ShiftRight`,
   `Space`,
   `KeyR`,
+  `KeyM`,
 ]);
 /** Pace scale when facing is not yet aligned with travel (WalkFix). Full forward, zero backward. */
 function alignedStep(angle) {
@@ -4645,6 +4646,7 @@ function kd() {
       lookHoldX: 0,
       lookHoldY: 0,
       sprint: !1,
+      moonwalk: !1,
       pause: !1,
     },
     r = 0,
@@ -4656,6 +4658,8 @@ function kd() {
     l = { x: 0, y: 0 },
     u = !1,
     sprintPointerId = null,
+    moonwalkHeld = !1,
+    moonwalkPointerId = null,
     d = null,
     f = [],
     p = (n) => (t ? t.includes(n) : e.has(n)),
@@ -4670,10 +4674,15 @@ function kd() {
       sprintPointerId = null;
       n.sprint = false;
     },
+    clearMoonwalk = () => {
+      moonwalkHeld = false;
+      moonwalkPointerId = null;
+      n.moonwalk = false;
+    },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; a = false; c = 0;
+      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; moonwalkHeld = false; moonwalkPointerId = null; a = false; c = 0;
       r = i = 0;
-      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
+      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,moonwalk:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
     _ = (e) => {
       (e.pointerType !== `mouse` || e.button === 0 || e.button === 2) &&
@@ -4703,6 +4712,7 @@ function kd() {
     },
     onSprintPointerEnd = (ev) => {
       if (sprintPointerId != null && ev.pointerId === sprintPointerId) clearSprint();
+      if (moonwalkPointerId != null && ev.pointerId === moonwalkPointerId) clearMoonwalk();
     },
     b = (e) => {
       ((d = e),
@@ -4767,12 +4777,15 @@ function kd() {
         (n.lookHoldX = Math.max(-1, Math.min(1, r))),
         (n.lookHoldY = Math.max(-1, Math.min(1, i))),
         // Hold-to-run only: Shift, touch Run button, or gamepad shoulder — never stick magnitude.
-        (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o));
+        (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o),
+        // Optional fun moonwalk: hold KeyM or Moonwalk button — never default locomotion.
+        (n.moonwalk = p(`KeyM`) || moonwalkHeld));
     };
   return {
     actions: n,
     reset: g,
     clearSprint,
+    clearMoonwalk,
     attach: b,
     detach: () => {
       for (let e of f) e();
@@ -4806,6 +4819,14 @@ function kd() {
         if (pointerId != null) sprintPointerId = pointerId;
       } else {
         clearSprint();
+      }
+    },
+    setTouchMoonwalk: (pressed, pointerId = null) => {
+      if (pressed) {
+        moonwalkHeld = true;
+        if (pointerId != null) moonwalkPointerId = pointerId;
+      } else {
+        clearMoonwalk();
       }
     },
     tryPointerLock: (canvas) => {
@@ -5415,7 +5436,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
       const align=alignedStep(delta);
       return {x:tx*align,z:tz*align,yaw:travelYaw};
     };
+    // Optional Moonwalk is player-only; auto restock always uses face-before-step.
+    const moonwalking=!automatic&&!!input.moonwalk;
     if(automatic) {
+      if(input.moonwalk)controls.clearMoonwalk();
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
         if(!route.length)chooseRoute();
@@ -5433,8 +5457,15 @@ function om({canvas,minimap,onHud,gltf=null}) {
       const pace=input.sprint?STORAGE_RUN_SPEED:STORAGE_WALK_SPEED;
       const rawX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
       const rawZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
-      const faced=faceTowardTravel(rawX,rawZ);
-      targetX=faced.x;targetZ=faced.z;
+      if(moonwalking){
+        // Classic moonwalk: translate while facing opposite of travel (toward the camera).
+        targetX=rawX;targetZ=rawZ;
+        const travel=Math.hypot(rawX,rawZ);
+        if(travel>1e-4)character.setHeading(Math.atan2(-rawX,-rawZ)+Math.PI);
+      } else {
+        const faced=faceTowardTravel(rawX,rawZ);
+        targetX=faced.x;targetZ=faced.z;
+      }
       // No residual slide while turning in place — that was reading as a moonwalk.
       if(Math.hypot(targetX,targetZ)<0.01){vx=vz=0;}
       else {
@@ -5446,7 +5477,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
     px=next.x;pz=next.z;
     // Animation uses the distance actually travelled, not the requested speed.
     vx=(px-oldX)/dt;vz=(pz-oldZ)/dt;speed=Math.hypot(vx,vz);
-    if(speed>0.08)character.setHeading(Math.atan2(-vx,-vz));
+    if(speed>0.08){
+      const travelYaw=Math.atan2(-vx,-vz);
+      character.setHeading(moonwalking?travelYaw+Math.PI:travelYaw);
+    }
     // Snap camera behind when walking without active look input (shoulder recenter).
     if(!automatic&&speed>0.35&&lookIdle>0.28){
       yaw=Sd(yaw,Math.atan2(-vx,-vz),1-Math.exp(-3.4*dt));
@@ -5455,7 +5489,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     idleTime=speed<0.08?idleTime+dt:0;
     time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
-      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();releasePointer();
+      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();controls.clearMoonwalk();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
@@ -5520,10 +5554,10 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();controls.clearMoonwalk();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
-    sound.unlock();controls.reset();controls.clearSprint();accumulator=0;lastFrame=performance.now();
+    sound.unlock();controls.reset();controls.clearSprint();controls.clearMoonwalk();accumulator=0;lastFrame=performance.now();
     if(phase==='title'||phase==='paused'||phase==='restocking')phase='playing';
     automatic=auto;assisted ||= auto;route=[];autoTarget=null;character.setWave(false);cameraInitial=true;
     // Leave the title pose: face into the stockroom (yaw), snap so she does not moonwalk on the first step.
@@ -5556,11 +5590,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
   emitHud();
   return {
     start:()=>start(false),autoRestock:()=>start(true),pause,
-    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();character.setHeading(yaw,true);phase='playing';emitHud();}},
-    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();character.setHeading(yaw,true);say('Your turn. I have the list.');emitHud();},
-    restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
+    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();controls.clearMoonwalk();character.setHeading(yaw,true);phase='playing';emitHud();}},
+    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();controls.clearMoonwalk();character.setHeading(yaw,true);say('Your turn. I have the list.');emitHud();},
+    restart(seed){sound.unlock();controls.reset();controls.clearSprint();controls.clearMoonwalk();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
-    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
+    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:(value,pointerId)=>controls.setTouchSprint(value,pointerId),setTouchMoonwalk:(value,pointerId)=>controls.setTouchMoonwalk(value,pointerId),requestLock:()=>controls.tryPointerLock(canvas),
     dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }
@@ -5851,10 +5885,10 @@ function yg() {
                     children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Hold Shift to run · walk up to marked goods to collect`,
+                    children: `Hold Shift to run · hold M or Moonwalk for a backwards glide`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry (release to walk)`,
+                    children: `Touch: Move and Look pads · hold Run to hurry · optional Moonwalk`,
                   }),
                 ],
               }),
@@ -6011,6 +6045,19 @@ function yg() {
           className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 hidden size-11 -translate-x-1/2 items-center justify-center rounded-2xl border border-paper/12 bg-ink/70 text-paper sm:flex`,
           onClick: () => n.current?.pause(),
           children: (0, $.jsx)(A, { className: `size-4` }),
+        }),
+      S &&
+        !r.autoRestocking &&
+        (0, $.jsx)(`button`, {
+          type: `button`,
+          "aria-label": `Moonwalk`,
+          className: `absolute z-20 h-11 min-w-[6.5rem] rounded-2xl border border-paper/12 bg-transparent px-3 text-sm font-semibold text-paper/80 hover:bg-paper/8 ${o ? `right-[7.25rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))]` : `right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))]`}`,
+          onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchMoonwalk(!0, event.pointerId); },
+          onPointerUp: (event) => n.current?.setTouchMoonwalk(!1, event.pointerId),
+          onPointerCancel: (event) => n.current?.setTouchMoonwalk(!1, event.pointerId),
+          onLostPointerCapture: (event) => n.current?.setTouchMoonwalk(!1, event?.pointerId),
+          style: {touchAction:"none",userSelect:"none"},
+          children: `Moonwalk`,
         }),
       o &&
         S &&

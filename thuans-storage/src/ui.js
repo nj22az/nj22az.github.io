@@ -284,10 +284,10 @@ function yg() {
                     children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Hold Shift to run · walk up to marked goods to collect`,
+                    children: `Hold Shift to run · hold M or Moonwalk for a backwards glide`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry (release to walk)`,
+                    children: `Touch: Move and Look pads · hold Run to hurry · optional Moonwalk`,
                   }),
                 ],
               }),
@@ -444,6 +444,19 @@ function yg() {
           className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 hidden size-11 -translate-x-1/2 items-center justify-center rounded-2xl border border-paper/12 bg-ink/70 text-paper sm:flex`,
           onClick: () => n.current?.pause(),
           children: (0, $.jsx)(A, { className: `size-4` }),
+        }),
+      S &&
+        !r.autoRestocking &&
+        (0, $.jsx)(`button`, {
+          type: `button`,
+          "aria-label": `Moonwalk`,
+          className: `absolute z-20 h-11 min-w-[6.5rem] rounded-2xl border border-paper/12 bg-transparent px-3 text-sm font-semibold text-paper/80 hover:bg-paper/8 ${o ? `right-[7.25rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))]` : `right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))]`}`,
+          onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchMoonwalk(!0, event.pointerId); },
+          onPointerUp: (event) => n.current?.setTouchMoonwalk(!1, event.pointerId),
+          onPointerCancel: (event) => n.current?.setTouchMoonwalk(!1, event.pointerId),
+          onLostPointerCapture: (event) => n.current?.setTouchMoonwalk(!1, event?.pointerId),
+          style: {touchAction:"none",userSelect:"none"},
+          children: `Moonwalk`,
         }),
       o &&
         S &&

@@ -396,6 +396,7 @@ var Dd = new Set([
   `ShiftRight`,
   `Space`,
   `KeyR`,
+  `KeyM`,
 ]);
 /** Pace scale when facing is not yet aligned with travel (WalkFix). Full forward, zero backward. */
 function alignedStep(angle) {
@@ -418,6 +419,7 @@ function kd() {
       lookHoldX: 0,
       lookHoldY: 0,
       sprint: !1,
+      moonwalk: !1,
       pause: !1,
     },
     r = 0,
@@ -429,6 +431,8 @@ function kd() {
     l = { x: 0, y: 0 },
     u = !1,
     sprintPointerId = null,
+    moonwalkHeld = !1,
+    moonwalkPointerId = null,
     d = null,
     f = [],
     p = (n) => (t ? t.includes(n) : e.has(n)),
@@ -443,10 +447,15 @@ function kd() {
       sprintPointerId = null;
       n.sprint = false;
     },
+    clearMoonwalk = () => {
+      moonwalkHeld = false;
+      moonwalkPointerId = null;
+      n.moonwalk = false;
+    },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; a = false; c = 0;
+      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; moonwalkHeld = false; moonwalkPointerId = null; a = false; c = 0;
       r = i = 0;
-      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
+      Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,moonwalk:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
     _ = (e) => {
       (e.pointerType !== `mouse` || e.button === 0 || e.button === 2) &&
@@ -476,6 +485,7 @@ function kd() {
     },
     onSprintPointerEnd = (ev) => {
       if (sprintPointerId != null && ev.pointerId === sprintPointerId) clearSprint();
+      if (moonwalkPointerId != null && ev.pointerId === moonwalkPointerId) clearMoonwalk();
     },
     b = (e) => {
       ((d = e),
@@ -540,12 +550,15 @@ function kd() {
         (n.lookHoldX = Math.max(-1, Math.min(1, r))),
         (n.lookHoldY = Math.max(-1, Math.min(1, i))),
         // Hold-to-run only: Shift, touch Run button, or gamepad shoulder — never stick magnitude.
-        (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o));
+        (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o),
+        // Optional fun moonwalk: hold KeyM or Moonwalk button — never default locomotion.
+        (n.moonwalk = p(`KeyM`) || moonwalkHeld));
     };
   return {
     actions: n,
     reset: g,
     clearSprint,
+    clearMoonwalk,
     attach: b,
     detach: () => {
       for (let e of f) e();
@@ -579,6 +592,14 @@ function kd() {
         if (pointerId != null) sprintPointerId = pointerId;
       } else {
         clearSprint();
+      }
+    },
+    setTouchMoonwalk: (pressed, pointerId = null) => {
+      if (pressed) {
+        moonwalkHeld = true;
+        if (pointerId != null) moonwalkPointerId = pointerId;
+      } else {
+        clearMoonwalk();
       }
     },
     tryPointerLock: (canvas) => {
