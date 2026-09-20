@@ -27,3 +27,56 @@ export function closingPreparationOpen(minutes){const m=((minutes%1440)+1440)%14
 export function closingStockPending(state,minutes){const day=closingDay(minutes);return day!==null&&day>=0&&(state?.sakura?.restockedDay??-1)<day;}
 export function closingPreparationPending(state,minutes){const day=Math.floor(minutes/1440);return closingPreparationOpen(minutes)&&day>=0&&(state?.sakura?.restockedDay??-1)<day;}
 export const SOLD_OUT='Sorry, we’ve sold out. Please come back tomorrow.';
+
+const STORAGE_WON_KEY='johansson-town:storage-won';
+
+/** True when any shelf can take units from its reserve. */
+export function shelvesNeedRestock(state){
+ return SHOP_STOCK.some(item=>{const stock=state?.sakura?.stock?.[item.id];return !!stock&&stock.reserve>0&&stock.shelf<item.capacity;});
+}
+
+/**
+ * Fill every shelf from its reserve and, when a closing restock is pending,
+ * mark that trading day complete. Safe to call twice: a second pass moves
+ * nothing and leaves restockedDay unchanged.
+ */
+export function applyStorageRestock(state,minutes){
+ if(!state?.sakura?.stock)return {moved:0,dayMarked:false};
+ let moved=0;
+ for(const item of SHOP_STOCK){
+  const count=restockItem(state,item.id,item.capacity);
+  if(count){
+   moved+=count;
+   const shop=state.sakura;
+   if(Array.isArray(shop.journal)){
+    shop.journal.push({minute:minutes|0,kind:'Restocked',item:item.name,buyer:'Thuan',quantity:count,revenue:0,cost:0,profit:0,cash:shop.cash|0});
+    shop.journal=shop.journal.slice(-400);
+   }
+  }
+ }
+ const day=closingDay(minutes);
+ let dayMarked=false;
+ if(day!==null&&day>=0&&(state.sakura.restockedDay??-1)<day){
+  state.sakura.restockedDay=day;dayMarked=true;
+ }
+ return {moved,dayMarked};
+}
+
+/** Read and clear the storage-won handshake written by thuans-storage. */
+export function consumeStorageWonHandshake(){
+ let raw=null;
+ try{raw=localStorage.getItem(STORAGE_WON_KEY);}catch{return null;}
+ if(!raw)return null;
+ try{localStorage.removeItem(STORAGE_WON_KEY);}catch{}
+ try{
+  const payload=JSON.parse(raw);
+  if(!payload||typeof payload!=='object')return null;
+  return {
+   day:Number.isFinite(payload.day)?payload.day:null,
+   assisted:payload.assisted===true,
+   t:Number.isFinite(payload.t)?payload.t:Date.now(),
+  };
+ }catch{return null;}
+}
+
+export {STORAGE_WON_KEY};
