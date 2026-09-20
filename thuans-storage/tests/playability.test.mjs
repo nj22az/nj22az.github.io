@@ -74,3 +74,28 @@ test('game moves on touch, pauses without drift and automatic restocking complet
   }
   game.dispose();assert.deepEqual(env.logs,[]);
 });
+
+test('harbour guests spawn on a fraction of seeds and never sit on restock shortest paths',()=>{
+  let withGuest=0;
+  for(let seed=0;seed<200;seed++) {
+    const maze=api.hd(seed);
+    if(!maze.guest)continue;
+    withGuest++;
+    const critical=new Set();
+    const mark=path=>path.forEach(p=>critical.add(`${p.c},${p.r}`));
+    mark(api.storageRoute(maze,maze.start,maze.exit));
+    for(const item of maze.items.filter(i=>i.needed)){
+      mark(api.storageRoute(maze,maze.start,item));
+      mark(api.storageRoute(maze,item,maze.exit));
+    }
+    assert.equal(critical.has(`${maze.guest.c},${maze.guest.r}`),false,`guest on critical path seed ${seed}`);
+    assert.ok(maze.guest.lines?.length>=2);
+    assert.ok(maze.guest.name);
+    // Required goods and exit remain reachable.
+    for(const target of [...maze.items.filter(i=>i.needed),maze.exit]){
+      assert.ok(api.storageRoute(maze,maze.start,target).length>0);
+    }
+  }
+  assert.ok(withGuest>=50&&withGuest<=90,`expected ~25–40% guests, got ${withGuest}/200`);
+  assert.deepEqual(api.hd(77).guest,api.hd(77).guest);
+});

@@ -6,8 +6,8 @@ function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,1.75));
   renderer.outputColorSpace=yt;renderer.toneMapping=4;renderer.toneMappingExposure=1.1;
-  const scene=new yr();scene.background=new K(0x929b90);scene.fog=new vr(0x929b90,0.012);
-  const camera=new os(52,1,0.06,80);scene.add(camera);
+  const scene=new yr();scene.background=new K(0xb8b4a6);scene.fog=new vr(0xc4bfb0,0.0085);
+  const camera=new os(50,1,0.06,80);scene.add(camera);
   const controls=kd();controls.attach(canvas);
   const rawSound=id();
   // Audio restrictions must never prevent starting, walking or collecting.
@@ -24,6 +24,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let reaction='',reactionTime=0,route=[],autoTarget=null,autoWait=0;
   let collectedBefore=0,explored=new Set(),lastPickup='';
   let simTime=0,cameraInitial=true;
+  let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
   const dust=Array.from({length:28},(_,i)=>({x:(i*7%29)-14,z:(i*11%29)-14,y:0.6+(i%8)*0.2}));
   function say(text,seconds=3) {reaction=text;reactionTime=seconds;}
@@ -32,7 +33,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     px=start.x;pz=start.z;vx=vz=speed=0;yaw=Math.PI;pitch=-0.36;
     time=0;simTime=0;idleTime=0;automatic=false;assisted=false;autoWait=0;route=[];autoTarget=null;
     explored=new Set();collectedBefore=0;lastPickup='';reaction='';reactionTime=0;
-    cameraInitial=true;character.group.position.set(px,0,pz);character.setHeading(yaw,true);
+    cameraInitial=true;boomLength=3.55;lookIdle=0.5;guestLine=0;guestCooldown=0;guestPrompt='';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
     character.setCelebrate(false);character.setWave(true);controls.reset();reveal();
   }
   function reveal() {
@@ -45,7 +46,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
       readyToStock:collected===required.length,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
-      explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length});
+      explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
     const from=_d(px,pz,maze),remaining=world.items.filter(item=>item.needed&&!item.taken);
@@ -75,8 +76,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const look=controls.consumeLook();
     const input=controls.actions;
     if(automatic&&(Math.hypot(input.moveX,input.moveY)>0.12)){automatic=false;route=[];say('Your turn. I have the list.');}
-    yaw-=look.x*0.0038+input.lookHoldX*2.1*dt;
-    pitch=Math.max(-0.85,Math.min(-0.06,pitch-look.y*0.0029-input.lookHoldY*1.5*dt));
+    // Orbit look — slightly snappier stick feel, pitch clamped like a soft third-person shoulder cam.
+    yaw-=look.x*0.0045+input.lookHoldX*2.35*dt;
+    pitch=Math.max(-0.72,Math.min(-0.08,pitch-look.y*0.0033-input.lookHoldY*1.65*dt));
+    const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
+    lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
     if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
@@ -103,36 +107,80 @@ function om({canvas,minimap,onHud,gltf=null}) {
     // Animation uses the distance actually travelled, not the requested speed.
     vx=(px-oldX)/dt;vz=(pz-oldZ)/dt;speed=Math.hypot(vx,vz);
     if(speed>0.08)character.setHeading(Math.atan2(-vx,-vz));
+    // Snap camera behind when walking without active look input (shoulder recenter).
+    if(!automatic&&speed>0.35&&lookIdle>0.28){
+      yaw=Sd(yaw,Math.atan2(-vx,-vz),1-Math.exp(-3.4*dt));
+    }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
-    time+=dt;reveal();collect();
+    time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
       phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
   }
+  function talkToGuest(dt) {
+    guestCooldown=Math.max(0,guestCooldown-dt);
+    guestPrompt='';
+    const guest=world.guest;if(!guest||phase!=='playing')return;
+    const near=Math.hypot(guest.x-px,guest.z-pz)<1.15;
+    if(!near){guestLine=0;return;}
+    guestPrompt='Talk with '+guest.name;
+    if(guestCooldown>0)return;
+    // Auto-chat on linger — short TalkFun lines, then yield so routes stay clear.
+    if(idleTime>0.45||near){
+      const line=guest.lines[Math.min(guestLine,guest.lines.length-1)];
+      say(guest.name+': '+line,3.4);
+      guestLine=Math.min(guestLine+1,guest.lines.length);
+      guestCooldown=guestLine>=guest.lines.length?8:2.6;
+    }
+  }
   function updateCamera(dt) {
-    let cameraYaw=yaw,cameraPitch=pitch,boom=3.8;
-    if(phase==='title'){cameraYaw=-Math.PI/2;cameraPitch=-0.14;boom=3.45;character.setHeading(-Math.PI/2,true);}
+    let cameraYaw=yaw,cameraPitch=pitch,boom=boomLength;
+    if(phase==='title'){cameraYaw=-Math.PI/2;cameraPitch=-0.14;boom=3.35;character.setHeading(-Math.PI/2,true);}
     if(phase==='won'){cameraYaw=yaw+Math.sin(simTime*0.32)*0.65;cameraPitch=-0.22;}
-    focus.set(px,0.96,pz);
+    focus.set(px,0.98,pz);
     const dx=Math.sin(cameraYaw)*Math.cos(cameraPitch)*boom;
     const dz=Math.cos(cameraYaw)*Math.cos(cameraPitch)*boom;
     const dy=-Math.sin(cameraPitch)*boom;
-    const distance=Math.hypot(dx,dy,dz);
+    const distance=Math.hypot(dx,dy,dz)||1;
     const safe=xd(focus.x,focus.y,focus.z,dx,dy,dz,distance,maze);
     desired.set(focus.x+dx/distance*safe,focus.y+dy/distance*safe,focus.z+dz/distance*safe);
     if(cameraInitial){cameraPosition.copy(desired);cameraInitial=false;}
-    else cameraPosition.lerp(desired,1-Math.exp(-11*dt));
+    else cameraPosition.lerp(desired,1-Math.exp(-7.5*dt)); // softer follow
     const offset=cameraPosition.clone().sub(focus),length=offset.length();
     const clipped=xd(focus.x,focus.y,focus.z,offset.x,offset.y,offset.z,length,maze);
     if(clipped<length)cameraPosition.copy(focus).addScaledVector(offset.normalize(),clipped);
     camera.position.copy(cameraPosition);camera.lookAt(focus);
+    // Soft FOV breath with boom zoom (third-person, not FPS head-bob).
+    const targetFov=48+(boomLength-2.6)*1.1;
+    camera.fov+=(targetFov-camera.fov)*(1-Math.exp(-6*dt));
+    camera.updateProjectionMatrix();
+  }
+  function onWheel(event){
+    if(phase!=='playing'&&phase!=='title')return;
+    event.preventDefault();
+    boomLength=Math.max(2.55,Math.min(5.1,boomLength+Math.sign(event.deltaY)*0.18));
+  }
+  let pinchStart=0;
+  function onTouchStart(event){
+    if(event.touches?.length===2){
+      const a=event.touches[0],b=event.touches[1];
+      pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    }
+  }
+  function onTouchMove(event){
+    if(event.touches?.length!==2||!pinchStart)return;
+    const a=event.touches[0],b=event.touches[1];
+    const dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    const delta=(pinchStart-dist)*0.01;
+    pinchStart=dist;
+    boomLength=Math.max(2.55,Math.min(5.1,boomLength+delta));
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;controls.reset();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
     sound.unlock();controls.reset();accumulator=0;lastFrame=performance.now();
@@ -143,6 +191,9 @@ function om({canvas,minimap,onHud,gltf=null}) {
   resetPosition();resize();
   const observer=new ResizeObserver(resize);observer.observe(canvas);
   window.addEventListener('resize',resize);window.addEventListener('blur',pause);document.addEventListener('visibilitychange',visibility);
+  canvas.addEventListener('wheel',onWheel,{passive:false});
+  canvas.addEventListener('touchstart',onTouchStart,{passive:true});
+  canvas.addEventListener('touchmove',onTouchMove,{passive:true});
   renderer.setAnimationLoop(()=>{
     if(disposed)return;
     const now=performance.now(),dt=Math.min((now-lastFrame)/1000,0.1);lastFrame=now;
@@ -168,6 +219,6 @@ function om({canvas,minimap,onHud,gltf=null}) {
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
-    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
+    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }
