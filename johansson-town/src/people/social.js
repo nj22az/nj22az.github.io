@@ -109,6 +109,58 @@ export function thuanAtMinato(profile,minutes,rain=false){
  // Leave time to walk to the stop before the evening bus arrives.
  return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
 }
+
+// A commuter does not spend the whole gap between clocking off and the next bus at
+// the terminus. These are small, personal after-work lives: errands, food, a bench,
+// the harbour and a closing walk. The last leg is deliberately omitted so every
+// resident still returns to the normal bus plan with ample boarding time.
+const AFTER_WORK=Object.freeze({
+ Aya:Object.freeze([
+  {until:45,place:'market',target:MARKET_THRESHOLD,activity:'picking up tea for the book counter'},
+  {until:120,place:'park',target:[PARK_STAND[0]-.9,PARK_STAND[1]+.7],activity:'reading in the park'},
+  {until:155,place:'stroll',target:[8,-43],activity:'checking the evening-paper box at the quay'},
+ ]),
+ Kenji:Object.freeze([
+  {until:55,place:'market',target:MARKET_THRESHOLD,activity:'buying a cold soda after work'},
+  {until:130,place:'stroll',target:[3.5,-47],activity:'looking over the harbour machinery'},
+  {until:165,place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.6],activity:'taking a breather in the park'},
+ ]),
+ 'Mrs Sato':Object.freeze([
+  {until:75,place:'izakaya',target:IZAKAYA_DOOR,activity:'having tea with Nao after the lunch shift'},
+  {until:135,place:'stroll',target:[11,-40],activity:'choosing fish at the harbour'},
+ ]),
+ Reiko:Object.freeze([
+  {until:120,place:'izakaya',target:IZAKAYA_DOOR,activity:'eating supper after the press shift'},
+  {until:250,place:'park',target:[PARK_STAND[0]-.7,PARK_STAND[1]-.9],activity:'sketching the park for tomorrow’s paper'},
+  {until:400,place:'stroll',target:[18,-45],activity:'watching the harbour lights'},
+ ]),
+ Tetsuo:Object.freeze([
+  {until:105,place:'izakaya',target:IZAKAYA_DOOR,activity:'playing the counter radio for Nao'},
+  {until:235,place:'stroll',target:[6,-48],activity:'checking the harbour radio signal'},
+  {until:390,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]+.5],activity:'listening to a pocket radio in the park'},
+ ]),
+ Nao:Object.freeze([
+  {until:60,place:'izakaya',target:IZAKAYA_DOOR,activity:'clearing tables and closing Minato'},
+  {until:165,place:'stroll',target:[14,-42],activity:'taking kitchen scraps to the harbour cats'},
+  {until:270,place:'park',target:[PARK_STAND[0]+.2,PARK_STAND[1]+1.1],activity:'resting her feet in the park'},
+ ]),
+ 'Officer Mori':Object.freeze([
+  {until:55,place:'stroll',target:[0,-44],activity:'making a final harbour round'},
+  {until:95,place:'park',target:[PARK_STAND[0]-1.2,PARK_STAND[1]-.2],activity:'writing the night report on a park bench'},
+ ]),
+});
+
+export function afterWorkPlan(profile,minutes,rain=false){
+ if(rain)return null;
+ const shift=shiftFor(profile),routine=AFTER_WORK[profile?.name];
+ if(!shift||shift.permanent||!routine)return null;
+ const elapsed=minuteOfDay(minutes-shift.finish);
+ // Keep the final hour clear for the walk to the bus. This also makes the routine
+ // safe if a shift or service changes without every personal stop being retimed.
+ const available=departureFor(profile,false)-shift.finish-60;
+ if(elapsed<0||elapsed>=available)return null;
+ return routine.find(stop=>elapsed<Math.min(stop.until,available))||null;
+}
 export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
  if(m<1200||m>=1370)return 'home';
@@ -173,7 +225,11 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer at Minato before the last bus'};
  }
- if(phase==='departing')return bus('walking to the Harbour Line for departure');
+ if(phase==='departing'){
+  const afterWork=afterWorkPlan(profile,minutes,rain);
+  if(afterWork)return afterWork;
+  return bus('walking to the Harbour Line for departure');
+ }
  if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
