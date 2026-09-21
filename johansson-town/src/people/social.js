@@ -85,11 +85,24 @@ export function thuanAfternoon(profile,minutes,rain=false){
 /**
  * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
  *
- * She has an hour between closing Sakura and the last Harbour Line service. She spends
- * three quarters of it two doors up the pavement and the rest walking to the stop.
+ * She has two hours between closing Sakura and the last Harbour Line service. She
+ * spends most of it two doors up the pavement and the rest walking to the bus.
  * Rain sends her straight to the bus; so does a night the izakaya is shut.
+ *
+ * Most of an hour of walking, not fifteen minutes. Minato's door to the bus is
+ * forty-five metres of pavement and bus road, and this town's walk is about eight
+ * tenths of a metre a second once the turning at each corner is paid for.
+ *
+ * It stops short of an hour on purpose: at sixty she sets off exactly as the nine
+ * o'clock pulls out, which reads as her catching it. She is not. The whole point of
+ * the beer is that she lets the nine go and takes the ten.
+ *
+ * Fifteen never worked: she was two metres short of the old queue when the old bus
+ * pulled out, and nobody noticed because a commuter whose departure time has passed
+ * is marked away wherever she happens to be standing. Now that she has to reach the
+ * door and step through it, being late shows.
  */
-export const THUAN_BUS_MARGIN=15;
+export const THUAN_BUS_MARGIN=55;
 export function thuanAtMinato(profile,minutes,rain=false){
  const shift=shiftFor(profile);
  if(rain||!shift||shift.permanent)return false;

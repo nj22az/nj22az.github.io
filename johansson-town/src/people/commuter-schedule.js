@@ -62,7 +62,10 @@ export const HARBOUR_LINE=Object.freeze([
 ]);
 
 /** How long the bus stands at the terminus with its doors open, in town minutes. */
-export const BUS_DWELL=4;
+// A terminus stand, not a kerbside pause. The bus waits at the arch and the people
+// catching it walk the length of the bus road to reach it, which is twelve metres and
+// the better part of ten seconds, so four minutes left them running for it.
+export const BUS_DWELL=8;
 
 /** Minutes until the next service, and which one it is. */
 export function nextService(minutes){

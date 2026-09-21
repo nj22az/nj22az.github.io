@@ -8,6 +8,7 @@ import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
+import {MAIN_ROAD} from './main-road.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -251,10 +252,13 @@ export function createTown(options){
     // Close enough matters. Without the radius it also held for people who had just
     // left work on the other side of town for a bus two services later: the 19:00
     // stood for its full twelve minutes because Kenji had set off for the 20:00.
+    // Somebody on the bus road with the bus in sight, rather than anybody anywhere
+    // whose next move is a bus. A radius was the wrong shape for it once the bus
+    // stopped coming down to the shelter: the walk up the road is twelve metres on its
+    // own, so a radius wide enough to cover it also covered half the town.
     world.bus?.update(dt,minutes,world.people.some(p=>{
      if(!p.g.visible||p.g.userData.indoors||p.g.userData.place!=='bus')return false;
-     const gap=p.g.position.distanceTo(world.bus.bus.position);
-     return gap>2.4&&gap<14;
+     return p.g.position.z>MAIN_ROAD.maxZ&&p.g.position.distanceTo(world.bus.bus.position)>2.4;
     }));
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.

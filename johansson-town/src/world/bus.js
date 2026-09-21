@@ -17,6 +17,14 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
  *
  * Coming back it does the same in reverse, so the town has one way in and one way out
  * and you can see both of them work.
+ *
+ * It used to carry on down the road to the terminus and swing through a hundred and
+ * eighty degrees at the stop, because a bus that arrives facing south and leaves facing
+ * north has to turn somewhere. A pirouette in front of the shelter is the one place you
+ * are certainly watching, and it looked like a toy on a turntable. So it does not turn
+ * at all now: it rolls out of the painting, stops with its tail at the arch, and the
+ * people who are catching it walk up the road and get on. Then the painting takes it
+ * back the way it came.
  */
 const BODY=Object.freeze({length:8.6,width:2.42,height:2.16,floor:.62});
 
@@ -65,8 +73,14 @@ export function buildBus({shadows=false}={}){
  return bus;
 }
 
-/** Where the bus stands when it is waiting, and the two ends of its run. */
-const STOP_Z=BUS_STATION.queue[1]-1.4,MOUTH_Z=TUNNEL.z-1.2;
+/**
+ * Where the bus stands: far enough out of the arch that the whole of it is on the road
+ * and none of it is inside the rock, and no further. The tail sits a boot's width short
+ * of the painting.
+ */
+const STOP_Z=TUNNEL.z-BODY.length/2-.7;
+/** The door it is boarded through, and the step inside it, both in world metres. */
+const DOOR_Z=STOP_Z-2.2,DOOR_X=MAIN_ROAD.x-BODY.width/2-.55;
 
 /**
  * @param {object} options
@@ -80,33 +94,37 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  const bus=buildBus({shadows});
  bus.position.set(MAIN_ROAD.x,0,STOP_Z);
  parent.add(bus);
- const vanish=vanishingPoint(),entry=new THREE.Vector3(MAIN_ROAD.x,0,MOUTH_Z);
+ const vanish=vanishingPoint(),entry=new THREE.Vector3(MAIN_ROAD.x,0,STOP_Z);
 
- const SPEED=6.4,FADE=1.5,TURN=2.2;
+ // The whole run is the recede and its reverse: out of the painting to the stop, and
+ // back into it. There is no drive down the road and no turn, so there is no SPEED and
+ // no TURN any more.
+ const FADE=2.4;
  /**
-  * How long the approach takes, in town minutes -- which is also seconds, because the
-  * clock runs at one minute a second. The bus leaves the far end this far ahead of its
-  * time so that it is standing at the terminus, turned and with its doors open, on the
-  * minute the timetable says.
+  * How far ahead of its time it leaves the far end, in town minutes -- which is also
+  * seconds, because the clock runs at a minute a second -- so that it is standing at
+  * the arch with its doors open on the minute the timetable says.
   */
- const DRIVE=(MOUTH_Z-STOP_Z)/SPEED,APPROACH=FADE+DRIVE+TURN;
+ const APPROACH=FADE;
  /**
   * The longest it will hold past its departure time for somebody still walking up.
   * A driver waits for a regular he can see coming; he does not wait all night for one
   * who has got himself stuck behind a bench.
   */
  const HOLD=8;
- let phase='away',fade=0,turn=0,service=null;
+ let phase='away',fade=0,service=null;
  const since=m=>((m-service)%1440+1440)%1440;
 
  /** Somewhere between the mouth of the tunnel and the painted daylight at its far end. */
  const recede=t=>{
-  const eased=t*t;
+  const eased=Math.max(0,Math.min(1,t))**2;
   bus.position.lerpVectors(entry,vanish,eased);
   bus.scale.setScalar(Math.max(.012,1-eased*.99));
  };
+ // Facing south for the whole of its visit, which is the way it came out. Nothing in
+ // the run changes its heading.
  const park=()=>{
-  bus.position.set(MAIN_ROAD.x,0,STOP_Z);bus.scale.setScalar(1);bus.visible=true;bus.rotation.y=0;
+  bus.position.set(MAIN_ROAD.x,0,STOP_Z);bus.scale.setScalar(1);bus.visible=true;bus.rotation.y=Math.PI;
  };
  park();
  // It starts the day somewhere else, like a bus.
@@ -139,6 +157,12 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  return {
   bus,
   get phase(){return phase;},
+  /** Where somebody stands to get on: beside the front of the bus, off its flank. */
+  get door(){return [DOOR_X,DOOR_Z];},
+  /** And the step inside it, which is where they stop being on the street. */
+  get doorway(){return [MAIN_ROAD.x,DOOR_Z];},
+  /** True while it is standing at the arch with its doors open. */
+  get boarding(){return phase==='waiting';},
   /** Which service it is working, so a timetable can be read off the running game. */
   get service(){return service;},
   /**
@@ -154,45 +178,33 @@ export function createBusRun({parent,shadows=false,colliders}={}){
    if(phase==='away'){
     const due=nextService(minutes);
     if(due.wait<=APPROACH){
-     service=due.service;phase='arriving';fade=1;bus.visible=true;bus.rotation.y=Math.PI;
+     service=due.service;phase='arriving';fade=1;bus.visible=true;bus.scale.setScalar(.012);
+     bus.rotation.y=Math.PI;
     }
+    return;
+   }
+   if(phase==='arriving'){
+    // Out of the painting and down onto the road, growing as it comes, which is the
+    // recede run backwards. It ends standing at the arch, and that is where it stays.
+    fade-=dt/FADE;
+    recede(Math.max(0,fade));
+    if(fade<=0){park();phase='waiting';}
     return;
    }
    if(phase==='waiting'){
     // It goes when its time is up, and not before. A passenger still on their way
     // holds it, up to a point: see HOLD.
     const waited=since(minutes);
-    if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD))phase='leaving';
+    // From nought, not from whatever the approach overshot to: a first frame that
+    // does not move is a bus that hesitates before it goes.
+    if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD)){phase='leaving';fade=0;}
     return;
    }
-   if(phase==='leaving'){
-    bus.position.z+=SPEED*dt;
-    if(bus.position.z>=MOUTH_Z){phase='vanishing';fade=0;}
-    return;
-   }
-   if(phase==='vanishing'){
-    fade+=dt/FADE;
-    recede(Math.min(1,fade));
-    if(fade>=1){bus.visible=false;phase='away';service=null;}
-    return;
-   }
-   if(phase==='arriving'){
-    fade-=dt/FADE;
-    recede(Math.max(0,fade));
-    if(fade<=0){phase='returning';}
-    return;
-   }
-   if(phase==='returning'){
-    // Back down the road to the stop, still facing the way it is going.
-    bus.position.z-=SPEED*dt;
-    if(bus.position.z<=STOP_Z){bus.position.z=STOP_Z;phase='turning';turn=0;}
-    return;
-   }
-   // Turning at the terminus, because a bus that arrives facing south and leaves facing
-   // north has to do it somewhere, and a snap at the stop is the one place you watch.
-   turn+=dt/TURN;
-   bus.rotation.y=Math.PI*(1-Math.min(1,turn));
-   if(turn>=1){park();phase='waiting';}
+   // Leaving is the recede itself. There is nowhere to drive to: the road ends at the
+   // rock, and the painting is the only way out of the town.
+   fade+=dt/FADE;
+   recede(Math.min(1,fade));
+   if(fade>=1){bus.visible=false;phase='away';service=null;}
   },
  };
 }

@@ -153,21 +153,23 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   * pulled away. Without the memory they would blink out the moment their shift ended
   * whenever the service happened to be up the road, which is the thing this replaces.
   */
- const seenAtStop=new WeakSet();
+ const seenAtStop=new WeakSet(),aboard=new WeakSet();
  function boarded(g){
   const run=world.bus;
   if(!run)return true;                                   // No service modelled: as before.
+  // Somebody who has walked through the door is on it. Without this the hold put them
+  // straight back on the pavement the frame after they got on, because the bus was
+  // still standing there and "still standing there" used to mean "still boarding".
+  if(aboard.has(g))return true;
   if(atTheStop()){seenAtStop.add(g);return false;}        // It is here; you are still getting on.
   return seenAtStop.has(g);                               // It has gone, and you were here for it.
  }
  /** The kerb beside the bus's own door, so people step off it rather than out of it. */
- const alightingPoint=()=>{
-  const run=world.bus;
-  if(!run)return BUS_STATION.arrival;
-  // The platform is north of where the bus stands and the door is on the kerb side,
-  // so you step off towards the shelter rather than into the carriageway.
-  return [run.bus.position.x-1.9,run.bus.position.z+1.2];
- };
+ // You get off where you would have got on: the door, at the front of the bus, on the
+ // flank away from the carriageway. It used to be worked out as an offset from the bus
+ // and pointed at the shelter, which stopped being behind the bus when the bus stopped
+ // coming down to the shelter.
+ const alightingPoint=()=>world.bus?.door||BUS_STATION.arrival;
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
@@ -196,13 +198,19 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(!atTheStop())continue;
     const step=alightingPoint();
     g.position.set(step[0],groundHeight(step[0],step[1]),step[1]);g.visible=true;
-    delete g.userData.commuterAwayDay;routes.delete(g);
+    aboard.delete(g);delete g.userData.commuterAwayDay;routes.delete(g);
    }
    const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=plan.target,tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
    if(holdForBus){g.visible=true;target=BUS_STATION.queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the Harbour Line';}
+   // The bus stands at the arch, not at the shelter, so that is where it is boarded --
+   // and they set off for it as soon as they are going, rather than waiting on the
+   // platform for it to show and then having twelve metres of road to cover in the
+   // time it stands there. They wait at the door instead, which is where you wait for
+   // a bus that only stops in one place.
+   if(transit&&tag==='bus'&&world.bus&&phase!=='arriving')target=world.bus.door;
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
     if(Math.hypot(g.position.x-patrol[index][0],g.position.z-patrol[index][1])<.85)index=(index+1)%patrol.length;
@@ -231,7 +239,34 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
-   if(transit&&tag==='bus'&&phase==='departing'&&arrived()){world.busStation?.board(v.name,minutes);g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';g.visible=false;routes.delete(g);continue;}
+   // A passenger caught halfway through the step when the bus goes is put back on
+   // their feet, rather than left holding a hand on a door that is not there.
+   if(g.userData.boarding&&!(transit&&tag==='bus'&&world.bus?.boarding)){
+    delete g.userData.boarding;delete g.userData.usingTownObject;
+   }
+   // Getting on, rather than ceasing to exist at the kerb. The last two metres are
+   // walked by hand because the inside of a bus is inside the bus's own collider, and
+   // the walker will not take a step into one.
+   // Either still inside their departing window, or past it and held at the door for
+    // the bus they are plainly waiting for. Asking only for 'departing' meant the one
+    // person whose departure time had come and gone -- which is everybody, by the time
+    // the bus they are catching is standing there -- never got on it.
+   if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&world.bus?.boarding&&(g.userData.boarding||arrived())){
+    const [insideX,insideZ]=world.bus.doorway;
+    g.userData.boarding=true;g.userData.usingTownObject=true;
+    g.userData.activity='getting on the Harbour Line';
+    const dx=insideX-g.position.x,dz=insideZ-g.position.z,reach=Math.hypot(dx,dz);
+    if(reach>.3){
+     const step=Math.min(reach,dt*1.1);
+     g.position.x+=dx/reach*step;g.position.z+=dz/reach*step;
+     g.rotation.y=Math.atan2(-dx,-dz);
+     outside.push(p);continue;
+    }
+    world.busStation?.board(v.name,minutes);aboard.add(g);
+    delete g.userData.boarding;delete g.userData.usingTownObject;
+    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';
+    g.visible=false;routes.delete(g);continue;
+   }
    if(indoor&&(g.userData.indoors===tag||arrived())){
     if(!g.userData.indoors)g.userData.justArrived=true;
     g.userData.indoors=tag;g.visible=false;routes.delete(g);

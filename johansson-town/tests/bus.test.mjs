@@ -12,10 +12,13 @@ import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
  * The bus is on the town clock now rather than a stopwatch, and the clock runs at a
  * minute a second, so the seconds fed to update are also the minutes fed with them.
  */
+/** Every heading the bus is drawn at, so a turn anywhere in the run shows up. */
+const headings=new Set();
 function until(run,phase,seconds=200,dt=1/30,inbound=false){
  const seen=[];
  for(let t=0;t<seconds;t+=dt){
   if(run.phase!==seen.at(-1))seen.push(run.phase);
+  if(run.bus.visible)headings.add(+run.bus.rotation.y.toFixed(6));
   if(run.phase===phase)return seen;
   clock.minutes+=dt;run.update(dt,clock.minutes,inbound);
  }
@@ -37,16 +40,18 @@ test('the bus leaves by being shrunk onto the painting, and comes back the same 
  assert.equal(run.bus.visible,false,'The bus stands at the stop between services');
  atTerminus(run);
  assert.equal(run.bus.scale.x,1);
- assert.ok(run.bus.position.z<TUNNEL.z-10,'The bus starts at the tunnel rather than the stop');
+ // It stands at the arch, which is where it is boarded, and the whole of it is on the
+ // road: a bus with its back end inside the rock is a bus drawn through the painting.
+ assert.ok(run.bus.position.z<TUNNEL.z,'The bus stands inside the rock');
+ assert.ok(TUNNEL.z-run.bus.position.z<6,'The bus stops short of the arch it is meant to stand at');
 
  assert.ok(until(run,'leaving'),'The bus never leaves');
- assert.ok(until(run,'vanishing'),'The bus never reaches the tunnel');
  // Through the vanish it converges on the painting's own vanishing point. Anything
  // else and it slides off the picture as it recedes, which is the whole illusion.
  let last=Infinity;
  for(let t=0;t<4;t+=1/30){
   run.update(1/30);
-  if(run.phase!=='vanishing')break;
+  if(run.phase!=='leaving')break;
   const gap=run.bus.position.distanceTo(vanish);
   assert.ok(gap<=last+1e-6,'The bus is not closing on the vanishing point');
   assert.ok(run.bus.scale.x<1,'The bus is not shrinking');
@@ -60,9 +65,13 @@ test('the bus leaves by being shrunk onto the painting, and comes back the same 
  // and the whole thing comes round again, on the next service rather than in a minute.
  const seen=until(run,'waiting',1500);
  assert.ok(seen,'The service never comes back');
- for(const phase of ['arriving','returning','turning'])assert.ok(seen.includes(phase),'The bus skips '+phase);
+ assert.ok(seen.includes('arriving'),'The bus skips arriving');
  assert.equal(run.bus.scale.x,1);
- assert.ok(Math.abs(run.bus.rotation.y)<1e-6,'The bus waits facing the wrong way');
+ // It used to drive down to the terminus and swing through a hundred and eighty
+ // degrees in front of the shelter, which is the one place you are certainly watching.
+ // It has one heading now, from the moment it appears to the moment it goes.
+ assert.equal(headings.size,1,'The bus turned somewhere in its run: '+[...headings].join(', '));
+ assert.ok(Math.abs([...headings][0]-Math.PI)<1e-4,'The bus faces away from the town it has come to serve');
 });
 
 test('the bus is solid while it is a bus, and not once it is a picture of one',()=>{
@@ -77,10 +86,11 @@ test('the bus is solid while it is a bus, and not once it is a picture of one',(
  assert.ok(!circleHitsRect(run.bus.position.x+4,run.bus.position.z,.36,solid),'The bus stops you from the next lane');
  assert.ok(solid.d>solid.w,'The waiting bus is as wide as it is long');
 
- // It carries its box up the road with it.
+ // The box comes off as soon as it starts shrinking, which is the first frame of
+ // leaving: from there it is a picture of a bus, not a bus.
  assert.ok(until(run,'leaving'),'The bus never leaves');
  for(let t=0;t<2;t+=1/30){clock.minutes+=1/30;run.update(1/30,clock.minutes);if(run.phase!=='leaving')break;}
- assert.ok(Math.abs(solid.z-run.bus.position.z)<1e-6,'The box stayed at the stop');
+ assert.equal(solid.w,0,'The shrinking bus keeps a box across the mouth of the tunnel');
 
  // and drops it the moment it stops being a vehicle in the road. A collider left on
  // the shrinking bus is an invisible wall across the mouth of the tunnel.
@@ -94,10 +104,6 @@ test('the bus is solid while it is a bus, and not once it is a picture of one',(
  assert.ok(Math.hypot(solid.x,solid.z)>1e5,'The departed bus left an invisible post behind it');
  assert.ok(circleHitsRect(solid.x,solid.z,.36,{x:solid.x,z:solid.z,w:0,d:0}),'A zero-size rect does not stop anyone, so parking it away is pointless');
 
- // Turning at the terminus it sweeps the road, so the box turns with it.
- assert.ok(until(run,'turning',1500),'The bus never turns');
- for(let t=0;t<1;t+=1/30){clock.minutes+=1/30;run.update(1/30,clock.minutes);if(run.phase!=='turning')break;}
- assert.ok(solid.w>2.5&&solid.d>2.5,'The turning bus keeps a box it is not inside');
 });
 
 test('the Harbour Line runs to a timetable, and holds for somebody still walking up',async()=>{
