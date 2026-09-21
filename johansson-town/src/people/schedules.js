@@ -9,7 +9,7 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
-import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii} from './thuan-commute-yield.js';
+import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommitted} from './thuan-commute-yield.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
@@ -77,6 +77,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const yieldAsideForThuan=person=>{
   if(person===thuan||!thuanCommutePriority())return null;
   const tg=thuan.g,g=person.g;
+  // Buying soda, eating, serving, sitting and other authored activities win right
+  // of way. Thuan sees the resident as a solid obstacle and finds another line.
+  if(residentCommitted(g))return null;
   if(g.userData.indoors||g.userData.inMarket||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome)return null;
   const point=yieldAsideTarget([g.position.x,g.position.z],[tg.position.x,tg.position.z],tg.rotation.y,
    (x,z)=>collides(x,z,.32),(x,z)=>Math.abs(groundHeight(x,z)-g.position.y)<.45);
@@ -154,7 +157,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // while they yield (sidestep below). Does not change faceStep / alignedStep.
    if(thuanCommutePriority()){
     if(person===thuan&&p===thuan)return true;
-    const radius=commuteCrowdRadii(person===thuan,p===thuan);
+    const radius=commuteCrowdRadii(person===thuan,p===thuan,residentCommitted(p.g));
     if(p===thuan||person===thuan)return next>=radius||(old<radius&&next>old+.00001);
    }
    return next>=.61||(old<.61&&next>old+.00001);

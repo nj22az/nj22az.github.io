@@ -1,12 +1,23 @@
 /**
- * Thuan commute yield — schedule layer only (not WalkFix gait/facing).
- * Other walkers step aside while she travels to Sakura / morning platform.
+ * Resident right-of-way — schedule layer only (not WalkFix gait/facing).
+ * Ordinary walkers make room for Thuan; residents committed to an activity hold
+ * their place and become an obstacle Thuan must route around.
  */
+
+/** An activity which must not be interrupted merely because another walker passes. */
+export function residentCommitted(g){
+ const d=g?.userData||{};
+ return !!(d.shopping||d.usingTownObject||d.serving||d.restocking||d.shopReach||d.mealState||Number.isFinite(d.seatHeight));
+}
 
 /** @param {{visible?:boolean,userData:Record<string,unknown>}|null|undefined} g */
 export function thuanHasCommutePriority(g,phase){
  if(!g||g.visible===false||g.userData.inMarket||g.userData.indoors==='market')return false;
  if(g.userData.indoors||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome)return false;
+ // Once she is visibly walking, the rule applies to the whole street rather than
+ // only the market and bus approaches. This keeps two routines from deadlocking at
+ // an arbitrary corner between named destinations.
+ if(g.userData.character?.moving)return true;
  const place=g.userData.place;
  if(place==='market')return true;
  if(place==='bus'||place==='station')return phase==='arriving'||phase==='town';
@@ -33,7 +44,10 @@ export function yieldAsideTarget(personPos,thuanPos,thuanYaw,collides=()=>false,
 }
 
 /** Personal space radii while Thuan has commute priority. */
-export function commuteCrowdRadii(walkerIsThuan,otherIsThuan){
+export function commuteCrowdRadii(walkerIsThuan,otherIsThuan,otherCommitted=false){
+ // Thuan goes around a resident who is shopping, eating, serving, or using a town
+ // object. She only gets the softer advance when that resident is actively yielding.
+ if(walkerIsThuan&&otherCommitted)return .78;
  if(otherIsThuan&&!walkerIsThuan)return .95;
  if(walkerIsThuan&&!otherIsThuan)return .42;
  return .61;

@@ -108,7 +108,7 @@ export function createLocalCharacters({shadows=false}={}){
     model.traverse(o=>{if(/^resident-(glasses|captain|police|driver)$/.test(o.name))bedAccessories.push(o);});
     const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
     const targetHeight=height||style.height||profile?.height||1.75,scale=targetHeight/size.y;
-    model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale;model.rotation.y=Math.PI;
+    model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale+(source==='nao-vrm'?.018:0);model.rotation.y=Math.PI;
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
@@ -144,7 +144,10 @@ export function createLocalCharacters({shadows=false}={}){
     try{
     if(actions.has('Sit')){
       actions.get('Sit').play();mixer.update(0);entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);
-      const hips=model.getObjectByName('Hips');
+      // Mixamo-style residents call this Hips; VRoid's VRM humanoid uses the
+      // J_Bip_C_Hips node. Missing that alias disabled all measured chair support for
+      // Nao, so a generic animation offset was mistaken for the actual seat surface.
+      const hips=model.getObjectByName('Hips')||model.getObjectByName('J_Bip_C_Hips');
       if(hips){
       const hip=entity.worldToLocal(hips.getWorldPosition(new THREE.Vector3()));
       let bottom=hip.y;const point=new THREE.Vector3(),support=[];

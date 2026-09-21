@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii} from '../src/people/thuan-commute-yield.js';
+import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommitted} from '../src/people/thuan-commute-yield.js';
 
 test('Thuan has commute priority on market and morning platform, not nap/evening bus',()=>{
  const g=place=>'market';
@@ -9,6 +9,7 @@ test('Thuan has commute priority on market and morning platform, not nap/evening
  assert.equal(thuanHasCommutePriority({visible:true,userData:{place:'bus'}},'town'),true);
  assert.equal(thuanHasCommutePriority({visible:true,userData:{place:'bus'}},'departing'),false);
  assert.equal(thuanHasCommutePriority({visible:true,userData:{place:'nap'}},'town'),false);
+ assert.equal(thuanHasCommutePriority({visible:true,userData:{place:'stroll',character:{moving:true}}},'town'),true);
  assert.equal(thuanHasCommutePriority({visible:true,userData:{place:'market',inMarket:true}},'town'),false);
  assert.equal(thuanHasCommutePriority({visible:false,userData:{place:'market'}},'town'),false);
 });
@@ -27,5 +28,14 @@ test('yield pushes a blocker beside Thuan forward path, not behind her',()=>{
 test('crowd radii give Thuan a wide bubble and a softer advance',()=>{
  assert.equal(commuteCrowdRadii(false,true),.95);
  assert.equal(commuteCrowdRadii(true,false),.42);
+ assert.equal(commuteCrowdRadii(true,false,true),.78,'Thuan must route around a committed resident');
  assert.equal(commuteCrowdRadii(false,false),.61);
+});
+
+test('shopping and other authored activities hold right of way',()=>{
+ assert.equal(residentCommitted({userData:{shopping:true}}),true,'Nao buying soda must not be displaced');
+ assert.equal(residentCommitted({userData:{usingTownObject:true}}),true);
+ assert.equal(residentCommitted({userData:{serving:true}}),true);
+ assert.equal(residentCommitted({userData:{seatHeight:.55}}),true);
+ assert.equal(residentCommitted({userData:{character:{moving:true}}}),false,'an ordinary walker may yield');
 });

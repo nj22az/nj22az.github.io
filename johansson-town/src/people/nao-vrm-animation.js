@@ -76,7 +76,11 @@ export function prepareNaoAnimations(asset){
  ],{[B.hips]:[[0,-.42,0],[0,-.42,0],[0,-.42,0]]});
  const clips=[idle,counter,walk,run,wave,sit];
  for(const name of ['CounterIdle.1','CounterIdle.2'])clips.push(cloneAs(counter,name));
- for(const name of ['Wake','Type','Read','Use','Phone','Fish','Eat','Drink','Sleep'])clips.push(cloneAs(sit,name));
+ // A pose name does not imply a chair. `Use` is used while Nao wipes Minato's
+ // counter and `Read`/`Phone`/`Fish` can be selected at standing town objects. They
+ // previously cloned Sit, leaving her knees bent in mid-air with no seat support.
+ for(const name of ['Wake','Eat','Drink','Sleep'])clips.push(cloneAs(sit,name));
+ for(const name of ['Type','Read','Use','Phone','Fish'])clips.push(cloneAs(counter,name));
  for(const name of ['DrinkStanding','EatStanding','CarryIdle','Rest','Greet'])clips.push(cloneAs(idle,name));
  for(const name of ['CarryWalk','Stroll'])clips.push(cloneAs(walk,name));
  return clips;

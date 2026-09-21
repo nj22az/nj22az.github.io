@@ -16,4 +16,8 @@ test('the supplied Nao VRM is preserved and has the town action set',async()=>{
  const clips=prepareNaoAnimations({scene}),names=new Set(clips.map(clip=>clip.name));
  for(const name of ['Idle_Neutral','CounterIdle','Walk','Run','Wave','Sit','Eat','Drink','Sleep','CarryWalk'])assert.ok(names.has(name),name);
  for(const clip of clips)for(const track of clip.tracks)assert.ok([...track.values].every(Number.isFinite),clip.name+' '+track.name);
+ const use=clips.find(clip=>clip.name==='Use'),sit=clips.find(clip=>clip.name==='Sit');
+ const useLeg=use.tracks.find(track=>track.name==='J_Bip_L_UpperLeg.quaternion');
+ const sitLeg=sit.tracks.find(track=>track.name==='J_Bip_L_UpperLeg.quaternion');
+ assert.notDeepEqual([...useLeg.values.slice(0,4)],[...sitLeg.values.slice(0,4)],'standing counter work must not reuse the airborne seated legs');
 });

@@ -31,3 +31,14 @@ Current request: Bring Nao into the game, place her in the Izakaya, tidying up, 
 - The broad legacy suite still includes expectations for the former ten-person cast and pre-existing frontage/threshold failures; the one model-count expectation directly changed by Nao's reintroduction was updated.
 - Live browser inspection at 17:04 confirms the supplied Nao VRM is grounded inside Minato Izakaya at the service counter, with no placeholder residents around her.
 - The required Playwright game client was invoked but retained the project's known virtual-time hang; the same running build was inspected through the in-app browser instead.
+
+Current request: Add collision avoidance so Nao cannot block Thuan or other residents. Ordinary street walkers should yield according to what they are doing; if Nao is buying soda she holds her activity and Thuan moves around her.
+
+- Extended Thuan's right-of-way from the old market/bus commute windows to any visible street walk.
+- Added activity priority: shopping, serving, eating, sitting, restocking, and town-object use are never interrupted to yield.
+- Thuan now treats a committed resident as a full obstacle and routes around them; an ordinary walking Nao steps aside and walks forward to a clear lateral point.
+
+Follow-up: Nao's feet clip through the floor and her work pose sits in the air.
+
+- Found two separate calibration faults: Nao's standing `Use` action was a clone of her seated leg pose, and the generic seat-support measurement only searched for a Mixamo `Hips` bone while her VRM uses `J_Bip_C_Hips`.
+- Standing activity aliases now use a standing counter pose, VRM hips participate in measured chair placement, and Nao has a small 1.8 cm shoe clearance above the render floor.
