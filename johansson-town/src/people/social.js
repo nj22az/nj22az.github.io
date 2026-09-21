@@ -87,6 +87,25 @@ export function thuanAfternoon(profile,minutes,rain=false){
  return THUAN_WALK.find(leg=>m<leg.until)||null;
 }
 
+// Nao has a real pre-shift day rather than materialising behind Minato's counter.
+// The generous legs account for the town's actual street distances and the time she
+// spends turning at corners. Two park targets make this a walk around the grounds,
+// rather than every resident being sent to the same bench coordinate.
+export const NAO_DAY=Object.freeze([
+ {until:650,place:'market',target:MARKET_THRESHOLD,activity:'buying Ramune soda at Sakura'},
+ {until:735,place:'park',target:[PARK_STAND[0]-1.4,PARK_STAND[1]+1.2],activity:'walking around the west side of the park',pace:.78},
+ {until:825,place:'stroll',target:[31.6,1.5],activity:'walking around the park to the sea wall',pace:.78},
+ {until:900,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]-.8],activity:'finishing her park circuit',pace:.78},
+ {until:960,place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'},
+].map(Object.freeze));
+export function naoBeforeShift(profile,minutes,rain=false){
+ if(profile?.name!=='Nao')return null;
+ const shift=shiftFor(profile),m=minuteOfDay(minutes);
+ if(!shift||m<shift.arrival+30||m>=shift.start)return null;
+ if(rain)return {place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'};
+ return NAO_DAY.find(leg=>m<leg.until)||null;
+}
+
 /**
  * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
  *
@@ -237,7 +256,11 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
- if(profile.name==='Nao')return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'running Minato Izakaya'}:bus('travelling to the next shift');
+ if(profile.name==='Nao'){
+  const morning=naoBeforeShift(profile,minutes,rain);
+  if(morning)return morning;
+  return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'serving guests and tidying Minato'}:bus('travelling to the next shift');
+ }
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
  if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return profile.workSite==='warehouse'?{place:'work',target:profile.work,activity:'checking the quay stores'}:{place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};

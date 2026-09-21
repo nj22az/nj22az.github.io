@@ -227,7 +227,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
-   if(g.userData.previewHold){g.visible=true;g.userData.place='preview';g.userData.activity='Nao model review';routes.delete(g);outside.push(p);continue;}
    if(p===thuan&&staffBreak?.active){
     staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
     routes.delete(g);outside.push(p);continue;

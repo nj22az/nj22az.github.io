@@ -7,7 +7,9 @@ const shifts={
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
- Nao:{arrival:870,start:960,finish:1620,departure:1950},
+ // Nao takes the morning service so her Konbini errand and park walk happen before
+ // Minato opens. Her return service is the next morning after the night shift.
+ Nao:{arrival:510,start:960,finish:1620,departure:1950},
  'Officer Mori':{arrival:870,start:1200,finish:1800,departure:1950},
  'Harbour master':{permanent:true},
  'Bus driver':{permanent:true},
