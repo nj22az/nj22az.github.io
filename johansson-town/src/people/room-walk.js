@@ -1,4 +1,4 @@
-import {alignedStep} from './facing.js';
+import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 import {createNavigation,NAV_MARGIN} from './navmesh.js?snappy=1';
 
 // Routes share the player's furniture collision geometry. No timeout teleports.
@@ -16,15 +16,15 @@ export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8
   while(route.points.length&&Math.hypot(g.position.x-route.points[0][0],g.position.z-route.points[0][1])<(smooth?.005:.04))route.points.shift();
   const next=route.points[0];if(!next)return false;
   const dx=next[0]-g.position.x,dz=next[1]-g.position.z,d=Math.hypot(dx,dz);let speed=person.profile.age>65?.7:1;
-  if(smooth){const yaw=Math.atan2(-dx,-dz),angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,angle));const desired=Math.abs(angle)>.35?0:Math.min(.9,Math.sqrt(2*1.8*d));route.speed+=Math.max(-dt*2.4,Math.min(dt*1.8,desired-route.speed));if(Math.abs(angle)>.35)return false;speed=route.speed;}
+  if(smooth){const angle=travelError(g.rotation.y,dx,dz);g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,angle));const aligned=forwardOnly(g.rotation.y,dx,dz),desired=aligned?Math.min(.9,Math.sqrt(2*1.8*d)):0;route.speed+=Math.max(-dt*2.4,Math.min(dt*1.8,desired-route.speed));if(!aligned)return false;speed=route.speed;}
   let step=Math.min(d,dt*speed);
   if(!smooth){
    // Match outdoor schedules faceStep: no translate until roughly aligned, then
    // scale residual step with alignedStep (Konbini door / aisle corners).
-   const yaw=Math.atan2(-dx,-dz),angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));
+   const yaw=travelYaw(dx,dz),angle=travelError(g.rotation.y,dx,dz);
    g.rotation.y+=Math.max(-dt*3.4,Math.min(dt*3.4,angle));
-   if(Math.abs(angle)>=.35)return false;
-   step*=alignedStep(angle);
+   if(!forwardOnly(g.rotation.y,dx,dz))return false;
+   step*=alignedStep(travelError(g.rotation.y,dx,dz));
   }
   if(step<=0)return false;
   const x=g.position.x+dx/d*step,z=g.position.z+dz/d*step;

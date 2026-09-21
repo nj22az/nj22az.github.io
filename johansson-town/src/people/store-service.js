@@ -3,6 +3,7 @@ import {STORE_CLERK_POSITION,STORE_SEATS,STORE_TABLES,STORE_SERVICE_ROUTE} from 
 import {createSteamedBunGeometry} from '../world/interiors/steamed-bun.js';
 import {createResidentLedger,residentPersonality} from './resident-personalities.js';
 import {THUAN_CHAIR_STEP} from './thuan-chair-motion.js';
+import {forwardOnly,travelError,travelYaw} from './facing.js';
 
 export const STORE_MENU=Object.freeze([
  {id:'bun',name:'Steamed pork bun',cost:150},
@@ -61,12 +62,12 @@ export function createStoreService({clerk,room,getSeat,getMinutes,getBalance,pay
   const p=route[0];if(!p)return true;
   const dx=p[0]-clerk.position.x,dz=p[1]-clerk.position.z,d=Math.hypot(dx,dz);
   if(d<.008){clerk.position.set(p[0],0,p[1]);route.shift();return !route.length;}
-  const target=Math.atan2(-dx,-dz);turn(target,dt);
-  const angle=Math.abs(Math.atan2(Math.sin(target-clerk.rotation.y),Math.cos(target-clerk.rotation.y)));
+  const target=travelYaw(dx,dz);turn(target,dt);
+  const angle=Math.abs(travelError(clerk.rotation.y,dx,dz));
   // Face the aisle before stepping, then ease off before a corner or table.
-  const desired=angle>.35?0:Math.min(.90,Math.sqrt(2*1.8*d));
+  const desired=forwardOnly(clerk.rotation.y,dx,dz)?Math.min(.90,Math.sqrt(2*1.8*d)):0;
   walkSpeed+=THREE.MathUtils.clamp(desired-walkSpeed,-dt*2.4,dt*1.8);
-  if(angle>.35)return false;
+  if(!forwardOnly(clerk.rotation.y,dx,dz))return false;
   const step=Math.min(d,dt*walkSpeed);
   const x=clerk.position.x+dx/d*step,z=clerk.position.z+dz/d*step;if(isBlocked(x,z))return false;
   clerk.position.set(x,0,z);return false;

@@ -3,6 +3,7 @@ import {createThuanFaceController} from './thuan-face-controller.js';
 import {createOfficeHands} from './office-hands.js';
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
 import {prepareMergedYuriAnimations} from './yuri-merged-animation.js';
+import {prepareNaoAnimations} from './nao-vrm-animation.js';
 import {rigThuanFingers} from './thuan-fingers.js';
 import {dressCharacter} from './surface.js';
 import {residentPersonality} from './resident-personalities.js';
@@ -22,7 +23,7 @@ import {PROFILES} from './profiles.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
 /** Alternate takes of an idle, tried in order after the unsuffixed one. */
 const IDLE_TAKES=Object.freeze(['','.1','.2']);
-const SOURCES=[...LOW_POLY,'yuri-merged'];
+const SOURCES=[...LOW_POLY,'yuri-merged','nao-vrm'];
 const loaded=new Map();let pending=null;
 const modelPending=new Map();
 export function preloadModel(id){
@@ -34,11 +35,12 @@ export function preloadModel(id){
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
       const figurine=id==='yuri-playful';
-      const path=id==='yuri-merged'?'characters/yuri/yuri-merged.glb':figurine?'characters/realistic/yuri-playful.glb?yuri-rig-2':'characters/residents/town-'+id+'.glb';
+      const path=id==='yuri-merged'?'characters/yuri/yuri-merged.glb':id==='nao-vrm'?'characters/nao/Nao.vrm':figurine?'characters/realistic/yuri-playful.glb?yuri-rig-2':'characters/residents/town-'+id+'.glb';
       const response=await fetch(assetURL(path),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const gltf=await loader.parseAsync(await response.arrayBuffer(),'');
       if(id==='yuri-merged'){rigThuanFingers(gltf);gltf.animations=prepareMergedYuriAnimations(gltf);}
+      else if(id==='nao-vrm')gltf.animations=prepareNaoAnimations(gltf);
       else if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);
       else{
         gltf.animations=prepareResidentAnimations(gltf);
@@ -58,6 +60,7 @@ export function preloadModels({onProgress}={}){
 }
 export function characterSource(name){
   if(name==='player'||name==='Johansson')return null;
+  if(name==='Nao')return 'nao-vrm';
   if(residentPersonality(name).source)return residentPersonality(name).source;
   const profile=PROFILES.find(p=>p.name===name);
   if(name==='Yui'||profile?.female)return profile?.age>=50?'female_formal':'female_casual';
@@ -109,7 +112,7 @@ export function createLocalCharacters({shadows=false}={}){
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='yuri-merged'?'Meshy merged · Thuan':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
+    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='yuri-merged'?'Meshy merged · Thuan':source==='nao-vrm'?'VRoid · Nao':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}

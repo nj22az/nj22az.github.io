@@ -15,7 +15,7 @@ import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
-import {alignedStep} from './facing.js';
+import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 export const DIALOGUE={
  Thuan:[['hello','いらっしゃいませ。\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled.'],['pink','このリボン、お気に入りなんです。\nThis ribbon is my favourite. My aunt says the shop is easier to find when I stand outside.'],['work','午後の品出しが終わりました。\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits.'],['harbour','港までお散歩ですか。\nWalking to the harbour? The light turns the water pink just before supper.'],['catalogue','取り寄せの帳面はこちらです。\nThe mail-order book is on the counter. I keep those orders separate from the daily till.']],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -91,10 +91,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    destinations.set(key,point);return point;
   }return target;
  }
- function faceStep(g,dx,dz,dt){
-  const heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-g.rotation.y),Math.cos(heading-g.rotation.y));
-  g.rotation.y+=THREE.MathUtils.clamp(delta,-2.6*dt,2.6*dt);
-  return Math.abs(delta)<.35;
+ function faceStep(g,dx,dz,dt,turnRate=2.6){
+  const heading=travelYaw(dx,dz),delta=travelError(g.rotation.y,dx,dz);
+  g.rotation.y+=THREE.MathUtils.clamp(delta,-turnRate*dt,turnRate*dt);
+  return forwardOnly(g.rotation.y,dx,dz);
  }
  function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
@@ -142,7 +142,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.
-  const paceLimit=pace||(person.profile?.age>65?.75:1.25);
+  // Forward-only turns cost a little travel time at every corner. Thuan recovers it
+  // on the straight instead of stealing it by sliding while still turned aside.
+  const paceLimit=pace||(person===thuan?1.4:person.profile?.age>65?.75:1.25);
   const speed=person===thuan?Math.min(paceLimit,(route.speed||0)+dt*1.8):paceLimit;
   const step=Math.min(d,dt*speed),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
@@ -168,14 +170,16 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // Face the actual clear step, including a detour, before advancing. Turning after
    // translation lets the walk clip carry them backwards or sideways around corners.
    const stepDx=x-beforeX,stepDz=z-beforeZ;
-   const stepHeading=Math.atan2(-stepDx,-stepDz);
-   const stepAngle=Math.atan2(Math.sin(stepHeading-g.rotation.y),Math.cos(stepHeading-g.rotation.y));
+   const stepHeading=travelYaw(stepDx,stepDz);
+   const stepAngle=travelError(g.rotation.y,stepDx,stepDz);
    if(!faceStep(g,stepDx,stepDz,dt)){
     // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
     // a grid point behind them and make them turn back and forth without leaving it.
     route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
    }
-   const travel=alignedStep(stepAngle);
+   // faceStep may have completed the last fraction of the turn this frame. Measure
+   // alignment again after it, so translation always agrees with the rendered body.
+   const travel=alignedStep(travelError(g.rotation.y,stepDx,stepDz));
    if(travel<=0){route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;}
    const ax=beforeX+stepDx*travel,az=beforeZ+stepDz*travel;
    if(travel<1&&(!clearOfPeople(ax,az)||collides(ax,az,.3))){
@@ -223,6 +227,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
+   if(g.userData.previewHold){g.visible=true;g.userData.place='preview';g.userData.activity='Nao model review';routes.delete(g);outside.push(p);continue;}
    if(p===thuan&&staffBreak?.active){
     staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
     routes.delete(g);outside.push(p);continue;

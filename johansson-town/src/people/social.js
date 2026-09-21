@@ -71,9 +71,13 @@ const THUAN_WALK=Object.freeze([
  // nap had finished. She dawdles once she is somewhere, not on the way to it.
  {until:866,place:'nap',target:BENCH_STAND,activity:'going round the back for her break'},
  {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
- {until:912,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
- {until:922,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
- {until:THUAN_WALK_END,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
+ {until:906,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:912,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
+ {until:916,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
+ // Start home while the break is still active. Waiting until the schedule flipped
+ // back to "work" left only ten seconds to cross the town, which encouraged route
+ // shortcuts and made the old loose facing gate look acceptable.
+ {until:THUAN_WALK_END,place:'market',target:MARKET_THRESHOLD,activity:'walking back to Sakura',pace:1.4},
 ].map(Object.freeze));
 /** The leg of the walk she is on, or null when she is not on it. */
 export function thuanAfternoon(profile,minutes,rain=false){
