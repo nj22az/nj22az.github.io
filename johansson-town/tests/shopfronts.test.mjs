@@ -31,7 +31,10 @@ test('every door opens onto a building',async()=>{
   if(size.y>2.4&&box.min.y<1&&Math.max(size.x,size.z)>2&&size.x<40&&size.z<40)walls.push(box);
  });
  assert.ok(walls.length>6,'Found no buildings to check the doors against');
- assert.ok(entrances.length>4,'Found no entrances');
+ assert.deepEqual(entrances.map(e=>e.label).sort(),[
+  'Enter Front-Row Books & Workshop','Enter Harbour Warehouse',
+  'Enter Johansson Harbour Office','Enter Sakura Shōten',
+ ].sort(),'One shared bookshop/workshop entrance, with the other businesses retained');
  // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
  // lamp post, because that is where the night-market alley put its door and the
  // peninsula does not build that alley. A door has to be in a wall.
@@ -63,6 +66,6 @@ test('the west shops leave the pavement and the crossing alone',async()=>{
   // And the building is behind the frontage line, not out in the street.
   assert.ok(WEST_FRONT<=-7.6,'The shop frontage has moved onto the carriageway');
  }
- // The crossing at z 5.1 still reaches the west kerb between the two shops.
+ // The crossing at z 5.1 still reaches the west kerb beside the combined shop.
  assert.ok(routeAt(-7.4,5.1,.32),'The shop crossing no longer reaches the west pavement');
 });

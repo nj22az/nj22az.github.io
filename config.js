@@ -56,6 +56,18 @@ const CONFIG = {
 
   projects: [
     {
+      title: "Thuan's Storage",
+      description:
+        "Work in progress. Walk Thuan through Sakura Shōten's stockroom, pick the day's list, and restock the konbini.",
+      url: "/thuans-storage/",
+      icon: "joystick",
+      image: "/thuans-storage/cover.jpg",
+      badge: "Work in progress",
+      tags: ["Work in Progress", "Three.js", "Playable Demo"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "The Front-Row Seat",
       description:
         "A six-book illustrated historical omnibus with adjustable type, thoughtful reading controls, and five centuries of connected stories.",
@@ -82,16 +94,6 @@ const CONFIG = {
       url: "/mizuhama-1988/",
       icon: "home",
       tags: ["Three.js", "Playable Demo", "3D Web"],
-      bento: "wide",
-      featured: true,
-    },
-    {
-      title: "JoJo Izakaya Tapper",
-      description:
-        "A classic arcade tapper behind the cedar at 居酒屋ジョジョ. Hop between four bars, slide drinks to the harbour queue, and catch every empty glass.",
-      url: "/jojo-izakaya-tapper/",
-      icon: "joystick",
-      tags: ["Arcade", "Playable Demo", "2D"],
       bento: "wide",
       featured: true,
     },

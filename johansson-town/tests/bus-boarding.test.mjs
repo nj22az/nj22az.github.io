@@ -86,8 +86,8 @@ test('nobody who was already away is left standing at the terminus',async()=>{
 
  configureTownMode(TOWN_MODES.PENINSULA);
  try{
-  // Three in the morning. Every shop worker went home hours ago, the last service was
-  // at half past one and the next is at four, and the player has just opened the page.
+  // Three in the morning. Day staff left on the evening service. Reiko and Tetsuo
+  // have finished work and wait for the morning service alongside the night staff.
   const NIGHT=188;
   const parent=new THREE.Group();
   const people=STREET_CAST_NAMES.map(name=>{
@@ -99,8 +99,8 @@ test('nobody who was already away is left standing at the terminus',async()=>{
   const player=new THREE.Group();player.position.set(0,0,0);
   const world={people,homes:new Map(),bus};
   // The save the player actually reloads. snapshot() records an away resident at
-  // BUS_STATION.exit, which is a waypoint at the far end of the bus road rather than
-  // anywhere a person would stand, so this is where they all come back to.
+  // BUS_STATION.exit (platform, clear of the painted tunnel mouth). They must not
+  // reappear in a heap at the coyote arch or on the forest bus road.
   const residentLocations=Object.fromEntries(people.map(p=>
    [p.profile.name,{position:[...BUS_STATION.exit],indoors:null,place:'away'}]));
   const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations}),
@@ -115,7 +115,7 @@ test('nobody who was already away is left standing at the terminus',async()=>{
   // and that they are standing in a heap on one spot at the terminus.
   const out=people.filter(p=>p.g.visible!==false);
   const named=out.map(p=>p.profile.name+' ('+p.g.userData.place+')').join(', ');
-  const working=['Officer Mori','Harbour master','Bus driver','Nao'];
+  const working=['Officer Mori','Harbour master','Bus driver','Nao','Reiko','Tetsuo'];
   const loitering=out.filter(p=>!working.includes(p.profile.name))
    .map(p=>p.profile.name+' at '+p.g.position.x.toFixed(1)+','+p.g.position.z.toFixed(1));
   assert.deepEqual(loitering,[],'People are standing about in the middle of the night: '+named);

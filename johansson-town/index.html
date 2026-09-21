@@ -3,30 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content">
-<meta name="theme-color" content="#1a3036">
+<meta name="theme-color" content="#27455c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <meta name="description" content="Johansson Town public information board. A first-person shopping district and working harbour, 1988.">
-<style>:root,html,body{margin:0;background:#0b171b!important}</style>
+<style>:root,html,body{margin:0;background:#f7f5f2!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./styles.css?h=f933a859">
 <link rel="stylesheet" href="./polish.css?h=f02f77bf">
 <link rel="stylesheet" href="./viewport-fix.css?h=4e2ebec6">
 <link rel="stylesheet" href="./character-controls.css?h=957b6eee">
-<link rel="stylesheet" href="./office.css?h=7100aa03">
+<link rel="stylesheet" href="./office.css?h=8723f239">
 <link rel="stylesheet" href="./dialogue.css?h=cf2f04f3">
 <link rel="stylesheet" href="./workshop.css?h=047b7ad5">
-<link rel="stylesheet" href="./context-controls.css?h=6c67abbe">
+<link rel="stylesheet" href="./context-controls.css?h=73a7cfe5">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?h=15bfb223">
-<link rel="stylesheet" href="./landing.css?h=c67dad56">
+<link rel="stylesheet" href="./landing.css?h=6c864c69">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=718c3ab8">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-C-swE53L.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-MVj_pj8f.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-EqdXBW1V.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-Biszbb3E.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-Byd8MLTL.js">
 </head>
 <body>
@@ -219,12 +219,12 @@
           <article class="notice-card">
             <p class="notice-no">NOTICE B-07</p>
             <h3>Evening paper</h3>
-            <p>Reiko locks the press at Front-Row after eighteen-thirty. Copy is posted on the alley board.</p>
+            <p>Reiko works the evening press inside Front-Row Books & Workshop until 00:30. Newspapers are available at Aya’s counter.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE C-02</p>
             <h3>Form 3D printer</h3>
-            <p>Five collectible patterns at Kenji & Tetsuo. Speak to Thuan at Sakura to sell a finished piece.</p>
+            <p>Five collectible patterns at the shared bookshop workshop. Speak to Thuan at Sakura to sell a finished piece.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE D-11</p>
@@ -294,7 +294,7 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=board-2"></script>
+<script src="./landing.js?v=books-workshop-3"></script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-BhdKDVvj.js';
 (() => {
@@ -334,7 +334,7 @@ import {unlockTownAudio} from './runtime/audio-BhdKDVvj.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-C-swE53L.js');
+      await import('./runtime/boot-MVj_pj8f.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

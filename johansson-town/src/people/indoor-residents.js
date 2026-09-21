@@ -38,7 +38,15 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     const seat=seatFor(p);if(!seat)continue;
     const settled=g.userData.indoors===place&&!g.userData.justArrived;
     walker.forget(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled||seat.managed?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);
-    g.position.set(...(settled?seat.position:entrance));g.rotation.set(0,seat.yaw,0);
+    // Face the path we will walk. Using seat.yaw at the door made visitors moonwalk
+    // toward their stand (Walk clip forward, body aimed at the chair).
+    if(settled||seat.managed){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
+    else{
+     const stand=seat.stand||seat.position;
+     g.position.set(...entrance);
+     const dx=stand[0]-entrance[0],dz=stand[2]-entrance[2];
+     g.rotation.set(0,Math.hypot(dx,dz)>.001?Math.atan2(-dx,-dz):seat.yaw,0);
+    }
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':'inIzakaya']=true;g.userData.place=place;
@@ -55,7 +63,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     }else if(saved.phase==='leaving'){
      if(walker.move(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walker.move(p,seat.stand,dt))saved.phase='sitting';
+     if(walker.move(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase='sitting';}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===1)saved.phase='seated';
     }

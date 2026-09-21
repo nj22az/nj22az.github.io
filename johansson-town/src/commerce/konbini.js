@@ -136,17 +136,26 @@ export function checkoutQuote(state,{warm=false,bag=true}={}){
  };
 }
 
+/** True while Sakura's posted hours say the till is open (09:00–20:00). */
+export function sakuraHoursOpen(minutes){
+ const m=((minutes%1440)+1440)%1440;
+ return m>=540&&m<1200;
+}
+/** Till message when Thuan is away mid-hours (afternoon walk / nap), not overnight closed. */
+export const SAKURA_AWAY_MESSAGE='Thuan is away from the counter for a bit. Try again when she is back.';
 /**
  * Rings the basket through. Either the whole basket goes, or nothing does: a claim that
  * cannot be met puts every earlier claim back on the shelf.
+ * @param {boolean} [thuanAvailable=true] When false, refuse mid-hours checkout (clerk not at counter).
  * @returns {{ok:true,receipt:Receipt}|{ok:false,message:string}}
  */
-export function checkout(state,{warm=false,bag=true}={},minutes=0){
+export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable=true){
  const konbini=state.konbini;
  const m=((minutes%1440)+1440)%1440;
  const lines=basketLines(state),total=basketTotal(state);
  if(!lines.length)return {ok:false,message:'Your basket is empty.'};
- if(m<540||m>=1200)return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
+ if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<total)return {ok:false,message:'You do not have enough yen for all of that.'};
  if(state.inventory.length+konbini.basket.length>100)return {ok:false,message:'Your bag is full.'};
 

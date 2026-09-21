@@ -7,6 +7,10 @@ export const TOWN_GRID=Object.freeze({north:BUS_STATION.maxZ,south:-38,quay:-44,
 export const SHOP_ADDRESSES=Object.freeze({
  market:{side:-1,z:-28.5},
 });
+// Street door and the last outdoor step through the opening. Keep profile.work
+// off this doorway so the player entrance stays clear while staff are inside.
+export const MARKET_DOOR=Object.freeze([SHOP_ADDRESSES.market.side*5.5,SHOP_ADDRESSES.market.z]);
+export const MARKET_THRESHOLD=Object.freeze([SHOP_ADDRESSES.market.side*6.3,SHOP_ADDRESSES.market.z]);
 export const TEA_HOUSE=Object.freeze({x:8.4,z:13.4,door:[8.4,0,18.4]});
 export const TOWN_DESTINATIONS=Object.freeze({
  bus:[...BUS_STATION.queue],busArrival:[...BUS_STATION.arrival],busDriver:[...BUS_STATION.driver],

@@ -1,12 +1,14 @@
 import {sakuraStock,saleProblem,sellToSakura} from '../commerce/sakura-economy.js';
 import {WORKSHOP_MODELS,workshopModel,modelTicket} from './catalogue.js';
 import {printProblem,startPrint,collectPrint,canSellAtSakura} from './production.js';
+import {recordFormSale} from '../progression/soft-quests.js';
+import {isWorkshopSite} from '../world/businesses.js';
 
 export function createWorkshopUI({state,show,close,save,say,note,getContext,getMinutes,preview,body,modal}){
  let embedded=null;
- const inWorkshop=()=>getContext().inside==='form3d';
+ const inWorkshop=()=>isWorkshopSite(getContext().inside);
  const selection=()=>workshopModel(state.workshop.selected)||WORKSHOP_MODELS[0];
- function unavailable(){show('Workshop','Use the printer at Kenji & Tetsuo Repairs.',[['Back',close]]);}
+ function unavailable(){show('Workshop','Use the printer at the workshop bench.',[['Back',close]]);}
  function choose(model,next){state.workshop.selected=model.id;save();next();}
  function openTool(tool){
   if(!inWorkshop()){unavailable();return;}
@@ -52,6 +54,7 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
    ...offers.map(offer=>['Sell '+offer.name+' · +¥'+offer.price,()=>{
     if(!canSellAtSakura(getContext(),getMinutes())){selling();return;}
     const result=sellToSakura(state,offer.name,getMinutes());if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}
+    if(offer.model)recordFormSale(state,getMinutes());
     save();note('Sold '+offer.name+' to Thuan for ¥'+offer.price+'.');
     show('Thuan · Thank you',offer.name+' sold for ¥'+offer.price+'.\n\nShop funds remaining: ¥'+state.sakura.cash+'.'+(offer.model?' You can make another now that there is room in your bag.':''),[['Sell another item',selling],['See you soon, Thuan',close]]);
    },!!saleProblem(state,offer.name)]),['Keep my items',close],

@@ -7,7 +7,7 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
 /**
  * The Harbour Line bus, and the trick it does at the end of the road.
  *
- * The tunnel is a painting on a rock face. The bus goes through it twice a day anyway,
+ * The tunnel is a painting on a rock face. The bus goes through it on each service,
  * which is the joke, and the joke only works if you watch it happen: the bus drives up
  * the bus-only road, reaches the arch, and from there it is not driving any more — it
  * is being shrunk onto the painting's own vanishing point, which is the one place on a
@@ -23,8 +23,8 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
  * north has to turn somewhere. A pirouette in front of the shelter is the one place you
  * are certainly watching, and it looked like a toy on a turntable. So it does not turn
  * at all now: it rolls out of the painting, stops with its tail at the arch, and the
- * people who are catching it walk up the road and get on. Then the painting takes it
- * back the way it came.
+ * people catching it walk up the road and get on. Then the painting takes it back the
+ * way it came.
  */
 const BODY=Object.freeze({length:8.6,width:2.42,height:2.16,floor:.62});
 
@@ -73,10 +73,11 @@ export function buildBus({shadows=false}={}){
  return bus;
 }
 
+/** Where the bus stands when it is waiting, and the two ends of its run. */
 /**
- * Where the bus stands: far enough out of the arch that the whole of it is on the road
- * and none of it is inside the rock, and no further. The tail sits a boot's width short
- * of the painting.
+ * Where it stands: far enough out of the arch that the whole of it is on the road and
+ * none of it is inside the rock, and no further. The tail sits a boot's width short of
+ * the painting.
  */
 const STOP_Z=TUNNEL.z-BODY.length/2-.7;
 /** The door it is boarded through, and the step inside it, both in world metres. */
@@ -97,23 +98,16 @@ export function createBusRun({parent,shadows=false,colliders}={}){
  const vanish=vanishingPoint(),entry=new THREE.Vector3(MAIN_ROAD.x,0,STOP_Z);
 
  // The whole run is the recede and its reverse: out of the painting to the stop, and
- // back into it. There is no drive down the road and no turn, so there is no SPEED and
- // no TURN any more.
+ // back into it. No drive down the road and no turn, so no SPEED and no TURN.
  const FADE=2.4;
  /**
-  * How far ahead of its time it leaves the far end, in town minutes -- which is also
-  * seconds, because the clock runs at a minute a second -- so that it is standing at
-  * the arch with its doors open on the minute the timetable says.
+  * How long the approach takes, in town minutes -- which is also seconds, because the
+  * clock runs at one minute a second. The bus leaves the far end this far ahead of its
+  * time so that it is standing at the terminus, turned and with its doors open, on the
+  * minute the timetable says.
   */
  const APPROACH=FADE;
- /**
-  * The longest it will hold past its departure time for somebody still walking up.
-  * A driver waits for a regular he can see coming; he does not wait all night for one
-  * who has got himself stuck behind a bench.
-  */
- const HOLD=8;
- let phase='away',fade=0,service=null;
- const since=m=>((m-service)%1440+1440)%1440;
+ let phase='away',fade=0,service=null,serviceAt=null,lastMinutes=null;
 
  /** Somewhere between the mouth of the tunnel and the painted daylight at its far end. */
  const recede=t=>{
@@ -121,9 +115,9 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   bus.position.lerpVectors(entry,vanish,eased);
   bus.scale.setScalar(Math.max(.012,1-eased*.99));
  };
- // Facing south for the whole of its visit, which is the way it came out. Nothing in
- // the run changes its heading.
  const park=()=>{
+  // Facing south for the whole of its visit, which is the way it came out. Nothing
+  // in the run changes its heading.
   bus.position.set(MAIN_ROAD.x,0,STOP_Z);bus.scale.setScalar(1);bus.visible=true;bus.rotation.y=Math.PI;
  };
  park();
@@ -159,6 +153,12 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   get phase(){return phase;},
   /** Where somebody stands to get on: beside the front of the bus, off its flank. */
   get door(){return [DOOR_X,DOOR_Z];},
+  /**
+   * A place in the queue for the door, so that four people waiting for the same bus
+   * are a queue along the kerb rather than four people in one another's coats.
+   * @param {number} place 0 for the front of the queue
+   */
+  queueSpot(place=0){return [DOOR_X-(place%2)*.62,DOOR_Z-Math.floor(place/2)*.85];},
   /** And the step inside it, which is where they stop being on the street. */
   get doorway(){return [MAIN_ROAD.x,DOOR_Z];},
   /** True while it is standing at the arch with its doors open. */
@@ -168,19 +168,38 @@ export function createBusRun({parent,shadows=false,colliders}={}){
   /**
    * @param {number} dt seconds
    * @param {number} minutes the town clock
-   * @param {boolean} inbound whether anybody is still walking up to the stop
    */
-  update(dt,minutes=0,inbound=false){
+  update(dt,minutes=0){
    if(!(dt>0))return;
-   try{this.step(dt,minutes,inbound);}finally{trackSolid();}
+   try{
+    // Loading during a stop restores that service. Returning from an interior or
+    // skipping time discards old trips instead of replaying them back to back.
+    if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){
+     phase='away';service=null;serviceAt=null;bus.visible=false;
+     const day=Math.floor(minutes/1440),m=minutes-day*1440;
+     const current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
+     if(current!==undefined){service=current;serviceAt=day*1440+current;park();phase='waiting';}
+    }
+    lastMinutes=minutes;
+    this.step(dt,minutes);
+   }finally{trackSolid();}
   },
-  step(dt,minutes=0,inbound=false){
+  step(dt,minutes=0){
    if(phase==='away'){
     const due=nextService(minutes);
     if(due.wait<=APPROACH){
-     service=due.service;phase='arriving';fade=1;bus.visible=true;bus.scale.setScalar(.012);
-     bus.rotation.y=Math.PI;
+     service=due.service;serviceAt=minutes+due.wait;phase='arriving';fade=1;
+     recede(1);bus.visible=true;bus.rotation.y=Math.PI;
     }
+    return;
+   }
+   if(phase==='waiting'){
+    // Every service waits fifteen town minutes, without an extra passenger hold: the
+    // people catching it set off for the door long before it shows up.
+    const waited=minutes-serviceAt;
+    // From nought, not from whatever the approach overshot to: a first frame that does
+    // not move is a bus that hesitates before it goes.
+    if(waited>=BUS_DWELL){phase='leaving';fade=0;}
     return;
    }
    if(phase==='arriving'){
@@ -188,16 +207,9 @@ export function createBusRun({parent,shadows=false,colliders}={}){
     // recede run backwards. It ends standing at the arch, and that is where it stays.
     fade-=dt/FADE;
     recede(Math.max(0,fade));
-    if(fade<=0){park();phase='waiting';}
-    return;
-   }
-   if(phase==='waiting'){
-    // It goes when its time is up, and not before. A passenger still on their way
-    // holds it, up to a point: see HOLD.
-    const waited=since(minutes);
-    // From nought, not from whatever the approach overshot to: a first frame that
-    // does not move is a bus that hesitates before it goes.
-    if(waited>=BUS_DWELL&&(!inbound||waited>=BUS_DWELL+HOLD)){phase='leaving';fade=0;}
+    // The fifteen minutes start when it is actually standing there, not when the
+    // timetable said it would be.
+    if(fade<=0){park();serviceAt=Math.max(serviceAt,minutes);phase='waiting';}
     return;
    }
    // Leaving is the recede itself. There is nowhere to drive to: the road ends at the

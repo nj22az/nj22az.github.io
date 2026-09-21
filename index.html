@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/theme-bootstrap.js?v=random-2"></script>
-  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
+  <link rel="stylesheet" href="/styles.css?v=thuans-storage-wip">
 </head>
 <body>
 
@@ -415,8 +415,14 @@
         var isExternal = new URL(p.url, location.origin).origin !== location.origin;
         var linkAttrs = isExternal ? ' target="_blank" rel="noopener"' : '';
         var actionLabel = isExternal ? "Visit site" : "Open project";
+        var cover = p.image
+          ? '<div class="bento-cover"><img src="' + p.image + '" alt="' + p.title + '">' +
+            (p.badge ? '<span class="bento-badge">' + p.badge + '</span>' : '') +
+            '</div>'
+          : '';
 
-        return '<a href="' + p.url + '"' + linkAttrs + ' class="bento-card ' + bentoClass + '" aria-label="' + actionLabel + ': ' + p.title + '">' +
+        return '<a href="' + p.url + '"' + linkAttrs + ' class="bento-card ' + bentoClass + (p.image ? ' has-cover' : '') + '" aria-label="' + actionLabel + ': ' + p.title + '">' +
+          cover +
           '<div class="bento-card-top">' +
             '<div class="bento-icon" data-icon="' + p.icon + '">' + siteIcon(p.icon) + '</div>' +
             '<div class="bento-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +

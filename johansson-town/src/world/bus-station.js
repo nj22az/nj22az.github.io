@@ -19,7 +19,15 @@ export const BUS_STATION=Object.freeze({
  platform:Object.freeze([MAIN_ROAD.x-2.3,23.05]),
  arrival:Object.freeze([-6.1,22.45]),
  driver:Object.freeze([4.1,23.35]),
- exit:Object.freeze([MAIN_ROAD.x,FOREST_EDGE.roadEndZ]),
+ /**
+  * Away / boarding-off waypoint for NPC schedules (not a place to loiter).
+  *
+  * This used to be [MAIN_ROAD.x, FOREST_EDGE.roadEndZ] — the painted coyote-tunnel
+  * mouth. Anyone still visible while phase is `away` (or restored from a save that
+  * stored exit) stood in a clump in front of the arch. The bus owns the mouth
+  * (MOUTH_Z in bus.js). NPCs stay on the platform / queue / street only.
+  */
+ exit:Object.freeze([MAIN_ROAD.x-2.3,23.05]),
 });
 export const BUS_STATION_ROUTES=Object.freeze([
  {id:'bus-approach',width:6,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
@@ -38,9 +46,8 @@ export const pavedByTerminus=(x,z)=>z>MAIN_ROAD.maxZ&&(
  x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z<=BUS_STATION.maxZ
  ||Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2+2.1&&z<=FOREST_EDGE.roadEndZ);
 
-// A modest terminus closes the shopping street. The bus itself remains an
-// implied off-screen service: residents walk to the queue, board, and disappear
-// through the northern exit rather than being teleported to a house.
+// A modest terminus closes the shopping street. Residents queue here for the
+// scheduled bus and leave when it pulls out along the northern road.
 export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{},label=()=>{},shadows=false}={}){
  const group=new THREE.Group();group.name='Harbour Line bus station';parent.add(group);
  const concrete=new THREE.MeshStandardMaterial({color:0x9b9c91,roughness:.9});

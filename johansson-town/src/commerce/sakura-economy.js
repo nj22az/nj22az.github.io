@@ -24,9 +24,10 @@ export function recordSakuraSale(state,cost,receipt=null,details={}){
  if(receipt){shop.receipts.push(receipt);shop.receipts=shop.receipts.slice(-128);}
  shopEntry(state,{minute:details.minute??state.minutes??0,kind:'Sale',item:details.item||'Counter sale',buyer:details.buyer||'Customer',quantity:1,revenue:cost,cost:goodsCost,profit});return true;
 }
-export function buySakuraItem(state,item,minutes){
+export function buySakuraItem(state,item,minutes,thuanAvailable=true){
  const m=((minutes%1440)+1440)%1440;
  if(m<540||m>=1200)return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
+ if(thuanAvailable===false)return {ok:false,message:'Thuan is away from the counter for a bit. Try again when she is back.'};
  if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
  if(state.yen<item.cost)return {ok:false,message:'You do not have enough yen.'};
  const claim=takeShopStock(state,item.id);if(!claim)return {ok:false,message:'Thuan: '+SOLD_OUT};

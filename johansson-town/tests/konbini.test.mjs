@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {restoreSakura} from '../src/commerce/sakura-economy.js';
 import {konbiniItem,defaultKonbini,restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,
- warmableInBasket,checkoutQuote,checkout,receiptText,tenderFor,STAMP_PER_YEN,CARD_STAMPS,WARMABLE} from '../src/commerce/konbini.js';
+ warmableInBasket,checkoutQuote,checkout,receiptText,tenderFor,STAMP_PER_YEN,CARD_STAMPS,WARMABLE,sakuraHoursOpen,SAKURA_AWAY_MESSAGE} from '../src/commerce/konbini.js';
 
 /** A shopper standing in Sakura at 10:00 with a full shelf and money. */
 const shopper=({yen=5000,stamps=0}={})=>{
@@ -92,6 +92,25 @@ test('a checkout that cannot complete puts every item back',()=>{
  assert.equal(basketTotal(state)>0,true,'The basket is still yours to put back');
 });
 
+test('checkout refuses while Thuan is away mid-hours but still works when she is at the counter',()=>{
+ const away=shopper();fill(away);addToBasket(away,'tea');
+ // Afternoon walk window (~14:10): hours open, clerk not available.
+ assert.equal(sakuraHoursOpen(850),true);
+ const refused=checkout(away,{},850,false);
+ assert.equal(refused.ok,false);
+ assert.equal(refused.message,SAKURA_AWAY_MESSAGE);
+ assert.equal(away.yen,5000,'Away refusal must not take money');
+ assert.equal(basketTotal(away)>0,true,'Basket stays until she returns');
+ // Same minute with her present still rings through.
+ const present=shopper();fill(present);addToBasket(present,'tea');
+ const ok=checkout(present,{},850,true);
+ assert.equal(ok.ok,true);
+ assert.equal(present.yen<5000,true);
+ // Overnight closed stays the closed message, even if availability were false.
+ const night=shopper();fill(night);addToBasket(night,'tea');
+ assert.match(checkout(night,{},1300,false).message,/till is closed/);
+});
+
 test('the till is shut outside trading hours and short money is refused',()=>{
  const shut=shopper();fill(shut);addToBasket(shut,'tea');
  assert.match(checkout(shut,{},1300).message,/till is closed/);
@@ -155,7 +174,7 @@ import {SAVE_KEY} from '../src/save.js';
 import {STORE_ITEMS} from '../src/commerce/catalogue.js';
 
 const counter=async()=>{
- const dom=installDOM();
+ globalThis.navigator??={vibrate(){}};const dom=installDOM();
  const {createActivities}=await import('../activities.js?konbini='+Math.random());
  let minutes=600;
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes,
@@ -274,4 +293,73 @@ test('the shop stands in a yard you can walk round, with a back to look at',asyn
  configureTownMode(TOWN_MODES.LEGACY);
  assert.ok(!routeAt(front-SAKURA_FRONT.depth-1.6,centre,.32),'Only the peninsula has the room for a yard');
  configureTownMode(TOWN_MODES.PENINSULA);
+});
+
+test('Examine opens the 3D inspector with Buy · Talk · Put back and baskets on Buy',async()=>{
+ globalThis.navigator??={vibrate(){}};installDOM();
+ const {createInspector}=await import('../inspect-3d.js');
+ const {createActivities}=await import('../activities.js?examine='+Math.random());
+ const {STORE_ITEMS}=await import('../src/commerce/catalogue.js');
+ const THREE=await import('../vendor/three.module.js');
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();
+ let dpr=2;const renderer={getPixelRatio:()=>dpr,setPixelRatio:n=>dpr=n,render(){}};
+ const inspector=createInspector({scene,camera,renderer,canvas:document.createElement('canvas'),onInspect(){},resetInput(){}});
+ const openLabels=()=>{
+  const caption=[...document.body.children].find(el=>el.id==='inspect-caption');
+  assert.ok(caption&&!caption.hidden);
+  const buttons=[...caption.children].flatMap(group=>group.children||[]);
+  return {caption,labels:buttons.filter(b=>!b.hidden).map(b=>b.textContent),buttons};
+ };
+ const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,
+  getSocialContext:()=>({inside:'market',thuanAvailable:true}),
+  onInspectShopGood:item=>inspector.open(item)});
+ for(const id of Object.keys(acts.state.sakura.stock))acts.state.sakura.stock[id].shelf=6;
+ const item=STORE_ITEMS.find(i=>i.id==='coffee');
+ acts.action('store-item',item.name,item);
+ assert.equal(inspector.active,true);
+ assert.equal(document.documentElement.classList.contains('inspecting'),true);
+ let {caption,labels,buttons}=openLabels();
+ assert.deepEqual(labels.slice(0,4),['↶','↷','−','+'],'Orbit controls lead');
+ assert.deepEqual(labels.slice(4),['Buy','Talk to Thuan','Put back']);
+ assert.equal(document.activeElement?.textContent,'Put back','Safe exit is focused');
+ inspector.render(.016);
+ assert.match(caption.children[0].textContent,/¥120/);
+ assert.match(caption.children[0].textContent,/Harbour walk fuel/);
+ buttons.find(b=>b.textContent==='Buy').onclick();
+ assert.equal(inspector.active,false);
+ assert.equal(acts.state.konbini.basket.includes('coffee'),true);
+ assert.match(document.querySelector('#activityBody').firstChild.textContent,/basket/i);
+ const actsAway=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,
+  getSocialContext:()=>({inside:'market',thuanAvailable:false}),
+  onInspectShopGood:item=>inspector.open(item)});
+ for(const id of Object.keys(actsAway.state.sakura.stock))actsAway.state.sakura.stock[id].shelf=6;
+ actsAway.action('store-item',item.name,item);
+ ({labels}=openLabels());
+ assert.ok(!labels.includes('Talk to Thuan'));
+ assert.deepEqual(labels.slice(4),['Buy','Put back']);
+ inspector.close();
+});
+
+test('the till backbar places impulse props behind Thuan without new SKUs',async()=>{
+ const {SAKURA_BACKBAR,SAKURA_LAYOUT}=await import('../src/world/interiors/sakura-layout.js');
+ assert.equal(SAKURA_BACKBAR.length,9);
+ assert.deepEqual(SAKURA_BACKBAR.map(p=>p.id),['ferry-tickets','phone-cards','stamps','gum','matches','osusume','postcard-stand','radio','batteries']);
+ for(const prop of SAKURA_BACKBAR){
+  assert.ok(prop.x>SAKURA_LAYOUT.staff[0],'Props sit on the wall behind the clerk');
+  assert.ok(prop.x<6.7,'and stay inside the east wall');
+ }
+ globalThis.navigator??={vibrate(){}};installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ const old=fetch;const {readFile}=await import('node:fs/promises');
+ globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
+ try{
+  const THREE=await import('../vendor/three.module.js');
+  const {buildSakuraInterior}=await import('../src/world/interiors/sakura-interior.js');
+  const room=new THREE.Group(),hits=[];
+  buildSakuraInterior({room,reg:(o,label)=>hits.push(label),action(){},exit(){}});
+  assert.ok(hits.includes('Look over the till backbar'));
+  assert.ok(hits.includes('Read Sakura sales ledger'),'Ledger kept');
+  assert.ok(hits.includes('Ring service bell'),'Bell kept');
+  let backbar=0;room.traverse(o=>{if(o.name&&(o.name.includes('backbar')||o.name==='Sakura postcard stand'||o.name==='Sakura backbar batteries'))backbar++;});
+  assert.ok(backbar>=5,'Backbar meshes are in the room');
+ }finally{globalThis.fetch=old;}
 });

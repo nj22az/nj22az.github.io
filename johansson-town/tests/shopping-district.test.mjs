@@ -28,16 +28,15 @@ test('shopping district has a northern bus terminus and no residential route dep
 });
 
 test('commuters arrive, work late, and leave through the Harbour Line',()=>{
- // She has two ways home: the nine o'clock, or the ten when she has been at Minato.
- assert.deepEqual(COMMUTER_SHIFTS.Thuan,{arrival:510,start:540,finish:1200,departure:1260,lateDeparture:1320});
+ // She shares the evening service, whether she visits Minato or waits in the rain.
+ assert.deepEqual(COMMUTER_SHIFTS.Thuan,{arrival:510,start:540,finish:1200,departure:1320});
  assert.equal(commuterPhase(profile('Thuan'),515),'arriving');
  assert.equal(commuterPhase(profile('Thuan'),550),'town');
  assert.equal(shiftActive(profile('Thuan'),1000),true);
  assert.equal(commuterPhase(profile('Thuan'),1200),'departing');
- // Nine o'clock only takes her home if she is not at Minato. Rain is what decides.
- assert.equal(commuterPhase(profile('Thuan'),1260,true),'away','She misses the nine in the rain');
- assert.equal(commuterPhase(profile('Thuan'),1260,false),'departing','She is on the nine after a beer');
- assert.equal(commuterPhase(profile('Thuan'),1320,false),'away','She misses the ten as well');
+ assert.equal(commuterPhase(profile('Thuan'),1260,true),'departing','She waits for the evening service in the rain');
+ assert.equal(commuterPhase(profile('Thuan'),1260,false),'departing','She is still at Minato at nine');
+ assert.equal(commuterPhase(profile('Thuan'),1320,false),'away','The boarding gate handles the evening stop');
  assert.equal(residentPlan(profile('Reiko'),1300,false,state).place,'work');
  assert.equal(residentPlan(profile('Tetsuo'),1300,false,state).place,'work');
  assert.equal(residentPlan(profile('Nao'),1000,false,state).place,'izakaya');

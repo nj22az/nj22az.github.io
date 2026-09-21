@@ -8,7 +8,7 @@ materials, height, blinking phase and existing identity. The mapping lives in
 `src/people/vroid.js`. Names, friendships, dialogue, schedules, supper visits and
 v4 saved relationships still refer to the original profiles.
 
-The supplied Yuri model and its own animations remain connected. The office,
+The supplied Thuan model and its own animations remain connected. The office,
 ramen restaurant, Minato exterior/interior, first-person controls and travel
 progression are independent of this character change.
 
@@ -60,7 +60,7 @@ The automated checks load the real GLBs and texture paths, verify file hashes,
 blended skin weights, face morphs, every clip's deformed bounds and planted soles.
 They attach the entire named cast through the production loader and exercise
 movement, greetings, blinking, independent materials/skeletons and drinking. The
-existing game suite also covers interiors, social visits, Yuri's supplied rig,
+existing game suite also covers interiors, social visits, Thuan's supplied rig,
 first-person controls, saves and quest progression. CPU renders inspect the shipped
 atlases and geometry in standing, walking, greeting and seated poses. These are
 asset renders; browser rendering and device frame rates are not measured here.
@@ -92,7 +92,7 @@ evening and Minato before expanding it to the rest of the cast.
 
 The follow-up glitch pass resets stale walking and greeting actions after
 visibility changes or instant relocation, and suspends mixers beneath hidden
-parents. Conversation framing uses the animated VRoid eye anchors or Yuri's
+parents. Conversation framing uses the animated VRoid eye anchors or Thuan's
 head/crown rather than one fixed height, so seated speakers are framed correctly.
 Regression checks reproduce the previous hidden-parent animation fault and
 cover reappearance, relocation, interrupted greetings and standing/seated focus.

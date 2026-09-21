@@ -1,3 +1,5 @@
+import {isWorkshopSite} from './src/world/businesses.js';
+import {harbourTimetable} from './src/people/commuter-schedule.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -10,6 +12,7 @@ import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workboo
 import {STORE_MENU} from './src/people/store-service.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
+import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
@@ -27,12 +30,13 @@ import {createThuanMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
+import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{}}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Harbour Line last departure: 21:00.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1988. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let pendingAbsence=0,ledgerView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
@@ -44,10 +48,12 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
       state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;state.quickTravelNotified=saved.quickTravelNotified===true;
+      if(typeof saved.lastDayKey==='string')state.lastDayKey=saved.lastDayKey;if(Array.isArray(saved.dailyQuests))state.dailyQuests=saved.dailyQuests;if(saved.dailyDone&&(typeof saved.dailyDone==='object'))state.dailyDone=saved.dailyDone;
     }
   } catch {}
 
   state.story=restoreStory(state.story);
+  ensureDailyQuests(state);
   state.konbini=restoreKonbini(state.konbini);
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
@@ -281,7 +287,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     const lines={
       Kenji:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
-      'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line leaves at 21:00.',
+      'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line timetable is at the northern terminal.',
       'Harbour master':'There are sea bream off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
     };
     show(name,lines[name]||'The resident nods politely.',[
@@ -319,7 +325,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function toggleSound(){state.sound=!state.sound;townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';save();}
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
-  function read(name,detail){show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
+  function read(name,detail){if(/harbour notice/i.test(String(name))&&hasDailyQuest(state,'notice')&&!isDailyDone(state,'notice')){markDailyDone(state,'notice');save();say(NOTICE_NUDGE,6);}show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
   function operate(name,detail){
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
@@ -353,7 +359,36 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   // A konbini is not a vending machine: things go in the basket and are paid for at the
   // counter, where Thuan rings them through.
+  // TalkFun one-liners on lift — Thuan's voice, never Yuri's.
+  const EXAMINE_LINES=Object.freeze({
+    tea:'Back of the cooler is colder. Front ones cooked.',
+    coffee:'Harbour walk fuel. Don\'t shake it.',
+    rice:'Wrapped this afternoon. Plum\'s in the middle.',
+    biscuit:'Corner folded so they don\'t rattle.',
+    soap:'Smells like the pink paper, not the flower.',
+    notebook:'For tide times. Or excuses.',
+    postcard:'Old breakwater. Photographer still owes me change.',
+    battery:'For the radio. Ask before you open the hatch.',
+  });
   function storeItem(item){
+    // Prefer the Field-book orbit when the game wired an inspector; tests keep the dialogue path.
+    if(typeof onInspectShopGood==='function'){
+      const brand=item.brand||'',jp=item.jp||'',name=item.name||item.id;
+      const caption=[brand,jp,name].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(' · ')+' · ¥'+item.cost;
+      onInspectShopGood({
+        kind:'shop-good',id:'shop-'+item.id,productId:item.id,title:name+' · ¥'+item.cost,caption,
+        liftLine:EXAMINE_LINES[item.id]||'Shelf price is the price.',
+        canTalk:()=>getSocialContext().inside==='market'&&getSocialContext().thuanAvailable!==false,
+        onBuy:()=>{
+          const result=addToBasket(state,item);save();
+          receipt(result.ok?'Basket':'Sakura Shōten',result.ok
+            ?result.message+' '+basketLines(state).reduce((n,l)=>n+l.count,0)+' item(s), ¥'+basketTotal(state)+'. Pay at the counter.'
+            :result.message);
+        },
+        onTalk:()=>{action('resident','Thuan');},
+      });
+      return;
+    }
     const available=state.sakura.stock[item.id]?.shelf||0;
     const held=state.konbini.basket.filter(id=>id===item.id).length;
     const carrying=state.konbini.basket.length;
@@ -377,6 +412,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function konbiniCounter(){
     const lines=basketLines(state);
     if(!lines.length){receipt('Sakura Shōten','Your basket is empty.');return;}
+    // Same presence gate as Form 3 sell: posted hours alone must not ring an empty till.
+    if(getSocialContext().thuanAvailable===false&&sakuraHoursOpen(getMinutes())){
+      receipt('Sakura Shōten',SAKURA_AWAY_MESSAGE);return;
+    }
     const listing=lines.map(l=>`${l.jp} ${l.name}${l.count>1?' ×'+l.count:''} · ¥${l.cost*l.count}`).join('\n');
     const warmable=warmableInBasket(state);
     if(warmable.length&&counterWarm===null){
@@ -400,7 +439,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   function payAtCounter(){
-    const result=checkout(state,{warm:counterWarm===true,bag:counterBag!==false},getMinutes());
+    const result=checkout(state,{warm:counterWarm===true,bag:counterBag!==false},getMinutes(),getSocialContext().thuanAvailable!==false);
     counterWarm=null;counterBag=null;
     if(!result.ok){receipt('Sakura Shōten',result.message);return;}
     save();
@@ -425,7 +464,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   function radio(name,detail){
     const stations=[
-      '82.1 Harbour Service — fictional relay: Sweden, cool rain; Nam Phuoc, warm showers. Check the moorings.',
+      RADIO_821,
       '89.4 JOJO — tonight’s request: '+JOURNAL[Math.floor(getMinutes())%JOURNAL.length][1]+'. A title from the journal, for the late shift.',
       '95.7 Sports — fictional prefectural score: Harbour '+Math.floor(getMinutes()/30)%8+', Mountain '+Math.floor(getMinutes()/47)%6+'.'
     ];
@@ -439,15 +478,39 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     try{const catalogue=await loadOfficeWorkbooks();if(!modalOpen||revision!==modalRevision)return;body.replaceChildren(createOfficeWorkbookView(catalogue,id,officeRecords));}
     catch{if(!modalOpen||revision!==modalRevision)return;show('Harbour office records','The records could not be loaded. Please try again.',[['Try again',()=>officeRecords(id)],['Close records',close]]);}
   }
+  function storageRestock(){
+    state.sakura=restoreSakura(state.sakura);
+    const minutes=getMinutes();
+    if(!(closingStockPending(state,minutes)||shelvesNeedRestock(state))){
+      show('Stockroom','Shelves are already set.',[['Leave',close]]);
+      return;
+    }
+    const day=Math.floor(minutes/1440);
+    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.',[
+      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day;}],
+      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day;}],
+      ['Leave',close],
+    ]);
+  }
+  function consumeStorageRestock(){
+    const handshake=consumeStorageWonHandshake();
+    if(!handshake)return false;
+    state.sakura=restoreSakura(state.sakura);
+    applyStorageRestock(state,getMinutes());
+    save();
+    say('Shelves restocked.',4);
+    return true;
+  }
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
       case 'workshop':workshopUI.printer();break;
       case 'town-cleanup':{const result=collectTownFind(state,name);if(!result.ok){receipt('Town clean-up',result.message);break;}save();receipt('Street tidied',result.name+' is in your bag. Thuan offers ¥'+result.price+' when the shop has enough takings.');break;}
-      case 'stepwise':if(getSocialContext().inside==='form3d')inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
+      case 'stepwise':if(isWorkshopSite(getSocialContext().inside))inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
+      case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
@@ -467,7 +530,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'radio':radio(name,detail);break;
       case 'ramen':if(getTableService())tableService();else show('Sato Ramen','Take a counter seat to order ramen, onigiri, steamed buns or tea. The cook prepares your meal and serves it at your place.',[['Take a seat',close]]);break;
        case 'phone':show('Public telephone','A handwritten card lists the harbour office.',[['Call harbour office · ¥10',()=>{if(spend(10)&&!onPhone())receipt('Harbour office','“The Harbour Line runs to the northern terminal. Port operations continue through the night. Speak to the harbour master if you want to sell a catch.”');}],['Hang up',close]]);break;
-       case 'bus':receipt('Harbour Line timetable','Shopping District → Harbour Line terminal\n07:00 · 09:30 · 12:00 · 15:00 · 18:30 · 21:00');break;
+       case 'bus':receipt('Harbour Line timetable',harbourTimetable(getMinutes()));break;
       case 'shrine':show('Neighbourhood shrine','The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);show('Set an intention','A bell note hangs above the roofs. Choose one thing to carry back into the street.',['Book','Work','Home'].map(intent=>[intent,()=>{state.shrineIntent=intent;note('Shrine intention: '+intent+'.');receipt('A quiet moment',intent+'. Noted.');}]));}}],['Leave',close]]);break;
     }
   }
@@ -482,6 +545,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1988, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
-  if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
+  // Storage restock handshake may arrive while the tab was on thuans-storage.
+  consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
+  return {action,inventory,close,save,spend,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

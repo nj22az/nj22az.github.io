@@ -24,7 +24,7 @@ Poly Haven's [licence statement](https://polyhaven.com/license) and [CC0 1.0](ht
 
 Original town geometry, procedural fallback rigs, signs and fictional paper text are authored project content. This ledger does not relicense the entire repository.
 
-All named residents now use the five Quaternius low-poly bases, including Aya and Nozomi in Reiko's existing role. Each identity has a stable individual palette, build and bone-mounted accessories; shared base geometry and animation clips are retained. New ponytails, hairbands, scarves and satchels are original project geometry. The earlier Aya and Nozomi models remain archived and are not requested by the character loader. Yuri's original soft model is loaded only for the static figurine inside Sakura.
+All named residents now use the five Quaternius low-poly bases, including Aya and Nozomi in Reiko's existing role. Each identity has a stable individual palette, build and bone-mounted accessories; shared base geometry and animation clips are retained. New ponytails, hairbands, scarves and satchels are original project geometry. The earlier Aya and Nozomi models remain archived and are not requested by the character loader. Thuan's original soft model is loaded only for the static figurine inside Sakura.
 
 The older Kenney Mini Character archive remains on disk under its included CC0 licence but is not loaded. ambientCG, Quaternius UBC/UAL2 and restaurant packs, GSI historical photographs and Sketchfab kits are **not included** in this revision. Later additions, including user-supplied franchise models, are recorded separately below.
 
@@ -38,16 +38,16 @@ The older Kenney Mini Character archive remains on disk under its included CC0 l
 
 Kenji: `characters/realistic/kenji.glb` is authored in Blender using MPFB/MakeHuman anatomical data and the MakeHuman CC0 system asset pack (skin, casualsuit01, shoes01, short01, low-poly eyes, eyebrow001). Exact file hashes, holders, source links and full CC0 text are in `characters/realistic/`. The editable packed `.blend`, scripts and actual CPU render previews are included under `art/characters/kenji/` and `tools/blender/`. MPFB add-on code is an authoring dependency and is not bundled.
 
-Yui: `characters/realistic/yui.glb` uses the MakeHuman CC0 anatomical base, young Asian female skin, female_elegantsuit01, shoes03, long01 hair, low-poly eyes and eyebrow001. Pink textile adaptation, A-line skirt shape, cream collar, glasses, hat and ribbon geometry were authored in Blender. Source hashes and rights holders: `characters/realistic/yui-provenance.json`; full CC0 text is shared with Kenji. User reference photographs are not redistributed.
+Thuan (legacy yui* asset): `characters/realistic/yui.glb` uses the MakeHuman CC0 anatomical base, young Asian female skin, female_elegantsuit01, shoes03, long01 hair, low-poly eyes and eyebrow001. Pink textile adaptation, A-line skirt shape, cream collar, glasses, hat and ribbon geometry were authored in Blender. Source hashes and rights holders: `characters/realistic/yui-provenance.json`; full CC0 text is shared with Kenji. User reference photographs are not redistributed.
 
-## Yuri — user-supplied Meshy design
+## Thuan (legacy yuri* paths) — user-supplied Meshy design
 
-`characters/realistic/yuri-meshy.glb` is the user's uploaded `Meshy_AI_Garden_Charm_0908113531_texture.glb`, included at their explicit request. It embeds three 2048px JPEG textures and contains 14,235 triangles. It is an unrigged posed mesh with no animation clips. It is **not represented as CC0**; the original author/account retains their applicable rights. The previous MakeHuman Yuri remains the local loading fallback.
+`characters/realistic/yuri-meshy.glb` is the user's uploaded `Meshy_AI_Garden_Charm_0908113531_texture.glb`, included at their explicit request. It embeds three 2048px JPEG textures and contains 14,235 triangles. It is an unrigged posed mesh with no animation clips. It is **not represented as CC0**; the original author/account retains their applicable rights. The previous MakeHuman Thuan remains the local loading fallback.
 
-## Yuri — Thoughtful Girl biped revision
+## Thuan (legacy yuri* paths) — Thoughtful Girl biped revision
 
 The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `Meshy_AI_Thoughtful_Girl_in_Pi_biped.zip`, containing textured Walking and Running GLBs. Included at the user's request; not represented as CC0. The supplied skeleton and locomotion are retained, with local Blender geometry/shading/weight repairs and an original quiet idle. The previous Garden Charm design is preserved in git history. Editable packed source and renders: `art/characters/yuri-biped/`.
-## Yuri — Thoughtful Girl (2026-09-08)
+## Thuan (legacy yuri* paths) — Thoughtful Girl (2026-09-08)
 - Source: owner-supplied `Meshy_AI_Thoughtful_Girl_in_Pi_biped(1).zip`, used at the owner's request. No CC0 licence is asserted.
 - Active file: `characters/realistic/yuri-playful.glb`; one textured skinned mesh with the supplied walking and running clips.
 - Packed with `tools/prepare-yuri.py`: duplicate clip removal, shared mesh/textures, embedded 1024px JPEG maps.
@@ -64,7 +64,7 @@ The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `M
 
 ## Living-town prototype · September 2026
 
-Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Yuri's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Yuri; see `docs/LIVING-TOWN.md`.
+Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Thuan's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Thuan; see `docs/LIVING-TOWN.md`.
 
 ## Quiet City Block — owner-supplied Meshy asset (2026-09-08)
 
@@ -72,7 +72,7 @@ Minato izakaya and the 21 resident prototypes are original scripted Blender cons
 
 ## Fitted neighbours and street surfaces (2026-09-09)
 
-The archived fitted cast used `characters/neighbours/resident-00.glb` through `resident-20.glb`, authored with Blender 4.2.23 LTS and MPFB from the MakeHuman CC0 anatomical base and system asset pack. Each has independent age/build/face fitting, fitted clothes and hair, blended skin weights, seven original in-place clips and grounded soles. Covered thighs are masked beneath skirts. Textures are shared locally and limited to 256–1024px; clothing colours and older residents' hair are adapted. Exact inputs, hashes, pinned authoring revision and modifications are in `characters/neighbours/manifest.json` and the per-resident `.source.json` files. Full CC0 terms and source rights holders remain in `characters/realistic/LICENSE-MAKEHUMAN-CC0.md` and `characters/realistic/provenance.json`. The former segmented `living/` models are now an inactive archive. Yuri's supplied asset and rights are unchanged.
+The archived fitted cast used `characters/neighbours/resident-00.glb` through `resident-20.glb`, authored with Blender 4.2.23 LTS and MPFB from the MakeHuman CC0 anatomical base and system asset pack. Each has independent age/build/face fitting, fitted clothes and hair, blended skin weights, seven original in-place clips and grounded soles. Covered thighs are masked beneath skirts. Textures are shared locally and limited to 256–1024px; clothing colours and older residents' hair are adapted. Exact inputs, hashes, pinned authoring revision and modifications are in `characters/neighbours/manifest.json` and the per-resident `.source.json` files. Full CC0 terms and source rights holders remain in `characters/realistic/LICENSE-MAKEHUMAN-CC0.md` and `characters/realistic/provenance.json`. The former segmented `living/` models are now an inactive archive. Thuan's supplied asset and rights are unchanged.
 
 The following surfaces were discovered through the owner's [GameDev Free Resources catalogue](https://github.com/teamgravitydev/gamedev-free-resources). All are CC0 1.0; exact source downloads and before/after hashes are in `materials/oga-manifest.json`.
 
@@ -95,13 +95,13 @@ These two models were supplied by the owner and included at their express reques
 
 Both models use unlit materials to preserve their baked texture/vertex lighting. Original source metadata, input/output SHA-256 hashes, transforms and counts are recorded in each model directory's `manifest.json`. The original uploads are not modified. Reproduction: `python tools/pack-supplied-rooms.py --office /path/to/office.glb --ramen /path/to/ramen.glb` (Python with NumPy). Collision shapes, interaction anchors and the original Sato Ramen fascia/roof trim are project additions. No CC0 licence is asserted for either supplied model.
 
-## Yuri’s bedroom — Bedroom Interior (2026-09-09)
+## Thuan’s bedroom — Bedroom Interior (2026-09-09)
 
 `models/yuri-home/yuri-bedroom.glb` is the owner-supplied **Bedroom Interior** by [ankitk2618](https://sketchfab.com/ankitk2618), [model page](https://sketchfab.com/3d-models/bedroom-interior-082a0fa7766448b8ad68202367cb27c1). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
 
 Adaptations: bake the source hierarchy into vertices; scale the 1.33 m dollhouse interior to a 2.72 m ceiling; rotate the south doorway to +Z; downsample embedded JPEGs to 1024px; merge primitives that share a material; unlit materials keep the baked lighting. 74,874 triangles; 24 draws. Source/output hashes, furniture bounds and transforms: `models/yuri-home/manifest.json`. Reproduction: `python tools/pack-yuri-bedroom.py /path/to/bedroom.glb` (NumPy and Pillow). No CC0 licence is asserted for this supplied interior.
 
-## Yuri’s house — Japanese Residential Home 02 (2026-09-09)
+## Thuan’s house — Japanese Residential Home 02 (2026-09-09)
 
 `models/yuri-home/yuri-home-exterior.glb` is the owner-supplied **Japanese Residential Home 02** by [Morrissey Alexander](https://sketchfab.com/reckzilla), [model page](https://sketchfab.com/3d-models/japanese-residential-home-02-c31697f09152453cb3ed215482e7a810). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
 
@@ -185,7 +185,7 @@ The complete seven-building street, canal and bridge are retained. Changes inclu
 
 Eight approach buildings, signs, lights, vending machines and paving lead into the existing restaurant façades. The studio backdrop, two closing buildings and central pole/cables were removed to make the connection. Other changes: baked transforms, static material batches, compacted vertices and smaller embedded JPEG textures. Original retained geometry, UVs and authorship are preserved. See `models/dining-street/CREDITS.md`, `manifest.json` and `tools/pack-dining-street.mjs`.
 
-## Yuri’s apartment replacement
+## Thuan’s apartment replacement
 
 **Seinfeld Apartment** by **kagley**, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Source model](https://sketchfab.com/3d-models/seinfeld-apartment-fd8abc336560446f9714dfe7076295b9). Supplied by the project owner as `seinfeld_apartment.glb`. Converted legacy diffuse materials, resized embedded textures, merged compatible primitives, scaled uniformly to metres, and moved the breakfast table 25 cm to clear the study passage. Runtime file: `models/yuri-home/seinfeld-apartment.glb`. Original metadata and SHA-256 recorded in the adjacent `manifest.json`.
 

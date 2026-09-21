@@ -18,6 +18,11 @@
 #directory h3{color:#41584d;margin:20px 0 8px;font-size:14px}
 @media(pointer:coarse){
  #hud #prompt{display:none}
+ /* Seated opening: show the Stand prompt so touch matches desktop (touch-ui still labels #act). */
+ body.hud-seated #hud #prompt{
+  display:block;opacity:1;bottom:calc(env(safe-area-inset-bottom) + 118px);
+  max-width:min(70vw,280px);font-size:13px;letter-spacing:.02em;text-align:center;
+ }
  #run{bottom:calc(env(safe-area-inset-bottom) + 140px)}
  #drink{bottom:calc(env(safe-area-inset-bottom) + 140px)}
  #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 210px);font-size:14px}

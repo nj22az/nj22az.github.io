@@ -8,7 +8,6 @@ import {batchStaticProps} from '../render/static-props.js';
 import {RESIDENTS} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
-import {MAIN_ROAD} from './main-road.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -26,6 +25,7 @@ import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
 import {createBusRun} from './bus.js';
 import {windowGlow} from '../render/dusk.js';
+import {isOceanMaterial,tickOcean} from './ocean.js';
 
 // Johansson Town district composition and street interactions.
 // Resource discovery is guided by Fasani/three-js-resources. Production runtime
@@ -166,7 +166,7 @@ function addStreetLife(world,options,factory){
   return {interactions,lights};
 }
 
-function findSea(group){let sea=null;group.traverse(o=>{const p=o.geometry?.parameters;if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&p?.width===160&&p?.height===86)sea=o;});return sea;}
+function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Peninsula surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
 export function createTown(options){
   const mode=configureTownMode(options.townMode);izakayaPlot();
@@ -206,7 +206,7 @@ export function createTown(options){
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.combinedWorkshop)return h>=540||h<30;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   // The peninsula keeps the park and the port; the dining lane and the izakaya are
@@ -236,7 +236,7 @@ export function createTown(options){
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);
-  if(sea?.material){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
+  if(sea?.material&&!isOceanMaterial(sea.material)){sea.material.flatShading=false;sea.material.dithering=true;sea.material.needsUpdate=true;}
   const baseUpdate=world.update.bind(world);
   // Reused every frame rather than rebuilt: the doors only need to know where people
   // are, and this runs at frame rate.
@@ -245,21 +245,8 @@ export function createTown(options){
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.eastLawn?.tick?.(time,minutes);
     world.busStation?.update(minutes,day);
-    // The Harbour Line runs to a timetable and holds for anyone still walking up to
-    // it -- somebody the schedule has sent to the stop, close enough that the driver
-    // would wait rather than pull out in front of them.
-    //
-    // Close enough matters. Without the radius it also held for people who had just
-    // left work on the other side of town for a bus two services later: the 19:00
-    // stood for its full twelve minutes because Kenji had set off for the 20:00.
-    // Somebody on the bus road with the bus in sight, rather than anybody anywhere
-    // whose next move is a bus. A radius was the wrong shape for it once the bus
-    // stopped coming down to the shelter: the walk up the road is twelve metres on its
-    // own, so a radius wide enough to cover it also covered half the town.
-    world.bus?.update(dt,minutes,world.people.some(p=>{
-     if(!p.g.visible||p.g.userData.indoors||p.g.userData.place!=='bus')return false;
-     return p.g.position.z>MAIN_ROAD.maxZ&&p.g.position.distanceTo(world.bus.bus.position)>2.4;
-    }));
+    // Three daily services, each with a fifteen-minute stop.
+    world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){
@@ -271,7 +258,10 @@ export function createTown(options){
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day,minutes);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
-    if(sea){const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
+    if(sea){
+      if(isOceanMaterial(sea.material))tickOcean(time);
+      else{const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
+    }
   };
   world.resources=factory.resources;
   world.quality={

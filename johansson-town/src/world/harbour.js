@@ -8,8 +8,10 @@ import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {buildStreetLamps} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
+import {createHarbourBasin,tickOcean,setOceanWeather} from './ocean.js';
 import {buildStorefront} from './storefront.js?snappy=1';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 import {peninsulaActive} from './town-mode.js';
@@ -189,6 +191,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   }
   for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d');
 
+  // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
+  // (no new PointLights); kept out of static batching so lanternGlow can update.
+  const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile});
+
   // Useful street furniture sits in the block recesses, clear of junctions.
   const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);
   if(!vendingReady())details.push({id:'street-vending',x:4.35,z:9.1,radius:42,load:()=>hydrateVending(vending,{shadows})});
@@ -210,10 +216,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([38,.6,.65],[0,-.12,-49.65],0x596568);
   box([38,.18,.55],[0,.19,-49.28],0x343f41);
 
-  const seaGeo=new THREE.PlaneGeometry(160,86,42,28);
-  const seaMat=new THREE.MeshStandardMaterial({color:0x426f79,transparent:false,dithering:true});
-  const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.50,-92.5);sea.receiveShadow=false;group.add(sea);water.push(sea);
-  const seaPos=seaGeo.attributes.position;
+  const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
 
   const warehouseWorld={group,colliders};
   // The warehouse stands at the quay in every layout. It was switched off while the
@@ -297,18 +300,19 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
 
   return {
-    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,
+    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,
     landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
     harbourShops,boardwalk,plantSites,shopDoors:shopDoors.filter(Boolean),
     setRain(value){
       boardwalk.setRain(value);
-      wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;seaMat.color.set(value?0x345b66:0x426f79);
+      wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(0xb8b8af,'road');road.roughness=value?.28:.84;setOceanWeather(value);
     },
     update(dt,time,day,minutes=1002){
       boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
-      for(let i=0;i<seaPos.count;i++){const x=seaPos.getX(i),y=seaPos.getY(i);seaPos.setZ(i,Math.sin(x*.17+time*.72)*.035+Math.sin(y*.12-time*.47)*.024);}seaPos.needsUpdate=true;
+      tickOcean(time);
       const lantern=lanternGlow(minutes),glass=windowGlow(minutes);
       for(const m of lamps){m.material.emissive.set(0xf0a65c);m.material.emissiveIntensity=.12+lantern*.82;}
+      streetLamps.update(lantern);
       lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});

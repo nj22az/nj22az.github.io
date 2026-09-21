@@ -20,7 +20,7 @@ export function installDOM(saved={}){
  globalThis.document={createElement:()=>new Element(),createElementNS:()=>new Element(),querySelector:s=>{if(!elements.has(s))elements.set(s,new Element());return elements.get(s);},addEventListener(){},exitPointerLock(){},activeElement:new Element(),documentElement:new Element(),body:new Element()};
  globalThis.window={};globalThis.location={href:'https://nj22az.github.io/johansson-town/'};
  globalThis.localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
- globalThis.innerWidth=1024;navigator.vibrate=()=>{};
+ globalThis.innerWidth=1024;(globalThis.navigator??={}).vibrate=()=>{};
  const actions=()=>document.querySelector('#activityActions').children;
  return {elements,storage,
   /** Every button label currently offered by the modal. */
