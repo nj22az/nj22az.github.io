@@ -83,10 +83,7 @@ export function buildFullTown(options){
  const pair=id=>{const p=FULL_TOWN.sites.get(id).door;return [p[0],p[2]];};IZAKAYA_DOOR.splice(0,2,...pair('izakaya'));RAMEN_DOOR.splice(0,2,...pair('ramen'));FULL_TOWN.escort=pair('form3d');
  const occupied=[];
  STREET_CAST.forEach((profile,i)=>{
-  // Keep the private Nao review URL beside the player's Sakura starting point.
-  // Her published work position remains Minato Izakaya.
-  const previewNao=profile.name==='Nao'&&typeof location!=='undefined'&&new URLSearchParams(location.search).get('cast-preview')==='nao';
-  const work=previewNao?nearest(-2.2,-23.8,occupied,4,true):profile.name==='Harbour master'?nearest(-12,-12.4,occupied,4,true):nearest(...pair(WORK_SITE[profile.name]),occupied,4,true);
+  const work=profile.name==='Harbour master'?nearest(-12,-12.4,occupied,4,true):nearest(...pair(WORK_SITE[profile.name]),occupied,4,true);
   occupied.push(work);
   const homeId=HOME_SITE[profile.name];
   const home=profile.name==='Thuan'?nearest(...doorApproach(STREET_DOORS.find(d=>d.id==='house-west-canal')),[],4,true):nearest(...(FULL_TOWN.sites.get(homeId)?pair(homeId):doorApproach(STREET_DOORS.find(d=>d.id===homeId)||STREET_DOORS[i])),[],4,true);

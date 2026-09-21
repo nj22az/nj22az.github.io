@@ -4,6 +4,7 @@ import {SHOP_STOCK,stockSpec,takeShopStock,returnShopStock,restockItem,depletedS
 import {recordSakuraSale,shopEntry,advanceDeliveries} from '../commerce/sakura-economy.js';
 import {createRoomWalk} from './room-walk.js';
 import {marketVisitPurpose} from './market-visits.js';
+import {residentPersonality} from './resident-personalities.js';
 import {SAKURA_SHELVES} from '../world/interiors/sakura-layout.js';
 
 
@@ -25,7 +26,9 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
  }
  function choices(person){
   const start=(Math.floor(getMinutes()/1440)+person.profile.name.length)%SHOP_STOCK.length;
-  return Array.from({length:SHOP_STOCK.length},(_,i)=>SHOP_STOCK[(start+i)%SHOP_STOCK.length]).filter(item=>ledger.account(person.profile.name,getMinutes()).yen>=item.cost);
+  const rotation=Array.from({length:SHOP_STOCK.length},(_,i)=>SHOP_STOCK[(start+i)%SHOP_STOCK.length]),preferred=residentPersonality(person.profile.name).shopping;
+  if(preferred){const index=rotation.findIndex(item=>item.id===preferred);if(index>0)rotation.unshift(rotation.splice(index,1)[0]);}
+  return rotation.filter(item=>ledger.account(person.profile.name,getMinutes()).yen>=item.cost);
  }
  function soldOut(person,record){finish(person,record);const clerk=world.people.find(p=>p.profile.name==='Thuan');if(clerk)clerk.g.userData.residentSpeech={text:SOLD_OUT,until:getMinutes()+5};}
  function update(dt){
