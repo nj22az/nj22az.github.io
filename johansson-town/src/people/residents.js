@@ -40,5 +40,8 @@ export function residentHomeDescription(name){
 // Movement-isolation phase: publish Thuan alone until her locomotion is visually
 // correct in every part of the town. The resident profiles remain intact above so
 // neighbours can be reintroduced one at a time without reconstructing their lives.
-export const STREET_CAST_NAMES=Object.freeze(['Thuan']);
+// `?cast-preview=nao` is a non-published review surface for checking Nao before
+// her staged reintroduction. The normal game, saved games and tests still get Thuan alone.
+const CAST_PREVIEW=typeof location!=='undefined'&&new URLSearchParams(location.search).get('cast-preview');
+export const STREET_CAST_NAMES=Object.freeze(CAST_PREVIEW==='nao'?['Thuan','Nao']:['Thuan']);
 export const STREET_CAST=RESIDENTS.filter(p=>STREET_CAST_NAMES.includes(p.name));

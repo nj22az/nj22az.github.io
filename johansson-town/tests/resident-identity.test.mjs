@@ -9,13 +9,13 @@ import {preloadModels,createLocalCharacters,createYuriFigurine} from '../src/peo
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
 import {SAVE_KEY,migrateThuan} from '../src/save.js';
 
-test('all named low-poly identities are distinct, retain shared body buffers and keep original Thuan only as a small static figurine',async()=>{
+test('resident identities are distinct, Nao uses her VRM and original Thuan remains only as a small static figurine',async()=>{
  installDOM();const native=globalThis.fetch,requests=[];globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return native(input);requests.push(url);return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));};
  try{
-  await preloadModels();assert.equal(requests.length,6);assert.ok(requests.every(url=>!url.includes('/realistic/')&&!url.includes('vroid')));
+  await preloadModels();assert.equal(requests.length,7);assert.ok(requests.every(url=>!url.includes('/realistic/')));assert.equal(requests.filter(url=>url.endsWith('/nao/Nao.vrm')).length,1);
   const scene=new THREE.Scene(),models=createLocalCharacters(),signatures=new Set(),actors=[];
-  const cast=[...PROFILES,{name:'Yui'}];
+  const cast=[...PROFILES.filter(profile=>profile.name!=='Nao'),{name:'Yui'}];
   for(const profile of cast){
    const g=new THREE.Group();g.userData.name=profile.name;scene.add(g);const actor=models.attach(g,profile.name,profile.height);actors.push(actor);
    let skin;actor.model.traverse(o=>{if(o.isSkinnedMesh&&!o.userData.facialFeatures)skin=o;});assert.ok(actor.lowPoly&&skin);const accessories=[];actor.model.traverse(o=>{if(o.name.startsWith('resident-')&&o.name!=='resident-held-item')accessories.push(o.name);});assert.ok(accessories.length,profile.name+' has an authored accessory');
@@ -23,10 +23,11 @@ test('all named low-poly identities are distinct, retain shared body buffers and
    let bodyDraws=0;actor.model.traverse(o=>{if(o.isMesh)bodyDraws++;});assert.ok(bodyDraws<=3,profile.name+' keeps at most three standing draws');
   }
   assert.equal(signatures.size,cast.length);
+  const naoEntity=new THREE.Group();naoEntity.userData.name='Nao';scene.add(naoEntity);const nao=models.attach(naoEntity,'Nao',1.65);assert.equal(nao.lowPoly,false);assert.equal(naoEntity.userData.visualSource,'VRoid · Nao');assert.ok(nao.actions.has('Walk')&&nao.actions.has('CounterIdle'));
   const entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);const yuri=models.attach(entity,'Thuan');assert.equal(yuri.height,1.64);assert.equal(yuri.lowPoly,false);assert.equal(yuri.model.getObjectByName('resident-ribbon'),undefined);
-  const nao=actors.find(a=>a.entity.userData.name==='Nao'),ys=yuri.model.getObjectByName('output_unwrapped');let ns;nao.model.traverse(o=>{if(o.isSkinnedMesh)ns=o;});assert.notEqual(ys.geometry.attributes.position,ns.geometry.attributes.position);assert.notEqual(ys.geometry.attributes.position.count,ns.geometry.attributes.position.count);assert.ok(ys.material.map);
+  const ys=yuri.model.getObjectByName('output_unwrapped');let ns;nao.model.traverse(o=>{if(o.isSkinnedMesh)ns=o;});assert.notEqual(ys.geometry.attributes.position,ns.geometry.attributes.position);assert.notEqual(ys.geometry.attributes.position.count,ns.geometry.attributes.position.count);assert.ok(ys.material.map);
   const figure=await createYuriFigurine();assert.ok(figure);assert.equal(requests.filter(url=>url.includes('yuri-playful')).length,1);let skins=0;figure.traverse(o=>{if(o.isSkinnedMesh)skins++;});assert.equal(skins,0,'Figurine is frozen geometry, not another actor');
-  const bounds=new THREE.Box3().setFromObject(figure);assert.ok(Math.abs(bounds.max.y-bounds.min.y-.30)<.001);assert.equal(figure.userData.figurine,true);assert.equal(models.actors.length,cast.length+1);
+  const bounds=new THREE.Box3().setFromObject(figure);assert.ok(Math.abs(bounds.max.y-bounds.min.y-.30)<.001);assert.equal(figure.userData.figurine,true);assert.equal(models.actors.length,cast.length+2);
   await createYuriFigurine();assert.equal(requests.filter(url=>url.includes('yuri-playful')).length,1);
  }finally{globalThis.fetch=native;}
 });
