@@ -37,6 +37,8 @@ export function residentHomeDescription(name){
  const roommates=householdFor(name).residents.filter(n=>n!==name);
  return address+(roommates.length?' I share the flat with '+roommates.join(' and ')+'.':neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');
 }
-// The peninsula scene uses the same active roster, without the bus driver.
-export const STREET_CAST_NAMES=Object.freeze(['Thuan','Nao','Mrs Sato','Kenji','Aya','Harbour master','Reiko','Tetsuo','Officer Mori']);
+// Movement-isolation phase: publish Thuan alone until her locomotion is visually
+// correct in every part of the town. The resident profiles remain intact above so
+// neighbours can be reintroduced one at a time without reconstructing their lives.
+export const STREET_CAST_NAMES=Object.freeze(['Thuan']);
 export const STREET_CAST=RESIDENTS.filter(p=>STREET_CAST_NAMES.includes(p.name));

@@ -5,7 +5,7 @@ import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
 import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
-import {RESIDENTS} from '../people/residents.js';
+import {STREET_CAST} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {buildDistricts} from './districts.js?snappy=1';
@@ -173,6 +173,10 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
+  // The harbour fallback supplies placeholder residents. During the Thuan movement
+  // isolation phase none of those actors may survive into the playable town.
+  for(const person of world.people)person.g?.removeFromParent();
+  world.people.length=0;
   const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
   world.forestEdge=forestEdge;
   // The road out of town has to end somewhere, and on the peninsula it ends at a
@@ -194,11 +198,6 @@ export function createTown(options){
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }
-  for(const [name,x,z] of [['Bus driver',...TOWN_DESTINATIONS.bus]]){
-    const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;world.group.add(g);
-    world.people.push({g,x,z,index:world.people.length,legs:[],arms:[]});
-    options.register(g,'Talk to '+name,()=>options.onAction('resident',name));
-  }
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
@@ -207,7 +206,7 @@ export function createTown(options){
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.combinedWorkshop)return h>=540||h<30;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
-  for(const profile of RESIDENTS){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
+  for(const profile of STREET_CAST){let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(profile.work[0],groundHeight(...profile.work),profile.work[1]);}
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   // The peninsula keeps the park and the port; the dining lane and the izakaya are
   // switched off with the rest of the buildings.

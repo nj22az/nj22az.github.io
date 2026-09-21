@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createFacing,occupied,faceYaw,turnToward,offBy,alignedStep,OCCUPIED_POSES} from '../src/people/facing.js';
+import {createFacing,occupied,faceYaw,turnToward,offBy,alignedStep,forwardOnly,travelError,travelYaw,FORWARD_ONLY_ANGLE,OCCUPIED_POSES} from '../src/people/facing.js';
 
 const person=(x,z,data={})=>{
  const g=new THREE.Group();g.position.set(x,0,z);g.userData={...data};
@@ -117,4 +117,14 @@ test('nobody outruns their own turn',()=>{
  assert.equal(alignedStep(-Math.PI),0,'and it does not care which way round');
  assert.equal(alignedStep(4*Math.PI),0,'nor about angles past half a turn');
  assert.ok(alignedStep(.2)>.97,'a small correction barely slows you');
+});
+
+test('Thuan forward-only travel rejects sideways and backward translation',()=>{
+ assert.ok(Math.abs(travelYaw(0,-1))<1e-12);
+ assert.equal(forwardOnly(0,0,-1),true);
+ assert.equal(forwardOnly(Math.PI,0,-1),false,'backward travel is forbidden');
+ assert.equal(forwardOnly(Math.PI/2,0,-1),false,'sideways travel is forbidden');
+ assert.equal(forwardOnly(FORWARD_ONLY_ANGLE*.9,0,-1),true);
+ assert.equal(forwardOnly(FORWARD_ONLY_ANGLE*1.1,0,-1),false);
+ assert.ok(Math.abs(travelError(Math.PI,0,-1))>3,'a reverse step reports a half-turn error');
 });

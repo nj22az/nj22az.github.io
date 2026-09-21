@@ -48,6 +48,17 @@ export function turnToward(current,target,dt,rate=6){
  */
 export const alignedStep=angle=>Math.max(0,Math.cos(Math.min(Math.abs(angle),Math.PI)));
 
+// Thuan may only translate once her body is effectively pointing along the step.
+// Eight hundredths of a radian is under five degrees: visually forward, not a
+// sideways shuffle disguised by a slowed walk cycle.
+export const FORWARD_ONLY_ANGLE=.08;
+export const travelYaw=(dx,dz)=>Math.atan2(-dx,-dz);
+export function travelError(yaw,dx,dz){
+ const target=travelYaw(dx,dz);
+ return Math.atan2(Math.sin(target-yaw),Math.cos(target-yaw));
+}
+export const forwardOnly=(yaw,dx,dz)=>Math.abs(travelError(yaw,dx,dz))<=FORWARD_ONLY_ANGLE;
+
 /** How far off a person's own facing a point is, in radians. */
 export function offBy(entity,point){
  const want=faceYaw(entity.position,point);

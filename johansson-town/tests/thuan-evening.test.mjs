@@ -11,6 +11,7 @@ import {EAST_LAWN} from '../src/world/east-lawn.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
+import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 
 const THUAN=RESIDENTS.find(p=>p.name==='Thuan');
 const shift=COMMUTER_SHIFTS.Thuan;
@@ -74,11 +75,12 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
    assert.equal(plan(m).activity,leg.activity,'The plan disagrees with the walk at '+m);
   }
   // Round the back for a sleep first, then the park and the sea wall.
-  assert.equal(legs.length,5,'The break is not five legs');
+  assert.equal(legs.length,6,'The break is missing a deliberate return leg');
   assert.match(legs[0].activity,/back/i);
   assert.match(legs[1].activity,/asleep/i);
   assert.match(legs[2].activity,/park/i);
-  assert.match(legs.at(-1).activity,/sea wall/i);
+  assert.match(legs.at(-2).activity,/sea wall/i);
+  assert.match(legs.at(-1).activity,/back to Sakura/i);
   // The pace has to survive into the plan, or the leisurely legs are walked at the
   // town's errand speed and the unhurried cycle her model carries never plays at all.
   // The legs whose point is getting somewhere keep the ordinary pace: see the walk to
@@ -86,7 +88,7 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   const strolling=legs.filter(leg=>leg.place==='stroll'||leg.place==='park');
   assert.ok(strolling.length,'No leisurely legs at all');
   for(const leg of strolling)assert.ok(leg.pace>0&&leg.pace<1,leg.activity+' is planned at '+leg.pace+' m/s');
-  assert.equal(plan(THUAN_WALK_END-3).pace,strolling.at(-1).pace,'The pace is dropped on the way to the plan');
+  assert.ok(plan(THUAN_WALK_END-3).pace>=1.25,'The return walk cannot reach Sakura before the break ends');
   for(const leg of legs.filter(l=>l.place==='nap'))assert.equal(leg.pace,undefined,leg.activity+' dawdles on the way there');
   assert.equal(plan(THUAN_WALK_START-5).pace,undefined,'A working shift is not a stroll');
 
@@ -100,15 +102,16 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   // Only the legs where she has arrived somewhere let the activity system stop her,
   // or she sits down on the first bench she passes and never reaches the park. The
   // nap is its own place because it has its own bench and its own pose.
-  assert.deepEqual(legs.map(l=>l.place),['nap','nap','park','stroll','stroll']);
-  // Everything after the nap happens out on the east green, inside it rather than out
-  // over the water, and the last leg of all ends at the sea wall.
-  for(const leg of legs.slice(2)){
+  assert.deepEqual(legs.map(l=>l.place),['nap','nap','park','stroll','stroll','market']);
+  // The leisure legs happen out on the east green, inside it rather than over the
+  // water. The final leg deliberately returns to Sakura.
+  for(const leg of legs.slice(2,-1)){
    const [x,z]=leg.target;
    assert.ok(x>EAST_LAWN.minX&&x<EAST_LAWN.maxX,'Off the lawn at x='+x);
    assert.ok(z>EAST_LAWN.minZ&&z<EAST_LAWN.maxZ,'Off the lawn at z='+z);
   }
-  assert.ok(legs.at(-1).target[0]>EAST_LAWN.maxX-6,'The sea wall leg is nowhere near the sea wall');
+  assert.ok(legs.at(-2).target[0]>EAST_LAWN.maxX-6,'The sea wall leg is nowhere near the sea wall');
+  assert.deepEqual(legs.at(-1).target,MARKET_THRESHOLD);
 
   // Rain keeps her in, and nobody else gets her walk.
   assert.equal(thuanAfternoon(THUAN,THUAN_WALK_START+10,true),null);

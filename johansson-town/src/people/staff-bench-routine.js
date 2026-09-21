@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {THUAN_CHAIR_STEP} from './thuan-chair-motion.js';
+import {travelYaw} from './facing.js';
 
 // Own the short movement through the bench's collision footprint until she is
 // standing clear again. Ordinary navigation must never start inside the seat.
@@ -17,7 +18,7 @@ export function createStaffBenchRoutine({entity,seat,isOccupied=()=>false}){
  function walk(target,dt){
   const dx=target[0]-entity.position.x,dz=target[1]-entity.position.z,d=Math.hypot(dx,dz);
   if(d<.004)return true;
-  if(!turn(Math.atan2(-dx,-dz),dt))return false;
+  if(!turn(travelYaw(dx,dz),dt))return false;
   const step=Math.min(d,dt*Math.min(.72,Math.sqrt(2*1.8*d)));
   entity.position.x+=dx/d*step;entity.position.z+=dz/d*step;return false;
  }
