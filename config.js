@@ -16,7 +16,7 @@ const CONFIG = {
 
   author: {
     name: "Nils Johansson",
-    role: "Field Service Engineer · Marine Systems",
+    role: "Field Service Engineer \u00b7 Marine Systems",
     location: "Southeast Asia",
     bio: "Marine engineer turned field service engineer, working across maritime systems, precision material testing, and industrial commissioning. I combine hands-on diagnostics with structured delivery, clear documentation, and cross-cultural collaboration.",
     social: {
@@ -56,9 +56,19 @@ const CONFIG = {
 
   projects: [
     {
+      title: "EL-LABB",
+      description:
+        "Touchscreen DC lab trainer for YH Elteknik och ell\u00e4ra. Student name login, course goals 4\u20139, meters, holding circuit and troubleshooting on SELV 12\u201324 V.",
+      url: "/ellab/",
+      icon: "zap",
+      tags: ["YH", "Elteknik", "Lab simulator"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "Thuan's Storage",
       description:
-        "Work in progress. Walk Thuan through Sakura Shōten's stockroom, pick the day's list, and restock the konbini.",
+        "Work in progress. Walk Thuan through Sakura Sh\u014dten's stockroom, pick the day's list, and restock the konbini.",
       url: "/thuans-storage/",
       icon: "joystick",
       image: "/thuans-storage/cover.jpg",
@@ -149,7 +159,6 @@ const CONFIG = {
     },
   ],
 
-  /** Preserved for possible future restoration; not shown on the public site. */
   archivedProjects: [
     {
       title: "Jonsson's Anslagstavla",
@@ -164,16 +173,9 @@ const CONFIG = {
     },
   ],
 
-  /** WordPress API for journal feed */
   wordpressApi:
     "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts",
 
-  /**
-   * Inline SVG logo — rubber-stamp seal style.
-   * Uses currentColor for theme adaptability.
-   * @param {number} size - width/height in px
-   */
-  /** Rectangular nav logo — wide, readable at nav bar height */
   navLogo: function (h) {
     var height = h || 32;
     var width = Math.round(height * 5.6);
@@ -184,7 +186,6 @@ const CONFIG = {
     '</svg>';
   },
 
-  /** Circular seal logo — for hero and about sections */
   logo: (function () {
     var _id = 0;
     return function (size) {
@@ -205,7 +206,6 @@ const CONFIG = {
     };
   })(),
 
-  // Inline SVG icon paths (SF Symbols / Lucide style, 24x24 viewBox)
   icons: {
     github:
       "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4M9 18c-4.51 2-5-2-7-2",
@@ -239,5 +239,7 @@ const CONFIG = {
       "M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2ZM6 15v-2a6 6 0 0 1 12 0v2M12 9V7M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
     package:
       "M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
+    zap:
+      "M13 2 3 14h9l-1 8 10-12h-9l1-8Z",
   },
 };
