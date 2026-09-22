@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>EL-LABB – Elteknik och ellära</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="gate" class="gate">
+    <form id="gate-form" class="gate-card">
+      <div class="logo">EL-<span>LABB</span></div>
+      <h1>Elteknik och ellära</h1>
+      <p>YH sjöfart / industri · SELV 12–24 V · mål 4–9</p>
+      <label>Namn</label>
+      <input id="gate-name" required autocomplete="name" placeholder="För- och efternamn">
+      <label>Klass / grupp</label>
+      <input id="gate-group" placeholder="t.ex. YH26 A">
+      <button class="check" type="submit">Starta labb</button>
+    </form>
+  </div>
+
+  <header class="app-header">
+    <div class="logo">EL-<span>LABB</span></div>
+    <div class="header-title">Simulerad labbplatta · SELV 12 / 24 V · YH Elteknik</div>
+    <span id="who" class="hint"></span>
+    <button class="ghost" id="btn-logout" type="button" style="width:auto;padding:8px 12px">Byt elev</button>
+    <select id="probe-mode" class="pill" aria-label="Pekläge">
+      <option value="wire">Pekläge: tråd</option>
+      <option value="pos">Pekläge: PROBE+ (röd)</option>
+      <option value="com">Pekläge: COM (svart)</option>
+    </select>
+  </header>
+
+  <div class="layout">
+    <aside class="side">
+      <h2>Labbmoment</h2>
+      <div id="lab-list"></div>
+      <div id="lab-copy"></div>
+    </aside>
+
+    <main class="board-wrap">
+      <div class="board" id="board">
+        <svg id="wires"></svg>
+        <div class="row">
+          <div class="card psu">
+            <h4>Labbaggregat</h4>
+            <div class="range-wrap">
+              <input id="psu" type="range" min="0" max="24" step="0.5" value="12" />
+              <div class="val" id="psu-val">12.0 V</div>
+            </div>
+            <div class="jacks">
+              <button class="jack plus" data-jack="PSU+"><i class="hole"></i><span>PSU+</span></button>
+              <button class="jack minus" data-jack="PSU-"><i class="hole"></i><span>PSU−</span></button>
+            </div>
+          </div>
+          <div class="card">
+            <h4>Batteri 12 V</h4>
+            <p class="hint" style="margin:0 0 8px">Skolans AGM – inte ur bilen</p>
+            <div class="jacks">
+              <button class="jack plus" data-jack="BAT+"><i class="hole"></i><span>BAT+</span></button>
+              <button class="jack minus" data-jack="BAT-"><i class="hole"></i><span>BAT−</span></button>
+            </div>
+            <button class="sw" id="btn-weak" type="button">Svagt batteri</button>
+          </div>
+          <div class="card">
+            <h4>Säkring 8 A</h4>
+            <div class="jacks">
+              <button class="jack plus" data-jack="FUSE+"><i class="hole"></i><span>IN</span></button>
+              <button class="jack plus" data-jack="FUSE-"><i class="hole"></i><span>UT</span></button>
+            </div>
+            <button class="sw" id="btn-fuse" type="button">Återställ</button>
+          </div>
+          <div class="card">
+            <h4>Huvudbrytare</h4>
+            <button class="sw on" id="sw-main" type="button">ON / OFF</button>
+            <div class="jacks">
+              <button class="jack" data-jack="MAINA"><i class="hole"></i><span>1</span></button>
+              <button class="jack" data-jack="MAINB"><i class="hole"></i><span>2</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="card"><h4>R 100 Ω</h4><div class="jacks"><button class="jack" data-jack="R100a"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="R100b"><i class="hole"></i><span>b</span></button></div></div>
+          <div class="card"><h4>R 220 Ω</h4><div class="jacks"><button class="jack" data-jack="R220a"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="R220b"><i class="hole"></i><span>b</span></button></div></div>
+          <div class="card"><h4>R 470 Ω</h4><div class="jacks"><button class="jack" data-jack="R470a"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="R470b"><i class="hole"></i><span>b</span></button></div></div>
+          <div class="card"><h4>Kabel 2 m</h4><div class="jacks"><button class="jack" data-jack="CAB+"><i class="hole"></i><span>in</span></button><button class="jack" data-jack="CAB-"><i class="hole"></i><span>ut</span></button></div></div>
+        </div>
+        <div class="row">
+          <div class="card"><h4>Lampa 1 · 12 V 21 W</h4><div class="lamp-glass" id="lamp1"></div><div class="jacks"><button class="jack plus" data-jack="L1+"><i class="hole"></i><span>L1+</span></button><button class="jack minus" data-jack="L1-"><i class="hole"></i><span>L1−</span></button></div></div>
+          <div class="card"><h4>Lampa 2 · 12 V 21 W</h4><div class="lamp-glass" id="lamp2"></div><div class="jacks"><button class="jack plus" data-jack="L2+"><i class="hole"></i><span>L2+</span></button><button class="jack minus" data-jack="L2-"><i class="hole"></i><span>L2−</span></button></div></div>
+          <div class="card"><h4>Lastbrytare</h4><button class="sw" id="sw-load" type="button">LAST</button><div class="jacks"><button class="jack" data-jack="LOADA"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="LOADB"><i class="hole"></i><span>b</span></button></div></div>
+        </div>
+        <div class="row">
+          <div class="card"><h4>Start NO</h4><button class="sw mom" id="sw-start" type="button">START</button><div class="jacks"><button class="jack" data-jack="STAR+"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="STAR-"><i class="hole"></i><span>b</span></button></div></div>
+          <div class="card"><h4>Stopp NC</h4><button class="sw on" id="sw-stop" type="button">STOPP</button><div class="jacks"><button class="jack" data-jack="STOP+"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="STOP-"><i class="hole"></i><span>b</span></button></div></div>
+          <div class="card relay"><h4>Relä 24 V</h4><div id="relay-led">ANKARE FRÅN</div><div class="jacks"><button class="jack" data-jack="A1"><i class="hole"></i><span>A1</span></button><button class="jack" data-jack="A2"><i class="hole"></i><span>A2</span></button><button class="jack" data-jack="R11"><i class="hole"></i><span>11</span></button><button class="jack" data-jack="R14"><i class="hole"></i><span>14 NO</span></button><button class="jack" data-jack="R12"><i class="hole"></i><span>12 NC</span></button></div></div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="meter-col">
+      <h2>Instrument</h2>
+      <div class="dmm">
+        <div class="screen">
+          <div><span class="read" id="dmm-read">—</span> <span class="unit" id="dmm-unit"></span></div>
+          <div class="hint" id="dmm-sub">PROBE+ — · COM —</div>
+        </div>
+        <div class="mode-row" id="modes">
+          <button class="mode active" data-mode="V" type="button">V</button>
+          <button class="mode" data-mode="A" type="button">A</button>
+          <button class="mode" data-mode="Ω" type="button">Ω</button>
+        </div>
+      </div>
+      <p class="hint">Välj pekläge uppe till höger. Tryck sedan på en hylsa för att sätta röd eller svart prob.</p>
+      <div id="alerts"></div>
+      <h2>Lärare</h2>
+      <label class="hint">Plantera fel</label>
+      <select id="fault" class="pill" style="width:100%;margin:6px 0 12px">
+        <option value="">Inget fel</option>
+        <option value="sakring">Blåst säkring</option>
+        <option value="kabel">Avbrott i sladd</option>
+        <option value="spole">Öppen reläspole</option>
+        <option value="lastglapp">Glapp i lastbrytare</option>
+        <option value="stopp">Stopp hänger inte i NC</option>
+      </select>
+      <button class="ghost" id="btn-undo" type="button">Ångra senaste tråd</button>
+      <button class="ghost" id="btn-clear" type="button">Rensa alla trådar</button>
+      <h2>Elevprotokoll</h2>
+      <div id="proto"></div>
+    </aside>
+  </div>
+
+  <footer class="status-bar">
+    <span id="stat-left"></span>
+    <span id="stat-right"></span>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
