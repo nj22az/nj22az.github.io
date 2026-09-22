@@ -9,28 +9,14 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="gate" class="gate">
-    <form id="gate-form" class="gate-card">
-      <div class="logo">EL-<span>LABB</span></div>
-      <h1>Elteknik och ellära</h1>
-      <p>YH sjöfart / industri · SELV 12–24 V · mål 4–9</p>
-      <label>Namn</label>
-      <input id="gate-name" required autocomplete="name" placeholder="För- och efternamn">
-      <label>Klass / grupp</label>
-      <input id="gate-group" placeholder="t.ex. YH26 A">
-      <button class="check" type="submit">Starta labb</button>
-    </form>
-  </div>
-
   <header class="app-header">
     <div class="logo">EL-<span>LABB</span></div>
-    <div class="header-title">Simulerad labbplatta · SELV 12 / 24 V · YH Elteknik</div>
-    <span id="who" class="hint"></span>
-    <button class="ghost" id="btn-logout" type="button" style="width:auto;padding:8px 12px">Byt elev</button>
+    <div class="header-title">SELV 12 / 24 V · YH Elteknik</div>
+    <input id="who-name" class="pill" placeholder="Namn (valfritt)" style="width:160px;min-height:40px" />
     <select id="probe-mode" class="pill" aria-label="Pekläge">
       <option value="wire">Pekläge: tråd</option>
-      <option value="pos">Pekläge: PROBE+ (röd)</option>
-      <option value="com">Pekläge: COM (svart)</option>
+      <option value="pos">Pekläge: PROBE+</option>
+      <option value="com">Pekläge: COM</option>
     </select>
   </header>
 
@@ -58,7 +44,6 @@
           </div>
           <div class="card">
             <h4>Batteri 12 V</h4>
-            <p class="hint" style="margin:0 0 8px">Skolans AGM – inte ur bilen</p>
             <div class="jacks">
               <button class="jack plus" data-jack="BAT+"><i class="hole"></i><span>BAT+</span></button>
               <button class="jack minus" data-jack="BAT-"><i class="hole"></i><span>BAT−</span></button>
@@ -89,8 +74,8 @@
           <div class="card"><h4>Kabel 2 m</h4><div class="jacks"><button class="jack" data-jack="CAB+"><i class="hole"></i><span>in</span></button><button class="jack" data-jack="CAB-"><i class="hole"></i><span>ut</span></button></div></div>
         </div>
         <div class="row">
-          <div class="card"><h4>Lampa 1 · 12 V 21 W</h4><div class="lamp-glass" id="lamp1"></div><div class="jacks"><button class="jack plus" data-jack="L1+"><i class="hole"></i><span>L1+</span></button><button class="jack minus" data-jack="L1-"><i class="hole"></i><span>L1−</span></button></div></div>
-          <div class="card"><h4>Lampa 2 · 12 V 21 W</h4><div class="lamp-glass" id="lamp2"></div><div class="jacks"><button class="jack plus" data-jack="L2+"><i class="hole"></i><span>L2+</span></button><button class="jack minus" data-jack="L2-"><i class="hole"></i><span>L2−</span></button></div></div>
+          <div class="card"><h4>Lampa 1 · 21 W</h4><div class="lamp-glass" id="lamp1"></div><div class="jacks"><button class="jack plus" data-jack="L1+"><i class="hole"></i><span>L1+</span></button><button class="jack minus" data-jack="L1-"><i class="hole"></i><span>L1−</span></button></div></div>
+          <div class="card"><h4>Lampa 2 · 21 W</h4><div class="lamp-glass" id="lamp2"></div><div class="jacks"><button class="jack plus" data-jack="L2+"><i class="hole"></i><span>L2+</span></button><button class="jack minus" data-jack="L2-"><i class="hole"></i><span>L2−</span></button></div></div>
           <div class="card"><h4>Lastbrytare</h4><button class="sw" id="sw-load" type="button">LAST</button><div class="jacks"><button class="jack" data-jack="LOADA"><i class="hole"></i><span>a</span></button><button class="jack" data-jack="LOADB"><i class="hole"></i><span>b</span></button></div></div>
         </div>
         <div class="row">
@@ -114,10 +99,9 @@
           <button class="mode" data-mode="Ω" type="button">Ω</button>
         </div>
       </div>
-      <p class="hint">Välj pekläge uppe till höger. Tryck sedan på en hylsa för att sätta röd eller svart prob.</p>
+      <p class="hint">Tråd: tryck två hylsor. Sätt sedan PROBE+ och COM.</p>
       <div id="alerts"></div>
       <h2>Lärare</h2>
-      <label class="hint">Plantera fel</label>
       <select id="fault" class="pill" style="width:100%;margin:6px 0 12px">
         <option value="">Inget fel</option>
         <option value="sakring">Blåst säkring</option>
