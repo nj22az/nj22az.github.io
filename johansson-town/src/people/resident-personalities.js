@@ -24,6 +24,7 @@ export const RESIDENT_PERSONALITIES=Object.freeze(Object.fromEntries(Object.entr
  Fumiko:{source:'female_formal',top:'#9c7fac',trousers:'#9c7fac',hair:'#d6d2c8',skin:'#c69f82',width:1.08,accessory:'glasses'},
  Kenta:{source:'casual_2',top:'#78a7b8',trousers:'#546679',hair:'#825f44',skin:'#d4ac85',width:.96,accessory:'tool-pouch'},
  Yui:{source:'female_casual',top:'#66969a',trousers:'#45465e',hair:'#332d31',skin:'#d0a586',width:1.01,accessory:'headband',accent:'#e8cf85'},
+ Barfly:{source:'casual_2',top:'#b74e43',trousers:'#36343a',hair:'#77766f',skin:'#b9825f',width:1.14,accessory:'hawaiian',interests:['seat','drink','radio'],snack:'yakitori',drink:'beer',meal:'yakitori',height:1.72},
 }).map(([name,style])=>[name,Object.freeze({...DEFAULT,...style})])));
 // Historical names address the same resident; they do not create extra townspeople.
 const ALIASES=Object.freeze({Aiko:'Aya',Nozomi:'Reiko'});
