@@ -24,6 +24,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   if(place==='ramen'&&name==='Thuan')return {...RAMEN_THUAN_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   const seats=place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
+  if(place==='izakaya'&&name==='Barfly'){
+   const index=7;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
+   return {...seats[index],index};
+  }
   const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==getPlayerSeat())&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
   if(index<0)return null;const seat=seats[index];
   return {...seat,index,stand:seat.stand||[1.16,0,seat.position[2]]};
