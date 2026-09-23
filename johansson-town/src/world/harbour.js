@@ -311,6 +311,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const catTail=new THREE.Group();catTail.position.set(0,.25,.27);cat.add(catTail);
   const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(0,.08,.07),new THREE.Vector3(0,.2,.08),new THREE.Vector3(0,.27,.02)]);
   const tail=new THREE.Mesh(new THREE.TubeGeometry(tailCurve,12,.02,6,false),material(ginger));tail.castShadow=shadows;catTail.add(tail);
+  // The cat likes the shop doorway. Standing there it should not take the prompt from
+  // the door you walked up to use, so it only wins when it is clearly the nearer thing.
+  cat.userData.promptPenalty=1;
   register(cat,'Greet the cat',()=>onAction('cat'));
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
