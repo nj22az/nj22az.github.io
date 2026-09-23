@@ -58,8 +58,9 @@ const CONFIG = {
     {
       title: "Elteknik och ell\u00e4ra",
       description:
-        "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book 550 kr \u2014 or download a free sample chapter.",
+        "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book price read live from Shopify \u2014 or download a free sample chapter.",
       url: "/elteknik/",
+      shopifyProductUrl: "https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara.js",
       icon: "notebook",
       image: "/elteknik/files/omslag.jpg",
       tags: ["Book", "Elteknik", "YH"],
