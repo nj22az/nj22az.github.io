@@ -25,7 +25,6 @@ import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey} from './src/save.js';
-import {townClockLine} from './src/town-clock.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {createThuanMind} from './src/people/thuan-mind.js';
@@ -334,7 +333,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     let roster=readPlayers(localStorage);const me=roster.players.find(p=>p.id===roster.active);
     const when=t=>t?new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'never';
     const others=roster.players.filter(p=>p.id!==roster.active);
-    show('Player · '+(me?.name||'Visitor'),'Progress saves on this device, automatically every few seconds and whenever you leave. Last saved: '+when(state.savedAt)+'.\n\nThe town keeps real time: '+townClockLine()+'.',[
+    show('Player · '+(me?.name||'Visitor'),'Progress saves on this device, automatically every few seconds and whenever you leave. Last saved: '+when(state.savedAt)+'.',[
       ['Save now',()=>{save();receipt('Saved','Saved for '+(me?.name||'Visitor')+' at '+when(Date.now())+'.');}],
       ['Rename player',()=>{const name=globalThis.prompt?.('Name for this player',me?.name||'');if(name&&renamePlayer(localStorage,name)){players();}}],
       ...others.map(p=>['Switch to '+p.name+' · '+when(p.lastPlayed),()=>{save();switchPlayer(localStorage,p.id);globalThis.location?.reload?.();}]),
@@ -655,5 +654,5 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,players,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,players,menu:show,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

@@ -1,6 +1,30 @@
 (() => {
-  const PRESETS = { "0900": 540, "1642": 1002, "1830": 1110, "2030": 1230 };
-  const ORDER = ["live", "run", "0900", "1642", "1830", "2030"];
+  const PRESETS = { "0600": 360, "1200": 720, "1830": 1110, "2200": 1320 };
+  const ORDER = ["live", "saved", "0600", "1200", "1830", "2200"];
+  // The choice made here is the one the game opens with (src/town-clock.js reads it).
+  const CLOCK_KEY = "johansson-town-clock";
+  const SPEEDS = [1, 2, 4];
+  const readSetting = () => {
+    try {
+      const s = JSON.parse(localStorage.getItem(CLOCK_KEY));
+      const start = s && typeof s.start === "string" ? s.start : "real";
+      const mode = start === "real" ? "live" : start === "saved" ? "saved" : start.replace(":", "");
+      return { mode: ORDER.includes(mode) ? mode : "live", speed: SPEEDS.includes(s && s.speed) ? s.speed : 1 };
+    } catch { return { mode: "live", speed: 1 }; }
+  };
+  const writeSetting = () => {
+    const start = mode === "live" ? "real" : mode === "saved" ? "saved" : mode.slice(0, 2) + ":" + mode.slice(2);
+    try { localStorage.setItem(CLOCK_KEY, JSON.stringify({ start, speed: mode === "live" ? 1 : speed })); } catch {}
+  };
+  /** Where the active player left off, from their save, as a minute of the day. */
+  const savedMinute = () => {
+    try {
+      const roster = JSON.parse(localStorage.getItem("johansson-town-players") || "null");
+      const id = roster && roster.active && roster.active !== "player-1" ? roster.active : null;
+      const save = JSON.parse(localStorage.getItem("johansson-town-1988-v5" + (id ? "@" + id : "")) || "null");
+      return save && Number.isFinite(save.minutes) ? ((save.minutes % 1440) + 1440) % 1440 : null;
+    } catch { return null; }
+  };
   const PLACES = [
     { id: "market", code: "01", title: "Sakura Shōten", jp: "桜商店", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
     { id: "frontrow", code: "02", title: "Front-Row Books & Workshop", jp: "前列書房・工房", sub: "Books · press · repairs", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, Reiko’s evening press, and Kenji and Tetsuo’s workshop. North of Minato, with a passage to the yard." },
@@ -104,7 +128,7 @@
     };
   };
 
-  let mode = "live";
+  let { mode, speed } = readSetting();
   let runOrigin = null;
 
   const $ = (id) => document.getElementById(id);
@@ -134,22 +158,20 @@
   function currentMinutes(now) {
     const local = localMinutes(now);
     if (mode === "live") return minuteOfDay(local);
-    if (mode === "run") {
-      const origin = runOrigin || { real: now, minutes: 1002 };
-      return minuteOfDay(origin.minutes + (now - origin.real) / 1000);
-    }
-    const d = new Date(now);
-    return minuteOfDay(PRESETS[mode] + (d.getSeconds() + d.getMilliseconds() / 1000) / 60);
+    // A set start runs on from that minute at the chosen speed, as the town will.
+    const origin = runOrigin || { real: now, minutes: mode === "saved" ? (savedMinute() ?? local) : PRESETS[mode] };
+    runOrigin = origin;
+    return minuteOfDay(origin.minutes + (now - origin.real) / 60000 * speed);
   }
 
   function setMode(next) {
     const now = Date.now();
     const shown = currentMinutes(now);
     mode = next;
-    runOrigin = next === "run" ? { real: now, minutes: shown } : null;
-    document.querySelectorAll("[data-clock-mode]").forEach((btn) => {
-      btn.setAttribute("aria-pressed", String(btn.dataset.clockMode === mode));
-    });
+    runOrigin = null;
+    if (mode === "live") speed = 1;
+    writeSetting();
+    showSetting();
     tick();
   }
 
@@ -189,7 +211,7 @@
     periodEl.textContent = period;
     lineEl.textContent = periodLine(minutes);
     shopsEl.textContent = `SHOPS ${pad(openCount)}/${pad(scheduled.length)} OPEN · HARBOUR DISTRICT TIME`;
-    liveEl.textContent = mode === "live" ? "LIVE · VISITOR CLOCK" : mode === "run" ? "60× TOWN SPEED" : "PRESET";
+    liveEl.textContent = mode === "live" ? "LIVE · VISITOR CLOCK" : `SET CLOCK · ${speed}×`;
     statusPeriod.textContent = period;
     statusPeriod.classList.toggle("alert", night);
     statusShops.textContent = `${openCount} open`;
@@ -237,9 +259,34 @@
     g.innerHTML = html;
   }
 
+  function showSetting() {
+    document.querySelectorAll("[data-clock-mode]").forEach((btn) => {
+      btn.setAttribute("aria-pressed", String(btn.dataset.clockMode === mode));
+    });
+    document.querySelectorAll("[data-clock-speed]").forEach((btn) => {
+      btn.setAttribute("aria-pressed", String(Number(btn.dataset.clockSpeed) === speed));
+      btn.disabled = mode === "live";
+    });
+    const speeds = document.querySelector(".clock-speeds");
+    if (speeds) speeds.classList.toggle("locked", mode === "live");
+    const note = $("clockChoiceNote");
+    if (note) note.textContent = mode === "live"
+      ? "LIVE: the town keeps your own time and today's date, in 1997. Pick a start time to set the clock yourself; it can then run faster."
+      : `The town will open at ${mode === "saved" ? "the time you left it" : mode.slice(0, 2) + ":" + mode.slice(2)} and run at ${speed === 1 ? "real pace" : speed + "× speed"}. Change it any time from the TIME button.`;
+  }
   document.querySelectorAll("[data-clock-mode]").forEach((btn) => {
     btn.addEventListener("click", () => setMode(btn.dataset.clockMode));
   });
+  document.querySelectorAll("[data-clock-speed]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (mode === "live") return;
+      const now = Date.now(), shown = currentMinutes(now);
+      speed = Number(btn.dataset.clockSpeed);
+      runOrigin = { real: now, minutes: shown };
+      writeSetting(); showSetting(); tick();
+    });
+  });
+  showSetting();
   document.addEventListener("keydown", (event) => {
     if (event.key !== "n" && event.key !== "N") return;
     if (start.classList.contains("hidden")) return;

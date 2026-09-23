@@ -5,7 +5,7 @@ import {createTownCatchup,MAX_ABSENCE_MINUTES} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {buildClassroom} from './world/interiors/classroom.js';
-import {realTownMinutes,clockCatchUp,townClockLine,townCalendar} from './town-clock.js';
+import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
@@ -262,8 +262,11 @@ activities=createActivities({say,onInspectModel:item=>inspector.open(item),onIns
   // The town keeps real time, so nothing skips the clock: resting, eating, a bath -- the
   // time passes in the telling. The TIME button says what time and day it is in town.
   if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
-  if(value==='cycle'){if(followRealClock){say('The town keeps real time · '+townClockLine(),5);return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
-  else if(!followRealClock)minutes+=value;evictIfClosed();}});
+  if(value==='cycle'){if(followRealClock){clockMenu();return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
+  // A set clock is a game clock, so resting or a bath does move it on; real time does not.
+  else if(!followRealClock)minutes+=value;
+  else if(townClock.mode==='set'&&Number.isFinite(value)&&value>0){minutes+=value;townClock.set(minutes);}
+  evictIfClosed();}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
 characters=createCharacters({mobile,shadows,canJump:()=>!seated&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
@@ -662,9 +665,12 @@ $('#waypoint').onclick=()=>{navigationTarget=null;drawMap();};
 let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // The clock runs at real time: a minute a minute. While the town is catching up on time
 // you were away it runs at the old fast-forward rate, a town minute a simulated second.
+// It can also be set: a start time chosen on the board before you enter, or from the TIME
+// menu, running at one, ten or sixty times real speed (see town-clock.js).
 let followRealClock=true;
+const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
-    minutes+=fastForward?dt:dt/60;elapsed+=dt;activities.tick(dt);
+    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;activities.tick(dt);
     if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
@@ -677,7 +683,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
 function followClock(){
  if(!followRealClock||catchingUp)return;
- const real=realTownMinutes(),gap=real-minutes;
+ const real=townClock.target(),gap=real-minutes;
  // A slow device drops frames and the simulation falls a little behind: close that
  // quietly. A real gap -- the tab was asleep -- is fast-forwarded so people move on.
  if(gap>5)advanceAbsentTown(gap);
@@ -692,6 +698,21 @@ const absence=createTownCatchup({advance:(dt,pending)=>{
  activities.state.pendingTownMinutes=pending;advanceTown(dt,true,true);
 }});
 /** Fast-forwards the town through town minutes it missed, up to a day; beyond that it jumps. */
+/** The TIME menu: real time, or a set clock at a chosen hour and speed. */
+function clockMenu(){
+ const setting=readClockSetting(localStorage),today=Math.floor(minutes/1440)*1440;
+ const apply=(start,speed)=>{const s=writeClockSetting(localStorage,{start,speed});
+  if(s.start==='real'){townClock.real();minutes=realTownMinutes();}
+  else{if(start!=='saved'){const [h,m]=start.split(':').map(Number);let t=today+h*60+m;if(t<minutes-1)t+=1440;minutes=t;}townClock.set(minutes,s.speed);}
+  evictIfClosed();activities.close();say(clockDescription(),4);};
+ const speedLabel=townClock.mode==='real'?'real time':townClock.speed===1?'set time, normal speed':'set time, '+townClock.speed+'× speed';
+ activities.menu('Town clock','It is '+townClockLineAt(minutes)+' in town, running on '+speedLabel+'.\n\nReal time follows your own clock and date. A set clock can start when you like and run a little faster: at 4× an hour in town takes fifteen minutes.',[
+  ['Real time',()=>apply('real',1)],
+  ...[1,2,4].filter(v=>!(townClock.mode==='set'&&townClock.speed===v)).map(v=>[v===1?'Keep this time, normal speed':'Speed up · '+v+'×',()=>apply('saved',v)]),
+  ...['06:00','12:00','18:00','22:00'].map(t=>['Set to '+t,()=>apply(t,townClock.mode==='set'?townClock.speed:1)]),
+  ['Close',()=>activities.close()]]);
+}
+const clockDescription=()=>(townClock.mode==='real'?'Real time':'Town clock '+townClock.speed+'×')+' · '+townClockLineAt(minutes);
 function advanceAbsentTown(townMinutes){
  if(!(townMinutes>0))return;
  if(townMinutes>MAX_ABSENCE_MINUTES){minutes+=townMinutes-MAX_ABSENCE_MINUTES;townMinutes=MAX_ABSENCE_MINUTES;}
@@ -820,6 +841,8 @@ function renderOutdoor(){
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the
 // town is where it would be; anything older, or from the old fast clock, opens at now.
 activities.takeAbsence();
-{const plan=clockCatchUp(activities.state.minutes);minutes=plan.start;advanceAbsentTown(plan.fastForward);}
+{const setting=readClockSetting(globalThis.localStorage);
+ if(setting.start==='real'){const plan=clockCatchUp(activities.state.minutes);minutes=plan.start;advanceAbsentTown(plan.fastForward);}
+ else{minutes=startingMinutes(setting,activities.state.minutes);townClock.set(minutes,setting.speed);}}
 // Allow the opening frame to paint before starting any district downloads.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{detailsStarted=true;}));

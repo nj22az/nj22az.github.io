@@ -226,6 +226,20 @@
   background: var(--aui-white); color: var(--aui-grey-900);
   font-family: inherit; cursor: pointer; text-align: center;
 }
+.clock-speeds { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: var(--sp-2); margin-top: var(--sp-2); align-items: center; }
+.clock-speeds button {
+  min-height: 3rem; padding: var(--sp-2);
+  border: 1px solid var(--aui-grey-420); border-radius: var(--rd-m);
+  background: var(--aui-white); color: var(--aui-grey-900);
+  font-family: inherit; cursor: pointer; text-align: center;
+}
+.clock-speeds button b { display: block; font-size: .9375rem; font-weight: 700; color: inherit; }
+.clock-speeds button span { display: block; font-size: .6875rem; color: var(--aui-grey-536); }
+.clock-speeds button[aria-pressed="true"] { background: var(--harbour-navy-deep); border-color: var(--harbour-navy-deep); color: #fff; }
+.clock-speeds button[aria-pressed="true"] span { color: rgba(255, 255, 255, .85); }
+.clock-speeds.locked button { opacity: .45; cursor: not-allowed; }
+.clock-choice-note { margin: var(--sp-2) 0 0; font-size: .75rem; color: var(--ink-muted); }
+@media (max-width: 560px) { .clock-speeds { grid-template-columns: repeat(3, minmax(0, 1fr)); } .clock-speeds .board-tiny { grid-column: 1 / -1; } }
 .clock-modes button:hover { background: var(--aui-grey-50); text-decoration: underline; }
 .clock-modes button b { display: block; font-size: .9375rem; font-weight: 700; }
 .clock-modes button span { display: block; font-size: .6875rem; color: var(--aui-grey-536); }

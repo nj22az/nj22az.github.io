@@ -5,6 +5,7 @@ import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
+import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
@@ -148,7 +149,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
   // The decorations follow the real calendar, looked at once an hour.
-  decorations.refresh(new Date());
+  decorations.refresh(townCalendarAt(minutes).date);
   lightLevel=fluorescent(minutes);fill.intensity=1.2*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;

@@ -21,12 +21,12 @@
 <link rel="stylesheet" href="./context-controls.css?h=73a7cfe5">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?h=15bfb223">
-<link rel="stylesheet" href="./landing.css?h=389ac346">
+<link rel="stylesheet" href="./landing.css?h=03b29d9b">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=718c3ab8">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-Bn1qftC3.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BmB3KYjP.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CiIAGsdE.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-eSrI8Gzq.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -133,12 +133,19 @@
 
           <div class="clock-modes" role="group" aria-label="Town clock modes">
             <button type="button" data-clock-mode="live" aria-pressed="true"><b>LIVE</b><span>Now in town</span></button>
-            <button type="button" data-clock-mode="run" aria-pressed="false"><b>60×</b><span>Town speed</span></button>
-            <button type="button" data-clock-mode="0900" aria-pressed="false"><b>09:00</b><span>Morning</span></button>
-            <button type="button" data-clock-mode="1642" aria-pressed="false"><b>16:42</b><span>Game start</span></button>
+            <button type="button" data-clock-mode="saved" aria-pressed="false"><b>SAVED</b><span>Where I left off</span></button>
+            <button type="button" data-clock-mode="0600" aria-pressed="false"><b>06:00</b><span>Early morning</span></button>
+            <button type="button" data-clock-mode="1200" aria-pressed="false"><b>12:00</b><span>Kyūshoku</span></button>
             <button type="button" data-clock-mode="1830" aria-pressed="false"><b>18:30</b><span>Evening press</span></button>
-            <button type="button" data-clock-mode="2030" aria-pressed="false"><b>20:30</b><span>Night</span></button>
+            <button type="button" data-clock-mode="2200" aria-pressed="false"><b>22:00</b><span>Night</span></button>
           </div>
+          <div class="clock-speeds" role="group" aria-label="Town clock speed">
+            <span class="board-tiny">SPEED</span>
+            <button type="button" data-clock-speed="1" aria-pressed="true"><b>1×</b><span>Real pace</span></button>
+            <button type="button" data-clock-speed="2" aria-pressed="false"><b>2×</b><span>An hour in 30 minutes</span></button>
+            <button type="button" data-clock-speed="4" aria-pressed="false"><b>4×</b><span>An hour in 15 minutes</span></button>
+          </div>
+          <p class="clock-choice-note" id="clockChoiceNote">LIVE follows your own clock and today's date. Pick a time to start the town there instead; it can run faster.</p>
         </section>
         <section class="controls-panel" aria-labelledby="controls-heading">
           <h2 id="controls-heading" class="sr-only">Street controls</h2>
@@ -152,7 +159,7 @@
             <li><kbd>R</kbd><span>Drink</span></li>
             <li><kbd>Q</kbd><span>Town book</span></li>
             <li><kbd>B</kbd><span>Notebook</span></li>
-            <li><kbd>N</kbd><span>Cycle time</span></li>
+            <li><kbd>N</kbd><span>Town clock</span></li>
           </ul>
         </section>
 
@@ -289,7 +296,7 @@
       </section>
 
       <footer class="board-foot">
-        <p>Johansson Town is a first-person shopping district and working harbour in the 1990s. The clock on this board follows the weekday and hour where you are, mapped onto 1997; 60× runs the in-game day; the four presets are the hours used in town. This English information edition is a visitor landing — not a historical survey.</p>
+        <p>Johansson Town is a first-person shopping district and working harbour in the 1990s. The clock on this board follows the weekday and hour where you are, mapped onto 1997, and so does the town. Choose SAVED or a start hour to set the town's clock yourself, at up to 4× speed. This English information edition is a visitor landing — not a historical survey.</p>
         <p class="jp"><span id="boardJpDate">平成9年9月13日</span><span class="board-foot-line">HARBOUR DISTRICT · 1997</span></p>
       </footer>
     </article>
@@ -353,7 +360,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-Bn1qftC3.js');
+      await import('./runtime/boot-BmB3KYjP.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

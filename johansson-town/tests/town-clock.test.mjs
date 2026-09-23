@@ -50,3 +50,22 @@ test('activities save into the active player’s slot and offer the player menu'
  acts.players();assert.ok(dom.has('Save now'));assert.ok(dom.labels().some(l=>l.startsWith('Switch to Visitor')));
  assert.ok(dom.has('Export save file')&&dom.has('Import save file')&&dom.has('New player'));
 });
+
+test('the clock can be set: a start time, where you left off, and a faster speed',async()=>{
+ const {readClockSetting,writeClockSetting,startingMinutes,createClock,townCalendarAt}=await import('../src/town-clock.js');
+ const store=new Map(),storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
+ assert.deepEqual(readClockSetting(storage),{start:'real',speed:1},'Real time is the default');
+ assert.deepEqual(writeClockSetting(storage,{start:'real',speed:4}),{start:'real',speed:1},'Real time cannot be sped up');
+ assert.deepEqual(writeClockSetting(storage,{start:'18:30',speed:4}),{start:'18:30',speed:4});
+ assert.deepEqual(readClockSetting(storage),{start:'18:30',speed:4});
+ assert.deepEqual(writeClockSetting(storage,{start:'18:30',speed:60}),{start:'18:30',speed:1},'60× is not offered: it is unplayable');
+ assert.deepEqual(writeClockSetting(storage,{start:'25:00',speed:7}),{start:'real',speed:1},'Nonsense falls back to real time');
+ const now=new Date(2026,8,23,9,15),real=realTownMinutes(now),today=Math.floor(real/1440)*1440;
+ assert.equal(startingMinutes({start:'18:30',speed:1},undefined,now),today+1110);
+ assert.equal(startingMinutes({start:'saved',speed:1},real-400,now),real-400,'Where I left off');
+ assert.equal(startingMinutes({start:'saved',speed:1},1002,now),today+1002,'An old save keeps its time of day');
+ let t=0;const clock=createClock({start:'06:00',speed:4},today+360,()=>t);
+ t=15*60000;assert.equal(clock.target(),today+420,'Four times: an hour in fifteen minutes');
+ clock.set(today+1439,2);t+=60000*2;assert.equal(townCalendarAt(clock.target()).date.getDate(),24,'A fast clock turns the date over');
+ clock.real();assert.equal(clock.mode,'real');assert.equal(clock.speed,1);
+});
