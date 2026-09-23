@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 21510)
+Total output lines: 947
+
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
@@ -59,6 +62,9 @@ import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } f
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
 import { createInkRecovery } from './render/ink-recovery.js';
+
+// Change the emitted game chunk URL when repairing a cached live runtime.
+window.__JOHANSSON_RUNTIME_VERSION__='town-bicycle-ride-2';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -415,127 +421,7 @@ function addRoomProps(s){
 
 }
 
-function clearRoom(){activeRoomLayout?.dispose?.();showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();hideRamen();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside&&!interactables[i].userData.persistentShop&&!interactables[i].userData.name)interactables.splice(i,1);}
-function roomShell(s){
- clearRoom();town.visible=false;room.visible=true;
- const shared={site:s,room,reg,collider:roomCollider,action:activities.action,exit:leaveRoom};
- if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
- if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
- activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
- if(activeRoomLayout||s.id==='izakaya')return;
- if(s.id==='market')return;
- throw Error('No interior defined for '+s.id);
-}
-
-
-/**
- * Doorways.
- *
- * A building used to be a room you teleported into: the screen cut, you were put on a
- * fixed spot, and your heading was thrown away and replaced with the room's. Walking
- * out did the same in reverse. That is what makes an interior read as somewhere else
- * rather than as the inside of the thing you were just looking at.
- *
- * Three things fix most of it without moving the rooms into world space. The heading
- * survives the door, the crossing is a step rather than a cut, and you walk through
- * instead of standing at a prompt.
- */
-const DOOR_REACH=1.35,THRESHOLD_HOLD=1.1;
-let doorwayArmed=true,doorwayCooldown=0;
-/**
- * The way back out, remembered on the way in.
- *
- * Not every interior has a layout to ask: the izakaya builds its room in addRoomProps
- * and leaves activeRoomLayout null, so reading the exit off the layout meant you could
- * walk into Minato and never walk out of it.
- */
-let roomDoorway=null;
-
-/**
- * The one rotation that maps between a building's street frame and its room frame.
- *
- * A door faces `entryFacing` in the world and `layout.yaw` in the room, so the two
- * frames differ by exactly that angle — inside and outside, both ways.
- */
-/** Everything the player could walk into, which is every site the town gave a door. */
-function doorwayUnderfoot(){
- const p=player.position,forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
- if(current){
-  if(!roomDoorway)return null;
-  const {x:ox,z:oz,inward}=roomDoorway;
-  if(Math.hypot(p.x-ox,p.z-oz)>DOOR_REACH)return null;
-  // Facing the door, not merely standing by it: you pass this spot walking in as well.
-  const outward=inward+Math.PI;
-  return forward.dot(new THREE.Vector3(-Math.sin(outward),0,-Math.cos(outward)))>.4?{leave:true}:null;
- }
- for(const s of SITES){
-  const d=s.approachPosition||s.door;if(!d)continue;
-  const dx=d[0],dz=d[2]??d[1];
-  if(Math.hypot(p.x-dx,p.z-dz)>DOOR_REACH)continue;
-  const facing=s.entryFacing??0;
-  if(forward.dot(new THREE.Vector3(-Math.sin(facing),0,-Math.cos(facing)))<.4)continue;
-  return {site:s};
- }
- return null;
-}
-
-/**
- * The crossing itself: chime, a short veil over the swap, and the heading carried
- * across. The veil also covers a room that has to stream its model in, which used to
- * be a frozen street and the word "Opening…".
- */
-async function crossThreshold(run){
- const veil=$('#threshold');
- townAudio.play('door-chime',.42);
- veil.classList.add('on');
- await new Promise(r=>setTimeout(r,150));
- try{await run();}finally{
-  await new Promise(r=>setTimeout(r,60));
-  veil.classList.remove('on');
-  doorwayCooldown=THRESHOLD_HOLD;doorwayArmed=false;
- }
-}
-
-/** Called once a frame from the player update. */
-function updateDoorways(dt){
- if(doorwayCooldown>0)doorwayCooldown=Math.max(0,doorwayCooldown-dt);
- if(roomLoading||seated||activities.paused||inspector?.active)return;
- const at=doorwayUnderfoot();
- if(!at){doorwayArmed=true;return;}
- if(!doorwayArmed||doorwayCooldown>0)return;
- // Only when actually walking at it. Standing in a doorway is not going through one.
- if(moveVec.lengthSq()<.0004)return;
- doorwayArmed=false;
- if(at.leave)void crossThreshold(async()=>leaveRoom());
- else void crossThreshold(()=>enterRoom(at.site));
-}
-
-let roomLoading=false;
-async function enterRoom(s){
- if(roomLoading)return;
- s=SITES.find(site=>site.id===businessId(s.id))||s;
- if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
- // Buildings remain accessible; business hours govern staff and service only.
- if(s.id==='izakaya'&&!izakayaReady('interior')){
-  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
-  try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
-  if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
- }
- if(isSuppliedRoom(s.id)&&!suppliedRoomReady(s.id)){
-  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
-  let ready=false;
-  try{[ready]=await preloadSuppliedRooms([s.id]);}finally{roomLoading=false;}
-  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
- }
- parkSeat=null;seated=false;activities.close();activities.visit(s.id);
- const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
- player.position.set(...spawn);unstuckPlayer();workplaceResidents.enter(s,minutes);
- roomDoorway={x:spawn[0],z:spawn[2]??spawn[1],inward:activeRoomLayout?.yaw??0};
- // The heading goes through the door with you. Snapping to the room's own yaw and a
- // level pitch is the single thing that most makes an interior read as a different
- // place: you walk in looking where you were looking, not where the room says.
- yaw=streetToRoom(streetYaw,s,activeRoomLayout);
+function clearRoom(){activeRoomLayout?.dispose?.();showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();hideRamen();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside&&!inte…1510 tokens truncated…;
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
 function leaveRoom(){if(!current)return;showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;roomDoorway=null;current=null;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
