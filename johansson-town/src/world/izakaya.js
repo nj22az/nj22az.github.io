@@ -8,6 +8,7 @@ import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
+import {IZAKAYA_PLAYER_SEATS} from '../people/izakaya-beer.js';
 import {daylight, lanternGlow} from '../render/dusk.js';
 const assets=new Map();
 export async function preloadIzakaya(kinds=['exterior','interior']){
@@ -117,8 +118,12 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
  anchor([0,1,0],'Listen to the table',()=>action('izakaya-gossip'));
- const windowSeat=anchor([4.0,1,2.7],'Sit and enjoy the evening',()=>action('seat','Minato window seat','A warm table, a little conversation, and nowhere to hurry.'));
- windowSeat.userData.seat={position:[4,0,2.7],stand:[2.95,0,2.7],eyeY:1.2,yaw:Math.PI/2,pitch:0};
+ // Your own places: the end of the second table, and the window seat. Sitting there, Nao
+ // takes your order and brings it over (people/izakaya-beer.js).
+ for(const seat of Object.values(IZAKAYA_PLAYER_SEATS)){
+  const title=seat.id==='window'?'Minato window seat':'Minato table',o=anchor([seat.position[0],1,seat.position[2]],seat.label,()=>action('seat',title,'A warm table, a little conversation, and nowhere to hurry.'));
+  o.userData.seat={...seat,izakaya:seat,pitch:0};
+ }
  anchor([4.5,1.8,-5.5],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  return {name:'Minato',cutaway:true,television:createIzakayaTV({parent:room})};

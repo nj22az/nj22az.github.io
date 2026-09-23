@@ -119,13 +119,19 @@ function steam(group){
  * @param {object} world the town world (group, colliders, details)
  * @param {object} options register / onAction as the other buildings take them
  */
-export function buildParkOnsen(world,{register,onAction,shadows=false}={}){
+export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=false}={}){
  const group=new THREE.Group();group.name='Umi-no-yu';group.position.set(ONSEN.x,0,ONSEN.z);group.rotation.y=ONSEN.yaw;world.group.add(group);
  world.colliders.push(...ONSEN_COLLIDERS.map(c=>({...c})));
  // The noren and the name board hang on the bathhouse, so they arrive with it.
  const {notice,kanban}=signs(group),curtain=noren(),plumes=steam(group);
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
- anchor(-1.4,1.2,4.75,'Bathe at Umi-no-yu',()=>onAction?.('onsen'));
+ // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
+ const [doorX,doorZ]=onsenPoint(-1.4,4.5),[outX,outZ]=onsenPoint(-1.4,5.4);
+ const site={id:'onsen',title:'Umi-no-yu',jp:'海の湯',sub:'HOT SPRING · FAMILY BATH',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
+  line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
+  entryFacing:ONSEN.yaw,opens:'10:00'};
+ sites?.push(site);
+ anchor(-1.4,1.2,4.75,'Go into Umi-no-yu',()=>enter?enter(site):onAction?.('onsen'));
  register?.(notice,'Read the onsen notice',()=>onAction?.('read','Umi-no-yu notice',
   'Harbour hot spring. Bath 10:00–22:00, adults ¥300. The footbath is free and never closes. Sodium chloride spring, 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.'));
  // Sit on the footbath's rim with your feet in the water, looking across it.

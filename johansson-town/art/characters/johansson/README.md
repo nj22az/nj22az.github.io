@@ -19,11 +19,12 @@ embedded). It is used only by the third-person view (`src/people/johansson.js`, 
   brows: `blinkL blinkR squint eyesWide browUp browDown browSad jawOpen smile frown pucker
   mouthWide lipsPress sneer lipUp`. Blinks, gaze (eye bones), speech and expressions are
   driven at runtime.
-- **Actions** (31): Idle, Walk, Run, Jump, Fall, Sit, SitEat, Soak, Wave, Bow, Nod,
+- **Actions** (33): Idle, Walk, Run, Jump, Fall, Sit, SitEat, SitDrink, SitToast, Soak, Wave, Bow, Nod,
   HeadShake, Point, Shrug, Talk, PickUp, Drink, Eat, Give, Clap, Stretch, LookAround,
   Think, Laugh, Phone, Crouch, Cast, FishIdle, Reel, Kachashi, Fist. Stride lengths are
   measured in Blender and written to `actions.json`, so walking and running keep the
   planted foot still at the game's speeds.
+- **Swimwear**: the skin under the clothes is its own mesh (`Johansson.SkinUnder`, hair painted on it too), with navy trunks cut square at the waist and thigh (`Johansson.Trunks`); the runtime swaps them in at the onsen.
 - **Clothes**: Kenji's fitted CC0 MakeHuman shirt, jeans and shoes (`../kenji/kenji.blend`),
   moved onto Johansson's frame; sleeves and legs are cut square with a bisect, and the
   textures are repainted as a kariyushi print and khaki.

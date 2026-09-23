@@ -1,160 +1,170 @@
 {
  "fps": 30,
- "walkMetresPerCycle": 2.44,
+ "walkMetresPerCycle": 2.193,
  "runMetresPerCycle": 3.042,
  "actions": [
   {
-   "name": "spine05",
-   "seconds": 0.76,
+   "name": "finger3-3.L",
+   "seconds": 0.74,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 0.6,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 5.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 5.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.6,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
+   "seconds": 2.6,
+   "loop": false
+  },
+  {
+   "name": "finger3-3.L",
+   "seconds": 2.4,
+   "loop": false
+  },
+  {
+   "name": "finger3-3.L",
    "seconds": 6.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.05,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.4,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.0,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 0.9,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.0,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.9,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.4,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 3.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.9,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.7,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.2,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.6,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.0,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 3.2,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 4.6,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 3.2,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.1,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 4.0,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 4.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.2,
    "loop": false
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 4.0,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 0.8,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 2.4,
    "loop": true
   },
   {
-   "name": "spine05",
+   "name": "finger3-3.L",
    "seconds": 1.2,
    "loop": false
   }

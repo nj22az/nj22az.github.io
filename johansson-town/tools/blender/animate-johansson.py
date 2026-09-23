@@ -149,8 +149,11 @@ def merge(base, **over):
 
 
 def stand(**over):
-    base = {'armL': {'fwd': 2, 'raise': 3, 'elbow': 14}, 'armR': {'fwd': 2, 'raise': 3, 'elbow': 14},
-            'legL': {'spread': -2.5, 'twist': 5}, 'legR': {'spread': -2.5, 'twist': 5}}
+    # Standing tall: chest up, head back over the shoulders, arms hanging close to the thighs.
+    base = {'spine': (-3, 0, 0), 'neck': (-7, 0, 0), 'head': (-2, 0, 0),
+            'armL': {'fwd': 3, 'raise': -4, 'elbow': 12, 'pron': 20}, 'armR': {'fwd': 3, 'raise': -4, 'elbow': 12, 'pron': 20},
+            'handL': {'curl': .3, 'thumb': .3}, 'handR': {'curl': .3, 'thumb': .3},
+            'legL': {'spread': -1.5, 'twist': 6}, 'legR': {'spread': -1.5, 'twist': 6}}
     return merge(base, **over)
 
 
@@ -214,21 +217,22 @@ wave = lambda x: math.cos(math.tau * x)
 
 
 def walk(ph):
-    p = {'legL': {}, 'legR': {}, 'armL': {}, 'armR': {}}
+    """A grounded, unhurried walk: chest up, head back, heels down, arms swinging from the shoulder."""
+    p = {}
     for s, off in (('L', 0), ('R', .5)):
         x = (ph + off) % 1
-        p['leg' + s] = {'fwd': 27 * wave(x) + 3, 'spread': 1.5, 'twist': 3,
-                        'knee': 4 + 62 * bump(x, .72, .12) + 14 * bump(x, .1, .07),
-                        'ankle': -9 * bump(x, .02, .06) + 20 * bump(x, .56, .07) - 8 * bump(x, .8, .09),
-                        'toes': -28 * bump(x, .52, .05)}
+        p['leg' + s] = {'fwd': 23 * wave(x) + 2, 'spread': -1.5, 'twist': 6,
+                        'knee': 5 + 44 * bump(x, .7, .11) + 9 * bump(x, .08, .07),
+                        'ankle': -12 * bump(x, .0, .06) + 14 * bump(x, .55, .06) - 12 * bump(x, .78, .08),
+                        'toes': -22 * bump(x, .52, .05)}
         a = wave(x + .5)
-        p['arm' + s] = {'fwd': 20 * a, 'raise': 5, 'elbow': 16 + 14 * max(0, a), 'pron': 10}
-        p['hand' + s] = {'curl': .32, 'thumb': .3}
-    p['root'] = (.014 * math.sin(math.tau * ph), 0, -.018 - .016 * math.cos(2 * math.tau * ph))
-    p['hips'] = (0, 1.5 * math.sin(math.tau * ph), -5 * wave(ph))
-    p['spine'] = (4, 0, 8 * wave(ph))
-    p['neck'] = (-2, 0, -2 * wave(ph))
-    p['head'] = (1, 0, -1 * wave(ph))
+        p['arm' + s] = {'fwd': 3 + 15 * a, 'raise': -4, 'elbow': 12 + 10 * max(0, a), 'pron': 20}
+        p['hand' + s] = {'curl': .38, 'thumb': .35}
+    p['root'] = (.006 * math.sin(math.tau * ph), 0, -.012 - .01 * math.cos(2 * math.tau * ph))
+    p['hips'] = (0, .6 * math.sin(math.tau * ph), -4 * wave(ph))
+    p['spine'] = (-3, 0, 6 * wave(ph))
+    p['neck'] = (-7, 0, -2 * wave(ph))
+    p['head'] = (-2, 0, -1 * wave(ph))
     return p
 
 
@@ -251,7 +255,7 @@ def run(ph):
     return p
 
 
-cycle('Walk', .76, walk)
+cycle('Walk', .74, walk)
 cycle('Run', .6, run)
 
 
@@ -274,7 +278,7 @@ def ground_speed(name, period):
     return round(abs(slope) * FPS * period, 3)
 
 
-WALK_METRES_PER_CYCLE = ground_speed('Walk', .76)
+WALK_METRES_PER_CYCLE = ground_speed('Walk', .74)
 RUN_METRES_PER_CYCLE = ground_speed('Run', .6)
 print('STRIDE walk', WALK_METRES_PER_CYCLE, 'run', RUN_METRES_PER_CYCLE, flush=True)
 
@@ -282,9 +286,9 @@ print('STRIDE walk', WALK_METRES_PER_CYCLE, 'run', RUN_METRES_PER_CYCLE, flush=T
 def idle(ph):
     breath = math.sin(math.tau * ph * 2)
     sway = math.sin(math.tau * ph)
-    return stand(root=(.01 * sway, 0, .002 * breath), hips=(0, .8 * sway, 0), spine=(-1.2 * breath, -.6 * sway, 0),
-                 neck=(1, 0, 3 * math.sin(math.tau * ph + 1)), head=(1.5 * breath, 0, 2 * math.sin(math.tau * ph + 1)),
-                 armL={'fwd': 2 + 1.5 * breath, 'raise': 4 + .5 * breath, 'elbow': 15}, armR={'fwd': 2 - 1.5 * breath, 'raise': 4, 'elbow': 15},
+    return stand(root=(.006 * sway, 0, .002 * breath), hips=(0, .5 * sway, 0), spine=(-3 - 1.2 * breath, -.4 * sway, 0),
+                 neck=(-6, 0, 3 * math.sin(math.tau * ph + 1)), head=(-2 + 1.5 * breath, 0, 2 * math.sin(math.tau * ph + 1)),
+                 armL={'fwd': 3 + 1.2 * breath, 'raise': -4 + .5 * breath, 'elbow': 13, 'pron': 20}, armR={'fwd': 3 - 1.2 * breath, 'raise': -4, 'elbow': 13, 'pron': 20},
                  legL={'knee': 3 + 3 * max(0, -sway)}, legR={'knee': 3 + 3 * max(0, sway)})
 
 
@@ -311,6 +315,16 @@ def sit_eat(ph):
 
 
 cycle('SitEat', 2.6, sit_eat, 12)
+# At the table with a drink: the hand comes off the table, up to the mouth, back down.
+table_hand = {'fwd': 38, 'raise': 12, 'elbow': 78, 'pron': 70, 'wrist': 5}
+cup = {'curl': .72, 'thumb': .6}
+sit_lift = seated(armR={'fwd': 42, 'raise': 22, 'elbow': 128, 'pron': 78, 'wrist': 10}, handR=cup, spine=(2, 0, 0), neck=(-2, 0, 0))
+sit_sip = merge(sit_lift, armR={'fwd': 48, 'raise': 28, 'elbow': 136, 'wrist': -18}, neck=(-10, 0, 0), head=(-12, 0, 0), jaw=4)
+at_table = seated(armR=table_hand, handR=cup, spine=(8, 0, 0))
+action('SitDrink', [(0, at_table), (.55, sit_lift), (.85, sit_sip), (1.7, sit_sip), (2.1, sit_lift), (2.6, at_table)])
+toast = seated(armR={'fwd': 70, 'raise': 20, 'elbow': 70, 'pron': 70, 'wrist': 0}, handR=cup, spine=(4, 0, 0), head=(-4, 0, 0))
+action('SitToast', [(0, at_table), (.45, toast), (.6, merge(toast, armR={'fwd': 78})), (.75, toast), (1.0, sit_lift), (1.3, sit_sip), (2.0, sit_sip), (2.4, at_table)])
+
 cycle('Soak', 6.0, lambda ph: seated(root=(0, .06, -.47), spine=(-8, 0, 0), neck=(-6, 0, 0), head=(-10 + 3 * math.sin(math.tau * ph), 0, 0),
                                       armL={'raise': 55, 'fwd': -12, 'elbow': 30, 'pron': 0}, armR={'raise': 55, 'fwd': -12, 'elbow': 30, 'pron': 0},
                                       legL={'fwd': 55, 'knee': 35}, legR={'fwd': 55, 'knee': 35},

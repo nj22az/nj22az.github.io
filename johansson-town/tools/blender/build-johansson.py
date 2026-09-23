@@ -353,10 +353,19 @@ kind[tongue] = 'tongue'
 body['__kind'] = 0
 kind_layer = body.data.attributes.new('town_kind', 'INT', 'POINT')
 kind_layer.data.foreach_set('value', np.array([0 if k == 'skin' else 1 if k == 'teeth' else 2 for k in kind], dtype=np.int32))
+# The whole skin is kept as well: what the clothes cover becomes its own mesh, shown
+# when he changes into swimwear at the onsen, and the skin is painted on the whole of it.
+full = body.copy()
+full.data = body.data.copy()
+full.name = full.data.name = 'Johansson.SkinUnder'
+bpy.context.scene.collection.objects.link(full)
+body_mask = np.zeros(len(pos_b), dtype=bool)
+body_mask[body_verts] = True
 delete_vertices(body, np.nonzero(~keep)[0])
-for g in list(body.vertex_groups):
-    if g.name not in bones:
-        body.vertex_groups.remove(g)
+for obj in (body, full):
+    for g in list(obj.vertex_groups):
+        if g.name not in bones:
+            obj.vertex_groups.remove(g)
 
 # Brows get the same face shapes, carried from the skin beneath them.
 brows.shape_key_add(name='Basis')
@@ -467,9 +476,9 @@ eye_out = store(eye_image, iris, 'Johansson.eye_diffuse')
 skin_image = bpy.data.images['Town.young_lightskinned_male_diffuse3.png']
 skin = pixels(skin_image)
 H, W = skin.shape[:2]
-mesh = body.data
+mesh = full.data
 uv = mesh.uv_layers.active.data
-co_b = coords(body)
+co_b = coords(full)
 kinds = np.zeros(len(mesh.vertices), dtype=np.int32)
 mesh.attributes['town_kind'].data.foreach_get('value', kinds)
 normals = np.zeros(len(mesh.vertices) * 3)
@@ -477,7 +486,7 @@ mesh.vertices.foreach_get('normal', normals)
 normals = normals.reshape(-1, 3)
 eye_c = (bones['eye.L'][0] + bones['eye.R'][0]) / 2
 mouth_z = (bones['oris03.L'][0][2] + bones['oris03.R'][0][2]) / 2 if 'oris03.L' in bones else eye_c[2] - .075
-limb_s = dominant(body)
+limb_s = dominant(full)
 print('LANDMARKS eye', eye_c, 'mouth', mouth_z, 'top', co_b[:, 2].max(), flush=True)
 
 
@@ -523,6 +532,13 @@ def hair_field(p, n, limb, f):
     chest_d = 20 * smooth(.16, .03, ax) + 10 * smooth(.035, .0, ax) * (z < eye_c[2] - .3)
     dens = np.where(chest, chest_d * .6, dens)
     length = np.where(chest, .011, length)
+    # The trail down the belly, and a lighter pelt across the shoulders and back.
+    belly = (limb == 'torso') & front & (z > eye_c[2] - .78) & (z <= eye_c[2] - .47) & (ax < .06)
+    dens = np.where(belly, 14 * smooth(.06, .015, ax), dens)
+    length = np.where(belly, .01, length)
+    back = (limb == 'torso') & (n[:, 1] > .3) & (z > eye_c[2] - .5) & (z < eye_c[2] - .2)
+    dens = np.where(back, 2.5, dens)
+    length = np.where(back, .008, length)
     # Brows: heavy, fair-to-mid brown, combed outward.
     brow_z = eye_c[2] + .017 - 7 * (ax - .03) ** 2
     brow = head & (ax > .008) & (ax < .062) & (np.abs(z - brow_z) < .0065) & (dy < .03)
@@ -817,12 +833,12 @@ tongue_mat = material('Johansson.Tongue', None, (.62, .30, .29, 1), rough=.45)
 body.data.materials.clear()
 for m in (skin_mat, teeth_mat, tongue_mat):
     body.data.materials.append(m)
-kinds = np.zeros(len(mesh.vertices), dtype=np.int32)
-mesh.attributes['town_kind'].data.foreach_get('value', kinds)
-for poly in mesh.polygons:
+kinds = np.zeros(len(body.data.vertices), dtype=np.int32)
+body.data.attributes['town_kind'].data.foreach_get('value', kinds)
+for poly in body.data.polygons:
     poly.material_index = int(np.bincount(kinds[list(poly.vertices)]).argmax())
     poly.use_smooth = True
-mesh.attributes.remove(mesh.attributes['town_kind'])
+body.data.attributes.remove(body.data.attributes['town_kind'])
 cloth_mat = material('Johansson.Cloth', cloth_image, rough=.86, spec=.2, double=True,
                      normal_image=bpy.data.images['Town.male_casualsuit01_normal.png'])
 suit.data.materials.clear()
@@ -872,7 +888,49 @@ fringe_mat.surface_render_method = 'BLENDED'
 fringe.data.materials.append(fringe_mat)
 print('FRINGE', len(fringe.data.vertices), flush=True)
 
-for obj in (suit, shoes, eyes, brows, body, fringe):
+# The skin under the clothes: body faces that are not already in the visible body.
+under = full
+under.shape_key_clear()
+under.data.attributes.remove(under.data.attributes['town_kind'])
+bm = bmesh.new()
+bm.from_mesh(under.data)
+bm.verts.ensure_lookup_table()
+doomed = [f for f in bm.faces if all(keep[v.index] for v in f.verts) or not all(body_mask[v.index] for v in f.verts)]
+bmesh.ops.delete(bm, geom=doomed, context='FACES')
+bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+bm.to_mesh(under.data)
+bm.free()
+under.data.materials.clear()
+under.data.materials.append(skin_mat)
+# Navy swimming trunks: the skin from the waist to the top of the thigh, lifted off it.
+trunks = under.copy()
+trunks.data = under.data.copy()
+trunks.name = trunks.data.name = 'Johansson.Trunks'
+bpy.context.scene.collection.objects.link(trunks)
+hip_z = bones['upperleg01.L'][0][2]
+bm = bmesh.new()
+bm.from_mesh(trunks.data)
+bm.normal_update()
+doomed = [f for f in bm.faces if not (hip_z - .32 < f.calc_center_median().z < hip_z + .16 and abs(f.calc_center_median().x) < .26)]
+bmesh.ops.delete(bm, geom=doomed, context='FACES')
+# Square cuts: a waistband, and a hem across each thigh.
+geom = lambda faces: list({e for f in faces for e in f.edges}) + faces + list({v for f in faces for v in f.verts})
+bmesh.ops.bisect_plane(bm, geom=geom(list(bm.faces)), plane_co=(0, 0, hip_z + .1), plane_no=(0, 0, 1), clear_outer=True)
+for side, sign in (('L', 1), ('R', -1)):
+    a_, b_ = SEGMENTS['thigh.' + side]
+    leg = [f for f in bm.faces if f.calc_center_median().x * sign > .03]
+    bmesh.ops.bisect_plane(bm, geom=geom(leg), plane_co=a_ + .3 * (b_ - a_), plane_no=(b_ - a_) / np.linalg.norm(b_ - a_), clear_outer=True)
+bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+bm.normal_update()
+for v in bm.verts:
+    v.co += v.normal * .007
+bm.to_mesh(trunks.data)
+bm.free()
+trunks.data.materials.clear()
+trunks.data.materials.append(material('Johansson.Swimwear', None, (.07, .11, .24, 1), rough=.55, spec=.35, double=True))
+print('UNDER', len(under.data.vertices), 'TRUNKS', len(trunks.data.vertices), flush=True)
+
+for obj in (suit, shoes, eyes, brows, body, fringe, under, trunks):
     for poly in obj.data.polygons:
         poly.use_smooth = True
 for img in list(bpy.data.images):

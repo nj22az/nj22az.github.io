@@ -16,6 +16,7 @@ import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,R
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
+import {DRINKS} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
@@ -35,7 +36,7 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{}}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -264,6 +265,24 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
+  /** At your own table in Minato: order a beer, drink it, eat, or get up. */
+  function izakayaTable(){
+    const table=getBeerTable()||{},drink=table.drink,order=table.order,buttons=[];
+    let text=izakayaOpen(getMinutes())?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
+    if(order)text='Nao is '+(order.phase==='pouring'?'pouring your '+DRINKS[order.kind].en.toLowerCase():'on her way over with it')+'.';
+    else if(drink)text='Your '+DRINKS[drink.kind].en.toLowerCase()+' is in front of you'+(drink.left<drink.sips?', '+drink.left+' sips left':', untouched')+'.';
+    if(drink&&drink.left>0)buttons.push([drink.left===drink.sips?'乾杯 · Kanpai, and drink':'Drink',()=>{close();onSip();}]);
+    if(!order&&(!drink||drink.left<=1)&&izakayaOpen(getMinutes())){
+      if(!table.naoHere)text+='\n\nNao is not at the counter just now.';
+      else for(const d of Object.values(DRINKS))buttons.push([d.jp+' · ¥'+d.price,()=>{
+        if(!spend(d.price))return;
+        if(!onOrderDrink(d.id)){state.yen+=d.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
+        onTime(2);note('Ordered '+d.en.toLowerCase()+' at Minato.');close();say('「すみません、'+d.jp+'ください！」 Nao nods and reaches for '+(d.id==='draft'?'a mug.':d.id==='bottle'?'a big bottle.':d.id==='can'?'the fridge.':'the tea jug.'),4);
+      }]);
+    }
+    buttons.push(['Something to eat',izakayaMenu],['Stand up',()=>{close();onStand();}],['Stay seated',close]);
+    show('居酒屋 みなと · your table',text,buttons);
+  }
   function izakayaMenu(){
     if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Nao is locking up.');return;}
     show('Minato · Tonight’s little pleasures','Nao: Choose something you like. The stories are on the house.',[
@@ -359,6 +378,27 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     input.click();
   }
   // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
+  // Inside Umi-no-yu (src/world/interiors/onsen.js): pay at the bandai, change, bathe.
+  const townDay=()=>Math.floor(getMinutes()/1440);
+  const onsenPaid=()=>state.onsenPaidDay===townDay();
+  function onsenPay(){
+    const m=((getMinutes()%1440)+1440)%1440;
+    if(m<600||m>=1320){show('海の湯 · Umi-no-yu','Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
+    if(onsenPaid()){receipt('海の湯 · Umi-no-yu','You have paid for today. Higa-san waves you through without looking up.');return;}
+    show('海の湯 · Umi-no-yu','Higa-san looks up from her crossword. Adults ¥300. Swimwear in the water -- it is a family bath.',[
+      ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt('海の湯 · Umi-no-yu','Three coins in the tray. "Lockers through the curtain. Wash before you get in."');}],
+      ['Not today',close]]);
+  }
+  function onsenMilk(){
+    show('Coffee milk','Cold coffee milk in a glass bottle, ¥100. It is drunk standing up, hand on hip, all in one go.',[
+      ['Buy one · ¥100',()=>{if(!spend(100))return;onTime(1);addItem('Coffee milk');onMove('Drink');receipt('Umi-no-yu','The cap pops off with your thumbnail. It is gone in five swallows. The bottle goes back in the crate.');}],
+      ['Back',close]]);
+  }
+  function onsenChange(){
+    const swimming=getOutfit();
+    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says swimwear in the bath.',[
+      [swimming?'Get dressed':'Change into swimwear',()=>{close();onOutfit(!swimming);}],['Back',close]]);
+  }
   function onsen(){
     const m=((getMinutes()%1440)+1440)%1440;
     if(m<600||m>=1320){show('海の湯 · Umi-no-yu','The glass doors are locked and the lamps inside are out. A card in the window: 10:00–22:00. The footbath outside is still warm.',[['Back',close]]);return;}
@@ -618,7 +658,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'resident':resident(name);break;
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
       case 'izakaya-menu':izakayaMenu();break;
+      case 'izakaya-table':izakayaTable();break;
       case 'onsen':onsen();break;
+      case 'onsen-pay':onsenPay();break;
+      case 'onsen-milk':onsenMilk();break;
+      case 'onsen-change':onsenChange();break;
       case 'sakura-medicine':sakuraMedicine();break;
       case 'kyushoku':kyushoku(name,detail);break;
       case 'school-pantry':schoolPantry(name);break;
@@ -656,5 +700,5 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,players,menu:show,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,players,menu:show,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

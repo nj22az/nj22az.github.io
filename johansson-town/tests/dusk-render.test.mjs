@@ -53,13 +53,13 @@ test('Sakura tubes load at the current hour without making stock emissive or cel
  const old=fetch;globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const room=new THREE.Group(),display=buildSakuraInterior({room,reg(){},action(){},exit(){}});
-  display.updateLighting(1200);assert.ok(await display.ready());applyCelShading(room);
+  display.updateLighting(1400);assert.ok(await display.ready());applyCelShading(room);
   const tube=room.getObjectByName('sakura-light'),shelf=room.getObjectByName('sakura-shelf');
   assert.ok(tube&&shelf);assert.notEqual(tube.material,shelf.material);
-  assert.equal(tube.material.emissiveIntensity,.35);
+  assert.equal(tube.material.emissiveIntensity,.6);
   assert.equal(tube.material.type,'MeshStandardMaterial');assert.equal(shelf.material.type,'MeshStandardMaterial');
   assert.equal(shelf.material.emissive.getHex(),0);
-  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1200,.35],[1440,.35]]){
+  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,.6],[1440,.6]]){
    display.updateLighting(minutes);
    assert.equal(tube.material.emissive.getHex(),PALETTE.sakuraTube);
    assert.equal(tube.material.emissiveIntensity,level);

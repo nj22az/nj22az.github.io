@@ -208,7 +208,7 @@ export function createTown(options){
    // Minato school, through the gate at the lawn's south end. See school.js.
    world.school=buildSchool(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
-   world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
+   world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }

@@ -22,11 +22,11 @@ function fixture({visible=true,saved=null}={}){
 }
 function visibleInstances(group){let count=0;const matrix=new T.Matrix4();group.traverse(mesh=>{if(mesh.isInstancedMesh)for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,matrix);if(Math.abs(matrix.determinant())>1e-8)count++;}});return count;}
 
-test('the town clock dims existing Sakura strip lights at closing without advancing staff jobs',()=>{
+test('the town clock dims existing Sakura strip lights late at night without advancing staff jobs',()=>{
  const f=fixture();f.shop.street(f.shop.group.parent,{position:[0,0,0],yaw:0});
  const strip=f.shop.group.getObjectByName('Sakura shopfront strip lights');assert.equal(strip.children.length,2);
  const phase=f.shop.service.phase,position=f.world.people[0].g.position.clone();
- for(const [minutes,level] of [[540,1],[1110,1],[1200,.35],[1440,.35]]){
+ for(const [minutes,level] of [[540,1],[1110,1],[1243,1],[1380,.6],[1440,.6]]){
   f.time(minutes);for(const update of f.world.hourly)update(minutes);
   assert.deepEqual(strip.children.map(l=>l.intensity),[150*level,110*level]);
   for(const lamp of strip.children)assert.equal(lamp.color.getHex(),0xfff1ce);

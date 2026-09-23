@@ -207,14 +207,18 @@ export const SAKURA_DRESSING=[
  * Eye / mid / low bands stay clear of her checkout yaw toward the customer side.
  * Ledger and service bell stay on the counter where sakura-interior places them.
  */
+/** The low open cabinet behind the till, under the medicine shelf. Board tops in metres. */
+export const SAKURA_TILL_CABINET=Object.freeze({x0:6.24,x1:6.62,z0:.3,z1:1.85,boards:Object.freeze([.38,.72,.96])});
 export const SAKURA_BACKBAR=Object.freeze([
-  {id:'ferry-tickets',band:'eye',x:6.42,y:1.52,z:1.62,note:'Ferry punch cards'},
-  {id:'phone-cards',band:'eye',x:6.42,y:1.50,z:1.32,note:'Phone cards'},
-  {id:'stamps',band:'eye',x:6.42,y:1.48,z:1.05,note:'Sakura postage stamps'},
-  {id:'gum',band:'eye',x:6.42,y:1.42,z:.78,note:'Chewing gum'},
-  {id:'matches',band:'eye',x:6.42,y:1.38,z:.52,note:'Matches and lighter'},
-  {id:'osusume',band:'mid',x:6.40,y:1.12,z:1.15,note:'本日のおすすめ'},
-  {id:'postcard-stand',band:'mid',x:6.40,y:.78,z:.90,note:'Harbour postcard stand'},
-  {id:'radio',band:'low',x:6.40,y:.48,z:.55,note:'Shop radio'},
-  {id:'batteries',band:'low',x:6.40,y:.42,z:.78,note:'Spare batteries face-out'},
+  // Everything stands on a board of the till cabinet (SAKURA_TILL_CABINET): the top for
+  // the small change-counter goods, the middle for the postcards, the bottom for the radio.
+  {id:'ferry-tickets',band:'eye',x:6.42,y:.962,z:1.62,note:'Ferry punch cards'},
+  {id:'phone-cards',band:'eye',x:6.42,y:.962,z:1.36,note:'Phone cards'},
+  {id:'stamps',band:'eye',x:6.42,y:.961,z:1.1,note:'Sakura postage stamps'},
+  {id:'gum',band:'eye',x:6.42,y:.98,z:.84,note:'Chewing gum'},
+  {id:'matches',band:'eye',x:6.42,y:.967,z:.5,note:'Matches and lighter'},
+  {id:'osusume',band:'mid',x:6.52,y:1.015,z:1.28,note:'本日のおすすめ'},
+  {id:'postcard-stand',band:'mid',x:6.40,y:.77,z:.90,note:'Harbour postcard stand'},
+  {id:'radio',band:'low',x:6.40,y:.42,z:.55,note:'Shop radio'},
+  {id:'batteries',band:'low',x:6.40,y:.40,z:.84,note:'Spare batteries face-out'},
 ]);

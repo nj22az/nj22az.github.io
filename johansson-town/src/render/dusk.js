@@ -83,13 +83,14 @@ export function lanternGlow(minutes){
 }
 
 /**
- * Sakura fluorescent: cold, constant while the shop is open (09:00–20:00),
- * then a night-security dim. Never warms toward lantern orange.
+ * Sakura fluorescent: cold and full from half past six until eleven -- through opening,
+ * and on while Thuan cashes up and restocks after the shutters come down at eight -- then
+ * the night light over the till. Never warms toward lantern orange.
  */
 export function fluorescent(minutes){
  const m=wrapMinutes(minutes);
- if(m>=540&&m<1200)return 1;
- return 0.35;
+ if(m>=390&&m<1380)return 1;
+ return 0.6;
 }
 
 export function periodLabel(minutes){

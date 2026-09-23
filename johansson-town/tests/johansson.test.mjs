@@ -99,7 +99,7 @@ test('the live controller blinks, talks, plays moves and hands back to walking',
   await withImageStub(async()=>{
    const scene=new THREE.Scene(),him=createJohansson({scene,resolve:p=>p});
    assert.equal(await him.loading,true);
-   assert.equal(him.actions.length,31);
+   assert.equal(him.actions.length,33);
    let blinked=0;
    for(let i=0;i<360;i++){him.update(1/60,{visible:true});blinked=Math.max(blinked,him.weights.blinkL);}
    assert.ok(blinked>.6,'he blinks within six seconds');

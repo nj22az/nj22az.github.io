@@ -7,7 +7,7 @@ import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-adv
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
-import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING,SAKURA_TILL_CABINET} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
@@ -66,6 +66,11 @@ export function preloadSakuraInterior(){
 function dressBackbar(room,anchor,action,materials){
  const mat=color=>new THREE.MeshStandardMaterial({color,roughness:.78});
  const box=(w,h,d,x,y,z,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.name='Sakura backbar';m.userData.sharedAsset=true;room.add(m);return m;};
+ // The cabinet they stand on: sides, back, a kick board and three boards.
+ {const C=SAKURA_TILL_CABINET,wood=0x8a6a4a,cx=(C.x0+C.x1)/2,cz=(C.z0+C.z1)/2,w=C.x1-C.x0,d=C.z1-C.z0,top=C.boards.at(-1);
+  for(const y of C.boards)box(w,.022,d,cx,y-.011,cz,wood);
+  for(const z of [C.z0+.011,C.z1-.011])box(w,top,.022,cx,top/2,z,wood);
+  box(.018,top,d,C.x1-.009,top/2,cz,0x6f553b);box(.02,.08,d,C.x0+.02,.04,cz,0x5c4631);}
  for(const prop of SAKURA_BACKBAR){
   const {id,x,y,z}=prop;
   if(id==='ferry-tickets'){for(let i=0;i<6;i++)box(.10,.003,.055,x,y+i*.004,z-i*.008,0xc45c48);}

@@ -38,7 +38,8 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     if(record.eaten>=42){record.finished=true;ledger.record(name,minutes,'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
-  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition?candidate:null;if(staff){
+  // While Nao is bringing the player a drink, izakaya-beer.js has her.
+  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
    const tidying=!serving&&Math.floor(minutes/6)%3!==2;
    staff.userData.serving=!!serving;staff.userData.socialPose=serving||tidying?'Use':'Idle_Neutral';
    staff.userData.activity=serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:tidying?'tidying the Minato counter':'welcoming the evening guests';

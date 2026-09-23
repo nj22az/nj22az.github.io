@@ -5,6 +5,10 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {PARK,PARK_BENCH,parkHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
 import {peninsulaActive} from './town-mode.js';
+import {createLightPools} from './light-pools.js';
+import {lanternGlow} from '../render/dusk.js';
+/** The park's three lamp posts, in the model's own (unscaled) ground coordinates. */
+export const PARK_LAMPS=Object.freeze([[.75,-2.97],[-6.72,10.41],[13.03,-3.54]]);
 let source=null;
 /** The lawn and the shrubs in the supplied park. Its meshes are named after materials. */
 const PARK_TURF='mtParkGround00t_mat',PARK_BUSH='mtParkBush00t_mat';
@@ -58,7 +62,7 @@ export function buildPark(world,options){
  if(!source)registerDetail(world,{id:'park',x:p.x,z:p.z,radius:38,load:async()=>{
   if(!await preloadPark())return false;const model=source.clone(true);model.userData.sharedAsset=true;
   model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;if(/Leaf|Bush|Grass|TreePlane/.test(o.material.name)){o.material.alphaTest=.35;o.material.transparent=false;o.material.depthWrite=true;o.material.side=THREE.DoubleSide;}}});
-  toneGround(model);visuals.clear();visuals.add(model);world.park.loaded=true;return true;
+  toneGround(model);litLamps(model);visuals.clear();visuals.add(model);world.park.loaded=true;return true;
  }});
  // The plinth's vertical face. On the peninsula the lawn grades the mound's foot into
  // the ground around it (parkSkirtHeight), so the face would stand inside that slope
@@ -71,7 +75,13 @@ export function buildPark(world,options){
  for(const [x,z] of [[.75,-2.97],[-6.72,10.41],[13.03,-3.54]])world.colliders.push({x:p.x+x*s,z:p.z+z*s,w:.25*s,d:.25*s,height:8,park:true});
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);
  options.register(bench,'Sit and watch the town and harbour',()=>options.onAction('seat','Harbour Park bench','A quiet view across the rooftops and port.'));
- world.park={group,bench,seat:PARK_BENCH,loaded:!!source};
+ // After dark the lamp glass glows and throws a warm pool on the path below each post.
+ const glassMaterials=[];
+ function litLamps(model){model.traverse(o=>{if(o.isMesh&&o.material?.name==='mtParkLampLight00t_mat'){o.material=o.material.clone();o.material.emissive=new THREE.Color(0xffd9a2);o.material.emissiveIntensity=0;glassMaterials.push(o.material);}});}
+ if(source)visuals.traverse(o=>{if(o.isMesh&&o.material?.name==='mtParkLampLight00t_mat'&&!glassMaterials.includes(o.material)){o.material=o.material.clone();o.material.emissive=new THREE.Color(0xffd9a2);glassMaterials.push(o.material);}});
+ const pools=createLightPools(world.group,PARK_LAMPS.map(([x,z])=>{const wx=p.x+x*s,wz=p.z+z*s;return {x:wx,z:wz,y:parkHeight(wx,wz)??p.lift,radius:2.6};}));
+ (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);for(const m of glassMaterials)m.emissiveIntensity=glow*1.6;});
+ world.park={group,bench,seat:PARK_BENCH,loaded:!!source,pools};
 }
 function buildPlaza(world,options,p){
  const group=new THREE.Group();group.name='Harbour Park';group.position.set(p.x,0,p.z);world.group.add(group);

@@ -43,12 +43,12 @@ test('paper lanterns lead the windows',()=>{
  assert.equal(lanternGlow(at(16)),0);
 });
 
-test('Sakura fluorescent stays cold and does not follow dusk',()=>{
+test('Sakura fluorescent stays cold, on into the evening, and does not follow dusk',()=>{
  assert.equal(fluorescent(at(12)),1);
  assert.equal(fluorescent(at(18,30)),1);
- assert.equal(fluorescent(at(19,59)),1);
- assert.equal(fluorescent(at(20)),0.35);
- assert.equal(fluorescent(at(2)),0.35);
+ assert.equal(fluorescent(at(20,43)),1,'still lit after closing while the till is cashed up');
+ assert.equal(fluorescent(at(23)),0.6);
+ assert.equal(fluorescent(at(2)),0.6);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.lanternPaper);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.sunDusk);
 });

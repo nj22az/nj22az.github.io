@@ -11,10 +11,10 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
  * expression -- is driven every frame on top of them.
  */
 export const JOHANSSON_MODEL='characters/johansson/johansson.glb';
-export const JOHANSSON_HEIGHT=1.82;
+export const JOHANSSON_HEIGHT=1.68;
 
 /** Metres covered by one cycle of each gait, measured in Blender (art/characters/johansson/actions.json). */
-const STRIDE={Walk:{metres:2.44,seconds:.76},Run:{metres:3.042,seconds:.6}};
+const STRIDE={Walk:{metres:2.193,seconds:.74},Run:{metres:3.042,seconds:.6}};
 export const GAIT_SPEED=Object.freeze({Walk:STRIDE.Walk.metres/STRIDE.Walk.seconds,Run:STRIDE.Run.metres/STRIDE.Run.seconds});
 
 /** Actions that repeat until something else happens. */
@@ -71,7 +71,7 @@ export function gaitRate(move,speed){
  */
 export function createJohansson({scene,resolve}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
- let model=null,mixer=null,faces=[],eyes=[],head=null,headRest=null,ready=false;
+ let model=null,mixer=null,faces=[],eyes=[],head=null,headRest=null,ready=false,sitHip=.4,held=null,seatHip={},outfit='clothes';const grip={},wardrobe={clothes:[],swim:[]};
  const actions=new Map();
  let base=null,baseName='',gesture=null,gestureName='',seatMove='Sit';
  let blinkIn=2,blinkT=-1,speakUntil=0,syllable=0,syllableShape={},expression='neutral',expressionUntil=0,time=0;
@@ -91,6 +91,8 @@ export function createJohansson({scene,resolve}){
     const m=o.material;
     if(m.transparent){m.depthWrite=false;m.alphaTest=.02;o.renderOrder=2;}
     if(o.morphTargetDictionary)faces.push({mesh:o,index:o.morphTargetDictionary});
+    // What he wears: the shirt, shorts and shoes, or the swimming trunks over the skin beneath them.
+    if(/Clothes|Shoes/.test(o.name))wardrobe.clothes.push(o);else if(/SkinUnder|Trunks/.test(o.name)){wardrobe.swim.push(o);o.visible=false;}
    }
    if(o.isBone){if(o.name==='eyeL'||o.name==='eyeR')eyes.push({bone:o,rest:o.quaternion.clone()});if(o.name==='head'){head=o;headRest=o.quaternion.clone();}}
   });
@@ -106,6 +108,11 @@ export function createJohansson({scene,resolve}){
    actions.set(clip.name,action);
   }
   mixer.addEventListener('finished',e=>{if(e.action===gesture)endGesture(.35);});
+  for(const name of ['wristR','finger3-2R','finger2-1R','finger5-1R'])grip[name]=model.getObjectByName(name);
+  // How high his hips sit above his feet in the chair pose, so a seat can take his weight.
+  const sit=actions.get('Sit'),hipBone=model.getObjectByName('upperleg01L');
+  for(const name of ['Sit','Soak','SitDrink']){const a=actions.get(name);if(!a||!hipBone)continue;a.reset().play();mixer.update(0);root.updateMatrixWorld(true);seatHip[name]=root.worldToLocal(hipBone.getWorldPosition(new THREE.Vector3())).y;a.stop();}
+  sitHip=seatHip.Sit??sitHip;
   setBase('Idle',0);ready=true;return true;
  })().catch(error=>{console.warn('Johansson stays first-person only:',error.message);return false;});
 
@@ -138,6 +145,16 @@ export function createJohansson({scene,resolve}){
  function speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);}
  function lookAt(point){lookTarget=point?point.clone?.()||point:null;}
 
+ const gw=new THREE.Vector3(),gf=new THREE.Vector3(),gi=new THREE.Vector3(),gp=new THREE.Vector3(),gUp=new THREE.Vector3(0,1,0),gq2=new THREE.Quaternion();
+ /** The fingers wrap round what he holds: its axis runs from little finger to forefinger. */
+ function placeInHand(){
+  if(!grip.wristR||!grip['finger3-2R'])return;
+  root.updateMatrixWorld(true);
+  grip.wristR.getWorldPosition(gw);grip['finger3-2R'].getWorldPosition(gf);grip['finger2-1R'].getWorldPosition(gi);grip['finger5-1R'].getWorldPosition(gp);
+  root.worldToLocal(gw);root.worldToLocal(gf);root.worldToLocal(gi);root.worldToLocal(gp);
+  const axis=gi.clone().sub(gp).normalize(),centre=gw.clone().lerp(gf,.55);
+  gq2.setFromUnitVectors(gUp,axis);held.quaternion.copy(gq2);held.position.copy(centre).addScaledVector(axis,-.055);
+ }
  const eyeWorld=new THREE.Vector3(),toTarget=new THREE.Vector3(),headQ=new THREE.Quaternion(),localDir=new THREE.Vector3(),gq=new THREE.Quaternion(),eq=new THREE.Quaternion(),ge=new THREE.Euler();
  function updateFace(dt){
   // Blinks: quick, now and then a double.
@@ -176,6 +193,13 @@ export function createJohansson({scene,resolve}){
   play,express,speak,lookAt,
   /** Seated variant: 'Sit', 'SitEat' or 'Soak'. */
   seat(name='Sit'){seatMove=actions.has(name)?name:'Sit';},
+  /** 'clothes' or 'swim'. */
+  wear(name){outfit=name==='swim'?'swim':'clothes';for(const o of wardrobe.clothes)o.visible=outfit==='clothes';for(const o of wardrobe.swim)o.visible=outfit==='swim';},
+  get outfit(){return outfit;},
+  /** Height of his hip joints above his feet when sitting. */
+  get sitHip(){return seatHip[seatMove]??sitHip;},
+  /** Put something in his right hand (a mug, a bottle, a can), or null to empty it. */
+  hold(prop){if(held)held.removeFromParent();held=prop||null;if(held)root.add(held);},
   jump(){play('Jump',{startAt:.14});},
   stop(){endGesture();},
   /**
@@ -195,6 +219,7 @@ export function createJohansson({scene,resolve}){
    for(const e of eyes)e.bone.quaternion.copy(e.rest);if(head)head.quaternion.copy(headRest);
    mixer.update(dt);
    updateFace(dt);
+   if(held)placeInHand();
   }
  };
 }
