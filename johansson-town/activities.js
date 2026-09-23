@@ -270,6 +270,17 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['Just looking, thank you',close]
     ]);
   }
+  // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
+  function onsen(){
+    const m=((getMinutes()%1440)+1440)%1440;
+    if(m<600||m>=1320){show('海の湯 · Umi-no-yu','The glass doors are locked and the lamps inside are out. A card in the window: 10:00–22:00. The footbath outside is still warm.',[['Back',close]]);return;}
+    show('海の湯 · Umi-no-yu','The attendant at the desk looks up from a crossword. Adults ¥300; a towel is ¥100 more, or bring your own.',[
+      ['Bathe · ¥300',()=>{if(!spend(300))return;onTime(40);note('Bathed at Umi-no-yu.');
+        show('The rock bath','You wash at the low taps, then lower yourself into the outdoor bath a little at a time. Over the bamboo on the sea side the harbour lights come and go in the steam. Forty minutes pass without asking.',[
+          ['Coffee milk from the fridge · ¥100',()=>{if(!spend(100))return;addItem('Coffee milk');receipt('Umi-no-yu','Cold coffee milk in a glass bottle, drunk standing up, hand on hip. The bottle goes back in the crate.');}],
+          ['Step back outside',close]]);}],
+      ['Not today',close]]);
+  }
   function izakayaGossip(){
     if(!izakayaOpen(getMinutes())){izakayaMenu();return;}
     const social=getSocialContext(),gossip=gossipAt(getMinutes(),social.names||[]);note(gossip.clue);
@@ -517,6 +528,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'resident':resident(name);break;
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
       case 'izakaya-menu':izakayaMenu();break;
+      case 'onsen':onsen();break;
       case 'izakaya-gossip':izakayaGossip();break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;

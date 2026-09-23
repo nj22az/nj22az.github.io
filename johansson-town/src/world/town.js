@@ -9,6 +9,7 @@ import {STREET_CAST} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {lanePatches} from './lane-surfaces.js?snappy=1';
+import {buildParkOnsen} from './park-onsen.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -201,6 +202,8 @@ export function createTown(options){
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.
+   // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
+   world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }
@@ -251,7 +254,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);
+    world.eastLawn?.tick?.(time,minutes);world.onsen?.tick(time);
     world.busStation?.update(minutes,day);
     // Three daily services, each with a fifteen-minute stop.
     world.bus?.update(dt,minutes);
