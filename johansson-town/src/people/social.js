@@ -295,6 +295,12 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  * reason the shopping district does — the bus is how people arrive and leave.
  */
 export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
+ // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
+ // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
+ if(profile?.name==='Barfly'){
+  const minute=minuteOfDay(minutes),sleeping=minute>=180&&minute<600;
+  return {place:'izakaya',target:IZAKAYA_DOOR,activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
+ }
  const commuter=mode===false?false
   :mode!=null&&mode!==''?true
   :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
