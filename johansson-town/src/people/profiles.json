@@ -14,7 +14,7 @@
       18
     ],
     "home": [
-      -25.0,
+      -25,
       -47
     ],
     "top": "#967a99",
@@ -55,7 +55,7 @@
       21
     ],
     "home": [
-      -29.0,
+      -29,
       -47
     ],
     "top": "#527d99",
@@ -96,7 +96,7 @@
       46
     ],
     "home": [
-      -25.0,
+      -25,
       -39
     ],
     "top": "#ad6178",
@@ -137,7 +137,7 @@
       -48
     ],
     "home": [
-      -29.0,
+      -29,
       -39
     ],
     "top": "#405d7e",
@@ -178,7 +178,7 @@
       46
     ],
     "home": [
-      -25.0,
+      -25,
       -32
     ],
     "top": "#498d8b",
@@ -219,7 +219,7 @@
       -55
     ],
     "home": [
-      -29.0,
+      -29,
       -32
     ],
     "top": "#6eaa9b",
@@ -260,7 +260,7 @@
       46
     ],
     "home": [
-      -25.0,
+      -25,
       -25
     ],
     "top": "#4b6e9c",
@@ -301,7 +301,7 @@
       30
     ],
     "home": [
-      -29.0,
+      -29,
       -25
     ],
     "top": "#d17b78",
@@ -342,7 +342,7 @@
       50
     ],
     "home": [
-      -25.0,
+      -25,
       -20
     ],
     "top": "#cda04f",
@@ -383,7 +383,7 @@
       39
     ],
     "home": [
-      -29.0,
+      -29,
       -20
     ],
     "top": "#73988a",
@@ -424,7 +424,7 @@
       18
     ],
     "home": [
-      -25.0,
+      -25,
       -12
     ],
     "top": "#bd7959",
@@ -465,7 +465,7 @@
       39
     ],
     "home": [
-      -29.0,
+      -29,
       -12
     ],
     "top": "#9ea66c",
@@ -506,7 +506,7 @@
       -2
     ],
     "home": [
-      -25.0,
+      -25,
       -5
     ],
     "top": "#a96883",
@@ -547,7 +547,7 @@
       18
     ],
     "home": [
-      -29.0,
+      -29,
       -5
     ],
     "top": "#807398",
@@ -588,7 +588,7 @@
       50
     ],
     "home": [
-      -25.0,
+      -25,
       2
     ],
     "top": "#d797a2",
@@ -629,7 +629,7 @@
       56
     ],
     "home": [
-      -29.0,
+      -29,
       2
     ],
     "top": "#bbaa85",
@@ -670,7 +670,7 @@
       46
     ],
     "home": [
-      -25.0,
+      -25,
       12
     ],
     "top": "#c77465",
@@ -711,7 +711,7 @@
       18
     ],
     "home": [
-      -29.0,
+      -29,
       12
     ],
     "top": "#7c9959",
@@ -752,7 +752,7 @@
       39
     ],
     "home": [
-      -25.0,
+      -25,
       19
     ],
     "top": "#aa90b4",
@@ -793,7 +793,7 @@
       18
     ],
     "home": [
-      -29.0,
+      -29,
       19
     ],
     "top": "#77a5b7",
@@ -834,7 +834,7 @@
       20
     ],
     "home": [
-      -25.0,
+      -25,
       25
     ],
     "start": 960,
@@ -859,5 +859,46 @@
       "angle": -1.5707963267948966
     },
     "homeAddress": "21 Willow Alley"
+  },
+  {
+    "name": "Barfly",
+    "age": 43,
+    "role": "Minato regular",
+    "female": false,
+    "height": 1.72,
+    "work": [
+      24,
+      21
+    ],
+    "evening": [
+      24,
+      21
+    ],
+    "home": [
+      24,
+      21
+    ],
+    "top": "#b74e43",
+    "start": 0,
+    "close": 0,
+    "retire": 1440,
+    "personality": "Unhurried, permanently thirsty",
+    "friend": "Nao",
+    "look": "Broad build, short salt-and-pepper hair, red patterned open-collar shirt and wristwatch",
+    "hairStyle": "short",
+    "outfit": "hawaiian",
+    "hello": "Another one? Nao knows my usual. I am staying right here.",
+    "gossip": "I have been at this stool long enough to know when the lanterns need trimming.",
+    "clue": "Minato stays open late. The regular at the end of the counter has never once caught the last bus.",
+    "model": "barfly",
+    "build": 1.14,
+    "supperStart": null,
+    "supperEnd": null,
+    "house": {
+      "x": 24,
+      "z": 21,
+      "angle": 0
+    },
+    "homeAddress": "Minato Izakaya"
   }
 ]
