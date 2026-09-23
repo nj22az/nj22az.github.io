@@ -163,6 +163,21 @@ h3 { font-size: 1.15rem; }
 .status.ok { color: var(--accent); font-weight: 600; }
 .status.error { color: var(--error); font-weight: 600; }
 
+.price { display: flex; align-items: baseline; gap: 8px; margin: 0 0 0.8em !important; }
+.price strong { font-size: 2rem; line-height: 1.1; color: var(--accent); }
+.price span { color: var(--muted); font-size: 0.9rem; }
+.checks.compact { margin: 0 0 1.4em; font-size: 0.95rem; }
+.checks.compact li { margin: 0.3em 0; }
+.dl-card-buy { border-color: var(--accent); border-width: 1.5px; }
+.dl-card .btn { margin-top: auto; }
+
+.unlock-panel { margin-top: 24px; }
+.unlock-panel summary {
+  cursor: pointer; color: var(--muted); font-size: 0.95rem; width: fit-content;
+}
+.unlock-panel summary:hover { color: var(--ink); }
+.unlock-panel .dl-card { margin-top: 14px; max-width: 520px; }
+
 /* sidfot */
 .footer { border-top: 1px solid var(--rule); padding: 28px 0 40px; color: var(--muted); font-size: 0.9rem; }
 .footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
