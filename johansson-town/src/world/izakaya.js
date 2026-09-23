@@ -106,8 +106,14 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture('おかえりなさい','WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
  for(const x of [-3.8,-2.3,-.8,.7,2.2])collider(x,-1.42,.6,.6,.71);
- collider(-.8,-2.6,8.3,1.15,1.15);collider(-1,-5.9,7.1,.6,2.7);collider(4.65,-4.7,2.2,1.0,1.3);
+ // The counter runs from the guest ledge back to the steel work top on Nao's side.
+ collider(-.8,-2.64,8.4,1.43,1.15);collider(-1,-5.95,7.2,.62,2.7);collider(4.65,-4.7,2.2,1.0,1.3);
  for(const [x,z] of [[-3.5,2.2],[2.6,2]]){collider(x,z,2.5,1.35,1);for(const dz of [-1.08,1.08])collider(x,z+dz,2.5,.50,.6);}
+ // The koagari, the sake barrels, crates of empties by the door and behind the counter,
+ // the drinks fridge and the umbrella stand (see tools/blender/build-minato-interior.py).
+ collider(5.3,1.8,2.0,5.4,.4);collider(-5.88,-.35,.7,1.5,.6);collider(-5.35,5.75,1.05,.4,.62);
+ collider(-5.72,-5.0,.85,1.9,1.9);collider(-2.35,5.95,.3,.3,.6);
+ hangMenuStrips(room);lightTheRoom(room);
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
  anchor([0,1,0],'Listen to the table',()=>action('izakaya-gossip'));
@@ -116,4 +122,44 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([4.5,1.8,-5.5],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  return {name:'Minato',cutaway:true,television:createIzakayaTV({parent:room})};
+}
+
+/**
+ * The tanzaku: the day's menu on strips of paper pinned along the back wall, one dish to
+ * a strip, written top to bottom with the price at the foot. The four Nao will make you
+ * are at the prices her menu charges; the rest are what a harbour izakaya had on its wall
+ * in 1997. Drawn here rather than baked into the model so the brushwork stays sharp.
+ */
+const MENU_STRIPS=[
+ ['焼き鳥盛合せ',180,true],['枝豆',120],['おでん',260,true],['生ビール 小',180],['冷奴',150],['だし巻き玉子',200],
+ ['ほっけ焼き',280],['刺身盛合せ',320,true],['揚げ出し豆腐',180],['鶏の唐揚げ',220],['お茶漬け',180],
+ ['日本酒 一合',220],['焼酎',200],['瓶ビール',260],['麦茶',100],['烏龍茶',100],
+];
+function hangMenuStrips(room){
+ const cell=[64,256],canvas=document.createElement('canvas');canvas.width=cell[0]*MENU_STRIPS.length;canvas.height=cell[1];
+ const ctx=canvas.getContext('2d');ctx.textAlign='center';ctx.textBaseline='middle';
+ MENU_STRIPS.forEach(([name,price,special],i)=>{
+  const x=i*cell[0];ctx.fillStyle=special?'#e9d9b4':'#f3e8cc';ctx.fillRect(x+3,0,cell[0]-6,cell[1]);
+  ctx.fillStyle=special?'#b3382c':'#2a221c';const chars=[...name.replace(/ /g,'')],size=Math.min(34,196/chars.length);
+  ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
+  chars.forEach((ch,k)=>ctx.fillText(ch,x+cell[0]/2,14+size/2+k*size*1.02));
+  ctx.fillStyle='#b3382c';ctx.font='bold 19px serif';ctx.fillText('¥'+price,x+cell[0]/2,cell[1]-18);
+ });
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
+ const material=new THREE.MeshStandardMaterial({map:texture,roughness:.92});
+ // Eleven to the left of the welcome board, five between it and the radio.
+ const slots=[...Array.from({length:11},(_,k)=>-4.95+k*.34),...Array.from({length:5},(_,k)=>2.35+k*.34)];
+ const group=new THREE.Group();group.name='Minato menu strips';
+ slots.forEach((x,i)=>{
+  const geometry=new THREE.PlaneGeometry(.2,.8),uv=geometry.attributes.uv;
+  for(let k=0;k<uv.count;k++)uv.setX(k,(i+uv.getX(k))/MENU_STRIPS.length);
+  const strip=new THREE.Mesh(geometry,material);strip.position.set(x,3.03,-6.18);strip.rotation.z=(i%3-1)*.012;group.add(strip);
+ });
+ room.add(group);
+}
+/** Warm light from the lanterns over the counter and the lamps over the tables. */
+function lightTheRoom(room){
+ for(const [x,y,z,power] of [[-4,2.6,-2.35,6],[-.8,2.6,-2.35,6],[2.4,2.6,-2.35,6],[-3.5,2.1,2.2,4],[2.6,2.1,2,4],[5.3,1.95,1.8,4]]){
+  const light=new THREE.PointLight(0xffb36b,power,7,2);light.position.set(x,y,z);light.name='Minato lamp';room.add(light);
+ }
 }

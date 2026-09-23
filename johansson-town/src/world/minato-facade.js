@@ -51,6 +51,19 @@ function norenTexture(){
 }
 
 /** The corner board: 居酒屋 みなと read from up the pavement, painted on dark timber. */
+/** Red paper with its bamboo ribs showing, and the word brushed on front and back. */
+function chochinTexture(word){
+ const c=document.createElement('canvas');c.width=256;c.height=256;const ctx=c.getContext('2d');
+ ctx.fillStyle='#b8392a';ctx.fillRect(0,0,256,256);
+ ctx.strokeStyle='rgba(60,20,14,.35)';ctx.lineWidth=2;
+ for(let y=10;y<256;y+=14){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(256,y);ctx.stroke();}
+ ctx.fillStyle='#1c1410';ctx.textAlign='center';ctx.textBaseline='middle';
+ const chars=[...word],size=Math.min(62,200/chars.length);
+ ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
+ // u=0 faces the street, so the front word straddles the seam; the back one is at u=.5.
+ for(const cx of [0,256,128])chars.forEach((ch,k)=>ctx.fillText(ch,cx,128+(k-(chars.length-1)/2)*size*1.05));
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
 function kanbanTexture(){
  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=1024;
  const ctx=canvas.getContext('2d');
@@ -237,16 +250,26 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // ---- lanterns --------------------------------------------------------------------
  // Three akachochin on the eave beam. They are the reason you can find the place after
  // dark from the far end of the pavement.
+ //
+ // Paper over bamboo, so they belly out between round black caps, and each says what
+ // is inside: yakitori, sake, oden. They used to be straight tubes between square
+ // plates, which from the pavement read as three orange boxes.
  const lanterns=[];
+ const belly=Array.from({length:13},(_,k)=>{const t=k/12;return new THREE.Vector2(.12+.085*Math.sin(Math.PI*t),-.25+.5*t);});
+ const lanternShape=new THREE.LatheGeometry(belly,20);
  for(const [i,x] of [centreX-1.9,centreX,centreX+1.9].entries()){
   const hang=new THREE.Group();hang.position.set(x,eaveY-.2,front+.46);group.add(hang);
-  painted([.03,.22,.03],[0,-.11,0],0x2b231a,undefined,hang);
-  const body=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.44,12,1,true),
-   new THREE.MeshStandardMaterial({color:0x9c3730,emissive:0xd8562e,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
+  painted([.03,.2,.03],[0,-.1,0],0x2b231a,undefined,hang);
+  const map=chochinTexture(['やきとり','酒','おでん'][i]);
+  const body=new THREE.Mesh(lanternShape,
+   new THREE.MeshStandardMaterial({map,emissiveMap:map,color:0xffffff,emissive:0xffb27a,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
   // The clock changes this material; a static batch would freeze a cloned copy.
   body.position.y=-.45;body.userData.dynamicProp=true;hang.add(body);
   lanterns.push(body);
-  for(const y of [-.24,-.66])painted([.38,.035,.38],[0,y,0],0x241c14,undefined,hang);
+  for(const y of [-.2,-.7]){
+   const cap=new THREE.Mesh(new THREE.CylinderGeometry(.115,.115,.05,16),paint(0x201813));
+   cap.position.y=y;cap.castShadow=!!shadows;hang.add(cap);
+  }
   hang.rotation.z=(i-1)*.015;
  }
 

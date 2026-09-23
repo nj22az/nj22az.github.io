@@ -84,34 +84,5 @@ for x in [-3.4,3.4]:
  cyl('Flower pot',.29,.48,(x,.35,4.6),wood)
  for i in range(6):sphere('Camellia leaves',(.17,.28,.14),(x+math.sin(i)*.19,.85+(i%2)*.17,4.6+math.cos(i)*.19),green)
 merge_export('minato-exterior');render('minato-exterior',(10,8,14),(0,2,0),14)
-bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-# Cutaway room, carefully separated entry / counter / shared tables.
-cube('Diorama base',(13,.3,13),(0,-.16,0),dark)
-for i in range(26):cube('Cedar floorboard',(.48,.08,12.6),(-6.25+i*.5,.015,0),wood,.008)
-cube('Back wall',(13,3.8,.20),(0,1.9,-6.4),plaster)
-cube('Left cutaway wall',(.2,2.8,13),(-6.4,1.4,0),plaster)
-cube('Right cutaway rim',(.2,.65,13),(6.4,.325,0),wood)
-for x in [-6.3,-3.2,0,3.2,6.3]:cube('Wall post',(.14,3.8,.17),(x,1.9,-6.24),dark)
-for y in [.3,2.7,3.7]:cube('Wall rail',(12.8,.13,.15),(0,y,-6.22),dark)
-cube('Counter carcass',(8,.98,.9),(-.8,.49,-2.6),dark);cube('Polished cedar counter',(8.3,.16,1.13),(-.8,1.03,-2.6),wood,.075)
-for x in [-3.8,-2.3,-.8,.7,2.2]:stool(x,-1.42);dish(x,1.15,-2.35);bottle(x+.3,1.12,-2.73)
-for y in [.9,1.65,2.4]:
- cube('Bottle shelf',(7,.10,.52),(-1,y,-5.9),dark)
- for i in range(18):bottle(-4.15+i*.36,y+.07,-5.85)
-for x in [-4,0,3.5]:lantern(x,3.0,-2.6)
-for x,z in [(-3.5,2.2),(2.6,2.0)]:
- cube('Shared table',(2.5,.13,1.35),(x,.88,z),wood,.07)
- for dx in [-.95,.95]:
-  for dz in [-.43,.43]:cube('Table leg',(.12,.8,.12),(x+dx,.4,z+dz),dark)
- for dz in [-1.08,1.08]:
-  cube('Bench cushion',(2.5,.13,.5),(x,.50,z+dz),red,.06)
-  for dx in [-.95,.95]:cube('Bench support',(.16,.43,.35),(x+dx,.22,z+dz),dark)
- for dx in [-.65,.65]:dish(x+dx,.98,z);bottle(x+dx+.25,.97,z-.3)
-cube('Kitchen',(2.2,.90,1.0),(4.65,.45,-4.7),metal)
-for x in [4.0,4.7,5.4]:cyl('Oden pot',.26,.26,(x,1.05,-4.7),dark);cyl('Pot lid',.28,.035,(x,1.2,-4.7),metal)
-for i in range(7):cube('Hanging menu card',(.36,.78,.03),(-2.2+i*.62,3.13,-6.07),cream,.01)
-cube('Radio cabinet',(1,.6,.4),(4.5,2.2,-6.0),wood)
-for i in range(10):cube('Radio grille',(.04,.34,.04),(4.13+i*.065,2.2,-5.77),dark,.005)
-cube('Entry mat',(2.1,.04,.9),(0,.10,5.5),red)
-merge_export('minato-interior');render('minato-interior',(12,15,19),(0,.5,0),19)
-(art/'export-report.json').write_text(json.dumps(report,indent=2))
+# The room (minato-interior.glb) is built by build-minato-interior.py.
+path=art/'export-report.json';data=json.loads(path.read_text()) if path.exists() else {};data.update(report);path.write_text(json.dumps(data,indent=2))
