@@ -39,8 +39,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   */
  const showPeople=on=>{
   // Staff are reparented in by the clerk service rather than added at the top, so this
-  // has to look through the whole shop, not just its direct children.
-  group.traverse(o=>{if(o!==group&&(o.userData?.name||o.userData?.character))o.visible=on;});
+  // has to look through the whole shop, not just its direct children. It does not look
+  // inside the shop model: its meshes carry a name of their own from the file, and
+  // taking that for a person hid every shelf, wall and fridge from the street, leaving
+  // the goods hanging in the window with nothing under them.
+  const visit=o=>{
+   if(o!==group&&(o.userData?.name||o.userData?.character)){o.visible=on;return;}
+   if(o.userData?.sharedAsset&&o!==group)return;
+   for(const child of o.children)visit(child);
+  };
+  visit(group);
  };
  const UP=new THREE.Vector3(0,1,0);
 

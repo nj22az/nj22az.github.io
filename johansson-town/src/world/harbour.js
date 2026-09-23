@@ -82,7 +82,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize()),e=new THREE.Euler().setFromQuaternion(q);
     return directMesh(new THREE.CylinderGeometry(r,r,d.length(),8),material(c),parent,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],[e.x,e.y,e.z]);
   }
-  function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false){
+  function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false,twoFaced=false){
     const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,768,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,744,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='700 96px "Yu Gothic",system-ui';ctx.fillText(text,384,106,716);ctx.font='600 30px system-ui';ctx.fillText(sub,384,201,700);
     const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
     const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05});
@@ -93,6 +93,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const back=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshStandardMaterial({color:new THREE.Color(bg).multiplyScalar(.78),roughness:.9}));
     back.position.set(p[0]-Math.sin(angle)*.012,p[1],p[2]-Math.cos(angle)*.012);
     back.rotation.y=angle+Math.PI;back.castShadow=false;back.receiveShadow=false;group.add(back);
+    // A gate sign carries its name on both faces, each the right way round.
+    if(twoFaced){back.material=mat;back.position.set(p[0]-Math.sin(angle)*.03,p[1],p[2]-Math.cos(angle)*.03);}
     return mesh;
   }
   function anchor(p,label,action){const a=new THREE.Object3D();a.position.set(...p);group.add(a);register(a,label,action);return a;}
@@ -130,8 +132,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
-  // Two perpendicular crossings define the short rectangular shopping blocks.
-  for(const z of [SHOP_CROSSING_Z,-18])for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,z,0xbeb79a);
+  // Two perpendicular crossings define the short rectangular shopping blocks. Where
+  // they fall on the timber boardwalk there is no traffic to stop and nothing to paint:
+  // a zebra on deck boards reads as a mistake, so those are left as plain boards.
+  for(const z of [SHOP_CROSSING_Z,-18])if(z>BOARDWALK.maxZ)for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,z,0xbeb79a);
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
@@ -189,7 +193,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
     if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d');
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.
@@ -287,7 +291,27 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // people with the street cast, so they are no longer built at all: removed from the
   // scene they still answered 'Talk to' from where they had stood.
   const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);
-  const catLast=cat.position.clone();let catFacing=0,catResting=true;const cb=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.65),material(0xd0a471));cb.position.y=.28;cat.add(cb);const ch=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0xd0a471));ch.position.set(0,.49,-.3);cat.add(ch);for(const x of [-.11,.11]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.085,.18,3),material(0xd0a471));ear.position.set(x,.67,-.3);cat.add(ear);}register(cat,'Greet the cat',()=>onAction('cat'));
+  const catLast=cat.position.clone();let catFacing=0,catResting=true;
+  // Tama, a ginger shop cat: rounded body, pale chest and muzzle, four legs that walk
+  // and a tail held up in a curl. It used to be a box with a ball on the end.
+  const catPart=(geo,p,col,scale)=>{const m=new THREE.Mesh(geo,material(col));m.position.set(...p);if(scale)m.scale.set(...scale);m.castShadow=shadows;cat.add(m);return m;};
+  const ginger=0xd0a471,cream=0xf0dcc0;
+  catPart(new THREE.SphereGeometry(.13,12,8),[0,.21,.02],ginger,[1,.92,2.05]);
+  catPart(new THREE.SphereGeometry(.1,10,8),[0,.25,-.18],cream,[1,1.05,1]);
+  catPart(new THREE.SphereGeometry(.1,12,10),[0,.35,-.29],ginger,[1.1,.95,1]);
+  catPart(new THREE.SphereGeometry(.045,8,6),[0,.325,-.38],cream,[1.2,.8,1]);
+  catPart(new THREE.SphereGeometry(.012,6,4),[0,.34,-.425],0x6b4a45);
+  for(const x of [-.04,.04])catPart(new THREE.SphereGeometry(.013,6,4),[x,.365,-.378],0x2d3230);
+  for(const x of [-.055,.055]){const ear=catPart(new THREE.ConeGeometry(.038,.085,4),[x,.435,-.28],ginger);ear.rotation.z=-Math.sign(x)*.28;}
+  const catLegs=[];
+  for(const [x,z] of [[-.06,-.14],[.06,-.14],[-.06,.17],[.06,.17]]){
+    const hip=new THREE.Group();hip.position.set(x,.18,z);cat.add(hip);
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(.026,.022,.18,6),material(z<0?cream:ginger));leg.position.y=-.09;leg.castShadow=shadows;hip.add(leg);catLegs.push(hip);
+  }
+  const catTail=new THREE.Group();catTail.position.set(0,.25,.27);cat.add(catTail);
+  const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(0,.08,.07),new THREE.Vector3(0,.2,.08),new THREE.Vector3(0,.27,.02)]);
+  const tail=new THREE.Mesh(new THREE.TubeGeometry(tailCurve,12,.02,6,false),material(ginger));tail.castShadow=shadows;catTail.add(tail);
+  register(cat,'Greet the cat',()=>onAction('cat'));
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
@@ -339,6 +363,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       catLast.copy(cat.position);
       if(catMoved>1e-4){catResting=false;catFacing=cat.rotation.y;}
       else{if(!catResting){catResting=true;catFacing=cat.rotation.y;}cat.rotation.y=catFacing+Math.sin(time*.3)*.2;}
+      // Diagonal pairs step together, as a cat's do; standing still they settle.
+      catLegs.forEach((hip,i)=>{const swing=catResting?0:Math.sin(time*11+(i===0||i===3?0:Math.PI))*.45;hip.rotation.x=THREE.MathUtils.damp(hip.rotation.x,swing,14,dt);});
+      catTail.rotation.z=Math.sin(time*(catResting?.9:2.4))*.22;
       if(wet){for(let i=0;i<rainCount;i++){positions[i*3+1]-=dt*12;if(positions[i*3+1]<0)positions[i*3+1]=16;}rainGeo.attributes.position.needsUpdate=true;}
     }
   };

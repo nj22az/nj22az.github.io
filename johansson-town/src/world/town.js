@@ -8,6 +8,7 @@ import {batchStaticProps} from '../render/static-props.js';
 import {STREET_CAST} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
+import {lanePatches} from './lane-surfaces.js?snappy=1';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -168,6 +169,12 @@ function addStreetLife(world,options,factory){
 
 function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Peninsula surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
+/** Whether a point lies under the paving the lane builder lays. */
+function pavedAt(){
+  const patches=lanePatches();
+  return (x,z)=>patches.some(p=>x>=p.x0-.01&&x<=p.x1+.01&&z>=p.z0-.01&&z<=p.z1+.01);
+}
+
 export function createTown(options){
   const mode=configureTownMode(options.townMode);izakayaPlot();
   applyShopAddresses(options.sites);
@@ -190,7 +197,7 @@ export function createTown(options){
    // onto the painting's vanishing point until it is gone. See bus.js.
    world.bus=createBusRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
-    heightAt:groundHeight,register:options.register,onAction:options.onAction});
+    heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.

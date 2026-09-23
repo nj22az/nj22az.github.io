@@ -14,7 +14,10 @@ export function buildDistricts(world,options){
   const unit=new THREE.BoxGeometry(1,1,1),dummy=new THREE.Object3D();
   function box(size,pos,kind='concrete',colour=0xffffff,rotation=[0,0,0]){const mat=library.worldMaterial(kind,colour);const key=mat.uuid;if(!batches.has(key))batches.set(key,{mat,items:[]});dummy.position.set(...pos);dummy.rotation.set(...rotation);dummy.scale.set(...size);dummy.updateMatrix();batches.get(key).items.push(dummy.matrix.clone());}
   function verb(pos,label,kind,title,text){const a=new THREE.Object3D();a.position.set(...pos);group.add(a);options.register(a,label,()=>options.onAction(kind,title,text));return a;}
-  function sign(text,sub,pos,w=2,h=.6,angle=0){const c=document.createElement('canvas');c.width=512;c.height=160;const x=c.getContext('2d');x.fillStyle='#dfd7bb';x.fillRect(0,0,512,160);x.fillStyle='#344e4a';x.textAlign='center';x.font='bold 64px serif';x.fillText(text,256,76,490);x.font='22px serif';x.fillText(sub,256,129,490);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.8,side:THREE.DoubleSide}));m.position.set(...pos);m.rotation.y=angle;group.add(m);return m;}
+  function sign(text,sub,pos,w=2,h=.6,angle=0){const c=document.createElement('canvas');c.width=512;c.height=160;const x=c.getContext('2d');x.fillStyle='#dfd7bb';x.fillRect(0,0,512,160);x.fillStyle='#344e4a';x.textAlign='center';x.font='bold 64px serif';x.fillText(text,256,76,490);x.font='22px serif';x.fillText(sub,256,129,490);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.8}));m.position.set(...pos);m.rotation.y=angle;group.add(m);
+   // Plain board behind: a double-sided face showed its directions mirrored from behind.
+   const back=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({color:0xb3ac94,roughness:.9}));back.position.set(pos[0]-Math.sin(angle)*.012,pos[1],pos[2]-Math.cos(angle)*.012);back.rotation.y=angle+Math.PI;group.add(back);
+   return m;}
   buildLaneSurfaces(group,library);
   // Open-air shopping street. The former rotated transparent cylinder canopy
   // intersected the walking corridor and looked like vertical sheets of fog.
@@ -59,10 +62,12 @@ export function buildDistricts(world,options){
   verb([-36,1,-22],'Watch the heron','inspect','Grey heron','It waits for a fish along the seawall.');
   }
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
-  const signs=peninsulaActive()?[[3.2,-34,'港通り','PORT AHEAD'],[4.8,18.9,'北通り','BUS STOP ↑']]:[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,18.9,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
+  // Each faces the people it is directing: the port sign is read walking up from the
+  // shops, the bus-stop sign walking down to the terminus.
+  const signs=peninsulaActive()?[[3.2,-34,'港通り','PORT AHEAD'],[4.8,18.9,'北通り','BUS STOP AHEAD',Math.PI]]:[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,18.9,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
   if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,'住まい','MAIN STREET HOMES ←']);
-  for(const [x,z,jp,en] of signs){
-    const marker=sign(jp,en,[x,2.7,z],3.1,.6,0);marker.name='District direction';
+  for(const [x,z,jp,en,angle=0] of signs){
+    const marker=sign(jp,en,[x,2.7,z],3.1,.6,angle);marker.name='District direction';
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }
   if(!shoppingDistrictActive())buildHomes(world,options,box);

@@ -88,7 +88,7 @@ const CELL=1.2;
  *   lawn's surface is the surface the player's feet are put on — in particular the
  *   graded foot of the park mound, which used to be a vertical face you walked into.
  */
-export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,anisotropy=4,register=()=>{},onAction=()=>{}}={}){
+export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,paved=null,anisotropy=4,register=()=>{},onAction=()=>{}}={}){
  const group=new THREE.Group();group.name='East lawn, seawall and beach';parent.add(group);
  const {wall,beach}=EAST_LAWN;
  const width=EAST_LAWN.maxX-EAST_LAWN.minX,depth=EAST_LAWN.maxZ-EAST_LAWN.minZ;
@@ -110,7 +110,12 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,a
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
- for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass,z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
+ // Under a path the turf is tucked a few centimetres down. Its 1.2m grid runs straight
+ // between samples while the paving follows the slope on a finer one, so where the ground
+ // bends -- the rise beside the harbour office -- the grass came up through the middle
+ // of the path as a green stripe.
+ const tuck=(x,z)=>paved?.(x,z)?.08:0;
+ for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass-tuck(x,z),z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
   const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
   if(onMound(mx,mz))continue;
