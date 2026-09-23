@@ -128,6 +128,6 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    return true;
   },
   hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const walls=shell();if(walls)walls.visible=true;showPeople(true);},
-  update(dt){display.tick?.(performance.now()/1000);residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
+  update(dt){display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
  };
 }

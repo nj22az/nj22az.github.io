@@ -11,6 +11,7 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 - Ten named town residents, all scheduled through the compact district, with collision-aware raster A* and local slide avoidance. Day staff, evening press and repair workers arrive by bus; Nao and Officer Mori keep the late shift; the harbour office and bus service remain active around the clock. Five locally vendored Quaternius body bases provide compatible walk/idle/run/wave clips. Procedural bodies remain the failure fallback. Kenji now has a separate Blender-authored, textured anatomical model with six original clips. The remaining bases are interim stylised adults, not ten bespoke Japanese identities or age-specific exports.
 - The supplied shop and harbour rooms plus a ramen room; nearby furniture and documents remain interactive. Rooms still share a shell. The former residential circuit, apartment entrances and sea cave are retired from the published street.
 - Local original synthesised Foley and instrumental WAV files, positional ambience/radio, material footsteps, can purchase/holding/drinking and seated camera height. Sound unlocks on ENTER TOWN.
+- Thuan can ride the commuter bicycle parked near Sakura. WASD or the left stick pedals and steers, Shift boosts, and E dismounts; collisions keep the ride on walkable streets. Her existing character rig sits on the bicycle, reaches for its handlebars and cycles her feet on the pedals.
 - Tama, yen, fishing, Star Port, notebooks and existing transactions preserved. Website portals have become in-world paper records. Version 5 saves import valid v4/v3 data without deleting the old save.
 
 ## Controls
@@ -21,7 +22,7 @@ inspect it from the Field book, and talk to Thuan at Sakura Konbini to sell it f
 town yen during her working hours. Printing and inventory survive reloads.
 See `docs/WORKSHOP-PRINTING.md` for the full loop and regeneration instructions.
 
-Desktop: exploration is always first person. Click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; N cycles time. Escape closes panels or releases the mouse.
+Desktop: exploration is first person on foot. Click the canvas for mouse look; WASD/arrows move; Shift jogs; Space jumps; E interacts or stands; R drinks the held can; Q opens the directory; B opens the notebook; N cycles time. At Thuan’s bicycle, E starts the ride; WASD/arrows steer and pedal, Shift boosts, and E dismounts. Escape closes panels or releases the mouse.
 
 Touch: left stick, right-side look, JUMP, ACTION and DRINK. The notebook can select a drink from the bag. Sound preference, inventory, money and quest state save on this device.
 

@@ -2,7 +2,7 @@ import {createYuriFace} from './yuri-face.js';
 import {createThuanFaceController} from './thuan-face-controller.js';
 import {createOfficeHands} from './office-hands.js';
 import {prepareYuriAnimations} from './yuri-animation.js?konbini-1';
-import {prepareMergedYuriAnimations} from './yuri-merged-animation.js';
+import {prepareMergedYuriAnimations,poseThuanOnBicycle} from './yuri-merged-animation.js';
 import {prepareNaoAnimations} from './nao-vrm-animation.js';
 import {rigThuanFingers} from './thuan-fingers.js';
 import {dressCharacter} from './surface.js';
@@ -281,6 +281,7 @@ export function createLocalCharacters({shadows=false}={}){
       else if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);
       else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
+      if(actor.isThuan&&entity.userData.playerControlled)poseThuanOnBicycle(actor.model,entity,entity.userData.bicyclePhase||0);
       if(seated&&actor.seatBlend===1){
         entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);let bottom=Infinity;
         for(const mesh of new Set(actor.seatVertices.map(v=>v.mesh)))mesh.skeleton.update();

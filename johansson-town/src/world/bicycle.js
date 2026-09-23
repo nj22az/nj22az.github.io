@@ -6,11 +6,12 @@ export const BOOKSHOP_BICYCLE=Object.freeze({x:.7,z:9.2});
 // One ordinary commuter bicycle, built at metre scale and merged to one draw.
 export function buildBicycle({x=0,z=0,rotation=0,colour=0x426969,shadows=false}={}){
  const object=new THREE.Group();object.name='parked-commuter-bicycle';object.position.set(x,0,z);object.rotation.y=rotation;
- const parts=[],rubber=0x262827,steel=0x949b94;
+ const parts=[],wheels=[],rubber=0x262827,steel=0x949b94;
+ let target=parts;
  function part(geometry,color,position=[0,0,0],rotation=[0,0,0]){
   const matrix=new THREE.Matrix4().compose(new THREE.Vector3(...position),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation)),new THREE.Vector3(1,1,1));
   geometry.applyMatrix4(matrix);const rgb=new THREE.Color(color),values=new Float32Array(geometry.attributes.position.count*3);
-  for(let i=0;i<values.length;i+=3){values[i]=rgb.r;values[i+1]=rgb.g;values[i+2]=rgb.b;}geometry.setAttribute('color',new THREE.BufferAttribute(values,3));parts.push(geometry);
+  for(let i=0;i<values.length;i+=3){values[i]=rgb.r;values[i+1]=rgb.g;values[i+2]=rgb.b;}geometry.setAttribute('color',new THREE.BufferAttribute(values,3));target.push(geometry);
  }
  function tube(a,b,r=.018,color=colour){
   const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),delta=end.clone().sub(start);
@@ -18,13 +19,19 @@ export function buildBicycle({x=0,z=0,rotation=0,colour=0x426969,shadows=false}=
   geometry.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize()));part(geometry,color,start.add(end).multiplyScalar(.5).toArray());
  }
  const wheelRadius=.31,axleY=.338,wheelbase=1.08;
- for(const wz of [-wheelbase/2,wheelbase/2]){
+ for(let wi=0;wi<2;wi++){
+  const wz=wi===0?-wheelbase/2:wheelbase/2,wheelParts=[];target=wheelParts;
   part(new THREE.TorusGeometry(wheelRadius,.028,6,28),rubber,[0,axleY,wz],[0,Math.PI/2,0]);
   part(new THREE.TorusGeometry(.281,.009,5,28),steel,[0,axleY,wz],[0,Math.PI/2,0]);
   tube([-.055,axleY,wz],[.055,axleY,wz],.024,steel);
   for(let i=0;i<16;i++){const angle=i/16*Math.PI*2;tube([i%2?.025:-.025,axleY,wz],[0,axleY+Math.sin(angle)*.28,wz+Math.cos(angle)*.28],.003,steel);}
   part(new THREE.TorusGeometry(.353,.014,5,24,Math.PI),steel,[0,axleY,wz],[0,Math.PI/2,0]);
+  for(const geometry of wheelParts)geometry.translate(0,-axleY,-wz);
+  const wheelGeometry=mergeGeometries(wheelParts,false);wheelParts.forEach(p=>p.dispose());
+  const wheelMesh=new THREE.Mesh(wheelGeometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.78,metalness:.1}));wheelMesh.name=`commuter-bicycle-wheel-${wi+1}`;wheelMesh.castShadow=shadows;wheelMesh.receiveShadow=true;
+  const wheel=new THREE.Group();wheel.name=`commuter-bicycle-wheel-pivot-${wi+1}`;wheel.position.set(0,axleY,wz);wheel.add(wheelMesh);wheels.push(wheel);
  }
+ target=parts;
  const crank=[0,.32,.12],rear=[0,axleY,.54],seat=[0,.80,.18],head=[0,.83,-.43];
  for(const [a,b] of [[crank,seat],[seat,head],[head,crank],[seat,rear],[crank,rear]])tube(a,b,.022);
  for(const side of [-1,1])tube([side*.045,axleY,-.54],[side*.045,.72,-.40],.017);
@@ -46,8 +53,8 @@ export function buildBicycle({x=0,z=0,rotation=0,colour=0x426969,shadows=false}=
  part(new THREE.SphereGeometry(.037,8,6),0xe6ddbd,[.08,.79,-.52]);
  tube([0,.35,.14],[.23,.018,.24],.012,steel);
  const geometry=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
- const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.12}));mesh.name='commuter-bicycle-mesh';mesh.castShadow=shadows;mesh.receiveShadow=true;object.add(mesh);
+ const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.12}));mesh.name='commuter-bicycle-mesh';mesh.castShadow=shadows;mesh.receiveShadow=true;object.add(mesh);wheels.forEach(wheel=>object.add(wheel));
  object.userData.wheelRadius=wheelRadius;object.userData.wheelbase=wheelbase;
  const w=Math.abs(Math.cos(rotation))*.62+Math.abs(Math.sin(rotation))*1.88,d=Math.abs(Math.sin(rotation))*.62+Math.abs(Math.cos(rotation))*1.88;
- return {object,collider:{x,z,w,d,height:1.10}};
+ return {object,wheels,collider:{x,z,w,d,height:1.10}};
 }

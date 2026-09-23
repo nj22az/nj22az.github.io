@@ -21,6 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/theme-bootstrap.js?v=random-2"></script>
   <link rel="stylesheet" href="/styles.css?v=thuans-storage-wip">
+  <script src="/assets/js/shopify-book-price.js" defer></script>
 </head>
 <body>
 
@@ -430,6 +431,7 @@
           '<div class="bento-card-body">' +
             '<h3>' + p.title + '</h3>' +
             '<p>' + p.description + '</p>' +
+            (p.shopifyProductUrl ? '<p class="shopify-live-price" data-shopify-book-price data-shopify-product-url="' + p.shopifyProductUrl + '" data-loading-text="Fetching live price from Shopify…" data-price-error="Check current price on Shopify">Fetching live price from Shopify…</p>' : '') +
             '<div class="card-tags">' + tags + '</div>' +
             '<span class="bento-card-cta">' + actionLabel + '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>' +
           '</div>' +
