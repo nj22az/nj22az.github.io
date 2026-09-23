@@ -37,6 +37,7 @@ import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?s
 import {createIzakayaGuests} from './people/izakaya-guests.js';
 import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
+import {createBicycleController} from './world/bicycle-controller.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?dusk-1';
@@ -213,6 +214,7 @@ const SITES=createPeninsulaBusinesses();
 const interactables=[],roomColliders=[],doors=new Map();
 let catchingUp=false,hiddenAt=0;
 let inspector=null,content=null,castAI=null,hands=null,storeService=null,ramenPlayerService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
+let bicycleRide=null;
 // PURPOSE BRIEF soft-guides: calendar dayKey soft quests (stand Form 3 / quay / notice).
 // Contextual touch-control state. Declared with the rest of the player state because
 // starting play stamps the touch clock, and that can happen while this module runs.
@@ -245,7 +247,7 @@ player.visible=false;
 const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};if(!interactables.includes(o))interactables.push(o)};
 function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on');subtitleTimer=sec}
 
- const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>player.position,onAction:(...args)=>{if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
 assignWorkplaces(world,SITES);
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])doors.set(place.id,new THREE.Vector3(...place.exitPosition));
@@ -277,7 +279,49 @@ const VIEW_KEY='johansson-town-view';
 let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
 try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)==='third';}catch{}
 function ensureJohansson(){if(!johansson){johansson=createJohansson({scene,resolve:assetURL});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
-function setThirdPerson(value,announce=true){thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'1st person':'3rd person';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
+function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'1st person':'3rd person';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
+function startBicycleRide(entry){
+ if(bicycleRide||current||seated)return;
+ const bike=entry||world.bicycle,thuan=world.people.find(p=>p.profile?.name==='Thuan');
+ if(!bike||!thuan?.g.userData.visualReady||!thuan.g.userData.character){say('Thuan is still getting ready. Try the bicycle again in a moment.',4);return;}
+ const object=bike.object,position=object.getWorldPosition(new THREE.Vector3()),heading=object.rotation.y||0;
+ const previousThirdPerson=thirdPerson,colliderIndex=world.colliders.indexOf(bike.collider);
+ if(colliderIndex>=0)world.colliders.splice(colliderIndex,1);
+ const flagNames=['inWorkplace','inIzakaya','inMarket','inRamen','inHome','indoors','roomTransition','sleeping'];
+ const flags=Object.fromEntries(flagNames.map(key=>[key,{exists:Object.hasOwn(thuan.g.userData,key),value:thuan.g.userData[key]}]));
+ bicycleRide={bike,thuan,controller:createBicycleController({x:position.x,z:position.z,yaw:heading}),previousThirdPerson,colliderRemoved:colliderIndex>=0,wheelAngle:0,originParent:thuan.g.parent,originPosition:thuan.g.position.clone(),originRotation:thuan.g.rotation.clone(),originVisible:thuan.g.visible,flags};
+ player.position.set(position.x,groundHeight(position.x,position.z),position.z);player.quaternion.setFromAxisAngle(yAxis,heading);player.visible=true;
+ player.add(object);object.position.set(0,0,0);object.rotation.set(0,0,0);
+ player.add(thuan.g);thuan.g.position.set(0,0,0);thuan.g.rotation.set(0,0,0);thuan.g.visible=true;
+ for(const key of Object.keys(flags))delete thuan.g.userData[key];
+ thuan.g.userData.playerControlled=true;thuan.g.userData.bicyclePhase=0;thuan.g.userData.socialPose='Sit';thuan.g.userData.seatHeight=.92;thuan.g.userData.activity='riding her bicycle';
+ const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
+ playerSpeed=0;playerRunning=false;setRunning(false);resetInput();
+ setThirdPerson(true,false);yaw=heading;pitch=-.12;thirdDistance=3.6;
+ say('Thuan’s bicycle · WASD / left stick to ride · E to dismount',5);
+}
+function stopBicycleRide(){
+ if(!bicycleRide)return;
+ const ride=bicycleRide,{bike,thuan}=ride,x=ride.controller.state.x,z=ride.controller.state.z,heading=ride.controller.state.yaw;
+ bike.object.removeFromParent();world.group.add(bike.object);bike.object.position.set(x,0,z);bike.object.rotation.set(0,heading,0);
+ bike.collider.x=x;bike.collider.z=z;
+ bike.collider.w=Math.abs(Math.cos(heading))*.62+Math.abs(Math.sin(heading))*1.88;
+ bike.collider.d=Math.abs(Math.sin(heading))*.62+Math.abs(Math.cos(heading))*1.88;
+ if(ride.colliderRemoved)world.colliders.push(bike.collider);
+ const rightX=Math.cos(heading),rightZ=-Math.sin(heading),thuanX=x-rightX*1.25,thuanZ=z-rightZ*1.25;
+ thuan.g.removeFromParent();
+ const wasInside=Object.values(ride.flags).some(flag=>flag.exists&&flag.value),parent=wasInside&&ride.originParent?.parent?ride.originParent:world.group;
+ parent.add(thuan.g);
+ if(wasInside){thuan.g.position.copy(ride.originPosition);thuan.g.rotation.copy(ride.originRotation);thuan.g.visible=ride.originVisible;}
+ else{thuan.g.position.set(thuanX,groundHeight(thuanX,thuanZ),thuanZ);thuan.g.rotation.set(0,heading,0);}
+ for(const [key,flag] of Object.entries(ride.flags))if(flag.exists)thuan.g.userData[key]=flag.value;
+ thuan.g.userData.playerControlled=false;delete thuan.g.userData.bicyclePhase;delete thuan.g.userData.socialPose;delete thuan.g.userData.seatHeight;
+ const [px,pz]=findClear(x+rightX*1.25,z+rightZ*1.25);player.position.set(px,groundHeight(px,pz),pz);
+ const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
+ player.visible=false;player.quaternion.setFromAxisAngle(yAxis,heading);yaw=heading;playerSpeed=0;playerRunning=false;
+ bicycleRide=null;resetInput();setThirdPerson(ride.previousThirdPerson,false);
+ say('Thuan parks her bicycle. E to ride again.',3);
+}
 function playMove(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().play(name);}
 function movesMenu(){if(!started||activities.paused)return;activities.menu('Moves','Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?',[...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
 const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Vector3(),lookPoint=new THREE.Vector3();
@@ -299,10 +343,10 @@ function updateJohansson(dt){
  if(seated&&parkSeat&&Number.isFinite(parkSeat.yaw))r.rotation.set(0,parkSeat.yaw,0);else r.quaternion.copy(player.quaternion);
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(null);
- johansson.update(dt,{speed:playerSpeed,running:playerRunning,seated,airborne:!!characters?.jumping,visible:thirdPerson&&started&&!inspector?.active});
+ johansson.update(dt,{speed:playerSpeed,running:playerRunning,seated,airborne:!!characters?.jumping,visible:thirdPerson&&started&&!inspector?.active&&!bicycleRide});
 }
 if(thirdPerson)setThirdPerson(true,false);
-characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!bicycleRide&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // Thuan is the heaviest single asset in the town and she is kept at full detail, so
 // fetching her before the first frame put nine megabytes in front of the chunks the
 // game needs to start: on a 1.6 Mbps link that was most of the wait. She is still the
@@ -330,7 +374,7 @@ function conversationChat(){
  if(!speaker?.visible)return null;
  return {speaker:{g:speaker,profile:{name:conversationLine.name}},text:conversationLine.text};
 }
-function residentSpeech(){const person=world.people.filter(p=>p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current&&(!p.g.userData.inMarket||current?.id==='market')).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
+function residentSpeech(){const person=world.people.filter(p=>!p.g.userData.playerControlled&&p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current&&(!p.g.userData.inMarket||current?.id==='market')).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
 function roomHit(object,label,kind,title,text){reg(object,label,()=>activities.action(kind,title,text),true);return object;}
 function roomCollider(x,z,w,d,height=2.8,minY=0){roomColliders.push({x,z,w,d,height,minY});}
 
@@ -507,15 +551,15 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d+(o.userData.promptPenalty||0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
+function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d+(o.userData.promptPenalty||0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
-function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
+function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
 function residentInView(g){if(g.userData.visualReady===false)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
-function overlapsResident(x,z){return world.people.some(p=>residentInView(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
+function overlapsResident(x,z){return world.people.some(p=>!p.g.userData.playerControlled&&residentInView(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){return environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);}
 function staysOpen(site){return !site||site.id==='home'||homeOwner(site)||['warehouse','office','bus-station'].includes(site.id);}
@@ -569,6 +613,20 @@ function updatePlayer(dt){
  ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
  let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
  let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
+ if(bicycleRide){
+  const ride=bicycleRide,oldYaw=ride.controller.state.yaw;
+  const fast=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]);
+  const result=ride.controller.update(dt,{throttle:f,steer:s,fast,blocked:(x,z)=>environmentBlocked(x,z,.48)||overlapsResident(x,z)});
+  const state=result.state;player.position.set(state.x,groundHeight(state.x,state.z),state.z);player.quaternion.setFromAxisAngle(yAxis,state.yaw);
+  yaw+=state.yaw-oldYaw;playerSpeed=Math.abs(state.speed);playerRunning=fast;player.visible=true;
+  ride.wheelAngle-=Math.hypot(result.dx,result.dz)/.31;
+  ride.thuan.g.userData.bicyclePhase=(state.distance/.12)%1;
+  ride.bike.wheels?.forEach(wheel=>wheel.rotation.x=ride.wheelAngle);
+  ride.thuan.g.userData.activity=state.speed>.15?'riding her bicycle':'stopped with her bicycle';
+  camera.position.copy(player.position).add(fwVec.set(0,1.45,0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);placeThirdPerson(dt);
+  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
+  return;
+ }
  if(seated){s=0;f=0;}
  move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();
  fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);

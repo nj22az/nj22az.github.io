@@ -25,6 +25,35 @@ function solveArm(model,side,wrist,pole,palm){
  }
 }
 
+function solveLeg(model,side,ankleTarget,pole){
+ const upper=model.getObjectByName(side+'UpLeg'),lower=model.getObjectByName(side+'Leg'),foot=model.getObjectByName(side+'Foot');
+ if(!upper||!lower||!foot)return;
+ const hip=upper.getWorldPosition(new THREE.Vector3()),knee=lower.getWorldPosition(new THREE.Vector3()),ankle=foot.getWorldPosition(new THREE.Vector3());
+ const a=hip.distanceTo(knee),b=knee.distanceTo(ankle),direction=ankleTarget.clone().sub(hip);
+ const distance=THREE.MathUtils.clamp(direction.length(),Math.abs(a-b)+.008,a+b-.008);direction.normalize();
+ const bend=pole.clone().addScaledVector(direction,-pole.dot(direction)).normalize();
+ const along=(a*a-b*b+distance*distance)/(2*distance),height=Math.sqrt(Math.max(0,a*a-along*along));
+ aim(upper,lower,hip.clone().addScaledVector(direction,along).addScaledVector(bend,height));
+ aim(lower,foot,hip.clone().addScaledVector(direction,distance));
+}
+
+/** Reach the commuter bicycle's grips and keep both feet on its rotating pedals. */
+export function poseThuanOnBicycle(model,entity,phase=0){
+ entity.updateWorldMatrix(true,false);
+ const rotation=entity.getWorldQuaternion(new THREE.Quaternion());
+ const point=(x,y,z)=>entity.localToWorld(new THREE.Vector3(x,y,z));
+ const vector=(x,y,z)=>new THREE.Vector3(x,y,z).applyQuaternion(rotation);
+ const forward=vector(0,0,-1),up=vector(0,1,0);
+ const palmside=side=>worldPalm(forward,up,side);
+ solveArm(model,'Left',point(.25,1.04,-.25),vector(.28,-.18,-.25),palmside(1));
+ solveArm(model,'Right',point(-.25,1.04,-.25),vector(-.28,-.18,-.25),palmside(-1));
+ const pedal=.12,angle=phase*Math.PI*2;
+ for(const [side,sign,offset] of [['Left',1,0],['Right',-1,.5]]){
+  const a=angle+offset*Math.PI*2;
+  solveLeg(model,side,point(sign*.12,.32+Math.sin(a)*pedal,.12+Math.cos(a)*pedal),vector(0,-.12,-1));
+ }
+}
+
 function worldPalm(forward,normal,side){
  const y=forward.clone().normalize(),z=normal.clone().addScaledVector(y,-normal.dot(y)).normalize(),x=new THREE.Vector3().crossVectors(y,z);
  // Meshy's palm normal is local +/-X, rather than local Z.
