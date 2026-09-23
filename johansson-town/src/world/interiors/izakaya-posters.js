@@ -26,7 +26,7 @@ function fallbackPoster(spec){
  x.textAlign='center';x.fillStyle=spec.ink;
  x.font='bold 42px serif';x.fillText(spec.title.split(' · ')[0],256,220,460);
  x.font='bold 64px serif';x.fillText(spec.jp,256,330,460);
- x.font='22px sans-serif';x.fillText('MINATO IZAKAYA · 1988',256,620,460);
+ x.font='22px sans-serif';x.fillText('MINATO IZAKAYA · 1997',256,620,460);
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 

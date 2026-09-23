@@ -1,8 +1,12 @@
 import {STORE_BRANDS} from './brands.js';
+/**
+ * Prices are late 1997's, tax included -- consumption tax went to five per cent that
+ * April, which is when a can of cola became ¥120 and a rice ball stopped being ¥100.
+ */
 export const STORE_ITEMS=Object.freeze([
  {id:'tea',jp:'緑茶',name:'Green tea',cost:120,color:0x64835b,text:'A chilled bottle of green tea. Thuan keeps the oldest stock at the front.'},
  {id:'coffee',jp:'缶コーヒー',name:'Canned coffee',cost:120,color:0x815549,text:'A small can of coffee for the walk down to the harbour.'},
- {id:'rice',jp:'おにぎり',name:'Plum rice ball',cost:80,color:0xeee3c3,text:'Rice, a little pickled plum and a strip of nori. Wrapped this afternoon.'},
+ {id:'rice',jp:'おにぎり',name:'Plum rice ball',cost:110,color:0xeee3c3,text:'Rice, a little pickled plum and a strip of nori. Wrapped this afternoon.'},
  {id:'biscuit',jp:'ビスケット',name:'Butter biscuits',cost:100,color:0xc19464,text:'A paper packet of biscuits. The corner is folded closed with care.'},
  {id:'soap',jp:'せっけん',name:'Sakura soap',cost:90,color:0xc8899b,text:'A lightly scented bar wrapped in pale pink paper.'},
  {id:'notebook',jp:'大学ノート',name:'Pocket notebook',cost:80,color:0x878c92,text:'Ruled pages for tide times, errands and things you meant to remember.'},
@@ -11,10 +15,10 @@ export const STORE_ITEMS=Object.freeze([
 ].map(item=>({...item,brand:STORE_BRANDS[item.id].name,brandJp:STORE_BRANDS[item.id].jp,text:STORE_BRANDS[item.id].name+' · '+STORE_BRANDS[item.id].jp+'\n'+item.text})));
 
 export const GROCERY_ITEMS=Object.freeze([...STORE_ITEMS,...[
- {id:'cola',name:'Sea breeze cola',jp:'コーラ',cost:100,color:0xb63231,text:'A small bottle of cola.'},
- {id:'water',name:'Spring water',jp:'天然水',cost:80,color:0x8dbfc1,text:'Water from the hills above the harbour.'},
- {id:'beer',name:'Umineko lager',jp:'麦酒',cost:180,color:0xc9ab59,text:'A chilled can of the local fictional lager.'},
- {id:'noodles',name:'Instant shoyu noodles',jp:'カップ麺',cost:140,color:0xd8b46e,text:'A sealed cup of noodles to take home.'},
+ {id:'cola',name:'Sea breeze cola',jp:'コーラ',cost:120,color:0xb63231,text:'A small bottle of cola.'},
+ {id:'water',name:'Spring water',jp:'天然水',cost:110,color:0x8dbfc1,text:'Water from the hills above the harbour.'},
+ {id:'beer',name:'Umineko lager',jp:'麦酒',cost:220,color:0xc9ab59,text:'A chilled can of the local fictional lager.'},
+ {id:'noodles',name:'Instant shoyu noodles',jp:'カップ麺',cost:150,color:0xd8b46e,text:'A sealed cup of noodles to take home.'},
  {id:'milk',name:'Asamori milk',jp:'牛乳',cost:110,color:0xdbe5df,text:'A small carton of milk.'},
  {id:'chips',name:'Salted potato crisps',jp:STORE_BRANDS.chips.line,cost:100,color:0xe5d9bc,text:'KOGANE · Salted potato crisps'},
  {id:'crackers',name:'Soy rice crackers',jp:STORE_BRANDS.crackers.line,cost:110,color:0xe5d9bc,text:'HAMABE · Soy rice crackers'},
@@ -34,7 +38,7 @@ export const GROCERY_ITEMS=Object.freeze([...STORE_ITEMS,...[
  {id:'bread',name:'Milk bread',jp:STORE_BRANDS.bread.line,cost:150,color:0xe5d9bc,text:'KOMUGI · Milk bread'},
  // The daily-delivery top shelf of the cold cabinet. Dearer than the rest of the
  // aisle, because it was made this morning and will not keep.
- {id:'bento',name:'Makunouchi bento',jp:STORE_BRANDS.bento.line,cost:420,color:0xe5d9bc,text:'MINATOYA · Makunouchi bento'},
- {id:'sandwich',name:'Egg sandwiches',jp:STORE_BRANDS.sandwich.line,cost:210,color:0xe5d9bc,text:'KOMUGI · Egg sandwiches'},
+ {id:'bento',name:'Makunouchi bento',jp:STORE_BRANDS.bento.line,cost:480,color:0xe5d9bc,text:'MINATOYA · Makunouchi bento'},
+ {id:'sandwich',name:'Egg sandwiches',jp:STORE_BRANDS.sandwich.line,cost:230,color:0xe5d9bc,text:'KOMUGI · Egg sandwiches'},
  {id:'pudding',name:'Custard pudding',jp:STORE_BRANDS.pudding.line,cost:130,color:0xe5d9bc,text:'ASAMORI · Custard pudding'},
 ].map(item=>({...item,brand:STORE_BRANDS[item.id].name,brandJp:STORE_BRANDS[item.id].jp}))]);

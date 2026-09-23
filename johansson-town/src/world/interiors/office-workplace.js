@@ -19,7 +19,7 @@ export function buildOfficeWorkplace({room:parent,reg,action}){
  for(let row=0;row<3;row++)for(let key=0;key<9;key++)box('Keyboard key',[.042,.010,.032],[-2.72+key*.05,.944,-2.46+row*.04],0x5b665a);
  box('Harbour master nameplate base',[.67,.045,.12],[-1.48,.925,-2.43],0x66563f);
  label('HARBOUR MASTER',[-1.48,.994,-2.365],.62,.12);
- label('SEPTEMBER 1988',[-1.22,1.35,-3.298],.48,.28);
+ label('SEPTEMBER 1997',[-1.22,1.35,-3.298],.48,.28);
  const computer=records([-2.52,1.20,-2.55],'Open harbour spreadsheets','berth-register',{pose:'Type',activity:'typing berth records',seated:true});
  // A fitted cabinet replaces the old decorative shelf. Each binder rests on a
  // shelf and keeps its spine within the frame, clear of the working aisle.

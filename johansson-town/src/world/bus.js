@@ -37,7 +37,7 @@ export function vanishingPoint(){
   TUNNEL.z-.06);
 }
 
-/** A 1988 single-decker, built the way the kei-truck on the quay is: boxes and paint. */
+/** A single-decker of the kind still running in 1997, built the way the kei-truck on the quay is: boxes and paint. */
 export function buildBus({shadows=false}={}){
  const bus=new THREE.Group();bus.name='Harbour Line bus';
  const paint=new THREE.MeshStandardMaterial({color:0xdcd6c2,roughness:.62});

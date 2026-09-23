@@ -163,7 +163,10 @@ test('the receipt reads like something the till printed',()=>{
  assert.match(text,/おつり  CHANGE/);
  assert.match(text,/温め済 WARMED · Plum rice ball/);
  assert.match(text,/袋辞退 · own bag/,'Declining a bag is noted, never charged');
- assert.doesNotMatch(text,/¥3|bag fee/i,'Bags were free in 1988');
+ // No bag charge -- that came in 2020. This used to look for a stray '¥3', which the
+ // receipt's tax line now legitimately prints; it asks for the thing itself instead.
+ assert.doesNotMatch(text,/レジ袋|bag fee|bag charge/i,'Bags were free in 1997');
+ assert.match(text,/内消費税 5%/,'The till shows the five per cent that came in that April');
  assert.match(text,/ありがとうございました/);
  assert.equal(receiptText(null),'');
 });
@@ -198,13 +201,13 @@ test('the shelf fills a basket and the counter runs the whole exchange',async()=
  dom.button('Yes, please');
  assert.match(body(),/袋はご利用ですか/,'then asks about a bag');
  dom.button('I have my own');
- assert.match(body(),/合計 ¥200/,'then reads out the total');
+ assert.match(body(),/合計 ¥230/,'then reads out the total');
  assert.match(body(),/スタンプカード/,'and mentions the stamp card');
- dom.button('Pay ¥200 in cash');
+ dom.button('Pay ¥230 in cash');
  assert.match(body(),/レシート|SAKURA SHŌTEN/,'A receipt is printed');
  assert.match(body(),/温め済 WARMED · Plum rice ball/);
  assert.match(body(),/袋辞退/,'Declining the bag is on it');
- assert.equal(acts.state.yen,start-200);
+ assert.equal(acts.state.yen,start-230);
  assert.deepEqual(acts.state.inventory.sort(),['Green tea','Plum rice ball']);
  assert.equal(acts.state.konbini.basket.length,0);
 });

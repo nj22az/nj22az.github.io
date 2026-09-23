@@ -40,7 +40,7 @@ export function buySakuraItem(state,item,minutes,thuanAvailable=true){
  * restock, so "gross profit" was a scoreboard rather than a question. A shop has a
  * meter running whether anybody comes in or not.
  *
- * The figures are the shop's own scale, not 1988 Tokyo's. Sakura serves five
+ * The figures are the shop's own scale, not 1997 Tokyo's. Sakura serves five
  * neighbours a day, which is about ¥694 of trade and ¥312 of gross profit, and the
  * day's costs are set just under that on purpose. On the neighbours alone the shop
  * only washes its face; every line the player buys is about ¥62 of margin on top, so

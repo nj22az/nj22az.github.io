@@ -221,7 +221,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   if(site.id==='crystal-room'){
     anchor([0,1.1,.6],'Listen to the room','inspect','A room that should not be here','The street sounds have faded. A clear, sustained note seems to come from the walls. There are no speakers.');
     anchor([1.55,1.2,1.8],'Examine the crystal formation','inspect','The crystal formation','Light gathers inside the stone, though the room has no windows. A tiny ruler rests against it. Every mark reads zero.');
-    anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1988.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
+    anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1997.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
     anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
   }else if(site.id==='office'){
     buildOfficeWorkplace({room,reg,action});

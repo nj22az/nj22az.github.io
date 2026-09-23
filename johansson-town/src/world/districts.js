@@ -38,7 +38,7 @@ export function buildDistricts(world,options){
     verb([x-w*.42,1,frontZ+1],'Inspect potted camellia','inspect','Camellia','The owner turns the pot a little every morning. A saucer catches the excess water.');
     verb([x+w*.42,1.4,frontZ+.8],'Read meter','read','Electricity meter','A mechanical disc turns behind the glass. The last reading was entered in pencil.');
     colliders.push({x,z:z-d/2,w,d:.35,height:h},{x:x-w/2,z,w:.35,d,height:h},{x:x+w/2,z,w:.35,d,height:h});
-    const s={id,x,z,title,jp,sub:'JOHANSSON町',color:colour,accent:'#4c655a',line:title+' · 14 September 1988',door:[x,0,frontZ+1],opens:'09:00'};
+    const s={id,x,z,title,jp,sub:'JOHANSSON町',color:colour,accent:'#4c655a',line:title+' · 14 September 1997',door:[x,0,frontZ+1],opens:'09:00'};
     if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }

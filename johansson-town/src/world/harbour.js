@@ -189,7 +189,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
     if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON TOWN · 1988',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d');
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d');
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.

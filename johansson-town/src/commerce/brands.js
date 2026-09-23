@@ -1,4 +1,4 @@
-// Original fictional packaging for the 1988 town. Stable catalogue IDs/names
+// Original fictional packaging for the 1997 town. Stable catalogue IDs/names
 // remain the save-game and purchasing keys; brand copy is a presentation layer.
 export const STORE_BRANDS=Object.freeze({
  tea:{name:'NAGI',jp:'なぎ',line:'緑茶',paper:'#f5edcf',ink:'#224b35',accent:'#738c43',symbol:'leaf'},

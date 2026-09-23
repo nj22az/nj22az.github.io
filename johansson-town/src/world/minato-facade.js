@@ -7,7 +7,7 @@ import {createMaterials} from '../render/materials.js?snappy=1';
  * The supplied exterior was a generic bar frontage: a flat glazed box that read as an
  * office at a distance and had no eave, no lantern and nothing to tell you what was
  * behind it. This is the building the town actually wants on that plot — a two-storey
- * harbour machiya of about 1988, the kind that has the bar downstairs and the family
+ * harbour machiya as it stood in 1997, the kind that has the bar downstairs and the family
  * upstairs, with the frontage doing all the talking:
  *
  *   a tiled pitch with its ridge along the street and a deep eave over the pavement,
@@ -276,7 +276,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   const bottle=new THREE.Mesh(new THREE.CylinderGeometry(.037,.041,.26,7),paint(0x3b4a2c,{roughness:.45}));
   bottle.position.set(x,.13,z);bottle.userData.staticProp=true;group.add(bottle);
  }
- // The compressor and the meter box on the south flank, which is what 1988 looks like.
+ // The compressor and the meter box on the south flank, which is what 1997 looks like.
  painted([.62,.5,.3],[southX+.14,1.05,front-1.5],0x7b7669,{roughness:.7});
  painted([.3,.38,.24],[southX+.14,1.75,front-2.35],0x8a8578);
 

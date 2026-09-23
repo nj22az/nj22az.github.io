@@ -27,8 +27,12 @@
   const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const MONTHS_SHORT = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  const TOWN_YEAR = 1988;
-  const SHOWA_YEAR = 63;
+  // Heisei 9. The board shows today's month and day moved to 1997, and the weekday
+  // that date really fell on then -- not today's, which is almost never the same day
+  // of the week, and a date with the wrong weekday on it is the one thing a notice
+  // board in a town like this would never get wrong.
+  const TOWN_YEAR = 1997;
+  const HEISEI_YEAR = 9;
 
   const minuteOfDay = (m) => ((m % 1440) + 1440) % 1440;
   const pad = (n) => String(n).padStart(2, "0");
@@ -81,7 +85,9 @@
     const d = new Date(now);
     const month = d.getMonth() + 1;
     const day = d.getDate();
-    const weekday = WEEKDAYS[d.getDay()];
+    // 29 February has no 1997 to land on; it becomes the 28th.
+    const onTown = new Date(TOWN_YEAR, d.getMonth(), Math.min(d.getDate(), d.getMonth() === 1 ? 28 : 31));
+    const weekday = WEEKDAYS[onTown.getDay()];
     const monthName = MONTHS[d.getMonth()];
     const monthShort = MONTHS_SHORT[d.getMonth()];
     const mm = pad(month);
@@ -91,10 +97,10 @@
       weekday,
       weekdayUpper: weekday.toUpperCase(),
       short: `${day} ${monthShort} ${TOWN_YEAR}`,
-      eraLine: `SHOWA ${SHOWA_YEAR} · ${long}`,
-      weekdayLine: `SHOWA ${SHOWA_YEAR} · ${weekday.toUpperCase()}`,
-      japanese: `昭和${SHOWA_YEAR}年${month}月${day}日`,
-      documentNo: `JT-HB-${SHOWA_YEAR}-${mm}${dd}`,
+      eraLine: `HEISEI ${HEISEI_YEAR} · ${long}`,
+      weekdayLine: `HEISEI ${HEISEI_YEAR} · ${weekday.toUpperCase()}`,
+      japanese: `平成${HEISEI_YEAR}年${month}月${day}日`,
+      documentNo: `JT-HB-H${HEISEI_YEAR}-${mm}${dd}`,
     };
   };
 

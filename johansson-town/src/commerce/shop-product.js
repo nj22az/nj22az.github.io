@@ -49,7 +49,7 @@ export function shopProductTemplate(id){
   label(new THREE.PlaneGeometry(r*1.05,r*.78),r*.66,t/2+.001);
   label(new THREE.PlaneGeometry(r*1.05,r*.78).rotateY(Math.PI),r*.66,-t/2-.001);
  }else if(id==='pudding'){
-  // A tapered cup under a foil lid, which is how a pudding came in 1988 and still does.
+  // A tapered cup under a foil lid, which is how a pudding came in 1997 and still does.
   const r=.038,h=.062;
   cyl(r,h,h/2,brand.paper,r*.72);
   cyl(r+.003,.004,h+.001,0xd8cfae);                      // the foil rim

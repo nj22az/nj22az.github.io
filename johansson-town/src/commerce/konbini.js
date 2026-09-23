@@ -11,10 +11,14 @@ import {recordSakuraSale,shopEntry} from './sakura-economy.js';
  * you have your card. That exchange is the thing worth having, so it is what this is.
  *
  * The shape of the ritual is borrowed from Yorimichi by emaxsaun (MIT), and adapted to
- * 1988. Its IC card and QR payments have no place here: Suica is thirteen years away, so
+ * 1997. Its IC card and QR payments have no place here: Suica is four years away, so
  * the counter takes cash and counts out change. Carrier bags were free in Japan until
  * 2020, so Thuan asks about a bag but never charges for one, and the point card is the
- * paper stamp card a 1988 shop would actually have kept under the till.
+ * paper stamp card a 1997 shop would actually have kept under the till.
+ *
+ * Consumption tax went from three per cent to five on 1 April 1997, and the till prints
+ * its share of the total the way a shop pricing tax-inclusive did: as a line underneath
+ * saying how much of what you paid was tax, rather than as something added on top.
  *
  * @typedef {object} BasketLine
  * @property {string} id
@@ -45,7 +49,7 @@ export const CARD_STAMPS=10;
 /** What a filled card is worth: she puts one of these on the counter and says nothing. */
 export const CARD_GIFT='tea';
 const BASKET_LIMIT=12;
-/** Notes and coins a 1988 wallet would actually hand over. */
+/** Notes and coins a 1997 wallet would actually hand over. The two-thousand note is three years off. */
 const DENOMINATIONS=[500,1000,5000,10000];
 
 export const konbiniItem=id=>BY_ID.get(id)||null;
@@ -217,6 +221,7 @@ export function receiptText(receipt){
  const tail=[
   '',
   `合計 TOTAL        ${yen(receipt.total)}`,
+  `(内消費税 5%      ${yen(Math.floor(receipt.total*5/105))})`,
   `お預り  CASH      ${yen(receipt.tendered)}`,
   `おつり  CHANGE    ${yen(receipt.change)}`
  ];
@@ -224,5 +229,5 @@ export function receiptText(receipt){
  if(!receipt.bag)tail.push('袋辞退 · own bag');
  if(receipt.stampsEarned)tail.push('',`スタンプ +${receipt.stampsEarned} (${receipt.stampsAfter}/${CARD_STAMPS})`);
  if(receipt.gift)tail.push(`カード満了 · ${receipt.gift}, on the house`);
- return ['桜商店 SAKURA SHŌTEN',`昭和63年 ${clock}`,'','—————————————',...rows,...tail,'','ありがとうございました'].join('\n');
+ return ['桜商店 SAKURA SHŌTEN',`平成9年 ${clock}`,'','—————————————',...rows,...tail,'','ありがとうございました'].join('\n');
 }
