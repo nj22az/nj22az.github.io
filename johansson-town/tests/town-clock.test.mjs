@@ -69,3 +69,13 @@ test('the clock can be set: a start time, where you left off, and a faster speed
  clock.set(today+1439,2);t+=60000*2;assert.equal(townCalendarAt(clock.target()).date.getDate(),24,'A fast clock turns the date over');
  clock.real();assert.equal(clock.mode,'real');assert.equal(clock.speed,1);
 });
+
+test('time spent on something moves the town on, in real time as well',async()=>{
+ const {createClock,realTownMinutes}=await import('../src/town-clock.js');
+ let t=Date.UTC(2026,8,23,3,0);const clock=createClock({start:'real',speed:1},0,()=>t);
+ const before=clock.target();clock.pass(40);
+ assert.equal(Math.round(clock.target()-before),40,'A forty-minute bath did not move the town on');
+ t+=60000;assert.equal(Math.round(clock.target()-realTownMinutes(new Date(t))),40,'The town does not stay ahead of the real clock');
+ clock.ahead=0;assert.equal(Math.round(clock.target()-realTownMinutes(new Date(t))),0);
+ const set=createClock({start:'12:00',speed:2},720,()=>t);set.pass(30);assert.equal(set.target(),750);
+});

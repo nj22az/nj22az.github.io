@@ -263,9 +263,10 @@ activities=createActivities({say,onInspectModel:item=>inspector.open(item),onIns
   // time passes in the telling. The TIME button says what time and day it is in town.
   if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
   if(value==='cycle'){if(followRealClock){clockMenu();return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
-  // A set clock is a game clock, so resting or a bath does move it on; real time does not.
+  // Time spent on something moves the town on, whichever clock it keeps. In real time
+  // the town then runs that far ahead of your own clock until you bring it back.
   else if(!followRealClock)minutes+=value;
-  else if(townClock.mode==='set'&&Number.isFinite(value)&&value>0){minutes+=value;townClock.set(minutes);}
+  else if(Number.isFinite(value)&&value>0){minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;}
   evictIfClosed();}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
@@ -702,16 +703,18 @@ const absence=createTownCatchup({advance:(dt,pending)=>{
 function clockMenu(){
  const setting=readClockSetting(localStorage),today=Math.floor(minutes/1440)*1440;
  const apply=(start,speed)=>{const s=writeClockSetting(localStorage,{start,speed});
-  if(s.start==='real'){townClock.real();minutes=realTownMinutes();}
+  if(s.start==='real'){townClock.real();townClock.ahead=0;activities.state.clockAhead=0;minutes=realTownMinutes();}
   else{if(start!=='saved'){const [h,m]=start.split(':').map(Number);let t=today+h*60+m;if(t<minutes-1)t+=1440;minutes=t;}townClock.set(minutes,s.speed);}
   evictIfClosed();activities.close();say(clockDescription(),4);};
  const speedLabel=townClock.mode==='real'?'real time':townClock.speed===1?'set time, normal speed':'set time, '+townClock.speed+'× speed';
- activities.menu('Town clock','It is '+townClockLineAt(minutes)+' in town, running on '+speedLabel+'.\n\nReal time follows your own clock and date. A set clock can start when you like and run a little faster: at 4× an hour in town takes fifteen minutes.',[
-  ['Real time',()=>apply('real',1)],
+ const ahead=townClock.mode==='real'&&townClock.ahead>=1?' Time spent in town has put it '+formatAhead(townClock.ahead)+' ahead of your own clock.':'';
+ activities.menu('Town clock','It is '+townClockLineAt(minutes)+' in town, running on '+speedLabel+'.'+ahead+'\n\nReal time follows your own clock and date. A set clock can start when you like and run a little faster: at 4× an hour in town takes fifteen minutes.',[
+  [townClock.mode==='real'&&townClock.ahead>=1?'Back in step with my clock':'Real time',()=>apply('real',1)],
   ...[1,2,4].filter(v=>!(townClock.mode==='set'&&townClock.speed===v)).map(v=>[v===1?'Keep this time, normal speed':'Speed up · '+v+'×',()=>apply('saved',v)]),
   ...['06:00','12:00','18:00','22:00'].map(t=>['Set to '+t,()=>apply(t,townClock.mode==='set'?townClock.speed:1)]),
   ['Close',()=>activities.close()]]);
 }
+const formatAhead=m=>m<60?Math.round(m)+' min':Math.floor(m/60)+' h '+Math.round(m%60)+' min';
 const clockDescription=()=>(townClock.mode==='real'?'Real time':'Town clock '+townClock.speed+'×')+' · '+townClockLineAt(minutes);
 function advanceAbsentTown(townMinutes){
  if(!(townMinutes>0))return;
@@ -842,7 +845,7 @@ function renderOutdoor(){
 // town is where it would be; anything older, or from the old fast clock, opens at now.
 activities.takeAbsence();
 {const setting=readClockSetting(globalThis.localStorage);
- if(setting.start==='real'){const plan=clockCatchUp(activities.state.minutes);minutes=plan.start;advanceAbsentTown(plan.fastForward);}
+ if(setting.start==='real'){townClock.ahead=activities.state.clockAhead||0;const plan=clockCatchUp(activities.state.minutes-townClock.ahead);minutes=plan.start+townClock.ahead;advanceAbsentTown(plan.fastForward);}
  else{minutes=startingMinutes(setting,activities.state.minutes);townClock.set(minutes,setting.speed);}}
 // Allow the opening frame to paint before starting any district downloads.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{detailsStarted=true;}));

@@ -92,11 +92,15 @@ export function startingMinutes(setting,savedMinutes,now=new Date()){
  * minute from an anchor. Moving it (a new time, a new speed, time skipped) re-anchors.
  */
 export function createClock(setting,startMinutes,now=()=>Date.now()){
- let mode=setting.start==='real'?'real':'set',speed=mode==='real'?1:setting.speed,anchorTown=startMinutes,anchorReal=now();
+ let mode=setting.start==='real'?'real':'set',speed=mode==='real'?1:setting.speed,anchorTown=startMinutes,anchorReal=now(),ahead=0;
  return {
   get mode(){return mode;},get speed(){return speed;},
-  target(){return mode==='real'?realTownMinutes(new Date(now())):anchorTown+(now()-anchorReal)/60000*speed;},
+  /** In real time, how far events have moved the town on past your own clock. */
+  get ahead(){return ahead;},set ahead(value){ahead=Number.isFinite(value)?Math.max(0,Math.min(7*1440,value)):0;},
+  target(){return mode==='real'?realTownMinutes(new Date(now()))+ahead:anchorTown+(now()-anchorReal)/60000*speed;},
   set(minutes,newSpeed=speed){mode='set';speed=CLOCK_SPEEDS.includes(newSpeed)?newSpeed:1;anchorTown=minutes;anchorReal=now();},
+  /** Time spent on something -- a rest, a meal, a bath -- moves the town on, in either mode. */
+  pass(minutes){if(!(minutes>0))return;if(mode==='real')this.ahead=ahead+minutes;else{anchorTown+=minutes;}},
   real(){mode='real';speed=1;},
  };
 }
