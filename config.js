@@ -56,16 +56,6 @@ const CONFIG = {
 
   projects: [
     {
-      title: "EL-LABB",
-      description:
-        "Touchscreen DC lab trainer for YH Elteknik och ell\u00e4ra. Student name login, course goals 4\u20139, meters, holding circuit and troubleshooting on SELV 12\u201324 V.",
-      url: "/ellab/",
-      icon: "zap",
-      tags: ["YH", "Elteknik", "Lab simulator"],
-      bento: "wide",
-      featured: true,
-    },
-    {
       title: "Elteknik och ell\u00e4ra",
       description:
         "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. Download a free sample chapter.",
@@ -73,18 +63,6 @@ const CONFIG = {
       icon: "notebook",
       image: "/elteknik/files/omslag.jpg",
       tags: ["Book", "Elteknik", "YH"],
-      bento: "wide",
-      featured: true,
-    },
-    {
-      title: "Thuan's Storage",
-      description:
-        "Work in progress. Walk Thuan through Sakura Sh\u014dten's stockroom, pick the day's list, and restock the konbini.",
-      url: "/thuans-storage/",
-      icon: "joystick",
-      image: "/thuans-storage/cover.jpg",
-      badge: "Work in progress",
-      tags: ["Work in Progress", "Three.js", "Playable Demo"],
       bento: "wide",
       featured: true,
     },

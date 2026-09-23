@@ -301,6 +301,20 @@
 .poster-card img { width: 100%; height: auto; border-radius: var(--rd-s); display: block; margin-bottom: var(--sp-2); }
 .poster-card figcaption > * { margin-top: 0; }
 
+/* Thuan's Storage: one wide card linking out to the stockroom side story */
+.stockroom-card {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--sp-3);
+  border: 1px solid var(--aui-grey-420); border-radius: var(--rd-m);
+  padding: var(--sp-3); background: var(--aui-white); color: inherit; text-decoration: none;
+}
+.stockroom-card img { width: 100%; height: auto; border-radius: var(--rd-s); display: block; }
+.stockroom-text { display: flex; flex-direction: column; gap: var(--sp-1); align-self: center; }
+.stockroom-text b { font-size: 1.125rem; line-height: 1.6; letter-spacing: .02rem; }
+.stockroom-text > span:not(.notice-no):not(.stockroom-go) { font-size: .875rem; color: var(--aui-grey-700); }
+.stockroom-go { margin-top: var(--sp-2); font-size: .875rem; font-weight: 700; color: var(--aui-red-1000); }
+.stockroom-card:hover .stockroom-go, .stockroom-card:focus-visible .stockroom-go { text-decoration: underline; }
+@media (max-width: 640px) { .stockroom-card { grid-template-columns: 1fr; } }
+
 /* Clock read-out beside the face */
 .clock-readout { min-width: 0; }
 .clock-digits {
