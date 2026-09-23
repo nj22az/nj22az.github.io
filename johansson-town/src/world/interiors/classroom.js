@@ -4,6 +4,7 @@ import {daylight} from '../../render/dusk.js';
 import {hanaBlockMaterial,hanaScreen} from '../school.js';
 import {buildFigure,setPose,animateFigure} from '../../people/school-kids.js';
 import {CHIME_TIMES,playSchoolChime} from '../../audio/school-chime.js';
+import {townCalendar} from '../../town-clock.js';
 
 /**
  * The 5・6年 classroom at Minato school, upstairs on the sea side.
@@ -86,7 +87,7 @@ const HAN_CENTRES=[[1.55,-1.95],[1.55,1.75],[-1.15,-.1]];
 const HAN=[];for(const [hx,hz] of HAN_CENTRES)for(const [dx,dz,f] of [[.225,-.33,-1],[.225,.33,-1],[-.225,-.33,1],[-.225,.33,1]])HAN.push([hx+dx,hz+dz,f]);
 const STACK=[];for(const x of [-1.2,-1.72,-2.24])for(const z of [-2.1,-1.35,-.6,.15])STACK.push([x,z,1]);
 
-export function buildClassroom({room,reg,action,exit,calendar=()=>({weekday:new Date().getDay(),date:new Date()})}){
+export function buildClassroom({room,reg,action,exit,calendar=()=>townCalendar()}){
  room.name='Minato school 5・6年 classroom';
  const colliders=[];
  const rect=(x,z,w,d,height=1)=>{const c={x,z,w,d,height,minY:0};colliders.push(c);return c;};

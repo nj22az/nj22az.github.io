@@ -24,7 +24,8 @@ import {createShopify} from './src/commerce/shopify.js';
 import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
-import {SAVE_KEY,readSave} from './src/save.js';
+import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey} from './src/save.js';
+import {townClockLine} from './src/town-clock.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {createThuanMind} from './src/people/thuan-mind.js';
@@ -75,7 +76,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   function save(){
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Kenji’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
-    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(state));$('#saveState').textContent='PROGRESS SAVED';}
+    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
@@ -325,6 +326,38 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ...items.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{if(!spend(item.price))return;addItem(item.en);townAudio.play('click',.35);
         receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
       ['Nothing, thank you',close]]);
+  }
+  // Local players: several people can keep their own progress on one device. Switching
+  // reloads the town from that player's save, which is the only way to be sure nothing
+  // from the last player is still in memory.
+  function players(){
+    let roster=readPlayers(localStorage);const me=roster.players.find(p=>p.id===roster.active);
+    const when=t=>t?new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'never';
+    const others=roster.players.filter(p=>p.id!==roster.active);
+    show('Player · '+(me?.name||'Visitor'),'Progress saves on this device, automatically every few seconds and whenever you leave. Last saved: '+when(state.savedAt)+'.\n\nThe town keeps real time: '+townClockLine()+'.',[
+      ['Save now',()=>{save();receipt('Saved','Saved for '+(me?.name||'Visitor')+' at '+when(Date.now())+'.');}],
+      ['Rename player',()=>{const name=globalThis.prompt?.('Name for this player',me?.name||'');if(name&&renamePlayer(localStorage,name)){players();}}],
+      ...others.map(p=>['Switch to '+p.name+' · '+when(p.lastPlayed),()=>{save();switchPlayer(localStorage,p.id);globalThis.location?.reload?.();}]),
+      ['New player',()=>{const name=globalThis.prompt?.('Name for the new player','');if(!name)return;save();addPlayer(localStorage,name);globalThis.location?.reload?.();}],
+      ['Export save file',exportSave],
+      ['Import save file',importSave],
+      ['Close',close]]);
+  }
+  function exportSave(){
+    save();const me=activePlayer(localStorage);
+    try{const blob=new Blob([JSON.stringify({game:'johansson-town',version:1,player:me?.name,savedAt:state.savedAt,state},null,1)],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='johansson-town-'+(me?.name||'player').replace(/\W+/g,'-').toLowerCase()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
+    catch{receipt('Export','This browser would not save the file.');}
+  }
+  function importSave(){
+    const input=document.createElement('input');input.type='file';input.accept='application/json,.json';
+    input.onchange=async()=>{
+      const file=input.files?.[0];if(!file)return;
+      try{const data=JSON.parse(await file.text());if(data?.game!=='johansson-town'||!data.state||typeof data.state!=='object')throw Error('not a save');
+        const id=addPlayer(localStorage,data.player||file.name.replace(/\.json$/,''));localStorage.setItem(slotKey(id),JSON.stringify(data.state));globalThis.location?.reload?.();}
+      catch{receipt('Import','That file is not a Johansson Town save.');}
+    };
+    input.click();
   }
   // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
   function onsen(){
@@ -615,11 +648,12 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#soundButton').onclick=toggleSound;
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
+  $('#playerButton').onclick=players;
   $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,players,thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

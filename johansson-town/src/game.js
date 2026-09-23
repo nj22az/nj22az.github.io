@@ -1,10 +1,11 @@
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
-import {elapsedTownAbsence,createTownCatchup} from './people/town-absence.js';
+import {createTownCatchup,MAX_ABSENCE_MINUTES} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {buildClassroom} from './world/interiors/classroom.js';
+import {realTownMinutes,clockCatchUp,townClockLine,townCalendar} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
@@ -220,7 +221,7 @@ let stickHintUntil=0;
 const pressedControls=new Set();
 let conversationName=null,conversationCamera=null,navigationTarget=null;
 let activeRoomLayout=null;
-let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=1002,subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
+let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
 let controllerFrame=gamepadInput.sample([]),controllerConnected=false;
@@ -257,7 +258,12 @@ if(benchSeat){
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
-activities=createActivities({say,onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>inspector.open(item),getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{if(value&&typeof value==='object'){minutes=value.restore;return;}if(value==='cycle'){timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}else minutes+=value;evictIfClosed();}});
+activities=createActivities({say,onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>inspector.open(item),getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{
+  // The town keeps real time, so nothing skips the clock: resting, eating, a bath -- the
+  // time passes in the telling. The TIME button says what time and day it is in town.
+  if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
+  if(value==='cycle'){if(followRealClock){say('The town keeps real time · '+townClockLine(),5);return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
+  else if(!followRealClock)minutes+=value;evictIfClosed();}});
 syncView();
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;activities.state.inventory.splice(i,1);activities.state.inventory.push('Empty can');activities.save();return true;}});
 characters=createCharacters({mobile,shadows,canJump:()=>!seated&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
@@ -643,7 +649,7 @@ function setConversation(name,text=''){for(const p of world.people)if(p.g.userDa
    conversationLine={speaker,name,text};}
   player.visible=false;
  }else{conversationLine=null;if(conversationCamera){player.visible=conversationCamera.playerVisible;conversationCamera=null;}}
-}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{if(hiddenAt)advanceAbsentTown(elapsedTownAbsence(hiddenAt));hiddenAt=0;clock.getDelta();activities.consumeStorageRestock?.();}});addEventListener('focus',()=>activities.consumeStorageRestock?.());addEventListener('pageshow',()=>activities.consumeStorageRestock?.());addEventListener('pagehide',()=>activities.save());
+}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{hiddenAt=0;followClock();clock.getDelta();activities.consumeStorageRestock?.();}});addEventListener('focus',()=>activities.consumeStorageRestock?.());addEventListener('pageshow',()=>activities.consumeStorageRestock?.());addEventListener('pagehide',()=>activities.save());
 
 const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');function drawMap(){drawTownMap(mapCtx,mapCanvas.width,mapCanvas.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited,target:navigationTarget});updateWaypoint();}
 function updateWaypoint(){
@@ -654,8 +660,11 @@ function updateWaypoint(){
 }
 $('#waypoint').onclick=()=>{navigationTarget=null;drawMap();};
 let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
-function advanceTown(dt,playerPaused){
-    minutes+=dt;elapsed+=dt;activities.tick(dt);
+// The clock runs at real time: a minute a minute. While the town is catching up on time
+// you were away it runs at the old fast-forward rate, a town minute a simulated second.
+let followRealClock=true;
+function advanceTown(dt,playerPaused,fastForward=false){
+    minutes+=fastForward?dt:dt/60;elapsed+=dt;activities.tick(dt);
     if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
@@ -665,15 +674,28 @@ function advanceTown(dt,playerPaused){
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);
     if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
+/** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
+function followClock(){
+ if(!followRealClock||catchingUp)return;
+ const real=realTownMinutes(),gap=real-minutes;
+ // A slow device drops frames and the simulation falls a little behind: close that
+ // quietly. A real gap -- the tab was asleep -- is fast-forwarded so people move on.
+ if(gap>5)advanceAbsentTown(gap);
+ else if(gap>.05||gap<-.05)minutes=real;
+}
 function simulate(frameDt,playerPaused=false){
+ followClock();
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}
 }
 const absence=createTownCatchup({advance:(dt,pending)=>{
- activities.state.pendingTownMinutes=pending;advanceTown(dt,true);
+ activities.state.pendingTownMinutes=pending;advanceTown(dt,true,true);
 }});
-function advanceAbsentTown(seconds){
- absence.add(seconds);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
+/** Fast-forwards the town through town minutes it missed, up to a day; beyond that it jumps. */
+function advanceAbsentTown(townMinutes){
+ if(!(townMinutes>0))return;
+ if(townMinutes>MAX_ABSENCE_MINUTES){minutes+=townMinutes-MAX_ABSENCE_MINUTES;townMinutes=MAX_ABSENCE_MINUTES;}
+ absence.add(townMinutes);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
 }
 function catchUpFrame(){
  absence.tick();catchingUp=absence.pending>0;
@@ -795,6 +817,9 @@ function renderOutdoor(){
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
-advanceAbsentTown(activities.takeAbsence());
+// Open on the device's clock: a save from earlier today is fast-forwarded to now so the
+// town is where it would be; anything older, or from the old fast clock, opens at now.
+activities.takeAbsence();
+{const plan=clockCatchUp(activities.state.minutes);minutes=plan.start;advanceAbsentTown(plan.fastForward);}
 // Allow the opening frame to paint before starting any district downloads.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{detailsStarted=true;}));
