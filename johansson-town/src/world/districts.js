@@ -53,8 +53,11 @@ export function buildDistricts(world,options){
   }
   // The western lane is the seafront service edge behind the shopping street.
   box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
+  // The heron fishes the seawall, which the peninsula keeps out of reach behind the yard.
+  if(!peninsulaActive()){
   for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
   verb([-36,1,-22],'Watch the heron','inspect','Grey heron','It waits for a fish along the seawall.');
+  }
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   const signs=peninsulaActive()?[[3.2,-34,'港通り','PORT AHEAD'],[4.8,18.9,'北通り','BUS STOP ↑']]:[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,18.9,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
   if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,'住まい','MAIN STREET HOMES ←']);

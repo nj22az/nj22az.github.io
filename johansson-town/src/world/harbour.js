@@ -283,13 +283,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [x,z,h] of [[-31,-98,13],[32,-102,16],[-45,-111,10]]){cyl(.24,h,[x,h/2,z],0x455054);beam([x,h*.8,z],[x+7,h*.8,z],.17,0x455054);beam([x+6.8,h*.8,z],[x+9,h*.55,z-3],.09,0x455054);}
   for(const [x,z,w,h] of [[-24,-105,15,7],[20,-107,18,8],[-3,-114,22,6]])box([w,h,10],[x,h/2-1,z],0x66706f);
 
-  const residents=[['Aya',-4,34,0x9b5347],['Kenji',4,13,0x51717d],['Mrs Sato',-3,-23,0x766484],['Harbour master',3,-54,0x465965]];
-  residents.forEach(([name,x,z,color],index)=>{
-    const g=new THREE.Group();g.position.set(x,0,z);g.userData.name=name;group.add(g);
-    function part(geo,p,col){const m=new THREE.Mesh(geo,material(col));m.position.set(...p);g.add(m);return m;}
-    part(new THREE.CylinderGeometry(.25,.21,.66,8),[0,1.17,0],color);part(new THREE.SphereGeometry(.22,10,8),[0,1.73,0],0xc79571);
-    const legs=[-.14,.14].map(dx=>part(new THREE.BoxGeometry(.17,.65,.2),[dx,.53,0],0x354349));const arms=[-.33,.33].map(dx=>part(new THREE.BoxGeometry(.14,.55,.17),[dx,1.1,0],color));register(g,`Talk to ${name}`,()=>onAction('resident',name));people.push({g,legs,arms,x,z,index});
-  });
+  // The harbour used to stand four placeholder residents here. The town replaces its
+  // people with the street cast, so they are no longer built at all: removed from the
+  // scene they still answered 'Talk to' from where they had stood.
   const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);
   const catLast=cat.position.clone();let catFacing=0,catResting=true;const cb=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.65),material(0xd0a471));cb.position.y=.28;cat.add(cb);const ch=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0xd0a471));ch.position.set(0,.49,-.3);cat.add(ch);for(const x of [-.11,.11]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.085,.18,3),material(0xd0a471));ear.position.set(x,.67,-.3);cat.add(ear);}register(cat,'Greet the cat',()=>onAction('cat'));
 

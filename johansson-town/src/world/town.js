@@ -173,8 +173,7 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
-  // The harbour fallback supplies placeholder residents. During the Thuan movement
-  // isolation phase none of those actors may survive into the playable town.
+  // Only the street cast lives in the playable town; nothing else may arrive as a person.
   for(const person of world.people)person.g?.removeFromParent();
   world.people.length=0;
   const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
