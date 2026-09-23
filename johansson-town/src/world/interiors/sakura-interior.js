@@ -5,6 +5,7 @@ import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
+import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 let model=null,pending=null;
@@ -127,18 +128,12 @@ export function buildSakuraInterior({room,reg,action,exit}){
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
  const ads=advertising.finish();
- // The three posters in the window wall. They take their art from the one poster list
- // rather than a second copy of it: this shop kept its own, so when the prints were
- // changed the wall it changed was somebody else's and the window still advertised the
- // packaging Sakura had stopped stocking.
- for(const [i,spec] of POSTER_SPECS.entries()){
-  const x=[-5.65,-3.15,3.10][i];if(x===undefined)break;
-  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.05,1.48),getPosterMaterial(spec));mesh.name=spec.title;
-  mesh.position.set(x,2.12,3.86);mesh.rotation.y=Math.PI;mesh.userData.sharedAsset=true;room.add(mesh);
-  const item=SHOP_STOCK.find(s=>s.id===spec.id);
-  anchor([x,2.0,3.65],'Read '+spec.id+' poster',()=>action('inspect',spec.title,
-   item?item.name+' · ¥'+item.cost+'\nThuan\u2019s own label, printed for the shop.':'Thuan\u2019s own label, printed for the shop.'));
- }
+ // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
+ // the glass is for seeing in, and for the paper decorations that change with the season.
+ hangWallPosters(room,{anchor,action});
+ buildMedicineShelf(room);
+ anchor([5.55,1.35,2.3],'Ask Thuan for something from the medicine shelf',()=>action('sakura-medicine'));
+ const decorations=createWindowDecorations(room);
  const ledger=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.20),new THREE.MeshStandardMaterial({color:0x436454,roughness:.8}));ledger.position.set(4.77,1.025,1.7);room.add(ledger);
  anchor([4.50,1.24,1.7],'Read Sakura sales ledger',()=>action('shop-ledger'));
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
@@ -152,13 +147,15 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0x66715c,1.2);room.add(fill);
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
+  // The decorations follow the real calendar, looked at once an hour.
+  decorations.refresh(new Date());
   lightLevel=fluorescent(minutes);fill.intensity=1.2*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
   }
  };
  let mounted=false,last='';
- return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>decorations.tick(time),accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

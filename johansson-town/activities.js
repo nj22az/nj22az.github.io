@@ -17,6 +17,7 @@ import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen} from './src/people/social.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
+import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
@@ -314,6 +315,17 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const text=lines[phase]||lines.closed;
     show(phase==='closed'?'Empty classroom':'与那嶺先生 · Yonamine-sensei',text,[['Thank you',close]]);
   }
+  // The medicine shelf behind Sakura's till. Nothing on it is self-service: you ask, and
+  // Thuan reaches it down and tells you how many to take.
+  function sakuraMedicine(){
+    const m=((getMinutes()%1440)+1440)%1440;
+    if(m<540||m>=1200){show('Medicine shelf','The till is closed. The boxes behind it wait for 09:00.',[['Back',close]]);return;}
+    const items=[...MEDICINES.filter(i=>['kaze','itami','ichou','megusuri','nodo','bansoko','shippu','katori','mushi','vitamin'].includes(i.id)),STAMINA_DRINK];
+    show('くすり · Medicine shelf','Thuan: "What do you need? If it is more than a cold, the clinic boat comes on Thursdays."',[
+      ...items.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{if(!spend(item.price))return;addItem(item.en);townAudio.play('click',.35);
+        receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
+      ['Nothing, thank you',close]]);
+  }
   // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
   function onsen(){
     const m=((getMinutes()%1440)+1440)%1440;
@@ -573,6 +585,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
       case 'izakaya-menu':izakayaMenu();break;
       case 'onsen':onsen();break;
+      case 'sakura-medicine':sakuraMedicine();break;
       case 'kyushoku':kyushoku(name,detail);break;
       case 'school-pantry':schoolPantry(name);break;
       case 'school-teacher':schoolTeacher(name);break;
