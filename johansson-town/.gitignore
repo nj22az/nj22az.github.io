@@ -12,3 +12,6 @@ dist/
 
 /art/tea-house/supplied/exterior-uncompressed.glb
 /art/yuri-home/japanese_residential_home_02.glb
+
+# Johansson: reproducible from tools/blender/build-johansson.py and animate-johansson.py.
+/art/characters/johansson/*.blend

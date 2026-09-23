@@ -81,7 +81,7 @@ export function createCharacters(options={}){
     return !window.__JOHANSSON_INSPECTING__&&!!playerEntity&&window.__JOHANSSON_RUNNING__===true&&hud&&!hud.classList.contains('hidden')&&directory?.classList.contains('hidden')&&activity?.classList.contains('hidden')&&qte?.classList.contains('hidden');
   }
 
-  function jump(){if(!canJump()||options.canJump?.()===false||jumping)return false;jumping=true;jumpVelocity=4.25;groundY=playerEntity.position.y;navigator.vibrate?.(12);return true;}
+  function jump(){if(!canJump()||options.canJump?.()===false||jumping)return false;jumping=true;jumpVelocity=4.25;groundY=playerEntity.position.y;navigator.vibrate?.(12);options.onJump?.();return true;}
   if(!window.__JOHANSSON_JUMP_BOUND__){window.__JOHANSSON_JUMP_BOUND__=true;document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat)jump();});document.querySelector('#jump')?.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();jump();});}
   window.__JOHANSSON_JUMP__=jump;
 
@@ -150,5 +150,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {get jumping(){return jumping;},attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

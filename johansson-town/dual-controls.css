@@ -58,3 +58,9 @@
  .touch-controls #mobile #drink{bottom:calc(env(safe-area-inset-bottom) + 142px)}
  #cameraPanel .camera-card{padding:16px}
 }
+
+/* Third-person view and moves: under the camera button, same pill. */
+#hud #viewButton,#hud #movesButton{pointer-events:auto;position:absolute;right:max(14px,env(safe-area-inset-right));min-height:40px;padding:7px 14px;border:1px solid #e6dbb955;border-radius:20px;background:#173238e8;color:#f4ead3;font:700 12px system-ui;letter-spacing:.04em}
+#hud #viewButton{top:max(156px,calc(env(safe-area-inset-top) + 150px))}
+#hud #movesButton{top:max(204px,calc(env(safe-area-inset-top) + 198px))}
+#hud #viewButton[aria-pressed="true"]{background:#2f5d57f0;border-color:#f4ead3aa}
