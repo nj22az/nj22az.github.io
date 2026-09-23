@@ -33,7 +33,9 @@ test('the bookshop has one visible doorway and the bicycle leaves its approach c
   let door=shoot(0,1.3);while(door&&door.name!=='frontrow-street-door')door=door.parent;assert.ok(door,'Centre entrance remains visible');
   shop.entrance.userData.hit();assert.equal(entered,'frontrow');
   const bike=buildBicycle(BOOKSHOP_BICYCLE);parent.add(bike.object);parent.updateMatrixWorld(true);
-  assert.equal(bike.object.children.length,1,'Bicycle geometry is one render mesh');
+  const meshes=[];bike.object.traverse(object=>{if(object.isMesh)meshes.push(object);});
+  assert.equal(meshes.length,3,'Bicycle has one frame mesh and two animated wheel meshes');
+  assert.equal(bike.wheels.length,2,'Both bicycle wheels have independent rotation pivots');
   const bounds=new THREE.Box3().setFromObject(bike.object),size=bounds.getSize(new THREE.Vector3());assert.ok(bounds.min.y>-.001&&bounds.min.y<.025,'Tyres touch the pavement');
   assert.ok(size.y>.95&&size.y<1.15&&size.z>1.7&&size.z<1.95,'Adult commuter bicycle proportions');
   for(let x=4.4;x<=7.0;x+=.1)assert.equal(circleHitsRect(x,30,.32,bike.collider),false,'Bookshop entrance approach stays clear');

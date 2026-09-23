@@ -24,9 +24,9 @@
 <link rel="stylesheet" href="./landing.css?h=03b29d9b">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-BCdj0hu3.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-C3wcCAjp.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CTFB8DFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-B5BcH3I0.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BvBnqLjY.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -156,6 +156,7 @@
             <li><kbd>Mouse / drag / right stick</kbd><span>Look</span></li>
             <li><kbd>Space</kbd><span>Jump</span></li>
             <li><kbd>E</kbd><span>Interact / stand</span></li>
+            <li><kbd>E at Thuan’s bicycle</kbd><span>Ride · E again to dismount</span></li>
             <li><kbd>R</kbd><span>Drink</span></li>
             <li><kbd>Q</kbd><span>Town book</span></li>
             <li><kbd>B</kbd><span>Notebook</span></li>
@@ -362,7 +363,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-BCdj0hu3.js');
+      await import('./runtime/boot-C3wcCAjp.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');

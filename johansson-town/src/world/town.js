@@ -146,11 +146,17 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
-  // The bicycle belongs to the bookshop alley. With the shops switched off it stands
-  // against the konbini's glazing instead, in front of the one window the town is
-  // meant to be read through, so the peninsula does without it until the shops return.
-  if(!peninsulaActive()){
-    addWithCollider(group,colliders,buildBicycle({...BOOKSHOP_BICYCLE,shadows:options.shadows}));
+  // Thuan's bicycle stands on the west footway, a short walk from Sakura. The
+  // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
+  // inspection spot and its original placement.
+  const bicycleSpot=peninsulaActive()?{x:-4.85,z:-23.2}:BOOKSHOP_BICYCLE;
+  const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows});
+  bicycle.object.name="Thuan's commuter bicycle";
+  addWithCollider(group,colliders,bicycle);
+  if(peninsulaActive()){
+    anchor(group,[bicycleSpot.x+1,.9,bicycleSpot.z],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
+    interactions++;
+  }else{
     addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
     inspect([BOOKSHOP_BICYCLE.x-.8,.9,BOOKSHOP_BICYCLE.z],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
   }
@@ -168,7 +174,7 @@ function addStreetLife(world,options,factory){
   const pump=factory.box(group,[.65,.85,.55],[-7.4,.52,-31.2],0x536568);factory.cylinder(group,.16,.45,[-7.4,1.12,-31.2],0x3d4c4e,12);colliders.push({x:-7.4,z:-31.2,w:.72,d:.62});
   machine([-6.8,1,-30.7],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
 
-  return {interactions,lights};
+  return {interactions,lights,bicycle};
 }
 
 function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Peninsula surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
@@ -214,6 +220,7 @@ export function createTown(options){
   }
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
+  world.bicycle=street.bicycle;
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
@@ -268,7 +275,7 @@ export function createTown(options){
     if(world.shopDoors?.length){
      doorTraffic.length=0;
      const here=options.getPlayerPosition?.();if(here)doorTraffic.push(here);
-     for(const p of world.people)if(p.g.visible&&!p.g.userData.indoors)doorTraffic.push(p.g.position);
+     for(const p of world.people)if(p.g.visible&&!p.g.userData.indoors&&!p.g.userData.playerControlled)doorTraffic.push(p.g.position);
      for(const door of world.shopDoors)door.update(dt,doorTraffic);
     }
     for(const shop of world.harbourShops)shop.update(true,day);
