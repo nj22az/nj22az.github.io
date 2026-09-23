@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trefas på 440 V och 60 Hz – Y, Δ och effekten i en pumpmotor | Elteknik ombord</title>
+  <meta name="description" content="Huvudspänning och fasspänning, Y- och Δ-koppling och trefaseffekt med ett genomräknat exempel på en pumpmotor ombord.">
+  <link rel="canonical" href="https://nj22az.github.io/blog/elteknik/trefas-440-v-60-hz/">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nj22az.github.io/blog/elteknik/trefas-440-v-60-hz/">
+  <meta property="og:locale" content="sv_SE">
+  <meta property="og:title" content="Trefas på 440 V och 60 Hz – Y, Δ och effekten i en pumpmotor | Elteknik ombord">
+  <meta property="og:description" content="Huvudspänning och fasspänning, Y- och Δ-koppling och trefaseffekt med ett genomräknat exempel på en pumpmotor ombord.">
+  <meta property="og:image" content="https://nj22az.github.io/elteknik/files/omslag.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#067A37">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/elteknik/styles.css">
+  <link rel="stylesheet" href="/blog/elteknik/article.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Trefas på 440 V och 60 Hz – Y, Δ och effekten i en pumpmotor",
+  "description": "Huvudspänning och fasspänning, Y- och Δ-koppling och trefaseffekt med ett genomräknat exempel på en pumpmotor ombord.",
+  "datePublished": "2026-09-23",
+  "inLanguage": "sv",
+  "author": {
+    "@type": "Person",
+    "name": "Nils Johansson",
+    "url": "https://nj22az.github.io/"
+  },
+  "image": "https://nj22az.github.io/elteknik/files/omslag.jpg",
+  "mainEntityOfPage": "https://nj22az.github.io/blog/elteknik/trefas-440-v-60-hz/",
+  "isPartOf": {
+    "@type": "CreativeWorkSeries",
+    "name": "Elteknik ombord",
+    "url": "https://nj22az.github.io/blog/elteknik/"
+  },
+  "position": 2
+}
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="back" href="/blog/">← Journal</a>
+      <a class="topbar-cta" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara">Köp boken · 375 kr</a>
+    </div>
+  </header>
+
+  <main>
+    <article class="post">
+      <header class="post-head wrap">
+        <p class="eyebrow"><a href="/blog/elteknik/">Elteknik ombord</a> · Del 2 av 5</p>
+        <h1>Trefas på 440 V och 60 Hz<span>Y, Δ och effekten i en pumpmotor</span></h1>
+        <p class="post-meta">Nils Johansson · <time datetime="2026-09-23">23 september 2026</time> · 3 min läsning</p>
+      </header>
+      <div class="post-body wrap">
+<p class="scenario">Landnätet i Sverige är 400 V och 50 Hz. Ombord på många fartyg är huvudnätet 440 V och 60 Hz. Fysiken är densamma, men siffrorna är andra, och den som räknar med landvanor gör lätt fel på både ström och varvtal.</p>
+
+<h2>Huvudspänning och fasspänning</h2>
+<p>I ett trefasnät är huvudspänningen <i>U</i><sub>h</sub> spänningen mellan två faser och fasspänningen <i>U</i><sub>f</sub> spänningen mellan en fas och nollpunkten. De hänger ihop med faktorn √3:</p>
+<p class="formula"><i>U</i><sub>h</sub> = √3 · <i>U</i><sub>f</sub></p>
+<p>För 400 V blir fasspänningen 231 V. För 440 V blir den 440 / √3 ≈ 254 V.</p>
+
+<h2>Y och Δ</h2>
+<p>En trefaslast har tre lindningar, och de kan kopplas på två sätt:</p>
+<ul>
+  <li><b>Y-koppling:</b> varje lindning ligger mellan en fas och en gemensam nollpunkt. Lindningen får fasspänningen, <i>U</i><sub>h</sub> / √3, och linjeströmmen är lika med lindningsströmmen.</li>
+  <li><b>Δ-koppling:</b> varje lindning ligger mellan två faser. Lindningen får hela huvudspänningen, och linjeströmmen blir √3 gånger lindningsströmmen.</li>
+</ul>
+<figure class="diagram"><svg viewBox="0 0 560 250" role="img" aria-labelledby="f3t">
+  <title id="f3t">Y-koppling med tre lindningar mot en gemensam nollpunkt och Δ-koppling med lindningarna mellan faserna</title>
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M140 130V40M140 130L62 175M140 130L218 175"/>
+    <rect x="130" y="62" width="20" height="44" rx="3"/>
+    <rect x="130" y="62" width="20" height="44" rx="3" transform="rotate(120 140 130)"/>
+    <rect x="130" y="62" width="20" height="44" rx="3" transform="rotate(240 140 130)"/>
+    <circle cx="140" cy="130" r="4" fill="currentColor"/>
+    <path d="M420 40L340 180H500Z"/>
+    <rect x="370" y="88" width="20" height="44" rx="3" transform="rotate(30 380 110)"/>
+    <rect x="450" y="88" width="20" height="44" rx="3" transform="rotate(-30 460 110)"/>
+    <rect x="398" y="170" width="44" height="20" rx="3"/>
+  </g>
+  <g class="lbl">
+    <text x="140" y="30" text-anchor="middle">L1</text>
+    <text x="48" y="190" text-anchor="middle">L2</text>
+    <text x="232" y="190" text-anchor="middle">L3</text>
+    <text x="140" y="228" text-anchor="middle">Y: lindningen får U / √3</text>
+    <text x="420" y="30" text-anchor="middle">L1</text>
+    <text x="326" y="196" text-anchor="middle">L2</text>
+    <text x="514" y="196" text-anchor="middle">L3</text>
+    <text x="420" y="228" text-anchor="middle">Δ: lindningen får hela U</text>
+  </g>
+</svg><figcaption>Samma tre lindningar, två kopplingar. I Y får varje lindning √3 gånger lägre spänning än i Δ.</figcaption></figure>
+<p>Det är principen bakom Y/Δ-start. En motor som är avsedd att gå i Δ startas i Y, så att varje lindning bara får spänningen / √3. Startströmmen från nätet och startmomentet blir då ungefär en tredjedel av värdena vid direktstart i Δ. När motorn har kommit upp i varv kopplas den om till Δ.</p>
+
+<h2>Effekten i en pumpmotor</h2>
+<p>Den aktiva effekten i en symmetrisk trefaslast är</p>
+<p class="formula"><i>P</i> = √3 · <i>U</i><sub>h</sub> · <i>I</i> · cos φ</p>
+<p>där <i>I</i> är linjeströmmen. Formeln gäller oavsett om lasten är Y- eller Δ-kopplad. Ta en pumpmotor på 440 V som drar 30 A med effektfaktorn 0,85:</p>
+<table>
+  <tr><td>Skenbar effekt <i>S</i></td><td>√3 · 440 · 30 ≈ 22,9 kVA</td></tr>
+  <tr><td>Aktiv effekt <i>P</i></td><td>22,9 · 0,85 ≈ 19,4 kW</td></tr>
+  <tr><td>Reaktiv effekt <i>Q</i></td><td>√(22,9² − 19,4²) ≈ 12,0 kvar</td></tr>
+  <tr><td>Axeleffekt vid 90 % verkningsgrad</td><td>19,4 · 0,90 ≈ 17,5 kW</td></tr>
+</table>
+<p>Två vanliga fel: att glömma √3, eller att blanda fasspänning med linjeström. Håll ihop paren: huvudspänning med linjeström och √3, eller lindningens spänning med lindningens ström utan √3.</p>
+
+<h2>Vad 60 Hz betyder för varvtalet</h2>
+<p>En asynkronmotors synkrona varvtal är</p>
+<p class="formula"><i>n</i><sub>s</sub> = 60 · <i>f</i> / <i>p</i></p>
+<p>där <i>p</i> är antalet polpar. En fyrpolig motor (två polpar) har 1 500 r/min vid 50 Hz men 1 800 r/min vid 60 Hz, och det faktiska varvtalet ligger strax under på grund av eftersläpningen. För en centrifugalpump ökar effektbehovet ungefär med varvtalet i kubik, så 20 % högre varvtal ger i storleksordningen 70 % högre effektbehov. Därför måste utrustning som flyttas mellan 50 Hz och 60 Hz alltid kontrolleras mot märkskylten.</p>
+
+<h2>Att ta med sig</h2>
+<ul class="checks">
+  <li>440 V huvudspänning ger ungefär 254 V fasspänning.</li>
+  <li><i>P</i> = √3 · <i>U</i> · <i>I</i> · cos φ med huvudspänning och linjeström, oavsett koppling.</li>
+  <li>60 Hz ger 20 % högre varvtal än 50 Hz. Kontrollera märkskylten.</li>
+</ul>
+      </div>
+      <div class="wrap post-end">
+
+    <aside class="book-box" aria-label="Läs mer i boken">
+      <img src="/elteknik/files/omslag.jpg" width="140" height="200" alt="Omslaget till Elteknik och ellära för sjöfart och industri" loading="lazy">
+      <div>
+        <p class="eyebrow">Läs mer i boken</p>
+        <h2>Elteknik och ellära för sjöfart och industri</h2>
+        <p>Det här ämnet behandlas utförligt, med genomräknade exempel och övningar med fullständiga lösningar, i kapitlen</p>
+        <ul class="chapters"><li>9 Effekt i växelströmskretsar</li><li>10 Trefassystemets grunder</li><li>11 Y, Δ och trefaseffekt</li><li>17 Transformatorer och motorer</li></ul>
+        
+        <div class="actions">
+          <a class="btn btn-primary" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Zm3 0a3 3 0 0 1 6 0"/></svg> Köp e-boken · 375 kr</a>
+          <a class="btn btn-secondary" href="/elteknik/files/provkapitel.pdf" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg> Gratis provkapitel</a>
+        </div>
+      </div>
+    </aside>
+        <nav class="prev-next" aria-label="Föregående och nästa del"><a class="prev" href="/blog/elteknik/lanternan-som-lyser-svagt/"><span>← Del 1</span>Lanternan som lyser svagt</a><a class="next" href="/blog/elteknik/fem-sakerhetsregler/"><span>Del 3 →</span>Innan du öppnar elcentralen</a></nav>
+        <section class="series-box" aria-labelledby="serien">
+          <h2 id="serien">Hela serien</h2>
+          <ol class="series-list"><li><a href="/blog/elteknik/lanternan-som-lyser-svagt/"><span class="nr">Del 1</span><span class="t">Lanternan som lyser svagt</span><span class="s">Ohms lag och spänningsfall i praktiken</span></a></li><li aria-current="page"><div><span class="nr">Del 2</span><span class="t">Trefas på 440 V och 60 Hz</span><span class="s">Y, Δ och effekten i en pumpmotor</span></div></li><li><a href="/blog/elteknik/fem-sakerhetsregler/"><span class="nr">Del 3</span><span class="t">Innan du öppnar elcentralen</span><span class="s">Fem säkerhetsregler enligt SS-EN 50110-1</span></a></li><li><a href="/blog/elteknik/isolationslarmet/"><span class="nr">Del 4</span><span class="t">Isolationslarmet som inte går att kvittera</span><span class="s">Så fungerar IT-systemet ombord</span></a></li><li><a href="/blog/elteknik/pumpen-som-inte-startar/"><span class="nr">Del 5</span><span class="t">Pumpen som inte startar</span><span class="s">Systematisk felsökning steg för steg</span></a></li></ol>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>© 2026 Nils Johansson</p>
+      <p><a href="/elteknik/">Elteknik och ellära</a> · <a href="/blog/">Journal</a> · <a href="/">The Office of Nils Johansson</a></p>
+    </div>
+  </footer>
+</body>
+</html>

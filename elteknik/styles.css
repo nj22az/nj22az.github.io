@@ -178,6 +178,11 @@ h3 { font-size: 1.15rem; }
 .unlock-panel summary:hover { color: var(--ink); }
 .unlock-panel .dl-card { margin-top: 14px; max-width: 520px; }
 
+.blog-series { margin: 0 0 1em; padding-left: 1.4em; }
+.blog-series li { margin: 0.45em 0; }
+.blog-series a { color: var(--ink); text-decoration: none; }
+.blog-series a:hover strong { color: var(--accent); text-decoration: underline; }
+
 /* sidfot */
 .footer { border-top: 1px solid var(--rule); padding: 28px 0 40px; color: var(--muted); font-size: 0.9rem; }
 .footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
