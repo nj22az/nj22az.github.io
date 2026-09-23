@@ -10,6 +10,7 @@ import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {lanePatches} from './lane-surfaces.js?snappy=1';
 import {buildParkOnsen} from './park-onsen.js';
+import {buildSchool} from './school.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
@@ -110,7 +111,9 @@ function addSiteFrontage(world,options,factory,lights){
   const group=world.group,colliders=world.colliders;let interactions=0;
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   (options.sites||[]).forEach((s,i)=>{
-    if(s.id==='market'||world.harbourShops.some(shop=>shop.id===s.id))return;
+    // Only the shops that stand on the main street get a street front; the school and
+    // the like have no side of the street to stand on.
+    if(s.id==='market'||world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))return;
     const side=s.side,x=side*6.88,z=s.z+2.55,frontRot=side<0?Math.PI/2:-Math.PI/2;
     factory.box(group,[.72,.025,1.2],[x,.15,z],0x5e5549,'timber',false);
     const awn=addWithCollider(group,colliders,factory.awning(side*6.95,s.z+1.2,frontRot,i%3===0?0x65766f:i%3===1?0x7b5e54:0x596b73));
@@ -202,6 +205,8 @@ export function createTown(options){
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.
+   // Minato school, through the gate at the lawn's south end. See school.js.
+   world.school=buildSchool(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
    world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
@@ -219,7 +224,7 @@ export function createTown(options){
    const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
   }
-  for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
+  for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
   // The peninsula keeps the park and the port; the dining lane and the izakaya are
   // switched off with the rest of the buildings.
   // The dining lane belongs to the old street plan and would run through the west
@@ -254,7 +259,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.onsen?.tick(time);
+    world.eastLawn?.tick?.(time,minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.busStation?.update(minutes,day);
     // Three daily services, each with a fifteen-minute stop.
     world.bus?.update(dt,minutes);

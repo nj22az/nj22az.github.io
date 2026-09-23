@@ -36,6 +36,24 @@ export const townAudio={
     for(const [name,x,z,volume,range] of sources){if(!loops.has(name)&&!paused&&volume>0&&Math.hypot(x-player.x,z-player.z)<range){const v=voice(name,true);if(v)loops.set(name,v);}const v=loops.get(name);if(!v)continue;const dx=x-player.x,dz=z-player.z,d=Math.hypot(dx,dz),gain=paused?0:volume*Math.max(0,1-d/range)*(inside?.24:1);v.gain.gain.setTargetAtTime(gain,ctx.currentTime,.2);v.pan.pan.setTargetAtTime(Math.max(-.85,Math.min(.85,(dx*Math.cos(yaw)-dz*Math.sin(yaw))/Math.max(d,1))),ctx.currentTime,.2);}
     const train=Math.floor(minutes/8);if(train!==lastTrain){if(lastTrain>=0&&!paused)this.play('train',.16);lastTrain=train;}
   },
+  /**
+   * A tune on struck bells, synthesised: each note a few inharmonic partials with a hard
+   * strike and a long decay, the way a school's chime sounds through a horn speaker.
+   * @param {Array<[number,number]>} notes [frequency Hz, start seconds]
+   */
+  bells(notes,volume=.5){
+    if(!enabled||!ctx||ctx.state!=='running')return;
+    const out=ctx.createGain();out.gain.value=volume*.55;
+    // A horn speaker has no bass and not much top.
+    const band=ctx.createBiquadFilter();band.type='bandpass';band.frequency.value=1100;band.Q.value=.55;
+    out.connect(band).connect(master);
+    const t0=ctx.currentTime+.05;
+    for(const [f,at] of notes)for(const [ratio,level,decay] of [[1,1,2.6],[2.76,.32,1.1],[5.4,.12,.5],[.5,.18,3.2]]){
+      const osc=ctx.createOscillator(),env=ctx.createGain();osc.type='sine';osc.frequency.value=f*ratio;
+      env.gain.setValueAtTime(0,t0+at);env.gain.linearRampToValueAtTime(level,t0+at+.008);env.gain.exponentialRampToValueAtTime(.0005,t0+at+decay);
+      osc.connect(env).connect(out);osc.start(t0+at);osc.stop(t0+at+decay+.05);
+    }
+  },
   get enabled(){return enabled;}
 };
 

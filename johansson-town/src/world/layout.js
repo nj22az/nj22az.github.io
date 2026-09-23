@@ -10,6 +10,7 @@ import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';
+import {SCHOOL,schoolAt} from './school-layout.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -83,11 +84,10 @@ function regionAt(x,z,r=0){
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
  if(!shoppingDistrictActive()&&inResidential(x,z))return residentialContains(x,z,r)?{id:'main-street-homes',surface:'stone'}:null;
  if(x>=BUS_STATION.minX+r&&x<=BUS_STATION.maxX-r&&z>=BUS_STATION.minZ+r&&z<=BUS_STATION.maxZ-r)return {id:BUS_STATION.id,surface:'stone'};
- // The bus-only road past the terminal. It is signed for buses and there is a painted
- // tunnel at the end of it, so of course people walk up it to look: leaving it off the
- // walkable set meant you were stopped by nothing at all, thirty metres short of the
- // one thing out here worth walking to. It ends at the rock, because the rock is where
- // it ends — running the road through the arch gives the joke away before you get to it.
+ // The bus-only road past the terminal. It is signed for buses and there is a tunnel
+ // at the end of it, so of course people walk up it to look: leaving it off the walkable
+ // set meant you were stopped by nothing at all, thirty metres short of the one thing out
+ // here worth walking to. It ends at the portal; there is no footway inside.
  if(peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
   &&z>=MAIN_ROAD.maxZ&&z<=FOREST_EDGE.roadEndZ+3.4-r)return {id:'bus-forest-road',surface:'asphalt'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
@@ -109,10 +109,12 @@ function regionAt(x,z,r=0){
  // the lawn nor what it deferred to would have you, and on open grass that is an
  // invisible wall.
  if(peninsulaActive()&&eastLawnAt(x,z,r))return EAST_LAWN;
+ // The school grounds, through the gate in the windbreak at the lawn's south end.
+ if(peninsulaActive()&&schoolAt(x,z,r))return SCHOOL;
  // ...and the same on the shop side, where the konbini stood in an invisible box with
  // only its frontage on ground you could stand on.
  if(peninsulaActive()&&westYardAt(x,z,r))return WEST_YARD;
  return null;
 }
 export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}
-export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:TUNNEL.z+TUNNEL.depth+1};
+export const MAP_BOUNDS={minX:-44,maxX:48,minZ:-72,maxZ:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)};

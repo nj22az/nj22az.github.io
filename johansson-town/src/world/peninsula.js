@@ -7,7 +7,8 @@ import {TUNNEL} from './coyote-tunnel.js';
 // put the hill, its boulders and the last few metres of the bus road out over open
 // water: from the road you saw a band of sea at the foot of the cliff and the painting
 // floating above it. The headland now carries the rock it is holding up.
-export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-19,48],[12,48],[13,35],[20,49],[35,51],[40,40],[45,29],[45,-43],[38,-50],[20,-50]];
+// South of the lawn the land runs out to the school's seawall and the tetrapods beyond it.
+export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-19,48],[11,49],[12,57.5],[47,57.5],[47.5,40],[45,29],[45,-43],[38,-50],[20,-50]];
 // The shore runs under the headland the tunnel goes through, and a boulder there stands
 // in the tunnel's road.
 const underTunnel=(x,z)=>Math.abs(x-TUNNEL.x)<TUNNEL.bore.half+1.5&&z>TUNNEL.z-1;

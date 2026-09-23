@@ -270,6 +270,50 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['Just looking, thank you',close]
     ]);
   }
+  // Minato school. Lunch is kyūshoku: eaten in the classroom, the same meal for everyone,
+  // the teacher included, and a visitor who turns up at the right time gets a tray too.
+  function kyushoku(phase,menu){
+    if(phase!=='serving'&&phase!=='lunch'){
+      show('Kyūshoku trolley','The stainless trolley parked by the pantry, its cauldrons scrubbed and upside down. Lunch is at 12:20: the lunch squad fetches it from the prep kitchen and serves at the front.',[['Back',close]]);return;
+    }
+    const dishes=menu?.jp?.join('、')||'';
+    show('給食 · Kyūshoku','Yonamine-sensei waves you over: "There is always a spare tray. Sit with han three." The lunch squad, in white smocks and caps and gauze masks, ladles it out: '+(menu?.en||'')+'.',[
+      ['Take a tray · いただきます',()=>{onTime(phase==='serving'?30:18);note('Ate kyūshoku with the 5・6年 class: '+dishes+'.');
+        show('いただきます！','Twelve voices and one teacher, all at once. '+(menu?.en?menu.en[0].toUpperCase()+menu.en.slice(1):'')+'. The bottle of milk is cold, and finishing it before you leave the table is not optional. Across the han, Kenta is trying to trade his goya to anyone who will take it. At the end: ごちそうさまでした, trays stacked, milk bottles rinsed at the corridor taps, and everybody is already rolling up their sleeves for sōji.',[['Help with sōji',()=>{onTime(15);receipt('Sōji','Desks to the back, brooms down the rows, wet rags pushed along the floorboards at a run. The class finishes in fifteen minutes flat and the floor shines.');}],['Thank the class',close]]);}],
+      ['Just watch',close]]);
+  }
+  // The class pantry. Anyone can use it after school, if they leave it as they found it and
+  // put something in the ingredients jar.
+  const PANTRY_DISHES=[
+    ['Sata andagi',100,25,'Balls of dough dropped into the oil, turning themselves over as they puff and crack open. Crisp outside, cake inside. Mai says hers are the best and they are.'],
+    ['Onigiri',50,10,'Rice from the class cooker, salt on your palms, a strip of nori. Three triangles, slightly lopsided, wrapped in a sheet of the class\'s newspaper.'],
+    ['Barley tea',20,8,'A kettle of mugicha, poured into the big plastic jug and set in a bowl of tap water to cool. It tastes of every summer afternoon.'],
+    ['Goya champuru',150,20,'Bitter melon, tofu, egg and a few slices of luncheon meat, stir-fried in the big pan on the gas ring. The bitterness is the point, says Sensei.'],
+  ];
+  function schoolPantry(phase){
+    const club=phase==='club';
+    const intro=club?'The home-economics club is at the pantry: three pupils in aprons and Yonamine-sensei with the andagi pot. "Wash your hands first. Then you can help."':
+      phase==='lesson'||phase==='lesson-pm'?'A lesson is on. The pantry can wait until after school -- the jar says ¥ on it, for ingredients.':
+      'The class pantry: a sink, two gas rings, the rice cooker, a shelf of trays and bowls, and a jar for ingredient money. Clean up after yourself.';
+    if(phase==='lesson'||phase==='lesson-pm'){show('Class pantry',intro,[['Back',close]]);return;}
+    show('Class pantry',intro,[...PANTRY_DISHES.map(([dish,cost,minutes,text])=>[`Make ${dish.toLowerCase()} · ¥${cost} in the jar`,()=>{
+      if(!spend(cost))return;onTime(minutes);addItem(dish);note('Made '+dish.toLowerCase()+' in the 5・6年 pantry.');receipt(dish,text+' It is in your bag.');}]),['Leave it for now',close]]);
+  }
+  function schoolTeacher(phase){
+    const lines={
+      morning:'"Good morning! You are early. The children will be in soon -- they walk along the seawall, which they are not supposed to."',
+      lesson:'"We are dividing fractions. The sixth-graders help the fifth-graders; with twelve of them in one room, everyone teaches someone."',
+      'lesson-pm':'"Social studies: the fishing co-op. Half their parents are in it, so the children correct me."',
+      serving:'"The lunch squad is serving. Wait your turn -- and if you are staying, there is a spare tray."',
+      lunch:'"We eat together. It is a lesson too: gratitude, manners, and nothing left on the plate."',
+      cleaning:'"Sōji! Everybody cleans, teachers too. The floor will not wipe itself."',
+      club:'"Home-ec club. Sata andagi today -- the oil has to be just right, one hundred and seventy degrees."',
+      after:'"The children have gone home. I am marking notebooks. Would you like some barley tea from the pantry?"',
+      weekend:'"No school today. I came in to water the morning glories on the windowsill."',
+      closed:'Nobody here. The notebooks are stacked on the teacher\'s desk, the chairs are up on the desks.'};
+    const text=lines[phase]||lines.closed;
+    show(phase==='closed'?'Empty classroom':'与那嶺先生 · Yonamine-sensei',text,[['Thank you',close]]);
+  }
   // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
   function onsen(){
     const m=((getMinutes()%1440)+1440)%1440;
@@ -529,6 +573,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
       case 'izakaya-menu':izakayaMenu();break;
       case 'onsen':onsen();break;
+      case 'kyushoku':kyushoku(name,detail);break;
+      case 'school-pantry':schoolPantry(name);break;
+      case 'school-teacher':schoolTeacher(name);break;
+      case 'school-taps':show('Wash station','Brass push taps over a concrete trough. You press one and it runs cold for exactly as long as you hold it. There is an orange net of soap hanging from the pipe, and somebody\'s blue sandal.',[['Rinse the sand off your feet',()=>{onTime(2);receipt('Wash station','Cold, clean, and the sand runs off down the trough. Your feet dry on the corridor concrete in a minute.');}],['Leave',close]]);break;
       case 'izakaya-gossip':izakayaGossip();break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;

@@ -4,6 +4,7 @@ import {createCameraControls,navigateControls,focusableControls} from './input/c
 import {elapsedTownAbsence,createTownCatchup} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
+import {buildClassroom} from './world/interiors/classroom.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
@@ -318,6 +319,7 @@ function startVenueService(place){venueService=createVenueService({room,place,ge
 function addRoomProps(s){
   if(s.id==='market'){shopStreetView.invalidate();storeWelcomed=false;sakuraShop.enter(room);roomColliders.push(...sakuraShop.colliders);sakuraShop.update(0);return;}
   if(s.id==='warehouse')return;
+  if(s.id==='school'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes,elapsed);return;}
   if(activeRoomLayout){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say});}
     if(homeOwner(s))homeGuests.enter(s,minutes);
@@ -327,11 +329,12 @@ function addRoomProps(s){
 
 }
 
-function clearRoom(){showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();hideRamen();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside&&!interactables[i].userData.persistentShop&&!interactables[i].userData.name)interactables.splice(i,1);}
+function clearRoom(){activeRoomLayout?.dispose?.();showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;activeRoomLayout?.workshop?.dispose();storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;workplaceResidents.restore();neighbourChats.cancel();chatBubble.hide();activeRoomLayout=null;izakayaGuests.restore();hideRamen();homeGuests.restore();roomColliders.length=0;const materials=new Set(),geos=new Set();room.traverse(o=>{for(let p=o;p&&p!==room;p=p.parent)if(p.userData.sharedAsset)return;if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];if(!o.userData.preserveMaterial)list.forEach(m=>m&&materials.add(m));if(![...boxCache.values()].includes(o.geometry))geos.add(o.geometry);}});materials.forEach(m=>{if(!m.map?.userData?.sharedAsset)m.map?.dispose?.();m.dispose?.();});geos.forEach(g=>g.dispose?.());while(room.children.length)room.remove(room.children[0]);for(let i=interactables.length-1;i>=0;i--)if(interactables[i].userData?.hit?.inside&&!interactables[i].userData.persistentShop&&!interactables[i].userData.name)interactables.splice(i,1);}
 function roomShell(s){
  clearRoom();town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:activities.action,exit:leaveRoom};
  if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
+ if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
  if(activeRoomLayout||s.id==='izakaya')return;
  if(s.id==='market')return;
@@ -656,6 +659,7 @@ function advanceTown(dt,playerPaused){
     if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
+    if(current&&!catchingUp)activeRoomLayout?.tick?.(dt,minutes,elapsed);
     if(homeOwner(current))homeGuests.update(dt,minutes);
     venueService?.update(dt);ramenPlayerService?.update(dt);workplaceResidents.update(dt,minutes,weather);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);

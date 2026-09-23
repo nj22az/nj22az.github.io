@@ -3,6 +3,7 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
+import {SCHOOL} from './school-layout.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -160,14 +161,19 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
  const leaves=TREE_LEAVES.map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
  const treeZ=EAST_LAWN.maxZ-.6,first=EAST_LAWN.minX+1.4,last=wall.x-1.6,count=13;
+ // With a gap for the school gate, which the lawn's path runs through.
+ const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9;
  for(let i=0;i<count;i++){
   const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=2.7+(i%4)*.4,radius=.78+(i%3)*.14;
+  if(clear(x))continue;
   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.21,height*.72,7),trunkMat);
   trunk.position.set(x,height*.36,z);trunk.castShadow=!!shadows;group.add(trunk);
   const crown=new THREE.Mesh(new THREE.ConeGeometry(radius,height*.85,7),leaves[i%leaves.length]);
   crown.position.set(x,height*.75,z);crown.scale.y=1.2;crown.castShadow=!!shadows;group.add(crown);
  }
- colliders.push({id:'east-lawn-trees',x:(first+last)/2,z:treeZ+.35,w:last-first+2.2,d:1.5,height:5.4});
+ const west=first-1.1,eastEnd=last+1.1,g0=gate.x-gate.half-.35,g1=gate.x+gate.half+.35;
+ colliders.push({id:'east-lawn-trees',x:(west+g0)/2,z:treeZ+.35,w:g0-west,d:1.5,height:5.4},
+  {id:'east-lawn-trees',x:(g1+eastEnd)/2,z:treeZ+.35,w:eastEnd-g1,d:1.5,height:5.4});
 
  // Shrubs banked against the two closed edges, so the green itself stays open. They
  // are kept off the park mound and off the lines people walk to reach it.
@@ -177,6 +183,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   const x=EAST_LAWN.minX+1.6+random()*(wall.x-EAST_LAWN.minX-3.4),z=EAST_LAWN.minZ+1.6+random()*(treeZ-EAST_LAWN.minZ-3.6);
   if(x>park.minX&&x<park.maxX&&z>park.minZ&&z<park.maxZ)continue;
   if(Math.abs(z+36)<2.2||Math.abs(z+18)<2.2)continue;
+  if(Math.abs(x-SCHOOL.gate.x)<3.2&&z>14)continue;          // the way to the school gate
   if(wall.x-x>7&&treeZ-z>7)continue;
   clumps.push({x,z,size:.5+random()*.42,tint:Math.floor(random()*CLUMP_LEAVES.length)});
  }

@@ -59,7 +59,9 @@ export function hillHeight(x,z){
  const waves=.55*Math.sin(x*.37+z*.21)+.4*Math.sin(x*.19-z*.43)+.3*Math.sin(x*.71+z*.53);
  // Out to the edges of the patch it comes down under the water, so it never ends in mid-air.
  const edge=smooth((34-Math.abs(dx+2))/9)*smooth((TUNNEL.z+58-z)/12);
- const h=(along*across+waves*smooth(dz/3+1))*edge-1.6*(1-edge);
+ let h=(along*across+waves*smooth(dz/3+1))*edge-1.6*(1-edge);
+ // To the east it comes down behind the school's boundary wall and goes under the yard.
+ const east=smooth((dx-8.5)/6.5);h=h*(1-east)-1.2*east;
  // Just behind the portal the ground comes down onto the headwall's coping, so there is
  // no step between the concrete and the slope above it.
  const onto=(1-smooth((dz-.35)/3.5))*(1-smooth((Math.abs(dx)-TUNNEL.cut.half)/2))*(dz>-.5?1:0);
