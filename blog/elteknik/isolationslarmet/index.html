@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Isolationslarmet som inte går att kvittera – Så fungerar IT-systemet ombord | Elteknik ombord</title>
+  <meta name="description" content="Varför ett jordfel ombord inte löser ut något, varför larmet kommer tillbaka och hur man letar upp felet innan det andra kommer.">
+  <link rel="canonical" href="https://nj22az.github.io/blog/elteknik/isolationslarmet/">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nj22az.github.io/blog/elteknik/isolationslarmet/">
+  <meta property="og:locale" content="sv_SE">
+  <meta property="og:title" content="Isolationslarmet som inte går att kvittera – Så fungerar IT-systemet ombord | Elteknik ombord">
+  <meta property="og:description" content="Varför ett jordfel ombord inte löser ut något, varför larmet kommer tillbaka och hur man letar upp felet innan det andra kommer.">
+  <meta property="og:image" content="https://nj22az.github.io/elteknik/files/omslag.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#067A37">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/elteknik/styles.css">
+  <link rel="stylesheet" href="/blog/elteknik/article.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Isolationslarmet som inte går att kvittera – Så fungerar IT-systemet ombord",
+  "description": "Varför ett jordfel ombord inte löser ut något, varför larmet kommer tillbaka och hur man letar upp felet innan det andra kommer.",
+  "datePublished": "2026-09-23",
+  "inLanguage": "sv",
+  "author": {
+    "@type": "Person",
+    "name": "Nils Johansson",
+    "url": "https://nj22az.github.io/"
+  },
+  "image": "https://nj22az.github.io/elteknik/files/omslag.jpg",
+  "mainEntityOfPage": "https://nj22az.github.io/blog/elteknik/isolationslarmet/",
+  "isPartOf": {
+    "@type": "CreativeWorkSeries",
+    "name": "Elteknik ombord",
+    "url": "https://nj22az.github.io/blog/elteknik/"
+  },
+  "position": 4
+}
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="back" href="/blog/">← Journal</a>
+      <a class="topbar-cta" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara">Köp boken · 375 kr</a>
+    </div>
+  </header>
+
+  <main>
+    <article class="post">
+      <header class="post-head wrap">
+        <p class="eyebrow"><a href="/blog/elteknik/">Elteknik ombord</a> · Del 4 av 5</p>
+        <h1>Isolationslarmet som inte går att kvittera<span>Så fungerar IT-systemet ombord</span></h1>
+        <p class="post-meta">Nils Johansson · <time datetime="2026-09-23">23 september 2026</time> · 3 min läsning</p>
+      </header>
+      <div class="post-body wrap">
+<p class="scenario">Larmet för låg isolationsresistans på 440 V-nätet går i kontrollrummet. Du kvitterar, och en stund senare är det tillbaka. Ingenting har löst ut och all utrustning går. Hur allvarligt är det?</p>
+
+<h2>Ett nät utan jordad nollpunkt</h2>
+<p>På land är de flesta lågspänningsnät jordade: nollpunkten är förbunden med jord, och ett jordfel blir en kortslutning som får skyddet att lösa ut. Ombord är huvudnätet ofta ett <b>IT-system</b>. Nollpunkten är isolerad från skrovet.</p>
+<p>Vid ett första jordfel, när en fas får kontakt med skrovet, finns ingen sluten väg tillbaka till källan, bortsett från små kapacitiva läckströmmar genom kablar och utrustning. Ingen säkring löser ut. Styrmaskin, pumpar och belysning fortsätter att gå.</p>
+<figure class="diagram"><svg viewBox="0 0 560 250" role="img" aria-labelledby="f2t">
+  <title id="f2t">IT-system: generator med isolerad nollpunkt, tre faser till en last, isolationsövervakning mellan nät och skrov och ett jordfel från L3 till skrovet</title>
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="70" cy="95" r="38"/>
+    <path d="M70 95V70M70 95l-22 13M70 95l22 13"/>
+    <path d="M108 60H440M108 95H440M108 130H440"/>
+    <rect x="440" y="45" width="80" height="100" rx="4"/>
+    <path d="M20 215H540" stroke-width="5"/>
+    <path d="M250 130V160"/>
+    <rect x="215" y="160" width="70" height="30" rx="4"/>
+    <path d="M250 190V215"/>
+    <path d="M360 130V150l-12 16 22 10-10 16V215" class="acc" stroke-dasharray="6 4"/>
+  </g>
+  <g class="lbl">
+    <text x="70" y="160" text-anchor="middle">Generator</text>
+    <text x="70" y="178" text-anchor="middle" class="s">isolerad nollpunkt</text>
+    <text x="118" y="54">L1</text><text x="118" y="89">L2</text><text x="118" y="124">L3</text>
+    <text x="480" y="100" text-anchor="middle">Last</text>
+    <text x="250" y="180" text-anchor="middle" class="s">IMD</text>
+    <text x="250" y="240" text-anchor="middle" class="s">isolationsövervakning</text>
+    <text x="20" y="206">Skrov</text>
+    <text x="378" y="175" class="acc-t s">jordfel på L3</text>
+  </g>
+</svg><figcaption>Ett jordfel på L3 sluter ingen krets eftersom nollpunkten inte är förbunden med skrovet. Isolationsövervakningen ser däremot att resistansen mellan nät och skrov har sjunkit.</figcaption></figure>
+
+<h2>Därför används det</h2>
+<p>Det är hela poängen: ett enskilt fel ska inte släcka ner system som fartyget behöver. Priset är att felet måste upptäckas på annat sätt. Därför finns en isolationsövervakning som hela tiden mäter resistansen mellan nätet och skrovet och larmar när den sjunker under ett inställt värde.</p>
+
+<h2>Varför larmet inte går att kvittera</h2>
+<p>Larmet beskriver ett tillstånd, inte en händelse. Kvitteringen bekräftar att någon har sett larmet, men så länge isolationsresistansen är låg finns orsaken kvar. Larmet försvinner först när felet är borta.</p>
+
+<h2>Det andra felet</h2>
+<p>Ett jordfel på en fas gör att de två friska faserna får full huvudspänning mot skrovet, alltså 440 V i stället för ungefär 254 V. Isolationen i resten av nätet belastas hårdare.</p>
+<p>Om ett andra jordfel sedan uppstår på en annan fas blir det en kortslutning mellan faserna via skrovet. Då löser skydd ut, kanske i två olika grupper samtidigt, och kanske i ett system som inte får stanna. Ett jordfel i ett IT-system ska därför letas upp och åtgärdas skyndsamt, inte bara noteras i loggen.</p>
+
+<h2>Så letar man</h2>
+<ol>
+  <li><b>Följ värdet.</b> Sjönk isolationen plötsligt eller gradvis? Följer den någon utrustning som startar och stoppar, till exempel en värmare eller en motor på däck?</li>
+  <li><b>Sektionera.</b> Koppla bort en grupp i taget, planerat och i samråd, och se när värdet återhämtar sig. Vissa anläggningar har jordfelsindikering per grupp, och en läckströmstång kan hjälpa till att ringa in felet.</li>
+  <li><b>Mät spänningslöst.</b> När gruppen är hittad: gör den spänningslös enligt rutin och mät isolationsresistansen med en isolationsprovare. Koppla först bort elektronik som kan skadas av provspänningen.</li>
+  <li><b>Leta efter de vanliga orsakerna.</b> Fukt i kopplingslådor och motorer på däck, skadade kabelgenomföringar och värmeelement.</li>
+</ol>
+
+<h2>Att ta med sig</h2>
+<ul class="checks">
+  <li>I ett IT-system löser det första jordfelet inte ut. Det larmar.</li>
+  <li>Ett larm som kommer tillbaka betyder att felet finns kvar.</li>
+  <li>Hitta felet innan det andra kommer.</li>
+</ul>
+      </div>
+      <div class="wrap post-end">
+
+    <aside class="book-box" aria-label="Läs mer i boken">
+      <img src="/elteknik/files/omslag.jpg" width="140" height="200" alt="Omslaget till Elteknik och ellära för sjöfart och industri" loading="lazy">
+      <div>
+        <p class="eyebrow">Läs mer i boken</p>
+        <h2>Elteknik och ellära för sjöfart och industri</h2>
+        <p>Det här ämnet behandlas utförligt, med genomräknade exempel och övningar med fullständiga lösningar, i kapitlen</p>
+        <ul class="chapters"><li>19 Lågspänningssystem</li><li>21 Fördjupad mätteknik</li><li>22 Systematisk felsökning</li></ul>
+        
+        <div class="actions">
+          <a class="btn btn-primary" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Zm3 0a3 3 0 0 1 6 0"/></svg> Köp e-boken · 375 kr</a>
+          <a class="btn btn-secondary" href="/elteknik/files/provkapitel.pdf" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg> Gratis provkapitel</a>
+        </div>
+      </div>
+    </aside>
+        <nav class="prev-next" aria-label="Föregående och nästa del"><a class="prev" href="/blog/elteknik/fem-sakerhetsregler/"><span>← Del 3</span>Innan du öppnar elcentralen</a><a class="next" href="/blog/elteknik/pumpen-som-inte-startar/"><span>Del 5 →</span>Pumpen som inte startar</a></nav>
+        <section class="series-box" aria-labelledby="serien">
+          <h2 id="serien">Hela serien</h2>
+          <ol class="series-list"><li><a href="/blog/elteknik/lanternan-som-lyser-svagt/"><span class="nr">Del 1</span><span class="t">Lanternan som lyser svagt</span><span class="s">Ohms lag och spänningsfall i praktiken</span></a></li><li><a href="/blog/elteknik/trefas-440-v-60-hz/"><span class="nr">Del 2</span><span class="t">Trefas på 440 V och 60 Hz</span><span class="s">Y, Δ och effekten i en pumpmotor</span></a></li><li><a href="/blog/elteknik/fem-sakerhetsregler/"><span class="nr">Del 3</span><span class="t">Innan du öppnar elcentralen</span><span class="s">Fem säkerhetsregler enligt SS-EN 50110-1</span></a></li><li aria-current="page"><div><span class="nr">Del 4</span><span class="t">Isolationslarmet som inte går att kvittera</span><span class="s">Så fungerar IT-systemet ombord</span></div></li><li><a href="/blog/elteknik/pumpen-som-inte-startar/"><span class="nr">Del 5</span><span class="t">Pumpen som inte startar</span><span class="s">Systematisk felsökning steg för steg</span></a></li></ol>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>© 2026 Nils Johansson</p>
+      <p><a href="/elteknik/">Elteknik och ellära</a> · <a href="/blog/">Journal</a> · <a href="/">The Office of Nils Johansson</a></p>
+    </div>
+  </footer>
+</body>
+</html>

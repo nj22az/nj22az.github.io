@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lanternan som lyser svagt – Ohms lag och spänningsfall i praktiken | Elteknik ombord</title>
+  <meta name="description" content="Varför lyser en lampa svagt fast batteriet visar 24 V? Ett räkneexempel med kabelresistans, en korroderad plint – och rätt sätt att mäta.">
+  <link rel="canonical" href="https://nj22az.github.io/blog/elteknik/lanternan-som-lyser-svagt/">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nj22az.github.io/blog/elteknik/lanternan-som-lyser-svagt/">
+  <meta property="og:locale" content="sv_SE">
+  <meta property="og:title" content="Lanternan som lyser svagt – Ohms lag och spänningsfall i praktiken | Elteknik ombord">
+  <meta property="og:description" content="Varför lyser en lampa svagt fast batteriet visar 24 V? Ett räkneexempel med kabelresistans, en korroderad plint – och rätt sätt att mäta.">
+  <meta property="og:image" content="https://nj22az.github.io/elteknik/files/omslag.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#067A37">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/elteknik/styles.css">
+  <link rel="stylesheet" href="/blog/elteknik/article.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Lanternan som lyser svagt – Ohms lag och spänningsfall i praktiken",
+  "description": "Varför lyser en lampa svagt fast batteriet visar 24 V? Ett räkneexempel med kabelresistans, en korroderad plint – och rätt sätt att mäta.",
+  "datePublished": "2026-09-23",
+  "inLanguage": "sv",
+  "author": {
+    "@type": "Person",
+    "name": "Nils Johansson",
+    "url": "https://nj22az.github.io/"
+  },
+  "image": "https://nj22az.github.io/elteknik/files/omslag.jpg",
+  "mainEntityOfPage": "https://nj22az.github.io/blog/elteknik/lanternan-som-lyser-svagt/",
+  "isPartOf": {
+    "@type": "CreativeWorkSeries",
+    "name": "Elteknik ombord",
+    "url": "https://nj22az.github.io/blog/elteknik/"
+  },
+  "position": 1
+}
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="back" href="/blog/">← Journal</a>
+      <a class="topbar-cta" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara">Köp boken · 375 kr</a>
+    </div>
+  </header>
+
+  <main>
+    <article class="post">
+      <header class="post-head wrap">
+        <p class="eyebrow"><a href="/blog/elteknik/">Elteknik ombord</a> · Del 1 av 5</p>
+        <h1>Lanternan som lyser svagt<span>Ohms lag och spänningsfall i praktiken</span></h1>
+        <p class="post-meta">Nils Johansson · <time datetime="2026-09-23">23 september 2026</time> · 3 min läsning</p>
+      </header>
+      <div class="post-body wrap">
+<p class="scenario">Det är kväll, och styrbords lanterna lyser märkbart svagare än babords. Batterierna är laddade och multimetern visar 24 V i gruppcentralen. Du kopplar loss lampan och mäter på lanternans plintar: 24 V där också. Ändå lyser den svagt. Var tar spänningen vägen?</p>
+
+<h2>Kabeln är också en resistans</h2>
+<p>Svaret finns i Ohms lag, <i>U</i> = <i>R</i> · <i>I</i>. Varje ledare har en resistans, och när ström flyter uppstår ett spänningsfall längs den. För en kopparledare gäller</p>
+<p class="formula"><i>R</i> = ρ · <i>L</i> / <i>A</i></p>
+<p>där ρ för koppar är ungefär 0,0175 Ω·mm²/m, <i>L</i> är ledarlängden och <i>A</i> tvärsnittsarean. Glöm inte att strömmen går både fram och tillbaka: med 40 meter kabel upp till lanternan blir ledarlängden 80 meter. Med 1,5 mm² ledare:</p>
+<p class="formula"><i>R</i><sub>kabel</sub> = 0,0175 · 80 / 1,5 ≈ 0,93 Ω</p>
+
+<h2>Räkna på hela kretsen</h2>
+<p>Anta en glödlampa märkt 24 V / 48 W. Vid märkspänning drar den 2 A, vilket motsvarar 24 / 2 = 12 Ω. En glödtråds resistans ändras med temperaturen, men som uppskattning räcker det. Lampa och kabel ligger i serie:</p>
+<table>
+  <tr><td>Total resistans</td><td>12 + 0,93 = 12,93 Ω</td></tr>
+  <tr><td>Ström</td><td>24 / 12,93 ≈ 1,86 A</td></tr>
+  <tr><td>Spänning över lampan</td><td>1,86 · 12 ≈ 22,3 V</td></tr>
+  <tr><td>Effekt i lampan</td><td>1,86² · 12 ≈ 41 W, cirka 86 % av märkeffekten</td></tr>
+</table>
+<p>Redan en rimligt dimensionerad kabel kostar alltså nästan två volt. Men babords lanterna har samma kabeldragning och lyser bättre. Något mer finns i styrbords krets.</p>
+
+<h2>Den korroderade plinten</h2>
+<p>En plint i en fuktig kopplingslåda som har börjat oxidera kan få en övergångsresistans på några tiondels ohm. Lägg till 0,5 Ω i serie:</p>
+<table>
+  <tr><td>Total resistans</td><td>12 + 0,93 + 0,5 = 13,43 Ω</td></tr>
+  <tr><td>Ström</td><td>24 / 13,43 ≈ 1,79 A</td></tr>
+  <tr><td>Spänning över plinten</td><td>1,79 · 0,5 ≈ 0,89 V</td></tr>
+  <tr><td>Spänning över lampan</td><td>≈ 21,4 V</td></tr>
+  <tr><td>Effekt i lampan</td><td>≈ 38 W, cirka 80 % av märkeffekten</td></tr>
+</table>
+<figure class="diagram"><svg viewBox="0 0 560 230" role="img" aria-labelledby="f1t">
+  <title id="f1t">Krets med batteri, kabelresistans, korroderad plint och lampa, med spänningsfallen utskrivna</title>
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M60 50H150M220 50H300M370 50H470V88M470 132V180H220M150 180H60V134M60 86V50"/>
+    <rect x="150" y="38" width="70" height="24" rx="3"/>
+    <rect x="150" y="168" width="70" height="24" rx="3"/>
+    <rect x="300" y="38" width="70" height="24" rx="3" class="acc"/>
+    <circle cx="60" cy="110" r="24"/>
+    <circle cx="470" cy="110" r="22"/>
+    <path d="M454 94l32 32M486 94l-32 32"/>
+  </g>
+  <g class="lbl">
+    <text x="60" y="115" text-anchor="middle">24 V</text>
+    <text x="185" y="30" text-anchor="middle">kabel 0,47 Ω</text>
+    <text x="185" y="82" text-anchor="middle" class="v">0,83 V</text>
+    <text x="185" y="212" text-anchor="middle">kabel 0,47 Ω</text>
+    <text x="185" y="160" text-anchor="middle" class="v">0,83 V</text>
+    <text x="335" y="30" text-anchor="middle" class="acc-t">plint 0,5 Ω</text>
+    <text x="335" y="82" text-anchor="middle" class="v acc-t">0,89 V</text>
+    <text x="502" y="104" text-anchor="start">lampa</text>
+    <text x="502" y="124" text-anchor="start" class="v">21,4 V</text>
+  </g>
+</svg><figcaption>Spänningsfallen längs slingan summerar till batterispänningen: 0,83 + 0,89 + 21,4 + 0,83 ≈ 24 V.</figcaption></figure>
+<p>En femtedel av ljuset har försvunnit, och nästan en volt ligger över en enda skruvförbindning. Den effekten, knappt 1,6 W, blir värme i plinten, och värmen påskyndar korrosionen.</p>
+
+<h2>Varför mätningen lurade dig</h2>
+<p>När lampan är urkopplad flyter ingen ström. Då är <i>I</i> = 0, och spänningsfallet <i>R</i> · <i>I</i> blir noll över varje resistans i kretsen, hur dålig plinten än är. Voltmetern visar full batterispänning: en korrekt mätning av fel sak.</p>
+<p>Mät därför med belastning, med lampan tänd:</p>
+<ol>
+  <li>Mät spänningen direkt över lampans anslutningar.</li>
+  <li>Mät över varje förbindning längs vägen. En frisk förbindning ska visa nära 0 V.</li>
+  <li>Jämför med spänningen vid säkringen i gruppcentralen.</li>
+</ol>
+<p>Summan av spänningsfallen runt slingan är lika med matningsspänningen. Det är Kirchhoffs spänningslag, och den pekar ut exakt var volten försvinner.</p>
+
+<h2>Att ta med sig</h2>
+<ul class="checks">
+  <li>Räkna kabelns resistans på hela slingan, fram och tillbaka.</li>
+  <li>Spänningsfall syns bara när ström flyter. Mät under belastning.</li>
+  <li>En dålig förbindning avslöjas av ett spänningsfall över något som borde vara 0 Ω.</li>
+</ul>
+      </div>
+      <div class="wrap post-end">
+
+    <aside class="book-box" aria-label="Läs mer i boken">
+      <img src="/elteknik/files/omslag.jpg" width="140" height="200" alt="Omslaget till Elteknik och ellära för sjöfart och industri" loading="lazy">
+      <div>
+        <p class="eyebrow">Läs mer i boken</p>
+        <h2>Elteknik och ellära för sjöfart och industri</h2>
+        <p>Det här ämnet behandlas utförligt, med genomräknade exempel och övningar med fullständiga lösningar, i kapitlen</p>
+        <ul class="chapters"><li>1 Likström och Ohms lag</li><li>5 Kirchhoffs lagar</li><li>6 Multimeter och mätfel</li></ul>
+        <p class="note">Kapitel 1 ingår i det kostnadsfria provkapitlet.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Zm3 0a3 3 0 0 1 6 0"/></svg> Köp e-boken · 375 kr</a>
+          <a class="btn btn-secondary" href="/elteknik/files/provkapitel.pdf" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg> Gratis provkapitel</a>
+        </div>
+      </div>
+    </aside>
+        <nav class="prev-next" aria-label="Föregående och nästa del"><span></span><a class="next" href="/blog/elteknik/trefas-440-v-60-hz/"><span>Del 2 →</span>Trefas på 440 V och 60 Hz</a></nav>
+        <section class="series-box" aria-labelledby="serien">
+          <h2 id="serien">Hela serien</h2>
+          <ol class="series-list"><li aria-current="page"><div><span class="nr">Del 1</span><span class="t">Lanternan som lyser svagt</span><span class="s">Ohms lag och spänningsfall i praktiken</span></div></li><li><a href="/blog/elteknik/trefas-440-v-60-hz/"><span class="nr">Del 2</span><span class="t">Trefas på 440 V och 60 Hz</span><span class="s">Y, Δ och effekten i en pumpmotor</span></a></li><li><a href="/blog/elteknik/fem-sakerhetsregler/"><span class="nr">Del 3</span><span class="t">Innan du öppnar elcentralen</span><span class="s">Fem säkerhetsregler enligt SS-EN 50110-1</span></a></li><li><a href="/blog/elteknik/isolationslarmet/"><span class="nr">Del 4</span><span class="t">Isolationslarmet som inte går att kvittera</span><span class="s">Så fungerar IT-systemet ombord</span></a></li><li><a href="/blog/elteknik/pumpen-som-inte-startar/"><span class="nr">Del 5</span><span class="t">Pumpen som inte startar</span><span class="s">Systematisk felsökning steg för steg</span></a></li></ol>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>© 2026 Nils Johansson</p>
+      <p><a href="/elteknik/">Elteknik och ellära</a> · <a href="/blog/">Journal</a> · <a href="/">The Office of Nils Johansson</a></p>
+    </div>
+  </footer>
+</body>
+</html>

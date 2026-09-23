@@ -31,12 +31,27 @@
     <section class="page-hero">
       <div class="page-eyebrow">Field Notes</div>
       <h1>Journal</h1>
-      <p>Technical dispatches and cultural reflections from field engineering work around the world. Articles are published through <a class="page-hero-link" href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">The Office of Nils</a>.</p>
+      <p>Technical dispatches, textbook series and cultural reflections from field engineering work around the world. Journal articles are published through <a class="page-hero-link" href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">The Office of Nils</a>.</p>
     </section>
 
     <div class="page-content">
+      <section class="series-feature" aria-labelledby="series-title">
+        <a class="series-feature-cover" href="/blog/elteknik/">
+          <img src="/elteknik/files/omslag.jpg" width="700" height="1000" alt="Cover of Elteknik och ellära för sjöfart och industri">
+        </a>
+        <div class="series-feature-text">
+          <div class="page-eyebrow">New series &middot; in Swedish</div>
+          <h2 id="series-title"><a href="/blog/elteknik/">Elteknik ombord</a></h2>
+          <p>Five real problems on board and in industry, and the electrical engineering needed to solve them &ndash; from a navigation light that glows dim to a pump that will not start. Based on my textbook <a href="/elteknik/">Elteknik och ellära för sjöfart och industri</a>.</p>
+          <ol id="series-parts" class="series-parts"></ol>
+          <a class="post-link" href="/blog/elteknik/">All parts of the series &rarr;</a>
+        </div>
+      </section>
+
+      <h2 class="journal-heading">From the Journal</h2>
       <div id="status" class="status-banner">Fetching the most recent posts&hellip;</div>
       <div id="posts" class="posts-grid"></div>
+      <div class="load-more-wrap"><button id="load-more" class="load-more" type="button" hidden>Load more posts</button></div>
     </div>
   </main>
 
@@ -44,13 +59,28 @@
 
   <script src="/config.js"></script>
   <script src="/shared.js?v=random-2"></script>
+  <script src="/blog/elteknik/series.js"></script>
   <script>
     (function () {
       "use strict";
 
       var postsEl = document.getElementById("posts");
       var statusEl = document.getElementById("status");
-      var API = CONFIG.wordpressApi + "?_embed&per_page=6";
+      var moreBtn = document.getElementById("load-more");
+      var partsEl = document.getElementById("series-parts");
+      var API = CONFIG.wordpressApi + "?_embed&per_page=6&page=";
+      var page = 1;
+
+      (window.ELTEKNIK_SERIES || []).forEach(function (part, i) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = part.url;
+        a.innerHTML = '<span class="nr">' + (i + 1) + '</span><span class="t"></span><span class="s"></span>';
+        a.querySelector(".t").textContent = part.title;
+        a.querySelector(".s").textContent = part.sub;
+        li.appendChild(a);
+        partsEl.appendChild(li);
+      });
 
       function strip(html) {
         var el = document.createElement("div");
@@ -93,22 +123,34 @@
         '</article>';
       }
 
-      fetch(API)
-        .then(function (res) {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          return res.json();
-        })
-        .then(function (posts) {
-          if (!posts.length) {
-            statusEl.textContent = "No posts available yet. Check back soon.";
-            return;
-          }
-          statusEl.remove();
-          postsEl.innerHTML = posts.map(buildPostCard).join("");
-        })
-        .catch(function () {
-          statusEl.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
-        });
+      function load() {
+        moreBtn.disabled = true;
+        var totalPages = 1;
+        fetch(API + page)
+          .then(function (res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            totalPages = parseInt(res.headers.get("X-WP-TotalPages"), 10) || 1;
+            return res.json();
+          })
+          .then(function (posts) {
+            if (!posts.length && page === 1) {
+              statusEl.textContent = "No posts available yet. Check back soon.";
+              return;
+            }
+            statusEl.hidden = true;
+            postsEl.insertAdjacentHTML("beforeend", posts.map(buildPostCard).join(""));
+            page += 1;
+            moreBtn.hidden = page > totalPages;
+          })
+          .catch(function () {
+            statusEl.hidden = false;
+            statusEl.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
+          })
+          .then(function () { moreBtn.disabled = false; });
+      }
+
+      moreBtn.addEventListener("click", load);
+      load();
     })();
   </script>
 </body>
