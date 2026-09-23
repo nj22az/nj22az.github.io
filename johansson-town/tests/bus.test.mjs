@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createBusRun,vanishingPoint} from '../src/world/bus.js';
+import {createBusRun,TUNNEL_RUN} from '../src/world/bus.js';
 import {TUNNEL} from '../src/world/coyote-tunnel.js';
 import {circleHitsRect} from '../physics.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
@@ -32,49 +32,46 @@ function atTerminus(run,service=HARBOUR_LINE[0]){
  return run;
 }
 
-test('the bus leaves by being shrunk onto the painting, and comes back the same way',()=>{
+test('the bus comes out of the tunnel to the stop and backs into it again',()=>{
  const parent=new THREE.Group(),run=createBusRun({parent});
- const vanish=vanishingPoint();
- // It is not at the terminus all day any more. It comes for its service.
+ // It is not at the terminus all day. It comes for its service.
  assert.equal(run.phase,'away');
  assert.equal(run.bus.visible,false,'The bus stands at the stop between services');
  atTerminus(run);
  assert.equal(run.bus.scale.x,1);
- // It stands at the arch, which is where it is boarded, and the whole of it is on the
- // road: a bus with its back end inside the rock is a bus drawn through the painting.
- assert.ok(run.bus.position.z<TUNNEL.z,'The bus stands inside the rock');
- assert.ok(TUNNEL.z-run.bus.position.z<6,'The bus stops short of the arch it is meant to stand at');
+ // It stands at the portal, which is where it is boarded, on the road.
+ assert.ok(run.bus.position.z<TUNNEL.z,'The bus stands inside the hill');
+ assert.ok(TUNNEL.z-run.bus.position.z<6,'The bus stops short of the tunnel it is meant to stand at');
 
+ // It leaves by reversing into the tunnel: always the same size, always going further
+ // in, and gone only once the dark inside has it.
  assert.ok(until(run,'leaving'),'The bus never leaves');
- // Through the vanish it converges on the painting's own vanishing point. Anything
- // else and it slides off the picture as it recedes, which is the whole illusion.
- let last=Infinity;
- for(let t=0;t<4;t+=1/30){
+ let last=-Infinity;
+ for(let t=0;t<30;t+=1/30){
   clock.minutes+=1/30;run.update(1/30,clock.minutes);
   if(run.phase!=='leaving')break;
-  const gap=run.bus.position.distanceTo(vanish);
-  assert.ok(gap<=last+1e-6,'The bus is not closing on the vanishing point');
-  assert.ok(run.bus.scale.x<1,'The bus is not shrinking');
-  last=gap;
+  assert.ok(run.bus.position.z>=last-1e-6,'The bus is not going into the tunnel');
+  assert.equal(run.bus.scale.x,1,'The bus changed size');
+  if(run.bus.position.z<TUNNEL.z+10)assert.equal(run.bus.visible,true,'The bus vanished in plain sight');
+  last=run.bus.position.z;
  }
  assert.equal(run.phase,'away');
  assert.equal(run.bus.visible,false,'The bus is still there once it has gone');
- assert.ok(run.bus.scale.x<.05,'The bus goes out at a size you would still see');
- assert.ok(run.bus.position.distanceTo(vanish)<.4,'The bus goes out somewhere other than the far end');
+ assert.ok(last>TUNNEL.z+18,'The bus went out somewhere other than deep in the tunnel');
+ assert.ok(last<=TUNNEL_RUN.deep+1e-6);
 
  // and the whole thing comes round again, on the next service rather than in a minute.
  const seen=until(run,'waiting',1500);
  assert.ok(seen,'The service never comes back');
  assert.ok(seen.includes('arriving'),'The bus skips arriving');
  assert.equal(run.bus.scale.x,1);
- // It used to drive down to the terminus and swing through a hundred and eighty
- // degrees in front of the shelter, which is the one place you are certainly watching.
- // It has one heading now, from the moment it appears to the moment it goes.
+ // It used to swing through a hundred and eighty degrees in front of the shelter. It
+ // has one heading now, from the moment it appears to the moment it goes.
  assert.equal(headings.size,1,'The bus turned somewhere in its run: '+[...headings].join(', '));
  assert.ok(Math.abs([...headings][0]-Math.PI)<1e-4,'The bus faces away from the town it has come to serve');
 });
 
-test('the bus is solid while it is a bus, and not once it is a picture of one',()=>{
+test('the bus is solid while it is on the road, and not once it is in the tunnel',()=>{
  const parent=new THREE.Group(),colliders=[],run=createBusRun({parent,colliders});
  const solid=colliders.find(c=>c.id==='harbour-bus');
  assert.ok(solid,'You walk through the bus at the stop');
@@ -86,14 +83,14 @@ test('the bus is solid while it is a bus, and not once it is a picture of one',(
  assert.ok(!circleHitsRect(run.bus.position.x+4,run.bus.position.z,.36,solid),'The bus stops you from the next lane');
  assert.ok(solid.d>solid.w,'The waiting bus is as wide as it is long');
 
- // The box comes off as soon as it starts shrinking, which is the first frame of
- // leaving: from there it is a picture of a bus, not a bus.
+ // Backing out of the stop it is still a bus in the road, and still in the way.
  assert.ok(until(run,'leaving'),'The bus never leaves');
  for(let t=0;t<2;t+=1/30){clock.minutes+=1/30;run.update(1/30,clock.minutes);if(run.phase!=='leaving')break;}
- assert.equal(solid.w,0,'The shrinking bus keeps a box across the mouth of the tunnel');
+ assert.ok(solid.w>0,'The bus lost its box while it was still on the road');
+ assert.ok(circleHitsRect(run.bus.position.x,run.bus.position.z-3.5,.36,solid),'You can walk through the reversing bus');
 
- // and drops it the moment it stops being a vehicle in the road. A collider left on
- // the shrinking bus is an invisible wall across the mouth of the tunnel.
+ // and drops it once it is in the tunnel, where nobody on foot can follow it. A
+ // collider left behind would be an invisible wall across the mouth of the tunnel.
  assert.ok(until(run,'away'),'The bus never goes');
  assert.equal(solid.w,0);assert.equal(solid.d,0);
  assert.ok(!circleHitsRect(TUNNEL.x,TUNNEL.z-2,.36,solid),'The departed bus still blocks the tunnel mouth');

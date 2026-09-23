@@ -186,16 +186,16 @@ export function createTown(options){
   world.people.length=0;
   const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
   world.forestEdge=forestEdge;
-  // The road out of town has to end somewhere, and on the peninsula it ends at a
-  // tunnel that is painted on a rock face. See coyote-tunnel.js.
+  // The road out of town ends at the Minato Tunnel through the headland, which only the
+  // bus goes through. See coyote-tunnel.js.
   if(peninsulaActive()){
    world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   // The bus, and the only way out of the town: it drives up the bus road and is shrunk
-   // onto the painting's vanishing point until it is gone. See bus.js.
+   // The bus, and the only way out of the town: it comes out of the tunnel to the stop
+   // and backs into it again. See bus.js.
    world.bus=createBusRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
