@@ -1,7 +1,7 @@
 {
  "fps": 30,
- "walkMetresPerCycle": 1.326,
- "runMetresPerCycle": 2.398,
+ "walkMetresPerCycle": 1.282,
+ "runMetresPerCycle": 2.319,
  "actions": [
   {
    "name": "Walk",
@@ -266,6 +266,26 @@
   {
    "name": "Ride",
    "seconds": 1.0,
+   "loop": true
+  },
+  {
+   "name": "Sweep",
+   "seconds": 1.3,
+   "loop": true
+  },
+  {
+   "name": "Spray",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "Wipe",
+   "seconds": 1.6,
+   "loop": true
+  },
+  {
+   "name": "Stock",
+   "seconds": 3.2,
    "loop": true
   }
  ]

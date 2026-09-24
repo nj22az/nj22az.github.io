@@ -518,6 +518,39 @@ if THUAN:
         return p
     cycle('Ride', 1.0, ride, 12)
 
+    # The storage-room kit: brush, spray bottle, rag and the shelves themselves.
+    S = lambda ph, k=1: math.sin(math.tau * ph * k)
+    # Broom held low across the body, left hand high on the handle, the sweep from the waist.
+    cycle('Sweep', 1.3, lambda ph: stand(spine=(12, 0, 16 * S(ph)), neck=(-4, 0, -8 * S(ph)), head=(8, 0, 0),
+                                         armR={'fwd': 34 + 12 * S(ph), 'raise': -2, 'elbow': 28, 'twist': 10, 'pron': 70, 'wrist': 10},
+                                         armL={'fwd': 52 + 10 * S(ph), 'raise': 8, 'elbow': 74, 'twist': -10, 'pron': 30},
+                                         handL={'curl': .85, 'thumb': .7}, handR={'curl': .85, 'thumb': .7},
+                                         legL={'knee': 12}, legR={'knee': 12}), 12)
+    # Spray bottle at chest height, index finger on the trigger, three quick squeezes.
+    def spray(ph):
+        squeeze = max(0., math.sin(math.tau * ph * 3)) ** 2
+        return stand(spine=(6, 0, -6), head=(6, 0, -4),
+                     armR={'fwd': 72, 'raise': 4, 'elbow': 44 + 6 * squeeze, 'twist': 8, 'pron': 20, 'wrist': -8 + 6 * squeeze},
+                     handR={'curl': .8, 'thumb': .6, 2: .15 + .45 * squeeze},
+                     armL={'fwd': 20, 'raise': -4, 'elbow': 60, 'pron': 50}, handL={'curl': .4})
+    cycle('Spray', 1.8, spray, 18)
+    # A rag worked in circles across a counter, weight on the other hand.
+    cycle('Wipe', 1.6, lambda ph: stand(spine=(16, 0, 6 * S(ph)), head=(10, 0, 4 * S(ph)),
+                                        armR={'fwd': 58 + 14 * S(ph), 'raise': 12 + 12 * math.cos(math.tau * ph), 'elbow': 46 - 14 * S(ph), 'pron': 88, 'wrist': 12},
+                                        handR={'curl': .35, 'thumb': .3},
+                                        armL={'fwd': 44, 'raise': 10, 'elbow': 32, 'pron': 85, 'wrist': 20}, handL={'curl': .15},
+                                        legL={'knee': 8}, legR={'knee': 10}), 12)
+    # Restocking: bend to the carton, lift, reach up to the shelf, place, come back down.
+    def stock(ph):
+        low = bump(ph, .15, .14)
+        high = bump(ph, .62, .16)
+        return stand(root=(0, 0, -.13 * BODY * low), spine=(8 + 32 * low - 6 * high, 0, 0), neck=(-2 - 10 * high, 0, 0), head=(6 * low - 14 * high, 0, 0),
+                     armL={'fwd': 18 + 48 * low + 88 * high, 'raise': 4 + 6 * high, 'elbow': 26 - 8 * high + 10 * low, 'pron': 70},
+                     armR={'fwd': 18 + 48 * low + 88 * high, 'raise': 4 + 6 * high, 'elbow': 26 - 8 * high + 10 * low, 'pron': 70},
+                     handL={'curl': .3 + .45 * (low + high)}, handR={'curl': .3 + .45 * (low + high)},
+                     legL={'fwd': 20 * low, 'knee': 40 * low, 'ankle': 12 * low}, legR={'fwd': 20 * low, 'knee': 40 * low, 'ankle': 12 * low})
+    cycle('Stock', 3.2, stock, 24)
+
 if args.test:
     for n, over in enumerate(json.loads(args.test)):
         action(f'T{n}', [(0, stand(**over)), (1, stand(**over))])

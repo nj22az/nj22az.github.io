@@ -51,7 +51,7 @@ test('the bath borrows Thuan into the rock pool in swimwear and gives her back d
  assert.ok(world.people.filter(p=>p!==person).every(p=>!p.g.userData.inOnsen));
 });
 
-test('swimwear on the rebuilt Thuan replaces the suit, shoes and beret, and comes off again',async()=>{
+test('swimwear on the rebuilt Thuan replaces her top, skirt and shoes, and comes off again',async()=>{
  installDOM();const previous={fetch:globalThis.fetch,self:globalThis.self,bitmap:globalThis.createImageBitmap};
  globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  globalThis.fetch=async input=>String(input).startsWith('blob:')?previous.fetch(input):new Response(await readFile(new URL('../assets/'+new URL(String(input.url||input)).pathname.split('/assets/')[1],import.meta.url)));
@@ -62,9 +62,9 @@ test('swimwear on the rebuilt Thuan replaces the suit, shoes and beret, and come
   assert.equal(shown(/Swimsuit/),false);assert.equal(shown(/elegantsuit/),true);
   entity.userData.outfit='swim';models.update(1/60);
   assert.equal(shown(/Swimsuit/),true);assert.equal(shown(/SkinUnder/),true);
-  assert.equal(shown(/elegantsuit/),false);assert.equal(shown(/shoes/),false);assert.equal(shown(/Beret/),false);
+  assert.equal(shown(/elegantsuit/),false);assert.equal(shown(/shoes/),false);assert.equal(shown(/Braid/),true,'The braids stay in');
   delete entity.userData.outfit;models.update(1/60);
-  assert.equal(shown(/Swimsuit/),false);assert.equal(shown(/elegantsuit/),true);assert.equal(shown(/Beret/),true);
+  assert.equal(shown(/Swimsuit/),false);assert.equal(shown(/elegantsuit/),true);assert.equal(shown(/shoes/),true);
  }finally{globalThis.fetch=previous.fetch;globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}
 });
 

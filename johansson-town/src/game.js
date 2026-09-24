@@ -967,7 +967,7 @@ window.__JOHANSSON_BEER__=()=>beerService?{pending:beerService.pending,drink:bee
 window.__JOHANSSON_CAST__={
  get takes(){return (characters?.actors||[]).map(a=>({
   name:a.entity?.userData?.name||'?',clip:a.current||null,
-  moving:!!a.moving,speed:+(a.speed||0).toFixed(2),activity:a.entity?.userData?.activity||null,indoors:a.entity?.userData?.indoors||null,visible:!!a.entity?.visible,flags:Object.keys(a.entity?.userData||{}).filter(k=>/^in[A-Z]/.test(k)&&a.entity.userData[k]===true)}));},
+  moving:!!a.moving,speed:+(a.speed||0).toFixed(2),activity:a.entity?.userData?.activity||null,indoors:a.entity?.userData?.indoors||null,visible:!!a.entity?.visible,flags:Object.keys(a.entity?.userData||{}).filter(k=>/^in[A-Z]/.test(k)&&a.entity.userData[k]===true),at:a.entity?[+a.entity.position.x.toFixed(2),+a.entity.position.z.toFixed(2),+a.entity.rotation.y.toFixed(2)]:null}));},
 };
 // Sakura's books, live rather than as last saved. The shop's day is settled on the
 // town clock whether or not anybody is standing in it, and the saved copy lags, so
