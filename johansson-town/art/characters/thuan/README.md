@@ -7,15 +7,16 @@ which had no fingers, toes or face shapes to speak of.
 ## What is in it
 
 - **Body and look**: the MakeHuman build of Yui (`../yui/yui.blend`, `construction.json`)
-  for her phenotype and fitted clothes, reshaped after a reference photograph supplied by
-  the user (nothing from it is embedded): a slimmer oval face with a narrow chin and less
-  cheek, eyes a touch larger and dark brown, a finer nose, fuller rosy lips. Black hair is
-  pulled back under a close hair cap into two long three-strand braids with white ties,
-  generated in the build script. The suit is a mustard-yellow short-sleeved top over a navy
-  skirt; loafers. Scaled to 1.64 m.
+  for her phenotype and fitted clothes, reshaped after reference photographs supplied by
+  the user (nothing from them is embedded): a slimmer oval face with a narrow chin and less
+  cheek, dark brown eyes, a finer nose and a smaller mouth with rose lips. Her long dark hair
+  is built in the script as one surface of strands from the crown (a smooth shell over the
+  skull, then falling behind the ears to below the shoulder blades, clear of her top), with
+  a side-swept fringe and a strand texture with a soft shine. She wears a short-sleeved top
+  and loose trousers in yellow cotton printed with small white flowers; loafers. 1.64 m.
 - **Skeleton**: MPFB's 163-bone default rig, the same one Johansson uses — twist bones, five
-  fingers with metacarpals, five toes per foot, jaw, tongue, eyes and lips. The braids are
-  skinned from the skin under them (head and neck at the top, chest below); the eyes ride
+  fingers with metacarpals, five toes per foot, jaw, tongue, eyes and lips. The hair is
+  skinned from the skin under it (head at the crown, neck and back below); the eyes ride
   their own bones.
 - **Face**: seventeen shape keys named the ARKit way on the head and brows (`eyeBlinkLeft`,
   `eyeBlinkRight`, `eyeWideLeft`, `eyeWideRight`, `eyeSquint`, `browOuterUpLeft`,

@@ -185,7 +185,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(!met)note('Met Thuan, the heart of Sakura Konbini.');
     const replies={
       snack:'おすすめ？ 任せて！\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.',
-      ribbon:'このみつあみ？\nMy braids? Two plaits every morning before the first bus. My little sister taught me — she says mine are crooked. The white ties are from our own hundred-yen shelf.',
+      ribbon:'髪？ ありがとう！\nMy hair? Thank you! I let it grow long and tie it back when I restock. On a hot day I braid it — my little sister says my plaits are crooked.',
       town:commuterMode?'夕方の港が好き。\nSakura closes at eight. I walk to the Harbour Line terminal and take the last bus after my shift. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.':'夕方の港が好き。\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.',
       home:state.townMode==='shopping-district'?commuterDescription('Thuan'):residentHomeDescription('Thuan'),
       compliment:'もう、照れちゃう。\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.',
@@ -213,7 +213,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     // folded away behind one button. Fourteen choices at once made her a directory.
     const smallTalk=[
       ['What is your favourite snack?','snack'],
-      ['I like your braids','ribbon'],
+      ['I like your hair','ribbon'],
       ['Where do you go after work?','town'],
       [commuterMode?'How do you travel?':'Where do you live?','home'],
       ['You make this place lovely','compliment'],

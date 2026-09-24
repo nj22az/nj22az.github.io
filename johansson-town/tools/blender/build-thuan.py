@@ -6,10 +6,9 @@ Blender 4.2 LTS. Stage one of two (animate-johansson.py --character thuan is the
 
 She starts from the Yui source (art/characters/yui/yui.blend), the MakeHuman build of the
 shopkeeper: phenotype, face targets, the fitted suit and loafers. Her look follows a
-reference photograph supplied by the user (nothing from it is embedded): a slimmer oval face
-with a narrow chin, warm brown eyes and rosy lips; black hair pulled back into two long
-three-strand braids with white ties, built here procedurally; a mustard-yellow short-sleeved
-top over a navy skirt. Underneath: MPFB's 163-bone default skeleton (fingers, toes, jaw,
+reference photographs supplied by the user (nothing from them is embedded): a slimmer oval
+face with a narrow chin, warm brown eyes and rosy lips; her long dark hair; a short-sleeved
+top and loose trousers in yellow cotton printed with small white flowers. Underneath: MPFB's 163-bone default skeleton (fingers, toes, jaw,
 eyes), face shapes named the ARKit way so her face controller drives them, and a one-piece
 swimsuit over the skin the clothes cover, for the family bath at Umi-no-yu.
 """
@@ -67,8 +66,8 @@ pos = mh.mixed(body)
 # visible skin has been matched, and only in front of the ears so the hair still fits.
 PRETTY = {'head/head-oval': .85, 'head/head-scale-horiz-decr': .25, 'chin/chin-width-decr': .65, 'chin/chin-triangle': .35, 'chin/chin-prominent-incr': .15,
           'cheek/l-cheek-volume-decr': .85, 'cheek/r-cheek-volume-decr': .85, 'cheek/l-cheek-bones-incr': .25, 'cheek/r-cheek-bones-incr': .25,
-          'eyes/l-eye-scale-incr': .2, 'eyes/r-eye-scale-incr': .2, 'nose/nose-scale-horiz-decr': .22, 'nose/nose-point-width-decr': .3,
-          'nose/nose-volume-decr': .18, 'mouth/mouth-upperlip-volume-incr': .4, 'mouth/mouth-lowerlip-volume-incr': .35,
+          'eyes/l-eye-scale-incr': .1, 'eyes/r-eye-scale-incr': .1, 'head/head-invertedtriangular': .25, 'mouth/mouth-scale-horiz-decr': .3, 'nose/nose-scale-horiz-decr': .22, 'nose/nose-point-width-decr': .3,
+          'nose/nose-volume-decr': .18, 'mouth/mouth-upperlip-volume-incr': .22, 'mouth/mouth-lowerlip-volume-incr': .12,
           'mouth/mouth-cupidsbow-incr': .3, 'neck/neck-scale-horiz-decr': .15}
 for target, weight in PRETTY.items():
     TargetService.load_target(body, str(TARGETS / (target + '.target.gz')), weight=weight, name='pretty.' + target.split('/')[-1])
@@ -130,7 +129,7 @@ objs = {o.name[4:]: o for o in bpy.data.objects if o.name.startswith('Yui.') and
 for name, obj in objs.items():
     obj.name = 'Thuan.' + name
 suit = objs['female_elegantsuit01']
-# Her look now: no beret, glasses, collar or bow -- two braids with white ties instead.
+# Her look now: no beret, glasses, collar or bow.
 for name in [n for n in objs if n.startswith(('Glasses', 'CreamBeret', 'Ribbon', 'Collar', 'SewnCollar', 'CottonTie'))]:
     bpy.data.objects.remove(objs.pop(name), do_unlink=True)
 
@@ -155,105 +154,74 @@ for obj in objs.values():
 # Puff sleeves: the jacket cut a little above the elbow; the arms show below.
 mh.trim(suit, {'arm.' + s: (.46, ['fore.' + s, 'hand.' + s]) for s in 'LR'}, bones, segs)
 
-# The suit becomes a yellow short-sleeved top over a navy skirt, split at the waist.
-waist_z = (bones['spine04'][0][2] + bones['spine05'][0][2]) / 2
-yellow = mh.plain_material('Thuan.Top', (.74, .63, .17, 1), .75, .2)
-navy = mh.plain_material('Thuan.Skirt', (.1, .13, .24, 1), .75, .2)
-suit.data.materials.clear()
-suit.data.materials.append(yellow)
-suit.data.materials.append(navy)
-for poly in suit.data.polygons:
-    poly.material_index = 1 if poly.center[2] < waist_z else 0
-
-# Hair pulled back from the face into two braids: the long loose hair goes, and a close
-# cap over the scalp (built below, once the skin is painted) carries the hairline.
-bpy.data.objects.remove(objs.pop('long01'), do_unlink=True)
+# Her everyday set: a short-sleeved top and loose trousers in yellow cotton printed with
+# small white flowers (red centres, green leaves), as in the reference photographs.
 import bmesh
+waist_z = (bones['spine04'][0][2] + bones['spine05'][0][2]) / 2
+hip_z = bones['upperleg01.L'][0][2]
+hem_z = bones['foot.L'][0][2] + .045
 
 
-def surface_front(x, z, clearance):
-    """The y just in front of the body skin at (x, z); Blender -Y is her front."""
-    near = [i for i in body_verts if abs(pos[i, 0] - x) < .02 and abs(pos[i, 2] - z) < .02]
-    return (min(pos[i, 1] for i in near) if near else eye_mid[1]) - clearance
+def floral_image(name, size=512, seed=1997, step=44, scale=1.):
+    """Yellow cotton with scattered five-petal white flowers."""
+    rng = np.random.default_rng(seed)
+    img = np.zeros((size, size, 3), dtype=np.float32)
+    img[:] = (.93, .7, .2)
+    yy, xx = np.mgrid[0:size, 0:size]
+    # Jittered grid, so flowers are spread evenly but not in rows; tiles seamlessly.
+    for gy in range(0, size, step):
+        for gx in range(0, size, step):
+            cx, cy = gx + rng.uniform(6, step - 6), gy + rng.uniform(6, step - 6)
+            turn = rng.uniform(0, 2 * np.pi)
+            for dxw in (-size, 0, size):
+                for dyw in (-size, 0, size):
+                    x0, y0 = cx + dxw, cy + dyw
+                    if not (-20 < x0 < size + 20 and -20 < y0 < size + 20):
+                        continue
+                    dx, dy = xx - x0, yy - y0
+                    r = np.hypot(dx, dy)
+                    if r.min() > 16 * scale:
+                        continue
+                    ang = np.arctan2(dy, dx) - turn
+                    for leaf in (0, 1):
+                        la = turn + (2.4 if leaf else -.9)
+                        lx, ly = x0 + np.cos(la) * 11 * scale, y0 + np.sin(la) * 11 * scale
+                        lr = np.hypot((xx - lx) * np.cos(la) + (yy - ly) * np.sin(la), ((yy - ly) * np.cos(la) - (xx - lx) * np.sin(la)) * 2.2)
+                        img[lr < 5.5 * scale] = (.28, .5, .24)
+                    petal = r < (5.2 + 3.4 * np.cos(ang * 5) ** 2) * scale
+                    img[petal & (r < 9.5 * scale)] = (.98, .97, .94)
+                    img[r < 2.4 * scale] = (.72, .12, .12)
+    im = bpy.data.images.new(name, size, size)
+    im.pixels.foreach_set(np.concatenate([img, np.ones((size, size, 1), np.float32)], -1)[::-1].ravel())
+    im.pack()
+    return im
 
 
-def braid(sign, name):
-    """A three-strand plait from behind the ear, over the front of the shoulder, down to the waist."""
-    ear = np.array([sign * .062, eye_mid[1] + .07, eye_mid[2] - .035])
-    shoulder = bones['clavicle.' + ('L' if sign > 0 else 'R')][1]
-    x = sign * .085
-    ctrl = [ear, np.array([sign * .075, eye_mid[1] + .06, bones['neck01'][0][2] + .01]),
-            np.array([x, bones['neck01'][0][1] + .005, shoulder[2] + .045]),
-            np.array([x, surface_front(x, shoulder[2] - .01, .02), shoulder[2] - .015])]
-    for z in np.linspace(shoulder[2] - .06, waist_z + .02, 6):
-        ctrl.append(np.array([x, surface_front(x, z, .02), z]))
-    ctrl = np.array(ctrl)
-    # Catmull-Rom through the control points, then resampled evenly.
-    pts = []
-    for i in range(len(ctrl) - 1):
-        p0, p1, p2, p3 = ctrl[max(i - 1, 0)], ctrl[i], ctrl[i + 1], ctrl[min(i + 2, len(ctrl) - 1)]
-        for t in np.linspace(0, 1, 12, endpoint=False):
-            pts.append(.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
-    pts.append(ctrl[-1])
-    pts = np.array(pts)
-    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
-    arc = np.concatenate([[0], np.cumsum(seg)])
-    n = 150
-    at = np.linspace(0, arc[-1], n)
-    path = np.array([np.interp(at, arc, pts[:, k]) for k in range(3)]).T
-    # Keep the whole plait clear of the skin under it.
-    for i, p in enumerate(path):
-        _, j, d = face_tree.find(p)
-        if d < .016:
-            path[i] = pos[j] + (p - pos[j]) / max(d, 1e-5) * .016
-    tangent = np.gradient(path, axis=0)
-    tangent /= np.linalg.norm(tangent, axis=1)[:, None]
-    bm = bmesh.new()
-    rings = []
-    length = arc[-1]
-    for k in range(3):
-        strand = []
-        for i, (p, t) in enumerate(zip(path, tangent)):
-            u = i / (n - 1)
-            side = np.cross(t, [0, 1, 0])
-            side /= max(np.linalg.norm(side), 1e-6)
-            depth = np.cross(side, t)
-            phase = at[i] / .022 * np.pi + k * 2 * np.pi / 3
-            width = .0062 * (1 - .4 * u) * (1 if u > .05 else .6 + 8 * u)
-            centre = p + side * np.sin(phase) * width + depth * np.sin(2 * phase) * width * .3
-            r = .0072 * (1 - .38 * u) * (1 if u > .04 else .5 + 12.5 * u)
-            ring = [bm.verts.new(centre + r * (np.cos(a) * side + np.sin(a) * depth)) for a in np.linspace(0, 2 * np.pi, 7, endpoint=False)]
-            strand.append(ring)
-        for a, b in zip(strand, strand[1:]):
-            for q in range(7):
-                bm.faces.new((a[q], a[(q + 1) % 7], b[(q + 1) % 7], b[q]))
-        rings.append(strand)
-    # A white hair tie a little above the end, and a short loose brush below it.
-    tie_at = int(n * .9)
-    hair_faces = len(bm.faces)
-    p, t = path[tie_at], tangent[tie_at]
-    side = np.cross(t, [0, 1, 0]); side /= np.linalg.norm(side); depth = np.cross(side, t)
-    tie = [[bm.verts.new(p + t * dz + .0085 * (np.cos(a) * side + np.sin(a) * depth)) for a in np.linspace(0, 2 * np.pi, 10, endpoint=False)] for dz in (-.006, .006)]
-    for q in range(10):
-        bm.faces.new((tie[0][q], tie[0][(q + 1) % 10], tie[1][(q + 1) % 10], tie[1][q]))
-    mesh = bpy.data.meshes.new(name)
-    bm.to_mesh(mesh)
-    bm.free()
-    obj = bpy.data.objects.new(name, mesh)
-    bpy.context.scene.collection.objects.link(obj)
-    mesh.materials.append(braid_mat)
-    mesh.materials.append(tie_mat)
-    for poly in mesh.polygons:
-        poly.material_index = 1 if poly.index >= hair_faces else 0
-        poly.use_smooth = True
-    print('BRAID', name, 'length', round(float(length), 3), 'verts', len(mesh.vertices), flush=True)
-    return obj
+def floral_material(name, image):
+    mat = mh.plain_material(name, (1, 1, 1, 1), .8, .15)
+    nodes = mat.node_tree.nodes
+    tex = nodes.new('ShaderNodeTexImage')
+    tex.image = image
+    mat.node_tree.links.new(tex.outputs['Color'], nodes['Principled BSDF'].inputs['Base Color'])
+    return mat
 
 
-braid_mat = mh.plain_material('Thuan.Braid', (.022, .018, .016, 1), .6, .25)
-tie_mat = mh.plain_material('Thuan.HairTie', (.95, .94, .9, 1), .6)
-objs['BraidL'] = braid(1, 'Thuan.BraidL')
-objs['BraidR'] = braid(-1, 'Thuan.BraidR')
+print_cloth = floral_image('Thuan.FloralCotton', step=30, scale=.72)
+# The body's UV layout gives the legs less of the texture, so the trousers print is finer.
+leg_cloth = floral_image('Thuan.FloralCottonLegs', seed=1998, step=17, scale=.4)
+top_mat = floral_material('Thuan.Top', print_cloth)
+# The suit's skirt goes: the jacket is cut square a little below the waist into a top.
+bm = bmesh.new()
+bm.from_mesh(suit.data)
+bmesh.ops.bisect_plane(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces), plane_co=(0, 0, hip_z + .015), plane_no=(0, 0, 1), clear_inner=True)
+bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+bm.to_mesh(suit.data)
+bm.free()
+suit.data.update()
+suit.data.materials.clear()
+suit.data.materials.append(top_mat)
+# Her hair is built below, to her own head: MakeHuman's long01 is flat plates with no crown.
+bpy.data.objects.remove(objs.pop('long01'), do_unlink=True)
 limb_b = mh.dominant(body, bones)
 frac_b = mh.along(pos, limb_b, segs)
 bare = ((np.char.startswith(limb_b, 'fore') | np.char.startswith(limb_b, 'hand')) | (np.char.startswith(limb_b, 'arm') & (frac_b > .4)))
@@ -261,6 +229,9 @@ bare = ((np.char.startswith(limb_b, 'fore') | np.char.startswith(limb_b, 'hand')
 bare |= np.char.startswith(limb_b, 'neck') | (limb_b == 'head')
 keep = np.zeros(len(pos), dtype=bool)
 keep[body_verts] = visible_on_yui[body_verts] | bare[body_verts]
+# The legs go under the trousers, from the waist to just above the ankle.
+legs = (np.char.startswith(limb_b, 'thigh') | np.char.startswith(limb_b, 'shin') | (limb_b == 'torso')) & (pos[:, 2] < waist_z) & (pos[:, 2] > hem_z)
+keep[legs] = False
 keep[teeth] = True
 keep[tongue] = True
 body_mask = np.zeros(len(pos), dtype=bool)
@@ -326,9 +297,8 @@ def paint_scalp():
     uv = uv.reshape(-1, 2) * [W, H]
     eye = (bones['eye.L'][0] + bones['eye.R'][0]) / 2
     mask = np.zeros((H, W), dtype=np.float32)
-    under_cap = np.array([cap_tree.find(p)[2] < .0085 for p in co])
     for poly in mesh.polygons:
-        if not all(under_cap[v] for v in poly.vertices):
+        if not in_scalp(co[list(poly.vertices)].mean(0)):
             continue
         pts = uv[list(poly.loop_indices)]
         for k in range(1, len(pts) - 1):
@@ -367,7 +337,7 @@ def paint_face():
     """Rosier lips on the skin texture, and dark brown irises on the eyes."""
     image = next((n.image for n in skin_mat.node_tree.nodes if n.type == 'TEX_IMAGE' and n.image), None)
     pucker = np.linalg.norm(unit_delta['mouth-pursing'], axis=1)
-    lips = pucker > pucker.max() * .6
+    lips = pucker > pucker.max() * .7
     if image is not None:
         W, H = image.size
         px = np.zeros(W * H * 4, dtype=np.float32)
@@ -387,8 +357,8 @@ def paint_face():
                 raster_triangle(mask, pts[0], pts[k], pts[k + 1])
         for _ in range(6):
             mask = (mask * 2 + np.roll(mask, 1, 0) + np.roll(mask, -1, 0) + np.roll(mask, 1, 1) + np.roll(mask, -1, 1)) / 6
-        rose = np.array([.74, .36, .38])
-        px[..., :3] = px[..., :3] * (1 - .55 * mask[..., None]) + rose * .55 * mask[..., None]
+        rose = np.array([.74, .33, .35])
+        px[..., :3] = px[..., :3] * (1 - .45 * mask[..., None]) + rose * .45 * mask[..., None]
         image.pixels.foreach_set(px.ravel())
         image.pack()
         print('LIPS painted', int(mask.sum()), flush=True)
@@ -423,26 +393,225 @@ for name, delta in FACE.items():
         moved[i] = p + (w[:, None] * delta[idx]).sum(0)
     brows.shape_key_add(name=name, from_mix=False).data.foreach_set('co', moved.ravel())
 full.data.attributes.remove(full.data.attributes['town_kind'])
-hair_cap_mat = mh.plain_material('Thuan.Hair', (.02, .016, .014, 1), .72, .15)
-# From the visible skin only: the full mesh also carries MakeHuman's hidden helper shells.
 from mathutils import Vector
 
+# Her hair, built to her head: one continuous surface of strands from the crown, a soft
+# hairline over the forehead and temples, behind the ears, and down her back to below the
+# shoulder blades. Its UVs run along the strands, so a strand texture and a shine ring
+# follow the hair the way they do on the real thing.
+skin_tree = mh.tree(pos, body_verts)
+from mathutils.bvhtree import BVHTree
 
-def scalp_broad(c):
-    dz, dy, ax = c[2] - eye_mid[2], c[1] - eye_mid[1], abs(c[0])
-    ear = ax > .058 and -.05 < dz < .04 and dy < .075
-    return ax < .12 and not ear and ((dy > .07 and dz > -.085) or (dy > .03 and dz > -.04) or dz > .015)
+
+def surface_of(obj):
+    return BVHTree.FromPolygons([tuple(v) for v in mh.coords(obj)], [tuple(p.vertices) for p in obj.data.polygons])
 
 
-E = Vector(eye_mid)
-front = lambda c: c.y < E.y + .03
-hairline = [(E + Vector((0, 0, .043)), Vector((0, -.3, -1)).normalized(), front)]
-for sgn in (1, -1):
-    hairline.append((E + Vector((sgn * .052, .012, .012)), Vector((sgn * .15, -1, -.55)).normalized(), lambda c, s=sgn: s * c.x > .035 and c.y < E.y + .06))
-objs['HairCap'] = mh.shell(body, 'Thuan.HairCap', scalp_broad, .0055, hair_cap_mat, cuts=hairline)
-# Darken only the skin the cap covers, so no painted edge shows below the hairline.
-cap_co = mh.coords(objs['HairCap'])
-cap_tree = mh.tree(cap_co, range(len(cap_co)))
+# Distances to the actual surfaces, not the nearest vertex: the nearest vertex dips between
+# vertices, and the hair came out hammered.
+skin_bvh, suit_bvh = surface_of(body), surface_of(suit)
+skin_dist = lambda p: skin_bvh.find_nearest(Vector(p))[3]
+wear_dist = lambda p: min(skin_bvh.find_nearest(Vector(p))[3], suit_bvh.find_nearest(Vector(p))[3])
+# What the falling hair must clear: the skin and the top she is wearing over it.
+suit_co = mh.coords(suit)
+wear_pts = np.concatenate([pos[body_verts], suit_co])
+wear_tree = mh.tree(wear_pts, range(len(wear_pts)))
+head_pts = pos[[i for i in body_verts if pos[i, 2] > eye_mid[2] - .09]]
+HC = np.array([0., (head_pts[:, 1].min() + head_pts[:, 1].max()) / 2 + .004, eye_mid[2] + .018])
+CLEAR = .011
+
+
+# A smooth egg-shaped shell around the skull; the walk below only pushes out where the
+# skull itself reaches further, so the crown reads as one smooth volume of hair.
+top = head_pts[head_pts[:, 2] > eye_mid[2] - .02] - HC
+RX = np.abs(top[:, 0]).max()
+RYB, RYF = top[:, 1].max(), -top[:, 1].min()
+RZ = top[:, 2].max()
+
+
+def shell_radius(d):
+    ry = RYB if d[1] > 0 else RYF
+    return 1 / np.sqrt((d[0] / RX) ** 2 + (d[1] / ry) ** 2 + (max(d[2], 0) / RZ) ** 2) + CLEAR * 1.05
+
+
+def onto(origin, direction, clear=CLEAR, reach=.32):
+    """Walk in from outside along the ray until the skin is `clear` away; the hair's surface."""
+    t = reach
+    while t > 0:
+        p = origin + direction * t
+        if skin_dist(p) < clear:
+            return origin + direction * (t + .002)
+        t -= .002
+    return origin
+
+
+def body_axis_y(z):
+    near = pos[[i for i in body_verts if abs(pos[i, 2] - z) < .012]]
+    return (near[:, 1].min() + near[:, 1].max()) / 2 if len(near) else HC[1]
+
+
+back_z = bones['spine03'][0][2]
+shoulder_z = bones['clavicle.L'][1][2] + .035
+nape_z = bones['neck01'][0][2] + .01
+rng_h = np.random.default_rng(7)
+N_AROUND, N_ALONG = 88, 46
+curves = []
+for k in range(N_AROUND):
+    phi = -np.pi + 2 * np.pi * k / N_AROUND  # 0 is straight back, +-pi the middle of the forehead
+    a = abs(phi)
+    # How far down this lock falls: to the shoulder blades behind, the shoulders at the sides,
+    # and only to the hairline over the face.
+    if a < np.radians(62):
+        z_end = back_z + rng_h.uniform(-.012, .012)
+    elif a < np.radians(100):
+        f = (a - np.radians(62)) / np.radians(38)
+        z_end = back_z * (1 - f) + shoulder_z * f
+    else:
+        z_end = None
+    hairline = eye_mid[2] + .02 + .03 * np.clip((a - np.radians(118)) / np.radians(62), 0, 1)
+    pts = []
+    for e in np.radians(np.linspace(84, -60, 90)):
+        d = np.array([np.sin(phi) * np.cos(e), np.cos(phi) * np.cos(e), np.sin(e)])
+        p = onto(HC, d)
+        if e > 0:
+            p = HC + d * max(np.linalg.norm(p - HC), shell_radius(d))
+        if z_end is None and p[2] < hairline:
+            break
+        if z_end is not None and p[2] < nape_z:
+            break
+        pts.append(p)
+    if z_end is not None and pts:
+        # Below the skull the hair falls, gathering a little towards the middle of the back,
+        # and is pushed back (not out) off the neck, shoulders and back. The side locks start
+        # their fall behind the ear.
+        x0, y0, z0 = pts[-1]
+        tuck = .028 * np.clip((a - np.radians(55)) / np.radians(40), 0, 1)
+        push = np.array([.3 * np.sin(phi), 1., 0.])
+        push /= np.linalg.norm(push)
+        levels = np.linspace(z0 - .012, z_end, 24)
+        for j, z in enumerate(levels):
+            f = (j + 1) / len(levels)
+            p = np.array([x0 * (1 - .3 * f), y0 + tuck * min(1, 3 * f), z])
+            # Beyond the furthest skin or cloth along the push line, not merely away from it.
+            near = wear_pts[np.abs(wear_pts[:, 2] - z) < .02]
+            rel = near - p
+            ahead = rel @ push
+            side = np.linalg.norm(rel - np.outer(ahead, push), axis=1)
+            block = ahead[side < .03]
+            if len(block) and block.max() > -CLEAR:
+                p = p + push * (block.max() + CLEAR)
+            pts.append(p)
+    pts = np.array(pts)
+    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+    arc = np.concatenate([[0], np.cumsum(seg)])
+    at = np.linspace(0, arc[-1], N_ALONG)
+    curves.append((np.array([np.interp(at, arc, pts[:, j]) for j in range(3)]).T, at))
+
+# Smooth the sheet along and across the strands (the ray walk lands on single vertices,
+# which reads as lumps), then lift anything the smoothing pulled into the skin.
+G = np.array([c for c, _ in curves])
+for _ in range(24):
+    along = G.copy()
+    along[:, 1:-1] = (G[:, :-2] + 2 * G[:, 1:-1] + G[:, 2:]) / 4
+    across = (np.roll(along, 1, 0) + 2 * along + np.roll(along, -1, 0)) / 4
+    across[:, 0] = along[:, 0]
+    G = across
+for k in range(N_AROUND):
+    for i in range(N_ALONG):
+        radial = G[k, i] - HC
+        radial /= np.linalg.norm(radial)
+        out = radial if G[k, i][2] > nape_z else np.array([.3 * radial[0], max(.2, radial[1]), 0.]) / np.linalg.norm([.3 * radial[0], max(.2, radial[1])])
+        for _ in range(12):
+            if wear_dist(G[k, i]) >= CLEAR - .0015:
+                break
+            G[k, i] = G[k, i] + out * .0015
+curves = [(G[k], curves[k][1]) for k in range(N_AROUND)]
+bm = bmesh.new()
+uv_layer = bm.loops.layers.uv.new('UVMap')
+grid = [[bm.verts.new(p) for p in c] for c, _ in curves]
+crown = bm.verts.new(np.mean([c[0] for c, _ in curves], axis=0) + np.array([0, 0, .002]))
+LEN = .62  # metres of strand per texture repeat
+for k in range(N_AROUND):
+    k2 = (k + 1) % N_AROUND
+    (ca, la), (cb, lb) = curves[k], curves[k2]
+    u0, u1 = k / N_AROUND * 6, (k + 1) / N_AROUND * 6
+    f = bm.faces.new((crown, grid[k2][0], grid[k][0]))
+    for loop, uv in zip(f.loops, [((u0 + u1) / 2, 0), (u1, lb[0] / LEN), (u0, la[0] / LEN)]):
+        loop[uv_layer].uv = uv
+    for i in range(N_ALONG - 1):
+        f = bm.faces.new((grid[k][i], grid[k2][i], grid[k2][i + 1], grid[k][i + 1]))
+        for loop, uv in zip(f.loops, [(u0, la[i] / LEN), (u1, lb[i] / LEN), (u1, lb[i + 1] / LEN), (u0, la[i + 1] / LEN)]):
+            loop[uv_layer].uv = uv
+# The two short front locks meet longer ones at the temples; weld nothing, just smooth.
+for f in bm.faces:
+    f.smooth = True
+bm.normal_update()
+# A side-swept fringe: from a side part over her left eye, across the forehead to her right
+# temple, lying just off the skin and ending at the brow on the far side.
+front_ends = sorted([c[-1] for c, _ in curves if c[-1][2] > eye_mid[2] and c[-1][1] < HC[1]], key=lambda q: q[0])
+hl = np.array(front_ends)
+part_x, temple_x = .028, -.068
+
+
+def on_forehead(p, lift=.0055):
+    loc, normal, _, _ = skin_bvh.find_nearest(Vector(p))
+    return np.array(loc) + np.array(normal) * lift
+
+
+N_FR, N_LEN = 26, 14
+fringe = []
+for j in range(N_FR):
+    u = j / (N_FR - 1)
+    x = part_x + (temple_x - part_x) * u
+    # Start a little up under the hairline, at this x.
+    idx = np.argmin(np.abs(hl[:, 0] - x))
+    start = hl[idx] + np.array([0, .004, .012])
+    sweep = .038 + .03 * (1 - u)
+    drop = .058 + .026 * u - .02 * (1 - u) ** 2
+    end = start + np.array([-sweep, 0, -drop])
+    end[2] = max(end[2], eye_mid[2] + .024)
+    strand = []
+    for t in np.linspace(0, 1, N_LEN):
+        q = start * (1 - t) + end * t + np.array([0, 0, .008 * np.sin(np.pi * t)])
+        strand.append(on_forehead(q, .0045 + .004 * np.sin(np.pi * t) + .003 * (1 - t)))
+    fringe.append(strand)
+fgrid = [[bm.verts.new(p) for p in strand] for strand in fringe]
+for j in range(N_FR - 1):
+    for i in range(N_LEN - 1):
+        f = bm.faces.new((fgrid[j][i], fgrid[j + 1][i], fgrid[j + 1][i + 1], fgrid[j][i + 1]))
+        for loop, uv in zip(f.loops, [(j / 5, i / 30), ((j + 1) / 5, i / 30), ((j + 1) / 5, (i + 1) / 30), (j / 5, (i + 1) / 30)]):
+            loop[uv_layer].uv = uv
+        f.smooth = True
+bm.normal_update()
+hair_mesh = bpy.data.meshes.new('Thuan.Hair')
+bm.to_mesh(hair_mesh)
+bm.free()
+hair = bpy.data.objects.new('Thuan.Hair', hair_mesh)
+bpy.context.scene.collection.objects.link(hair)
+
+
+def strand_image(size=512):
+    rng = np.random.default_rng(1998)
+    cols = np.cumsum(rng.normal(0, .5, size))
+    cols = (cols - cols.min()) / (np.ptp(cols) + 1e-6)
+    lum = .75 + .5 * cols[None, :] + .18 * rng.normal(0, 1, (1, size))
+    v = np.linspace(0, 1, size)[:, None]
+    shine = np.exp(-((v - .16) / .035) ** 2) * .9 + np.exp(-((v - .66) / .05) ** 2) * .35
+    base = np.array([.036, .027, .022])
+    img = base * np.clip(lum, .4, 1.6)[..., None] + np.array([.1, .085, .07]) * shine[..., None] * np.clip(lum, .6, 1.4)[..., None]
+    im = bpy.data.images.new('Thuan.HairStrands', size, size)
+    im.pixels.foreach_set(np.concatenate([img, np.ones((size, size, 1))], -1)[::-1].astype(np.float32).ravel())
+    im.pack()
+    return im
+
+
+hair_mat = mh.plain_material('Thuan.Hair', (1, 1, 1, 1), .66, .14, double=True)
+tex = hair_mat.node_tree.nodes.new('ShaderNodeTexImage')
+tex.image = strand_image()
+hair_mat.node_tree.links.new(tex.outputs['Color'], hair_mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+hair_mesh.materials.append(hair_mat)
+objs['Hair'] = hair
+print('HAIR', len(hair_mesh.vertices), 'verts', flush=True)
 paint_scalp()
 under = mh.complement(full, keep, body_mask, 'Thuan.SkinUnder', skin_mat)
 armpit = bones['upperarm01.L'][0][2] - .05
@@ -459,6 +628,15 @@ def swim_face(c):
 
 
 swimsuit = mh.shell(under, 'Thuan.Swimsuit', swim_face, .005, coral)
+# Loose cotton trousers over the skin under them, waistband tucked beneath the top.
+trouser_mat = floral_material('Thuan.Trousers', leg_cloth)
+trousers = mh.shell(under, 'Thuan.Trousers', lambda c: hem_z - .004 < c.z < waist_z + .03 and abs(c.x) < .25, .014, trouser_mat)
+# Roomy over the hips, slimmer from mid-thigh down (her knees pass close by the chair's
+# front edge as she turns to sit), and flared again at the hem over her shoes.
+for v in trousers.data.vertices:
+    slim = np.clip((hip_z - .06 - v.co.z) / .06, 0, 1) * np.clip((v.co.z - hem_z - .035) / .03, 0, 1)
+    v.co -= v.normal * (.0075 * slim)
+trousers.data.update()
 
 # Skin everything from the body beneath it; the rigid bits ride the head or the eyes.
 for name, obj in objs.items():
@@ -468,7 +646,7 @@ for name, obj in objs.items():
         mh.reweight(obj, rig, weight_tree, vertex_weights, rigid=lambda p: 'head')
     else:
         mh.reweight(obj, rig, weight_tree, vertex_weights)
-for obj in (body, under, swimsuit):
+for obj in (body, under, swimsuit, trousers):
     obj.parent = rig
     for mod in list(obj.modifiers):
         if mod.type == 'ARMATURE':
@@ -494,7 +672,7 @@ for eb in rig.data.edit_bones:
     eb.tail *= K
 bpy.ops.object.mode_set(mode='OBJECT')
 print('HEIGHT', mh.coords(body)[:, 2].max(), 'BODY', len(body.data.vertices), 'UNDER', len(under.data.vertices),
-      'SWIM', len(swimsuit.data.vertices), 'OBJECTS', sorted(o.name for o in bpy.data.objects if o.name.startswith('Thuan.')), flush=True)
+      'SWIM', len(swimsuit.data.vertices), 'TROUSERS', len(trousers.data.vertices), 'OBJECTS', sorted(o.name for o in bpy.data.objects if o.name.startswith('Thuan.')), flush=True)
 out_dir = root / 'art/characters/thuan'
 out_dir.mkdir(parents=True, exist_ok=True)
 bpy.ops.file.pack_all()

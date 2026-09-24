@@ -116,7 +116,7 @@ export function createLocalCharacters({shadows=false}={}){
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
     // Swimwear and the skin under the clothes wait until the onsen asks for them.
     const wardrobe={clothes:[],swim:[]};
-    model.traverse(o=>{if(!o.isMesh)return;if(/SkinUnder|Swimsuit/.test(o.name)){wardrobe.swim.push(o);o.visible=false;}else if(/elegantsuit|shoes0|Collar|Beret|CollarTie/.test(o.name))wardrobe.clothes.push(o);});
+    model.traverse(o=>{if(!o.isMesh)return;if(/SkinUnder|Swimsuit/.test(o.name)){wardrobe.swim.push(o);o.visible=false;}else if(/elegantsuit|Trousers|shoes0|Collar|Beret|CollarTie/.test(o.name))wardrobe.clothes.push(o);});
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
     entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='thuan-mh'?'MakeHuman · Thuan':source==='yuri-merged'?'Meshy merged · Thuan':source==='nao-vrm'?'VRoid · Nao':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
