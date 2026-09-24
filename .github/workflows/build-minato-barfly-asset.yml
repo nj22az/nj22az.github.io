@@ -16,11 +16,11 @@ concurrency:
 
 jobs:
   build-and-audit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install Blender
         run: |
           sudo apt-get update
@@ -44,7 +44,7 @@ jobs:
           assert report['passed'], 'Blender rig audit did not pass'
           PY
       - name: Upload review package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: minato-barfly-blender-review
           path: ${{ runner.temp }}/minato-barfly/
