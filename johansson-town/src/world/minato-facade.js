@@ -1,5 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
+import {createKit} from './okinawa/kit.js';
+import {shisa,potPlant} from './okinawa/houses.js';
+import {fascia} from './okinawa/signs.js';
 
 /**
  * Minato Izakaya, built rather than fetched.
@@ -125,9 +128,11 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
 
  // ---- shell -------------------------------------------------------------------
  box([width+.3,.2,depth+.2],[centreX,.1,(front+back)/2],'concrete',0x8c8578);
- box([width,upperH,.24],[centreX,upperH/2,back-.12],'plaster',0x7d7566);
+ // Warm lime plaster rather than the grey it was: on a street of pale Okinawan walls a
+ // dark grey slab read as a hole in the row.
+ painted([width,upperH,.24],[centreX,upperH/2,back-.12],0xbdac8c,{roughness:.95});
  for(const side of [-1,1])
-  box([.24,upperH,depth],[centreX+side*(half+.12),upperH/2,(front+back)/2],'plaster',0x7a7264);
+  painted([.24,upperH,depth],[centreX+side*(half+.12),upperH/2,(front+back)/2],0xbfae8e,{roughness:.95});
  // Timber corner posts, the frame the frontage hangs off.
  for(const x of [northX,southX])box([.26,upperH,.26],[x,upperH/2,front-.13],'timber',0x3c3025);
 
@@ -214,7 +219,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   const shape=new THREE.Shape();
   shape.moveTo(0,0);shape.lineTo(eave+.34,-.46);shape.lineTo(eave+.34,-.58);shape.lineTo(0,-.12);shape.closePath();
   const tiles=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:width+.5,bevelEnabled:false}),
-   shade('roof',0x6d736c));
+   shade('roof',0xa24c35));
   tiles.rotation.y=Math.PI/2;tiles.position.set(northX-.25,eaveY+.2,front-.15);
   tiles.castShadow=!!shadows;tiles.receiveShadow=true;tiles.userData.staticProp=true;group.add(tiles);
  }
@@ -222,16 +227,39 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  for(let x=northX;x<=southX;x+=.52)painted([.07,.1,eave+.2],[x,eaveY-.12,front+eave/2-.1],0x3d2f21);
 
  // ---- second storey and roof -----------------------------------------------------
- box([width,upperH-eaveY-.14,.26],[centreX,(upperH+eaveY+.14)/2,front-.13],'plaster',0x837a69);
+ // Painted rather than photographed plaster: the photograph's own shadows took every
+ // tint down to the grey of wet concrete, and the upper floor read as a blank slab.
+ painted([width,upperH-eaveY-.14,.26],[centreX,(upperH+eaveY+.14)/2,front-.13],0xc9b796,{roughness:.95});
  // Two lattice windows over the street, the flat's own.
  for(const x of [centreX-1.55,centreX+1.55]){
-  box([1.62,.16,.3],[x,upperH-1.62,front-.14],'timber',0x4a3a2a);
-  box([1.62,.16,.3],[x,upperH-.36,front-.14],'timber',0x4a3a2a);
+  // Proud of the wall face, so the window is a window: the panes used to sit a
+  // quarter of a metre inside a solid wall and only the rails showed, as two slits.
+  box([1.62,.16,.36],[x,upperH-1.62,front-.1],'timber',0x4a3a2a);
+  box([1.62,.16,.36],[x,upperH-.36,front-.1],'timber',0x4a3a2a);
+  for(const dx of [-.78,.78])painted([.08,1.3,.34],[x+dx,upperH-.99,front-.1],0x4a3a2a);
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.1),
-   new THREE.MeshStandardMaterial({color:0x4b4336,emissive:0xd0a35e,emissiveIntensity:.06,roughness:.55}));
-  pane.position.set(x,upperH-.99,front-.27);pane.userData.clearWindow=true;pane.userData.minatoGlow=true;group.add(pane);
-  for(let i=0;i<7;i++)painted([.04,1.06,.05],[x-.66+i*.22,upperH-.99,front-.25],0x362b20);
-  painted([1.5,.05,.06],[x,upperH-.99,front-.245],0x362b20);
+   new THREE.MeshStandardMaterial({color:0x5c6a6c,emissive:0xd0a35e,emissiveIntensity:.06,roughness:.35}));
+  pane.position.set(x,upperH-.99,front+.012);pane.userData.clearWindow=true;pane.userData.minatoGlow=true;group.add(pane);
+  for(let i=0;i<7;i++)painted([.04,1.06,.03],[x-.66+i*.22,upperH-.99,front+.035],0x362b20);
+  painted([1.5,.05,.035],[x,upperH-.99,front+.04],0x362b20);
+  // A sudare, the bamboo blind, let half-way down against the afternoon sun.
+  painted([1.52,.52,.02],[x,upperH-.72,front+.06],0xcaa86a,{roughness:.95});
+  for(let k=0;k<5;k++)painted([1.52,.018,.02],[x,upperH-.52-k*.1,front+.075],0x8d7448);
+  // A sill with a pot of something on it, which says somebody lives up there.
+  painted([1.7,.07,.24],[x,upperH-1.72,front+.05],0x4a3a2a);
+ }
+ // The painted board between the floors: what the place is, for anyone up the street.
+ {
+  const board=new THREE.Mesh(new THREE.BoxGeometry(4.4,.56,.06),[paint(0x3a2c20),paint(0x3a2c20),paint(0x3a2c20),paint(0x3a2c20),
+   new THREE.MeshStandardMaterial({map:fascia({jp:'琉球料理・泡盛',en:'Minato izakaya · Ryukyu cooking & awamori',bg:'#efe2c2',accent:'#8a3b2e',ink:'#2b1d17'}),roughness:.8}),paint(0x3a2c20)]);
+  board.position.set(centreX,eaveY+.62,front+.02);board.userData.staticProp=true;group.add(board);
+ }
+ // A shisa on the eave over the door, and pot plants either side of the step.
+ {
+  const kit=createKit({shadows});
+  shisa(kit,southX-.45,eaveY+.08,front+.55,0,1.05);
+  potPlant(kit,-cheekHalf-.35,front+.35,{seed:3,size:.3});potPlant(kit,cheekHalf+.95,front+.3,{seed:6,size:.26});
+  kit.finish(group,'Minato shisa and plants');
  }
  // The main pitch, ridge along the street, eaves front and back: a machiya, not a hut
  // with a gable pointed at the road.
@@ -240,11 +268,12 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   shape.moveTo(front+.42,0);shape.lineTo((front+back)/2,ridge-upperH);shape.lineTo(back-.42,0);
   shape.lineTo(back-.42,-.24);shape.lineTo((front+back)/2,ridge-upperH-.24);shape.lineTo(front+.42,-.24);shape.closePath();
   const roof=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:width+.44,bevelEnabled:false}),
-   shade('roof',0x69706a));
+   shade('roof',0xa24c35));
   roof.rotation.y=-Math.PI/2;roof.position.set(southX+.22,upperH,0);
   roof.castShadow=!!shadows;roof.receiveShadow=true;roof.userData.staticProp=true;group.add(roof);
   // A ridge cap, because a bare fold reads as paper.
-  painted([width+.5,.2,.34],[centreX,ridge-.06,(front+back)/2],0x5b615b,{roughness:.9});
+  // Okinawan red tile, the ridge pointed in white lime.
+  painted([width+.5,.2,.34],[centreX,ridge-.06,(front+back)/2],0xe6e0d2,{roughness:.9});
  }
 
  // ---- lanterns --------------------------------------------------------------------

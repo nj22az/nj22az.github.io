@@ -85,6 +85,8 @@ export const EAST_BACK=Object.freeze({
   {id:'nakasone',kind:'red-tile',family:'仲宗根',romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
   {id:'miyagi',kind:'red-tile',family:'宮城',romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
   {id:'tamaki',kind:'concrete',family:'玉城',romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
+  // Between the park and the seawall, its gate on the garden with the pond.
+  {id:'kamiya',kind:'red-tile',family:'神谷',romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
  ].map(Object.freeze)),
 });
 
@@ -117,7 +119,13 @@ export function mapPlan(){
  const yards=[...NISHI.plots,...EAST_BACK.plots].map(p=>[p.minX,p.maxX,p.minZ,p.maxZ]);
  const buildings=[...EAST_ROW.plots.map(p=>[EAST_ROW.minX,EAST_ROW.maxX,p.minZ,p.maxZ]),...YARD_ROW.plots.map(p=>[YARD_ROW.minX,YARD_ROW.maxX,p.minZ,p.maxZ]),
   [EAST_QUAY.shed.minX,EAST_QUAY.shed.maxX,EAST_QUAY.shed.minZ,EAST_QUAY.shed.maxZ],[EAST_QUAY.ice.minX,EAST_QUAY.ice.maxX,EAST_QUAY.ice.minZ,EAST_QUAY.ice.maxZ],
+  [GOYA.minX,GOYA.maxX,GOYA.minZ,GOYA.maxZ],
   ...[...NISHI.plots,...EAST_BACK.plots].filter(p=>p.kind!=='grove').map(p=>{const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2;return [cx-3.3,cx+3.3,cz-2.8,cz+2.8];})];
- const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23]];
+ const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23],['GATEBALL',21,-34]];
+ walks.push([GATEBALL.minX,GATEBALL.maxX,GATEBALL.minZ,GATEBALL.maxZ]);
  return {walks,yards,buildings,labels};
 }
+
+/** The gateball court on the lawn by the seawall, and the goya garden in the west yard. */
+export const GATEBALL=Object.freeze({minX:20,maxX:31.4,minZ:-37.5,maxZ:-32.2});
+export const GOYA=Object.freeze({minX:-23.4,maxX:-17.4,minZ:-11.4,maxZ:-4.2});

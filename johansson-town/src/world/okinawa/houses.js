@@ -132,7 +132,7 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  * and an awning, a tall board on the corner, windows above and a tank on the roof.
  * `stock` fills the shop with shelves of colour; `sign` and `upright` are textures.
  */
-export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
+export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
  const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=D-2.2;
  // The body, stopping short of the front so the shop floor is a real room.
  kit.block(-W,W,0,H,-D,back,colour);
@@ -143,13 +143,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  kit.block(-open,open,.02,.08,back,D-.05,0x9d9486);
  kit.block(-open,open,.08,ground-.3,back,back+.06,0xefe6d2,'glow');
  kit.block(-open,open,ground-.3,ground,back,D-.3,0xd8d2c4,'glow');
- for(let level=0;level<4;level++){
-  const y=.4+level*.62;
-  kit.box(open*2-.3,.04,.42,0,y,back+.28,0xb9b0a0);
-  for(let i=0;i<Math.floor(open*2/.32);i++){const x=-open+.3+i*.32;kit.box(.24,.26+r.next()*.14,.28,x,y+.17,back+.28,r.pick(stock),{finish:'glow'});}
- }
- kit.box(open*1.1,.95,.6,-open*.3,.48,back+1.2,0x7d6a55);
- kit.box(open*1.1+.06,.05,.66,-open*.3,.98,back+1.2,0xcfc5b3);
+ shopInterior(kit,interior,{open,back,D,r,stock});
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
  kit.block(-W,W,ground,ground+.1,D,D+.08,trim);
@@ -285,4 +279,76 @@ export function potPlant(kit,x,z,{seed=9,size=.35}={}){
  kit.cyl(size*.8,size*.6,size*1.2,x,size*.6,z,C.terracotta,{segments:9});
  kit.sphere(size,x,size*1.55,z,r.pick([0x4f7d3e,0x3f6b3a,0x5b8a45]));
  if(r.next()>.5)kit.sphere(.06,x+size*.5,size*1.8,z,C.hibiscus,{detail:0});
+}
+
+/**
+ * What is inside the shopfront, seen from the pavement: each trade has its own furniture,
+ * because a fish shop that looks like a general store is a general store.
+ */
+function shopInterior(kit,kind,{open,back,D,r,stock}){
+ const shelves=(levels=4,colours=stock,tall=false)=>{
+  for(let level=0;level<levels;level++){
+   const y=.4+level*.62;
+   kit.box(open*2-.3,.04,.42,0,y,back+.28,0xb9b0a0);
+   for(let i=0;i<Math.floor(open*2/(tall?.18:.32));i++){
+    const x=-open+.3+i*(tall?.18:.32);
+    if(tall)kit.cyl(.055,.06,.3+r.next()*.1,x,y+.2,back+.28,r.pick(colours),{segments:6,finish:'glow'});
+    else kit.box(.24,.26+r.next()*.14,.28,x,y+.17,back+.28,r.pick(colours),{finish:'glow'});
+   }
+  }
+ };
+ const counter=(x,width,colour=0x7d6a55)=>{kit.box(width,.95,.6,x,.48,back+1.2,colour);kit.box(width+.06,.05,.66,x,.98,back+1.2,0xcfc5b3);};
+ if(kind==='zenzai'){
+  // A counter with the ice shaver on it and the glass bowls, two tables and their stools.
+  shelves(2,[0xe8e2d0,0xd9b04a,0x9c3b2e]);
+  counter(-open*.35,open*1.1);
+  kit.cyl(.12,.14,.45,-open*.35,1.22,back+1.2,0xc0392b,{segments:10});kit.cyl(.16,.16,.08,-open*.35,1.5,back+1.2,0xd0d4d6,{segments:10});
+  for(const x of [-open*.7,0])kit.cyl(.09,.06,.1,x,1.05,back+1.35,0xdfeef2,{segments:8,finish:'gloss'});
+  for(const x of [open*.45]){kit.cyl(.35,.35,.05,x,.75,D-1.4,0xe8e2d0,{segments:14});kit.cyl(.05,.05,.72,x,.37,D-1.4,0x6d7478,{segments:6});
+   for(const dz of [-.55,.55])kit.cyl(.16,.16,.45,x,.23,D-1.4+dz,0xc0392b,{segments:10});}
+ }else if(kind==='barber'){
+  // Two chairs facing a long mirror, and the striped pole outside the door.
+  kit.box(open*2-.4,1.1,.05,0,1.5,back+.1,0x9fb8be,{finish:'gloss'});
+  kit.box(open*2-.4,.08,.35,0,.92,back+.25,0xd8d2c4);
+  for(const x of [-open*.45,open*.45]){
+   kit.box(.62,.12,.6,x,.62,back+1.2,0x2f5a4a);kit.box(.62,.7,.12,x,1.02,back+1.5,0x2f5a4a);
+   kit.cyl(.12,.2,.55,x,.28,back+1.2,0xd0d4d6,{segments:10,finish:'metal'});
+   kit.box(.14,.08,.5,x-.34,.78,back+1.2,0x2f5a4a);kit.box(.14,.08,.5,x+.34,.78,back+1.2,0x2f5a4a);
+  }
+  kit.cyl(.11,.11,1.3,open+.12,2.1,D+.12,0xf4f1ea,{segments:12,finish:'gloss'});
+  for(let k=0;k<5;k++)kit.cyl(.115,.115,.1,open+.12,1.6+k*.25,D+.12,k%2?0x2f5f8e:0xc0392b,{segments:12,finish:'gloss'});
+  kit.sphere(.12,open+.12,2.8,D+.12,0xf4f1ea,{finish:'gloss'});
+ }else if(kind==='fish'){
+  // A sloped counter of crushed ice with the day's fish laid on it, out to the street.
+  kit.box(open*2-.2,.85,1.1,0,.43,D-.9,0xb8bec0,{finish:'metal'});
+  kit.box(open*2-.3,.08,1.05,0,.9,D-.9,0xeef4f4,{rx:-.18});
+  const fish=[0x5a8fb0,0xc85a4a,0x9fb4c0,0x6fa0c8,0x3f7fa0];
+  for(let i=0;i<Math.floor(open*2/.42);i++)for(let row=0;row<2;row++)
+   kit.sphere(.1,-open+.35+i*.42,.98+row*.08,D-.65-row*.4,r.pick(fish),{sx:2.3,sy:.6,finish:'gloss'});
+  kit.box(1.4,1.1,.5,-open*.5,.55,back+.4,0xf1efe8);kit.box(.5,.3,.3,open*.5,1.1,back+.5,0x2f6fb8);
+  counter(open*.45,1.2,0x6a7a80);
+ }else if(kind==='sweets'){
+  // A glass case of andagi and chinsuko, and the fryer at the back.
+  shelves(2,[0xd9a45a,0xc0843a,0xe8d8b0]);
+  kit.box(open*1.3,.9,.6,-open*.2,.45,back+1.3,0xd8d2c4);
+  kit.box(open*1.3,.4,.58,-open*.2,1.1,back+1.3,0xcfe3e6,{finish:'gloss'});
+  for(let i=0;i<9;i++)kit.sphere(.06,-open*.2-open*.55+i*open*.14,.98,back+1.3+(i%2?.1:-.1),0xb8762e,{detail:1});
+  kit.box(.9,.9,.6,open*.6,.45,back+.4,0x9aa0a4,{finish:'metal'});
+ }else if(kind==='laundry'){
+  // Washers along the back, dryers stacked above them, the bench and its manga.
+  for(let i=0;i<Math.floor(open*2/.72);i++){
+   const x=-open+.42+i*.72;
+   kit.box(.64,.9,.6,x,.45,back+.38,0xf1efe8);kit.cyl(.2,.2,.03,x,.55,back+.69,0x5d7a84,{rx:Math.PI/2,segments:14,finish:'glow'});
+   kit.box(.64,.7,.6,x,1.3,back+.38,0xe6e4de);kit.cyl(.18,.18,.03,x,1.3,back+.69,0x5d7a84,{rx:Math.PI/2,segments:14,finish:'glow'});
+  }
+  kit.box(open*1.2,.42,.4,0,.21,D-1.2,0x3a6a9a);kit.box(.3,.2,.22,open*.4,.52,D-1.2,0xe0c060);
+ }else if(kind==='liquor'){
+  // Bottles, tall and in rows, and the clay pots at the back that are not for sale.
+  shelves(4,[0x3b4a2c,0x6a4a2a,0xd8d0b0,0x2c5a6a,0x8a3b2e],true);
+  for(const x of [-open*.6,open*.6])kit.sphere(.34,x,.34,back+1.3,0x6a4a36,{sy:1.1,finish:'gloss'});
+  counter(0,open*.8);
+ }else{
+  shelves();
+  counter(-open*.3,open*1.1);
+ }
 }

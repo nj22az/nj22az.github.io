@@ -143,3 +143,47 @@ export function coralSand(){
   for(let i=0;i<120;i++){ctx.fillStyle='rgba(120,110,90,.35)';ctx.beginPath();ctx.arc(r()*w,r()*h,1+r()*2,0,Math.PI*2);ctx.fill();}
  });
 }
+
+/** A painted wall advert for island ice cream, the kind every shop side wall had. */
+export function iceMural(){
+ return paint(1024,300,(ctx,w,h)=>{
+  const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#2d7fb8');g.addColorStop(1,'#1f5f94');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='rgba(255,255,255,.12)';for(let i=0;i<6;i++){ctx.beginPath();ctx.arc(90+i*170,h+40,120,0,Math.PI*2);ctx.fill();}
+  // The cone and three scoops.
+  ctx.fillStyle='#d9a45a';ctx.beginPath();ctx.moveTo(110,150);ctx.lineTo(190,150);ctx.lineTo(150,285);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#a8763a';ctx.lineWidth=3;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(118+i*16,150);ctx.lineTo(150,280);ctx.stroke();}
+  for(const [x,y,c] of [[130,135,'#f6efe0'],[172,132,'#e98aa6'],[151,95,'#8a5a3c']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,34,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#fff';ctx.textAlign='left';ctx.textBaseline='middle';
+  ctx.font='bold 92px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('ブルーコーラル',250,105);
+  ctx.font='bold 54px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('アイスクリーム',254,190);
+  ctx.fillStyle='#ffd45a';ctx.font='bold 30px sans-serif';ctx.fillText('BLUE CORAL ICE CREAM · OKINAWA · SINCE 1963',254,256);
+  ctx.strokeStyle='#f3ead2';ctx.lineWidth=10;ctx.strokeRect(8,8,w-16,h-16);
+ });
+}
+
+/** An enamel tin advert, rusting at the corners. */
+export function enamel({jp,en,bg='#f1e6c8',ink='#b8302a'}={}){
+ return paint(256,384,(ctx,w,h)=>{
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle=ink;ctx.lineWidth=10;ctx.strokeRect(12,12,w-24,h-24);
+  const chars=[...jp],size=Math.min(84,Math.floor((h-110)/chars.length*.92));
+  ctx.fillStyle=ink;ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  chars.forEach((c,i)=>ctx.fillText(c,w/2,40+(i+.5)*(h-110)/chars.length));
+  ctx.font='bold 20px sans-serif';ctx.fillText(en.toUpperCase(),w/2,h-44);
+  ctx.fillStyle='rgba(120,60,30,.55)';for(const [x,y] of [[16,16],[w-26,20],[20,h-28],[w-30,h-24]]){ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.fill();}
+ });
+}
+
+/** A tairyō-bata, the big-catch flag a boat flies coming home: loud colours, a crane. */
+export function catchFlag(seed=0){
+ const palettes=[['#d8342c','#f4d23c','#1f5fa8'],['#1f5fa8','#f4f0e4','#d8342c'],['#f4d23c','#d8342c','#2a8a5a']];
+ const [a,b,c]=palettes[seed%palettes.length];
+ return paint(384,256,(ctx,w,h)=>{
+  ctx.fillStyle=a;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=b;ctx.beginPath();ctx.arc(w*.72,h*.42,70,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=c;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(0,h*.7+i*18);for(let x=0;x<=w;x+=24)ctx.quadraticCurveTo(x+12,h*.62+i*18,x+24,h*.7+i*18);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();}
+  ctx.fillStyle='#fff';ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('大漁',w*.34,h*.4);
+ });
+}

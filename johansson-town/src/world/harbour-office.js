@@ -5,7 +5,7 @@ import {HARBOUR_OFFICE as O} from './business-layout.js';
 // A single quay office replaces the old cold-store box and both office addresses.
 export function buildHarbourOffice({parent,site,register,enter,label,shadows}){
  const group=new THREE.Group();group.name='Consolidated harbour office';group.position.set(O.x,0,O.frontZ);parent.add(group);
- const surfaces=createMaterials(),wood=surfaces.material('timber',0xd0c9ac),trim=surfaces.material('timber',0x435b57),roof=surfaces.material('roof',0x545e5b),concrete=surfaces.worldMaterial('concrete',0x9e9e8d,2);
+ const surfaces=createMaterials(),wood=surfaces.material('timber',0xd0c9ac),trim=surfaces.material('timber',0x435b57),roof=surfaces.material('roof',0xa24c35),concrete=surfaces.worldMaterial('concrete',0x9e9e8d,2);
  const box=(size,pos,mat)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);m.position.set(...pos);m.castShadow=!!shadows;m.receiveShadow=true;group.add(m);return m;};
  box([7.2,.16,7.2],[0,0,-3.6],concrete);
  box([7.2,3.25,.15],[0,1.625,-7.1],wood);for(const x of [-3.55,3.55])box([.15,3.25,7.2],[x,1.625,-3.6],wood);

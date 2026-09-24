@@ -1,10 +1,11 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
-import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK} from './layout.js';
+import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
+import {dressOldTown} from './old-town.js';
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {ONSEN_DOOR} from '../onsen-layout.js';
@@ -44,8 +45,10 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildYardRow(kit,solid,{anchor,inspect,onAction});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
+ buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
+ dressOldTown(kit,solid,{inspect});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
  world.colliders.push(...colliders);
@@ -239,17 +242,17 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 /* ------------------------------- Shop-houses ------------------------------ */
 
 const SHOPS=Object.freeze({
- nakamura:{jp:'仲村ぜんざい',en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:'氷',upright:'ぜんざい',uprightBg:'#2f7fa8',
+ nakamura:{interior:'zenzai',jp:'仲村ぜんざい',en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:'氷',upright:'ぜんざい',uprightBg:'#2f7fa8',
   buy:{label:'Buy a zenzai',title:'Nakamura Zenzai · 仲村ぜんざい',cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'}},
- shimabukuro:{jp:'島袋理容',en:'Shimabukuro barber',bg:'#eaf1f3',accent:'#2f5f8e',upright:'理容',uprightBg:'#2f5f8e',
+ shimabukuro:{interior:'barber',jp:'島袋理容',en:'Shimabukuro barber',bg:'#eaf1f3',accent:'#2f5f8e',upright:'理容',uprightBg:'#2f5f8e',
   inspect:{label:'Look in at the barber',title:'Shimabukuro Barber · 島袋理容',text:'Two green leather chairs, a radio on the shelf and a jar of blue comb disinfectant. Mr Shimabukuro is reading the Ryūkyū Shimpō in the second chair, waiting for his next head. A cut is ¥1,800; a shave is the rest of the afternoon.'}},
- 'higa-saketen':{jp:'比嘉酒店',en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:'泡盛',uprightBg:'#8a3b2e',
+ 'higa-saketen':{interior:'liquor',jp:'比嘉酒店',en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:'泡盛',uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:'Higa Liquor · 比嘉酒店',cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
- arakaki:{jp:'新垣菓子店',en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:'菓子',uprightBg:'#2d6f63',
+ arakaki:{interior:'sweets',jp:'新垣菓子店',en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:'菓子',uprightBg:'#2d6f63',
   buy:{label:'Buy sata andagi',title:'Arakaki Sweets · 新垣菓子店',cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile. Three to a paper bag, still warm, sugar on your fingers.'}},
- yonamine:{jp:'与那嶺鮮魚店',en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:'魚',upright:'鮮魚',uprightBg:'#9a4a2a',
+ yonamine:{interior:'fish',jp:'与那嶺鮮魚店',en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:'魚',upright:'鮮魚',uprightBg:'#9a4a2a',
   inspect:{label:'Look at the fish',title:'Yonamine Fish · 与那嶺鮮魚店',text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
- 'coin-laundry':{jp:'コインランドリー',en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:'洗濯',uprightBg:'#3a6a9a',
+ 'coin-laundry':{interior:'laundry',jp:'コインランドリー',en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:'洗濯',uprightBg:'#3a6a9a',
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
 });
 
@@ -257,7 +260,7 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction}){
  const spec=SHOPS[plot.id],w=plot.maxZ-plot.minZ-.1,d=frame.depth;
  const sign=fascia({jp:spec.jp,en:spec.en,bg:spec.bg,accent:spec.accent,mark:spec.mark||''});
  const upright=vertical({jp:spec.upright,bg:spec.uprightBg});
- kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,seed:plot.minZ*7|0})));
+ kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const act=spec.buy?()=>onAction?.('buy',spec.buy.title,{cost:spec.buy.cost,item:spec.buy.item,text:spec.buy.text}):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  anchor(front+out*.9,1.1,z,(spec.buy||spec.inspect).label,act);
@@ -308,7 +311,8 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  solid(keiTruck(kit,-20.4,11.5,{ry:Math.PI/2,colour:0xdcd6c6,load:'crates'}));
  solid(fishCrates(kit,-17.6,8,{rows:2,cols:2,seed:21}));
  solid(planterBoxes(kit,-23.4,9.5,{ry:Math.PI/2,count:5,seed:22}));
- solid(laundry(kit,-21.8,-6.5,{ry:Math.PI/2,length:2.4}));
+ solid(laundry(kit,-21.8,4.6,{ry:Math.PI/2,length:2.4}));
+ buildYardLife(kit,solid,{anchor,inspect,onAction});
  solid(gasBottles(kit,-16.4,17.8,{ry:Math.PI/2}));
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});
 }
@@ -380,6 +384,61 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  inspect(24.6,1,Q.minZ+.9,'Look at the boats','第三港丸 · Minato Maru No. 3',
   'The Minato Maru is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
+}
+
+/** The back of the west yard: the goya trellis, the bicycle shed, drums and tyres. */
+function buildYardLife(kit,solid,{inspect}){
+ const G=GOYA,y=GROUND_LAYER.lane;
+ // Raised beds of red earth with a path between them, under a trellis the bitter melon
+ // has already covered: a roof of leaves, and the gourds hanging through it.
+ for(const z of [G.minZ+.9,G.minZ+3.6,G.maxZ-.9]){
+  kit.block(G.minX+.4,G.maxX-.4,y-.02,.24,z-.55,z+.55,0x8a4a32);
+  for(let x=G.minX+.8;x<G.maxX-.6;x+=.55)kit.sphere(.18,x,.34,z+(x*7%2?.2:-.2),0x4f7d3e,{sy:.7,detail:0});
+  solid({id:'goya-bed',x:(G.minX+G.maxX)/2,z,w:G.maxX-G.minX-.8,d:1.1,height:.3});
+ }
+ const posts=[];for(const x of [G.minX+.2,(G.minX+G.maxX)/2,G.maxX-.2])for(const z of [G.minZ+.2,G.maxZ-.2])posts.push([x,z]);
+ for(const [x,z] of posts){kit.cyl(.05,.06,2.1,x,1.05,z,0x6e5a44,{segments:6});solid({id:'trellis-post',x,z,w:.14,d:.14,height:2.1});}
+ kit.box(G.maxX-G.minX,.02,G.maxZ-G.minZ,(G.minX+G.maxX)/2,2.08,(G.minZ+G.maxZ)/2,0x3f6b3a,{finish:'thin'});
+ const r=rng(55);
+ for(let i=0;i<34;i++)kit.sphere(.35+r.next()*.25,G.minX+.3+r.next()*(G.maxX-G.minX-.6),2.18,G.minZ+.3+r.next()*(G.maxZ-G.minZ-.6),r.pick([0x4f8a3e,0x3f7a36,0x5c9446]),{sy:.35,detail:0});
+ for(let i=0;i<16;i++){const x=G.minX+.5+r.next()*(G.maxX-G.minX-1),z=G.minZ+.5+r.next()*(G.maxZ-G.minZ-1);kit.sphere(.08,x,1.78,z,0x6fa84a,{sy:2.6,detail:1});}
+ inspect((G.minX+G.maxX)/2,1,G.maxZ+.8,'Look at the goya trellis','Goya trellis',
+  'Bitter melon, ゴーヤー, grown up a net until it roofs the whole bed: in summer it is the coolest place in the yard. The warty green gourds hanging through are for chanpurū, fried with tofu, egg and a little spam. Whoever planted it has written 取らないで on a card — please don’t pick.');
+ // The bicycle shed at the top of the yard, and what gathers round a working yard.
+ const bx0=-24,bx1=-19.4,bz0=15.8,bz1=19.6;
+ kit.block(bx0,bx1,2.15,2.25,bz0,bz1,0x8c9ea3);
+ for(const [x,z] of [[bx0+.1,bz0+.1],[bx1-.1,bz0+.1],[bx0+.1,bz1-.1],[bx1-.1,bz1-.1]]){kit.box(.08,2.15,.08,x,1.08,z,0x9aa0a4);solid({id:'shed-post',x,z,w:.14,d:.14,height:2.2});}
+ for(let i=0;i<4;i++)bicycle(kit,bx0+.8+i*1.05,(bz0+bz1)/2,{ry:Math.PI/2,colour:[0x3d6f8f,0xb03a3a,0xd9d2c0,0x3a7a5a][i]});
+ solid({id:'bicycles',x:(bx0+bx1)/2,z:(bz0+bz1)/2,w:bx1-bx0-.6,d:1.3,height:1.1});
+ for(const [x,z] of [[-17,-16.2],[-16.4,-15.8]]){kit.cyl(.29,.29,.88,x,.44,z,0x2f5a8a,{segments:12});kit.cyl(.3,.3,.04,x,.89,z,0x24486e,{segments:12});}
+ solid({id:'oil-drums',x:-16.7,z:-16,w:1.3,d:1,height:.9});
+ for(let k=0;k<4;k++)kit.cyl(.33,.33,.2,-23.6,.12+k*.21,-15.6,0x1f2124,{segments:12});
+ solid({id:'tyres',x:-23.6,z:-15.6,w:.72,d:.72,height:.9});
+}
+
+/** Gateball on the lawn by the seawall: a sand court, three hoops, the goal post, a shelter. */
+function buildGateball(kit,solid,{anchor,inspect}){
+ const G=GATEBALL,top=GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
+ kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,0xcdb88f,'sand');
+ const line=(x0,x1,z0,z1)=>kit.block(x0,x1,top,top+.006,z0,z1,0xf4f1ea);
+ line(G.minX+.3,G.maxX-.3,G.minZ+.3,G.minZ+.36);line(G.minX+.3,G.maxX-.3,G.maxZ-.36,G.maxZ-.3);
+ line(G.minX+.3,G.minX+.36,G.minZ+.3,G.maxZ-.3);line(G.maxX-.36,G.maxX-.3,G.minZ+.3,G.maxZ-.3);
+ for(const [x,z] of [[G.minX+2.4,G.minZ+1.4],[G.maxX-2.8,cz],[G.minX+3.2,G.maxZ-1.3]]){
+  for(const dx of [-.11,.11])kit.box(.02,.2,.02,x+dx,top+.1,z,0xf4f1ea);
+  kit.box(.24,.02,.02,x,top+.2,z,0xf4f1ea);
+ }
+ kit.cyl(.02,.02,.45,cx,top+.22,cz,0xf4f1ea,{segments:5});
+ // Five coloured balls where the last game stopped.
+ for(const [i,[x,z]] of [[22.5,-35],[24.1,-33.9],[26,-36.2],[27.3,-34.4],[29.4,-33.2]].entries())kit.sphere(.04,x,top+.04,z,i%2?0xd8342c:0xf4f1ea,{detail:1});
+ // The shelter on the seaward end, where the elders sit between turns.
+ const sx0=G.maxX-.1,sx1=G.maxX+1.5;
+ kit.block(sx0,sx1,2.3,2.4,G.minZ+.6,G.maxZ-.6,0x8a3b2e);
+ for(const z of [G.minZ+.8,G.maxZ-.8])for(const x of [sx0+.1,sx1-.1]){kit.box(.1,2.3,.1,x,1.15,z,0x6e5a44);solid({id:'shelter-post',x,z,w:.14,d:.14,height:2.3});}
+ kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,.22,cz+dz,0x5d6468);
+ solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:.5});
+ for(let i=0;i<3;i++)kit.rod([sx1-.25,.02,cz-1+i*.5],[sx1-.15,.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
+ inspect(cx,1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
+  'Five a side, mallets and numbered balls, three hoops and a post, and a referee with a whistle and a stopwatch who is somehow also the loudest player. The Minato seniors play here at seven every morning before it gets hot. They have been losing to the team from the next village since 1985.');
 }
 
 /* ---------------------------------- Wires --------------------------------- */
