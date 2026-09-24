@@ -75,3 +75,34 @@ test('Thuan has something to say about the island sweets',async()=>{
  }
  assert.equal(itemIcon('Zenzai'),'ice');assert.equal(itemIcon('Sata andagi'),'food');assert.equal(itemIcon('Awamori miniature'),'cup');
 });
+
+test('the neighbours can be walked up to, and the walkers keep to the ground',async()=>{
+ const {world}=await town();
+ const {routeAt}=await import('../src/world/layout.js');
+ const {NEIGHBOURS,routePoint,neighbourAwake}=await import('../src/people/neighbours.js');
+ const open=(x,z)=>!!routeAt(x,z,.32)&&!world.colliders.some(c=>circleHitsRect(x,z,.32,c));
+ for(const n of NEIGHBOURS){
+  assert.ok(n.lines.length>0&&n.hours.length>0,n.name+' has nothing to say or no hours');
+  if(n.walk){
+   const total=routePoint(n.route,0).total;
+   for(let d=0;d<total;d+=.5){const p=routePoint(n.route,d);assert.ok(open(p.x,p.z),`${n.name} walks through something at ${p.x.toFixed(1)},${p.z.toFixed(1)}`);}
+  }else{
+   // Somewhere within talking distance where the player can stand.
+   let near=false;
+   for(let a=0;a<Math.PI*2&&!near;a+=Math.PI/12)for(const r of [1,1.5,2,2.5,3])if(open(n.at[0]+Math.cos(a)*r,n.at[1]+Math.sin(a)*r)){near=true;break;}
+   assert.ok(near,'Nobody can get near enough to talk to '+n.name);
+  }
+ }
+ assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length,'Two neighbours share a name');
+ const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');
+ assert.ok(neighbourAwake(higa,9*60)&&!neighbourAwake(higa,23*60),'Grandmother Higa keeps the wrong hours');
+});
+
+test('Sakura’s shutter is up while she is open and comes down at eight',async()=>{
+ const {world}=await town();
+ const shutter=world.quarters.shutter;
+ for(let i=0;i<400;i++)shutter.update(21*60,1/30);
+ assert.equal(shutter.open,0,'The shutter is up after closing');
+ for(let i=0;i<400;i++)shutter.update(10*60,1/30);
+ assert.equal(shutter.open,1,'The shutter is down in shop hours');
+});

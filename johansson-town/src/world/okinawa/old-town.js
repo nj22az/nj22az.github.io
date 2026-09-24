@@ -1,6 +1,8 @@
-import {fascia,iceMural,enamel,catchFlag,poster} from './signs.js';
+import * as THREE from '../../../vendor/three.module.js';
+import {paint} from './kit.js';
+import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {fishCrates,buoys} from './props.js';
+import {fishCrates,buoys,bicycle} from './props.js';
 
 /**
  * The buildings that were here before the quarters went up, brought up to the street
@@ -14,11 +16,116 @@ import {fishCrates,buoys} from './props.js';
  *   Office      big-catch flags on a pole by the door, a life ring and the tide board.
  *   Bookshop    a cart of cheap paperbacks out on the pavement.
  */
-export function dressOldTown(kit,solid,{inspect}){
+export function dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group}){
  dressSakura(kit,solid,{inspect});
+ const shutter=sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group});
  dressWarehouse(kit,solid,{inspect});
  dressOffice(kit,solid,{inspect});
  dressBookshop(kit,solid,{inspect});
+ return {shutter};
+}
+
+/** Sakura opens at nine and shuts at eight, the same hours the town keeps for her. */
+export const sakuraOpenAt=minutes=>{const h=((minutes%1440)+1440)%1440;return h>=540&&h<1200;};
+
+/** The roller shutter's face: galvanised slats and the shop's hours painted across it. */
+function shutterTexture(){
+ return paint(1024,256,(ctx,w,h)=>{
+  const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#b9bfc2');g.addColorStop(1,'#9ea5a8');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  for(let y=0;y<h;y+=9){ctx.fillStyle='rgba(60,66,70,.35)';ctx.fillRect(0,y,w,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,y+2,w,1);}
+  ctx.fillStyle='#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('桜商店',w/2,h*.46);
+  ctx.font='bold 22px sans-serif';ctx.fillText('SAKURA · OPEN 9:00 – 20:00 · また明日',w/2,h*.72);
+  ctx.fillStyle='rgba(110,70,40,.25)';for(const x of [60,w-80])ctx.fillRect(x,h*.2,3,h*.7);
+ });
+}
+
+/**
+ * Sakura's shopfront, after Sakura Crossing's 青空商店 (shop.js): the red-and-white
+ * awning built as geometry stripes so the banding stays crisp under the cel pass, the
+ * roller shutter that rolls into its drum when the shop opens and comes down at eight,
+ * the two vending machines, the drink crates, a trestle of fruit, the bin, the flags,
+ * and the wall services -- meter, pipes, the camera and its warning plate.
+ *
+ * The frontage runs along z at x = -7.45; the pavement is the metre in front of it.
+ * The door is at the middle (z -27.3) and everything stands clear of it.
+ */
+function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
+ const S=SAKURA_BOX,front=S.maxX,door=-27.3,doorClear=1.6;
+ // The awning: sloping canvas in alternating stripes, on its brackets.
+ const zA=S.minZ+2.8,zB=S.maxZ-.25,out=1.15,top=2.8,drop=.38,stripes=18,sw=(zB-zA)/stripes,slope=Math.atan2(drop,out);
+ for(let i=0;i<stripes;i++)kit.box(out,.06,sw,front+out/2+.28,top-drop/2,zA+sw*(i+.5),i%2?0xf4f0e6:0xc8392e,{rz:-slope});
+ kit.box(.06,.26,zB-zA,front+out+.28,top-drop-.1,(zA+zB)/2,0xc8392e);
+ for(let i=0;i<stripes;i+=2)kit.box(.05,.22,sw*.9,front+out+.3,top-drop-.12,zA+sw*(i+.5),0xf4f0e6);
+ for(const z of [zA+.2,(zA+zB)/2,zB-.2])kit.rod([front+.3,top-.2,z],[front+out+.2,top-drop,z],.02,0x6d7478);
+ // The shutter drum under the sign band, and its guides down each end of the glass.
+ kit.box(.24,.24,S.maxZ-S.minZ-.5,front+.12,2.72,(S.minZ+S.maxZ)/2,0x8e9699,{finish:'metal'});
+ for(const z of [S.minZ+.3,S.maxZ-.3])kit.box(.08,2.6,.1,front+.05,1.3,z,0x7b8285,{finish:'metal'});
+ const SH=2.55,width=S.maxZ-S.minZ-.6,tex=shutterTexture();
+ const shutterMat=new THREE.MeshStandardMaterial({map:tex,roughness:.55,metalness:.3});
+ const curtain=new THREE.Mesh(new THREE.PlaneGeometry(width,SH),shutterMat);
+ curtain.rotation.y=Math.PI/2;curtain.position.set(front+.07,SH/2+.05,(S.minZ+S.maxZ)/2);
+ curtain.name='Sakura roller shutter';curtain.userData.dynamicProp=true;curtain.receiveShadow=true;group.add(curtain);
+ const rail=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,width),new THREE.MeshStandardMaterial({color:0x6d7478,roughness:.5,metalness:.4}));
+ rail.userData.dynamicProp=true;group.add(rail);
+ let open=1;
+ const setShutter=o=>{
+  open=o;const shown=Math.max(.02,1-o);
+  curtain.scale.y=shown;curtain.position.y=.05+SH-SH*shown/2;
+  tex.repeat.set(1,shown);tex.offset.set(0,0);
+  rail.position.set(front+.08,.05+SH-SH*shown,(S.minZ+S.maxZ)/2);
+  curtain.visible=shown>.03;
+ };
+ setShutter(1);
+ // The vending pair at the south end of the frontage, with a bin between them and the door.
+ vending(front+.45,S.minZ+1.1,Math.PI/2);vending(front+.45,S.minZ+2.3,Math.PI/2);
+ kit.cyl(.22,.19,.72,front+.4,.36,door-doorClear-.5,0x2f6fa8,{segments:12});kit.cyl(.24,.24,.05,front+.4,.74,door-doorClear-.5,0x3a3f42,{segments:12});
+ solid({id:'sakura-bin',x:front+.4,z:door-doorClear-.5,w:.5,d:.5,height:.8});
+ // Drink crates stacked the way empties are, against the glass beyond the vending machines.
+ const crateAt=[[0,0,0],[0,1,0],[0,2,0],[0,0,.56],[0,1,.56],[.02,0,1.1]];
+ crateAt.forEach(([dx,ly,dz],i)=>{kit.box(.46,.28,.5,front+.3+dx,.14+ly*.28,S.minZ+3.4+dz,i%2?0x2f6fb8:0xc8392e);kit.box(.4,.04,.44,front+.3+dx,.28+ly*.28,S.minZ+3.4+dz,0x2f3140);});
+ solid({id:'sakura-crates',x:front+.3,z:S.minZ+3.95,w:.55,d:1.7,height:.9});
+ // A trestle of fruit and island vegetables either side of the door's north.
+ const tz=door+doorClear+1.2;
+ kit.box(.55,.05,1.6,front+.36,.72,tz,0xb89a6a);for(const dz of [-.7,.7])for(const dx of [-.2,.2])kit.box(.04,.7,.04,front+.36+dx,.35,tz+dz,0x5d6468);
+ const fruit=[[0xf0a63c,'mango'],[0x8fbf4a,'goya'],[0xe0574a,'dragon fruit'],[0xe8c84a,'shiquasa']];
+ fruit.forEach(([colour],i)=>{const z=tz-.6+i*.4;kit.cyl(.17,.13,.12,front+.36,.8,z,0xb48a4a,{segments:10});for(let k=0;k<3;k++)kit.sphere(.06,front+.32+(k%2)*.08,.9,z-.06+k*.06,colour,{detail:0});});
+ solid({id:'sakura-trestle',x:front+.36,z:tz,w:.6,d:1.7,height:.8});
+ // The ice-cream freezer at the north end: a white chest with a blue lid, glass on top.
+ const fz=S.maxZ-1.1;
+ kit.box(.62,.78,1.1,front+.36,.39,fz,0xf1efe8);kit.box(.64,.06,1.12,front+.36,.8,fz,0x2d7fb8);
+ kit.box(.5,.02,.98,front+.36,.84,fz,0xbfe0ee,{finish:'gloss'});
+ for(let k=0;k<6;k++)kit.box(.12,.05,.12,front+.26+(k%2)*.2,.78,fz-.35+Math.floor(k/2)*.35,[0xe98aa6,0xf6efe0,0x8a5a3c][k%3]);
+ kit.sign(poster({title:'アイス',lines:['BLUE CORAL','¥150','冷たい！'],band:'#2d7fb8'}),.5,.34,front+.68,.45,fz,{ry:Math.PI/2,depth:.01,name:'freezer card'});
+ solid({id:'sakura-freezer',x:front+.36,z:fz,w:.66,d:1.15,height:.9});
+ anchor(front+1.1,1,fz,'Buy a Blue Coral ice cream',()=>onAction?.('buy','Blue Coral ice cream',{cost:150,item:'Blue Coral ice cream',text:'Blue Coral, from the chest freezer outside Sakura: ube, salt cookie or the pink one that is guava. It starts melting before you have your change.'}));
+ // Two nobori flags at the kerb: ice cream, and cold drinks.
+ for(const [z,jp,bg] of [[fz-1.6,'アイスクリーム','#2d7fb8'],[S.minZ+4.9,'冷たい飲み物','#c8392e']]){
+  kit.cyl(.025,.025,2.8,front+.95,1.4,z,0x9aa0a4,{segments:6});kit.rod([front+.95,2.72,z],[front+.95,2.72,z+.5],.012,0x9aa0a4);
+  kit.sign(vertical({jp,bg}),.46,1.9,front+.95,1.75,z+.26,{ry:Math.PI/2,depth:.01,both:true,name:'nobori'});
+  solid({id:'nobori',x:front+.95,z,w:.1,d:.1,height:2.8});
+ }
+ // Services on the wall ends: the meter, pipes to the drum, the camera and its plate.
+ kit.box(.14,.5,.36,front+.07,1.75,S.maxZ-.2,0xd8d4ca);kit.box(.02,.2,.2,front+.15,1.8,S.maxZ-.2,0x2c3a33);
+ for(const z of [S.minZ+.12,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
+ kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
+ kit.sign(enamel({jp:'防犯カメラ',en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
+ // A rack at the edge of the boardwalk with two bicycles in it, the air conditioner on the
+ // south flank, and two sheets of paper the wind took off the notice board.
+ kit.box(.06,.06,1.8,front+1.22,.35,S.minZ+1.7,0x9aa0a4,{finish:'metal'});
+ for(const dz of [-.8,0,.8])kit.rod([front+1.22,0,S.minZ+1.7+dz],[front+1.22,.35,S.minZ+1.7+dz],.02,0x9aa0a4);
+ bicycle(kit,front+1.25,S.minZ+1.3,{ry:0,colour:0x3a7a5a});bicycle(kit,front+1.25,S.minZ+2.1,{ry:0,colour:0xd9d2c0});
+ solid({id:'sakura-bikes',x:front+1.25,z:S.minZ+1.7,w:1.3,d:1.4,height:1.1});
+ kit.box(.95,.62,.32,-12.4,1.4,S.minZ-.2,0xe2e0d8);kit.cyl(.2,.2,.04,-12.2,1.4,S.minZ-.37,0x3a3f42,{rx:Math.PI/2,segments:12});
+ for(let y=1.2;y<1.6;y+=.1)kit.box(.5,.02,.02,-12.6,y,S.minZ-.37,0x7b8285);
+ kit.box(.3,.004,.4,front+2.2,.012,-24.6,0xf4f1ea,{ry:.7});kit.box(.3,.004,.4,front+3.1,.012,-23.9,0xe8e2d0,{ry:-1.1});
+ return {
+  set:setShutter,
+  get open(){return open;},
+  /** Follows the clock: rolls up at nine and down at eight, taking a few seconds. */
+  update(minutes,dt=1/60){const want=sakuraOpenAt(minutes)?1:0,step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
+ };
 }
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */

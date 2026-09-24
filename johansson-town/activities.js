@@ -29,6 +29,7 @@ import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,rename
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
+import {NEIGHBOUR_TALK} from './src/people/neighbours.js';
 import {svg,itemIcon} from './src/ui/icons.js';
 import {TOWN_FINDS} from './src/commerce/sakura-economy.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
@@ -96,7 +97,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false,say])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;if(say!==undefined)b.dataset.say=say||'';b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
     const speaker=title.split('·')[0].trim();
-    const conversation=speaker==='Thuan'||!!DIALOGUE[speaker];
+    const conversation=speaker==='Thuan'||!!DIALOGUE[speaker]||!!NEIGHBOUR_TALK[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
     modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);
     if(speaker==='Thuan')characterControl()?.setExpression?.('Thuan',options.mood||null);
@@ -303,6 +304,25 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['The shop side of things',paperwork],
       ['See you soon, Thuan',close],
     ]);
+  }
+  // The people of the new streets: a few things each to say, in turn, and the odd thing
+  // to sell. See src/people/neighbours.js.
+  const neighbourTurns=new Map();
+  const NEIGHBOUR_SALES=Object.freeze({
+   'Mrs Nakamura':['A zenzai, please · ¥250',250,'Zenzai','She shaves the ice straight into the glass, spoons the beans over and pushes it across. “Eat it before it eats you.”'],
+   'Mrs Yonamine':['A tray of mozuku · ¥200',200,'Mozuku','A tray of mozuku in vinegar, wrapped in newspaper. “Good for everything,” she says again, in case you missed it.'],
+   'Kōji':['I’ll take the tuna head',0,'Tuna head','He wraps it in two newspapers and a plastic bag, and it is still looking at you. “Soup,” he says. “Trust me.”'],
+   'Mrs Kinjō':null,
+  });
+  function neighbour(name){
+    const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}
+    const turn=neighbourTurns.get(name)||0;neighbourTurns.set(name,turn+1);
+    const line=spec.lines[turn%spec.lines.length],buttons=[];
+    const sale=NEIGHBOUR_SALES[name];
+    if(sale)buttons.push([sale[0],()=>{if(sale[1]&&!spend(sale[1]))return;onTime(2);addItem(sale[2]);tone(700,.12);show(name+' · '+spec.role,sale[3],[['Thank you',close]]);}]);
+    if(spec.lines.length>1)buttons.push(['Tell me more',()=>neighbour(name)]);
+    buttons.push(['See you later',close]);
+    show(name+' · '+spec.role,line,buttons);
   }
   function resident(name){
     if(name==='Thuan'){thuanConversation();return;}
@@ -730,6 +750,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
       case 'resident':resident(name);break;
+      case 'neighbour':neighbour(name);break;
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
       case 'izakaya-menu':izakayaMenu();break;
       case 'izakaya-table':izakayaTable();break;

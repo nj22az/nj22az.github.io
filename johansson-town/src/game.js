@@ -50,6 +50,7 @@ import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp} from './people/izakaya-beer.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
 import {routeAt,groundHeight} from './world/layout.js?snappy=1';
+import {createNeighbours} from './people/neighbours.js';
 import {drawTownMap} from './world/map.js?snappy=1';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js?snappy=1';
@@ -229,6 +230,7 @@ let stickHintUntil=0;
 // A control under a finger must not be hidden out from under it. Any pointer release
 // ends every press, so a control can never stay pinned on by a touch we lost track of.
 const pressedControls=new Set();
+let neighbours=null;
 let conversationName=null,conversationCamera=null,navigationTarget=null,beerService=null,tipsy=0;
 let activeRoomLayout=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
@@ -403,6 +405,12 @@ function updateJohansson(dt){
 }
 if(thirdPerson)setThirdPerson(true,false);
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!bicycleRide&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+// The people of the new streets: shopkeepers at their counters, the old men at gateball,
+// Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
+neighbours=createNeighbours({parent:town,register:reg,characters,onAction:(kind,name)=>{
+ const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
+}});
+world.neighbours=neighbours.entities;
 // Thuan is the heaviest single asset in the town and she is kept at full detail, so
 // fetching her before the first frame put nine megabytes in front of the chunks the
 // game needs to start: on a 1.6 Mbps link that was most of the wait. She is still the
@@ -868,12 +876,12 @@ $('#run').onclick=e=>{if(e.detail===0)toggleRunning();};
 $('#drink').onpointerdown=e=>{e.preventDefault();pressedControls.add('drink');drinkNow();};$('#act').onpointerdown=e=>{e.preventDefault();pressedControls.add('act');doInteract()};
 
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();started=false;const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Reload Johansson Town to continue.'}});canvas.addEventListener('webglcontextrestored',()=>location.reload());function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
-function setConversation(name,text=''){for(const p of world.people)if(p.g.userData.playerConversation){delete p.g.userData.playerConversation;delete p.g.userData.chatHold;delete p.g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
+function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.g),...(world.neighbours||[])])if(g.userData.playerConversation){delete g.userData.playerConversation;delete g.userData.chatHold;delete g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
  if(name&&!conversationName){conversationSide=0;shotCut=true;conversationShot='speaker';conversationCamera={rotation:camera.quaternion.clone(),playerVisible:player.visible};johansson?.play('Bow');}
  if(name)johansson?.speak(2.4);
  conversationName=name;resizeRenderer();
  if(name){
-  const speaker=name==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===name)?.g;
+  const speaker=name==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name);
   if(speaker){speaker.userData.playerConversation=true;speaker.userData.chatHold=true;speaker.userData.speakingUntil=performance.now()+Math.min(6500,Math.max(1400,text.length*43));
    // The camera is not taken off you any more: she turns to face you instead, and the
    // line appears over her shoulder. See people/facing.js.
@@ -907,7 +915,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     if(homeOwner(current))homeGuests.update(dt,minutes);
     venueService?.update(dt);beerService?.update(dt);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);
-    if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
+    if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
 function followClock(){

@@ -48,7 +48,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
- dressOldTown(kit,solid,{inspect});
+ const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
  world.colliders.push(...colliders);
@@ -57,9 +57,10 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   const glow=windowGlow(minutes);
   if(materials.glow)materials.glow.emissiveIntensity=glow*.75;
   if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;
+  old.shutter.update(minutes);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
- return {group,meshes,colliders,materials};
+ return {group,meshes,colliders,materials,shutter:old.shutter};
 }
 
 /* ------------------------------ Nishi-machi ------------------------------ */
@@ -250,7 +251,7 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a bottle of awamori',title:'Higa Liquor · 比嘉酒店',cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  arakaki:{interior:'sweets',jp:'新垣菓子店',en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:'菓子',uprightBg:'#2d6f63',
   buy:{label:'Buy sata andagi',title:'Arakaki Sweets · 新垣菓子店',cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile. Three to a paper bag, still warm, sugar on your fingers.'}},
- yonamine:{interior:'fish',jp:'与那嶺鮮魚店',en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:'魚',upright:'鮮魚',uprightBg:'#9a4a2a',
+ yonamine:{interior:'fish',anchorDz:2.3,jp:'与那嶺鮮魚店',en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:'魚',upright:'鮮魚',uprightBg:'#9a4a2a',
   inspect:{label:'Look at the fish',title:'Yonamine Fish · 与那嶺鮮魚店',text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
  'coin-laundry':{interior:'laundry',jp:'コインランドリー',en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:'洗濯',uprightBg:'#3a6a9a',
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
@@ -263,7 +264,8 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction}){
  kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const act=spec.buy?()=>onAction?.('buy',spec.buy.title,{cost:spec.buy.cost,item:spec.buy.item,text:spec.buy.text}):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
- anchor(front+out*.9,1.1,z,(spec.buy||spec.inspect).label,act);
+ // Off to one side where somebody works the counter, so talking to them wins over the shop.
+ anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
 }
 
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){

@@ -40,6 +40,10 @@ export function giftReaction(item,{giftsToday=0}={}){
   return {mood:'happy',text:'サーターアンダギー！\nStill warm! Arakaki-san’s are the best on the island. My grandmother said they smile when they are done properly. Look — this one is smiling.'};
  if(item==='Awamori miniature')
   return {mood:'shy',text:'泡盛？ もう…\nAwamori? Are you trying to get the shopkeeper drunk? I will keep it for after closing. Maybe we open it together.'};
+ if(item==='Tuna head')
+  return {mood:'shy',text:'え…マグロの頭？\nA tuna head. For me. Wrapped in the Ryūkyū Shimpō. …Kōji gave it to you, didn’t he. He gives it to everybody. Fine — soup tonight. You are washing the pot.'};
+ if(item==='Mozuku')
+  return {mood:'happy',text:'もずく！\nMozuku from Yonamine-san! With vinegar, cold, after work. You are learning how to live here.'};
  if(item==='Sea bream')
   return {mood:'happy',text:'鯛！ 立派！\nA whole sea bream! Supper is solved. I will tell Nao I caught it myself. She will not believe me.'};
  if(item==='Coffee milk')
