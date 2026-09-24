@@ -9,15 +9,17 @@ which had no fingers, toes or face shapes to speak of.
 - **Body and look**: the MakeHuman build of Yui (`../yui/yui.blend`, `construction.json`)
   for her body and fitted clothes. Her head is built on a second MakeHuman human, a young
   woman in her twenties with ideal proportions, and carried over above the neck (the head
-  bones are refitted to it): a soft, rounded face with slightly larger eyes, a small nose,
-  full cheeks, a short chin and the corners of her mouth turned up, so she rests with a
-  smile; light makeup painted into the skin (rose lips, blush, a warm eyeshadow and fine
-  liner), lashes and warm brown brows. Her long dark hair is built in the script as one
-  surface of strands that spring from a side part over her left brow and sweep back, lying
-  close over the skull, thinning into the skin at the hairline, falling beside her cheeks
-  from the temples and down her back to below the shoulder blades, clear of her top. She
-  wears a short-sleeved top and loose trousers in yellow cotton printed with small white
-  flowers; loafers. 1.64 m.
+  bones are refitted to it): a soft, rounded face with big bright eyes, a small nose, full
+  cheeks, a short chin and the corners of her mouth turned up, so she rests with a smile;
+  light makeup painted into the skin (rose lips, blush, a warm eyeshadow and fine liner),
+  lashes and warm brown brows. Her hair is built in the script: a close surface of strands
+  from a clear side part over her left brow (a fine line of scalp shows along it), thinning
+  into the skin at the hairline, over the tops of her ears and gathered behind them into two
+  plaits that come forward over her shoulders and down her top, tied in white with a short
+  brushed end. Each plait is a column of plump, tilted lobes that alternate side to side, so
+  the town's ink draws a plait's chevrons and scalloped edge. The scalp is darkened only
+  where the hair covers it. She wears a short-sleeved top and loose trousers in yellow
+  cotton printed with small white flowers; loafers. 1.64 m.
 - **Skeleton**: MPFB's 163-bone default rig, the same one Johansson uses — twist bones, five
   fingers with metacarpals, five toes per foot, jaw, tongue, eyes and lips. The hair is
   skinned from the skin under it (head at the crown, neck and back below); the eyes ride

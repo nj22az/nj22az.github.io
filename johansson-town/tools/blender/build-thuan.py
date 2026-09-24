@@ -6,8 +6,8 @@ Blender 4.2 LTS. Stage one of two (animate-johansson.py --character thuan is the
 
 She starts from the Yui source (art/characters/yui/yui.blend), the MakeHuman build of the
 shopkeeper: phenotype, the fitted suit and loafers. Her head is a young woman's, soft and
-friendly: warm brown eyes, a small nose, rosy lips resting in a smile; her long dark hair
-parted to the side; a short-sleeved top and loose trousers in yellow cotton printed with
+friendly: big warm brown eyes, a small nose, rosy lips resting in a smile; her long dark
+hair with a clear side part, in two plaits over her shoulders; a short-sleeved top and loose trousers in yellow cotton printed with
 small white flowers. Underneath: MPFB's 163-bone default skeleton (fingers, toes, jaw,
 eyes), face shapes named the ARKit way so her face controller drives them, and a one-piece
 swimsuit over the skin the clothes cover, for the family bath at Umi-no-yu.
@@ -15,7 +15,7 @@ swimsuit over the skin the clothes cover, for the family bath at Umi-no-yu.
 import bpy, sys, argparse, json
 from pathlib import Path
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 sys.path.insert(0, str(Path(__file__).parent))
 import mh_character as mh
@@ -63,17 +63,17 @@ for u in unit_names:
 pos = mh.mixed(body)
 # Her face: a clean MakeHuman head for a young woman in her twenties, with ideal proportions,
 # in place of Yui's teenage face (and the wide smile built into it). Only a few light touches
-# on top: slightly larger, brighter eyes, a smaller nose and mouth, softly full cheeks, a
+# on top: big, bright eyes, a smaller nose and mouth, softly full cheeks, a
 # shorter rounder chin and the corners of her mouth turned up, so she rests with a smile.
 # The head is built on a second human and carried over above the neck, so the body and
 # clothes stay Yui's.
 FACE_PHENOTYPE = {**construction['phenotype'], 'age': .5, 'proportions': 1.}
 CUTE = {
-    'eyes/l-eye-scale-incr': .35, 'eyes/r-eye-scale-incr': .35,
+    'eyes/l-eye-scale-incr': .6, 'eyes/r-eye-scale-incr': .6,
     'nose/nose-scale-horiz-decr': .2, 'nose/nose-volume-decr': .25, 'nose/nose-point-width-decr': .25,
     'mouth/mouth-scale-horiz-decr': .12, 'cheek/l-cheek-volume-incr': .12, 'cheek/r-cheek-volume-incr': .12,
     'chin/chin-prominent-decr': .15, 'chin/chin-width-decr': .15, 'chin/chin-height-decr': .25, 'head/head-oval': .3,
-    'mouth/mouth-angles-up': .45, 'eyes/l-eye-height1-incr': .25, 'eyes/r-eye-height1-incr': .25,
+    'mouth/mouth-angles-up': .45, 'eyes/l-eye-height1-incr': .4, 'eyes/r-eye-height1-incr': .4,
     'expression/units/asian/mouth-corner-puller': .22, 'mouth/mouth-lowerlip-volume-decr': .2}
 ref = HumanService.create_human(macro_detail_dict=FACE_PHENOTYPE)
 for target, weight in CUTE.items():
@@ -300,15 +300,6 @@ bpy.data.objects.remove(yui_body, do_unlink=True)
 
 # The long hair falls from a parting and leaves the crown bare under the beret; darken the
 # scalp in the skin texture so the head reads as hair all round.
-def in_scalp(c):
-    """Where her hair grows: a hairline across the forehead and temples, behind the ears, down to the nape."""
-    dz, dy, ax = c[2] - eye_mid[2], c[1] - eye_mid[1], abs(c[0])
-    if dz < -.085 or ax > .12:
-        return False
-    ear = ax > .058 and -.05 < dz < .04 and dy < .075
-    return not ear and (dz > .052 - .03 * min(1, max(0, ax - .03) / .04) or (dy > .045 and dz > -.075))
-
-
 def paint_scalp():
     image = next((n.image for n in skin_mat.node_tree.nodes if n.type == 'TEX_IMAGE' and n.image), None)
     if image is None:
@@ -322,10 +313,15 @@ def paint_scalp():
     uv = np.zeros(len(mesh.loops) * 2)
     mesh.uv_layers.active.data.foreach_get('uv', uv)
     uv = uv.reshape(-1, 2) * [W, H]
-    eye = (bones['eye.L'][0] + bones['eye.R'][0]) / 2
+    # Only the skin her hair actually covers: straight out from it, the hair is met within a
+    # couple of centimetres (not over her ears, nor anywhere the hair does not reach).
+    hair_bvh = surface_of(hair)
+    nrm = np.array([v.normal for v in mesh.vertices])
+    covered = np.array([c[2] > nape_z - .005 and hair_bvh.ray_cast(Vector(c), Vector(n), .022)[0] is not None
+                        for c, n in zip(co, nrm)])
     mask = np.zeros((H, W), dtype=np.float32)
     for poly in mesh.polygons:
-        if not in_scalp(co[list(poly.vertices)].mean(0)):
+        if not covered[list(poly.vertices)].all():
             continue
         pts = uv[list(poly.loop_indices)]
         for k in range(1, len(pts) - 1):
@@ -333,10 +329,21 @@ def paint_scalp():
     soft = mask.copy()
     for _ in range(2):
         soft = (soft * 2 + np.roll(soft, 1, 0) + np.roll(soft, -1, 0) + np.roll(soft, 1, 1) + np.roll(soft, -1, 1)) / 6
+    # The side part shows her scalp: a fine line left unpainted.
+    near_part = np.clip(1 - np.abs(co[:, 0] - PART_X) / .009, 0, 1) * np.array([in_part(c) for c in co])
+    line = np.zeros((H, W), dtype=np.float32)
+    for poly in mesh.polygons:
+        vs = list(poly.vertices)
+        if near_part[vs].max() <= 0:
+            continue
+        pts = uv[list(poly.loop_indices)]
+        for k in range(1, len(pts) - 1):
+            raster_weights(line, pts[0], pts[k], pts[k + 1], near_part[vs[0]], near_part[vs[k]], near_part[vs[k + 1]])
+    soft *= 1 - np.clip((line - .5) / .25, 0, 1)
     rng = np.random.default_rng(1997)
     strands = .06 + .05 * np.abs(np.sin(np.arange(W)[None, :] * .9 + rng.normal(0, .6, (H, 1))))
-    hair = np.stack([strands * .8, strands * .72, strands * .7], -1)
-    px[..., :3] = px[..., :3] * (1 - soft[..., None]) + hair * soft[..., None]
+    tint = np.stack([strands * .8, strands * .72, strands * .7], -1)
+    px[..., :3] = px[..., :3] * (1 - soft[..., None]) + tint * soft[..., None]
     image.pixels.foreach_set(px.ravel())
     image.pack()
 
@@ -524,12 +531,11 @@ def lashes():
 
 objs['Lashes'] = lashes()
 full.data.attributes.remove(full.data.attributes['town_kind'])
-from mathutils import Vector
 
-# Her hair, built to her head: one continuous surface of strands from the crown, a soft
-# hairline over the forehead and temples, behind the ears, and down her back to below the
-# shoulder blades. Its UVs run along the strands, so a strand texture and a shine ring
-# follow the hair the way they do on the real thing.
+# Her hair, built to her head: a close surface of strands from a side part, a soft hairline
+# over the forehead and the tops of her ears, gathered behind them into two plaits. Its UVs
+# run along the strands, so a strand texture and a shine ring follow the hair the way they
+# do on the real thing.
 skin_tree = mh.tree(pos, body_verts)
 from mathutils.bvhtree import BVHTree
 
@@ -582,10 +588,7 @@ def body_axis_y(z):
     return (near[:, 1].min() + near[:, 1].max()) / 2 if len(near) else HC[1]
 
 
-back_z = bones['spine03'][0][2]
-shoulder_z = bones['clavicle.L'][1][2] + .035
 nape_z = bones['neck01'][0][2] + .01
-rng_h = np.random.default_rng(7)
 # The locks spring from a side part over her left brow, not from the top of her head, so they
 # sweep off it the way combed hair does: the pole of the walk is tilted towards the part.
 _pole = np.array([.42, -.2, 1.])
@@ -595,25 +598,29 @@ _ang = np.arcsin(np.linalg.norm(_ax))
 _ax /= np.linalg.norm(_ax)
 _K = np.array([[0, -_ax[2], _ax[1]], [_ax[2], 0, -_ax[0]], [-_ax[1], _ax[0], 0]])
 PART_TILT = np.eye(3) + np.sin(_ang) * _K + (1 - np.cos(_ang)) * _K @ _K
-N_AROUND, N_ALONG = 88, 64
-curves, fronts = [], []
+N_AROUND, N_ALONG = 88, 44
+
+
+def hairline_at(p):
+    """How low her hair reaches at this point of the head: a soft line across the forehead,
+    over the tops of her ears, down behind them to the nape, where it is gathered."""
+    ab = abs(np.degrees(np.arctan2(p[0] - HC[0], p[1] - HC[1])))  # 0 behind, 180 the forehead
+    temple = eye_mid[2] + .028
+    if ab >= 118:
+        f = min(1, (ab - 118) / 50)
+        return eye_mid[2] + .032 + .034 * f * f * (3 - 2 * f)
+    if ab >= 95:
+        return temple
+    if ab >= 82:
+        f = (ab - 82) / 13
+        return nape_z * (1 - f) + temple * f
+    # Behind the ears it is gathered low, into the plaits.
+    return nape_z
+
+
+curves = []
 for k in range(N_AROUND):
-    phi = -np.pi + 2 * np.pi * k / N_AROUND  # 0 is straight back, +-pi the middle of the forehead
-    a = abs(phi)
-    # How far down this lock falls: to the shoulder blades behind, the shoulders at the sides,
-    # past the jaw beside her face from the temples, and only to the hairline over the face.
-    framing = np.radians(97) < a < np.radians(117)
-    if a < np.radians(62):
-        z_end = back_z + rng_h.uniform(-.012, .012)
-    elif framing:
-        z_end = shoulder_z - .03 + rng_h.uniform(-.012, .012)
-    elif a < np.radians(100):
-        f = (a - np.radians(62)) / np.radians(38)
-        z_end = back_z * (1 - f) + shoulder_z * f
-    else:
-        z_end = None
-    fronts.append(z_end is None)
-    hairline = eye_mid[2] + .032 + .034 * np.clip((a - np.radians(118)) / np.radians(62), 0, 1)
+    phi = -np.pi + 2 * np.pi * k / N_AROUND
     pts = []
     for e in np.radians(np.linspace(84, -60, 90)):
         d = PART_TILT @ np.array([np.sin(phi) * np.cos(e), np.cos(phi) * np.cos(e), np.sin(e)])
@@ -621,33 +628,9 @@ for k in range(N_AROUND):
         if e > 0:
             # A little more volume towards the crown.
             p = HC + d * max(np.linalg.norm(p - HC), shell_radius(d) + .003 * np.clip(e / np.radians(55), 0, 1))
-        if z_end is None and p[2] < hairline:
-            break
-        if z_end is not None and p[2] < (eye_mid[2] + .005 if framing else nape_z):
+        if p[2] < hairline_at(p):
             break
         pts.append(p)
-    if z_end is not None and pts:
-        # Below the skull the hair falls, gathering a little towards the middle of the back,
-        # and is pushed back (not out) off the neck, shoulders and back. The side locks start
-        # their fall behind the ear; the ones from the temples fall beside her cheeks, clear
-        # of the face and onto the front of the shoulders.
-        x0, y0, z0 = pts[-1]
-        tuck = 0. if framing else .028 * np.clip((a - np.radians(55)) / np.radians(40), 0, 1)
-        push = np.array([np.sign(np.sin(phi)), -.3, 0.]) if framing else np.array([.3 * np.sin(phi), 1., 0.])
-        push /= np.linalg.norm(push)
-        levels = np.linspace(z0 - .012, z_end, 24)
-        for j, z in enumerate(levels):
-            f = (j + 1) / len(levels)
-            p = np.array([x0 * (1 + .06 * f) if framing else x0 * (1 - .3 * f), y0 + tuck * min(1, 3 * f), z])
-            # Beyond the furthest skin or cloth along the push line, not merely away from it.
-            near = wear_pts[np.abs(wear_pts[:, 2] - z) < .02]
-            rel = near - p
-            ahead = rel @ push
-            side = np.linalg.norm(rel - np.outer(ahead, push), axis=1)
-            block = ahead[side < .03]
-            if len(block) and block.max() > -CLEAR:
-                p = p + push * (block.max() + CLEAR)
-            pts.append(p)
     pts = np.array(pts)
     seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
     curves.append((pts, np.concatenate([[0], np.cumsum(seg)])))
@@ -691,8 +674,8 @@ for k in range(N_AROUND):
             if wear_dist(G[k, i]) >= CLEAR - .0015:
                 break
             G[k, i] = G[k, i] + out * .0015
-# Where the hair meets the forehead it grows out of the skin: no rim, it thins to nothing.
-for k in np.flatnonzero(fronts):
+# Where the hair meets the skin it grows out of it: no rim, it thins to nothing.
+for k in range(N_AROUND):
     for n in range(7):
         i = last[k] - n
         if i < 1:
@@ -700,7 +683,35 @@ for k in np.flatnonzero(fronts):
         loc, normal, _, _ = skin_bvh.find_nearest(Vector(G[k, i]))
         w = ((7 - n) / 7) ** 1.5
         G[k, i] = G[k, i] * (1 - w) + (np.array(loc) + np.array(normal) * .0012) * w
+# A clear side part over her left brow, from the hairline back to the top of her head: the
+# hair lies close to the scalp beside it and leaves a fine line of scalp between.
+PART_X, PART_Y_END, PART_GAP = .03, HC[1] + .005, .0024
+
+
+def in_part(p):
+    return p[1] < PART_Y_END and p[2] > eye_mid[2] + .04
+
+
+for k in range(N_AROUND):
+    for i in range(last[k] + 1):
+        p = G[k, i]
+        if not in_part(p):
+            continue
+        dx = p[0] - PART_X
+        w = np.clip(1 - abs(dx) / .018, 0, 1) * np.clip((PART_Y_END - p[1]) / .012, 0, 1)
+        w = w * w * (3 - 2 * w)
+        loc, normal, _, _ = skin_bvh.find_nearest(Vector(p))
+        G[k, i] = p * (1 - w) + (np.array(loc) + np.array(normal) * .0016) * w
+        if abs(dx) < PART_GAP * 2.8:
+            G[k, i][0] = PART_X + (PART_GAP if dx >= 0 else -PART_GAP)
 clamp_tails()
+
+
+def across_part(vs):
+    xs = [v.co.x - PART_X for v in vs]
+    return min(xs) < 0 < max(xs) and all(in_part(np.array(v.co)) for v in vs)
+
+
 bm = bmesh.new()
 uv_layer = bm.loops.layers.uv.new('UVMap')
 grid = [[bm.verts.new(G[k, i]) if valid[k, i] else None for i in range(N_ALONG)] for k in range(N_AROUND)]
@@ -709,9 +720,10 @@ LEN = .62  # metres of strand per texture repeat
 for k in range(N_AROUND):
     k2 = (k + 1) % N_AROUND
     u0, u1 = k / N_AROUND * 6, (k + 1) / N_AROUND * 6
-    f = bm.faces.new((crown, grid[k2][0], grid[k][0]))
-    for loop, uv in zip(f.loops, [((u0 + u1) / 2, 0), (u1, 0), (u0, 0)]):
-        loop[uv_layer].uv = uv
+    if not across_part((crown, grid[k2][0], grid[k][0])):
+        f = bm.faces.new((crown, grid[k2][0], grid[k][0]))
+        for loop, uv in zip(f.loops, [((u0 + u1) / 2, 0), (u1, 0), (u0, 0)]):
+            loop[uv_layer].uv = uv
     for i in range(N_ALONG - 1):
         a0, b0, b1, a1 = grid[k][i], grid[k2][i], grid[k2][i + 1], grid[k][i + 1]
         if a0 is None or b0 is None:
@@ -720,6 +732,8 @@ for k in range(N_AROUND):
                                          (b1, (u1, S_AT[i + 1] / LEN)), (a1, (u0, S_AT[i + 1] / LEN))) if v is not None]
         if len(corners) < 3:
             break
+        if across_part([v for v, _ in corners]):
+            continue
         f = bm.faces.new([v for v, _ in corners])
         for loop, (_, uv) in zip(f.loops, corners):
             loop[uv_layer].uv = uv
@@ -730,6 +744,8 @@ for k in range(N_AROUND):
         tip, uo, uh = grid[lo][last[lo]], (u0 if lo == k else u1), (u0 if hi == k else u1)
         for i in range(last[lo] + 1, min(last[hi], last[lo] + 4)):
             tri = [tip, grid[hi][i], grid[hi][i + 1]] if hi == k2 else [tip, grid[hi][i + 1], grid[hi][i]]
+            if across_part(tri):
+                continue
             uvs = [(uo, S_AT[last[lo]] / LEN)] + ([(uh, S_AT[i] / LEN), (uh, S_AT[i + 1] / LEN)] if hi == k2 else [(uh, S_AT[i + 1] / LEN), (uh, S_AT[i] / LEN)])
             try:
                 f = bm.faces.new(tri)
@@ -737,6 +753,124 @@ for k in range(N_AROUND):
                 continue
             for loop, uv in zip(f.loops, uvs):
                 loop[uv_layer].uv = uv
+
+
+# Two plaits, gathered behind her ears and brought forward over her shoulders, down the front
+# of her top, tied in white with a short brushed end. Each is a column of plump, tilted lobes,
+# alternating side to side the way the three strands cross, so the ink draws the chevrons of a
+# real plait rather than a tangle of thin tubes.
+
+
+def front_y(x, z, clear):
+    near = wear_pts[(np.abs(wear_pts[:, 0] - x) < .02) & (np.abs(wear_pts[:, 2] - z) < .02)]
+    return (near[:, 1].min() if len(near) else eye_mid[1]) - clear
+
+
+def away_from_body(p):
+    best = None
+    for bvh in (skin_bvh, suit_bvh):
+        loc, normal, _, d = bvh.find_nearest(Vector(p))
+        if best is None or d < best[1]:
+            best = (np.array(loc), d, np.array(normal))
+    loc, d, normal = best
+    out = (p - loc) / d if d > 1e-6 else normal
+    return loc, d, out
+
+
+def braid(sign):
+    s_ = 'L' if sign > 0 else 'R'
+    shoulder = bones['clavicle.' + s_][1]
+    x = sign * .086
+    ctrl = [np.array([sign * .052, HC[1] + .034, eye_mid[2] - .058]),
+            np.array([sign * .068, HC[1] + .012, nape_z - .03]),
+            np.array([x, bones['neck01'][0][1] - .005, shoulder[2] + .035]),
+            np.array([x, front_y(x, shoulder[2] - .01, .018), shoulder[2] - .02])]
+    # Down over her chest, drawing in a little towards the end.
+    for j, z in enumerate(np.linspace(shoulder[2] - .06, waist_z + .11, 5)):
+        xz = x - sign * .012 * j / 4
+        ctrl.append(np.array([xz, front_y(xz, z, .02), z]))
+    ctrl = np.array(ctrl)
+    pts = []
+    for i in range(len(ctrl) - 1):
+        p0, p1, p2, p3 = ctrl[max(i - 1, 0)], ctrl[i], ctrl[i + 1], ctrl[min(i + 2, len(ctrl) - 1)]
+        for t in np.linspace(0, 1, 12, endpoint=False):
+            pts.append(.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
+    pts.append(ctrl[-1])
+    pts = np.array(pts)
+    arc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(pts, axis=0), axis=1))])
+    n = 140
+    at = np.linspace(0, arc[-1], n)
+    path = np.array([np.interp(at, arc, pts[:, k]) for k in range(3)]).T
+    L = arc[-1]
+    radius = lambda s: .0135 * (1 - .3 * s / L) * (.78 + .22 * min(1, s / .02))
+    # Clear of her neck, shoulder and top by its own thickness, then smoothed.
+    for _ in range(4):
+        for i in range(n):
+            loc, d, out = away_from_body(path[i])
+            need = radius(at[i]) + .003
+            if d < need:
+                path[i] = loc + out * need
+        path[1:-1] = (path[:-2] + 2 * path[1:-1] + path[2:]) / 4
+    tangent = np.gradient(path, axis=0)
+    tangent /= np.linalg.norm(tangent, axis=1)[:, None]
+    point = lambda s: np.array([np.interp(s, at, path[:, k]) for k in range(3)])
+    tang = lambda s: (lambda v: v / np.linalg.norm(v))(np.array([np.interp(s, at, tangent[:, k]) for k in range(3)]))
+
+    def frame(s):
+        t = tang(s)
+        _, _, out = away_from_body(point(s))
+        side = np.cross(t, out)
+        side /= np.linalg.norm(side)
+        return t, side, np.cross(side, t)
+
+    def lobe(centre, axes, radii, segs=(10, 7)):
+        # The axes are the columns of the 3x3 block.
+        m3 = np.array([axes[0] * radii[0], axes[1] * radii[1], axes[2] * radii[2]]).T
+        m = Matrix([list(m3[0]) + [centre[0]], list(m3[1]) + [centre[1]], list(m3[2]) + [centre[2]], [0, 0, 0, 1]])
+        return bmesh.ops.create_uvsphere(bm, u_segments=segs[0], v_segments=segs[1], radius=1., matrix=m, calc_uvs=True)
+
+    s_tie = L - .045
+    # A rounder knot where the hair is gathered, over the join with the hair on her head.
+    t, side, depth = frame(0.)
+    lobe(point(0.) + t * .004, (side, depth, t), (radius(0) * 1.35, radius(0) * 1.05, radius(0) * 1.4))
+    s, j = .008, 0
+    while s < s_tie - .006:
+        t, side, depth = frame(s)
+        r = radius(s) * (1 - .3 * np.clip((s - (s_tie - .03)) / .03, 0, 1))
+        alt = 1 if j % 2 else -1
+        long = t - alt * .75 * side
+        long /= np.linalg.norm(long)
+        wide = np.cross(depth, long)
+        wide /= np.linalg.norm(wide)
+        # Lobes set well out to either side, so even far off the plait's edge is scalloped.
+        lobe(point(s) + side * alt * .44 * r + depth * .12 * r, (wide, np.cross(long, wide), long), (.68 * r, .52 * r, 1.3 * r))
+        s += .74 * r
+        j += 1
+    # The tie, and the brushed end below it.
+    t, side, depth = frame(s_tie)
+    rt = radius(s_tie) * .85
+    ring = lambda c, rad: [bm.verts.new(c + rad * (np.cos(a) * side + np.sin(a) * depth)) for a in np.linspace(0, 2 * np.pi, 14, endpoint=False)]
+    rings = [ring(point(s_tie) + t * dz, rt * f) for dz, f in ((-.005, .92), (0, 1.08), (.005, .92))]
+    for ra, rb in zip(rings, rings[1:]):
+        for q in range(14):
+            f = bm.faces.new((ra[q], ra[(q + 1) % 14], rb[(q + 1) % 14], rb[q]))
+            f.material_index = 1
+    rng_b = np.random.default_rng(3 + sign)
+    prof = [(.004, .75), (.012, 1.05), (.022, 1.12), (.032, .85), (.04, .4)]
+    rings = [ring(point(s_tie + dz), rt * f) for dz, f in prof]
+    tip = [bm.verts.new(point(s_tie + .044) + rt * .35 * (np.cos(a) * side + np.sin(a) * depth) * rng_b.uniform(.2, 1.4) + t * rng_b.uniform(-.004, .004))
+           for a in np.linspace(0, 2 * np.pi, 14, endpoint=False)]
+    rings.append(tip)
+    for i, (ra, rb) in enumerate(zip(rings, rings[1:])):
+        for q in range(14):
+            f = bm.faces.new((ra[q], ra[(q + 1) % 14], rb[(q + 1) % 14], rb[q]))
+            for loop, uv in zip(f.loops, [(q / 14, i / 12), ((q + 1) / 14, i / 12), ((q + 1) / 14, (i + 1) / 12), (q / 14, (i + 1) / 12)]):
+                loop[uv_layer].uv = uv
+    print('BRAID', s_, 'length', round(float(L), 3), 'lobes', j, flush=True)
+
+
+braid(1)
+braid(-1)
 for f in bm.faces:
     f.smooth = True
 bm.normal_update()
@@ -767,6 +901,7 @@ tex = hair_mat.node_tree.nodes.new('ShaderNodeTexImage')
 tex.image = strand_image()
 hair_mat.node_tree.links.new(tex.outputs['Color'], hair_mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
 hair_mesh.materials.append(hair_mat)
+hair_mesh.materials.append(mh.plain_material('Thuan.HairTie', (.95, .94, .9, 1), .6))
 objs['Hair'] = hair
 print('HAIR', len(hair_mesh.vertices), 'verts', flush=True)
 paint_scalp()
@@ -817,7 +952,6 @@ for img in list(bpy.data.images):
         bpy.data.images.remove(img)
 
 # Up to her real height, 1.64 m: meshes with their shape keys, and the bones with them.
-from mathutils import Matrix
 K = 1.64 / mh.coords(body)[:, 2].max()
 for obj in [o for o in bpy.data.objects if o.type == 'MESH' and o.name.startswith('Thuan.')]:
     obj.data.transform(Matrix.Scale(K, 4), shape_keys=True)
