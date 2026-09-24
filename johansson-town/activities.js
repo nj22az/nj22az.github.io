@@ -80,7 +80,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);previousFocus?.focus?.();}
+  function close(){ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   function show(title,text,buttons=[]){
     ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     modalRevision++;const revision=modalRevision;
@@ -134,8 +134,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function runDialogue(script,startId,title){
     const dialogue=createTownDialogue({script,state,note,getMinutes,
       getPlace:()=>getSocialContext().inside||'street',getRain:()=>state.weather===true});
+    const face=mood=>window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',mood||null);
     const render=frame=>{
       if(frame.done){save();close();return;}
+      // Each of her lines carries a mood (happy, sad, angry, shy...), and her face follows.
+      if(frame.speaker==='Thuan')face(frame.mood);
       const buttons=frame.choices.length
         ? frame.choices.map(choice=>[choice.text,()=>render(dialogue.choose(choice.index))])
         : [[frame.endsHere?'See you soon, Thuan':'Go on',()=>render(dialogue.advance())]];

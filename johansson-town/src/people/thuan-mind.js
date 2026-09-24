@@ -7,7 +7,7 @@
  * eighteen times the entire town, so nothing here starts until the player asks for it
  * and the scripted dialogue remains the default.
  *
- * @typedef {'neutral'|'smile'|'concern'|'surprise'} ThuanExpression
+ * @typedef {'neutral'|'smile'|'concern'|'surprise'|'happy'|'sad'|'angry'|'shy'} ThuanExpression
  * @typedef {'idle'|'wave'|'point'} ThuanGesture
  * @typedef {object} ThuanReply
  * @property {string} dialogue
@@ -19,7 +19,7 @@ export const MODEL_ID='Llama-3.2-1B-Instruct-q4f16_1-MLC';
 export const MODEL_BYTES=672*1024*1024;
 const WEB_LLM_URL='https://esm.run/@mlc-ai/web-llm';
 
-const EXPRESSIONS=['neutral','smile','concern','surprise'];
+const EXPRESSIONS=['neutral','smile','concern','surprise','happy','sad','angry','shy'];
 const GESTURES=['idle','wave','point'];
 
 /** Kept short: every token of this is paid for on a 1B model's context. */
@@ -28,7 +28,7 @@ export const SYSTEM_PROMPT=[
  'You are Vietnamese, from Nam Phuoc. You are dry, practical and brief. You never gush.',
  'You keep the till and the plants. You name the plants. The stubborn one by the door is the assistant manager.',
  'Reply with ONE or TWO short sentences of spoken dialogue. Never narrate actions or use asterisks.',
- 'Answer only as JSON: {"dialogue":string,"expression":"neutral"|"smile"|"concern"|"surprise","gesture":"idle"|"wave"|"point"}'
+ 'Answer only as JSON: {"dialogue":string,"expression":"neutral"|"smile"|"happy"|"sad"|"angry"|"shy"|"concern"|"surprise","gesture":"idle"|"wave"|"point"}'
 ].join(' ');
 
 /**

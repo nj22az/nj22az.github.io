@@ -62,7 +62,7 @@ export function createDialogue({script,variables=()=>({}),execute=()=>{},playerN
   if(id===END_DIALOG_ID||!script[id]){node=null;page=0;ended=true;return view();}
   const raw=script[id];
   const choices=(raw.choices||[]).filter(c=>!c.show_only_if||met(c.show_only_if));
-  node={id,speaker:raw.name||'',icon:raw.icon||'none',voice:raw.voice||'default',
+  node={id,speaker:raw.name||'',icon:raw.icon||'none',voice:raw.voice||'default',mood:typeof raw.mood==='string'?raw.mood:null,
    texts:Array.isArray(raw.text)?raw.text:[raw.text],choices,
    // next is unused when a node offers choices, exactly as in the original.
    next:raw.choices?END_DIALOG_ID:resolveNext(raw.next)};
@@ -72,10 +72,11 @@ export function createDialogue({script,variables=()=>({}),execute=()=>{},playerN
  }
 
  function view(){
-  if(ended||!node)return {done:true,id:lastId,speaker:'',text:'',pauses:{},choices:[],page:0,pages:0,atLastPage:true,endsHere:true};
+  if(ended||!node)return {done:true,id:lastId,speaker:'',mood:null,text:'',pauses:{},choices:[],page:0,pages:0,atLastPage:true,endsHere:true};
   const {text,pauses}=printable(node.texts[page],playerName);
   const atLastPage=page===node.texts.length-1;
-  return {done:false,id:node.id,speaker:node.speaker,icon:node.icon,voice:node.voice,
+  // mood: how the speaker's face should look for this node (the town maps it to a face).
+  return {done:false,id:node.id,speaker:node.speaker,icon:node.icon,voice:node.voice,mood:node.mood,
    text,pauses,page,pages:node.texts.length,atLastPage,
    // Whether reading on closes the conversation, so a caller can label its own button
    // honestly instead of promising a goodbye that leads into another node.

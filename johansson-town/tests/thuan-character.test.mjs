@@ -291,3 +291,34 @@ test('an empty question is ignored and an unusable answer is admitted',async()=>
  assert.match(brokenShown.at(-1).text,/did not follow that/,'A failed generation says so rather than inventing');
  assert.equal(broken.transcript.at(-1).text,'…');
 });
+
+test('happy, sad, angry and shy are full presets, and each reads differently',()=>{
+ for(const name of ['happy','sad','angry','shy']){
+  const preset=EXPRESSIONS[name];
+  for(const key of Object.keys(EXPRESSIONS.neutral))assert.ok(key in preset,name+' sets '+key);
+ }
+ assert.ok(EXPRESSIONS.happy.smile>EXPRESSIONS.smile.smile-.2&&EXPRESSIONS.happy.squint>0,'A happy smile reaches the eyes');
+ assert.ok(EXPRESSIONS.sad.frown>.5&&EXPRESSIONS.sad.browInner>.5&&EXPRESSIONS.sad.smile===0);
+ assert.ok(EXPRESSIONS.angry.browDown>.5&&EXPRESSIONS.angry.press>0&&EXPRESSIONS.angry.smile===0);
+ assert.ok(EXPRESSIONS.shy.blush>.5&&EXPRESSIONS.shy.smile>0&&EXPRESSIONS.shy.smile<EXPRESSIONS.happy.smile);
+});
+
+test('the brows, lashes and blush move with the face, and the blush fades in when she is shy',()=>{
+ const head={isMesh:true,name:'ThuanBody',morphTargetDictionary:{eyeBlinkLeft:0,browDown:1,mouthFrown:2,mouthSmileLeft:3},morphTargetInfluences:[0,0,0,0]};
+ const brows={isMesh:true,name:'Thuaneyebrow001',morphTargetDictionary:{browDown:0,eyeBlinkLeft:1},morphTargetInfluences:[0,0]};
+ const blush={isMesh:true,name:'ThuanBlush',visible:true,morphTargetDictionary:{mouthSmileLeft:0},morphTargetInfluences:[0],material:null};
+ const model={traverse(fn){for(const m of [head,brows,blush])fn(m);}};
+ const found=findMorphTargets(model);
+ assert.equal(found.mesh,head,'The head is the richest mesh');
+ assert.equal(found.meshes.length,3,'Every mesh with face shapes is found');
+ const controller=createThuanFaceController({model,random:()=>0});
+ assert.equal(blush.visible,false,'The blush starts hidden');
+ controller.setExpression('angry');run(controller,2);
+ assert.ok(head.morphTargetInfluences[1]>.8&&brows.morphTargetInfluences[0]>.8,'The brows come down with the brow skin');
+ assert.ok(head.morphTargetInfluences[2]>.6,'and the mouth turns down');
+ assert.equal(blush.visible,false,'No flush when cross');
+ controller.setExpression('shy');run(controller,2);
+ assert.equal(blush.visible,true);
+ assert.ok(blush.material.opacity>.3&&blush.material.depthWrite===false,'A soft flush, drawn without an ink outline');
+ assert.ok(blush.morphTargetInfluences[0]>.3,'The blush follows her smile');
+});

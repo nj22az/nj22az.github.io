@@ -426,7 +426,7 @@ def paint_face():
         half = abs(pos[np.argmax(corner), 0])
         mouth_z = pos[np.argmax(corner), 2]
         lipw = (np.clip((lipness - .6) / .15, 0, 1) * low_face * np.clip((half * .9 - np.abs(pos[:, 0])) / (half * .22), 0, 1)
-                * (np.abs(pos[:, 2] - mouth_z) < .014))
+                * (np.abs(pos[:, 2] - mouth_z) < .011))
         # Lipstick: a clear, warm rose red.
         layer(lipw, (.80, .22, .31), .82, 1)
         for sign in (1, -1):
@@ -540,6 +540,56 @@ def lashes():
 
 
 objs['Lashes'] = lashes()
+
+
+def blush():
+    """Two soft patches over the apples of her cheeks, a hair's breadth off the skin and
+    following every face shape, for the flush when she is shy. Their UVs are a disc
+    centred on each cheek; the town fades them in with a radial alpha (they ship clear)."""
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new('UVMap')
+    R = .026
+    mesh = full.data
+    nrm = np.array([v.normal for v in mesh.vertices])
+    for sign in (1, -1):
+        apple = np.array([sign * .043, 0, eye_mid[2] - .036])
+        near = [i for i in body_verts if abs(pos[i, 0] - apple[0]) < .01 and abs(pos[i, 2] - apple[2]) < .01]
+        apple[1] = min(pos[i, 1] for i in near)
+        inside = set(i for i in body_verts if np.linalg.norm(pos[i] - apple) < R and nrm[i, 1] < -.2)
+        made = {}
+        for poly in mesh.polygons:
+            vs = list(poly.vertices)
+            if not all(v in inside for v in vs):
+                continue
+            for v in vs:
+                if v not in made:
+                    made[v] = bm.verts.new(pos[v] + nrm[v] * .0012)
+            f = bm.faces.new([made[v] for v in vs])
+            for loop, v in zip(f.loops, vs):
+                loop[uvl].uv = (.5 + (pos[v, 0] - apple[0]) / (2 * R), .5 + (pos[v, 2] - apple[2]) / (2 * R))
+            f.smooth = True
+    blush_mesh = bpy.data.meshes.new('Thuan.Blush')
+    bm.to_mesh(blush_mesh)
+    bm.free()
+    obj = bpy.data.objects.new('Thuan.Blush', blush_mesh)
+    bpy.context.scene.collection.objects.link(obj)
+    mat = mh.plain_material('Thuan.Blush', (.95, .45, .52, 1), .6, .1)
+    mat.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = 0.
+    mat.blend_method = 'BLEND'
+    blush_mesh.materials.append(mat)
+    co = mh.coords(obj)
+    obj.shape_key_add(name='Basis')
+    for name, delta in FACE.items():
+        moved = co.copy()
+        for i, p in enumerate(co):
+            idx, w = mh.weighted(brow_tree, p, 3)
+            moved[i] = p + (w[:, None] * delta[idx]).sum(0)
+        obj.shape_key_add(name=name, from_mix=False).data.foreach_set('co', moved.ravel())
+    print('BLUSH', len(blush_mesh.vertices), flush=True)
+    return obj
+
+
+objs['Blush'] = blush()
 full.data.attributes.remove(full.data.attributes['town_kind'])
 
 # Her hair, built to her head: a close surface of strands from a side part, a soft hairline

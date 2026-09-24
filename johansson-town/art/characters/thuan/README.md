@@ -31,7 +31,13 @@ which had no fingers, toes or face shapes to speak of.
   `browOuterUpRight`, `browInnerUp`, `browDown`, `jawOpen`, `mouthSmileLeft`,
   `mouthSmileRight`, `mouthFunnel`, `mouthPucker`, `mouthFrown`, `mouthStretch`,
   `mouthPress`), so `thuan-face-controller.js` drives them unchanged. Her smile is a soft
-  closed one, not MakeHuman's full corner-puller.
+  closed one, not MakeHuman's full corner-puller. The brows, lashes and a pair of blush
+  patches over her cheeks (`Thuan.Blush`, shipped clear) carry the same shapes, and the
+  controller drives every one of them. Her moods are presets on those shapes: neutral,
+  smile, concern, surprise, and happy (a smile that reaches the eyes), sad (inner brows up,
+  corners down), angry (brows down, lips pressed) and shy (a small smile and a flush, the
+  blush patches fading in with a radial alpha). Her lines in `src/dialogue/sakura.json`
+  carry a `mood`, and her face follows it while the line is on screen.
 - **Swimwear**: the skin the clothes cover is its own mesh (`Thuan.SkinUnder`) with a red
   one-piece over it (`Thuan.Swimsuit`: high-cut legs, straps). Both are hidden until the
   onsen asks for them (`entity.userData.outfit = 'swim'`).
