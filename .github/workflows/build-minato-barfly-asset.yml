@@ -1,0 +1,52 @@
+name: Build Minato Barfly asset
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build-minato-barfly-asset.yml'
+      - 'johansson-town/art/characters/minato-barfly/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: barfly-asset-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender
+      - name: Build native scene, GLB and preview
+        run: |
+          blender --version
+          blender --background --factory-startup \
+            --python johansson-town/art/characters/minato-barfly/build_barfly.py \
+            -- --output "$RUNNER_TEMP/minato-barfly"
+      - name: Validate exported files
+        run: |
+          test -s "$RUNNER_TEMP/minato-barfly/minato-barfly.blend"
+          test -s "$RUNNER_TEMP/minato-barfly/minato-barfly.glb"
+          test -s "$RUNNER_TEMP/minato-barfly/minato-barfly-review.png"
+          python3 - <<'PY'
+          import json, os
+          path = os.path.join(os.environ['RUNNER_TEMP'], 'minato-barfly', 'minato-barfly-rig-audit.json')
+          report = json.load(open(path, encoding='utf-8'))
+          print(json.dumps(report, indent=2))
+          assert report['passed'], 'Blender rig audit did not pass'
+          PY
+      - name: Upload review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: minato-barfly-blender-review
+          path: ${{ runner.temp }}/minato-barfly/
+          if-no-files-found: error
+          retention-days: 30
