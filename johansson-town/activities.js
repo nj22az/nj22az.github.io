@@ -38,7 +38,7 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -68,7 +68,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   const characterControl=()=>window.__JOHANSSON_CHARACTER_CONTROL__;
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
-  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close()});
+  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close(),onPhase:phase=>onDialoguePhase(phase)});
 
   const workshopUI=createWorkshopUI({state,show,close,save,say,note,getContext:getSocialContext,getMinutes,preview:previewPrint,body,modal});
 
@@ -92,7 +92,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
-    buttons.forEach(([label,fn,disabled=false])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
+    buttons.forEach(([label,fn,disabled=false,say])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;if(say!==undefined)b.dataset.say=say||'';b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
     const speaker=title.split('·')[0].trim();
     const conversation=speaker==='Thuan'||!!DIALOGUE[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
@@ -259,7 +259,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
         note('Gave Thuan a present: '+item+'.');save();
         characterControl()?.feel?.('Thuan',reaction.mood,10);
         show(title,reaction.text,[['Back to Thuan',()=>thuanConversation()],['See you soon, Thuan',close]],{mood:reaction.mood});
-      }]),
+      },false,'I brought you this — '+item.toLowerCase()+'.']),
       ['Never mind',()=>thuanConversation()]]);
     show(title,greeting,[
       ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),

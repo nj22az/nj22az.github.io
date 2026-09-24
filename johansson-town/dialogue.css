@@ -84,73 +84,52 @@ body.conversation-open #subtitle{visibility:hidden}
  background:#9b4035;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .chat-input button:disabled{opacity:.6;cursor:progress}
 
-/* ---- RPG dialogue box (src/dialogue/dialogue-box.js) --------------------------------
-   One box along the bottom: a name tag on its top edge, the line typed out inside, a
-   tail pointing up at whoever is talking, and the replies underneath once the line has
-   finished. It sits over the town, not instead of it. */
-#activity.conversation.rpg{max-height:62dvh;padding-top:26px}
-#activity.conversation.rpg .activity-card{--tail-x:50%;width:min(700px,100%);padding:26px 22px 16px;border:3px solid #28594f;border-radius:22px;
- background:#fffaf0f2;backdrop-filter:blur(4px);box-shadow:0 6px 0 #1d4038,0 18px 40px #0e222b55;overflow:visible;animation:rpg-rise .22s ease-out}
-/* The tail: a small triangle on the top edge, under the speaker's screen position. */
-#activity.conversation.rpg .activity-card::before{content:"";position:absolute;top:-15px;left:clamp(28px,var(--tail-x),calc(100% - 28px));
- width:22px;height:22px;background:#fffaf0;border-left:3px solid #28594f;border-top:3px solid #28594f;transform:translateX(-50%) rotate(45deg);border-radius:4px 0 0 0}
-#activity.conversation.rpg #activityTitle{position:absolute;top:-18px;left:18px;margin:0;display:flex;align-items:baseline;gap:8px;z-index:1;font-size:0;color:transparent}
-#activity.conversation.rpg #activityTitle::before{content:attr(data-speaker);padding:5px 16px;border-radius:999px;background:#28594f;color:#fffaf0;font-size:15px;font-weight:800;letter-spacing:.04em;box-shadow:0 3px 0 #1d4038}
-#activity.conversation.rpg #activityTitle::after{content:attr(data-place);padding:3px 10px;border-radius:999px;background:#ffe9bd;color:#6b5140;font-size:11px;font-weight:700;letter-spacing:.05em}
-#activity.conversation.rpg #activityTitle[data-place=""]::after{display:none}
-#activity.conversation.rpg .activity-card header{position:absolute;top:-16px;right:14px;z-index:1}
-#activity.conversation.rpg #closeActivity{min-height:30px;padding:3px 12px;border:2px solid #28594f;background:#fffaf0;color:#28594f;font-size:12px}
-/* The line itself is back in the box, and reads like speech. */
-#activity.conversation.rpg #activityBody{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;
- margin:0 0 12px;font-size:18px;line-height:1.55;color:#22343b}
-#activity.conversation.rpg #activityBody p{margin:0;padding:0;border:0;background:none;border-radius:0;white-space:pre-line;min-height:2.6em}
-#activity.conversation.rpg #activityBody .chat-log,#activity.conversation.rpg #activityBody .chat-input{white-space:normal}
-/* Replies: a numbered list, one always selected. They wait for the line to finish. */
-#activity.conversation.rpg #activityActions{display:flex;flex-direction:column;gap:6px;transition:opacity .15s ease}
-#activity.conversation.rpg.typing #activityActions{opacity:0;pointer-events:none}
-#activity.conversation.rpg #activityActions button{display:flex;align-items:center;gap:10px;min-height:40px;padding:8px 14px 8px 12px;border:2px solid transparent;border-radius:12px;
- background:#f3ead6;color:#2b3d36;box-shadow:none;font-size:15px;font-weight:700;text-align:left}
-#activity.conversation.rpg #activityActions button::before{content:attr(data-key);flex:0 0 22px;height:22px;display:grid;place-items:center;border-radius:6px;background:#fffaf0;border:2px solid #d9c8a4;color:#8a6c4d;font-size:12px;font-weight:800}
-#activity.conversation.rpg #activityActions button[data-key=""]::before{visibility:hidden}
-#activity.conversation.rpg #activityActions button.selected{background:#28594f;color:#fffaf0;border-color:#28594f;transform:translateX(4px)}
-#activity.conversation.rpg #activityActions button.selected::before{background:#ffd76a;border-color:#ffd76a;color:#28594f}
-#activity.conversation.rpg #activityActions button.selected::after{content:"◀";margin-left:auto;font-size:11px;opacity:.8}
-/* A single way on is a "continue" arrow in the corner, not a big button. */
-#activity.conversation.rpg #activityActions.single{align-items:flex-end}
-#activity.conversation.rpg #activityActions.single button{min-height:34px;padding:6px 14px;border-radius:999px}
-#activity.conversation.rpg #activityActions.single button::before{content:"E";font-family:ui-monospace,monospace}
-#activity.conversation.rpg #activityActions.single button.selected::after{content:"▼";animation:rpg-bob .9s ease-in-out infinite}
-@media(hover:none){#activity.conversation.rpg #activityActions button::before{display:none}#activity.conversation.rpg #activityActions.single button::before{display:none}}
-@keyframes rpg-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes rpg-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
-@media(max-width:719px){
- #activity.conversation.rpg{max-height:55dvh}
- #activity.conversation.rpg .activity-card{padding:22px 14px 12px}
- #activity.conversation.rpg #activityBody{font-size:16px;margin-bottom:9px}
- #activity.conversation.rpg #activityActions button{min-height:38px;font-size:14px}
-}
-@media(prefers-reduced-motion:reduce){#activity.conversation.rpg .activity-card{animation:none}#activity.conversation.rpg #activityActions.single button.selected::after{animation:none}#activity.conversation.rpg #activityActions button.selected{transform:none}}
-/* Over the speaker's head: only who is talking, with dots while the line is typed. */
-.neighbour-chat.speaking{width:auto;min-width:0;padding:5px 11px;border-color:#28594f;background:#fffaf0;text-align:center}
-.neighbour-chat.speaking strong{margin:0;color:#28594f;font-size:12px}
-.neighbour-chat.speaking span{display:none}
-.neighbour-chat.speaking.typing span{display:block;height:8px;background:radial-gradient(circle,#28594f 2px,transparent 2.5px) 0 50%/8px 8px repeat-x;width:24px;margin:3px auto 0;animation:rpg-dots .9s steps(3) infinite}
-@keyframes rpg-dots{from{width:8px}to{width:32px}}
-#activity.conversation.rpg #activityActions:not(.single){max-height:min(34dvh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 2px 0}
-/* Replies in two tidy columns where there is room (read left to right, top to bottom),
-   one column on a phone; never wider than the box. */
-#activity.conversation.rpg #activityActions:not(.single){display:grid;grid-template-columns:1fr;overflow-x:hidden}
-@media(min-width:720px){#activity.conversation.rpg #activityActions:not(.single){grid-template-columns:repeat(2,minmax(0,1fr))}}
-#activity.conversation.rpg #activityActions button{min-height:36px;padding:6px 12px 6px 10px;font-size:14px}
-#activity.conversation.rpg #activityActions button.selected{transform:none}
-#activity.conversation.rpg .activity-card{padding-top:24px;padding-bottom:12px}
-#activity.conversation.rpg #activityBody{margin-bottom:10px;font-size:17px}
-/* "Leave", with its key where there is a keyboard. */
-#activity.conversation.rpg #closeActivity{font-size:0}
+/* ---- Conversations as scenes (src/dialogue/dialogue-box.js) -----------------------
+   Shenmue's staging, Grim Fandango's words. The frame goes letterboxed and the HUD steps
+   out of the way. No box, no name tag: the line is a subtitle in the speaker's colour,
+   and your replies are plain lines underneath; the one under the cursor lights up. */
+body.conversation-open::before{content:"";position:fixed;left:0;right:0;top:0;height:9vh;background:#000;z-index:29;pointer-events:none;animation:scene-bar-top .35s ease-out}
+body.conversation-open #place,body.conversation-open #placeSub,body.conversation-open #clock,body.conversation-open #timeText,body.conversation-open #waypoint,
+body.conversation-open #cameraButton,body.conversation-open #viewButton,body.conversation-open #movesButton,body.conversation-open #directoryButton,
+body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conversation-open #mobile,body.conversation-open .neighbour-chat{opacity:0!important;pointer-events:none!important;transition:opacity .25s}
+#activity.conversation.rpg{--line-colour:#fff;inset:auto 0 0;max-height:none;padding:6vh max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+ background:linear-gradient(to top,#000 0,#000c 62%,#0000 100%);pointer-events:auto;z-index:30}
+#activity.conversation.rpg .activity-card{width:min(860px,100%);margin:0 auto;padding:0;border:0;border-radius:0;background:none;backdrop-filter:none;box-shadow:none;overflow:visible;animation:none;max-height:none;color:#fff;
+ font-family:"Futura","Avenir Next","Century Gothic","Trebuchet MS",system-ui,sans-serif}
+#activity.conversation.rpg .activity-card::before{content:none}
+#activity.conversation.rpg #activityTitle{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;margin:0}
+#activity.conversation.rpg .activity-card header{position:absolute;top:calc(-6vh + 6px);right:0;z-index:1}
+#activity.conversation.rpg #closeActivity{min-height:28px;padding:2px 10px;border:1px solid #ffffff55;border-radius:4px;background:none;color:#ffffffb0;font-size:0;letter-spacing:.08em;box-shadow:none}
 #activity.conversation.rpg #closeActivity span{display:none}
-#activity.conversation.rpg #closeActivity::before{content:"Leave";font-size:12px}
-@media(hover:hover){#activity.conversation.rpg #closeActivity::after{content:"Esc";margin-left:6px;padding:1px 5px;border-radius:5px;background:#28594f;color:#fffaf0;font:700 10px ui-monospace,monospace}}
-#activity.conversation.rpg #activityActions button:hover{transform:none}
-#activity.conversation.rpg #activityTitle{max-width:calc(100% - 130px)}
-#activity.conversation.rpg #activityTitle::after{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media(max-width:480px){#activity.conversation.rpg #activityTitle::after{display:none}}
+#activity.conversation.rpg #closeActivity::before{content:"LEAVE";font-size:11px}
+@media(hover:hover){#activity.conversation.rpg #closeActivity::after{content:"ESC";margin-left:7px;font:700 10px ui-monospace,monospace;opacity:.6}}
+/* The line: a subtitle, whole, in the speaker's colour, outlined so it reads on anything. */
+#activity.conversation.rpg #activityBody{position:relative;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;margin:0 0 14px;text-align:center}
+#activity.conversation.rpg #activityBody p{margin:0 auto;padding:0;border:0;background:none;border-radius:0;max-width:62ch;white-space:pre-line;
+ font-size:clamp(17px,2.1vw,23px);line-height:1.45;letter-spacing:.01em;color:var(--line-colour);text-shadow:0 2px 0 #000,0 0 3px #000,0 0 12px #000a;animation:scene-line .3s ease-out}
+/* Johansson's own line takes the same spot, in white. */
+#activity.conversation.rpg #activityBody .rpg-own{display:none;color:#fff}
+#activity.conversation.rpg.player-speaking #activityBody .rpg-line{display:none}
+#activity.conversation.rpg.player-speaking #activityBody .rpg-own{display:block}
+#activity.conversation.rpg #activityBody .chat-log,#activity.conversation.rpg #activityBody .chat-input{white-space:normal;text-align:left;max-width:62ch;margin-left:auto;margin-right:auto}
+/* Replies: plain lines, left-aligned under the subtitle. The lit one is gold. */
+#activity.conversation.rpg #activityActions{display:flex;flex-direction:column;align-items:stretch;gap:0;max-width:62ch;margin:0 auto;padding:0;transition:opacity .25s ease;
+ max-height:min(32vh,320px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff40 transparent}
+#activity.conversation.rpg.listening #activityActions,#activity.conversation.rpg.player-speaking #activityActions{opacity:0;pointer-events:none}
+#activity.conversation.rpg #activityActions button{display:block;width:100%;min-height:0;margin:0;padding:5px 4px;border:0;border-radius:0;background:none;box-shadow:none;transform:none;
+ color:#ffffffa8;font:inherit;font-size:clamp(15px,1.7vw,19px);font-weight:500;line-height:1.35;letter-spacing:.01em;text-align:left;text-shadow:0 2px 0 #000;cursor:pointer;filter:none}
+#activity.conversation.rpg #activityActions button::before,#activity.conversation.rpg #activityActions button::after{content:none}
+#activity.conversation.rpg #activityActions button.selected,#activity.conversation.rpg #activityActions button:hover{color:#ffcf4d;background:none;transform:none;filter:none}
+#activity.conversation.rpg #activityActions button:focus-visible{outline:none}
+#activity.conversation.rpg #activityActions button:active:not(:disabled){transform:none;box-shadow:none}
+@keyframes scene-line{from{opacity:0}to{opacity:1}}
+@keyframes scene-bar-top{from{transform:translateY(-100%)}to{transform:none}}
+@media(max-width:719px){
+ body.conversation-open::before{height:6vh}
+ #activity.conversation.rpg{padding-top:5vh}
+ #activity.conversation.rpg #activityActions{max-height:34vh}
+}
+@media(prefers-reduced-motion:reduce){body.conversation-open::before,#activity.conversation.rpg #activityBody p{animation:none}}
+/* Leave sits in the top letterbox bar, out of the picture. */
+#activity.conversation.rpg .activity-card header{position:fixed;top:max(6px,calc(4.5vh - 14px));right:max(16px,env(safe-area-inset-right));z-index:31}
+@media(max-width:719px){#activity.conversation.rpg .activity-card header{top:max(4px,calc(3vh - 14px))}}

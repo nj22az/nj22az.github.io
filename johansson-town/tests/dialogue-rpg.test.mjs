@@ -66,3 +66,19 @@ test('giving Thuan a fish: she takes it, beams, and a second present makes her s
  assert.equal(moods.at(-1),null,'Closing releases the pinned face');
  delete window.__JOHANSSON_CHARACTER_CONTROL__;
 });
+
+test('Johansson says what you pick, unless it is something you do rather than say',async()=>{
+ const {spokenLine,speakerColour,readingBeat,playerLineTime}=await import('../src/dialogue/dialogue-box.js');
+ assert.equal(spokenLine('How is Thuan?'),'How is Thuan?');
+ assert.equal(spokenLine('I like your hair'),'I like your hair.','A plain label becomes a sentence');
+ assert.equal(spokenLine('Talk with Thuan'),'Got a minute, Thuan?','Menu labels become what he would actually say');
+ assert.equal(spokenLine('Pay ¥230 in cash'),'Here you are.');
+ for(const silent of ['Go on','Look at the receipt','Back to Thuan','Read the shop ledger','Put something back'])assert.equal(spokenLine(silent),null,silent+' is done, not said');
+ assert.equal(spokenLine('Sea bream','I brought you this — sea bream.'),'I brought you this — sea bream.','A button may carry its own line');
+ assert.equal(spokenLine('Anything',''),null,'or none');
+ assert.equal(speakerColour('Johansson'),'#ffffff','Johansson speaks in white');
+ assert.equal(speakerColour('Thuan'),'#ffd56b');
+ assert.equal(speakerColour('Someone new'),speakerColour('Someone new'),'Anyone else keeps one colour');
+ assert.ok(readingBeat('short')<readingBeat('x'.repeat(80))&&readingBeat('x'.repeat(900))<=1600,'Longer lines get a longer beat, within reason');
+ assert.ok(playerLineTime('Hi.')>=1200&&playerLineTime('x'.repeat(900))<=3200);
+});

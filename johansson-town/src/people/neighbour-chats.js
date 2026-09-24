@@ -70,11 +70,7 @@ export function createChatBubble({camera,canvas,target,blocked=()=>false}){
   const rect=canvas.getBoundingClientRect?.()||{left:0,top:0,width:innerWidth,height:innerHeight};
   const x=rect.left+(p.x+1)*rect.width/2,y=rect.top+(1-p.y)*rect.height/2;
   if(y<100||y>rect.top+rect.height*.72)return;
-  // In a conversation with you the line is in the dialogue box; the bubble only marks
-  // who is talking, with dots while the line is still being said.
-  bubble.classList.toggle('speaking',!!chat.speaking);bubble.classList.toggle('typing',!!chat.typing);
-  name.textContent=chat.speaker.profile.name;line.textContent=chat.speaking?'':chat.text;
-  bubble.style.left=Math.max(chat.speaking?60:116,Math.min(innerWidth-(chat.speaking?60:116),x))+'px';bubble.style.top=y+'px';bubble.hidden=false;
-  return {x,y};
+  name.textContent=chat.speaker.profile.name;line.textContent=chat.text;
+  bubble.style.left=Math.max(116,Math.min(innerWidth-116,x))+'px';bubble.style.top=y+'px';bubble.hidden=false;
  },hide(){bubble.hidden=true;}};
 }
