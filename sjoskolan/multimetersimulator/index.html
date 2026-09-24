@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="sv" data-theme="cobalt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multimetersimulator · Sjöskolan</title>
+<meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="simulator.css">
+</head>
+<body class="multimeter-page">
+<nav id="site-nav" class="site-nav"></nav>
+<main id="main-content" class="sim-app">
+  <header class="sim-heading">
+    <div><a class="back-link" href="../vecka-39/aktuell/">← Sjöskolan · vecka 39</a><h1>Multimeterlabbet</h1><p>Välj funktion. Koppla mätspetsarna. Förklara resultatet.</p></div>
+    <a class="presentation-link" href="../vecka-39/aktuell/Multimeter_Sjoskolan_v7_SV.pptx">Öppna PowerPoint ↗</a>
+  </header>
+  <div class="lesson-bar"><label for="lesson-select">Övning</label><select id="lesson-select"></select><button id="free-mode" aria-pressed="false">Fri övning</button><span id="progress">0 av 8 klara</span></div>
+  <div class="sim-layout">
+    <section class="work-area" aria-label="Mätplats">
+      <div id="workbench" class="workbench">
+        <div class="circuit-area">
+          <div class="bench-heading"><div><span class="eyebrow">Mätplats</span><h2 id="circuit-title">Hyttbelysning · 12 V DC</h2></div><span id="source-status">Matning bruten</span></div>
+          <div id="circuit" class="circuit" aria-label="Kopplingsschema">
+            <svg id="diagram" viewBox="0 0 600 340" role="img" aria-labelledby="diagram-title"></svg>
+            <div id="nodes"></div>
+            <button class="probe probe-black" id="probe-black" data-probe="black" aria-label="Välj eller dra svart mätspets">Svart</button>
+            <button class="probe probe-red" id="probe-red" data-probe="red" aria-label="Välj eller dra röd mätspets">Röd</button>
+          </div>
+          <div id="circuit-controls" class="circuit-controls"></div>
+          <p class="connection-help" id="connection-help">Välj en mätspets och tryck på en mätpunkt. Du kan också dra spetsen.</p>
+          <div class="probe-selects"><label>Svart spets<select id="black-node" aria-label="Mätpunkt för svart spets"></select></label><label>Röd spets<select id="red-node" aria-label="Mätpunkt för röd spets"></select></label><button id="disconnect">Lossa båda</button></div>
+        </div>
+        <section class="meter" aria-label="Virtuell multimeter">
+          <div class="meter-brand">SJÖSKOLAN <span>ÖVNINGSINSTRUMENT</span></div>
+          <div class="meter-screen" role="status" aria-live="polite" aria-atomic="true"><div class="screen-top"><span id="screen-mode">OFF</span><span id="screen-range">AUTO</span></div><div class="reading"><span id="reading">—</span><span id="unit"></span></div><div id="beep-status">&nbsp;</div></div>
+          <p id="meter-detail" class="meter-detail">Välj mätfunktion.</p>
+          <fieldset class="function-fieldset"><legend>1. Välj mätfunktion</legend><div class="functions" id="functions">
+            <button data-mode="off" aria-pressed="true">OFF</button><button data-mode="dc" aria-pressed="false">V ⎓</button><button data-mode="ac" aria-pressed="false">V ~</button><button data-mode="current" aria-pressed="false">A ⎓</button><button data-mode="ohm" aria-pressed="false">Ω</button><button data-mode="continuity" aria-pressed="false">Summer</button>
+          </div></fieldset>
+          <label class="range-label">Spänningsområde<select id="range"><option value="auto">AUTO</option><option value="20">20 V</option><option value="200">200 V</option></select></label>
+          <fieldset class="jack-fieldset"><legend>2. Välj uttag för röd sladd</legend><div class="jacks">
+            <button class="jack" data-jack="a" aria-pressed="false"><i></i><strong>A</strong><small>10 A max</small></button>
+            <button class="jack" data-jack="ma" aria-pressed="false"><i></i><strong>mA</strong><small>200 mA</small></button>
+            <div class="com-jack"><i id="black-anchor"></i><strong>COM</strong><small>Svart sladd</small></div>
+            <button class="jack" data-jack="v" aria-pressed="true"><i></i><strong>V Ω</strong><small>Spänning / Ω</small></button>
+          </div></fieldset>
+          <label class="sound-label"><input id="sound" type="checkbox"> Ljud vid kontinuitet</label>
+          <button id="reset-protection" hidden>Återställ mätarskydd</button>
+        </section>
+        <svg class="leads" id="leads" aria-hidden="true"></svg>
+      </div>
+      <section id="category-area" class="category-area" hidden>
+        <p class="eyebrow">Instrumentval · teorimoment</p><h2>Kategori och spänning måste båda stämma.</h2>
+        <p>Kategorin beskriver mätmiljöns elektriska påfrestningar. Volt-talet anger märkspänningen för den kategorin. Läs hela märkningen på både mätare och tillbehör.</p>
+        <div class="cat-table-wrap"><table class="cat-table"><thead><tr><th>Mätmiljö</th><th>Typiska exempel</th></tr></thead><tbody><tr><th>CAT II</th><td>Stickproppsanslutna apparater och förbrukarkretsar vid anslutningspunkten.</td></tr><tr><th>CAT III</th><td>Fast installation: centraler, fast ledningsdragning och fast anslutna motorer. Gäller även enfas.</td></tr><tr><th>CAT IV</th><td>Lågspänningsinstallationens början: servisintag och primärt överströmsskydd.</td></tr></tbody></table></div>
+        <p class="cat-note">CAT I är en äldre beteckning för kretsar utan direkt anslutning till elnätet. För sådana kretsar måste instrumentets specificerade begränsningar ändå kontrolleras. Låg spänning innebär inte automatiskt låg energi.</p>
+        <div class="cat-question"><h3 id="cat-question"></h3><div id="cat-choices"></div></div>
+        <p class="cat-note">Detta moment tränar instrumentval. Ingen nätspänningsmätning utförs i simulatorn.</p>
+      </section>
+      <div id="feedback" class="feedback" role="status" aria-live="polite"><strong id="feedback-title">Börja med mätfunktionen</strong><p id="feedback-text">Följ uppgiften till höger. Mätvärdet ändras när du kopplar eller ändrar en inställning.</p></div>
+    </section>
+    <aside class="lesson-panel" aria-label="Handledd övning">
+      <div class="lesson-panel-top"><span id="lesson-number" class="eyebrow">Övning 01 / 08</span><span id="slide-ref">Bild 10–16</span></div>
+      <h2 id="lesson-title">Spänning</h2><p id="lesson-goal"></p>
+      <div class="step-marker" id="step-marker"></div><h3 id="task-heading">Din uppgift</h3><p id="task"></p>
+      <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+      <button id="check" class="primary">Kontrollera mätningen</button><button id="next" class="primary" hidden>Nästa steg →</button>
+      <button id="restart" class="plain-button">Börja om övningen</button>
+      <div id="free-settings" hidden><label>Övningskrets<select id="free-circuit"><option value="lamp">Hyttbelysning</option><option value="resistor">Två resistorer</option><option value="fuse">Säkring</option><option value="divider">Spänningsdelare</option></select></label><p>Prova olika uttag, områden och kopplingar. Du får återkoppling, men inga övningsresultat sparas.</p></div>
+      <div class="principle"><h3 id="principle-title">V mäts parallellt</h3><p id="principle-text">Mätaren jämför två punkter. Kretsen behöver inte öppnas.</p></div>
+    </aside>
+  </div>
+  <section class="session-strip"><div><h2>Ditt mätprotokoll</h2><p id="record-count">Inga kontrollerade mätningar ännu. Framsteg sparas på denna enhet.</p></div><div><button id="download-log">Ladda ner CSV</button><button id="clear-progress" class="plain-button">Nollställ framsteg</button></div></section>
+  <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och källor</summary>
+    <p>Visa först motsvarande bilder i PowerPointen. Låt sedan eleverna välja funktion och uttag, förutsäga värdet, koppla och förklara resultatet. Använd ”Fri övning” för felkopplingar och diskussion. Inga namn eller elevdata skickas till en server.</p>
+    <p>Modellen använder resistiva likströmskretsar: ideal spänningskälla 12/24 V, lampa som konstant resistans, 10 MΩ eller 1 MΩ voltmeter och shunt 0,1 Ω (A) respektive 1 Ω (mA). Mätvärdena beräknas från kopplingen. Temperatur, toleranser, kontaktglapp, verklig säkringskurva och transienter simuleras inte.</p>
+    <p>Matningen bryts av simulatorn vid en beräknad ström genom A-ingången över 2 A; mA-säkringen löser här direkt över 200 mA. Det är förenklade skydd för undervisning. I verkligheten kan en felkoppling skada utrustning och person. Bryt och verifiera spänningslöshet enligt labbets rutin innan omkoppling. Följ det verkliga instrumentets manual och lärarens instruktioner.</p>
+    <p>För Ω-övningarna är källan bortkopplad. Summergränsen är 30 Ω och OL betyder avbrott; i V-läge betyder OL att området överskrids. AC-läget modelleras som AC-kopplat och visar därför 0 V på dessa rena DC-källor. Instrumentet är en undervisningsmodell, inte en produktmodell eller säkerhetsbedömning av verkliga anläggningar.</p>
+    <p>Tekniska referenser: <a href="https://www.hioki.com/us-en/learning/usage/testers_1.html">Hioki: användning av multimeter</a>, <a href="https://www.hioki.com/us-en/support/warranty/safe-operation">Hioki: mätkategorier och säker användning</a>, <a href="https://www.fluke.com/en-ie/product/electrical-testing/digital-multimeters/fluke-114">Fluke: CAT-märkning och IEC 61010-2-033</a>. Mätkategorier ingår i IEC 61010-serien, bland annat del 2-030 för mätkretsar och 2-033 för handhållna multimetrar.</p>
+    <p>För mer omfattande fri kretsbyggnad: <a href="https://www.falstad.com/circuit/">Falstad CircuitJS</a> och <a href="https://github.com/OpenLake/bhilaee-simulator">OpenLake/bhilaee-simulator</a>. Denna simulator har en egen kodbas anpassad till kursens övningar.</p>
+  </details>
+  <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
+</main>
+<footer id="site-footer" class="site-footer"></footer>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs"></script>
+</body></html>
