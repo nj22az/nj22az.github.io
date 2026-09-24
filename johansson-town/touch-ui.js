@@ -1,5 +1,6 @@
 // Touch-first controls for Johansson Town. No image dependency: the controls are CSS/vector shapes,
 // so they remain sharp on Retina displays and cannot fail because an external asset host is unavailable.
+import {svg,iconUrl,actionFor} from './src/ui/icons.js';
 const coarse=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const canvas=document.querySelector('#game');
 const stick=document.querySelector('#stick');
@@ -15,33 +16,28 @@ let qteState=null,qteStart=null,lastRound=0;
 // The action button lingers for a moment after its target is lost, so a tap already on
 // its way still lands. Remember the last real label: reverting to a generic one the
 // instant the target goes flashes a meaningless verb on the button as it fades out.
-let lastVerb='ACTION',lastGlyph='◎',lastText='';
+// It shows the icon for what you are facing (a speech bubble, a door, a basket...) and
+// one word; the keyboard prompt gets the same icon in front of its text.
+let lastAction={icon:'eye',verb:'LOOK'},lastText='',lastKey='';
 function setActionLabel(){
   if(!act||!prompt)return;
   const text=prompt.textContent.trim();
   const active=prompt.classList.contains('on')&&text;
   const lingering=!active&&!act.classList.contains('control-off');
-  let verb=lingering?lastVerb:'ACTION',glyph=lingering?lastGlyph:'◎';
-  if(active){
-    if(/^Stand/i.test(text)){verb='STAND';glyph='↑';}
-    else if(/^Talk/i.test(text)){verb='TALK';glyph='◇';}
-    else if(/^Enter/i.test(text)){verb='ENTER';glyph='→';}
-    else if(/cat/i.test(text)){verb='GREET';glyph='♡';}
-    else if(/fish|Cast/i.test(text)){verb='USE';glyph='⌁';}
-    else if(/buy|order/i.test(text)){verb='BUY';glyph='¥';}
-    else if(/read|browse/i.test(text)){verb='READ';glyph='▤';}
-    else if(/play/i.test(text)){verb='PLAY';glyph='▶';}
-    else {verb='INSPECT';glyph='○';}
-  }
-  if(active){lastVerb=verb;lastGlyph=glyph;lastText=text;}
+  const action=active?actionFor(text):lingering?lastAction:{icon:'eye',verb:'LOOK'};
+  if(active){lastAction=action;lastText=text;}
   act.classList.toggle('available',!!active||lingering);
-  act.innerHTML=`<span class="act-glyph">${glyph}</span><b class="act-label">${verb}</b>`;
+  const key=action.icon+'/'+action.verb;
+  if(key!==lastKey){act.innerHTML=`<span class="act-glyph">${svg(action.icon)}</span><b class="act-label">${action.verb}</b>`;lastKey=key;}
   act.setAttribute('aria-label',active?text:lingering&&lastText?lastText:'Context action');
+  // Only when it changes: the prompt is watched for changes, so an unconditional write
+  // here would wake this function again, and again, and freeze the page.
+  if(active&&prompt.dataset.icon!==action.icon){prompt.dataset.icon=action.icon;prompt.style.setProperty('--icon',iconUrl(action.icon));if(!prompt.classList.contains('has-icon'))prompt.classList.add('has-icon');}
 }
 
 if(prompt){
   const observer=new MutationObserver(setActionLabel);
-  observer.observe(prompt,{attributes:true,childList:true,characterData:true,subtree:true});
+  observer.observe(prompt,{attributes:true,attributeFilter:['class'],childList:true,characterData:true,subtree:true});
   setActionLabel();
 }
 

@@ -5,7 +5,9 @@ import {controlVisibility} from '../src/interact/control-visibility.js';
 
 test('idle exploration hides unused controls; movement, targets and held drinks reveal only relevant actions',()=>{
  const idle={playing:true,paused:false,seated:false,inside:false,moving:false,running:false,canDrink:false,hasTarget:false};
- assert.deepEqual(controlVisibility(idle),{mobile:true,act:false,drink:false,run:false,jump:false});
+ assert.deepEqual(controlVisibility(idle),{mobile:true,act:false,drink:false,run:false,jump:false,bagButton:false});
+ assert.equal(controlVisibility({...idle,hasItems:true}).bagButton,true,'The bag appears once something is in it');
+ assert.equal(controlVisibility({...idle,hasItems:true,paused:true}).bagButton,false,'and steps away behind a menu');
  const walking=controlVisibility({...idle,moving:true});assert.ok(walking.run&&walking.jump&&!walking.act);
  assert.equal(controlVisibility({...idle,hasTarget:true}).act,true);
  assert.equal(controlVisibility({...idle,canDrink:true}).drink,true);
@@ -26,7 +28,7 @@ test('a control under a finger stays on screen until the touch ends',()=>{
  assert.equal(controlVisibility({...idle,seated:true,pressed:['run']}).run,true,'Run held while sitting down');
  // One press never reveals the others.
  const one=controlVisibility({...idle,pressed:['run']});
- assert.deepEqual(one,{mobile:true,act:false,drink:false,run:true,jump:false});
+ assert.deepEqual(one,{mobile:true,act:false,drink:false,run:true,jump:false,bagButton:false});
  // Opening a modal takes the controls away regardless of what is held.
  const held=['act','run','jump','drink'];
  assert.ok(Object.values(controlVisibility({...idle,paused:true,pressed:held})).every(v=>!v),'A modal clears held controls');

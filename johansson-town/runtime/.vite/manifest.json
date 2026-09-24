@@ -1,4 +1,8 @@
 {
+  "_icons-BYRbUAGr.js": {
+    "file": "icons-BYRbUAGr.js",
+    "name": "icons"
+  },
   "_town-audio-xOebpuup.js": {
     "file": "town-audio-xOebpuup.js",
     "name": "town-audio"
@@ -13,7 +17,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-DBOlMAGs.js",
+    "file": "boot-VKeplWvd.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -25,19 +29,23 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CdKaWwp8.js",
+    "file": "game-EkVsrgVJ.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_town-audio-xOebpuup.js"
+      "_town-audio-xOebpuup.js",
+      "_icons-BYRbUAGr.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CTFB8DFd.js",
+    "file": "touch-ui-CCZm_ggp.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
-    "isDynamicEntry": true
+    "isDynamicEntry": true,
+    "imports": [
+      "_icons-BYRbUAGr.js"
+    ]
   },
   "webmcp-characters.js": {
     "file": "webmcp-characters-OJ-jcBMt.js",

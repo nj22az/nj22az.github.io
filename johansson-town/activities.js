@@ -29,6 +29,8 @@ import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,rename
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
+import {svg,itemIcon} from './src/ui/icons.js';
+import {TOWN_FINDS} from './src/commerce/sakura-economy.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {createThuanMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
@@ -84,10 +86,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){dialogueBox.close();ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
-    ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
@@ -100,6 +102,36 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(speaker==='Thuan')characterControl()?.setExpression?.('Thuan',options.mood||null);
     dialogueBox.present({title,text,conversation});
     if(!conversation)$('#closeActivity').focus();
+  }
+  // The bag: what you are carrying, as a tray of icons. Tap one to use it or look at it.
+  function bag(){
+    const counts=new Map();for(const item of state.inventory)counts.set(item,(counts.get(item)||0)+1);
+    if(!counts.size){receipt('Bag','Your bag is empty.');return;}
+    const models=new Set(printedModels(state.inventory).map(m=>m.name));
+    show('Bag',`${state.inventory.length} thing${state.inventory.length===1?'':'s'} · ¥${state.yen.toLocaleString()}`,[['Field book',inventory],['Close',close]]);
+    modal.classList.add('bag-view');
+    const grid=document.createElement('div');grid.className='bag-grid';
+    for(const [item,n] of counts){
+      const tile=document.createElement('button');tile.type='button';tile.className='bag-tile';
+      tile.innerHTML=svg(itemIcon(item,{printed:models.has(item)}),{size:34});
+      const label=document.createElement('span');label.className='bag-name';label.textContent=item;tile.append(label);
+      if(n>1){const count=document.createElement('b');count.className='bag-n';count.textContent='×'+n;tile.append(count);}
+      tile.setAttribute('aria-label',n>1?`${item}, ${n}`:item);
+      tile.onclick=()=>bagItem(item);grid.append(tile);
+    }
+    body.append(grid);
+  }
+  function bagItem(item){
+    const model=printedModels(state.inventory).find(m=>m.name===item);
+    const drinkable=['Canned coffee','Green tea'].includes(item)&&state.inventory.includes(item);
+    const spec=GROCERY_ITEMS.find(g=>g.name===item),find=TOWN_FINDS.find(f=>f.name===item);
+    const text=model?'A model you printed on the Form 3. Thuan would put it by the till.'
+      :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
+      :item==='Sea bream'?'Fresh from the pier. Nao — or Thuan — would know what to do with it.'
+      :'Something you picked up in town.';
+    show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
+    modal.classList.add('bag-view');
+    const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});body.prepend(hero);
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
@@ -742,5 +774,5 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,bag,close,save,spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

@@ -61,6 +61,7 @@ import { circleHitsRect,circleHitsCircle,roomBoundsBlocked,townBoundsBlocked } f
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline } from './render/ink-pipeline.js?snappy=1';
 import { createInkRecovery } from './render/ink-recovery.js';
+import {dressHud,runButtonFace} from './ui/hud-icons.js';
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
 window.__JOHANSSON_RUNTIME_VERSION__='town-bicycle-ride-2';
@@ -855,9 +856,11 @@ document.addEventListener('keydown',e=>{
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Home'].includes(e.code))e.preventDefault();keys[e.code]=true;
  if(!started)return;
  if(e.code==='Home'&&!e.repeat)centreCamera();
- if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='KeyR'&&!e.repeat)drinkNow();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.inventory();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();
+ if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='KeyR'&&!e.repeat)drinkNow();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.bag();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();
 });document.addEventListener('keyup',e=>keys[e.code]=false);
-function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').textContent=value?'RUNNING':'RUN';}
+function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').innerHTML=runButtonFace(value);}
+// Icons on the buttons, and the bag, which only appears when there is something in it.
+const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused)activities.bag();}});$('#run').innerHTML=runButtonFace(false);
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
 $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();pressedControls.add('run');toggleRunning();};
@@ -996,7 +999,10 @@ function updateContextControls(){
  // Hold the action button for a moment after its target is lost. Walking past scenery
  // otherwise blinks it in and out, and a tap can land where the button just was.
  if(!blocked&&active)controlsTargetUntil=now+450;
- const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:now<controlsTargetUntil,pressed:[...pressedControls]});
+ const items=activities.state.inventory?.length||0;hudIcons.count(items);
+ // While you walk, the top buttons fade back so the street has the screen.
+ document.body.classList.toggle('hud-moving',!blocked&&now<controlsMovingUntil);
+ const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:now<controlsTargetUntil,hasItems:items>0,pressed:[...pressedControls]});
  for(const [id,visible] of Object.entries(state)){
   const element=$('#'+id);
   if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}

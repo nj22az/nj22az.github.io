@@ -57,3 +57,59 @@
 @media(prefers-reduced-motion:reduce){
  #act,#run,#jump,#drink,#mobile .stick-base{transition:none}
 }
+
+/* ---- Icons (src/ui/icons.js, src/ui/hud-icons.js) ----------------------------------
+   One line-drawn set on every control. With a mouse the top buttons read icon + word;
+   on a touch screen they are icon-only rounds sized for a thumb. Whatever is not needed
+   right now is not on screen: the bag appears once something is in it, the thumb
+   buttons appear with what they are for, and the top rail fades back while you walk. */
+.ui-icon{display:block;flex:0 0 auto}
+.icon-btn::before{content:"";display:inline-block;width:18px;height:18px;margin-right:8px;vertical-align:-4px;background:currentColor;
+ -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+#hud #prompt.has-icon::before{content:"";display:inline-block;width:18px;height:18px;margin-right:9px;vertical-align:-4px;background:currentColor;
+ -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+/* The bag: at the foot of the top rail, with a count. */
+#hud #bagButton{pointer-events:auto;position:absolute;right:max(14px,env(safe-area-inset-right));top:max(252px,calc(env(safe-area-inset-top) + 246px));
+ display:flex;align-items:center;gap:8px;min-height:40px;padding:7px 14px;border:1px solid #e6dbb955;border-radius:20px;background:#173238e8;color:#f4ead3;
+ font:700 12px/1 "Avenir Next",system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;transition:opacity .2s ease,transform .2s ease}
+#hud #bagButton::before{content:none}
+#hud #bagButton .ui-icon{width:18px;height:18px}
+#hud #bagButton .bag-count{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#f2c14e;color:#1c2f33;font:800 11px/18px system-ui;text-align:center}
+#hud #bagButton.control-off{opacity:0;transform:scale(.8);pointer-events:none}
+#hud #bagButton.hidden{display:none}
+.touch-controls #drink{display:flex;align-items:center;gap:8px}
+.touch-controls #drink .ui-icon,.touch-controls #run .ui-icon{width:20px;height:20px}
+.touch-controls #run{display:flex;align-items:center;justify-content:center;gap:6px;font:800 11px/1 system-ui;letter-spacing:.06em}
+.touch-controls #jump .jump-glyph .ui-icon{width:24px;height:24px}
+.touch-controls #act .act-glyph .ui-icon{width:32px;height:32px;margin:0 auto 3px}
+.touch-controls #act .act-glyph{display:block;line-height:0}
+@media(pointer:coarse){
+ #hud #directoryButton,#hud #cameraButton,#hud #viewButton,#hud #movesButton,#hud #bagButton{
+  width:48px;height:48px;min-height:48px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:0!important;letter-spacing:0}
+ #hud #directoryButton::before,#hud #cameraButton::before,#hud #viewButton::before,#hud #movesButton::before{width:22px;height:22px;margin:0}
+ #hud #bagButton .ui-icon{width:22px;height:22px;grid-area:1/1}
+ #hud #bagButton .bag-label{display:none}
+ #hud #bagButton .bag-count{position:absolute;top:-3px;right:-3px;font-size:11px}
+ #exitRoomButton.icon-btn{display:flex;align-items:center;gap:0;font-size:0!important;min-height:48px;padding:0 16px 0 14px}
+ #exitRoomButton.icon-btn::before{width:22px;height:22px;margin:0 8px 0 0}
+ #exitRoomButton.icon-btn::after{content:"Exit";font-size:15px;font-weight:800}
+ /* Walking: the rail steps back so the street has the screen. */
+ body.hud-moving #hud .icon-btn,body.hud-moving #exitRoomButton{opacity:.28;transition:opacity .3s ease}
+}
+/* The bag tray: a grid of what you carry. */
+#activity.bag-view .bag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin:4px 0 18px}
+#activity.bag-view .bag-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;min-height:104px;padding:14px 8px 10px;
+ border:2px solid #e3d3b2;border-radius:16px;background:#fffdf6;color:#284b44;font:700 12px/1.25 "Avenir Next",system-ui,sans-serif;text-align:center;cursor:pointer;
+ box-shadow:0 3px 0 #d9c7a2;transition:transform .12s ease}
+#activity.bag-view .bag-tile:active{transform:translateY(2px);box-shadow:0 1px 0 #d9c7a2}
+#activity.bag-view .bag-tile .ui-icon{width:34px;height:34px;color:#2f6a5d}
+#activity.bag-view .bag-n{position:absolute;top:6px;right:8px;font-size:12px;color:#9b6a2b}
+#activity.bag-view .bag-hero{display:grid;place-items:center;width:92px;height:92px;margin:0 auto 14px;border-radius:50%;background:#e7f1e4;color:#2f6a5d}
+#activity.bag-view .bag-hero .ui-icon{width:52px;height:52px}
+@media(prefers-reduced-motion:reduce){#hud #bagButton,#activity.bag-view .bag-tile{transition:none}}
+@media(max-height:520px){
+ #activity.bag-view .bag-hero{width:58px;height:58px;margin:0 auto 8px}
+ #activity.bag-view .bag-hero .ui-icon{width:32px;height:32px}
+ #activity.bag-view .bag-tile{min-height:84px;padding:10px 6px 8px}
+ #activity.bag-view .bag-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:12px}
+}
