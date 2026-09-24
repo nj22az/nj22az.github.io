@@ -1,7 +1,7 @@
 {
  "fps": 30,
- "walkMetresPerCycle": 1.282,
- "runMetresPerCycle": 2.319,
+ "walkMetresPerCycle": 1.249,
+ "runMetresPerCycle": 2.26,
  "actions": [
   {
    "name": "Walk",

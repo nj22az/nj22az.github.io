@@ -7,13 +7,17 @@ which had no fingers, toes or face shapes to speak of.
 ## What is in it
 
 - **Body and look**: the MakeHuman build of Yui (`../yui/yui.blend`, `construction.json`)
-  for her phenotype and fitted clothes, reshaped after reference photographs supplied by
-  the user (nothing from them is embedded): a slimmer oval face with a narrow chin and less
-  cheek, dark brown eyes, a finer nose and a smaller mouth with rose lips. Her long dark hair
-  is built in the script as one surface of strands from the crown (a smooth shell over the
-  skull, then falling behind the ears to below the shoulder blades, clear of her top), with
-  a side-swept fringe and a strand texture with a soft shine. She wears a short-sleeved top
-  and loose trousers in yellow cotton printed with small white flowers; loafers. 1.64 m.
+  for her body and fitted clothes. Her head is built on a second MakeHuman human, a young
+  woman in her twenties with ideal proportions, and carried over above the neck (the head
+  bones are refitted to it): a soft, rounded face with slightly larger eyes, a small nose,
+  full cheeks, a short chin and the corners of her mouth turned up, so she rests with a
+  smile; light makeup painted into the skin (rose lips, blush, a warm eyeshadow and fine
+  liner), lashes and warm brown brows. Her long dark hair is built in the script as one
+  surface of strands that spring from a side part over her left brow and sweep back, lying
+  close over the skull, thinning into the skin at the hairline, falling beside her cheeks
+  from the temples and down her back to below the shoulder blades, clear of her top. She
+  wears a short-sleeved top and loose trousers in yellow cotton printed with small white
+  flowers; loafers. 1.64 m.
 - **Skeleton**: MPFB's 163-bone default rig, the same one Johansson uses — twist bones, five
   fingers with metacarpals, five toes per foot, jaw, tongue, eyes and lips. The hair is
   skinned from the skin under it (head at the crown, neck and back below); the eyes ride
@@ -22,7 +26,8 @@ which had no fingers, toes or face shapes to speak of.
   `eyeBlinkRight`, `eyeWideLeft`, `eyeWideRight`, `eyeSquint`, `browOuterUpLeft`,
   `browOuterUpRight`, `browInnerUp`, `browDown`, `jawOpen`, `mouthSmileLeft`,
   `mouthSmileRight`, `mouthFunnel`, `mouthPucker`, `mouthFrown`, `mouthStretch`,
-  `mouthPress`), so `thuan-face-controller.js` drives them unchanged.
+  `mouthPress`), so `thuan-face-controller.js` drives them unchanged. Her smile is a soft
+  closed one, not MakeHuman's full corner-puller.
 - **Swimwear**: the skin the clothes cover is its own mesh (`Thuan.SkinUnder`) with a red
   one-piece over it (`Thuan.Swimsuit`: high-cut legs, straps). Both are hidden until the
   onsen asks for them (`entity.userData.outfit = 'swim'`).
