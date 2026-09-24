@@ -10,7 +10,9 @@ const entry=(sourceZ,sourceX)=>{
 export const RESIDENTIAL_ENTRIES=Object.freeze({one:entry(-794,-58.36),two:entry(-356,-54.62),three:entry(-100,-55.01),four:entry(811,-55.68),five:entry(968,-50.33)});
 export const RESIDENTIAL_ASSIGNMENTS=Object.freeze(Object.fromEntries(HOUSEHOLDS.flatMap(h=>h.residents.map(name=>[name,h.entry]))));
 export function residentialHome(name){
- const household=householdFor(name),entrance=RESIDENTIAL_ENTRIES[household.entry];
+ // Someone who lives where they drink (Minato's barfly) has no flat on the street.
+ const household=householdFor(name),entrance=household&&RESIDENTIAL_ENTRIES[household.entry];
+ if(!entrance)return {};
  return {home:[...entrance.door],house:{...RESIDENTIAL_BUILDINGS[0],angle:entrance.angle},homeEntry:household.entry,homeAddress:household.address,household:household.id};
 }
 export function inResidential(x,z){return x>=RESIDENTIAL.minX&&x<=RESIDENTIAL.maxX&&z>=RESIDENTIAL.minZ&&z<=RESIDENTIAL.maxZ;}

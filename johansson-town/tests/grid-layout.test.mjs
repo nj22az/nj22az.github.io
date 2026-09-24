@@ -6,7 +6,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {activeRoutes,routeAt} from '../src/world/layout.js?snappy=1';
 import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 import {circleHitsRect} from '../physics.js?snappy=1';
-import {RESIDENTS} from '../src/people/residents.js';
+import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
 import {FULL_TOWN} from '../src/world/full-town-state.js';
 import {buildPark} from '../src/world/park.js?snappy=1';
 
@@ -39,7 +39,7 @@ test('rectangular lanes have clear centres and every shopfront door is reachable
 test('archived residential fixtures keep every home on a reachable lane it faces',()=>{
  const {world}=make('legacy');
  const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
- for(const p of RESIDENTS){
+ for(const p of HOME_OWNERS){
   assert.equal(blocked(...p.home),false,p.name+' home approach');
   const dx=p.home[0]-p.house.x,dz=p.home[1]-p.house.z;
   assert.ok(dx*Math.sin(p.house.angle)+dz*Math.cos(p.house.angle)>2,p.name+' faces its lane');

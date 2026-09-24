@@ -32,11 +32,14 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
 export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);
  if(!profile)return '';
+ if(!householdFor(name))return profile.homeAddress?'I live at '+profile.homeAddress+'.':'Home? Minato, mostly. Nao says I pay rent in bottle caps.';
  const neighbour=RESIDENTS.find(p=>p.name!==name&&p.homeEntry===profile.homeEntry);
  const address=name==='Kenji'?'My place is at '+profile.homeAddress+', bro.':'I live at '+profile.homeAddress+'.';
  const roommates=householdFor(name).residents.filter(n=>n!==name);
  return address+(roommates.length?' I share the flat with '+roommates.join(' and ')+'.':neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');
 }
+/** Residents with a flat on the street. Minato's barfly lives on his stool and has none. */
+export const HOME_OWNERS=RESIDENTS.filter(p=>p.homeEntry);
 // Reintroduce residents deliberately, one at a time. Nao is the first neighbour back:
 // her work and daily errands are defined in social.js instead of sharing a crowd loop.
 export const STREET_CAST_NAMES=Object.freeze(['Thuan','Nao']);

@@ -25,7 +25,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     const sleeping=((minutes%1440)+1440)%1440>=180&&((minutes%1440)+1440)%1440<600;
     person.g.userData.sleeping=sleeping;
     person.g.userData.socialPose=sleeping?'Sleep':'Drink';
-    person.g.userData.heldItem=sleeping?null:'beer';
+    if(sleeping)delete person.g.userData.heldItem;else person.g.userData.heldItem='beer';
     person.g.userData.activity=sleeping?'asleep on his Minato stool':'drinking beer at Minato';
     continue;
    }

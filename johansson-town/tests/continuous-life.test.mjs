@@ -2,7 +2,7 @@ import {HOUSEHOLDS,householdFor} from '../src/people/households.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {RESIDENTS} from '../src/people/residents.js';
+import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js';
 import {residentPlan,IZAKAYA_DOOR,RAMEN_DOOR,RAMEN_VISITS,GOSSIP} from '../src/people/social.js';
 import {WORK_SITES} from '../src/people/workplaces.js';
@@ -24,13 +24,14 @@ function roomFor(p){
  return {room,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }
 test('all ten home owners can be selected even where their building entrance is shared',()=>{
+ // Minato's barfly sleeps on his stool; everyone else has a flat.
  installDOM();const world={group:new THREE.Group(),colliders:[]},sites=[],anchors=[],menus=[];let entered;
  buildHomes(world,{sites,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),enter:s=>entered=s,onAction:(k,n,detail)=>menus.push(detail)});
  assert.equal(new Set(sites.map(s=>s.id)).size,7);assert.equal(anchors.length,5);
- assert.equal(new Set(RESIDENTS.map(p=>p.homeAddress)).size,7);
- for(const p of RESIDENTS){assert.equal(sites.find(s=>s.homeOwners.includes(p.name)).line,p.homeAddress);assert.equal(world.homes.get(p.name).address,p.homeAddress);}
+ assert.equal(new Set(HOME_OWNERS.map(p=>p.homeAddress)).size,7);
+ for(const p of HOME_OWNERS){assert.equal(sites.find(s=>s.homeOwners.includes(p.name)).line,p.homeAddress);assert.equal(world.homes.get(p.name).address,p.homeAddress);}
  const selected=new Set();for(const a of anchors){entered=null;menus.length=0;a.fn();if(entered)entered.homeOwners.forEach(n=>selected.add(n));for(const menu of menus)for(const item of menu){item.enter();entered.homeOwners.forEach(n=>selected.add(n));}}
- assert.deepEqual([...selected].sort(),RESIDENTS.map(p=>p.name).sort());
+ assert.deepEqual([...selected].sort(),HOME_OWNERS.map(p=>p.name).sort());
 });
 test('every current resident keeps a door address and a live neighbour behind the commuter answer',async()=>{
  const dom=installDOM(),{createActivities}=await import('../activities.js?snappy=1');
@@ -62,7 +63,7 @@ test('every current resident keeps a door address and a live neighbour behind th
  for(const pair of GOSSIP)for(const name of [pair.a,pair.b])assert.ok(RESIDENTS.some(p=>p.name===name),'Overheard conversations use the existing cast');
 });
 test('two complete days give every resident work, meals and uninterrupted sleep at their own home',()=>{
- for(const profile of RESIDENTS){
+ for(const profile of HOME_OWNERS){
   const places=new Set();
   for(const rain of [false,true])for(let minutes=0;minutes<2880;minutes++){
    const plan=residentPlan(profile,minutes,rain);places.add(plan.place);
@@ -96,7 +97,7 @@ test('indoor saves follow moved homes and venues, then depart from that same doo
  }
 });
 test('every resident sleeps, wakes, eats breakfast and leaves their actual furnished home',()=>{
- for(const profile of RESIDENTS){
+ for(const profile of HOME_OWNERS){
   const street=new THREE.Group(),parent=new THREE.Group(),p=person(profile.name,street),world={people:[p],homes:new Map()},room=roomFor(p);
   const {sleep,wake}=sleepHours(profile),beforeWake=wake<sleep?wake+1440:wake;
   assert.equal(homeRoutine(profile,beforeWake-2).id,'sleep');
@@ -125,7 +126,7 @@ test('residents travelling home cannot be teleported into a visited apartment',(
  p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1301);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
 test('venue visitors arrive at the door, keep their seat, walk out, and remain indoors when the player leaves first',()=>{
- for(const [place,name,minutes,door,end] of [['market','Kenji',945,RESIDENTS.at(-1).work,1023],['ramen','Kenji',RAMEN_VISITS.Kenji[0]+25,RAMEN_DOOR,RAMEN_VISITS.Kenji[1]],['izakaya','Nao',1100,IZAKAYA_DOOR,1620]]){
+ for(const [place,name,minutes,door,end] of [['market','Kenji',945,RESIDENTS.find(p=>p.name==='Thuan').work,1023],['ramen','Kenji',RAMEN_VISITS.Kenji[0]+25,RAMEN_DOOR,RAMEN_VISITS.Kenji[1]],['izakaya','Nao',1100,IZAKAYA_DOOR,1620]]){
   const street=new THREE.Group(),parent=new THREE.Group(),p=person(name,street),yuri=person('Thuan',street),world={people:[p,yuri]};p.g.position.set(0,0,40);
   const service=createIndoorResidents({world,parent,place});service.sync(minutes);assert.equal(p.g.parent,street,place+' cannot pull someone from the street');
   p.g.position.set(door[0],0,door[1]);service.sync(minutes);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
@@ -141,7 +142,7 @@ test('camera rank cannot remove a visible street resident, and saves preserve a 
  const ai=createCastAI({world,player,state:()=>saved,paused:()=>false,collides:()=>false});ai.update(0,1002,false);
  // Use ten ordinary outdoor workers, regardless of their observer distance.
  for(const p of world.people){p.profile={...p.profile,name:'Worker '+p.profile.name};delete p.g.userData.indoors;}
- ai.update(0,1002,false);assert.equal(world.people.filter(p=>p.g.visible).length,10);
+ ai.update(0,1002,false);assert.equal(world.people.filter(p=>p.g.visible).length,world.people.length);
  const kenji=world.people[1];kenji.g.position.set(2,0,20);saved.residentLocations=ai.snapshot();
  const other={people:world.people.map(p=>({profile:p.profile,g:p.g.clone()}))};other.people.forEach(p=>street.add(p.g));
  createCastAI({world:other,player,state:()=>saved,paused:()=>false,collides:()=>false}).update(0,1002,false);
