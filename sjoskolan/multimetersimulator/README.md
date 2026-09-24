@@ -2,7 +2,7 @@
 
 Svensk multimeterträning som kompletterar `Multimeter_Sjoskolan_v7_SV.pptx`.
 
-Planerad/publicerad adress: https://nj22az.github.io/sjoskolan/multimetersimulator/
+Live: https://nj22az.github.io/sjoskolan/multimetersimulator/
 
 ## Användning
 
@@ -31,12 +31,18 @@ node --test sjoskolan/multimetersimulator/model.test.mjs
 
 Öppna `/sjoskolan/multimetersimulator/` via HTTP. Numeriska tester täcker godtyckliga nodpar, omvänd polaritet, serieinkoppling och shunt, förbikopplad amperemeter, kortslutning med fel uttag, mA-säkring, parallellresistans, avbrott, spänningssatt Ω-mätning, mätarbelastning, områdesöverskridande och alla lektionsvillkor.
 
+## Genomförd kontroll 24 september 2026
+
+13 numeriska tester godkända. Samtliga åtta övningar genomförda i Chrome, inklusive alla 15 delmoment och felaktigt CAT-svar. Dragning, val i listor, omkopplingsspärr vid tillkopplad matning, kortslutningsstopp även i OFF, skyddsåterställning och sparade framsteg kontrollerade. CSV laddades ned och granskades: 15 moment, 8 kolumner, UTF-8 och svenska decimaler.
+
+Responsiva brytpunkter och Pointer Events finns för pekskärm; fysisk mobil/pekplatta har inte kunnat provas i denna miljö.
+
 ## Referensprojekt och källor
 
 - [OpenLake/bhilaee-simulator](https://github.com/OpenLake/bhilaee-simulator): webbaserad generell kretsbyggare. README anger MIT; ingen kod har kopierats.
 - [pfalstad/circuitjs1](https://github.com/pfalstad/circuitjs1): generell simulator, GPL-2.0-or-later, Java/GWT. Repoägaren är **pfalstad**, inte `falstad`. Länkas som fördjupning; ingen inbäddning eller återanvändning av kod.
 - [Yousef4008/Multimeter](https://github.com/Yousef4008/Multimeter): ATmega32/Proteus passar hårdvaruutveckling snarare än denna elevövning. Ingen firmware har kopierats.
-- `tiagocoutinho/instruments` är avsett för instrumentkommunikation. Repositoryinnehållet kunde inte hämtas vid granskningen; det ingår inte i implementationen.
+- [tiagocoutinho/sinstruments](https://github.com/tiagocoutinho/sinstruments) är en server för instrumentkommunikation via TCP, UDP och seriell anslutning. Den passar protokoll- och automationsträning; den behövs inte för dessa visuella mätövningar och ingår inte i implementationen.
 - [Hioki: multimeteranvändning](https://www.hioki.com/us-en/learning/usage/testers_1.html), [säker användning och CAT](https://www.hioki.com/us-en/support/warranty/safe-operation), [Fluke 114 och IEC 61010-2-033](https://www.fluke.com/en-ie/product/electrical-testing/digital-multimeters/fluke-114).
 
 CAT är inte en indelning efter enbart fasantal eller volt-tal. Den lägst klassade delen av mätuppställningen begränsar användningen. Simulatorn ersätter inte instrumentmanual, riskbedömning, praktisk handledning eller verifiering av spänningslöshet.

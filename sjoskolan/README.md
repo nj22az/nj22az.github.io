@@ -9,3 +9,7 @@ Version 6 med 46 bilder har flyttats oförändrad till `vecka-39/arkiv/2026-09-2
 Övriga elevpresentationer saknar lösningsbilder, anteckningar, kommentarer och dolda bilder. Genomräknade undervisningsexempel finns kvar. Inga separata prov, lärarfacit eller kursböcker ingår. Lokala lärarfiler är källmaterial och ska kontrolleras före publicering.
 
 `downloads.js` ger nedladdningsbara filer i veckornas aktuella mappar namn med `_nedladdad_ÅÅÅÅ-MM-DD_TT-MM-SS`, enligt besökarens lokala tid vid klicket. Versionsnumret behålls; datumet är nedladdningstid, inte dokumentets ändringsdatum.
+
+## Multimeterlabbet
+
+`multimetersimulator/` kompletterar vecka 39 och multimeterpresentationen med åtta svenska mätövningar och fri övning. Elever väljer funktion/uttag och kopplar mätspetsar. Direkt återkoppling, lokal progress och CSV-protokoll. Se simulatorns README för modellbegränsningar och tester.
