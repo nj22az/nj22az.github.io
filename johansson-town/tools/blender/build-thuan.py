@@ -317,8 +317,9 @@ def paint_scalp():
     # couple of centimetres (not over her ears, nor anywhere the hair does not reach).
     hair_bvh = surface_of(hair)
     nrm = np.array([v.normal for v in mesh.vertices])
-    covered = np.array([c[2] > nape_z - .005 and hair_bvh.ray_cast(Vector(c), Vector(n), .022)[0] is not None
-                        for c, n in zip(co, nrm)])
+    hits = [hair_bvh.ray_cast(Vector(c), Vector(n), .022) if c[2] > nape_z - .005 else (None, None, None, None) for c, n in zip(co, nrm)]
+    # The cap only: the plaits swing away from the neck as she moves.
+    covered = np.array([h[2] is not None and h[2] < CAP_FACES for h in hits])
     mask = np.zeros((H, W), dtype=np.float32)
     for poly in mesh.polygons:
         if not covered[list(poly.vertices)].all():
@@ -417,8 +418,17 @@ def paint_face():
             px[..., :3] = px[..., :3] * (1 - a) + np.array(colour) * a
 
         low_face = pos[:, 2] < eye_mid[2] - .035
-        lipw = np.clip((pucker / pucker.max() - .8) / .12, 0, 1) * low_face
-        layer(lipw, (.72, .30, .36), .62, 1)
+        # The lips: where pursing and pushing the mouth forward both move the skin, short of
+        # the corners (which move most of all when she purses, and would smear).
+        push = np.linalg.norm(unit_delta['mouth-protusion'], axis=1)
+        lipness = np.maximum(pucker / pucker.max(), push / push.max())
+        corner = np.linalg.norm(unit_delta['mouth-corner-puller'], axis=1) * low_face
+        half = abs(pos[np.argmax(corner), 0])
+        mouth_z = pos[np.argmax(corner), 2]
+        lipw = (np.clip((lipness - .6) / .15, 0, 1) * low_face * np.clip((half * .9 - np.abs(pos[:, 0])) / (half * .22), 0, 1)
+                * (np.abs(pos[:, 2] - mouth_z) < .014))
+        # Lipstick: a clear, warm rose red.
+        layer(lipw, (.80, .22, .31), .82, 1)
         for sign in (1, -1):
             apple = np.array([sign * .043, 0, eye_mid[2] - .036])
             near = [i for i in body_verts if abs(pos[i, 0] - apple[0]) < .01 and abs(pos[i, 2] - apple[2]) < .01]
@@ -755,8 +765,8 @@ for k in range(N_AROUND):
                 loop[uv_layer].uv = uv
 
 
-# Two plaits, gathered behind her ears and brought forward over her shoulders, down the front
-# of her top, tied in white with a short brushed end. Each is a column of plump, tilted lobes,
+# Two plaits, gathered behind her ears and brought forward over her shoulders onto the top of
+# her chest, tied in yellow with a short brushed end. Each is a column of plump, tilted lobes,
 # alternating side to side the way the three strands cross, so the ink draws the chevrons of a
 # real plait rather than a tangle of thin tubes.
 
@@ -785,9 +795,9 @@ def braid(sign):
             np.array([sign * .068, HC[1] + .012, nape_z - .03]),
             np.array([x, bones['neck01'][0][1] - .005, shoulder[2] + .035]),
             np.array([x, front_y(x, shoulder[2] - .01, .018), shoulder[2] - .02])]
-    # Down over her chest, drawing in a little towards the end.
-    for j, z in enumerate(np.linspace(shoulder[2] - .06, waist_z + .11, 5)):
-        xz = x - sign * .012 * j / 4
+    # Down over the top of her chest, drawing in a little towards the end.
+    for j, z in enumerate(np.linspace(shoulder[2] - .06, shoulder[2] - .17, 3)):
+        xz = x - sign * .01 * j / 2
         ctrl.append(np.array([xz, front_y(xz, z, .02), z]))
     ctrl = np.array(ctrl)
     pts = []
@@ -850,7 +860,7 @@ def braid(sign):
     t, side, depth = frame(s_tie)
     rt = radius(s_tie) * .85
     ring = lambda c, rad: [bm.verts.new(c + rad * (np.cos(a) * side + np.sin(a) * depth)) for a in np.linspace(0, 2 * np.pi, 14, endpoint=False)]
-    rings = [ring(point(s_tie) + t * dz, rt * f) for dz, f in ((-.005, .92), (0, 1.08), (.005, .92))]
+    rings = [ring(point(s_tie) + t * dz, rt * f) for dz, f in ((-.006, .95), (-.003, 1.18), (.003, 1.18), (.006, .95))]
     for ra, rb in zip(rings, rings[1:]):
         for q in range(14):
             f = bm.faces.new((ra[q], ra[(q + 1) % 14], rb[(q + 1) % 14], rb[q]))
@@ -869,6 +879,7 @@ def braid(sign):
     print('BRAID', s_, 'length', round(float(L), 3), 'lobes', j, flush=True)
 
 
+CAP_FACES = len(bm.faces)
 braid(1)
 braid(-1)
 for f in bm.faces:
@@ -901,10 +912,87 @@ tex = hair_mat.node_tree.nodes.new('ShaderNodeTexImage')
 tex.image = strand_image()
 hair_mat.node_tree.links.new(tex.outputs['Color'], hair_mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
 hair_mesh.materials.append(hair_mat)
-hair_mesh.materials.append(mh.plain_material('Thuan.HairTie', (.95, .94, .9, 1), .6))
+hair_mesh.materials.append(mh.plain_material('Thuan.HairTie', (.98, .78, .12, 1), .55))
 objs['Hair'] = hair
 print('HAIR', len(hair_mesh.vertices), 'verts', flush=True)
 paint_scalp()
+
+
+# Round glasses: thin frames in a soft rose, lenses left open (glass would only catch ink),
+# sitting just in front of her brows and cheeks, the bridge over her nose, the arms along her
+# temples and in under her hair over the ears. They ride her head bone.
+def tube(bm, path, radius, closed=False, seg=8):
+    path = np.array(path)
+    n = len(path)
+    rings = []
+    for i in range(n):
+        t = (path[(i + 1) % n] - path[i - 1]) if closed else (path[min(i + 1, n - 1)] - path[max(i - 1, 0)])
+        t = t / np.linalg.norm(t)
+        a = np.cross(t, [0, 0, 1.])
+        if np.linalg.norm(a) < .2:
+            a = np.cross(t, [0, 1., 0])
+        a /= np.linalg.norm(a)
+        b = np.cross(t, a)
+        rings.append([bm.verts.new(path[i] + radius * (np.cos(q) * a + np.sin(q) * b)) for q in np.linspace(0, 2 * np.pi, seg, endpoint=False)])
+    for i in range(n if closed else n - 1):
+        ra, rb = rings[i], rings[(i + 1) % n]
+        for q in range(seg):
+            bm.faces.new((ra[q], ra[(q + 1) % seg], rb[(q + 1) % seg], rb[q]))
+    if not closed:
+        bm.faces.new(rings[0][::-1])
+        bm.faces.new(rings[-1])
+
+
+def skin_front(x, z, half=.022):
+    near = pos[body_verts][(np.abs(pos[body_verts][:, 0] - x) < half) & (np.abs(pos[body_verts][:, 2] - z) < half)]
+    return near[:, 1].min()
+
+
+def skin_side(y, z, sign):
+    near = pos[body_verts][(np.abs(pos[body_verts][:, 1] - y) < .006) & (np.abs(pos[body_verts][:, 2] - z) < .008)]
+    return (near[:, 0] * sign).max()
+
+
+gbm = bmesh.new()
+RX, RZ, TILT, WRAP = .021, .0195, np.radians(8), np.radians(7)
+lens = {}
+for sign in (1, -1):
+    c0 = bones['eye.' + ('L' if sign > 0 else 'R')][0]
+    ex = np.array([np.cos(WRAP), sign * np.sin(WRAP), 0])
+    ez = np.array([0, -np.sin(TILT), np.cos(TILT)])
+    c = np.array([c0[0] + sign * .002, 0, c0[2] + .002])
+    c[1] = skin_front(c[0], c[2]) - .005
+    rim = [c + np.cos(q) * RX * ex + np.sin(q) * RZ * ez for q in np.linspace(0, 2 * np.pi, 40, endpoint=False)]
+    tube(gbm, rim, .0019, closed=True)
+    lens[sign] = (c, ex, ez)
+# The bridge, arched a little over her nose.
+(cl, exl, ezl), (cr, exr, ezr) = lens[1], lens[-1]
+pl, pr = cl - exl * RX + ezl * .004, cr + exr * RX + ezr * .004
+mid = (pl + pr) / 2 + np.array([0, 0, .004])
+mid[1] = min(mid[1] - .002, skin_front(0, mid[2], .006) - .003)
+tube(gbm, [(1 - t) ** 2 * pl + 2 * t * (1 - t) * mid + t * t * pr for t in np.linspace(0, 1, 12)], .0017)
+# The arms: from the hinge at the outer rim, back along the side of her head, a little bend
+# down behind the tops of her ears.
+for sign in (1, -1):
+    c, ex, ez = lens[sign]
+    hinge = c + sign * RX * ex + ez * .006
+    z = hinge[2]
+    path = [hinge, hinge + np.array([sign * .003, .006, 0])]
+    # Along her temple and in under her hair, never out over her ear.
+    temple = skin_side(hinge[1] + .016, z, sign)
+    for y in np.linspace(hinge[1] + .016, HC[1] + .012, 9):
+        path.append(np.array([sign * (min(skin_side(y, z, sign), temple + .004) + .0032), y, z]))
+    path.append(path[-1] + np.array([-sign * .002, .008, -.012]))
+    tube(gbm, path, .0014)
+glasses_mesh = bpy.data.meshes.new('Thuan.Glasses')
+gbm.to_mesh(glasses_mesh)
+gbm.free()
+for poly in glasses_mesh.polygons:
+    poly.use_smooth = True
+glasses = bpy.data.objects.new('Thuan.Glasses', glasses_mesh)
+bpy.context.scene.collection.objects.link(glasses)
+glasses_mesh.materials.append(mh.plain_material('Thuan.Glasses', (.9, .58, .62, 1), .35, .4))
+objs['Glasses'] = glasses
 under = mh.complement(full, keep, body_mask, 'Thuan.SkinUnder', skin_mat)
 armpit = bones['upperarm01.L'][0][2] - .05
 hip_z = bones['upperleg01.L'][0][2]
