@@ -83,3 +83,74 @@ body.conversation-open #subtitle{visibility:hidden}
 .chat-input button{flex:0 0 auto;min-height:44px;padding:8px 16px;border:2px solid #252821;border-radius:8px;
  background:#9b4035;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .chat-input button:disabled{opacity:.6;cursor:progress}
+
+/* ---- RPG dialogue box (src/dialogue/dialogue-box.js) --------------------------------
+   One box along the bottom: a name tag on its top edge, the line typed out inside, a
+   tail pointing up at whoever is talking, and the replies underneath once the line has
+   finished. It sits over the town, not instead of it. */
+#activity.conversation.rpg{max-height:62dvh;padding-top:26px}
+#activity.conversation.rpg .activity-card{--tail-x:50%;width:min(700px,100%);padding:26px 22px 16px;border:3px solid #28594f;border-radius:22px;
+ background:#fffaf0f2;backdrop-filter:blur(4px);box-shadow:0 6px 0 #1d4038,0 18px 40px #0e222b55;overflow:visible;animation:rpg-rise .22s ease-out}
+/* The tail: a small triangle on the top edge, under the speaker's screen position. */
+#activity.conversation.rpg .activity-card::before{content:"";position:absolute;top:-15px;left:clamp(28px,var(--tail-x),calc(100% - 28px));
+ width:22px;height:22px;background:#fffaf0;border-left:3px solid #28594f;border-top:3px solid #28594f;transform:translateX(-50%) rotate(45deg);border-radius:4px 0 0 0}
+#activity.conversation.rpg #activityTitle{position:absolute;top:-18px;left:18px;margin:0;display:flex;align-items:baseline;gap:8px;z-index:1;font-size:0;color:transparent}
+#activity.conversation.rpg #activityTitle::before{content:attr(data-speaker);padding:5px 16px;border-radius:999px;background:#28594f;color:#fffaf0;font-size:15px;font-weight:800;letter-spacing:.04em;box-shadow:0 3px 0 #1d4038}
+#activity.conversation.rpg #activityTitle::after{content:attr(data-place);padding:3px 10px;border-radius:999px;background:#ffe9bd;color:#6b5140;font-size:11px;font-weight:700;letter-spacing:.05em}
+#activity.conversation.rpg #activityTitle[data-place=""]::after{display:none}
+#activity.conversation.rpg .activity-card header{position:absolute;top:-16px;right:14px;z-index:1}
+#activity.conversation.rpg #closeActivity{min-height:30px;padding:3px 12px;border:2px solid #28594f;background:#fffaf0;color:#28594f;font-size:12px}
+/* The line itself is back in the box, and reads like speech. */
+#activity.conversation.rpg #activityBody{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;
+ margin:0 0 12px;font-size:18px;line-height:1.55;color:#22343b}
+#activity.conversation.rpg #activityBody p{margin:0;padding:0;border:0;background:none;border-radius:0;white-space:pre-line;min-height:2.6em}
+#activity.conversation.rpg #activityBody .chat-log,#activity.conversation.rpg #activityBody .chat-input{white-space:normal}
+/* Replies: a numbered list, one always selected. They wait for the line to finish. */
+#activity.conversation.rpg #activityActions{display:flex;flex-direction:column;gap:6px;transition:opacity .15s ease}
+#activity.conversation.rpg.typing #activityActions{opacity:0;pointer-events:none}
+#activity.conversation.rpg #activityActions button{display:flex;align-items:center;gap:10px;min-height:40px;padding:8px 14px 8px 12px;border:2px solid transparent;border-radius:12px;
+ background:#f3ead6;color:#2b3d36;box-shadow:none;font-size:15px;font-weight:700;text-align:left}
+#activity.conversation.rpg #activityActions button::before{content:attr(data-key);flex:0 0 22px;height:22px;display:grid;place-items:center;border-radius:6px;background:#fffaf0;border:2px solid #d9c8a4;color:#8a6c4d;font-size:12px;font-weight:800}
+#activity.conversation.rpg #activityActions button[data-key=""]::before{visibility:hidden}
+#activity.conversation.rpg #activityActions button.selected{background:#28594f;color:#fffaf0;border-color:#28594f;transform:translateX(4px)}
+#activity.conversation.rpg #activityActions button.selected::before{background:#ffd76a;border-color:#ffd76a;color:#28594f}
+#activity.conversation.rpg #activityActions button.selected::after{content:"◀";margin-left:auto;font-size:11px;opacity:.8}
+/* A single way on is a "continue" arrow in the corner, not a big button. */
+#activity.conversation.rpg #activityActions.single{align-items:flex-end}
+#activity.conversation.rpg #activityActions.single button{min-height:34px;padding:6px 14px;border-radius:999px}
+#activity.conversation.rpg #activityActions.single button::before{content:"E";font-family:ui-monospace,monospace}
+#activity.conversation.rpg #activityActions.single button.selected::after{content:"▼";animation:rpg-bob .9s ease-in-out infinite}
+@media(hover:none){#activity.conversation.rpg #activityActions button::before{display:none}#activity.conversation.rpg #activityActions.single button::before{display:none}}
+@keyframes rpg-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes rpg-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@media(max-width:719px){
+ #activity.conversation.rpg{max-height:55dvh}
+ #activity.conversation.rpg .activity-card{padding:22px 14px 12px}
+ #activity.conversation.rpg #activityBody{font-size:16px;margin-bottom:9px}
+ #activity.conversation.rpg #activityActions button{min-height:38px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){#activity.conversation.rpg .activity-card{animation:none}#activity.conversation.rpg #activityActions.single button.selected::after{animation:none}#activity.conversation.rpg #activityActions button.selected{transform:none}}
+/* Over the speaker's head: only who is talking, with dots while the line is typed. */
+.neighbour-chat.speaking{width:auto;min-width:0;padding:5px 11px;border-color:#28594f;background:#fffaf0;text-align:center}
+.neighbour-chat.speaking strong{margin:0;color:#28594f;font-size:12px}
+.neighbour-chat.speaking span{display:none}
+.neighbour-chat.speaking.typing span{display:block;height:8px;background:radial-gradient(circle,#28594f 2px,transparent 2.5px) 0 50%/8px 8px repeat-x;width:24px;margin:3px auto 0;animation:rpg-dots .9s steps(3) infinite}
+@keyframes rpg-dots{from{width:8px}to{width:32px}}
+#activity.conversation.rpg #activityActions:not(.single){max-height:min(34dvh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 2px 0}
+/* Replies in two tidy columns where there is room (read left to right, top to bottom),
+   one column on a phone; never wider than the box. */
+#activity.conversation.rpg #activityActions:not(.single){display:grid;grid-template-columns:1fr;overflow-x:hidden}
+@media(min-width:720px){#activity.conversation.rpg #activityActions:not(.single){grid-template-columns:repeat(2,minmax(0,1fr))}}
+#activity.conversation.rpg #activityActions button{min-height:36px;padding:6px 12px 6px 10px;font-size:14px}
+#activity.conversation.rpg #activityActions button.selected{transform:none}
+#activity.conversation.rpg .activity-card{padding-top:24px;padding-bottom:12px}
+#activity.conversation.rpg #activityBody{margin-bottom:10px;font-size:17px}
+/* "Leave", with its key where there is a keyboard. */
+#activity.conversation.rpg #closeActivity{font-size:0}
+#activity.conversation.rpg #closeActivity span{display:none}
+#activity.conversation.rpg #closeActivity::before{content:"Leave";font-size:12px}
+@media(hover:hover){#activity.conversation.rpg #closeActivity::after{content:"Esc";margin-left:6px;padding:1px 5px;border-radius:5px;background:#28594f;color:#fffaf0;font:700 10px ui-monospace,monospace}}
+#activity.conversation.rpg #activityActions button:hover{transform:none}
+#activity.conversation.rpg #activityTitle{max-width:calc(100% - 130px)}
+#activity.conversation.rpg #activityTitle::after{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){#activity.conversation.rpg #activityTitle::after{display:none}}

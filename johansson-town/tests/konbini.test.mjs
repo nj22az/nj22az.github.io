@@ -204,6 +204,8 @@ test('the shelf fills a basket and the counter runs the whole exchange',async()=
  assert.match(body(),/合計 ¥230/,'then reads out the total');
  assert.match(body(),/スタンプカード/,'and mentions the stamp card');
  dom.button('Pay ¥230 in cash');
+ assert.match(body(),/ありがとうございました/,'She thanks you first');
+ dom.button('Look at the receipt');
  assert.match(body(),/レシート|SAKURA SHŌTEN/,'A receipt is printed');
  assert.match(body(),/温め済 WARMED · Plum rice ball/);
  assert.match(body(),/袋辞退/,'Declining the bag is on it');

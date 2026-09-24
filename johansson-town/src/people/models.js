@@ -318,8 +318,11 @@ export function createLocalCharacters({shadows=false}={}){
         const engaged=!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime);
         actor.faceController.setAsleep(eyesClosed);
         actor.faceController.setSpeaking(!!(entity.userData.chat?.speaking||entity.userData.speakingUntil>performance.now()));
-        // A conversation may pin an expression; otherwise she warms up when engaged.
-        actor.faceController.setExpression(entity.userData.thuanExpression||(engaged?'smile':'neutral'));
+        // A conversation may pin an expression; a passing mood (a present, a sale) holds for
+        // a few seconds; otherwise she warms up when engaged.
+        const mood=entity.userData.thuanMood,feeling=mood&&mood.until>performance.now()?mood.expression:null;
+        if(mood&&!feeling)delete entity.userData.thuanMood;
+        actor.faceController.setExpression(entity.userData.thuanExpression||feeling||(engaged?'smile':'neutral'));
         actor.faceController.update(dt,faceClock);
       }
       if(entity.userData.inWorkplace==='office'&&entity.userData.socialPose==='Type')actor.officeHands?.update(dt);

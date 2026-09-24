@@ -127,6 +127,16 @@ export function createCharacters(options={}){
     if(gesture&&gesture!=='idle')models.gesture(entity);
     return true;
   }
+  /**
+   * A mood that lasts a little while on its own, and outlives the conversation that
+   * caused it: she is still smiling as you walk away from the till.
+   */
+  function feel(name,expression,seconds=6){
+    const entity=entities.get(name);
+    if(!entity||!expression)return false;
+    entity.userData.thuanMood={expression,until:performance.now()+Math.max(0,seconds)*1000};
+    return true;
+  }
   /** Holds the mouth open while a spoken line runs; the controller does the shaping. */
   function setSpeaking(name,value){
     const entity=entities.get(name);
@@ -135,7 +145,7 @@ export function createCharacters(options={}){
     entity.userData.speakingUntil=value?performance.now()+60000:0;
     return true;
   }
-  window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter,setExpression,setSpeaking});
+  window.__JOHANSSON_CHARACTER_CONTROL__=Object.freeze({list:listCharacters,get:getCharacter,moveNPC,faceCharacter,gesture:commandGesture,release:releaseCharacter,setExpression,setSpeaking,feel});
 
   function update(dt){
     updateAIControls(dt);

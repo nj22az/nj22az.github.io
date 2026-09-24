@@ -7,7 +7,8 @@ import {createDialogue,END_DIALOG_ID} from './dialogue-engine.js';
 export const STORY_FLAGS=Object.freeze({
  met_thuan:false,bought_from_sakura:false,sold_model:false,sold_form_day:-1,inspected_plant:false,
  has_letter:false,helped_ledger:false,sat_after_close:false,helped_close:false,
- heard_nam_phuoc:false,rain_awning:false,talks_today:0,last_talk_day:-1});
+ heard_nam_phuoc:false,rain_awning:false,talks_today:0,last_talk_day:-1,
+ gifts_given:0,gifts_today:0,gift_day:-1});
 
 export const defaultStory=()=>({...STORY_FLAGS});
 

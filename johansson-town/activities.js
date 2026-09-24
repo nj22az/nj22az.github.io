@@ -27,6 +27,8 @@ import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey} from './src/save.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
+import {createDialogueBox} from './src/dialogue/dialogue-box.js';
+import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {createThuanMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
@@ -64,7 +66,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   const commuterDescription=name=>name==='Harbour master'?'The harbour office is staffed around the clock. I stay on the quay.':name==='Bus driver'?'I work the Harbour Line and stay at the northern terminal.':'I commute into the shopping district on the Harbour Line and leave by bus after my shift.';
 
+  const characterControl=()=>window.__JOHANSSON_CHARACTER_CONTROL__;
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
+  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close()});
 
   const workshopUI=createWorkshopUI({state,show,close,save,say,note,getContext:getSocialContext,getMinutes,preview:previewPrint,body,modal});
 
@@ -80,8 +84,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
-  function show(title,text,buttons=[]){
+  function close(){dialogueBox.close();ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  // options.mood: how Thuan's face looks for this line (her lines only; others release it).
+  function show(title,text,buttons=[],options={}){
     ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
@@ -91,7 +96,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const speaker=title.split('·')[0].trim();
     const conversation=speaker==='Thuan'||!!DIALOGUE[speaker];
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
-    modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);$('#closeActivity').focus();
+    modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);
+    if(speaker==='Thuan')characterControl()?.setExpression?.('Thuan',options.mood||null);
+    dialogueBox.present({title,text,conversation});
+    if(!conversation)$('#closeActivity').focus();
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
@@ -134,15 +142,13 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function runDialogue(script,startId,title){
     const dialogue=createTownDialogue({script,state,note,getMinutes,
       getPlace:()=>getSocialContext().inside||'street',getRain:()=>state.weather===true});
-    const face=mood=>window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',mood||null);
     const render=frame=>{
       if(frame.done){save();close();return;}
-      // Each of her lines carries a mood (happy, sad, angry, shy...), and her face follows.
-      if(frame.speaker==='Thuan')face(frame.mood);
       const buttons=frame.choices.length
         ? frame.choices.map(choice=>[choice.text,()=>render(dialogue.choose(choice.index))])
         : [[frame.endsHere?'See you soon, Thuan':'Go on',()=>render(dialogue.advance())]];
-      show(title||frame.speaker||'',frame.text,buttons);
+      // Each of her lines carries a mood (happy, sad, angry, shy...), and her face follows.
+      show(title||frame.speaker||'',frame.text,buttons,{mood:frame.speaker==='Thuan'?frame.mood:null});
     };
     render(dialogue.start(startId));
     return dialogue;
@@ -241,9 +247,24 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
      state.onsenDate=day;save();
      show(title,(tonight?'お風呂？ いいね！\nYes — tonight, straight after I lock up. ':'今夜はもう遅いから… 明日ね！\nTonight it is too late for me, but tomorrow, straight after I lock up. ')+'I will be in the rock bath by the sea wall. Bring your swimsuit — they are strict about that at Umi-no-yu. Pay Higa-san at the bandai.',[['See you at the bath',close]]);
     };
+    // A present from your bag. She is delighted; a second the same day makes her shy.
+    const gifts=giftableItems(state.inventory);
+    const giveGift=()=>show(title,'え、何かくれるの？\nFor me? What have you brought?',[
+      ...gifts.slice(0,8).map(item=>[item,()=>{
+        if(!takeGift(state.inventory,item)){thuanConversation();return;}
+        const story=state.story,day=Math.floor(getMinutes()/1440);
+        if(story.gift_day!==day){story.gift_day=day;story.gifts_today=0;}
+        const reaction=giftReaction(item,{giftsToday:story.gifts_today});
+        story.gifts_today=Math.min(999,story.gifts_today+1);story.gifts_given=Math.min(999,story.gifts_given+1);
+        note('Gave Thuan a present: '+item+'.');save();
+        characterControl()?.feel?.('Thuan',reaction.mood,10);
+        show(title,reaction.text,[['Back to Thuan',()=>thuanConversation()],['See you soon, Thuan',close]],{mood:reaction.mood});
+      }]),
+      ['Never mind',()=>thuanConversation()]]);
     show(title,greeting,[
       ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),
       ['Talk with Thuan',thuanStory],
+      ...(gifts.length?[['Give her a present',giveGift]]:[]),
       ...(onsenBath?[]:[[onsenAsked?'Umi-no-yu after work — still on':'Come to Umi-no-yu after work',onsenAsked?()=>show(title,state.onsenDate===today?'Of course! After I lock up. The rock bath, by the sea wall.':'Tomorrow, after I lock up. I have not forgotten.',[['Back to Thuan',()=>thuanConversation()]]):inviteOnsen]]),
       ...offered.map(([label,id])=>[label,()=>thuanConversation(id)]),
       ['Ask her something',askThuan],
@@ -600,7 +621,16 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(bought.some(name=>['Green tea','Canned coffee'].includes(name)))onPurchase(bought.find(name=>['Green tea','Canned coffee'].includes(name)));
     note('Shopped at Sakura Shōten · ¥'+result.receipt.total+'.');
     if(result.receipt.gift)note('Filled a Sakura stamp card. Thuan put a green tea on the counter.');
-    show('レシート · Receipt',receiptText(result.receipt),[['Into your pocket',close]]);
+    // A sale makes her day a little: she beams, and is still smiling as you leave.
+    characterControl()?.feel?.('Thuan','happy',8);
+    const thanks=result.receipt.gift
+      ?'ありがとうございました！\nThank you! And that fills your card — the green tea is on the house. Do not tell the assistant manager.'
+      :['ありがとうございました！\nThank you! Come back soon — the cooler gets lonely.',
+        'ありがとうございました！\nThank you! I put the receipt in the bag so it does not blow away on the quay.',
+        'まいど！\nThank you! You are my favourite customer today. Do not tell the others.'][state.konbini.visits%3];
+    show('Thuan · Counter',thanks,[
+      ['Look at the receipt',()=>show('レシート · Receipt',receiptText(result.receipt),[['Into your pocket',close]])],
+      ['Thank you, Thuan',close]],{mood:'happy'});
   }
 
   function konbiniBasket(){
@@ -712,5 +742,5 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
-  return {action,inventory,close,save,spend,players,menu:show,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,inventory,close,save,spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

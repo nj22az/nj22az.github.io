@@ -427,7 +427,71 @@ function conversationChat(){
  if(!conversationLine)return null;
  const speaker=conversationLine.speaker;
  if(!speaker?.visible)return null;
- return {speaker:{g:speaker,profile:{name:conversationLine.name}},text:conversationLine.text};
+ return {speaker:{g:speaker,profile:{name:conversationLine.name}},text:conversationLine.text,speaking:true,typing:!!activities?.dialogue?.typing};
+}
+/**
+ * While you talk, the picture eases up by a sixth of the screen so the speaker stands
+ * above the dialogue box instead of behind it, and eases back down when you are done.
+ */
+let conversationLift=0;
+const speakerHead=new THREE.Vector3(),facingSpeaker=new THREE.Quaternion(),twoShot=new THREE.Vector3(),twoShotLook=new THREE.Vector3(),shotAim=new THREE.Matrix4(),shotQ=new THREE.Quaternion();
+/** How far the lens can go from `from` along (dx,dz) before something solid is in the way. */
+function clearReach(from,dx,dz,y,want){
+ for(let d=.3;d<=want+.001;d+=.1)if(cameraBlocked(from.x+dx*d,from.z+dz*d,y,.16))return Math.max(0,d-.25);
+ return want;
+}
+/**
+ * A conversation frames the speaker. Johansson turns to face her; in first person the
+ * view eases round to her; in third person the lens moves to the side of the two of
+ * them, on whichever side is clear, so both are in the shot and neither hides the
+ * other. The ordinary camera is paused while a window is open, so this places it.
+ */
+function frameConversation(dt){
+ const speaker=conversationLine?.speaker;
+ if(!speaker?.visible||seated||bicycleRide)return;
+ speaker.getWorldPosition(speakerHead);speakerHead.y+=1.45;
+ const dx=speakerHead.x-player.position.x,dz=speakerHead.z-player.position.z,dist=Math.hypot(dx,dz);
+ if(dist<.2||dist>8)return;
+ const k=1-Math.exp(-dt*4),want=Math.atan2(-dx,-dz);
+ facingSpeaker.setFromAxisAngle(yAxis,want);player.quaternion.slerp(facingSpeaker,k);
+ yaw+=Math.atan2(Math.sin(want-yaw),Math.cos(want-yaw))*k;
+ if(!thirdPerson){
+  const wantPitch=THREE.MathUtils.clamp(Math.atan2(speakerHead.y-(player.position.y+1.6),dist)-.06,-.3,.12);
+  pitch+=(wantPitch-pitch)*k;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);return;
+ }
+ const ux=dx/dist,uz=dz/dist,mid=twoShot.set(player.position.x+dx*.5,player.position.y+1.62,player.position.z+dz*.5);
+ const want2=Math.max(1.8,dist*1.35);let best=null;
+ // To one side of the pair and a little behind him, so she is seen more from the front.
+ for(const side of [1,-1]){
+  let sx=uz*side-ux*.45,sz=-ux*side-uz*.45;const n=Math.hypot(sx,sz);sx/=n;sz/=n;
+  const reach=clearReach(mid,sx,sz,mid.y,want2);
+  if(!best||reach>best.reach+.05)best={sx,sz,reach};
+ }
+ const reach=Math.max(.9,best.reach);
+ twoShotLook.set(mid.x+dx*.15,mid.y-.08,mid.z+dz*.15);
+ camera.position.lerp(speakerHead.set(mid.x+best.sx*reach,mid.y+.12,mid.z+best.sz*reach),k);
+ shotAim.lookAt(camera.position,twoShotLook,yAxis);shotQ.setFromRotationMatrix(shotAim);camera.quaternion.slerp(shotQ,k);
+}
+function updateConversationLift(dt){
+ if(conversationLine)frameConversation(dt);
+ const target=conversationLine?.18:0;
+ if(Math.abs(target-conversationLift)<.001&&conversationLift===target)return;
+ conversationLift+=(target-conversationLift)*Math.min(1,dt*7);
+ if(Math.abs(target-conversationLift)<.002)conversationLift=target;
+ const w=canvas.width,h=canvas.height;
+ if(conversationLift>0)camera.setViewOffset(w,h,0,Math.round(h*conversationLift),w,h);else camera.clearViewOffset();
+}
+/** Points the dialogue box's tail at the speaker, or at the middle when she is out of view. */
+const tailPoint=new THREE.Vector3();
+function aimDialogueTail(at){
+ const card=document.querySelector('#activity.rpg .activity-card');if(!card)return;
+ const rect=card.getBoundingClientRect();let x=at?.x;
+ // No bubble (she is near the top of the frame, say): aim at her head all the same.
+ if(x==null&&conversationLine?.speaker?.visible){
+  tailPoint.copy(characters.conversationTarget(conversationLine.speaker)).project(camera);
+  if(tailPoint.z>-1&&tailPoint.z<1&&Math.abs(tailPoint.x)<1){const c=canvas.getBoundingClientRect();x=c.left+(tailPoint.x+1)*c.width/2;}
+ }
+ card.style.setProperty('--tail-x',x!=null&&rect.width?Math.round(x-rect.left)+'px':'50%');
 }
 function residentSpeech(){const person=world.people.filter(p=>!p.g.userData.playerControlled&&p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current&&(!p.g.userData.inMarket||current?.id==='market')).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
 function roomHit(object,label,kind,title,text){reg(object,label,()=>activities.action(kind,title,text),true);return object;}
@@ -610,7 +674,11 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;if(o.userData.visualReady===false||!o.visible||current&&!h.inside||!current&&h.inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;if(v.lengthSq()&&fw.dot(v.normalize())<-.2)continue;const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d+(o.userData.promptPenalty||0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
+function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
+  // What you are facing, not merely what is nearest: things behind you or well off to the
+  // side are out (unless you are all but touching them), and people come before things.
+  const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
+  const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
 function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();active?.fn?.();}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
@@ -895,6 +963,8 @@ function updateController(dt){
  const root=cameraControls.active?cameraControls.panel:activities.paused?$('#activity'):!$('#directory').classList.contains('hidden')?$('#directory'):null;
  if(root){
   if(f.pressed[1]||f.pressed[9]){if(cameraControls.active)cameraControls.close();else if(activities.paused)activities.close();else toggleDir(false);return;}
+  // In a conversation, A finishes the line being typed, then takes the highlighted reply.
+  if(root.id==='activity'&&activities.dialogue?.active&&f.pressed[0]){activities.dialogue.confirm();return;}
   navigateControls(root,direction);
   if(f.pressed[0]){const items=focusableControls(root);if(items.includes(document.activeElement))document.activeElement.click();else items[0]?.focus();}return;
  }
@@ -990,7 +1060,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused)facing.update(frameDt);}if(!paused)chatBubble.render(conversationChat()||neighbourChats.current||residentSpeech());if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){const talking=conversationChat(),at=chatBubble.render(talking||neighbourChats.current||residentSpeech());if(conversationLine)aimDialogueTail(talking?at:null);updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
