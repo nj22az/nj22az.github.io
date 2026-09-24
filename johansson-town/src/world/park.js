@@ -3,7 +3,7 @@ import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
-import {PARK,PARK_BENCH,parkHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
+import {PARK,PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
 import {peninsulaActive} from './town-mode.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
@@ -57,7 +57,7 @@ export function buildPark(world,options){
   const vertices=[],indices=[];for(let z=0;z<=56;z++)for(let x=0;x<=56;x++)vertices.push(x*.5-14,(parkHeight(p.x+(x*.5-14)*s,p.z+(z*.5-14)*s)-p.lift)/s,z*.5-14);
   for(let z=0;z<56;z++)for(let x=0;x<56;x++){const i=z*57+x;indices.push(i,i+57,i+1,i+1,i+57,i+58);}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setIndex(indices);geo.computeVertexNormals();visuals.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x85946a,roughness:1})));
-  const seat=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,1.8),new THREE.MeshStandardMaterial({color:0x865f42}));seat.position.set(2.06,1.9,0);visuals.add(seat);
+  const f=PARK_BENCH_FIT,seat=new THREE.Mesh(new THREE.BoxGeometry(.65*f.scale,.12*f.scale,1.8*f.scale),new THREE.MeshStandardMaterial({color:0x865f42}));seat.position.set(2.06,benchPoint(0,1.9,0)[1],0);visuals.add(seat);
  }
  if(!source)registerDetail(world,{id:'park',x:p.x,z:p.z,radius:38,load:async()=>{
   if(!await preloadPark())return false;const model=source.clone(true);model.userData.sharedAsset=true;
@@ -71,7 +71,8 @@ export function buildPark(world,options){
   const base=edge.length/3;for(const t of [i/56,(i+1)/56]){const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;edge.push(x,-p.lift/s,z,x,(parkHeight(p.x+x*s,p.z+z*s)-p.lift)/s,z);}indices.push(base,base+1,base+2,base+2,base+1,base+3);
  }
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(edge,3));geo.setIndex(indices);geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x858474,roughness:1,side:THREE.DoubleSide})));
- world.colliders.push({x:p.x+2.12*s,z:p.z,w:.94*s,d:1.86*s,minY:p.lift+1.58*s,height:p.lift+2.51*s,park:true},{x:p.x+3.5*s,z:p.z,w:.85*s,d:.85*s,height:10,park:true});
+ {const f=PARK_BENCH_FIT;world.colliders.push({x:p.x+f.x*s,z:p.z+f.z*s,w:f.width*f.scale*s,d:f.length*f.scale*s,minY:p.lift+f.y*s,height:p.lift+benchPoint(0,f.top,0)[1]*s,park:true});}
+ world.colliders.push({x:p.x+3.5*s,z:p.z,w:.85*s,d:.85*s,height:10,park:true});
  for(const [x,z] of [[.75,-2.97],[-6.72,10.41],[13.03,-3.54]])world.colliders.push({x:p.x+x*s,z:p.z+z*s,w:.25*s,d:.25*s,height:8,park:true});
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);
  options.register(bench,'Sit and watch the town and harbour',()=>options.onAction('seat','Harbour Park bench','A quiet view across the rooftops and port.'));

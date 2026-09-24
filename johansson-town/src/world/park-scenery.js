@@ -1,3 +1,4 @@
+import {PARK_BENCH_FIT} from './park-layout.js';
 // Remove the bush centred on the western approach and the detached blossom card.
 // The original supplied asset remains intact; only the cached scene is adapted.
 export const REMOVED_PARK_BUSH={minX:-11.71,maxX:-9.04,minZ:-1.09,maxZ:1.89};
@@ -9,5 +10,8 @@ export function prepareParkScenery(source){
   for(let i=0;i<indices.length;i+=3){const triangle=[indices[i],indices[i+1],indices[i+2]];if(triangle.every(inside))removed++;else kept.push(...triangle);}
   geometry.setIndex(kept);geometry.computeBoundingBox();geometry.computeBoundingSphere();bush.geometry=geometry;bush.userData.removedApproachTriangles=removed;
  }
+ // The bench back at human size (park-layout.js PARK_BENCH_FIT).
+ const f=PARK_BENCH_FIT;
+ for(const name of ['mtParkBenchIron00t_mat','mtParkBenchWood00t_mat']){const o=model.getObjectByName(name);if(!o)continue;o.scale.multiplyScalar(f.scale);o.position.set(f.x*(1-f.scale),f.y*(1-f.scale),f.z*(1-f.scale));o.userData.benchScaled=true;}
  return model;
 }

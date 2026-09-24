@@ -962,6 +962,8 @@ window.__JOHANSSON_POSE__={
 // invisible from a screenshot -- a weight shift and a loop look identical in a still --
 // so there is otherwise no way to check from outside that anyone is using more than
 // the first take of an idle.
+/** Minato's beer service, for watching an order go from the tap to the table. */
+window.__JOHANSSON_BEER__=()=>beerService?{pending:beerService.pending,drink:beerService.drink,served:beerService.served}:null;
 window.__JOHANSSON_CAST__={
  get takes(){return (characters?.actors||[]).map(a=>({
   name:a.entity?.userData?.name||'?',clip:a.current||null,
