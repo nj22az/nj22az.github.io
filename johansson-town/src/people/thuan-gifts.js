@@ -34,6 +34,12 @@ export function giftReaction(item,{giftsToday=0}={}){
  if(giftsToday>=1)return {mood:'shy',text:'また？ もう…\nAnother one? You are spoiling me. The assistant manager is going to think I have a favourite customer.'};
  if(WORKSHOP_MODELS.some(model=>model.name===item))
   return {mood:'happy',text:'わあ、すごい！\nYou printed this? It is going on the shelf by the till, where everyone can see it. The assistant manager will be jealous.'};
+ if(item==='Zenzai')
+  return {mood:'happy',text:'ぜんざい！ 溶ける前に！\nZenzai from Nakamura’s! Quick, before it melts — no, you have a spoon too. We share. That is the rule with zenzai.'};
+ if(item==='Sata andagi')
+  return {mood:'happy',text:'サーターアンダギー！\nStill warm! Arakaki-san’s are the best on the island. My grandmother said they smile when they are done properly. Look — this one is smiling.'};
+ if(item==='Awamori miniature')
+  return {mood:'shy',text:'泡盛？ もう…\nAwamori? Are you trying to get the shopkeeper drunk? I will keep it for after closing. Maybe we open it together.'};
  if(item==='Sea bream')
   return {mood:'happy',text:'鯛！ 立派！\nA whole sea bream! Supper is solved. I will tell Nao I caught it myself. She will not believe me.'};
  if(item==='Coffee milk')

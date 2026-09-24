@@ -26,6 +26,7 @@ import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
+import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {createBusRun} from './bus.js';
 import {windowGlow} from '../render/dusk.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
@@ -215,6 +216,9 @@ export function createTown(options){
    world.school=buildSchool(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
    world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
+   // The streets that fill the rest of the peninsula in: Nishi-machi behind the west
+   // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
+   world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }

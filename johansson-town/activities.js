@@ -756,7 +756,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'ramen':if(getTableService())tableService();else show('Sato Ramen','Take a counter seat to order ramen, onigiri, steamed buns or tea. The cook prepares your meal and serves it at your place.',[['Take a seat',close]]);break;
        case 'phone':show('Public telephone','A handwritten card lists the harbour office.',[['Call harbour office · ¥10',()=>{if(spend(10)&&!onPhone())receipt('Harbour office','“The Harbour Line runs to the northern terminal. Port operations continue through the night. Speak to the harbour master if you want to sell a catch.”');}],['Hang up',close]]);break;
        case 'bus':receipt('Harbour Line timetable',harbourTimetable(getMinutes()));break;
-      case 'shrine':show('Neighbourhood shrine','The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);show('Set an intention','A bell note hangs above the roofs. Choose one thing to carry back into the street.',['Book','Work','Home'].map(intent=>[intent,()=>{state.shrineIntent=intent;note('Shrine intention: '+intent+'.');receipt('A quiet moment',intent+'. Noted.');}]));}}],['Leave',close]]);break;
+      case 'shrine':show(typeof name==='string'&&name?name:'Neighbourhood shrine',typeof detail==='string'&&detail?detail:'The street sounds soften behind the torii gate.',[['Make an offering · ¥5',()=>{if(spend(5)){tone(420,.7);show('Set an intention','A bell note hangs above the roofs. Choose one thing to carry back into the street.',['Book','Work','Home'].map(intent=>[intent,()=>{state.shrineIntent=intent;note('Shrine intention: '+intent+'.');receipt('A quiet moment',intent+'. Noted.');}]));}}],['Leave',close]]);break;
     }
   }
 

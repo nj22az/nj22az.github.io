@@ -11,6 +11,7 @@ import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';
 import {SCHOOL,schoolAt} from './school-layout.js';
+import {NISHI,nishiAt,EAST_QUAY,eastQuayAt} from './okinawa/layout.js';
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
@@ -114,6 +115,10 @@ function regionAt(x,z,r=0){
  // ...and the same on the shop side, where the konbini stood in an invisible box with
  // only its frontage on ground you could stand on.
  if(peninsulaActive()&&westYardAt(x,z,r))return WEST_YARD;
+ // Nishi-machi, through the lane openings in the yard wall and along the quay.
+ if(peninsulaActive()&&nishiAt(x,z,r))return NISHI;
+ // The auction shed and ice plant, on the quay east of the harbour office.
+ if(peninsulaActive()&&eastQuayAt(x,z,r))return EAST_QUAY;
  return null;
 }
 export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;return 0;}

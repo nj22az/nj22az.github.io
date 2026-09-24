@@ -23,6 +23,13 @@ export const WEST_YARD=Object.freeze({
  /** Where the quay takes over along the south edge, and the bus station along the north. */
  quayFrom:-19,stationFrom:-10.6,
  wall:Object.freeze({height:.72,thickness:.5}),
+ /**
+  * Where the lanes of Nishi-machi come through the long wall, as lane centres. The
+  * wall is broken for each, three metres wide, so the quarter behind it is the next
+  * street over rather than ground on the far side of a wall.
+  */
+ lanes:Object.freeze([-27.5,-13,1.5,16]),
+ laneHalf:1.5,
 });
 
 export const westYardAt=(x,z,r=0)=>
@@ -61,10 +68,16 @@ export function buildWestYard({parent,colliders=[],shadows=false}={}){
   coping.position.set(x,height+.045,z);coping.receiveShadow=!!shadows;group.add(coping);
   colliders.push({id:'west-yard-wall',x,z,w:w+.12,d:d+.12,height:height+.09});
  };
- // The long side, then the two returns that close the corners the quay and the bus
- // station do not already close.
- wall(thickness,depth+thickness,WEST_YARD.minX-thickness/2,(WEST_YARD.minZ+WEST_YARD.maxZ)/2);
- wall(WEST_YARD.quayFrom-WEST_YARD.minX,thickness,(WEST_YARD.minX+WEST_YARD.quayFrom)/2,WEST_YARD.minZ-thickness/2);
+ // The long side, in lengths between the lane openings, and the return that closes the
+ // corner the bus station does not. The south end is open: the yard runs straight on
+ // onto the quay apron, which is how a working yard meets a quay.
+ const x=WEST_YARD.minX-thickness/2;
+ let from=WEST_YARD.minZ-thickness;
+ for(const lane of [...WEST_YARD.lanes,Infinity]){
+  const to=Math.min(lane-WEST_YARD.laneHalf,WEST_YARD.maxZ+thickness);
+  if(to-from>.2)wall(thickness,to-from,x,(from+to)/2);
+  from=lane+WEST_YARD.laneHalf;
+ }
  wall(WEST_YARD.stationFrom-WEST_YARD.minX,thickness,(WEST_YARD.minX+WEST_YARD.stationFrom)/2,WEST_YARD.maxZ+thickness/2);
  return {group,ground};
 }

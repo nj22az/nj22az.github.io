@@ -97,10 +97,11 @@ export function actionFor(label=''){
 
 /** An icon for something in the bag. */
 const ITEMS=[
- [/tea|coffee|cola|water|lager|beer|milk|juice|sake|ramune/i,'cup'],
+ [/zenzai|shaved ice/i,'ice'],
+ [/tea|coffee|cola|water|lager|beer|milk|juice|sake|ramune|awamori/i,'cup'],
  [/bream|fish|mackerel|squid/i,'fish'],
  [/^Ice$/i,'ice'],
- [/rice ball|onigiri|biscuit|bun|bread|cake|snack|mochi|noodle|bento|dango/i,'food'],
+ [/rice ball|onigiri|biscuit|bun|bread|cake|snack|mochi|noodle|bento|dango|andagi/i,'food'],
  [/soap|shampoo|towel/i,'soap'],
  [/page|letter|postcard|paper|ticket|note/i,'page'],
  [/bottle|cans|metal parts|scrap/i,'recycle'],

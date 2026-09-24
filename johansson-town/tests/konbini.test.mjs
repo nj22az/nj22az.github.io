@@ -293,8 +293,9 @@ test('the shop stands in a yard you can walk round, with a back to look at',asyn
   ['behind',front-SAKURA_FRONT.depth-1.6,centre],
   ['in front',front+1.2,centre],
  ])assert.ok(routeAt(x,z,.32),'You cannot stand '+side+' of the shop');
- // and the yard is closed by something rather than simply stopping.
- assert.ok(!routeAt(front-SAKURA_FRONT.depth-9,centre,.32),'The yard runs on past its wall');
+ // and the yard is closed by a wall rather than simply stopping: beyond it is the next
+ // quarter, reached by the lanes through the wall, not more of the yard.
+ assert.equal(routeAt(front-SAKURA_FRONT.depth-9,centre,.32)?.id,'nishi-machi','Behind the yard wall is not Nishi-machi');
  configureTownMode(TOWN_MODES.LEGACY);
  assert.ok(!routeAt(front-SAKURA_FRONT.depth-1.6,centre,.32),'Only the peninsula has the room for a yard');
  configureTownMode(TOWN_MODES.PENINSULA);

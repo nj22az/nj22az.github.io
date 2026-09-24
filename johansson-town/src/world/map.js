@@ -8,6 +8,7 @@ import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
 import {TUNNEL} from './coyote-tunnel.js';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
+import {mapPlan} from './okinawa/layout.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
   sites=[...sites,...landmarks];
@@ -40,7 +41,13 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
   }
   if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
-  if(peninsulaActive()){ctx.fillStyle='#6d6a60';ctx.fillRect(px(TUNNEL.x-TUNNEL.width/2),pz(TUNNEL.z+TUNNEL.depth),Math.max(1,TUNNEL.width*scale),Math.max(2,TUNNEL.depth*scale));ctx.strokeStyle='#766c50';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(TUNNEL.x),pz(MAIN_ROAD.maxZ));ctx.lineTo(px(TUNNEL.x),pz(FOREST_EDGE.roadEndZ));ctx.stroke();if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('TUNNEL',px(TUNNEL.x-TUNNEL.width/2+.5),pz(TUNNEL.z+TUNNEL.depth*.6));}}
+  if(peninsulaActive()){
+   const plan=mapPlan(),rect=([x0,x1,z0,z1])=>ctx.fillRect(px(x0),pz(z1),Math.max(1,(x1-x0)*scale),Math.max(1,(z1-z0)*scale));
+   ctx.fillStyle='#d8cda9';plan.yards.forEach(rect);
+   ctx.fillStyle='#b9ab88';plan.walks.forEach(rect);
+   ctx.fillStyle='#a8997a';plan.buildings.forEach(rect);
+   if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';for(const [text,x,z] of plan.labels)ctx.fillText(text,px(x),pz(z));}
+   ctx.fillStyle='#6d6a60';ctx.fillRect(px(TUNNEL.x-TUNNEL.width/2),pz(TUNNEL.z+TUNNEL.depth),Math.max(1,TUNNEL.width*scale),Math.max(2,TUNNEL.depth*scale));ctx.strokeStyle='#766c50';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(TUNNEL.x),pz(MAIN_ROAD.maxZ));ctx.lineTo(px(TUNNEL.x),pz(FOREST_EDGE.roadEndZ));ctx.stroke();if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('TUNNEL',px(TUNNEL.x-TUNNEL.width/2+.5),pz(TUNNEL.z+TUNNEL.depth*.6));}}
   else if(shoppingDistrictActive()){ctx.fillStyle='#496347';ctx.fillRect(px(FOREST_EDGE.minX),pz(FOREST_EDGE.roadEndZ+.3),Math.max(1,(FOREST_EDGE.maxX-FOREST_EDGE.minX)*scale),Math.max(2,.8*scale));if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('FOREST · BUS ONLY',px(FOREST_EDGE.minX+.5),pz(FOREST_EDGE.roadEndZ+.65));}}
   ctx.fillStyle='#a8997a';for(const house of [...(shoppingDistrictActive()?[]:RESIDENTIAL_BUILDINGS),...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
