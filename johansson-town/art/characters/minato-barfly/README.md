@@ -6,7 +6,7 @@ The design follows the resident profile: broad build, short salt-and-pepper hair
 
 ## Build
 
-Use Blender 4.x and run:
+Use Blender 4.0 or later and run:
 
 ```sh
 blender --background --factory-startup --python build_barfly.py -- --output ./out
@@ -19,7 +19,7 @@ The output directory contains:
 - `minato-barfly-review.png`: neutral presentation render.
 - `minato-barfly-rig-audit.json`: machine-readable rig validation.
 
-The same build and validation run on pull requests in GitHub Actions. The four outputs are retained as a downloadable Actions artifact so reviewers can open the native Blender file and inspect the interchange export without committing generated binaries.
+The same build and validation are configured to run on pull requests in GitHub Actions. The four outputs are retained as a downloadable Actions artifact so reviewers can open the native Blender file and inspect the interchange export without committing generated binaries.
 
 ## Rig controls
 
