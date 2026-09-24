@@ -22,7 +22,7 @@ import {clone} from '../../vendor/SkeletonUtils.js';
  */
 
 /** The two skeletons in this town name their feet differently. */
-const FEET=[['LeftFoot','RightFoot'],['FootL','FootR']];
+const FEET=[['LeftFoot','RightFoot'],['FootL','FootR'],['footL','footR']];
 
 const measured=new WeakMap();
 

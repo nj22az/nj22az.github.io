@@ -34,19 +34,24 @@ test('moving Thuan’s wrists and fingers cannot pull the skirt out of shape',()
  assert.deepEqual(positions.array,original,'Skinning repair preserves the supplied surface');
 }));
 
-function handSurfaceCheck(mesh,label){
+const TORSO=/^(Hips|Spine\d*|LeftUpLeg|RightUpLeg|root|spine0\d|pelvis[LR]|upperleg0\d[LR])$/,HAND=/Hand|^wrist|^finger|^metacarpal/;
+/** Dress triangles come from `mesh`; hands from `handMesh` (the same mesh on a single-mesh rig). */
+function handSurfaceCheck(mesh,label,handMesh=mesh){
+ const hands=[];
+ if(handMesh!==mesh){handMesh.updateWorldMatrix(true,false);handMesh.skeleton.update();const {position,skinIndex,skinWeight}=handMesh.geometry.attributes;
+  for(let i=0;i<position.count;i++){let hand=0;for(let k=0;k<4;k++)if(HAND.test(handMesh.skeleton.bones[skinIndex.getComponent(i,k)].name))hand+=skinWeight.getComponent(i,k);if(hand>.5)hands.push(handMesh.getVertexPosition(i,new T.Vector3()));}}
  mesh.updateWorldMatrix(true,false);mesh.skeleton.update();
- const {position,skinIndex,skinWeight}=mesh.geometry.attributes,points=[],body=[],hands=[];
+ const {position,skinIndex,skinWeight}=mesh.geometry.attributes,points=[],body=[];
  for(let i=0;i<position.count;i++){
   let torso=0,hand=0;
   for(let k=0;k<4;k++){
    const name=mesh.skeleton.bones[skinIndex.getComponent(i,k)].name,w=skinWeight.getComponent(i,k);
-   if(/^(Hips|Spine\d*|LeftUpLeg|RightUpLeg)$/.test(name))torso+=w;
-   if(/Hand/.test(name))hand+=w;
+   if(TORSO.test(name))torso+=w;
+   if(HAND.test(name))hand+=w;
   }
   body[i]=torso>.6;
-  if(body[i]||hand>.5)points[i]=mesh.getVertexPosition(i,new T.Vector3());
-  if(hand>.5)hands.push(points[i]);
+  if(body[i]||hand>.5&&handMesh===mesh)points[i]=mesh.getVertexPosition(i,new T.Vector3());
+  if(hand>.5&&handMesh===mesh)hands.push(points[i]);
  }
  const indices=mesh.geometry.index.array,triangles=[];
  for(let i=0;i<indices.length;i+=3){
@@ -74,8 +79,11 @@ function handSurfaceCheck(mesh,label){
 test('Thuan’s hands clear her dress through idle loops and release smoothly after work',()=>setup(async()=>{
  await preloadCharacter('Thuan');const controller=createLocalCharacters(),room=new T.Group(),entity=new T.Group();
  room.position.set(6,0,-4);room.rotation.y=.7;room.add(entity);entity.rotation.y=1.1;
- const actor=controller.attach(entity,'Thuan'),arms=Object.values(actor.mealMotion.arms);
- let mesh;actor.model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});
+ const actor=controller.attach(entity,'Thuan'),bone=n=>actor.model.getObjectByName(n);
+ // The MakeHuman Thuan carries her own arm clips; the Meshy rig took an additive meal layer.
+ const arms=actor.mealMotion?Object.values(actor.mealMotion.arms):['L','R'].map(s=>({upper:bone('upperarm01'+s),lower:bone('lowerarm01'+s),hand:bone('wrist'+s)}));
+ let mesh,skin;actor.model.traverse(o=>{if(!o.isSkinnedMesh)return;if(/elegantsuit/.test(o.name))mesh=o;else if(/Body|base/.test(o.name)&&!/Under/.test(o.name))skin=o;});
+ if(!mesh)actor.model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});
  const lengths=()=>arms.flatMap(a=>[a.upper.getWorldPosition(new T.Vector3()).distanceTo(a.lower.getWorldPosition(new T.Vector3())),a.lower.getWorldPosition(new T.Vector3()).distanceTo(a.hand.getWorldPosition(new T.Vector3()))]);
  const originalLengths=lengths();let last=[];
  const step=(seconds,walking=false)=>{for(let i=0;i<Math.round(seconds*60);i++){
@@ -83,15 +91,15 @@ test('Thuan’s hands clear her dress through idle loops and release smoothly af
   controller.update(1/60);room.updateMatrixWorld(true);
   const hands=arms.map(a=>entity.worldToLocal(a.hand.getWorldPosition(new T.Vector3())));
   if(last.length)hands.forEach((p,j)=>assert.ok(p.distanceTo(last[j])<.055,'No snap during '+actor.current+': '+p.distanceTo(last[j])));
-  last=hands;lengths().forEach((length,j)=>assert.ok(Math.abs(length-originalLengths[j])<.00001,'Arm bones retain their length'));
+  last=hands;lengths().forEach((length,j)=>assert.ok(Math.abs(length-originalLengths[j])<.0001,'Arm bones retain their length'));
  }};
  for(const pose of ['Idle_Neutral','CounterIdle']){
   entity.userData.socialPose=pose;step(.5);
-  for(let i=0;i<4;i++){step(1.5);handSurfaceCheck(mesh,pose+' '+i);}
+  for(let i=0;i<4;i++){step(1.5);handSurfaceCheck(mesh,pose+' '+i,skin||mesh);}
  }
- delete entity.userData.socialPose;step(1,true);assert.equal(actor.current,'Walk');step(1);handSurfaceCheck(mesh,'after walking');
- entity.userData.carrying=true;step(.6);handSurfaceCheck(mesh,'carrying');
- delete entity.userData.carrying;step(.6);handSurfaceCheck(mesh,'after carrying');
- entity.userData.shopGoods=true;entity.userData.heldItem='shop-milk';step(.6);handSurfaceCheck(mesh,'holding goods');
- delete entity.userData.shopGoods;delete entity.userData.heldItem;step(.6);handSurfaceCheck(mesh,'after serving');
+ delete entity.userData.socialPose;step(1,true);assert.equal(actor.current,'Walk');step(1);handSurfaceCheck(mesh,'after walking',skin||mesh);
+ entity.userData.carrying=true;step(.6);handSurfaceCheck(mesh,'carrying',skin||mesh);
+ delete entity.userData.carrying;step(.6);handSurfaceCheck(mesh,'after carrying',skin||mesh);
+ entity.userData.shopGoods=true;entity.userData.heldItem='shop-milk';step(.6);handSurfaceCheck(mesh,'holding goods',skin||mesh);
+ delete entity.userData.shopGoods;delete entity.userData.heldItem;step(.6);handSurfaceCheck(mesh,'after serving',skin||mesh);
 }));

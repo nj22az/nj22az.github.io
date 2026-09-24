@@ -9,6 +9,7 @@ import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
 import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
@@ -133,6 +134,26 @@ export function thuanAtMinato(profile,minutes,rain=false){
  return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
 }
 
+/**
+ * Thuan's evening at Umi-no-yu, when she has been asked. `state.onsenDate` is the day
+ * index (minutes / 1440) she said yes for; she goes straight from locking up, and still
+ * leaves in time for her bus.
+ */
+export function thuanAtOnsen(profile,minutes,rain=false,state=null,commuter=true){
+ if(profile?.name!=='Thuan'||!Number.isFinite(state?.onsenDate)||Math.floor(minutes/1440)!==state.onsenDate)return false;
+ const m=minuteOfDay(minutes);
+ if(!inTimeRange(m,ONSEN.opens,ONSEN.closes))return false;
+ if(commuter){const shift=shiftFor(profile);return !!shift&&!shift.permanent&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);}
+ return inTimeRange(m,profile.close,Math.min(profile.close+80,ONSEN.closes));
+}
+/** The evening she would be at the bath if asked now: tonight, or tomorrow once tonight has gone. */
+export function onsenInvitationDay(profile,minutes,rain=false,state=null){
+ const commuter=state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
+ const day=Math.floor(minutes/1440),m=minuteOfDay(minutes),shift=shiftFor(profile);
+ const end=commuter&&shift&&!shift.permanent?departureFor(profile,rain)-THUAN_BUS_MARGIN:Math.min((profile?.close??1200)+80,ONSEN.closes);
+ return m<end?day:day+1;
+}
+
 // A commuter does not spend the whole gap between clocking off and the next bus at
 // the terminus. These are small, personal after-work lives: errands, food, a bench,
 // the harbour and a closing walk. The last leg is deliberately omitted so every
@@ -221,6 +242,7 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
+  if(thuanAtOnsen(profile,minutes,rain,state,false))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu after work'};
   if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
   if(thuanVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
   const slot=thuanEveningPlace(minutes);
@@ -246,6 +268,7 @@ function commuterPlan(profile,minutes,rain=false,state=null){
  if(profile.name==='Thuan'&&phase==='departing'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
+  if(thuanAtOnsen(profile,minutes,rain,state))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu before the last bus'};
   if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer at Minato before the last bus'};
  }
  if(phase==='departing'){

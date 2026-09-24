@@ -21,7 +21,7 @@ test('the actual Meshy rig turns its head smoothly, keeps its body still and ret
  globalThis.fetch=async input=>String(input).startsWith('blob:')?previous(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
   await preloadCharacter('Thuan');const scene=new T.Group(),entity=new T.Group();scene.position.set(7,0,-3);scene.rotation.y=.65;scene.add(entity);entity.rotation.y=.4;entity.userData.inMarket=true;
-  const controller=createLocalCharacters(),actor=controller.attach(entity,'Thuan'),head=actor.model.getObjectByName('Head'),body=entity.quaternion.clone(),position=entity.position.clone();controller.update(.01);
+  const controller=createLocalCharacters(),actor=controller.attach(entity,'Thuan'),head=actor.model.getObjectByName('Head')||actor.model.getObjectByName('head'),body=entity.quaternion.clone(),position=entity.position.clone();controller.update(.01);
   const point=entity.localToWorld(new T.Vector3(-1.5,1.65,-1.8));entity.userData.lookTarget=point.toArray();let last=0;
   for(let i=0;i<90;i++){controller.update(1/60);assert.ok(Math.abs(actor.customerGaze.yaw-last)<=1.2/60+.0001);last=actor.customerGaze.yaw;}
   assert.ok(actor.customerGaze.yaw>.5&&actor.customerGaze.yaw<=.65);assert.ok(entity.quaternion.equals(body)&&entity.position.equals(position));assert.ok(head.quaternion.toArray().every(Number.isFinite));
@@ -35,6 +35,9 @@ test('the actual Meshy rig turns its head smoothly, keeps its body still and ret
   const rest=head.quaternion.clone(),take=actor.current;
   for(let i=0;i<idleFrames*2;i++)controller.update(1/60);
   assert.equal(actor.current,take,'The idle take changed while drift was being measured');
-  assert.ok(head.quaternion.angleTo(rest)<.001,'No accumulated head rotation across complete idle loops');
+  // angleTo assumes unit quaternions; sampled float32 tracks are a few 1e-7 off, which
+  // alone reads as a milliradian.
+  const drift=head.quaternion.clone().normalize().angleTo(rest.clone().normalize());
+  assert.ok(drift<.001,'No accumulated head rotation across complete idle loops: '+drift);
  }finally{globalThis.fetch=previous;}
 });

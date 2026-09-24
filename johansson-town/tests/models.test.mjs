@@ -17,7 +17,7 @@ test('residents retain independent motion and seating with Thuan on her supplied
  try{
   assert.deepEqual(await preloadModels(),{ready:6,total:6});assert.equal(requests.length,6);
   assert.ok(requests.every(url=>!url.includes('/realistic/')&&!url.includes('vroid')),'No superseded character or VRoid textures requested');
-  assert.equal(characterSource('Thuan'),'yuri-merged');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
+  assert.equal(characterSource('Thuan'),'thuan-mh');assert.equal(characterSource('Aya'),'female_casual');assert.equal(characterSource('Reiko'),'female_formal');assert.equal(characterSource('Nozomi'),'female_formal');
   const models=createLocalCharacters(),scene=new THREE.Scene(),actors=[];
   const player=new THREE.Group();assert.equal(models.attach(player,'Johansson'),null);assert.equal(player.children.length,0);
   for(const name of [...PROFILES.map(p=>p.name),'Yui','Thuan']){
@@ -110,7 +110,7 @@ test('Thuan changes how she stands instead of looping one take all day',async()=
   for(const name of used)assert.ok(name.startsWith('CounterIdle'),'Idle variation reached outside the family: '+name);
 
   // And it must be a settle, not a snap: the hands may not step between takes.
-  const hand=actor.model.getObjectByName('LeftHand');
+  const hand=actor.model.getObjectByName('LeftHand')||actor.model.getObjectByName('wristL');
   let last=null,worst=0;
   for(let i=0;i<90*60;i++){
    models.update(1/60);entity.updateWorldMatrix(true,true);
@@ -131,7 +131,7 @@ test('Thuan changes how she stands instead of looping one take all day',async()=
     for(const fraction of [0,.34,.67]){
      actor.mixer.setTime(clip.duration*fraction);
      entity.updateWorldMatrix(true,true);actor.model.updateMatrixWorld(true);
-     for(const foot of ['LeftToeBase','RightToeBase']){
+     for(const foot of ['LeftToeBase','RightToeBase','toe3-1L','toe3-1R']){
       const bone=actor.model.getObjectByName(foot);if(!bone)continue;
       const here=entity.worldToLocal(bone.getWorldPosition(new THREE.Vector3()));
       (planted[foot]||=[]).push(here);

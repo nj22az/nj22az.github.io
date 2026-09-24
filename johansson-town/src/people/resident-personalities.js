@@ -10,7 +10,7 @@ export const RESIDENT_PERSONALITIES=Object.freeze(Object.fromEntries(Object.entr
  Nao:{source:'female_casual',top:'#bd7557',trousers:'#394b58',hair:'#292a30',skin:'#cf9b77',width:.98,accessory:'apron',interests:['shop','post','read','radio'],shopping:'soda',snack:'rice',drink:'tea',meal:'yakitori'},
  Aya:{source:'female_casual',top:'#424552',trousers:'#74764e',hair:'#24212a',skin:'#d5a17d',width:.91,accessory:'ponytail-satchel',accent:'#ab799e',height:1.62,interests:['read','seat','post','shop'],snack:'tea',drink:'beer',meal:'rice'},
  Reiko:{source:'female_formal',top:'#a05c75',trousers:'#a05c75',hair:'#44332b',skin:'#d8ae8c',width:.96,accessory:'headband-scarf',accent:'#efe2c3',height:1.62,interests:['read','radio','phone','shop'],snack:'rice',drink:'beer',meal:'fish'},
- Thuan:{source:'yuri-merged',top:'#d49bb3',trousers:'#996c85',hair:'#704e53',skin:'#ddb499',width:1.02,accessory:'ribbon',interests:['shop','seat','read','post'],snack:'tea',drink:'tea',meal:'rice',height:1.64},
+ Thuan:{source:'thuan-mh',top:'#d49bb3',trousers:'#996c85',hair:'#704e53',skin:'#ddb499',width:1.02,accessory:'ribbon',interests:['shop','seat','read','post'],snack:'tea',drink:'tea',meal:'rice',height:1.64},
  'Cold-storage kid':{source:'worker',top:'#87a5b2',trousers:'#495e71',hair:'#664634',skin:'#d4a982',helmet:'#658499',width:.90,accessory:'scarf',accent:'#ddd6ba'},
  Hana:{source:'female_formal',top:'#c58176',trousers:'#c58176',hair:'#76503e',skin:'#dcb594',width:.92,accessory:'headband',accent:'#eee0ae'},
  Daichi:{source:'casual_2',top:'#bba153',trousers:'#5d614c',hair:'#634f34',skin:'#cea276',width:.93,accessory:'satchel',accent:'#655337'},

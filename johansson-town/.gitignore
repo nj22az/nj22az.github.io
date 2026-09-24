@@ -15,3 +15,6 @@ dist/
 
 # Johansson: reproducible from tools/blender/build-johansson.py and animate-johansson.py.
 /art/characters/johansson/*.blend
+# Thuan: reproducible from tools/blender/build-thuan.py and animate-johansson.py --character thuan.
+/art/characters/thuan/*.blend
+__pycache__/

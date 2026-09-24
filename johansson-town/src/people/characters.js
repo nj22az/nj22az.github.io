@@ -48,7 +48,7 @@ export function createCharacters(options={}){
       entry.onChange=onChange;
       stream.add({id:'resident:'+entry.file,priority:0,radius:52,timeoutMs:16000,distance:position=>{
         for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
-        if(entity.userData.inWorkplace||entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inHome)position=getPosition?.()||position;
+        if(entity.userData.inWorkplace||entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inOnsen||entity.userData.inHome)position=getPosition?.()||position;
         const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
       },load:async()=>{
         try{
@@ -150,5 +150,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {get jumping(){return jumping;},attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {get jumping(){return jumping;},wear:(entity,outfit)=>models.wear(entity,outfit),attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

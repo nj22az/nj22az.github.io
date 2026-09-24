@@ -13,7 +13,7 @@ export function residentCommitted(g){
 /** @param {{visible?:boolean,userData:Record<string,unknown>}|null|undefined} g */
 export function thuanHasCommutePriority(g,phase){
  if(!g||g.visible===false||g.userData.inMarket||g.userData.indoors==='market')return false;
- if(g.userData.indoors||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome)return false;
+ if(g.userData.indoors||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inRamen||g.userData.inHome)return false;
  // Once she is visibly walking, the rule applies to the whole street rather than
  // only the market and bus approaches. This keeps two routines from deadlocking at
  // an arbitrary corner between named destinations.

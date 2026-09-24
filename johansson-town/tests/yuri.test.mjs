@@ -10,7 +10,7 @@ test('Thuan holds a conversation rather than presenting a directory',()=>{
  const body=()=>document.querySelector('#activityBody').firstChild.textContent;
  const smallTalk=()=>dom.labels().filter(l=>
   !['Talk with Thuan','Ask her something','The shop side of things','See you soon, Thuan'].includes(l)
-  &&!/^Pay for /.test(l));
+  &&!/^Pay for /.test(l)&&!/Umi-no-yu/.test(l));
 
  acts.action('resident','Thuan');
  assert.match(body(),/I am Thuan/);

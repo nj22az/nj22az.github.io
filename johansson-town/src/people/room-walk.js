@@ -35,6 +35,6 @@ export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8
 
 export function atDestination(person,place,target){
  const g=person.g;
- if(g.userData.inHome||g.userData.inMarket||g.userData.inRamen||g.userData.inIzakaya||g.userData.inWorkplace)return false;
+ if(g.userData.inHome||g.userData.inMarket||g.userData.inRamen||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inWorkplace)return false;
  return g.userData.indoors===place||!g.userData.indoors&&Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
 }

@@ -29,6 +29,6 @@ test('retained alley and vending assets fit their budget; streamed facades prese
  characters.attach(yuri,'Thuan',1.6);const old=[...yuri.children],entries=[];
  characters.streamDetails({add:entry=>entries.push(entry)},()=>{});
  const requestsBefore=requests.length;assert.equal(await entries[0].load(),true);assert.equal(requests.length,requestsBefore+1,'Only Thuan is fetched');
- assert.equal(requests.at(-1),'characters/yuri/yuri-merged.glb');assert.ok(old.every(child=>child.parent===null));assert.equal(characters.actors.length,1);assert.ok(characters.actors[0].mixer);
+ assert.equal(requests.at(-1),'characters/thuan/thuan.glb');assert.ok(old.every(child=>child.parent===null));assert.equal(characters.actors.length,1);assert.ok(characters.actors[0].mixer);
  globalThis.fetch=nativeFetch;
 });

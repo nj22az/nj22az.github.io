@@ -7,21 +7,25 @@ export function biteAmount(seconds){const t=seconds%3;return t<.7?smooth(t/.7):t
 // An additive arm layer shared by the Meshy and Quaternius skeletons. Targets
 // are in metres; only bone rotations change, so elbows keep their real lengths.
 export function createMealMotion(model,entity,height){
- const merged=!!model.getObjectByName('RightHand_End'),head=model.getObjectByName('Head');
+ // MakeHuman (MPFB) skeletons -- Thuan rebuilt in Blender -- name their joints
+ // upperarm01/lowerarm01/wrist and carry lip bones, so the mouth is read, not guessed.
+ const merged=!!model.getObjectByName('RightHand_End'),mh=!merged&&!!model.getObjectByName('upperarm01R'),head=model.getObjectByName('Head')||(mh?model.getObjectByName('head'):null);
  if(!head)return null;
  model.updateWorldMatrix(true,true);
- const mouthLocal=head.worldToLocal(entity.localToWorld(entity.worldToLocal(head.getWorldPosition(new THREE.Vector3())).add(new THREE.Vector3(0,height*(merged?.037:.023),-height*.061))));
+ const lip=mh&&model.getObjectByName('oris05');
+ const mouthLocal=head.worldToLocal(lip?entity.localToWorld(entity.worldToLocal(lip.getWorldPosition(new THREE.Vector3())).add(new THREE.Vector3(0,0,-height*.006))):entity.localToWorld(entity.worldToLocal(head.getWorldPosition(new THREE.Vector3())).add(new THREE.Vector3(0,height*(merged?.037:.023),-height*.061))));
  const arms={};
  for(const [side,sign] of [['R',1],['L',-1]]){
-  const word=side==='R'?'Right':'Left',upper=model.getObjectByName(merged?word+'Arm':'UpperArm'+side),lower=model.getObjectByName(merged?word+'ForeArm':'LowerArm'+side),hand=model.getObjectByName(merged?word+'Hand':'Wrist'+side);
+  const word=side==='R'?'Right':'Left',upper=model.getObjectByName(merged?word+'Arm':mh?'upperarm01'+side:'UpperArm'+side),lower=model.getObjectByName(merged?word+'ForeArm':mh?'lowerarm01'+side:'LowerArm'+side),hand=model.getObjectByName(merged?word+'Hand':mh?'wrist'+side:'Wrist'+side);
   if(!upper||!lower||!hand)continue;
-  const grip=new THREE.Vector3(merged?-sign*.011:0,merged?.062:.103,merged?0:-sign*.018),normal=new THREE.Vector3(merged?-sign:0,0,merged?0:-sign);
+  // MakeHuman wrists: Y runs to the knuckles, the palm faces -X on the right and +X on the left.
+  const grip=mh?new THREE.Vector3(-sign*.028,.078,0):new THREE.Vector3(merged?-sign*.011:0,merged?.062:.103,merged?0:-sign*.018),normal=new THREE.Vector3(merged||mh?-sign:0,0,merged||mh?0:-sign);
   // Local Y follows the fingers. Fit the palm plane to each rig's hand axes.
   const localBasis=new THREE.Matrix4().makeBasis(new THREE.Vector3().crossVectors(UP,normal),UP,normal);
   arms[side]={upper,lower,hand,grip,sign,localBasis:new THREE.Quaternion().setFromRotationMatrix(localBasis),contact:new THREE.Vector3()};
  }
  if(!arms.R||!arms.L)return null;
- const fingers=[];model.traverse(bone=>{if(bone.isBone&&(/^(Index|Middle|Ring|Pinky)[23][LR]$/.test(bone.name)||/Hand(Index|Middle|Ring|Pinky|Thumb)[123]$/.test(bone.name)))fingers.push(bone);});
+ const fingers=[];model.traverse(bone=>{if(bone.isBone&&(/^(Index|Middle|Ring|Pinky)[23][LR]$/.test(bone.name)||/^finger[2-5]-[23][LR]$/.test(bone.name)||/Hand(Index|Middle|Ring|Pinky|Thumb)[123]$/.test(bone.name)))fingers.push(bone);});
  const bones=[...new Set([...Object.values(arms).flatMap(a=>[a.upper,a.lower,a.hand]),...fingers])],saved=new Map();
  const propOffset=new THREE.Vector3();
  let amount=0,elapsed=0,lastMode='',lastKind='',mode='',kind=null,lift=0,orientation=new THREE.Quaternion();

@@ -28,3 +28,7 @@ export function installDOM(saved={}){
   has(label){return actions().some(x=>x.textContent===label);},
   button(label){const b=actions().find(x=>x.textContent===label);if(!b)throw Error('Missing action: '+label+' in '+JSON.stringify(actions().map(x=>x.textContent)));b.onclick();}};
 }
+
+// Mixamo-style joint names the older tests use, and the same joints on MakeHuman (MPFB) rigs.
+const MAKEHUMAN={Hips:'root',Head:'head',Neck:'neck01',LeftHand:'wristL',RightHand:'wristR',LeftFoot:'footL',RightFoot:'footR',LeftToeBase:'toe1-1L',RightToeBase:'toe1-1R',LeftArm:'upperarm01L',RightArm:'upperarm01R',LeftForeArm:'lowerarm01L',RightForeArm:'lowerarm01R',LeftUpLeg:'upperleg01L',RightUpLeg:'upperleg01R',LeftLeg:'lowerleg01L',RightLeg:'lowerleg01R'};
+export function rigBone(model,name){return model.getObjectByName(name)||(MAKEHUMAN[name]?model.getObjectByName(MAKEHUMAN[name]):undefined);}

@@ -23,11 +23,14 @@ import {PROFILES} from './profiles.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
 /** Alternate takes of an idle, tried in order after the unsuffixed one. */
 const IDLE_TAKES=Object.freeze(['','.1','.2']);
-const SOURCES=[...LOW_POLY,'yuri-merged','nao-vrm'];
+// thuan-mh: Thuan rebuilt on the MakeHuman skeleton Johansson uses (tools/blender/build-thuan.py).
+const SOURCES=[...LOW_POLY,'thuan-mh','nao-vrm'];
+// The Meshy Thuan is no longer anybody's body, but can still be loaded by name.
+const LOADABLE=[...SOURCES,'yuri-merged'];
 const loaded=new Map();let pending=null;
 const modelPending=new Map();
 export function preloadModel(id){
-  if(!SOURCES.includes(id)&&id!=='yuri-playful')return Promise.resolve(false);
+  if(!LOADABLE.includes(id)&&id!=='yuri-playful')return Promise.resolve(false);
   if(loaded.has(id))return Promise.resolve(true);
   if(modelPending.has(id))return modelPending.get(id);
   const task=(async()=>{
@@ -35,11 +38,12 @@ export function preloadModel(id){
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);
     try{
       const figurine=id==='yuri-playful';
-      const path=id==='yuri-merged'?'characters/yuri/yuri-merged.glb':id==='nao-vrm'?'characters/nao/Nao.vrm':figurine?'characters/realistic/yuri-playful.glb?yuri-rig-2':'characters/residents/town-'+id+'.glb';
+      const path=id==='thuan-mh'?'characters/thuan/thuan.glb':id==='yuri-merged'?'characters/yuri/yuri-merged.glb':id==='nao-vrm'?'characters/nao/Nao.vrm':figurine?'characters/realistic/yuri-playful.glb?yuri-rig-2':'characters/residents/town-'+id+'.glb';
       const response=await fetch(assetURL(path),{signal:abort.signal});
       if(!response.ok)throw Error('Local character unavailable: '+id);
       const gltf=await loader.parseAsync(await response.arrayBuffer(),'');
-      if(id==='yuri-merged'){rigThuanFingers(gltf);gltf.animations=prepareMergedYuriAnimations(gltf);}
+      if(id==='thuan-mh'){/* Authored with every clip the town asks for, fingers and face included. */}
+      else if(id==='yuri-merged'){rigThuanFingers(gltf);gltf.animations=prepareMergedYuriAnimations(gltf);}
       else if(id==='nao-vrm')gltf.animations=prepareNaoAnimations(gltf);
       else if(id==='yuri-playful')gltf.animations=prepareYuriAnimations(gltf);
       else{
@@ -110,9 +114,12 @@ export function createLocalCharacters({shadows=false}={}){
     const targetHeight=height||style.height||profile?.height||1.75,scale=targetHeight/size.y;
     model.scale.multiplyScalar(scale);model.position.y=-bounds.min.y*scale+(source==='nao-vrm'?.018:0);model.rotation.y=Math.PI;
     if(lowPoly){model.scale.x*=style.width||1;model.scale.z*=Math.sqrt(style.width||1);}
+    // Swimwear and the skin under the clothes wait until the onsen asks for them.
+    const wardrobe={clothes:[],swim:[]};
+    model.traverse(o=>{if(!o.isMesh)return;if(/SkinUnder|Swimsuit/.test(o.name)){wardrobe.swim.push(o);o.visible=false;}else if(/elegantsuit|shoes0|Collar|Beret|CollarTie/.test(o.name))wardrobe.clothes.push(o);});
     model.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=shadows;o.frustumCulled=false;if(lowPoly&&!o.userData.facialFeatures)dressCharacter(o,profile?.top,style);}});
     for(const child of entity.children)child.visible=false;
-    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='yuri-merged'?'Meshy merged · Thuan':source==='nao-vrm'?'VRoid · Nao':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
+    entity.add(model);entity.userData.visualReady=true;entity.userData.visualSource=source==='thuan-mh'?'MakeHuman · Thuan':source==='yuri-merged'?'Meshy merged · Thuan':source==='nao-vrm'?'VRoid · Nao':'PSX low-poly · '+(name==='Reiko'?'Nozomi (Reiko)':name);
     const mixer=new THREE.AnimationMixer(model),actions=new Map(asset.animations.map(clip=>[clip.name,mixer.clipAction(clip)]));
     {
       const wave=actions.get('Wave');if(wave){wave.setLoop(THREE.LoopOnce,1);wave.clampWhenFinished=true;}
@@ -147,18 +154,25 @@ export function createLocalCharacters({shadows=false}={}){
       // Mixamo-style residents call this Hips; VRoid's VRM humanoid uses the
       // J_Bip_C_Hips node. Missing that alias disabled all measured chair support for
       // Nao, so a generic animation offset was mistaken for the actual seat surface.
-      const hips=model.getObjectByName('Hips')||model.getObjectByName('J_Bip_C_Hips');
+      const hips=model.getObjectByName('Hips')||model.getObjectByName('J_Bip_C_Hips')||model.getObjectByName('root');
       if(hips){
       const hip=entity.worldToLocal(hips.getWorldPosition(new THREE.Vector3()));
-      let bottom=hip.y;const point=new THREE.Vector3(),support=[];
-      model.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;mesh.skeleton.update();
-        const read=mesh.getVertexPosition?mesh.getVertexPosition.bind(mesh):(i,t)=>{t.fromBufferAttribute(mesh.geometry.attributes.position,i);};
-        for(let i=0;i<mesh.geometry.attributes.position.count;i++){
-          read(i,point).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(point);
-          if(Math.hypot(point.x-hip.x,point.z-hip.z)<.25&&point.y>hip.y-.24&&point.y<hip.y){bottom=Math.min(bottom,point.y);support.push({mesh,index:i,y:point.y});}
-        }
-      });
-      actor.seatSupport={x:hip.x,y:bottom,z:hip.z};actor.seatVertices=support.sort((a,b)=>a.y-b.y).slice(0,16);actor.seatPoint=new THREE.Vector3();mixer.stopAllAction();
+      // A dressed MakeHuman body sits on its skin, hidden or not; a skirt that sags between
+      // the thighs is laid on the seat by the drape instead of holding the body up.
+      const BODY=/SkinUnder|^base0|Body/,bodyOnly=!!model.getObjectByName('ThuanSkinUnder');
+      const measure=(depth=.24)=>{
+        let bottom=hip.y;const point=new THREE.Vector3(),support=[],centre=entity.worldToLocal(hips.getWorldPosition(new THREE.Vector3()));
+        model.traverse(mesh=>{if(!mesh.isSkinnedMesh||!(bodyOnly?BODY.test(mesh.name):mesh.visible))return;mesh.skeleton.update();
+          const read=mesh.getVertexPosition?mesh.getVertexPosition.bind(mesh):(i,t)=>{t.fromBufferAttribute(mesh.geometry.attributes.position,i);};
+          for(let i=0;i<mesh.geometry.attributes.position.count;i++){
+            read(i,point).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(point);
+            if(Math.hypot(point.x-centre.x,point.z-centre.z)<.25&&point.y>centre.y-depth&&point.y<centre.y){bottom=Math.min(bottom,point.y);support.push({mesh,index:i,y:point.y});}
+          }
+        });
+        return {bottom,support:support.sort((a,b)=>a.y-b.y).slice(0,16)};
+      };
+      const {bottom,support}=measure();actor.measureSeat=measure;
+      actor.seatSupport={x:hip.x,y:bottom,z:hip.z};actor.seatVertices=support;actor.seatPoint=new THREE.Vector3();mixer.stopAllAction();
       }
     }
     }catch{mixer.stopAllAction();}
@@ -168,12 +182,19 @@ export function createLocalCharacters({shadows=false}={}){
     if(actor.chairMotion&&actor.seatSupport){
       const idleTime=idle.time;mixer.stopAllAction();actions.get('Sit').reset().play();mixer.update(0);
       model.position.set(-actor.seatSupport.x,actor.floorOffset+.51-actor.seatSupport.y,-actor.seatSupport.z);
+      // Shorter legs than the chair was built for reach the floor on the balls of the feet.
+      entity.updateMatrixWorld(true);actor.chairMotion.fit?.(.078);
       actor.chairMotion.update({seatHeight:.51,floorHeight:.078},1);
+      // Planting the feet can bend the knees further than the clip does and take the backs
+      // of the thighs below the pelvis. Sit on whatever is lowest in that pose; the seated
+      // fit below measures the clip alone, so it carries the difference as a lift.
+      entity.updateMatrixWorld(true);actor.seatLift=Math.max(0,.51-actor.measureSeat(.4).bottom);actor.seatSupport.y-=actor.seatLift;model.position.y+=actor.seatLift;
       actor.seatDrape=createThuanSeatDrape(model,entity,.51);
       actor.chairMotion.restore();mixer.stopAllAction();idle.reset().play();idle.time=idleTime;mixer.update(0);model.position.set(0,actor.floorOffset,0);
     }
     actor.customerGaze=name==='Thuan'?createCustomerGaze(model,entity):null;
     actor.mealMotion=createMealMotion(model,entity,targetHeight);actor.hands?.fit(actor.mealMotion);
+    actor.wardrobe=wardrobe;
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
   let faceClock=0;
@@ -205,9 +226,13 @@ export function createLocalCharacters({shadows=false}={}){
       actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
       actor.moving=actor.speed>(actor.moving?.03:.07);
       actor.gestureTime=Math.max(0,actor.gestureTime-dt);
+      // The onsen changes a visitor into swimwear; the town has them change back.
+      const outfit=entity.userData.outfit||'clothes';if((actor.outfit||'clothes')!==outfit){wear(entity,outfit);actor.outfit=outfit;}
       actor.hands?.show(entity.userData.heldItem||(['Drink','DrinkStanding'].includes(entity.userData.socialPose)?'tea':null));
       if(actions.size===0)continue;
-      const seated=actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink','Sleep'].includes(entity.userData.socialPose);
+      // On her bicycle the Ride clip carries her up onto the saddle itself.
+      const riding=!!(entity.userData.playerControlled&&actions.has('Ride'));
+      const seated=!riding&&actor.seatSupport&&Number.isFinite(entity.userData.seatHeight)&&['Wake','Sit','Type','Eat','Drink','Sleep','Soak'].includes(entity.userData.socialPose);
       const chairTransition=actor.chairMotion&&Number.isFinite(entity.userData.chairBlend);
       actor.seatBlend=chairTransition?THREE.MathUtils.clamp(entity.userData.chairBlend,0,1):THREE.MathUtils.clamp((actor.seatBlend||0)+(seated?dt:-dt)/.35,0,1);
       if(seated)actor.lastSeatHeight=entity.userData.seatHeight;
@@ -235,7 +260,7 @@ export function createLocalCharacters({shadows=false}={}){
         actor.strolling=actor.strolling?slow:actor.strollFor>.45;
       }
       const travelling=actor.speed>3.5?'Run':actor.moving?(actor.strolling&&actions.has('Stroll')?'Stroll':'Walk'):'Idle_Neutral';
-      const requested=(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||travelling;
+      const requested=(riding?'Ride':null)||(actor.isThuan&&entity.userData.carrying?(actor.moving?'CarryWalk':'CarryIdle'):null)||(waving&&(!pose||pose==='CounterIdle')?'Wave':null)||pose||travelling;
       const family=[requested,seated?'Sit':null,'Idle_Neutral','Idle'].find(name=>actions.has(name));
       if(!family)continue;
       // Standing still is not one pose held for eleven hours.
@@ -281,12 +306,13 @@ export function createLocalCharacters({shadows=false}={}){
       else if(locomotion&&['Walk','CarryWalk'].includes(actor.current))locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/walkSpeed,.18,1.8);
       else if(locomotion&&actor.current==='Run')locomotion.timeScale=THREE.MathUtils.clamp(actor.speed/runSpeed,.5,2.2);
       mixer.update(dt);
-      if(actor.isThuan&&entity.userData.playerControlled)poseThuanOnBicycle(actor.model,entity,entity.userData.bicyclePhase||0);
+      if(riding){const ride=actions.get('Ride');ride.timeScale=/stopped/.test(entity.userData.activity||'')?0:1.4;}
+      else if(actor.isThuan&&entity.userData.playerControlled)poseThuanOnBicycle(actor.model,entity,entity.userData.bicyclePhase||0);
       if(seated&&actor.seatBlend===1){
         entity.updateWorldMatrix(true,false);entity.updateMatrixWorld(true);let bottom=Infinity;
         for(const mesh of new Set(actor.seatVertices.map(v=>v.mesh)))mesh.skeleton.update();
         for(const {mesh,index} of actor.seatVertices){mesh.getVertexPosition(index,actor.seatPoint).applyMatrix4(mesh.matrixWorld);entity.worldToLocal(actor.seatPoint);bottom=Math.min(bottom,actor.seatPoint.y);}
-        if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom;
+        if(Number.isFinite(bottom))actor.model.position.y+=entity.userData.seatHeight-bottom+(actor.seatLift||0);
       }
       if(actor.faceController){
         const engaged=!!(entity.userData.playerConversation||entity.userData.chat||actor.gestureTime);
@@ -314,8 +340,11 @@ export function createLocalCharacters({shadows=false}={}){
   }
   function conversationTarget(entity,target=new THREE.Vector3()){
     const actor=byEntity.get(entity);if(!actor)return null;
-    const head=actor.model.getObjectByName('Head');
+    const head=actor.model.getObjectByName('Head')||actor.model.getObjectByName('head');
     if(head){
+      // MakeHuman rigs carry real eye joints: look between them.
+      const eyes=['eyeL','eyeR'].map(n=>actor.model.getObjectByName(n));
+      if(eyes[0]&&eyes[1])return eyes[0].getWorldPosition(target).add(eyes[1].getWorldPosition(new THREE.Vector3())).multiplyScalar(.5);
       if(actor.eyeCentres){const [left,right]=actor.eyeCentres;target.fromArray(left).add(new THREE.Vector3(...right)).multiplyScalar(.5);return head.localToWorld(target);}
       head.getWorldPosition(target);
       // Thuan's Head joint is at the base of her large head, not eye level.
@@ -325,5 +354,7 @@ export function createLocalCharacters({shadows=false}={}){
     }
     entity.getWorldPosition(target);target.y+=actor.height*.9;return target;
   }
-  return {attach,update,actors,conversationTarget,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
+  /** 'swim' puts a resident with a swimsuit into it, anything else back into her clothes. */
+  function wear(entity,outfit){const actor=byEntity.get(entity);if(!actor?.wardrobe?.swim.length)return false;for(const o of actor.wardrobe.clothes)o.visible=outfit!=='swim';for(const o of actor.wardrobe.swim)o.visible=outfit==='swim';return true;}
+  return {attach,update,actors,conversationTarget,wear,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
 }

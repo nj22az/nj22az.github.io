@@ -1,7 +1,7 @@
 {
  "fps": 30,
- "walkMetresPerCycle": 2.193,
- "runMetresPerCycle": 3.042,
+ "walkMetresPerCycle": 1.326,
+ "runMetresPerCycle": 2.398,
  "actions": [
   {
    "name": "Walk",
@@ -94,12 +94,12 @@
    "loop": false
   },
   {
-   "name": "Drink",
+   "name": "DrinkStanding",
    "seconds": 2.7,
    "loop": false
   },
   {
-   "name": "Eat",
+   "name": "EatStanding",
    "seconds": 2.2,
    "loop": false
   },
@@ -167,6 +167,106 @@
    "name": "Fist",
    "seconds": 1.2,
    "loop": false
+  },
+  {
+   "name": "Idle_Neutral",
+   "seconds": 5.0,
+   "loop": true
+  },
+  {
+   "name": "Eat",
+   "seconds": 2.6,
+   "loop": true
+  },
+  {
+   "name": "Drink",
+   "seconds": 2.6,
+   "loop": true
+  },
+  {
+   "name": "Fish",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "Greet",
+   "seconds": 2.0,
+   "loop": true
+  },
+  {
+   "name": "Idle_Neutral.1",
+   "seconds": 6.0,
+   "loop": true
+  },
+  {
+   "name": "Idle_Neutral.2",
+   "seconds": 7.0,
+   "loop": true
+  },
+  {
+   "name": "CounterIdle",
+   "seconds": 6.0,
+   "loop": true
+  },
+  {
+   "name": "CounterIdle.1",
+   "seconds": 7.0,
+   "loop": true
+  },
+  {
+   "name": "CounterIdle.2",
+   "seconds": 6.5,
+   "loop": true
+  },
+  {
+   "name": "Use",
+   "seconds": 2.4,
+   "loop": true
+  },
+  {
+   "name": "Type",
+   "seconds": 1.6,
+   "loop": true
+  },
+  {
+   "name": "Read",
+   "seconds": 5.0,
+   "loop": true
+  },
+  {
+   "name": "Wake",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "Sleep",
+   "seconds": 9.0,
+   "loop": true
+  },
+  {
+   "name": "CarryIdle",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "CarryWalk",
+   "seconds": 0.74,
+   "loop": true
+  },
+  {
+   "name": "Stroll",
+   "seconds": 0.95,
+   "loop": true
+  },
+  {
+   "name": "Rest",
+   "seconds": 5.0,
+   "loop": true
+  },
+  {
+   "name": "Ride",
+   "seconds": 1.0,
+   "loop": true
   }
  ]
 }

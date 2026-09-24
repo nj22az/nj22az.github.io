@@ -36,7 +36,7 @@ test('Thuan keeps her supplied appearance and typing wrists meet the fitted keyb
  localAssets();try{
   await Promise.all(['Thuan','Harbour master'].map(preloadCharacter));const models=createLocalCharacters(),scene=new THREE.Scene();
   const y=new THREE.Group();y.userData.name='Thuan';scene.add(y);const yuri=models.attach(y,'Thuan',1.64);assert.equal(yuri.face,null);assert.equal(yuri.model.getObjectByName('resident-ribbon-apron-uniform'),undefined);
-  const body=yuri.model.getObjectByName('output_unwrapped');assert.ok(body.isSkinnedMesh&&body.material.map);const neutral=body.geometry.attributes.position.array.slice();
+  const body=yuri.model.getObjectByName('output_unwrapped')||yuri.model.getObjectByName('base001');assert.ok(body.isSkinnedMesh&&body.material.map);const neutral=body.geometry.attributes.position.array.slice();
   models.gesture(y);models.update(.1);assert.equal(yuri.current,'Wave');assert.deepEqual(body.geometry.attributes.position.array,neutral,'Keep the supplied face and body vertices');
   y.userData.sleepBlend=1;y.userData.socialPose='Sleep';models.update(.4);assert.equal(yuri.current,'Sleep');assert.equal(yuri.sleepEyes,null,'Do not fit the old low-poly eye plaques to the new face');
   const g=new THREE.Group();g.userData={name:'Harbour master',inWorkplace:'office',socialPose:'Type',seatHeight:.54};g.position.set(...OFFICE_DESK_SEAT.position);scene.add(g);const clerk=models.attach(g,'Harbour master',1.74);

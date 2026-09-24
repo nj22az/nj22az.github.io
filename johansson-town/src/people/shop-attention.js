@@ -41,7 +41,7 @@ export function createShopAttention({clerk,world,retail,colliders,isInside,getPl
 // The supplied face is one textured mesh with no separate eyeball joints. Turn
 // its existing head and neck together; do not add artificial eyes over the face.
 export function createCustomerGaze(model,entity){
- const head=model.getObjectByName('Head'),neck=model.getObjectByName('neck')||model.getObjectByName('Neck');if(!head)return null;
+ const head=model.getObjectByName('Head')||model.getObjectByName('head'),neck=model.getObjectByName('neck')||model.getObjectByName('Neck')||model.getObjectByName('neck03');if(!head)return null;
  const saved=new Map();let yaw=0,pitch=0;
  const restore=()=>{for(const [bone,q] of saved)bone.quaternion.copy(q);saved.clear();};
  const rotate=(bone,angle,axis)=>{if(!bone)return;const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(new THREE.Quaternion().setFromAxisAngle(axis,angle)).multiply(parent));bone.updateWorldMatrix(false,true);};

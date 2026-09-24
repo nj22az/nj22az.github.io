@@ -15,7 +15,7 @@ import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
-import {gossipAt,izakayaOpen} from './src/people/social.js';
+import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
@@ -49,7 +49,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
-      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;state.quickTravelNotified=saved.quickTravelNotified===true;
+      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;if(Number.isInteger(saved.onsenDate)&&saved.onsenDate>=0)state.onsenDate=saved.onsenDate;state.quickTravelNotified=saved.quickTravelNotified===true;
       if(typeof saved.lastDayKey==='string')state.lastDayKey=saved.lastDayKey;if(Array.isArray(saved.dailyQuests))state.dailyQuests=saved.dailyQuests;if(saved.dailyDone&&(typeof saved.dailyDone==='object'))state.dailyDone=saved.dailyDone;
     }
   } catch {}
@@ -177,7 +177,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   function thuanConversation(topic=null){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
-    const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya';
+    const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya',onsenBath=getSocialContext().inside==='onsen';
     const commuterMode=state.townMode==='shopping-district';
     if(ramenVisit)note('Shared a ramen-shop break with Thuan after closing.');
     if(offDuty)note('Caught up with Thuan after closing at Minato Izakaya.');
@@ -205,8 +205,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       replies.challenge='Try naming every topping before the steam fogs your glasses. I always forget one.';
       replies.radio='I leave the singing to the shop radio tonight. Here I am listening to the kitchen.';
     }
-    const greeting=ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
-    const title=ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
+    const greeting=onsenBath?'はぁ… 気持ちいい。\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.':ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
+    const title=onsenBath?'Thuan · Umi-no-yu':ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
     // A conversation, not a menu. Two pieces of small talk at a time, rotated so the
     // next time you stop by she has something else to say, and the shop's paperwork
@@ -230,9 +230,18 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['Read the shop ledger',shopLedger],
       ['Back to Thuan',()=>thuanConversation()],
     ]);
+    // Umi-no-yu: ask her along after work. She goes straight from locking up.
+    const today=Math.floor(getMinutes()/1440),thuanProfile=PROFILES.find(p=>p.name==='Thuan');
+    const onsenAsked=Number.isFinite(state.onsenDate)&&state.onsenDate>=today;
+    const inviteOnsen=()=>{
+     const day=onsenInvitationDay(thuanProfile,getMinutes(),false,state),tonight=day===today;
+     state.onsenDate=day;save();
+     show(title,(tonight?'お風呂？ いいね！\nYes — tonight, straight after I lock up. ':'今夜はもう遅いから… 明日ね！\nTonight it is too late for me, but tomorrow, straight after I lock up. ')+'I will be in the rock bath by the sea wall. Bring your swimsuit — they are strict about that at Umi-no-yu. Pay Higa-san at the bandai.',[['See you at the bath',close]]);
+    };
     show(title,greeting,[
       ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),
       ['Talk with Thuan',thuanStory],
+      ...(onsenBath?[]:[[onsenAsked?'Umi-no-yu after work — still on':'Come to Umi-no-yu after work',onsenAsked?()=>show(title,state.onsenDate===today?'Of course! After I lock up. The rock bath, by the sea wall.':'Tomorrow, after I lock up. I have not forgotten.',[['Back to Thuan',()=>thuanConversation()]]):inviteOnsen]]),
       ...offered.map(([label,id])=>[label,()=>thuanConversation(id)]),
       ['Ask her something',askThuan],
       ['The shop side of things',paperwork],

@@ -1,4 +1,5 @@
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
+import {ONSEN_DOOR} from '../world/onsen-layout.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
@@ -80,12 +81,12 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // Buying soda, eating, serving, sitting and other authored activities win right
   // of way. Thuan sees the resident as a solid obstacle and finds another line.
   if(residentCommitted(g))return null;
-  if(g.userData.indoors||g.userData.inMarket||g.userData.inIzakaya||g.userData.inRamen||g.userData.inHome)return null;
+  if(g.userData.indoors||g.userData.inMarket||g.userData.inIzakaya||g.userData.inRamen||g.userData.inOnsen||g.userData.inHome)return null;
   const point=yieldAsideTarget([g.position.x,g.position.z],[tg.position.x,tg.position.z],tg.rotation.y,
    (x,z)=>collides(x,z,.32),(x,z)=>Math.abs(groundHeight(x,z)-g.position.y)<.45);
   return point?clearOfTunnelMouth(point):null;
  };
- const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -138,7 +139,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
   if(route.stalled>3){
-   const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
+   const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inOnsen&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
    const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>Math.hypot(x-o.x,z-o.z)<r+.34));
    const points=detour.path(g.position,{x:target[0],z:target[1]});
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
@@ -151,7 +152,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const speed=person===thuan?Math.min(paceLimit,(route.speed||0)+dt*1.8):paceLimit;
   const step=Math.min(d,dt*speed),nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   const clearOfPeople=(x,z)=>world.people.every(p=>{
-   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
+   if(p.g===g||p.g.userData.indoors||p.g.userData.inIzakaya||p.g.userData.inOnsen||p.g.userData.inMarket||p.g.userData.inRamen||p.g.userData.inHome||p.g.userData.inWorkplace)return true;
    const old=Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z),next=Math.hypot(p.g.position.x-x,p.g.position.z-z);
    // Thuan commute priority: others treat her as a wide impassable; she may ease past them
    // while they yield (sidestep below). Does not change faceStep / alignedStep.
@@ -235,7 +236,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
     routes.delete(g);outside.push(p);continue;
    }
-   if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
+   if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const phase=transit?commuterPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
@@ -284,7 +285,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   if(!(tag==='work'&&v.workSite)&&!['home','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
@@ -305,7 +306,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
    if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
-   const indoor=['home','izakaya','ramen','market'].includes(tag)||tag==='work'&&v.workSite;
+   const indoor=['home','izakaya','ramen','market','onsen'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
    const yieldTarget=p!==thuan?yieldAsideForThuan(p):null;
    if(yieldTarget){

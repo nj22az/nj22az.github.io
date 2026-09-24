@@ -45,7 +45,7 @@ export function createResidentProp(kind){
 }
 
 export function createResidentHands(model){
- let hand;model.traverse(o=>{if(o.isBone&&(/RightHand$/.test(o.name)||o.name==='WristR'))hand=o;});if(!hand)return null;
+ let hand;model.traverse(o=>{if(o.isBone&&(/RightHand$/.test(o.name)||o.name==='WristR'||o.name==='wristR'))hand=o;});if(!hand)return null;
  const holder=new THREE.Group();holder.name='resident-held-item';holder.visible=false;holder.matrixAutoUpdate=false;hand.add(holder);
  const utensils=new THREE.Group();utensils.name='resident-chopsticks';utensils.visible=false;utensils.matrixAutoUpdate=false;hand.add(utensils);
  const props=new Map(),point=new THREE.Vector3(),world=new THREE.Matrix4(),rotation=new THREE.Quaternion(),one=new THREE.Vector3(1,1,1);

@@ -17,13 +17,9 @@ import {registerDetail} from './detail-stream.js';
  * wall. The noren, the signs and the steam are made here; the noren and the name
  * board go up with the building.
  */
-export const ONSEN=Object.freeze({x:24.5,z:4.5,yaw:-Math.PI/2,opens:600,closes:1320,fee:300});
+import {ONSEN,onsenPoint,onsenOpen} from './onsen-layout.js';
+export {ONSEN,onsenPoint,onsenOpen};
 
-/** A point in the model's own frame, in the town's. */
-export function onsenPoint(x,z){
- const c=Math.cos(ONSEN.yaw),s=Math.sin(ONSEN.yaw);
- return [ONSEN.x+x*c+z*s,ONSEN.z-x*s+z*c];
-}
 /** A rectangle in the model's frame; a quarter turn swaps its width and depth. */
 function rect(x,z,w,d,height){const [wx,wz]=onsenPoint(x,z);return {id:'park-onsen',x:wx,z:wz,w:d,d:w,height};}
 
@@ -39,7 +35,6 @@ export const ONSEN_COLLIDERS=Object.freeze([
  rect(-2.9,6.6,.16,.16,1.8),
 ]);
 
-export const onsenOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=ONSEN.opens&&m<ONSEN.closes;};
 
 function canvasTexture(width,height,draw){
  const c=document.createElement('canvas');c.width=width;c.height=height;draw(c.getContext('2d'),width,height);
