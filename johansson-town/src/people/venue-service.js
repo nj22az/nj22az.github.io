@@ -18,7 +18,18 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   const minutes=getMinutes(),present=getCustomers().filter(p=>(place!=='izakaya'||p.profile.name!=='Nao')&&p.g.visible&&!p.g.userData.roomTransition);
   for(const p of [...settings.keys()])if(!present.includes(p))remove(p);
   for(const person of present){
-   const name=person.profile.name,account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
+   const name=person.profile.name;
+   if(name==='Barfly'){
+    // No order ledger, payment or finite meal cycle: his drink animation repeats
+    // indefinitely, with the overnight sleep pose taking over from 03:00 to 10:00.
+    const sleeping=((minutes%1440)+1440)%1440>=180&&((minutes%1440)+1440)%1440<600;
+    person.g.userData.sleeping=sleeping;
+    person.g.userData.socialPose=sleeping?'Sleep':'Drink';
+    person.g.userData.heldItem=sleeping?null:'beer';
+    person.g.userData.activity=sleeping?'asleep on his Minato stool':'drinking beer at Minato';
+    continue;
+   }
+   const account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
    const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?'tea':taste.drink,delivered:false,eaten:0,finished:false};
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}
    if(!setting){

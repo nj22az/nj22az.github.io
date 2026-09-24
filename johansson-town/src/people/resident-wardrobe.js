@@ -61,7 +61,7 @@ export function addResidentAccessories(model,style){
   if(type!=='police')box(size.x*.32,size.y*.065,.016,centre.x,bounds.min.y+size.y*.28,front,style.hair);
  }
  mount(head,type);
- if(chest&&(type==='police'||type.includes('apron')||type==='tool-pouch'||type.includes('satchel')||type.includes('scarf'))){
+ if(chest&&(type==='police'||type.includes('apron')||type==='tool-pouch'||type.includes('hawaiian')||type.includes('satchel')||type.includes('scarf'))){
   const chestPoint=chest.getWorldPosition(new THREE.Vector3()),h=size.y;
   if(type.includes('apron')){
    const front=torsoBounds.max.z+.014,top=torsoBounds.max.y-.055,bottom=torsoBounds.min.y+.06;
@@ -76,6 +76,16 @@ export function addResidentAccessories(model,style){
    coloured(new THREE.BoxGeometry(.025,top-bottom,.018).rotateZ(-.23).translate(chestPoint.x,(top+bottom)/2,front),style.accent);
    box(.13,.13,.07,chestPoint.x-size.x*.46,bottom,front,style.accent);
    box(.025,.025,.012,chestPoint.x-size.x*.46,bottom,front+.04,0xc1ac73);
+  }else if(type==='hawaiian'){
+   // Pale leaf marks and an open cream collar follow the torso bone.
+   const front=torsoBounds.max.z+.024,low=torsoBounds.min.y+.10,high=torsoBounds.max.y-.10;
+   for(let row=0;row<3;row++)for(let col=0;col<3;col++){
+    const x=chestPoint.x+(col-1)*size.x*.19,y=low+(row+.5)*(high-low)/3;
+    coloured(new THREE.BoxGeometry(size.x*.075,.018,.012).rotateZ((row+col)%2?.48:-.48).translate(x,y,front),row===1?0xa4b9b4:0xe6d7bd);
+   }
+   for(const side of [-1,1])box(size.x*.13,.12,.018,chestPoint.x+side*size.x*.18,torsoBounds.max.y-.05,front,0xe6d7bd);
+   // A small gold watch face on the wrist, parented to the rigged hand.
+   for(const handName of ['RightHand','WristR']){const hand=model.getObjectByName(handName);if(hand){const watch=new THREE.Mesh(new THREE.BoxGeometry(.065,.045,.018),new THREE.MeshStandardMaterial({color:0xc6a45d,roughness:.55}));watch.name='barfly-wristwatch';watch.position.set(.012,.018,.012);hand.add(watch);break;}}
   }else if(type==='police')box(.045,.062,.026,chestPoint.x+size.x*.35,chestPoint.y,centre.z+size.z*.36,0xd5b865);
   else box(.085,.11,.055,chestPoint.x-size.x*.58,chestPoint.y-h*.65,centre.z+size.z*.24,0x84674c);
   mount(chest,type+'-uniform');

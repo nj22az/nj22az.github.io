@@ -8,6 +8,7 @@ import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {supperGuests,residentPlan,IZAKAYA_SEATS,gossipAt,thuanVisitsIzakaya,thuanEveningPlace,inTimeRange,izakayaOpen,IZAKAYA_DOOR,RAMEN_DOOR} from '../src/people/social.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
+import {createVenueService} from '../src/people/venue-service.js';
 import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
@@ -18,6 +19,22 @@ test('all residents have distinct identities, actual friendships and time-bound 
  for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(RESIDENTS.some(r=>r.name===p.name));assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
  assert.equal(residentPlan(PROFILES.find(p=>p.name==='Nao'),1002).place,'izakaya');
  assert.equal(gossipAt(1110,['Aya','Reiko']).id,'apron');assert.equal(gossipAt(1110,['Aya']).id,'welcome');
+});
+
+test('the Barfly stays in Minato, drinks without a purchase and sleeps overnight',()=>{
+ const person=PROFILES.find(p=>p.name==='Barfly');assert.ok(person);
+ for(const minute of [0,179,600,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
+ for(const minute of [180,300,599]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,true);}
+});
+
+test('the Barfly drinks indefinitely without a bill and sleeps through the night',()=>{
+ const profile=PROFILES.find(p=>p.name==='Barfly'),person={profile,g:{visible:true,userData:{}}},room=new THREE.Group();
+ let minutes=1200;
+ const service=createVenueService({room,place:'izakaya',getCustomers:()=>[person],getMinutes:()=>minutes,
+  ledger:{account(){throw Error('Barfly must not open a meal ledger');},purchase(){throw Error('Barfly must never be charged');}}});
+ service.update(1);assert.equal(person.g.userData.socialPose,'Drink');assert.equal(person.g.userData.heldItem,'beer');
+ minutes=240;service.update(1);assert.equal(person.g.userData.socialPose,'Sleep');assert.equal(person.g.userData.heldItem,undefined);
+ service.dispose();
 });
 
 test('izakaya borrows existing entities, updates guests and restores interaction ownership without duplicates',()=>{
