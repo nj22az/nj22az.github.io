@@ -156,11 +156,23 @@ def add_action(arm, name, frames):
         p.rotation_euler = (0,0,0)
         p.location = (0,0,0)
         p.keyframe_insert(data_path="rotation_euler", frame=1, group=p.name)
+        p.keyframe_insert(data_path="location", frame=1, group=p.name)
     for frame, poses in frames:
         for bone_name, rotation in poses.items():
+            if bone_name.endswith(".location"):
+                p=arm.pose.bones[bone_name[:-9]]
+                p.location=rotation
+                p.keyframe_insert(data_path="location", frame=frame, group=p.name)
+                continue
             p = arm.pose.bones[bone_name]
             p.rotation_euler = rotation
             p.keyframe_insert(data_path="rotation_euler", frame=frame, group=bone_name)
+        if not poses:
+            for p in arm.pose.bones:
+                p.rotation_euler=(0,0,0)
+                p.location=(0,0,0)
+                p.keyframe_insert(data_path="rotation_euler", frame=frame, group=p.name)
+                p.keyframe_insert(data_path="location", frame=frame, group=p.name)
     action = arm.animation_data.action
     action.name = name
     for fc in action.fcurves:
@@ -177,7 +189,7 @@ def build(output):
     for datablocks in (bpy.data.meshes, bpy.data.armatures, bpy.data.cameras, bpy.data.lights):
         pass
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE_NEXT"
+    scene.render.engine = "BLENDER_EEVEE_NEXT" if bpy.app.version >= (4,2,0) else "BLENDER_EEVEE"
     scene.render.resolution_x = 720
     scene.render.resolution_y = 720
     scene.render.resolution_percentage = 100
@@ -284,12 +296,15 @@ def build(output):
     smooth(bpy.context.object,stool_mat,None,None)
     bpy.context.object.name="Review stool seat"
     # Animation actions: repeating drink loop and overnight seated sleep pose.
-    act_drink=add_action(arm,"Barfly_Drink_Loop",[(13,{"upperarm.R":(0.45,0.10,-0.05),"forearm.R":(-0.95,0.05,0.0),"hand.R":(-0.18,0,0),"head":(0.03,0,0)}),(25,{})])
-    act_sleep=add_action(arm,"Barfly_Sleep_Loop",[(13,{"spine":(0.10,0.02,0),"head":(0.22,0.02,0.03),"upperarm.L":(0.18,0,0.1),"forearm.L":(-0.22,0,0),"upperarm.R":(0.18,0,-0.1),"forearm.R":(-0.22,0,0)}),(25,{})])
+    seated={"pelvis.location":(0,0,-.16),"thigh.L":(-1.05,0,0),"thigh.R":(-1.05,0,0),"shin.L":(1.05,0,0),"shin.R":(1.05,0,0)}
+    drink_pose={**seated,"upperarm.R":(0.45,0.10,-0.05),"forearm.R":(-0.95,0.05,0.0),"hand.R":(-0.18,0,0),"head":(0.03,0,0)}
+    sleep_pose={**seated,"spine":(0.10,0.02,0),"head":(0.28,0.02,0.03),"upperarm.L":(0.18,0,0.1),"forearm.L":(-0.22,0,0),"upperarm.R":(0.18,0,-0.1),"forearm.R":(-0.22,0,0)}
+    act_drink=add_action(arm,"Barfly_Drink_Loop",[(13,drink_pose),(25,{})])
+    act_sleep=add_action(arm,"Barfly_Sleep_Loop",[(13,sleep_pose),(25,{})])
     # Keep both actions available as named NLA clips in the interchange export.
     arm.animation_data.action = act_drink
-    track=arm.animation_data.nla_tracks.new(); track.name="Drink loop"; track.strips.new("Barfly_Drink_Loop",1,act_drink)
-    track2=arm.animation_data.nla_tracks.new(); track2.name="Sleep loop"; track2.strips.new("Barfly_Sleep_Loop",27,act_sleep)
+    track=arm.animation_data.nla_tracks.new(); track.name="Drink loop"; strip=track.strips.new("Barfly_Drink_Loop",1,act_drink); strip.repeat=100
+    track2=arm.animation_data.nla_tracks.new(); track2.name="Sleep loop"; strip=track2.strips.new("Barfly_Sleep_Loop",27,act_sleep); strip.repeat=100
     arm.animation_data.action=None
     scene.frame_end=52
     # Match the resident profile's stated 1.72 m height.
