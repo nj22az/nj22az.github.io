@@ -56,6 +56,16 @@ const CONFIG = {
 
   projects: [
     {
+      title: "Sjöskolan – elteknik",
+      description:
+        "Svenskt elevmaterial för elteknik ombord: presentationer, bildövningar och metodstöd för vecka 37–45. Multimeter, SELV-rigg, trefas och felsökning.",
+      url: "/sjoskolan/",
+      icon: "notebook",
+      tags: ["Sjöfart", "Elteknik", "Elevmaterial"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "Elteknik och ell\u00e4ra",
       description:
         "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book price read live from Shopify \u2014 or download a free sample chapter.",
