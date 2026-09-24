@@ -6,7 +6,8 @@
 <meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="simulator.css">
+<link rel="stylesheet" href="simulator.css?v=20260924-dial">
+<link rel="stylesheet" href="meter.css?v=20260924-dial">
 </head>
 <body class="multimeter-page">
 <nav id="site-nav" class="site-nav"></nav>
@@ -34,10 +35,20 @@
         <section class="meter" aria-label="Virtuell multimeter">
           <div class="meter-brand">SJÖSKOLAN <span>ÖVNINGSINSTRUMENT</span></div>
           <div class="meter-screen" role="status" aria-live="polite" aria-atomic="true"><div class="screen-top"><span id="screen-mode">OFF</span><span id="screen-range">AUTO</span></div><div class="reading"><span id="reading">—</span><span id="unit"></span></div><div id="beep-status">&nbsp;</div></div>
-          <p id="meter-detail" class="meter-detail">Välj mätfunktion.</p>
-          <fieldset class="function-fieldset"><legend>1. Välj mätfunktion</legend><div class="functions" id="functions">
-            <button data-mode="off" aria-pressed="true">OFF</button><button data-mode="dc" aria-pressed="false">V ⎓</button><button data-mode="ac" aria-pressed="false">V ~</button><button data-mode="current" aria-pressed="false">A ⎓</button><button data-mode="ohm" aria-pressed="false">Ω</button><button data-mode="continuity" aria-pressed="false">Summer</button>
-          </div></fieldset>
+          <fieldset class="function-fieldset"><legend>1. Vrid till mätfunktionen</legend>
+            <div class="rotary-selector" id="functions">
+              <button class="dial-setting" data-mode="off" data-angle="-120" aria-pressed="true">OFF</button>
+              <button class="dial-setting" data-mode="dc" data-angle="-72" aria-pressed="false">V ⎓</button>
+              <button class="dial-setting" data-mode="ac" data-angle="-24" aria-pressed="false">V ~</button>
+              <button class="dial-setting" data-mode="ohm" data-angle="24" aria-pressed="false">Ω</button>
+              <button class="dial-setting" data-mode="continuity" data-angle="72" aria-pressed="false"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M 7 8 V 12 M 12 5 Q 18 10 12 15 M 17 2 Q 26 10 17 18"/></svg><span>Summer</span></button>
+              <button class="dial-setting" data-mode="current" data-angle="120" aria-pressed="false">A ⎓</button>
+              <div id="dial-knob" class="dial-knob" role="slider" tabindex="0" aria-label="Vridomkopplare" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="OFF, avstängd" aria-describedby="dial-help">
+                <div class="dial-rotor" aria-hidden="true"><div class="dial-grip"><span class="dial-pointer"></span></div></div>
+              </div>
+            </div>
+            <p class="dial-help" id="dial-help">Vrid ratten eller tryck på en symbol.<span>Piltangenter byter läge.</span></p>
+          </fieldset>
           <label class="range-label">Spänningsområde<select id="range"><option value="auto">AUTO</option><option value="20">20 V</option><option value="200">200 V</option></select></label>
           <fieldset class="jack-fieldset"><legend>2. Välj uttag för röd sladd</legend><div class="jacks">
             <button class="jack" data-jack="a" aria-pressed="false"><i></i><strong>A</strong><small>10 A max</small></button>
@@ -50,6 +61,7 @@
         </section>
         <svg class="leads" id="leads" aria-hidden="true"></svg>
       </div>
+      <p id="meter-detail" class="meter-detail">Välj mätfunktion.</p>
       <section id="category-area" class="category-area" hidden>
         <p class="eyebrow">Instrumentval · teorimoment</p><h2>Kategori och spänning måste båda stämma.</h2>
         <p>Kategorin beskriver mätmiljöns elektriska påfrestningar. Volt-talet anger märkspänningen för den kategorin. Läs hela märkningen på både mätare och tillbehör.</p>
@@ -83,5 +95,5 @@
   <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
 </main>
 <footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs"></script>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260924-dial"></script>
 </body></html>

@@ -1,0 +1,238 @@
+/* Handheld instrument: yellow holster, inset face and a six-position selector. */
+.workbench {
+  grid-template-columns: minmax(0, 1fr) 312px;
+  background: linear-gradient(90deg, #fff 64%, #e9eef2);
+  align-items: start;
+}
+.meter {
+  --meter-face: #333b3f;
+  --meter-yellow: #f2c547;
+  display: block;
+  width: calc(100% - 24px);
+  margin: 18px 12px 24px;
+  padding: 19px 14px 18px;
+  border: 9px solid var(--meter-yellow);
+  border-radius: 34px 34px 46px 46px / 30px 30px 40px 40px;
+  background: linear-gradient(115deg, #444c50, var(--meter-face) 40%, #272f33);
+  box-shadow: 0 3px 0 #b38b20, 0 9px 18px #21344926,
+              inset 0 0 0 2px #1f2629, inset 0 0 0 3px #62696c;
+  color: #f4f5ee;
+}
+.meter-brand {
+  margin: 0 2px 14px;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: .9px;
+  gap: 8px;
+}
+.meter-brand span {
+  max-width: none;
+  font-size: 7px;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  color: #d5dadd;
+}
+.meter-screen {
+  min-height: 108px;
+  padding: 9px 9px 5px;
+  border: 5px solid #182226;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #c8d3b5, #dce5c9);
+  box-shadow: 0 1px 0 #677173, inset 0 3px 6px #25352d30;
+}
+.meter .reading #reading {
+  font-size: 40px;
+  letter-spacing: -2px;
+}
+.meter .reading #unit { font-size: 12px; }
+.meter .reading { min-height: 53px; gap: 5px; }
+.meter .function-fieldset { margin: 17px 0 0; padding: 0; }
+.meter legend { color: #d6dde0; font-size: 10px; letter-spacing: .2px; }
+.rotary-selector {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-top: 2px;
+  isolation: isolate;
+}
+.sim-app .dial-setting {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 44px;
+  width: 48px;
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #f4f5ee;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  cursor: pointer;
+  z-index: 3;
+  touch-action: manipulation;
+}
+.sim-app .dial-setting[data-mode='off'] { font-size: 12px; }
+.sim-app .dial-setting[data-mode='continuity'] { font-size: 8px; }
+.dial-setting svg { width: 25px; height: 20px; }
+.dial-setting svg path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.sim-app .dial-setting:hover { background: #ffffff12; color: #ffe29a; border-color: #ffffff35; }
+.sim-app .dial-setting[aria-pressed='true'] { color: #ffdf74; }
+.meter :focus-visible { outline-color: #ffe396; }
+.dial-tick {
+  position: absolute;
+  width: 2px;
+  height: 7px;
+  border-radius: 1px;
+  background: #c4ccce;
+  pointer-events: none;
+}
+.dial-knob {
+  --dial-angle: -120deg;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 3px solid #151e22;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#5c666b 0deg 5deg, #313b40 5deg 10deg);
+  box-shadow: 0 5px 7px #0009, 0 0 0 4px #222c31, 0 0 0 5px #566065;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 2;
+}
+.dial-knob.turning { cursor: grabbing; }
+.dial-rotor {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1px solid #657077;
+  background: radial-gradient(circle at 38% 25%, #5c676e, #39444a 68%, #273138);
+  transform: rotate(var(--dial-angle));
+  transition: transform 110ms ease-out;
+  pointer-events: none;
+}
+.turning .dial-rotor { transition: none; }
+.dial-grip {
+  position: absolute;
+  width: 32%;
+  height: 94%;
+  left: 34%;
+  top: 3%;
+  border: 1px solid #1e292e;
+  border-radius: 8px 8px 10px 10px;
+  background: linear-gradient(90deg, #253138, #637179 28%, #4e5c64 65%, #26343c);
+  box-shadow: 3px 3px 4px #0008, inset 1px 0 0 #89959b;
+}
+.dial-pointer {
+  position: absolute;
+  width: 10px;
+  height: 22px;
+  left: calc(50% - 5px);
+  top: 3px;
+  background: #fff2bc;
+  clip-path: polygon(50% 0, 100% 30%, 76% 30%, 76% 100%, 24% 100%, 24% 30%, 0 30%);
+}
+.dial-grip::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 22%;
+  width: 56%;
+  height: 30%;
+  background: repeating-linear-gradient(0deg, #1f2a30 0 2px, #6b7a82 2px 3px, transparent 3px 6px);
+  border-radius: 2px;
+}
+.meter .dial-help { margin: -10px 0 0; text-align: center; font-size: 10px; line-height: 1.5; color: #e0e5e7; }
+.dial-help span { display: block; color: #b7c4cb; font-size: 9px; }
+.meter .range-label {
+  justify-content: space-between;
+  margin: 14px 0 0;
+  padding: 12px 0;
+  border-top: 1px solid #606d72;
+  border-bottom: 1px solid #222c31;
+  color: #e0e5e7;
+  font-size: 10px;
+}
+.sim-app .meter .range-label select {
+  background: #242e33;
+  color: #f1f4f5;
+  border: 1px solid #829197;
+  box-shadow: 0 2px 2px #0004;
+  min-height: 35px;
+  border-radius: 18px;
+}
+.sim-app .meter .range-label select:disabled { opacity: .55; cursor: default; }
+.meter .jack-fieldset { margin: 13px 0 0; }
+.meter .jack-fieldset legend { margin-bottom: 3px; }
+.meter .jacks { gap: 2px; }
+.sim-app .meter .jack, .meter .com-jack {
+  color: #f3f5f6;
+  min-height: 76px;
+  padding: 7px 0 4px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+.sim-app .meter .jack:hover { background: #ffffff12; border-color: #687b84; }
+.sim-app .meter .jack[aria-pressed='true'] { border-color: #d1ab49; background: #ffe5990b; }
+.meter .jacks i {
+  width: 27px;
+  height: 27px;
+  background: #091015;
+  border: 5px solid #ad343c;
+  box-shadow: 0 2px 0 #151d22, inset 0 0 0 2px #48555c, 0 0 0 1px #161e23;
+}
+.meter .jacks .com-jack i { border-color: #131c22; background: #52626c; }
+.meter .jacks .jack[aria-pressed='true'] i { border-color: #e04750; background: #782029; box-shadow: inset 0 0 0 2px #b83f48, 0 0 0 2px #181f22; }
+.meter .jacks strong { font-size: 12px; }
+.meter .jacks small { color: #c7d1d6; font-size: 7px; }
+.meter .sound-label { color: #d3dde1; font-size: 10px; margin: 11px 0 0; }
+.meter .sound-label input { accent-color: #e4bc4b; }
+.sim-app .meter #reset-protection { color: #6b251f; background: #fff1d7; }
+.sim-app .meter-detail { min-height: 0; margin: 10px 4px 0 !important; color: var(--lab-muted); font-size: 12px !important; line-height: 1.5; }
+@media (min-width: 1500px) {
+  .workbench { grid-template-columns: minmax(0, 1fr) 328px; }
+  .meter { padding: 21px 18px 19px; }
+}
+@media (min-width: 1021px) and (max-width: 1190px) {
+  .workbench { grid-template-columns: minmax(0, 1fr) 284px; }
+  .meter { width: calc(100% - 16px); margin: 16px 8px 22px; padding: 17px 12px; border-width: 8px; }
+  .meter-brand { font-size: 11px; letter-spacing: .5px; gap: 5px; }
+  .meter-brand span { font-size: 6px; }
+  .meter .reading #reading { font-size: 36px; }
+}
+@media (min-width: 621px) and (max-width: 1020px) {
+  .workbench { grid-template-columns: minmax(0, 1fr) 310px; }
+}
+@media (max-width: 620px) {
+  .workbench { display: flex; background: #fff; }
+  .meter {
+    display: block;
+    width: calc(100% - 36px);
+    max-width: 300px;
+    margin: 8px auto 26px;
+    padding: 19px 14px 18px;
+    border: 9px solid var(--meter-yellow);
+    border-radius: 34px 34px 46px 46px / 30px 30px 40px 40px;
+  }
+  .meter-brand { font-size: 11px; letter-spacing: .5px; gap: 6px; }
+  .meter-brand span { font-size: 6px; letter-spacing: 0; }
+  .meter .function-fieldset { margin: 17px 0 0; }
+  .meter .meter-screen { padding: 9px 8px 5px; border-width: 5px; }
+  .meter .reading #reading { font-size: 38px; }
+  .meter .reading #unit { font-size: 11px; }
+  .meter .reading { min-height: 53px; gap: 5px; }
+  .meter .jack-fieldset { margin: 13px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dial-rotor { transition: none; }
+}

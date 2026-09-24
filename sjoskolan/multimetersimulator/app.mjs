@@ -11,6 +11,23 @@ try {
 let lessonIndex = 0, stage = 0, passed = false, free = false, choice = null;
 let state = initialState(), activeProbe = 'black', sound = false, audioContext = null;
 let drag = null, ignoreClickUntil = 0, confirmClear = false;
+const dialStops = $$('#functions [data-mode]').map(button => ({
+  mode:button.dataset.mode, angle:Number(button.dataset.angle), button
+}));
+const dialNames = {off:'OFF, avstängd', dc:'Likspänning, V ⎓', ac:'Växelspänning, V ~', ohm:'Resistans, Ω', continuity:'Kontinuitet, summer', current:'Likström, A ⎓'};
+let dialDrag = null;
+// Printed labels and detent marks share the knob's angle convention: zero is up.
+for (const stop of dialStops) {
+  const radians=stop.angle*Math.PI/180;
+  stop.button.style.left=`${50+42*Math.sin(radians)}%`;
+  stop.button.style.top=`${50-42*Math.cos(radians)}%`;
+  const tick=document.createElement('span');
+  tick.className='dial-tick';tick.setAttribute('aria-hidden','true');
+  tick.style.left=`${50+29*Math.sin(radians)}%`;
+  tick.style.top=`${50-29*Math.cos(radians)}%`;
+  tick.style.transform=`translate(-50%,-50%) rotate(${stop.angle}deg)`;
+  $('#functions').append(tick);
+}
 const positions = {
   lamp:{K1:[210,75],K2:[365,75],P1:[485,135],P2:[300,235]},
   resistor:{A:[140,165],B:[460,165]},
@@ -68,7 +85,7 @@ function renderLesson() {
   $('#step-marker').setAttribute('aria-label',`Steg ${stage+1} av ${l.steps.length}`);
   $('#free-settings').hidden=!free;$('#free-circuit').value=state.circuit;
   const p=principle[state.circuit];$('#principle-title').textContent=p[0];$('#principle-text').textContent=p[1];
-  const cat=state.circuit==='category';$('#workbench').hidden=cat;$('#category-area').hidden=!cat;
+  const cat=state.circuit==='category';$('#workbench').hidden=cat;$('#category-area').hidden=!cat;$('#meter-detail').hidden=cat;
   if(cat){$('#cat-question').textContent=step.task;$('#cat-choices').innerHTML=step.choices.map((label,i)=>`<button data-choice="${i}" aria-pressed="${i===choice}">${label}</button>`).join('');}
 }
 function circuitSVG() {
@@ -148,7 +165,11 @@ function renderMeter() {
   $('#reading').textContent=m.text;$('#unit').textContent=m.unit;$('#meter-detail').textContent=m.detail;
   $('#screen-mode').textContent=MODES[state.mode];$('#screen-range').textContent=['dc','ac'].includes(state.mode)?(state.range==='auto'?'AUTO':state.range+' V'):'';
   $('#beep-status').textContent=m.beep?'KONTAKT · TON':'\u00a0';
-  $$('#functions button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===state.mode)));
+  dialStops.forEach(stop=>stop.button.setAttribute('aria-pressed',String(stop.mode===state.mode)));
+  const dialIndex=dialStops.findIndex(stop=>stop.mode===state.mode);
+  $('#dial-knob').style.setProperty('--dial-angle',`${dialStops[dialIndex].angle}deg`);
+  $('#dial-knob').setAttribute('aria-valuenow',String(dialIndex));
+  $('#dial-knob').setAttribute('aria-valuetext',dialNames[state.mode]);
   $$('.jack').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.jack===state.jack)));
   $('#range').value=state.range;$('#range').disabled=!['dc','ac'].includes(state.mode);
   $('#reset-protection').hidden=!state.trip&&!state.fuse;
@@ -197,6 +218,40 @@ function beep(){
 }
 $('#lesson-select').addEventListener('change',e=>startLesson(Number(e.target.value)));
 $('#functions').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(b)change('mode',b.dataset.mode);});
+function setDial(index) {
+  const stop=dialStops[Math.max(0,Math.min(dialStops.length-1,index))];
+  if(stop.mode!==state.mode)change('mode',stop.mode);
+}
+$('#dial-knob').addEventListener('keydown',e=>{
+  const index=dialStops.findIndex(stop=>stop.mode===state.mode);
+  const targets={ArrowRight:index+1,ArrowUp:index+1,ArrowLeft:index-1,ArrowDown:index-1,Home:0,End:dialStops.length-1};
+  if(e.key in targets){e.preventDefault();setDial(targets[e.key]);}
+});
+function pointerAngle(e) {
+  const rect=$('#dial-knob').getBoundingClientRect();
+  const x=e.clientX-rect.left-rect.width/2,y=e.clientY-rect.top-rect.height/2;
+  return Math.hypot(x,y)<8?null:Math.atan2(x,-y)*180/Math.PI;
+}
+$('#dial-knob').addEventListener('pointerdown',e=>{
+  if(e.button!==0||dialDrag)return;
+  e.preventDefault();e.currentTarget.focus();e.currentTarget.setPointerCapture(e.pointerId);
+  dialDrag={id:e.pointerId,previous:pointerAngle(e),angle:dialStops.find(stop=>stop.mode===state.mode).angle};
+  e.currentTarget.classList.add('turning');
+});
+$('#dial-knob').addEventListener('pointermove',e=>{
+  if(!dialDrag||e.pointerId!==dialDrag.id)return;
+  const angle=pointerAngle(e);if(angle===null)return;
+  if(dialDrag.previous===null){dialDrag.previous=angle;return;}
+  // Unwrap across 180 degrees, then enforce the physical OFF/A end stops.
+  const delta=((angle-dialDrag.previous+540)%360)-180;
+  dialDrag.previous=angle;
+  dialDrag.angle=Math.max(dialStops[0].angle,Math.min(dialStops.at(-1).angle,dialDrag.angle+delta));
+  const nearest=dialStops.reduce((best,stop,i)=>Math.abs(stop.angle-dialDrag.angle)<Math.abs(dialStops[best].angle-dialDrag.angle)?i:best,0);
+  setDial(nearest);
+});
+for(const event of ['pointerup','pointercancel','lostpointercapture'])$('#dial-knob').addEventListener(event,e=>{
+  if(dialDrag&&dialDrag.id===e.pointerId){dialDrag=null;e.currentTarget.classList.remove('turning');}
+});
 $('.jacks').addEventListener('click',e=>{const b=e.target.closest('[data-jack]');if(b)change('jack',b.dataset.jack);});
 $('#range').addEventListener('change',e=>change('range',e.target.value));
 for(const color of ['black','red']){

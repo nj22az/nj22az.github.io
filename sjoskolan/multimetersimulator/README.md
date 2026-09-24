@@ -8,13 +8,13 @@ Live: https://nj22az.github.io/sjoskolan/multimetersimulator/
 
 Åtta handledda övningar: spänning, polaritet, ström i serie inklusive återställning av sladd, resistans, parallella strömvägar, kontinuitet, mätarbelastning och CAT-val. Varje övning hänvisar till bilder i PowerPointen. Fri övning ger fyra kretsar, variabel matning/last i lampkretsen, felkopplingsrespons och mA-säkring.
 
-Välj svart eller röd mätspets och tryck på en mätpunkt, dra en spets till en punkt eller använd mätpunkternas select-listor. Funktioner och uttag kan manövreras med tangentbord. Ljud är av som standard; kontinuitet visas även i text. Framsteg och högst 200 protokollrader sparas lokalt med felhantering om lagring blockeras. CSV-export kräver inget konto.
+Välj svart eller röd mätspets och tryck på en mätpunkt, dra en spets till en punkt eller använd mätpunkternas select-listor. Mätfunktionen väljs med vridomkopplaren: dra ratten med mus eller finger, eller tryck på en av de sex symbolerna. Med ratten fokuserad byter piltangenter läge; Home väljer OFF och End väljer A ⎓. Ratten har fasta ändlägen. Uttagen kan också manövreras med tangentbord. Ljud är av som standard; kontinuitet visas även i text. Framsteg och högst 200 protokollrader sparas lokalt med felhantering om lagring blockeras. CSV-export kräver inget konto.
 
 Direktlänkar: `?ovning=voltage`, `polarity`, `current`, `resistance`, `parallel`, `continuity`, `loading`, `category` eller `fri`.
 
 ## Teknik och modell
 
-Statisk HTML/CSS/ES-moduler, inga beroenden, byggsteg eller backend. `model.mjs` innehåller nodanalys med hopslagning av idealledningar, resistansbestämning med en 1 V-testkälla samt instrumentmodellen. `lessons.mjs` definierar handledning och godkända moment. `app.mjs` hanterar interaktion, kretsritning, Pointer Events, progress och CSV.
+Statisk HTML/CSS/ES-moduler, inga beroenden, byggsteg eller backend. `model.mjs` innehåller nodanalys med hopslagning av idealledningar, resistansbestämning med en 1 V-testkälla samt instrumentmodellen. `lessons.mjs` definierar handledning och godkända moment. `app.mjs` hanterar interaktion, kretsritning, Pointer Events, progress och CSV. `meter.css` formar det gula skyddshöljet, instrumentpanelen och den funktionella vridomkopplaren. Väljaren styr samma mätmodell som övningarna; utseendet representerar inte någon specifik tillverkarmodell.
 
 Modellen beräknar kretsen oberoende av valt lektions-ID. Voltmeteringång 10 MΩ eller 1 MΩ, strömshunt 0,1 Ω i A och 1 Ω i mA. Amperemeterns låga resistans finns kvar när väljaren står i V eller OFF. Kortslutningsförsök bryter modellmatningen över 2 A; mA-säkringen löser direkt över 200 mA. Skydden är pedagogiska förenklingar, inte modeller av en verklig säkrings tidskurva. Lampan är en konstant resistans. AC-läget avvisar den rena DC-komponenten; inga AC-källor, transienter, temperaturer eller ljusbågar simuleras. Resistanskretsar är frånskilda; en aktiv källa blockerar Ω/summer. Källan tas elektriskt bort när matningen bryts.
 
