@@ -167,21 +167,21 @@ F=fig(4.3,3.0); triangle(F,30,40,("R = 30 Ω","Xᴸ = 40 Ω","|Z| = ?"),colors=(
 F=fig(4.3,3.0); triangle(F,30,40,("R = 30 Ω","Xᴸ = 40 Ω","|Z|"),colors=(BLUE,GREEN,INK),angle_label="φ = ?",rect=(0.06,0.04,0.9,0.92)); save(F,"v40_02_s26_ovn6")
 # s21 RL and RC triangles
 F=fig(4.3,4.4); ax=F.add_axes((0.02,0.02,0.96,0.96)); ax.set_aspect("equal"); ax.axis("off")
-for y0,s_,lab,txt in ((5.2,1,"Xᴸ","RL: strömmen\nsläpar, φ > 0"),(3.6,-1,"Xᶜ","RC: strömmen\nleder, φ < 0")):
-    ax.plot([0,3],[y0,y0],color=BLUE,lw=3); ax.plot([3,3],[y0,y0+s_*4],color=GREEN,lw=3); ax.plot([0,3],[y0,y0+s_*4],color=INK,lw=3)
-    ax.text(1.5,y0-s_*0.12,"R",ha="center",va="top" if s_>0 else "bottom",color=BLUE,fontsize=15)
-    ax.text(3.15,y0+s_*2,lab,va="center",color=GREEN,fontsize=15)
-    ax.text(1.3,y0+s_*2.3,"|Z|",ha="right",va="center",fontsize=15)
-    ax.add_patch(Arc((0,y0),1.8,1.8,theta1=0 if s_>0 else -53.13,theta2=53.13 if s_>0 else 0,color=INK,lw=1.3))
-    ax.text(1.0,y0+s_*0.3,"φ",va="center",fontsize=15)
-    ax.text(4.1,y0+s_*2,txt,va="center",fontsize=14)
-ax.set_xlim(-0.2,7.2); ax.set_ylim(-0.7,9.5)
+for y0,s_,lab,txt in ((5.3,1,"Xᴸ","RL: strömmen släpar, φ > 0"),(3.3,-1,"Xᶜ","RC: strömmen leder, φ < 0")):
+    ax.plot([4.8,4.8],[y0,y0+s_*2],color=GREEN,lw=3); ax.plot([0,4.8],[y0,y0+s_*2],color=INK,lw=3); ax.plot([0,4.8],[y0,y0],color=BLUE,lw=3)
+    ax.text(2.4,y0-s_*0.12,"R",ha="center",va="top" if s_>0 else "bottom",color=BLUE,fontsize=15)
+    ax.text(4.95,y0+s_*1.0,lab,va="center",color=GREEN,fontsize=15)
+    ax.text(2.2,y0+s_*1.35,"|Z|",ha="right",va="center",fontsize=15)
+    ax.add_patch(Arc((0,y0),1.8,1.8,theta1=0 if s_>0 else -22.62,theta2=22.62 if s_>0 else 0,color=INK,lw=1.3))
+    ax.text(1.05,y0+s_*0.2,"φ",va="center",fontsize=15)
+    ax.text(0.0,y0+s_*2.9,txt,va="center",fontsize=14)
+ax.set_xlim(-0.3,6.2); ax.set_ylim(-0.1,8.7)
 save(F,"v40_02_s21_fasvinkel")
 
 # ================= v40_03 Effekt =================
 def ptri(name,P,Q,labs,angle="φ",h=3.0,down=False,note=None):
     F=fig(4.3,h); triangle(F,P,abs(Q),labs,angle_label=angle,down=down,rect=(0.06,0.04,0.9,0.92),note=note); save(F,name)
-ptri("v40_03_s06_tre",4,3,("P (W)","Q (var)","S (VA)"),h=3.4,note="cos φ = P/S")
+ptri("v40_03_s06_tre",0.85,0.527,("P (W)","Q (var)","S (VA)"),h=3.4,note="cos φ = P/S")
 ptri("v40_03_s13_ovn2",0.75,0.6614,("P = ?","Q","S = 920 VA"),note="cos φ = 0,75")
 ptri("v40_03_s15_ovn3",600,800,("P = 600 W","Q = 800 var","S = ?"),note="PF = ?")
 ptri("v40_03_s17_ovn4",0.8,0.6,("P = ?","Q = ?","S = 2,0 kVA"),note="cos φ = 0,80")
@@ -211,7 +211,7 @@ def harm(name,extra):
     F=fig(4.3,3.4 if "s21" in name else 3.0); ax=wave_ax(F,(0.08,0.12,0.88,0.8)); t=T(0,20,800); w=2*np.pi*t/20
     ax.plot(t,np.sin(w),color=BLUE,lw=2.2); ax.plot(t,0.75*(np.sin(w-0.3)+0.33*np.sin(3*w)+0.18*np.sin(5*w)),color=ORANGE,lw=2.2)
     ax.set_xlim(0,21); ax.set_ylim(-1.35,1.6); ax.set_xticks([]); ax.set_yticks([]); extra(ax); save(F,name)
-harm("v40_03_s21_overtoner",lambda ax:(ax.text(0.3,1.3,"u (sinus)",color=BLUE,fontsize=14),ax.text(8,1.3,"i med övertoner",color=ORANGE,fontsize=14),ax.text(20.7,-1.3,"PF = P/S ≠ cos φ₁",ha="right",fontsize=14)))
+harm("v40_03_s21_overtoner",lambda ax:(ax.text(0.3,1.3,"u (sinus)",color=BLUE,fontsize=14),ax.text(8,1.3,"i med övertoner",color=ORANGE,fontsize=14),ax.text(20.7,-1.3,"PF = P/S ≠ cos φ₁",ha="right",fontsize=14),ax.text(0.3,-0.75,"Ombord: frekvens-\nomriktare",fontsize=12,color=GRAY,va="top")))
 harm("v40_03_s34_ovn10",lambda ax:(ax.text(0.3,1.3,"u",color=BLUE,fontsize=14),ax.text(2,1.3,"i",color=ORANGE,fontsize=14),ax.text(20.7,1.3,"P = 800 W   S = 1 000 VA",ha="right",fontsize=13),ax.text(20.7,-1.3,"PF = ?",ha="right",fontsize=15,color=RED)))
 # s22 compensation / s28 Ö7
 def comp(name,P,QL,QC,labs,h=3.4,exercise=False):

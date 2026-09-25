@@ -7,6 +7,21 @@ for f in font_manager.findSystemFonts():
     if "Carlito" in f: font_manager.fontManager.addfont(f)
 plt.rcParams.update({"font.family":"Carlito","font.size":15,"axes.linewidth":1.2,
     "mathtext.fontset":"custom","mathtext.rm":"Carlito","mathtext.it":"Carlito:italic"})
+# Index skrivs som riktiga nedsänkta tecken (X_L, U_R, Q_C, U_F) i stället för upphöjda bokstäver.
+_SUB={"ᴸ":"L","ᶜ":"C","ᴿ":"R","ꜰ":"F"}
+def sub(t):
+    if not isinstance(t,str): return t
+    for k,v in _SUB.items(): t=t.replace(k,r"$_\mathregular{"+v+"}$")
+    return t
+import matplotlib.axes, matplotlib.figure
+_at=matplotlib.axes.Axes.text; _ft=matplotlib.figure.Figure.text
+matplotlib.axes.Axes.text=lambda self,x,y,s,*a,**k:_at(self,x,y,sub(s),*a,**k)
+matplotlib.figure.Figure.text=lambda self,x,y,s,*a,**k:_ft(self,x,y,sub(s),*a,**k)
+for _n in ("set_xlabel","set_ylabel","set_title"):
+    _o=getattr(matplotlib.axes.Axes,_n)
+    setattr(matplotlib.axes.Axes,_n,(lambda o:lambda self,t,*a,**k:o(self,sub(t),*a,**k))(_o))
+_xl=matplotlib.axes.Axes.set_xticklabels
+matplotlib.axes.Axes.set_xticklabels=lambda self,labels,*a,**k:_xl(self,[sub(l) for l in labels],*a,**k)
 BLUE="#064F91"; GREEN="#0E7C5A"; RED="#B8323C"; ORANGE="#C8641E"; INK="#111111"; GRAY="#6B6B6B"; LIGHT="#D9E3EE"
 OUT=None
 K=1.25
@@ -104,3 +119,38 @@ def triangle(f,a,b,labels,colors=(BLUE,GREEN,INK),angle_label=None,down=False,re
     lo,hi=(-m*4, b+m*2+(max(a,b)*0.3 if note else 0)) if not down else (-b-m*2, m*4)
     ax.set_ylim(lo,hi)
     return ax
+
+# ---------- trefas och styrkretsar (vecka 41) ----------
+def rresistor(ax,p1,p2,label=None,loff=0.3,color=INK,frac=0.42,W=0.2,lcolor=None,fs=14):
+    """Resistor längs linjen p1→p2 (ledning + rektangel)."""
+    p1=np.array(p1,float); p2=np.array(p2,float); d=p2-p1; L_=np.linalg.norm(d); u=d/L_; n=np.array([-u[1],u[0]])
+    m=(p1+p2)/2; h=L_*frac/2
+    ax.plot(*zip(p1,p2),color=color,lw=LW,zorder=2)
+    corners=[m-u*h-n*W/2,m+u*h-n*W/2,m+u*h+n*W/2,m-u*h+n*W/2]
+    ax.add_patch(Polygon(corners,closed=True,fc="white",ec=color,lw=LW,zorder=3))
+    if label:
+        q=m+n*loff; ax.text(*q,label,ha="center",va="center",fontsize=fs,color=lcolor or color)
+def dot(ax,x,y,r=0.06,color=INK):
+    ax.add_patch(Circle((x,y),r,fc=color,ec=color,zorder=4))
+def vmark(ax,p1,p2,label,color=BLUE,off=(0.12,0),ha="left",fs=14):
+    """Dubbelpil för en spänning mellan två punkter."""
+    ax.add_patch(FancyArrowPatch(p1,p2,arrowstyle="<|-|>",mutation_scale=13,color=color,lw=1.6,zorder=5,shrinkA=2,shrinkB=2))
+    ax.text((p1[0]+p2[0])/2+off[0],(p1[1]+p2[1])/2+off[1],label,ha=ha,va="center",color=RED if "?" in label else color,fontsize=fs)
+def phasor(ax,ang,length,color,label=None,origin=(0,0),lr=1.12,fs=15,lw=2.6,lcolor=None):
+    a=np.radians(ang); x0,y0=origin; x1,y1=x0+length*np.cos(a),y0+length*np.sin(a)
+    ax.add_patch(FancyArrowPatch((x0,y0),(x1,y1),arrowstyle="-|>",mutation_scale=18,color=color,lw=lw,zorder=4,shrinkA=0,shrinkB=0))
+    if label: ax.text(x0+length*lr*np.cos(a),y0+length*lr*np.sin(a),label,ha="center",va="center",fontsize=fs,color=lcolor or (RED if "?" in label else color))
+    return (x1,y1)
+def contact(ax,x,y,closed,label=None,nc=False,L=0.6,color=INK,unknown=False):
+    """Kontakt i horisontell ledning. closed: sluten. nc: normalt sluten (markeras med hake)."""
+    ax.plot([x-L/2,x+L/2],[y,y],color="white",lw=LW*3,zorder=2)
+    dot(ax,x-L/2,y,0.045,color); dot(ax,x+L/2,y,0.045,color)
+    c=GRAY if unknown else color; ls="--" if unknown else "-"
+    if closed: ax.plot([x-L/2,x+L/2+0.03],[y,y+0.02],color=c,lw=LW,zorder=3,ls=ls)
+    else: ax.plot([x-L/2,x+L/2*0.9],[y,y+0.28],color=c,lw=LW,zorder=3,ls=ls)
+    if nc: ax.plot([x+L/2,x+L/2],[y,y+0.2],color=color,lw=LW,zorder=3)
+    if label: ax.text(x,y-0.2,label,ha="center",va="top",fontsize=13,color=color)
+def coil(ax,x,y,label="K1",on=False,w=0.55,h=0.34):
+    ax.plot([x-w/2,x+w/2],[y,y],color="white",lw=LW*3,zorder=2)
+    ax.add_patch(Rectangle((x-w/2,y-h/2),w,h,fc="#FFE08A" if on else "white",ec=INK,lw=LW,zorder=3))
+    ax.text(x,y,label,ha="center",va="center",fontsize=13,zorder=4)

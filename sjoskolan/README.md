@@ -20,3 +20,13 @@ Version 6 med 46 bilder har flyttats oförändrad till `vecka-39/arkiv/2026-09-2
 
 Den 25 september 2026 fick de tre presentationerna vecka 40 43 figurer: en på varje övningsbild och en på utvalda teoribilder. Bland annat har övning 2 i `v40_01` nu den kurva som uppgiften hänvisar till. Figurerna visar givna värden och markerar det som söks med ”?”. Källkoden finns i `verktyg/figurer/`.
 
+### Granskning vecka 40 (25 september 2026)
+
+Figurerna och labbet granskades ur tre perspektiv: lärare, elinstallatör och fartygsingenjör. Därefter gjordes följande ändringar i presentationerna vecka 40:
+
+- **Räkneexempel som avslöjade övningssvar har fått nya tal.** Det gäller v40_02 bild 8 och 21, v40_03 bild 6, 7 och 23.
+- **Fartygsexempel har lagts till.** Toppvärde vid 440 och 690 V, energi vid landanslutning, samt att kondensatorbatterier sällan används ombord.
+- **Säkerhetsrad om oscilloskop på IT-nät:** v40_01 bild 19.
+- **Index skrivs nedsänkt:** X_L, X_C, U_R, Q_C i stället för upphöjda bokstäver.
+- **Den felaktiga hänvisningen till bildanteckningar är borttagen.** Det gäller även vecka 39.
+

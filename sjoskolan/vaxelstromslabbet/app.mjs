@@ -6,6 +6,11 @@ const $ = (id) => document.getElementById(id);
 const C = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', slate: '#4a6378', purple: '#7a3fa0', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', soft: '#edf3f7' };
 const STORE = 'sjoskolan-vaxelstrom-v1';
 const clone = (o) => JSON.parse(JSON.stringify(o));
+// Index skrivs nedsänkt (X_L, X_C, U_R, Q_C) i stället för med upphöjda bokstäver
+const SUBS = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F' };
+const plain = (t) => String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => SUBS[ch]);
+const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const subHtml = (t) => escHtml(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`);
 
 const state = { tab: 'sinus', values: clone(DEFAULTS), challenge: null, attempts: 0, solved: loadSolved() };
 
@@ -63,13 +68,13 @@ function renderControls() {
     const row = document.createElement('div');
     row.className = `control control-${c.type || 'range'}`;
     if (c.type === 'select') {
-      row.innerHTML = `<label for="${id}">${c.label}</label><select id="${id}">${c.options.map(([v, l]) => `<option value="${v}"${String(s[c.key]) === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
+      row.innerHTML = `<label for="${id}">${subHtml(c.label)}</label><select id="${id}">${c.options.map(([v, l]) => `<option value="${v}"${String(s[c.key]) === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
     } else if (c.type === 'check') {
-      row.innerHTML = `<label class="check"><input type="checkbox" id="${id}"${s[c.key] ? ' checked' : ''}> ${c.label}</label>`;
+      row.innerHTML = `<label class="check"><input type="checkbox" id="${id}"${s[c.key] ? ' checked' : ''}> ${subHtml(c.label)}</label>`;
     } else {
       const max = resolve(c.max, s);
       if (s[c.key] > max) s[c.key] = max;
-      row.innerHTML = `<div class="control-top"><label for="${id}">${c.label}</label><span class="num"><input type="number" id="${id}-n" aria-label="${c.label} som tal" min="${c.min}" max="${max}" step="${c.step}" value="${s[c.key]}"><span>${c.unit}</span></span></div>
+      row.innerHTML = `<div class="control-top"><label for="${id}">${subHtml(c.label)}</label><span class="num"><input type="number" id="${id}-n" aria-label="${plain(c.label)} som tal" min="${c.min}" max="${max}" step="${c.step}" value="${s[c.key]}"><span>${c.unit}</span></span></div>
         <input type="range" id="${id}" min="${c.min}" max="${max}" step="${c.step}" value="${s[c.key]}" aria-valuetext="${fmt(s[c.key])} ${c.unit}">`;
     }
     form.append(row);
@@ -122,7 +127,7 @@ function refreshLimits() {
 // ---------- SVG-hjälp ----------
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 function txt(x, y, t, { color = C.ink, size = 14, anchor = 'start', weight = 400, baseline = 'middle' } = {}) {
-  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="${baseline}" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t)}</text>`;
+  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="${baseline}" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<tspan baseline-shift="sub" font-size="75%">${SUBS[ch]}</tspan>`)}</text>`;
 }
 function line(x1, y1, x2, y2, color, w = 2, dash = '') {
   return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
@@ -135,7 +140,7 @@ function arrow(x1, y1, x2, y2, color, w = 3) {
   return line(x1, y1, hx, hy, color, w) + `<path d="M${x2.toFixed(1)},${y2.toFixed(1)} L${(hx + 5 * Math.sin(a)).toFixed(1)},${(hy - 5 * Math.cos(a)).toFixed(1)} L${(hx - 5 * Math.sin(a)).toFixed(1)},${(hy + 5 * Math.cos(a)).toFixed(1)} Z" fill="${color}"/>`;
 }
 function svg(w, h, body, label) {
-  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(plain(label))}">${body}</svg>`;
 }
 function figure(title, content, cls = '') {
   return `<figure class="fig ${cls}"><figcaption>${title}</figcaption>${content}</figure>`;
@@ -265,7 +270,7 @@ function renderImpedans(s, r) {
   const x1 = ox + r.UR * sc; const y2 = oy - (r.UL - r.UC) * sc;
   pb += arrow(ox, oy, x1, oy, C.slate);
   pb += txt((ox + x1) / 2, oy + 18, hideVals || masked('UR') ? 'Uᴿ' : `Uᴿ = ${fmt(r.UR)} V`, { color: C.slate, size: 13, anchor: 'middle' });
-  if (hasL) { pb += arrow(x1, oy, x1, oy - r.UL * sc, C.green); pb += txt(x1 + 8, oy - r.UL * sc * 0.78, hideVals || masked('UL') ? 'Uᴸ' : `Uᴸ = ${fmt(r.UL)} V`, { color: C.green, size: 13 }); }
+  if (hasL) { pb += arrow(x1, oy, x1, oy - r.UL * sc, C.green); pb += txt(x1 + (hasC ? 30 : 8), oy - r.UL * sc * 0.78, hideVals || masked('UL') ? 'Uᴸ' : `Uᴸ = ${fmt(r.UL)} V`, { color: C.green, size: 13 }); }
   if (hasC) {
     const xs = hasL ? x1 + 16 : x1; const ys = hasL ? oy - r.UL * sc : oy;
     pb += arrow(xs, ys, xs, ys + r.UC * sc, C.purple);
@@ -395,13 +400,14 @@ function renderEffekt(s, r) {
 }
 
 function readoutList(items) {
-  $('readouts').innerHTML = items.map(([k, v, d]) => `<div class="${v === '?' ? 'hidden-value' : ''}"><dt>${k}</dt><dd><strong>${v}</strong><span>${d}</span></dd></div>`).join('');
+  $('readouts').innerHTML = items.map(([k, v, d]) => `<div class="${v === '?' ? 'hidden-value' : ''}"><dt>${subHtml(k)}</dt><dd><strong>${escHtml(v)}</strong><span>${subHtml(d)}</span></dd></div>`).join('');
 }
 
 function render() {
   const s = state.values[state.tab];
   const r = readouts(state.tab, s);
   ({ sinus: renderSinus, impedans: renderImpedans, effekt: renderEffekt })[state.tab](s, r);
+  const pr = $('principle'); pr.innerHTML = pr.innerHTML.replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`);
 }
 
 // ---------- uppgifter ----------
@@ -421,10 +427,10 @@ function startChallenge(id) {
   state.values[c.tab] = clone(c.setup);
   $('challenge-body').hidden = false; $('challenge-intro').hidden = true;
   $('challenge-deck').textContent = c.deck;
-  $('challenge-task').textContent = c.task;
-  $('answer-label').textContent = `${c.ask.label} =`;
+  $('challenge-task').innerHTML = subHtml(c.task);
+  $('answer-label').innerHTML = `${subHtml(c.ask.label)} =`;
   $('answer-unit').textContent = c.ask.unit;
-  $('answer').value = ''; $('hint-text').textContent = c.hint; $('hint').open = false;
+  $('answer').value = ''; $('hint-text').innerHTML = subHtml(c.hint); $('hint').open = false;
   $('feedback').className = 'feedback'; $('feedback').textContent = '';
   $('show-answer').hidden = true;
   renderControls(); renderChallengeSelect(); render(); updateUrl();
@@ -443,7 +449,7 @@ function finishChallenge(correct, message) {
   state.challenge = null;
   const fb = $('feedback');
   fb.className = `feedback ${correct ? 'ok' : 'info'}`;
-  fb.innerHTML = `<strong>${message}</strong> ${c.ask.label} = ${fmt(e, 4)} ${c.ask.unit}. ${c.after || 'Reglagen är nu upplåsta. Ändra ett värde och se vad som händer.'}`;
+  fb.innerHTML = `<strong>${message}</strong> ${subHtml(c.ask.label)} = ${fmt(e, 4)} ${c.ask.unit}. ${subHtml(c.after || 'Reglagen är nu upplåsta. Ändra ett värde och se vad som händer.')}`;
   $('show-answer').hidden = true;
   renderControls(); renderChallengeSelect(); render();
   // behåll uppgiftstexten synlig efter lösningen
@@ -469,7 +475,7 @@ function checkAnswer(ev) {
   else if (isClose(ans * Math.SQRT2, e, c.ask) || isClose(ans / Math.SQRT2, e, c.ask)) msg += 'Du är en faktor √2 fel. Blanda inte ihop topp- och effektivvärde. ';
   else msg += 'Kontrollera formeln och enheterna. ';
   if (state.attempts >= 2) { $('hint').open = true; $('show-answer').hidden = false; }
-  fb.textContent = msg;
+  fb.innerHTML = subHtml(msg);
 }
 
 // ---------- flikar och URL ----------
