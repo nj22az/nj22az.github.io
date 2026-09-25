@@ -14,6 +14,14 @@ A first-person browser town set on 14 September 1988. This branch upgrades the e
 - Thuan can ride the commuter bicycle parked near Sakura. WASD or the left stick pedals and steers, Shift boosts, and E dismounts; collisions keep the ride on walkable streets. Her existing character rig sits on the bicycle, reaches for its handlebars and cycles her feet on the pedals.
 - Tama, yen, fishing, Star Port, notebooks and existing transactions preserved. Website portals have become in-world paper records. Version 5 saves import valid v4/v3 data without deleting the old save.
 
+## Shimanchu: the town's people
+
+Everybody in town -- Thuan, Johansson, Nao, the residents and the neighbours in the new streets -- is a Shimanchu (島人, islander): a round-headed, cel-shaded figure built at load time from a small recipe (`src/avatars/`). A recipe is face parts, hair, body and clothes; the face is painted onto the head, the body is one skinned mesh whose elbows, knees and skirts bend softly, and one procedural animator walks, sits, rides, serves, dances and turns its head to whoever is talking. The town's existing flags (`socialPose`, `seatHeight`, `outfit`, `lookTarget` and so on) drive it, so every interaction works as before.
+
+- **Make your islander**: Town book → *Make your islander*. Pick parts from picture grids, colours from swatches, fine-tune with sliders, roll the dice for somebody new, and save to walk the town as them. The recipe is kept on this device (`johansson-town-avatar`).
+- **Share**: the maker's *Share* button gives a link to `creator/?r=<code>`; opening it shows that islander in the maker. `?avatar=<code>` on the game's own address imports one directly.
+- `?classic` brings back the previous character models for comparison. `tools/avatar-preview?who=Thuan,Johansson&pose=walk` is a development line-up.
+
 ## Controls
 
 At **Kenji & Tetsuo Repairs**, use the Form 3D printer to make five collectible

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#cfe9ea">
+<title>Shimanchu Maker · Johansson Town</title>
+<meta name="description" content="Make an islander for Johansson Town, a 1997 Okinawan harbour town. Share them with a link.">
+<style>html,body{margin:0;height:100%;background:#fff4dc}noscript{display:block;padding:24px;font-family:system-ui,sans-serif}</style>
+</head>
+<body>
+<noscript>The islander maker needs JavaScript.</noscript>
+<script type="module">
+// A shared islander (?r=code) opens here; saving it walks you into the town as them.
+import {openCreator} from '../src/avatars/creator.js';
+import {playerRecipe,savePlayerRecipe} from '../src/avatars/actors.js';
+import {decodeRecipe} from '../src/avatars/recipe.js';
+const code=new URLSearchParams(location.search).get('r'),shared=code?decodeRecipe(code):null;
+openCreator({
+ recipe:shared||playerRecipe(),
+ saveLabel:'Walk the town as them',
+ shareLink:c=>new URL('./?r='+c,location.href).href,
+ onSave:recipe=>{savePlayerRecipe(recipe);},
+ onClose:()=>{location.href='../';},
+});
+</script>
+</body>
+</html>

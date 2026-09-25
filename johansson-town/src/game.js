@@ -46,6 +46,8 @@ import {clock as duskClock, daylight} from './render/dusk.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
 import {createJohansson,MOVES} from './people/johansson.js';
+import {avatarsEnabled,createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
+import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp} from './people/izakaya-beer.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -241,7 +243,7 @@ const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:cent
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function controlsAllowed(){return !creatorOpen&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
@@ -286,7 +288,21 @@ hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inve
 const VIEW_KEY='johansson-town-view';
 let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
 try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)==='third';}catch{}
-function ensureJohansson(){if(!johansson){johansson=createJohansson({scene,resolve:assetURL});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
+/**
+ * The Shimanchu maker, from the Town book. The town stops while it is open (it is a
+ * menu, not a pause in the telling) and whoever you make walks out of it.
+ */
+let creatorOpen=false;
+function openAvatarMaker(){
+ if(creatorOpen)return;
+ toggleDir(false);resetInput();document.exitPointerLock?.();creatorOpen=true;
+ openCreator({recipe:playerRecipe(),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
+  onSave:r=>{savePlayerRecipe(r);ensureJohansson().setRecipe?.(r);if(!thirdPerson)setThirdPerson(true,false);say((r.name?r.name+' · ':'')+'Looking good. V switches between your eyes and this view.',4);},
+  onClose:()=>{creatorOpen=false;resetInput();clock.getDelta();}});
+}
+// A shared link (?avatar=code) is somebody to walk the town as.
+{const shared=importRecipeFromURL();if(shared)setTimeout(()=>say('Walking the town as '+(shared.name||'a new islander')+'.',4),4000);}
+function ensureJohansson(){if(!johansson){johansson=avatarsEnabled()?createAvatarJohansson({scene}):createJohansson({scene,resolve:assetURL});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
 function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'1st person':'3rd person';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function startBicycleRide(entry){
  if(bicycleRide||current||seated)return;
@@ -342,9 +358,10 @@ function cameraBlocked(x,z,y,r){
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
- const eye=seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6;
+ const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
+ const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
- tpPivot.set(player.position.x,player.position.y+eye,player.position.z).addScaledVector(tpRight,.34);
+ tpPivot.set(player.position.x,player.position.y+eye,player.position.z).addScaledVector(tpRight,lens?.side??.34);
  const want=current?2.2:3.2;let reach=want;
  // His own bench or chair is not in the way: only look for obstacles once clear of where he is.
  for(let d=.3;d<=want+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(.3,d-.22);break;}}
@@ -455,14 +472,16 @@ function shotClear(from,to){
  return true;
 }
 /** An over-the-shoulder lens: behind `near`, off to `side`, looking at `far`. */
+// Shimanchu heads are big, so the lens stands further back and wider to see past one.
+const SHOULDER=avatarsEnabled()?{back:1.05,side:.8,up:.16}:{back:.72,side:.5,up:.06};
 function overShoulder(near,far,ux,uz,side,out){
- return out.set(near.x-ux*.72+uz*side*.5,near.y+.06,near.z-uz*.72-ux*side*.5);
+ return out.set(near.x-ux*SHOULDER.back+uz*side*SHOULDER.side,near.y+SHOULDER.up,near.z-uz*SHOULDER.back-ux*side*SHOULDER.side);
 }
 function frameConversation(dt){
  const speaker=conversationLine?.speaker;
  if(!speaker?.visible||seated||bicycleRide)return;
  speakerHead.copy(characters.conversationTarget(speaker));
- playerHead.set(player.position.x,player.position.y+1.58,player.position.z);
+ playerHead.set(player.position.x,player.position.y+(johansson?.lens?.head??1.58),player.position.z);
  const dx=speakerHead.x-playerHead.x,dz=speakerHead.z-playerHead.z,dist=Math.hypot(dx,dz);
  if(dist<.2||dist>8)return;
  const k=1-Math.exp(-dt*4),want=Math.atan2(-dx,-dz);
@@ -830,6 +849,7 @@ function updateDirectory(){
  const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
  const progress=travelProgress(activities.state);
+ if(avatarsEnabled())row('✿ Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
  row(progress.unlocked?'✦ Town shortcuts unlocked':'🔒 Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
  const destination=(site,title)=>{row((progress.unlocked?'Go to ':'Find on foot · ')+(title||site.title),progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
  const teaHouse=SITES.find(s=>s.id==='tea-house');
@@ -1036,6 +1056,18 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  teleport(x,z,facing){player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
  camera:null,
  get world(){return world;},
+ enter(id){const s=SITES.find(site=>site.id===id);return s?enterRoom(s):null;},
+ leave(){leaveRoom();},
+ interact(){doInteract();},
+ use(label){const o=interactables.find(o=>o.userData.hit?.label===label);if(!o)return false;active={...o.userData.hit,object:o};o.userData.hit.fn();return true;},
+ get active(){return active?.label||null;},
+ near(r=3.2){const q=new THREE.Vector3();return interactables.map(o=>{o.getWorldPosition(q);return [o.userData.hit?.label,+q.distanceTo(player.position).toFixed(2),o.visible,!!o.userData.hit?.inside];}).filter(x=>x[1]<r);},
+ get seated(){return seated;},
+ get beer(){return beerService?{pending:beerService.pending,drink:beerService.drink}:null;},
+ get paused(){return !!activities?.paused;},
+ get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
+ get johansson(){return johansson;},
+ get room(){return room;},
 };
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.
@@ -1085,7 +1117,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   const audit=window.__JOHANSSON_AUDIT__?.camera;

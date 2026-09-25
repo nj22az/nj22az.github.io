@@ -20,6 +20,7 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {clone} from '../../vendor/SkeletonUtils.js';
 import {assetURL} from '../assets.js';
 import {PROFILES} from './profiles.js';
+import {avatarsEnabled,createAvatarActor,updateAvatarActor,avatarConversationTarget} from '../avatars/actors.js';
 const LOW_POLY=['worker','suit','casual_2','female_casual','female_formal'];
 /** Alternate takes of an idle, tried in order after the unsuffixed one. */
 const IDLE_TAKES=Object.freeze(['','.1','.2']);
@@ -99,6 +100,12 @@ export async function createYuriFigurine(){
 export function createLocalCharacters({shadows=false}={}){
   const actors=[],byEntity=new Map();
   function attach(entity,name,height){
+    // Everybody is a Shimanchu now: one family of bodies built from recipes, drawn to
+    // the person the entity is (not the look it was once lent). See src/avatars/.
+    if(avatarsEnabled()){
+      const actor=createAvatarActor(entity,entity.userData.name||name,{shadows});
+      byEntity.set(entity,actor);actors.push(actor);return actor;
+    }
     const profile=PROFILES.find(p=>p.name===name),source=characterSource(name),asset=loaded.get(source);
     if(!asset)return null;
     const model=clone(asset.scene);
@@ -201,6 +208,7 @@ export function createLocalCharacters({shadows=false}={}){
   function update(dt){
     faceClock+=dt;
     for(const actor of actors){const {entity,mixer,actions}=actor;
+      if(actor.isAvatar){updateAvatarActor(actor,dt);continue;}
       actor.customerGaze?.restore();
       actor.mealMotion?.restore();
       actor.chairMotion?.restore();
@@ -343,6 +351,7 @@ export function createLocalCharacters({shadows=false}={}){
   }
   function conversationTarget(entity,target=new THREE.Vector3()){
     const actor=byEntity.get(entity);if(!actor)return null;
+    if(actor.isAvatar)return avatarConversationTarget(actor,target);
     const head=actor.model.getObjectByName('Head')||actor.model.getObjectByName('head');
     if(head){
       // MakeHuman rigs carry real eye joints: look between them.
@@ -358,6 +367,6 @@ export function createLocalCharacters({shadows=false}={}){
     entity.getWorldPosition(target);target.y+=actor.height*.9;return target;
   }
   /** 'swim' puts a resident with a swimsuit into it, anything else back into her clothes. */
-  function wear(entity,outfit){const actor=byEntity.get(entity);if(!actor?.wardrobe?.swim.length)return false;for(const o of actor.wardrobe.clothes)o.visible=outfit!=='swim';for(const o of actor.wardrobe.swim)o.visible=outfit==='swim';return true;}
-  return {attach,update,actors,conversationTarget,wear,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
+  function wear(entity,outfit){const actor=byEntity.get(entity);if(actor?.isAvatar){actor.avatar.wear(outfit);actor.outfit=outfit;return true;}if(!actor?.wardrobe?.swim.length)return false;for(const o of actor.wardrobe.clothes)o.visible=outfit!=='swim';for(const o of actor.wardrobe.swim)o.visible=outfit==='swim';return true;}
+  return {attach,update,actors,conversationTarget,wear,gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(actor.gestureTime>0)return true;actor.gestureTime=actor.isAvatar?1.6:actor.actions.get('Wave')?.getClip().duration||1.2;return true;}};
 }
