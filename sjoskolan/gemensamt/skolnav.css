@@ -1,0 +1,14 @@
+/* Sjöskolans egen meny och startruta i labbarna. Samma utseende som Växelströmslabbet, oberoende av webbplatsens teman. */
+.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid #cdd9e2;padding:14px max(20px,calc((100% - 1400px)/2));background:#fff;color:#163248;font:16px/1.4 Arial,Helvetica,sans-serif}
+.school-nav a{color:#064f91;text-decoration:none;min-height:32px;display:inline-flex;align-items:center}
+.school-nav strong{letter-spacing:.08em;font-size:18px}
+.school-nav :focus-visible{outline:3px solid #1688d3;outline-offset:3px}
+footer.school-nav{border-top:1px solid #cdd9e2;border-bottom:0;margin-top:40px;color:#516679}
+.school-nav ~ main.ac-app,.school-nav ~ main.sim-app{padding-top:28px}
+.lab-start{background:#fff;border:1px solid #cdd9e2;border-left:5px solid #064f91;border-radius:12px;padding:16px 20px;margin:0 0 22px;color:#163248;font:16px/1.5 Arial,Helvetica,sans-serif}
+.lab-start h2,.ac-app .lab-start h2,.sim-app .lab-start h2{font-size:19px;line-height:1.3;margin:0 0 8px;letter-spacing:0}
+.lab-start ol{margin:0 0 12px;padding-left:22px}.lab-start li{margin:4px 0}
+.lab-start button,.ac-app .lab-start button,.sim-app .lab-start button{font:inherit;font-weight:700;min-height:44px;padding:8px 18px;border:0;border-radius:8px;background:#064f91;color:#fff;cursor:pointer}
+.lab-start button:hover,.ac-app .lab-start button:hover,.sim-app .lab-start button:hover{background:#053f74;color:#fff}
+.lab-start .muted{color:#516679;font-size:14px;margin:10px 0 0}
+@media (max-width:700px){.school-nav{padding:12px 16px}.school-nav ~ main.ac-app,.school-nav ~ main.sim-app{padding-top:18px}}

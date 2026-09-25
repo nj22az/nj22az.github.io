@@ -5,11 +5,11 @@
 <title>Trefaslabbet · Sjöskolan</title>
 <meta name="description" content="Utforska trefas: fas- och linjespänning, neutralström, bruten neutralledare, Y- och Δ-koppling och motorns märkning.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/trefaslabbet/">
-<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260926">
 <link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 </head>
 <body class="ac-page">
-<nav id="site-nav" class="site-nav"></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-41/aktuell/">Vecka 41</a></nav>
 <main id="main-content" class="ac-app">
   <header class="ac-heading">
     <div>
@@ -18,7 +18,7 @@
       <p>Tre faser, en neutralledare och två sätt att koppla. Räkna först, kontrollera sedan.</p>
     </div>
     <ul class="deck-links" aria-label="Presentationer vecka 41"><li><a href="../vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx">v41_01 Grunder ↗</a></li><li><a href="../vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx">v41_02 Y, Δ och effekt ↗</a></li><li><a href="../vaxelstromslabbet/">Växelströmslabbet</a></li></ul>
-  </header>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><ol><li>Välj flik: 1 visare, 2 bruten neutralledare eller 3 Y och Δ.</li><li>Välj en uppgift under ”Räkna först”. Reglagen låses och svaret döljs.</li><li>Räkna på papper och skriv ditt svar. Tryck ”Kontrollera”.</li><li>När uppgiften är klar kan du ändra reglagen fritt och se vad som händer.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
 
   <div class="tabs" role="tablist" aria-label="Del av labbet">
     <button role="tab" id="tab-visare" data-tab="visare" aria-controls="lab" aria-selected="true"><span>1</span>Visare och neutralström</button>
@@ -67,6 +67,6 @@
   </details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
-<footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260926"></script>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="app.mjs?v=20260926"></script>
 </body></html>

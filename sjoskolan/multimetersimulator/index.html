@@ -5,18 +5,18 @@
 <title>Multimetersimulator · Sjöskolan</title>
 <meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
-<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260926">
 <link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="simulator.css?v=20260925-loading">
 <link rel="stylesheet" href="meter.css?v=20260925-loading">
 </head>
 <body class="multimeter-page">
-<nav id="site-nav" class="site-nav"></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-39/aktuell/">Vecka 39</a></nav>
 <main id="main-content" class="sim-app">
   <header class="sim-heading">
     <div><a class="back-link" href="../vecka-39/aktuell/">← Sjöskolan · vecka 39</a><h1>Multimeterlabbet</h1><p>Välj funktion. Koppla mätspetsarna. Förklara resultatet.</p></div>
     <a class="presentation-link" href="../multimeterfilm/">Se den animerade genomgången (engelska) ↗</a>
     <a class="presentation-link" href="../vecka-39/aktuell/Multimeter_Sjoskolan_v7_SV.pptx">Öppna PowerPoint ↗</a>
-  </header>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><ol><li>Välj en övning i listan. Börja med 01 och följ ordningen.</li><li>Läs uppgiften i rutan ”Övning”. Förutsäg värdet innan du kopplar.</li><li>Vrid ratten till rätt funktion och välj uttag för röd sladd.</li><li>Tryck på Svart eller Röd och sedan på en mätpunkt i kretsen. Slå på matningen om uppgiften säger det.</li><li>Tryck ”Kontrollera mätningen”. Fungerar det inte, öppna ledtråden.</li></ol><button type="button" onclick="document.querySelector('#lesson-select').value='0';document.querySelector('#lesson-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#task-heading').scrollIntoView({behavior:'smooth',block:'center'})">Starta övning 01</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
   <div class="lesson-bar"><label for="lesson-select">Övning</label><select id="lesson-select"></select><button id="free-mode" aria-pressed="false">Fri övning</button><span id="progress">0 av 8 klara</span></div>
   <div class="sim-layout">
     <section class="work-area" aria-label="Mätplats">
@@ -114,6 +114,6 @@
   </details>
   <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
 </main>
-<footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260926"></script>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="app.mjs?v=20260926"></script>
 </body></html>
