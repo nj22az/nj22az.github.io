@@ -1,12 +1,17 @@
-# Swedish narration
+# British English narration
 
-The film uses locally generated synthetic Swedish narration from Piper's `sv_SE-nst-medium` voice. The model is not distributed with this website.
+The English edition uses locally generated synthetic speech from **Kokoro-82M v1.0**, voice **bf_emma**, language `en-gb`, speaking rate `0.96`.
 
-- Voice/model card: https://huggingface.co/rhasspy/piper-voices/blob/main/sv/sv_SE/nst/medium/MODEL_CARD
-- Training: KBLab, National Library of Sweden.
-- Dataset: NST, CC0, according to the voice model card.
-- Piper engine: https://github.com/OHF-Voice/piper1-gpl (GPL-3.0).
-- Model SHA-256 used for this film: `df011f56825a59dd1efc080c38a65a1ef70407e60f63050e9246f43a3d7e471e`.
-- The supplied build script sets `ORT_DISABLE_TELEMETRY=1` before importing the inference runtime. See https://github.com/microsoft/onnxruntime/blob/main/docs/Privacy.md.
+- Model and voice documentation: https://huggingface.co/hexgrad/Kokoro-82M
+- Voice list: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
+- Inference package: https://github.com/thewh1teagle/kokoro-onnx (MIT), pinned to `kokoro-onnx==0.4.9`.
+- Kokoro model licence: Apache-2.0, according to the model's published documentation.
+- Downloaded FP32 export and voice archive: https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1
+- Model SHA-256: `beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a`.
+- Voice archive SHA-256: `bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d`.
 
-Narration is generated from the original Swedish manuscript in `src/content.mjs`. The final audio and timeline are checked in so playback and ordinary rendering require no speech service and no local model download.
+Both downloaded hashes were checked against the release metadata. The model and voice archive are not distributed with the website. Narration is generated from `src/content.mjs`; no manuscript is sent to a speech service.
+
+The generation script sets `ORT_DISABLE_TELEMETRY=1` before importing the runtime. See https://github.com/microsoft/onnxruntime/blob/main/docs/Privacy.md. It preserves the FP32 export's floating-point speed input rather than the integer-speed assumption in kokoro-onnx 0.4.9. SI prefixes are separated for pronunciation: `megohm` is spoken as `mega ohm`, and `kilohm` as `kilo ohm`. Captions retain their standard spelling.
+
+Completed audio, captions and the measured timeline are versioned. Playback and ordinary rendering need neither a model download nor a speech service. The preceding Swedish Piper edition remains recoverable from Git history at commit `86b8357ddb42cc0a7987b483390dd880513909fd`.

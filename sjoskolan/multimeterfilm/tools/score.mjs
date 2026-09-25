@@ -24,6 +24,6 @@ writeFileSync('assets/score.csv',score.join('\n'));
 writeFileSync('build/voice-spans.tsv',T.scenes.map(s=>[s.voiceStart,s.voiceStart+s.voiceDuration].join('\t')).join('\n'));
 let r=spawnSync('java',['tools/MusicScore.java',String(T.duration),'build/notes.tsv','build/voice-spans.tsv','build/music.wav'],{stdio:'inherit'});if(r.status)process.exit(r.status);
 const run=args=>{const r=spawnSync('ffmpeg',['-v','error','-y',...args],{stdio:'inherit'});if(r.status)process.exit(r.status)};
-run(['-i','build/music.wav','-c:a','libmp3lame','-b:a','128k','assets/music.mp3']);
+run(['-i','build/music.wav','-c:a','libmp3lame','-b:a','128k','assets/music-en.mp3']);
 run(['-i','build/narration.wav','-i','build/music.wav','-filter_complex','[0:a][1:a]amix=inputs=2:normalize=0,alimiter=limit=0.89:level=false:latency=true[a]','-map','[a]','-ar','48000','-ac','2','build/mix.wav']);
 console.log(JSON.stringify({notes:notes.length,seconds:T.duration,score:'assets/score.csv',synthesizer:'Java 17'}));

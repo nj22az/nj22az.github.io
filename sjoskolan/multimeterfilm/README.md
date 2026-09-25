@@ -1,29 +1,31 @@
-# Multimetern ombord
+# Multimeter Aboard
 
-Svensk undervisningsfilm som kompletterar Sjöskolans **Multimeter och mätfel**, version 7, 70 bilder.
+Sjöskolan's **English film companion** to *Multimeter och mätfel*, version 7, 70 slides. It replaces the Swedish film on the course website with British English narration, English diagrams and captions, while retaining all 37 scenes, the same examples, mascots, original music and Sjöskolan branding.
 
-**14 min 51,5 s · 1920 × 1080 · 30 fps · 37 scener · 12 kapitel**
+**13 min 37.5 s · 1920 × 1080 · 30 fps · 37 scenes · 12 chapters**
 
-[Se filmen](https://nj22az.github.io/sjoskolan/multimeterfilm/) · [Öppna simulatorn](https://nj22az.github.io/sjoskolan/multimetersimulator/) · [Manus](MANUS_SV.md) · [Koppling till PowerPoint](COVERAGE.md)
+[Watch the film](https://nj22az.github.io/sjoskolan/multimeterfilm/) · [Open the simulator](https://nj22az.github.io/sjoskolan/multimetersimulator/) · [English script](SCRIPT_EN.md) · [PowerPoint coverage](COVERAGE.md)
 
-Filmen innehåller spänning, ström, resistans, kontinuitet, CAT-kategorier, instrumentval, upplösning, specificerad felgräns, tolerans, mätprotokoll, voltmeterns belastning och strömmätarens spänningsfall. De tre fördjupningsexemplen på bild 66–68 ingår. Presentationens externa filmer kopieras inte.
+Topics include voltage, current, resistance, continuity, CAT categories, instrument selection, resolution, specified error limits, tolerance, measurement records, voltmeter loading and ammeter burden voltage. All three extension examples on slides 66–68 are included. The PowerPoint and simulator remain in Swedish. External videos linked by the presentation are referenced, not copied.
 
-## För undervisning
+## For teaching
 
-Kapitelknapparna hoppar i filmen. Pausa vid frågorna och låt eleverna motivera sitt val innan ni fortsätter. Berättarröst, bakgrundsmusik och text kan slås av var för sig. Filmens text finns också under spelaren och i `MANUS_SV.md`. MP4-versionen har svensk text inbränd i bilden; SRT och VTT finns separat i `assets`.
+Use the chapter buttons to jump through the film. Pause at the questions and ask students to justify their choice. Narration, music and captions can be switched off individually. Playback speed is adjustable. The complete script is also available as text below the player and in `SCRIPT_EN.md`.
 
-Kopplingarna gäller förenklade undervisningsmodeller. Praktisk inkoppling sker vid handledd laboration. Instrumentets manual och arbetsplatsens rutiner gäller vid verkligt arbete. CAT är inte en uppgift om mätnoggrannhet. Intervallexemplen omfattar den angivna instrumentfelgränsen, inte en fullständig osäkerhetsbudget.
+The downloadable `assets/Multimeter_Aboard_EN.mp4` has English captions burned into the picture. Separate SRT and VTT files are in `assets`. Its chapters match the web player.
 
-## Teknik
+The circuits are simplified teaching models for supervised laboratory work. Follow the actual instrument manual and workplace procedures. CAT is not a measure of accuracy. The error-limit examples cover the stated instrument specification, not a complete uncertainty budget.
 
-- **JavaScript + HTML Canvas:** ursprungliga maskotar, instrument, scheman och rörelser. `src/draw.mjs` är en ren ritfunktion av scen och tid.
-- **Anidoodle:** anpassad filmkärna med kontroll av scener och bildrutor, Apache-2.0. Kodritning och musikrecept bygger på projektets arbetsmetod.
-- **Helios 5.13.2:** styr bildrutornas tidslinje i både webbläsare och export. Webbläsaren använder berättarljudets tid som klocka, så bild och tal inte glider isär. ELv2-licensen finns i `vendor`.
-- **Java 17:** `tools/MusicScore.java` syntetiserar den egna kompositionen *Mätresan*. C-dur, 120 BPM, plockade toner, bas, diskret tick/tock och avslutande tonikaklocka. Musiken sänks under talet. Inga samplade låtar används.
-- **Piper:** berättarrösten genereras lokalt på svenska med `sv_SE-nst-medium`. ONNX Runtime-telemetri stängs av före initiering. Modellen är tränad av KBLab på NST-data (CC0). Rösten är syntetisk.
-- **Native Canvas + FFmpeg:** MP4-export utan skärminspelning eller webbläsarautomation. Samma ritfunktion används för film och webbspelare.
+## Technology
 
-## Bygg webbspelaren
+- **JavaScript + HTML Canvas:** original mascots, meter, diagrams and animation in a pure scene-and-time drawing function.
+- **Anidoodle:** adapted deterministic film core, Apache-2.0.
+- **Helios 5.13.2:** frame timeline in both browser and export. Narration audio is the browser playback clock. Licence: ELv2.
+- **Java 17:** synthesises the original composition *Mätresan*: C major, 120 BPM, plucked notes, bass, gentle percussion and a final tonic bell. Music is reduced under speech and follows the English timing.
+- **Kokoro-82M:** local British English synthetic narration, `bf_emma`, at speed `0.96`. The model and voice archive hashes are documented in `vendor/VOICE-NOTICE.md`.
+- **Native Canvas + FFmpeg:** MP4 rendering from the same drawing code used by the web player.
+
+## Build the web player
 
 Node.js 20+:
 
@@ -34,49 +36,47 @@ npm run check
 npm run serve
 ```
 
-Öppna `http://localhost:8000`. Slutliga ljudfiler och exakt tidslinje är incheckade. Ingen extern taltjänst behövs för uppspelning eller videoexport. Gemensam sidnavigation hämtas från huvudwebbplatsens rot vid publicering.
+Open `http://localhost:8000`. Final audio and exact narration timings are checked in. The shared site navigation is loaded from the parent website when published.
 
-## Exportera MP4
+## Export an MP4
 
-Installera FFmpeg. Kör:
+Install FFmpeg, then run:
 
 ```sh
 npm run render
 ```
 
-Det skapar `build/Multimetern_ombord_SV.mp4`. Om den okomprimerade ljudmixen saknas bygger exporten den från de medföljande MP3-filerna. För en kort kontroll:
+This creates `build/Multimeter_Aboard_EN.mp4`. If the uncompressed mix is absent, the renderer rebuilds it from the included English MP3 tracks. For a short preview:
 
 ```sh
 node tools/render.mjs --start 0 --end 8 --out build/preview.mp4
 ```
 
-## Ändra manus och generera ny lokal röst
+## Edit the script and regenerate speech
 
-Redigera `src/content.mjs`. Installera Python 3.10+, `piper-tts==1.8.0` och `numpy`. Hämta röstens ONNX-fil och JSON-konfiguration från [Piper NST](https://huggingface.co/rhasspy/piper-voices/tree/main/sv/sv_SE/nst/medium). Modellen ingår inte i webbpaketet.
+Edit `src/content.mjs`. Install Python 3.10+, `kokoro-onnx==0.4.9` and `numpy`. Download `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the [v1.1 model-file release](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1), and verify the SHA-256 hashes in `vendor/VOICE-NOTICE.md`.
 
 ```sh
-npm run narrate -- --model /sokvag/sv_SE-nst-medium.onnx
+npm run narrate -- --model /path/kokoro-v1.0.onnx --voices /path/voices-v1.0.bin
 npm run score
 npm run build
 npm run check
 npm run render
 ```
 
-Java 17 krävs bara när musikfilen skapas på nytt. Manus överförs inte till en taltjänst. `src/timeline.json` innehåller scenlängder och undertextens verkliga syntestider. Syntesen cachelagrar ljud lokalt och de slutliga ljudfilerna gör vanlig export reproducerbar.
+Java 17 is needed only when regenerating the music. Speech is generated locally, cached by content and model hash, and timed from actual samples. `src/timeline.json` contains the resulting chapter, scene and caption timings. The script disables inference telemetry before runtime initialisation. The FP32 model adapter preserves the floating-point speaking rate.
 
-## Filer
+## Main files
 
-| Fil | Innehåll |
+| File | Purpose |
 |---|---|
-| `src/content.mjs` | Manus, kapitel och referenser till presentationen |
-| `src/draw.mjs` | Alla maskotar, figurer, symboler och animationer |
-| `src/film.mjs` | Anidoodle-kontrakt och renderingsfunktion |
-| `src/player.mjs` | Helios, ljudsynkronisering och spelarens kontroller |
-| `tools/narrate.py` | Lokal svensk talsyntes och undertexter |
-| `tools/score.mjs` | Komposition, noter och arrangemang |
-| `tools/MusicScore.java` | Ljudsyntes i Java |
-| `tools/render.mjs` | MP4-export |
-| `tools/check.mjs` | Täckning, matematik, tidslinje, textgränser och determinism |
-| `assets/score.csv` | Noter med MIDI-ton, bildruta, anslag och instrument |
+| `src/content.mjs` | English narration, chapters, examples and PowerPoint references |
+| `src/draw.mjs` | Original mascots, English labels, circuits and motion |
+| `src/player.mjs` | Helios timeline, audio synchronisation and controls |
+| `tools/narrate.py` | Local British English speech and timed captions |
+| `tools/score.mjs` | Original musical composition and arrangement |
+| `tools/MusicScore.java` | Java audio synthesiser |
+| `tools/render.mjs` | MP4 export |
+| `tools/check.mjs` | Slide coverage, calculations, timing, all caption bounds and determinism |
 
-Typsnittet DejaVu levereras lokalt för svenska tecken. Licenser och hänvisningar till återanvänd kod finns i `vendor`. Den egna figurvärlden och musikkompositionen använder inga stockbilder eller tredjepartslåtar.
+The local DejaVu fonts preserve the Sjöskolan name and technical symbols. Licences and source notices are in `vendor`. The earlier Swedish edition is preserved in Git history at commit `86b8357ddb42cc0a7987b483390dd880513909fd`.

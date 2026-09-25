@@ -1,142 +1,151 @@
 {
+  "language": "en-GB",
+  "title": "Multimeter Aboard",
   "fps": 30,
   "bpm": 120,
   "width": 1920,
   "height": 1080,
-  "duration": 891.5,
+  "duration": 817.5,
   "chapters": [
-    "Välkommen ombord",
-    "U, I och R",
-    "Lär känna instrumentet",
-    "Spänning",
-    "Ström",
-    "Resistans och kontinuitet",
-    "CAT och instrumentval",
-    "Upplösning och felgräns",
-    "Tolerans och protokoll",
-    "Belastningsfel",
-    "Strömmätarens påverkan",
-    "Din egen mätning"
+    "Welcome aboard",
+    "U, I and R",
+    "Know your instrument",
+    "Voltage",
+    "Current",
+    "Resistance and continuity",
+    "CAT and instrument selection",
+    "Resolution and error limits",
+    "Tolerance and records",
+    "Voltage loading",
+    "Ammeter loading",
+    "Your own measurement"
   ],
   "scenes": [
     {
       "id": "ombord",
       "chapter": 0,
-      "title": "Varför lyser inte hyttlampan?",
+      "title": "Why is the cabin lamp not working?",
       "visual": "intro",
       "slides": [
         1,
         2
       ],
-      "key": "En bra mätning börjar med en fråga.",
-      "say": "En mörk hyttlampa. Ska vi gissa, eller mäta? Följ kadetten Saga och Måsen genom Sjöskolans multimeterlabb. Vi tränar koppling, instrumentval och beräkningar. Till sist skriver vi ett resultat som nästa vakt kan förstå.",
-      "start": 0.0,
-      "duration": 19.0,
+      "key": "A good measurement starts with a question.",
+      "say": "A cabin lamp has gone dark. Shall we guess, or measure? Join cadet Saga and the Gull in the multimeter lab. We will practise connections, instrument selection and calculations. Finally, we will record a result that the next watch can understand.",
+      "start": 0,
+      "duration": 17,
       "voiceStart": 0.5,
-      "voiceDuration": 17.460317460317462
+      "voiceDuration": 15.222666666666667,
+      "cues": {}
     },
     {
       "id": "voltbegrepp",
       "chapter": 1,
-      "title": "Spänning jämför två punkter",
+      "title": "Voltage compares two points",
       "visual": "quantity",
       "slides": [
         3,
         4
       ],
-      "key": "U mäts i volt, V.",
-      "say": "Spänning är skillnaden i elektrisk potential mellan två punkter. Symbolen är U och enheten volt. Mätaren jämför den röda spetsens punkt med den svarta. Därför behöver en spänningsmätning alltid två mätpunkter.",
+      "key": "U is measured in volts, V.",
+      "say": "Voltage is the difference in electrical potential between two points. In this course, its symbol is the letter U, and its unit is the volt. The meter compares the point at the red probe with the point at the black probe. A voltage measurement therefore always needs two measurement points.",
       "quantity": "U",
-      "start": 19.0,
-      "duration": 17.5,
-      "voiceStart": 19.5,
-      "voiceDuration": 15.73297052154195
+      "start": 17,
+      "duration": 18,
+      "voiceStart": 17.5,
+      "voiceDuration": 16.410666666666668,
+      "cues": {}
     },
     {
       "id": "amperebegrepp",
       "chapter": 1,
-      "title": "Ström passerar genom en gren",
+      "title": "Current flows through a branch",
       "visual": "quantity",
       "slides": [
         3,
         4
       ],
-      "key": "I mäts i ampere, A.",
-      "say": "Ström beskriver hur mycket elektrisk laddning som passerar per sekund. Symbolen är I och enheten ampere. För att mäta ström måste grenens ström gå genom instrumentet. De rörliga markeringarna visar strömriktningen i vår modell, inte laddningarnas verkliga hastighet.",
+      "key": "I is measured in amperes, A.",
+      "say": "Current describes how much electric charge passes a point each second. Its symbol is the letter I, and its unit is the ampere. To measure current, the current in that branch must pass through the instrument. The moving dots show the current direction in our model, not the actual speed of the charges.",
       "quantity": "I",
-      "start": 36.5,
-      "duration": 20.5,
-      "voiceStart": 37.0,
-      "voiceDuration": 18.64707482993197
+      "start": 35,
+      "duration": 18.5,
+      "voiceStart": 35.5,
+      "voiceDuration": 16.794666666666668,
+      "cues": {}
     },
     {
       "id": "ohmbegrepp",
       "chapter": 1,
-      "title": "Resistans begränsar strömmen",
+      "title": "Resistance limits the current",
       "visual": "quantity",
       "slides": [
         3,
         4
       ],
-      "key": "R mäts i ohm, Ω.  U = R · I",
-      "say": "Resistans beskriver motstånd mot ström. Symbolen är R och enheten ohm. För en resistiv last gäller Ohms lag. Tolv volt över hundratjugo ohm ger noll komma ett ampere. Lampan behandlas här som ett konstant motstånd. En verklig lampa kan ändra resistans med temperaturen.",
+      "key": "R is measured in ohms, Ω.  U = R · I",
+      "say": "Resistance describes opposition to current. Its symbol is the letter R, and its unit is the ohm. For a resistive load, we use Ohm's law. Twelve volts across one hundred and twenty ohms gives zero point one amperes. Here, we treat the lamp as a constant resistance. A real lamp's resistance can change with temperature.",
       "quantity": "R",
-      "start": 57.0,
-      "duration": 23.0,
-      "voiceStart": 57.5,
-      "voiceDuration": 21.219410430839
+      "start": 53.5,
+      "duration": 21.5,
+      "voiceStart": 54,
+      "voiceDuration": 19.64533333333333,
+      "cues": {}
     },
     {
       "id": "rigg",
       "chapter": 2,
-      "title": "Vår strömbegränsade 12 V-rigg",
+      "title": "Our current-limited 12 V training circuit",
       "visual": "rig",
       "slides": [
         5,
         6
       ],
-      "key": "F1: säkring   S1: brytare   H1: lampa",
-      "say": "Här finns en tolvvoltskälla med skyddande avskiljning och strömbegränsning. F ett är säkringen, S ett brytaren och H ett hyttlampan. P ett och P två är lampans anslutningar. Returen går tillbaka till källan. Praktisk inkoppling görs vid handledd laboration.",
-      "start": 80.0,
+      "key": "F1: fuse   S1: switch   H1: lamp",
+      "say": "This is a twelve-volt source with protective electrical separation and current limiting. F one is the fuse, S one the switch, and H one the cabin lamp. P one and P two are the lamp terminals. The return conductor leads back to the source. Practical connections are made during a supervised laboratory session.",
+      "start": 75,
       "duration": 20.5,
-      "voiceStart": 80.5,
-      "voiceDuration": 18.772244897959187
+      "voiceStart": 75.5,
+      "voiceDuration": 18.550666666666668,
+      "cues": {}
     },
     {
       "id": "instrument",
       "chapter": 2,
-      "title": "Vred, display och uttag",
+      "title": "Selector, display and sockets",
       "visual": "meter",
       "slides": [
         7,
         8
       ],
-      "key": "Funktion och uttag måste stämma överens.",
-      "say": "Vredet väljer funktionen. Displayen visar tal, enhet och mätläge. Likspänning heter D C, växelspänning A C. Svart ledning sitter i COM. Röd sitter i volt och ohm, eller i rätt strömingång. Autorange väljer mätområde, men du väljer fortfarande funktion och uttag.",
-      "start": 100.5,
-      "duration": 23.0,
-      "voiceStart": 101.0,
-      "voiceDuration": 21.39356009070295
+      "key": "The function and sockets must agree.",
+      "say": "The rotary selector chooses the function. The display shows the number, unit and measurement mode. D C means direct current, and A C means alternating current. The black lead goes into COM. The red lead goes into volts and ohms, or the appropriate current socket. Autoranging selects the range, but you still choose the function and sockets.",
+      "start": 95.5,
+      "duration": 23,
+      "voiceStart": 96,
+      "voiceDuration": 21.309333333333335,
+      "cues": {}
     },
     {
       "id": "forkontroll",
       "chapter": 2,
-      "title": "Kontroll före anslutning",
+      "title": "Check before connecting",
       "visual": "check",
       "slides": [
         9
       ],
-      "key": "Fråga → kontroll → koppling → avläsning",
-      "say": "Vad ska mätas, mellan vilka punkter och ungefär hur mycket? Kontrollera hela sladdar, mätspetsar och instrument. Välj rätt funktion, uttag och område. Kontrollera kopplingen innan matningen slås på. I vår rigg sker omkoppling alltid med matningen frånkopplad.",
-      "start": 123.5,
-      "duration": 21.5,
-      "voiceStart": 124.0,
-      "voiceDuration": 19.73587301587302
+      "key": "Question → check → connect → read",
+      "say": "What are you measuring, between which points, and approximately how much do you expect? Inspect the leads, probes and instrument for damage. Select the correct function, sockets and range. Check the connections before switching on the supply. In our training circuit, always disconnect the supply before changing connections.",
+      "start": 118.5,
+      "duration": 20,
+      "voiceStart": 119,
+      "voiceDuration": 18.38,
+      "cues": {}
     },
     {
       "id": "voltforkoppling",
       "chapter": 3,
-      "title": "Spänning: koppla med matningen av",
+      "title": "Voltage: connect with the supply off",
       "visual": "voltage",
       "slides": [
         10,
@@ -144,263 +153,290 @@
         12,
         13
       ],
-      "key": "Svart: COM till P2. Röd: VΩ till P1.",
-      "say": "Vi vill mäta över lampan. Med matningen frånkopplad väljer Saga volt likspänning. Svart går från COM till P två. Röd går från voltuttaget till P ett. Lampans strömväg är obruten. Mätaren ligger parallellt med lampan. COM betyder inte automatiskt jord.",
+      "key": "Black: COM to P2. Red: VΩ to P1.",
+      "say": "We want to measure across the lamp. With the supply disconnected, Saga selects D C volts. The black lead connects COM to P two. The red lead connects the voltage socket to P one. The lamp's current path remains complete. The meter is connected in parallel with the lamp. COM does not automatically mean earth.",
       "powered": false,
-      "start": 145.0,
-      "duration": 22.5,
-      "voiceStart": 145.5,
-      "voiceDuration": 20.555102040816326
+      "start": 138.5,
+      "duration": 21.5,
+      "voiceStart": 139,
+      "voiceDuration": 19.758666666666667,
+      "cues": {}
     },
     {
       "id": "voltavlasning",
       "chapter": 3,
-      "title": "Spänning: läs tal, enhet och läge",
+      "title": "Voltage: read the value, unit and mode",
       "visual": "voltage",
       "slides": [
         14,
         16
       ],
-      "key": "12,00 V DC. Mätaren ligger parallellt.",
-      "say": "När kopplingen är kontrollerad slår vi på riggens matning. Modellen visar tolv komma noll noll volt likspänning. Voltmeterns höga ingångsresistans gör att bara en liten ström går genom mätaren. Vi återkommer till varför även den lilla strömmen kan påverka resultatet.",
+      "key": "12.00 V DC. The meter is connected in parallel.",
+      "say": "After checking the connections, we switch on the training circuit. The model reads twelve point zero zero volts D C. The voltmeter has a high input resistance, so only a small current flows through it. Later, we will see why even that small current can affect the result.",
       "powered": true,
-      "start": 167.5,
-      "duration": 22.0,
-      "voiceStart": 168.0,
-      "voiceDuration": 20.156371882086166
+      "start": 160,
+      "duration": 17.5,
+      "voiceStart": 160.5,
+      "voiceDuration": 15.600000000000001,
+      "cues": {}
     },
     {
       "id": "polaritet",
       "chapter": 3,
-      "title": "Omvänd polaritet ger minustecken",
+      "title": "Reversing polarity gives a minus sign",
       "visual": "voltage",
       "slides": [
         15
       ],
-      "key": "−12,00 V: samma belopp, omvänd jämförelse.",
-      "say": "Vi bryter först matningen och byter plats på spetsarna. Efter kontroll slås matningen på igen. Nu visar instrumentet minus tolv volt. Spänningens belopp är detsamma. Minustecknet visar att den röda punkten ligger på lägre potential än den svarta.",
+      "key": "−12.00 V: the same magnitude, with the comparison reversed.",
+      "say": "First, we disconnect the supply and swap the probe positions. After checking, we switch the supply on again. The meter now reads minus twelve volts. The magnitude is unchanged. The minus sign tells us that the red probe is at a lower potential than the black probe.",
       "powered": true,
       "reversed": true,
-      "start": 189.5,
-      "duration": 21.0,
-      "voiceStart": 190.0,
-      "voiceDuration": 19.480453514739228
+      "start": 177.5,
+      "duration": 17.5,
+      "voiceStart": 178,
+      "voiceDuration": 15.990666666666666,
+      "cues": {}
     },
     {
       "id": "stromkoppling",
       "chapter": 4,
-      "title": "Ström: öppna och fyll strömvägen",
+      "title": "Current: open the path and bridge the gap",
       "visual": "current",
       "slides": [
         17,
         18,
         19
       ],
-      "key": "Matning AV. Mätaren kopplas i serie.",
-      "say": "Nu vill vi mäta lampans ström. Bryt matningen och öppna länken mellan K ett och K två. Välj ampere likström och en strömingång med rätt gränser enligt manualen. Röd ansluts till K ett och svart COM till K två. Mätaren fyller öppningen.",
+      "key": "Supply OFF. Connect the meter in series.",
+      "say": "Now we want to measure the lamp current. Disconnect the supply and open the link between K one and K two. Select D C amperes and a current socket with suitable limits, as specified in the manual. Connect red to K one, and black COM to K two. The meter bridges the gap.",
       "powered": false,
-      "start": 210.5,
-      "duration": 21.5,
-      "voiceStart": 211.0,
-      "voiceDuration": 19.573333333333334
+      "start": 195,
+      "duration": 19,
+      "voiceStart": 195.5,
+      "voiceDuration": 17.377333333333333,
+      "cues": {}
     },
     {
       "id": "stromavlasning",
       "chapter": 4,
-      "title": "All lampström går genom mätaren",
+      "title": "All lamp current passes through the meter",
       "visual": "current",
       "slides": [
         20
       ],
-      "key": "I = 12 V / 120 Ω = 0,10 A",
-      "say": "Efter handledarens kontroll slås matningen på. All ström i lampgrenen går nu genom mätaren. Vår förenklade modell visar noll komma ett ampere, alltså hundra milliampere. Anteckna den verkliga avläsningen med enhet. Instrumentets säkring, tidsgräns och strömgräns måste följas.",
+      "key": "I = 12 V / 120 Ω = 0.10 A",
+      "say": "After the instructor has checked the connections, switch on the supply. All the current in the lamp branch now passes through the meter. Our simplified model reads zero point one amperes, or one hundred milliamperes. Record the actual reading with its unit. Observe the instrument's fuse requirements, time limit and current limit.",
       "powered": true,
-      "start": 232.0,
-      "duration": 23.5,
-      "voiceStart": 232.5,
-      "voiceDuration": 21.663129251700678
+      "start": 214,
+      "duration": 21,
+      "voiceStart": 214.5,
+      "voiceDuration": 19.254666666666665,
+      "cues": {}
     },
     {
       "id": "aterstall",
       "chapter": 4,
-      "title": "Tillbaka till en säker grundinställning",
+      "title": "Return to a safe starting configuration",
       "visual": "restore",
       "slides": [
         21
       ],
-      "key": "Bryt matningen. Röd ledning tillbaka till VΩ.",
-      "say": "Efter strömmätningen bryter vi matningen. Ta bort mätaren och återställ länken i kretsen. Flytta den röda ledningen tillbaka till volt och ohm. Den vanan minskar risken att nästa spänningsmätning börjar med en farlig felkoppling.",
-      "start": 255.5,
-      "duration": 18.0,
-      "voiceStart": 256.0,
-      "voiceDuration": 16.174149659863946
+      "key": "Disconnect the supply. Move red back to VΩ.",
+      "say": "After measuring current, disconnect the supply. Remove the meter and restore the link in the circuit. Move the red lead back to the volts and ohms socket. This habit reduces the risk of beginning the next voltage measurement with a dangerous connection.",
+      "start": 235,
+      "duration": 16,
+      "voiceStart": 235.5,
+      "voiceDuration": 14.405333333333337,
+      "cues": {
+        "restore": 6.486666666666679
+      }
     },
     {
       "id": "feluttag",
       "chapter": 4,
-      "title": "Pausa: vad är fel på mätaren?",
+      "title": "Pause: what is wrong with this setup?",
       "visual": "wrong",
       "slides": [
         22,
         23
       ],
-      "key": "V-läge + röd i A-uttaget = fel inför spänningsmätning.",
-      "say": "Måsen vill mäta spänning. Vredet står rätt, men den röda sladden sitter kvar i ampereuttaget. Vad måste ändras? Pausa gärna filmen. Strömingången har låg resistans och kan kortsluta en källa. Att bara vrida till volt gör inte det felaktiga uttaget säkert. Prova inte felkopplingen.",
+      "key": "V mode + red in the A socket = wrong setup for voltage.",
+      "say": "The Gull wants to measure voltage. The selector is correct, but the red lead is still in the ampere socket. What must change? Pause the film and decide. The current input has low resistance and can short-circuit a source. Simply turning the selector to volts does not make the wrong socket safe. Do not try this incorrect connection.",
       "pause": true,
-      "start": 273.5,
-      "duration": 24.5,
-      "voiceStart": 274.0,
-      "voiceDuration": 21.274920634920637
+      "start": 251,
+      "duration": 24,
+      "voiceStart": 251.5,
+      "voiceDuration": 20.505333333333333,
+      "cues": {
+        "answer": 10.574666666666644
+      }
     },
     {
       "id": "resistans",
       "chapter": 5,
-      "title": "Ohm: instrumentet skickar en testsignal",
+      "title": "Ohms: the meter supplies a test signal",
       "visual": "ohm",
       "slides": [
         24,
         25,
         26
       ],
-      "key": "Frånskild, kontrollerad och urladdad krets.",
-      "say": "Vid resistansmätning skickar mätaren själv en liten testsignal. Koppla bort matningen, kontrollera att spänningen är borta och hantera lagrad energi säkert. Isolera komponenten genom att lossa minst en anslutning. Med COM, volt och ohm, och vredet på ohm mäter vi tusen ohm, alltså ett kiloohm.",
-      "start": 298.0,
-      "duration": 23.0,
-      "voiceStart": 298.5,
-      "voiceDuration": 21.08517006802721
+      "key": "Isolate the circuit, verify it is dead, and discharge stored energy.",
+      "say": "For resistance measurements, the meter supplies its own small test signal. Disconnect the supply, verify that voltage is absent, and deal safely with stored energy. Isolate the component by disconnecting at least one terminal. With the leads in COM and volts and ohms, and the selector on ohms, we measure one thousand ohms: one kilohm.",
+      "start": 275,
+      "duration": 22,
+      "voiceStart": 275.5,
+      "voiceDuration": 20.4,
+      "cues": {}
     },
     {
       "id": "kontinuitet",
       "chapter": 5,
-      "title": "Summern hittar en ledande väg",
+      "title": "The buzzer identifies a conducting path",
       "visual": "continuity",
       "slides": [
         27,
         28,
         29
       ],
-      "key": "Låg resistans kan ge pip. Avbrott kan ge OL.",
-      "say": "Med frånskild och kontrollerad utrustning väljer vi summer. Testa först spetsarna mot varandra. Låg resistans ger normalt ett pip. En hel uttagen säkring ger också låg resistans. En bruten väg kan visa O L. Det kan även betyda för hög resistans. Ett pip bevisar aldrig spänningslöshet.",
-      "start": 321.0,
-      "duration": 25.5,
-      "voiceStart": 321.5,
-      "voiceDuration": 23.654965986394554
+      "key": "Low resistance may produce a beep. An open path may show OL.",
+      "say": "With the equipment isolated and verified dead, select continuity. First, touch the probe tips together. Low resistance normally produces a beep. An intact fuse, removed from the circuit, also has low resistance. An open path may display O L. This can also mean resistance above the range. A beep never proves that a circuit is dead.",
+      "start": 297,
+      "duration": 23.5,
+      "voiceStart": 297.5,
+      "voiceDuration": 21.870666666666665,
+      "cues": {
+        "fuse": 10.205333333333328,
+        "open": 14.457333333333338
+      }
     },
     {
       "id": "parallellohm",
       "chapter": 5,
-      "title": "Två vägar ändrar resistansvärdet",
+      "title": "Two paths change the resistance reading",
       "visual": "parallel",
       "slides": [
         30,
         31,
         32
       ],
-      "key": "1 kΩ parallellt med 1 kΩ = 500 Ω",
-      "say": "Två tusenohmsmotstånd sitter parallellt utan yttre matning. Mätarens testström får två vägar och instrumentet visar femhundra ohm. När en gren lossas återstår en väg och värdet blir tusen ohm. Därför kan en komponent mätas fel om andra strömvägar sitter kvar.",
-      "start": 346.5,
-      "duration": 21.5,
-      "voiceStart": 347.0,
-      "voiceDuration": 19.715192743764174
+      "key": "1 kΩ in parallel with 1 kΩ = 500 Ω",
+      "say": "Two one-thousand-ohm resistors are connected in parallel, with no external supply. The meter's test current has two paths, and the meter reads five hundred ohms. Disconnecting one branch leaves a single path, and the reading becomes one thousand ohms. Other connected paths can therefore distort a component's resistance measurement.",
+      "start": 320.5,
+      "duration": 21,
+      "voiceStart": 321,
+      "voiceDuration": 19.44,
+      "cues": {
+        "disconnect": 10.305333333333351
+      }
     },
     {
       "id": "transient",
       "chapter": 6,
-      "title": "CAT handlar om mätmiljöns påfrestningar",
+      "title": "CAT describes the measurement environment",
       "visual": "transient",
       "slides": [
         33
       ],
-      "key": "En kort spänningstopp kan starta ett farligt fel.",
-      "say": "En transient är en mycket kort spänningstopp, till exempel när en motor kopplas från. Om isoleringen bryts igenom kan matningen fortsätta driva en kortslutning och en farlig ljusbåge. CAT beskriver den mätmiljö som instrumentets skydd har provats för. Samma driftspänning kan kräva olika kategori.",
-      "start": 368.0,
-      "duration": 22.0,
-      "voiceStart": 368.5,
-      "voiceDuration": 20.435011337868485
+      "key": "A brief voltage spike can start a dangerous fault.",
+      "say": "A transient is a very brief voltage spike, for example when a motor is switched off. If insulation breaks down, the supply can continue feeding a short circuit and a dangerous arc. The CAT rating describes the measurement environment for which the instrument's protection has been tested. The same operating voltage can require different categories.",
+      "start": 341.5,
+      "duration": 22.5,
+      "voiceStart": 342,
+      "voiceDuration": 20.890666666666664,
+      "cues": {}
     },
     {
       "id": "katkarta",
       "chapter": 6,
-      "title": "Från apparat till inkommande matning",
+      "title": "From appliances to the incoming supply",
       "visual": "categories",
       "slides": [
         34
       ],
-      "key": "CAT II: apparat. CAT III: fast installation. CAT IV: servis.",
-      "say": "CAT två gäller exempelvis stickproppsanslutna apparater på förbrukarsidan. CAT tre gäller fast installation, centraler och fast anslutna motorer, även enfas. CAT fyra gäller lågspänningsinstallationens matningspunkt. Det betyder inte alla ledningar utomhus. Äldre CAT ett avser kretsar utan direkt nätanslutning. Kontrollera deras särskilda gränser i manualen.",
-      "start": 390.0,
-      "duration": 30.5,
-      "voiceStart": 390.5,
-      "voiceDuration": 28.696235827664403
+      "key": "CAT II: appliances. CAT III: fixed installation. CAT IV: supply origin.",
+      "say": "Category two includes plug-connected appliances on the load side. Category three covers fixed installations, distribution boards and fixed motors, including single-phase systems. Category four covers the origin of the low-voltage installation. It does not mean every outdoor wire. The older category one refers to circuits without a direct mains connection. Check their particular limits in the manual.",
+      "start": 364,
+      "duration": 26.5,
+      "voiceStart": 364.5,
+      "voiceDuration": 24.914666666666665,
+      "cues": {}
     },
     {
       "id": "katvolt",
       "chapter": 6,
-      "title": "Läs både kategori och märkspänning",
+      "title": "Read both the category and voltage rating",
       "visual": "ratings",
       "slides": [
         35
       ],
-      "key": "CAT III 1 000 V / CAT IV 600 V kan stå på samma mätare.",
-      "say": "Kan en CAT två-mätare ha högre voltal än en CAT fyra-mätare? Ja. Men ett högre voltal ersätter aldrig rätt kategori. Samma instrument kan ha flera märkningar. Högre kategori kräver inte automatiskt lägre märkspänning. Kontrollera spänningen till jord, mellan uttagen och gränserna för den valda funktionen.",
-      "start": 420.5,
+      "key": "One meter may carry CAT III 1 000 V / CAT IV 600 V.",
+      "say": "Can a category two meter have a higher voltage rating than a category four meter? Yes. But a higher voltage rating never substitutes for the required category. One instrument can have several ratings. A higher category does not automatically require a lower rated voltage. Check voltage to earth, voltage between sockets, and the limits of the selected function.",
+      "start": 390.5,
       "duration": 24.5,
-      "voiceStart": 421.0,
-      "voiceDuration": 22.693877551020407
+      "voiceStart": 391,
+      "voiceDuration": 22.717333333333332,
+      "cues": {}
     },
     {
       "id": "katimpuls",
       "chapter": 6,
-      "title": "Provimpuls är inte tillåten mätspänning",
+      "title": "Test impulse is not a permitted measuring voltage",
       "visual": "impulse",
       "slides": [
         36
       ],
-      "key": "Samma provspänning kan innebära olika provström.",
-      "say": "I tabellens exempel provas CAT två, tusen volt, och CAT tre, sexhundra volt, med sex tusen volts korta impulser. Men provkällans resistans är tolv respektive två ohm. Lägre resistans kan ge större ström. CAT fyra, sexhundra volt, provas här med åtta tusen volt. Detta är provvärden, aldrig tillåtna kontinuerliga mätspänningar.",
-      "start": 445.0,
-      "duration": 30.0,
-      "voiceStart": 445.5,
-      "voiceDuration": 28.489795918367346
+      "key": "The same test voltage can produce different test currents.",
+      "say": "In this example, category two at one thousand volts and category three at six hundred volts are tested with brief six-thousand-volt impulses. But the test-source resistances are twelve ohms and two ohms respectively. Lower resistance can deliver more current. Category four at six hundred volts is tested here at eight thousand volts. These are test values, never permissible continuous measuring voltages.",
+      "start": 415,
+      "duration": 26.5,
+      "voiceStart": 415.5,
+      "voiceDuration": 24.609333333333332,
+      "cues": {}
     },
     {
       "id": "katval",
       "chapter": 6,
-      "title": "Pausa: vilket instrument uppfyller kravet?",
+      "title": "Pause: which meter meets the requirement?",
       "visual": "choose",
       "slides": [
         37,
         38,
         39
       ],
-      "key": "Krav: CAT III 600 V. Kontrollera även sladdar och spetsar.",
-      "say": "Arbetsplanen kräver CAT tre, sexhundra volt. A är CAT två, tusen volt. B är CAT tre, sexhundra volt. Vilket väljer du? B uppfyller båda delarna. Hela mätutrustningen måste klara kravet. En CAT fyra-mätare med CAT två-spetsar räcker inte. Även borttagna spetsskydd kan ändra märkningen. Läs manualen.",
+      "key": "Required: CAT III 600 V. Check the leads and probes too.",
+      "say": "The work plan requires category three, six hundred volts. Meter A is category two, one thousand volts. Meter B is category three, six hundred volts. Which do you choose? B meets both requirements. The entire measuring system must meet them. A category four meter with category two probes is not sufficient. Removing probe-tip covers may also change the rating. Read the manual.",
       "pause": true,
-      "start": 475.0,
-      "duration": 31.0,
-      "voiceStart": 475.5,
-      "voiceDuration": 27.643718820861682
+      "start": 441.5,
+      "duration": 28,
+      "voiceStart": 442,
+      "voiceDuration": 24.998666666666665,
+      "cues": {
+        "answer": 12.110666666666646
+      }
     },
     {
       "id": "upplosning",
       "chapter": 7,
-      "title": "Fler siffror är inte samma sak som mindre fel",
+      "title": "More digits do not necessarily mean less error",
       "visual": "resolution",
       "slides": [
         41,
         42
       ],
-      "key": "12,00 → 12,01 V: ett steg är 0,01 V.",
-      "say": "Upplösning är det minsta steget på skärmen. Här är skillnaden mellan tolv komma noll noll och tolv komma noll ett volt en hundradels volt. Felgränsen beskriver instrumentets specificerade avvikelse under angivna villkor. Toleransen beskriver i stället vad utrustningen får ligga inom. Blanda inte ihop begreppen.",
-      "start": 506.0,
-      "duration": 26.0,
-      "voiceStart": 506.5,
-      "voiceDuration": 24.078004535147393
+      "key": "12.00 → 12.01 V: one count is 0.01 V.",
+      "say": "Resolution is the smallest step on the display. Here, the difference between twelve point zero zero and twelve point zero one volts is one hundredth of a volt. The error limit describes the instrument's specified deviation under stated conditions. Tolerance describes the range allowed for the equipment being tested. Keep these three concepts separate.",
+      "start": 469.5,
+      "duration": 23,
+      "voiceStart": 470,
+      "voiceDuration": 21.067999999999998,
+      "cues": {}
     },
     {
       "id": "fel12",
       "chapter": 7,
-      "title": "Felgräns: procentdel plus sifferdel",
+      "title": "Error limit: percentage plus counts",
       "visual": "accuracy",
       "slides": [
         43,
@@ -408,52 +444,55 @@
         45,
         46
       ],
-      "key": "12,00 V ±0,08 V ger 11,92–12,08 V.",
-      "say": "Anta specifikationen plus minus noll komma fem procent av visningen, plus två siffror. Ett steg är noll komma noll ett volt. Vid tolv volt blir procentdelen noll komma noll sex volt och sifferdelen noll komma noll två. Summan ger plus minus noll komma noll åtta volt. Intervallet gäller bara denna instrumentfelgräns.",
+      "key": "12.00 V ±0.08 V gives 11.92–12.08 V.",
+      "say": "Assume a specification of plus or minus zero point five per cent of the reading, plus two counts. One count is zero point zero one volts. At twelve volts, the percentage contribution is zero point zero six volts. The two counts contribute zero point zero two volts. Adding them gives plus or minus zero point zero eight volts. This interval covers only the stated instrument error limit.",
       "example": 12,
-      "start": 532.0,
+      "start": 492.5,
       "duration": 26.5,
-      "voiceStart": 532.5,
-      "voiceDuration": 24.971972789115647
+      "voiceStart": 493,
+      "voiceDuration": 24.850666666666662,
+      "cues": {}
     },
     {
       "id": "fel24",
       "chapter": 7,
-      "title": "Pausa och beräkna vid 24,00 V",
+      "title": "Pause and calculate at 24.00 V",
       "visual": "accuracy",
       "slides": [
         47,
         48
       ],
-      "key": "24,00 V ±0,14 V ger 23,86–24,14 V.",
-      "say": "Samma specifikation och upplösning, men nu visar skärmen tjugofyra volt. Pausa och räkna först. Procentdelen blir noll komma tolv volt. Två steg ger fortfarande noll komma noll två volt. Felgränsen blir plus minus noll komma fjorton volt. Intervallet går från tjugotre komma åttiosex till tjugofyra komma fjorton volt.",
+      "key": "24.00 V ±0.14 V gives 23.86–24.14 V.",
+      "say": "Use the same specification and resolution, but now the display reads twenty-four volts. Pause and calculate first. The percentage contribution is zero point one two volts. Two counts still contribute zero point zero two volts. The error limit is plus or minus zero point one four volts. The interval runs from twenty-three point eight six to twenty-four point one four volts.",
       "example": 24,
       "pause": true,
-      "start": 558.5,
-      "duration": 31.0,
-      "voiceStart": 559.0,
-      "voiceDuration": 27.60489795918367
+      "start": 519,
+      "duration": 27,
+      "voiceStart": 519.5,
+      "voiceDuration": 23.890666666666668,
+      "cues": {}
     },
     {
       "id": "fel8",
       "chapter": 7,
-      "title": "Ett annat instrument ger andra bidrag",
+      "title": "A different meter gives different contributions",
       "visual": "accuracy",
       "slides": [
         67
       ],
-      "key": "8,00 V ±0,11 V ger 7,89–8,11 V.",
-      "say": "I fördjupningsexemplet visar instrumentet åtta volt. Specifikationen är plus minus en procent, plus tre siffror, och upplösningen en hundradels volt. Bidragen blir noll komma noll åtta och noll komma noll tre volt. Summan är noll komma elva volt. Använd alltid specifikationen för det aktuella området.",
+      "key": "8.00 V ±0.11 V gives 7.89–8.11 V.",
+      "say": "In the extension example, the meter reads eight volts. Its specification is plus or minus one per cent, plus three counts, with a resolution of one hundredth of a volt. The contributions are zero point zero eight and zero point zero three volts. Their sum is zero point one one volts. Always use the specification for the actual range.",
       "example": 8,
-      "start": 589.5,
-      "duration": 25.5,
-      "voiceStart": 590.0,
-      "voiceDuration": 23.961904761904762
+      "start": 546,
+      "duration": 23,
+      "voiceStart": 546.5,
+      "voiceDuration": 21.26,
+      "cues": {}
     },
     {
       "id": "tolerans",
       "chapter": 8,
-      "title": "Ryms hela mätintervallet inom kravet?",
+      "title": "Does the whole interval fit within the limits?",
       "visual": "tolerance",
       "slides": [
         49,
@@ -461,49 +500,52 @@
         51,
         52
       ],
-      "key": "Krav 11,40–12,60 V. Mätintervall 11,40–11,60 V.",
-      "say": "Utrustningen kräver tolv volt plus minus fem procent. Fem procent är noll komma sex volt. Tillåtet område blir elva komma fyrtio till tolv komma sextio volt. Mätningen är elva komma femtio plus minus noll komma tio volt. Hela intervallet ryms. Här räknas gränsvärdena som tillåtna. Verkliga acceptansregler måste vara bestämda i förväg.",
-      "start": 615.0,
-      "duration": 29.0,
-      "voiceStart": 615.5,
-      "voiceDuration": 27.11473922902495
+      "key": "Required: 11.40–12.60 V. Measurement interval: 11.40–11.60 V.",
+      "say": "The equipment requires twelve volts, plus or minus five per cent. Five per cent is zero point six volts, giving an allowed range of eleven point four zero to twelve point six zero volts. Our measurement is eleven point five zero, plus or minus zero point one zero volts. The whole interval fits. This exercise includes the boundary values. In real work, acceptance rules must be agreed beforehand.",
+      "start": 569,
+      "duration": 27,
+      "voiceStart": 569.5,
+      "voiceDuration": 25.49066666666666,
+      "cues": {}
     },
     {
       "id": "protokoll",
       "chapter": 8,
-      "title": "Nästa vakt behöver mer än en siffra",
+      "title": "The next watch needs more than a number",
       "visual": "protocol",
       "slides": [
         53,
         54
       ],
-      "key": "Mätpunkter, drifttillstånd, instrument, resultat och slutsats.",
-      "say": "Anteckningen spänningen är elva komma åtta räcker inte. Skriv enhet, mätpunkter och drifttillstånd. Ange instrument, funktion, område, upplösning och relevant specifikation. Redovisa felgräns, krav och slutsats samt datum och utförare. Här visar vi fiktiva undervisningsdata. Verkliga uppgifter ska dokumenteras, aldrig gissas.",
-      "start": 644.0,
-      "duration": 28.5,
-      "voiceStart": 644.5,
-      "voiceDuration": 26.861859410430842
+      "key": "Record the points, operating state, instrument, result and conclusion.",
+      "say": "Writing 'the voltage is eleven point eight' is not enough. Record the unit, measurement points and operating state. Identify the instrument, function, range, resolution and relevant specification. Include the error limit, requirement and conclusion, together with the date and operator. This is fictional teaching data. Record real information in actual work; never guess it.",
+      "start": 596,
+      "duration": 25,
+      "voiceStart": 596.5,
+      "voiceDuration": 23.293333333333326,
+      "cues": {}
     },
     {
       "id": "delare",
       "chapter": 9,
-      "title": "Två lika motstånd delar 10 V lika",
+      "title": "Two equal resistors divide 10 V equally",
       "visual": "divider",
       "slides": [
         55
       ],
-      "key": "Utan mätare: U över R₂ = 5,000 V.",
-      "say": "Nu lämnar vi lampan och undersöker en givarmodell. Två motstånd på vardera en megaohm delar tio volt lika. Utan ansluten mätare blir spänningen över det nedre motståndet fem volt. Vad händer när en verklig voltmeter kopplas in?",
+      "key": "Without a meter: U across R₂ = 5.000 V.",
+      "say": "We now leave the lamp and examine a sensor model. Two resistors, each one megohm, divide ten volts equally. With no meter connected, the voltage across the lower resistor is five volts. What happens when a real voltmeter is connected?",
       "rm": 0,
-      "start": 672.5,
-      "duration": 18.5,
-      "voiceStart": 673.0,
-      "voiceDuration": 16.95201814058957
+      "start": 621,
+      "duration": 16.5,
+      "voiceStart": 621.5,
+      "voiceDuration": 14.725333333333335,
+      "cues": {}
     },
     {
       "id": "last10",
       "chapter": 9,
-      "title": "Mätaren skapar en extra strömväg",
+      "title": "The meter adds another current path",
       "visual": "divider",
       "slides": [
         56,
@@ -511,1309 +553,1324 @@
         58,
         59
       ],
-      "key": "Rₘ = 10 MΩ: beräknat 4,762 V, visning 4,76 V.",
-      "say": "Voltmeterns ingång på tio megaohm hamnar parallellt med det nedre motståndet. Parallellvärdet blir ungefär noll komma nio noll nio megaohm. Med spänningsdelarens formel får vi ungefär fyra komma sjuhundrasextiotvå volt. Med hundradels upplösning visas fyra komma sjuttiosex. Mätaren har ändrat spänningen som vi ville undersöka.",
+      "key": "Rₘ = 10 MΩ: calculated 4.762 V, displayed 4.76 V.",
+      "say": "The voltmeter's ten-megohm input is in parallel with the lower resistor. The equivalent parallel resistance is about zero point nine zero nine megohms. The voltage-divider equation then gives approximately four point seven six two volts. With a resolution of one hundredth, the display reads four point seven six. The meter has changed the voltage we wanted to investigate.",
       "rm": 10,
-      "start": 691.0,
-      "duration": 29.0,
-      "voiceStart": 691.5,
-      "voiceDuration": 27.003718820861675
+      "start": 637.5,
+      "duration": 25,
+      "voiceStart": 638,
+      "voiceDuration": 23.26533333333333,
+      "cues": {}
     },
     {
       "id": "last1",
       "chapter": 9,
-      "title": "Lägre ingångsresistans belastar mer här",
+      "title": "Lower input resistance causes more loading here",
       "visual": "divider",
       "slides": [
         60,
         61
       ],
-      "key": "Rₘ = 1 MΩ: beräknat 3,333 V, visning 3,33 V.",
-      "say": "Byt bara mätarens ingångsresistans till en megaohm. En megaohm parallellt med en megaohm blir en halv megaohm. Tio gånger en halv, delat med ett plus en halv, ger ungefär tre komma tre tre tre volt. Pausa gärna och kontrollera beräkningen.",
+      "key": "Rₘ = 1 MΩ: calculated 3.333 V, displayed 3.33 V.",
+      "say": "Change only the meter's input resistance to one megohm. One megohm in parallel with one megohm is half a megohm. Ten times one half, divided by one plus one half, gives approximately three point three three three volts. Pause and check the calculation.",
       "rm": 1,
       "pause": true,
-      "start": 720.0,
-      "duration": 22.0,
-      "voiceStart": 720.5,
-      "voiceDuration": 18.739954648526076
+      "start": 662.5,
+      "duration": 20,
+      "voiceStart": 663,
+      "voiceDuration": 16.581333333333333,
+      "cues": {}
     },
     {
       "id": "lastprocent",
       "chapter": 9,
-      "title": "Belastningsfelet jämförs med ursprungsvärdet",
+      "title": "Compare loading error with the original value",
       "visual": "loadingError",
       "slides": [
         62,
         63
       ],
-      "key": "(3,333 − 5,000) / 5,000 · 100 % ≈ −33,3 %",
-      "say": "Jämför med fem volt utan mätare. Skillnaden dividerad med ursprungsvärdet ger ungefär minus trettiotre komma tre procent. Minustecknet betyder lägre spänning. Stora resistanser i givarkretsen gör påverkan tydlig. Högre ingångsresistans belastar mindre i just denna modell. Belastningsfel är något annat än instrumentets egen felgräns.",
-      "start": 742.0,
-      "duration": 28.5,
-      "voiceStart": 742.5,
-      "voiceDuration": 26.89668934240363
+      "key": "(3.333 − 5.000) / 5.000 · 100 % ≈ −33.3 %",
+      "say": "Compare the result with the original five volts, without the meter. Divide the difference by the original value to obtain about minus thirty-three point three per cent. The minus sign means a lower voltage. Large resistances in the sensor circuit make the effect clear. Higher input resistance causes less loading in this model. Loading error is separate from the instrument's own error limit.",
+      "start": 682.5,
+      "duration": 24.5,
+      "voiceStart": 683,
+      "voiceDuration": 22.653333333333336,
+      "cues": {}
     },
     {
       "id": "last9",
       "chapter": 9,
-      "title": "Samma princip vid 9 V",
+      "title": "The same principle at 9 V",
       "visual": "divider",
       "slides": [
         68
       ],
-      "key": "R₁ = R₂ = Rₘ = 2 MΩ. 4,5 V blir 3,0 V.",
-      "say": "Fördjupning: källan är nio volt och alla tre resistanser är två megaohm. Utan mätare blir spänningen fyra komma fem volt. Den nedre parallellkopplingen blir en megaohm. Med mätaren ansluten får vi tre volt. Även här blir förändringen minus trettiotre komma tre procent.",
+      "key": "R₁ = R₂ = Rₘ = 2 MΩ. 4.5 V becomes 3.0 V.",
+      "say": "For the extension example, the source is nine volts and all three resistances are two megohms. Without the meter, the voltage is four point five volts. The lower parallel combination is one megohm. With the meter connected, we obtain three volts. Once again, the change is minus thirty-three point three per cent.",
       "rm": 2,
       "source": 9,
-      "start": 770.5,
-      "duration": 21.5,
-      "voiceStart": 771.0,
-      "voiceDuration": 19.840362811791383
+      "start": 707,
+      "duration": 21,
+      "voiceStart": 707.5,
+      "voiceDuration": 19.276000000000003,
+      "cues": {}
     },
     {
       "id": "burden",
       "chapter": 10,
-      "title": "Även amperemetern påverkar kretsen",
+      "title": "The ammeter also changes the circuit",
       "visual": "burden",
       "slides": [
         66
       ],
-      "key": "12 / 120 = 0,100 A. 12 / 121 ≈ 0,0992 A.",
-      "say": "Även strömmätaren förändrar kretsen. Med tolv volt och hundratjugo ohm blir strömmen noll komma ett ampere. Om mätaren tillför en ohm blir totalen hundratjugoen ohm och strömmen ungefär noll komma noll nio nio två ampere. Shunt och säkring orsakar spänningsfall. I manualer kallas detta ofta burden voltage.",
-      "start": 792.0,
-      "duration": 27.5,
-      "voiceStart": 792.5,
-      "voiceDuration": 25.796281179138322
+      "key": "12 / 120 = 0.100 A. 12 / 121 ≈ 0.0992 A.",
+      "say": "An ammeter also changes the circuit. Twelve volts across one hundred and twenty ohms gives zero point one amperes. If the meter adds one ohm, the total becomes one hundred and twenty-one ohms. Current falls to about zero point zero nine nine two amperes. The shunt and fuse cause a voltage drop. Instrument manuals often call this burden voltage.",
+      "start": 728,
+      "duration": 24,
+      "voiceStart": 728.5,
+      "voiceDuration": 22.119999999999997,
+      "cues": {}
     },
     {
       "id": "repetition",
       "chapter": 11,
-      "title": "Förklara kopplingen innan du mäter",
+      "title": "Explain the connection before measuring",
       "visual": "recap",
       "slides": [
         4,
         40,
         64
       ],
-      "key": "V parallellt. A i serie. Ω och summer utan yttre matning.",
-      "say": "Varför mäts volt parallellt och ampere i serie? Varför måste resistans mätas i en frånskild krets? Förklara med ett schema. Skilj på upplösning, felgräns, tolerans och belastningsfel. Rätt kategori och spänning skyddar mätningen, men gör inte avläsningen mer noggrann.",
-      "start": 819.5,
-      "duration": 22.0,
-      "voiceStart": 820.0,
-      "voiceDuration": 20.153832199546486
+      "key": "V in parallel. A in series. Ω and continuity with no external supply.",
+      "say": "Why do we measure volts in parallel and amperes in series? Why must resistance be measured in an isolated circuit? Explain using a diagram. Distinguish resolution, error limit, tolerance and loading error. The correct category and voltage rating provide protection for the measurement environment, but they do not make the reading more accurate.",
+      "start": 752,
+      "duration": 22,
+      "voiceStart": 752.5,
+      "voiceDuration": 20.129333333333335,
+      "cues": {}
     },
     {
       "id": "egetarbete",
       "chapter": 11,
-      "title": "Din tur i Multimeterlabbet",
+      "title": "Your turn in the Multimeter Lab",
       "visual": "outro",
       "slides": [
         2,
         64,
         65
       ],
-      "key": "Förutsäg. Koppla. Läs av. Förklara. Dokumentera.",
-      "say": "Nu har Saga och Måsen ett arbetssätt i stället för en gissning. Öppna Multimeterlabbet, förutsäg värdet och välj funktion och uttag. Koppla, läs av och förklara. Rita sedan en korrekt mätkoppling och skriv ett kort protokoll. Följ kursens inlämningsanvisning och lärarens instruktioner vid praktisk laboration.",
-      "start": 841.5,
-      "duration": 24.5,
-      "voiceStart": 842.0,
-      "voiceDuration": 22.510657596371882
+      "key": "Predict. Connect. Read. Explain. Record.",
+      "say": "Saga and the Gull now have a method instead of a guess. Open the Multimeter Lab, predict the value, and select the function and sockets. Connect, read and explain. Then draw the correct measurement circuit and write a short record. Follow the course submission instructions and the instructor's directions during practical laboratory work.",
+      "start": 774,
+      "duration": 21,
+      "voiceStart": 774.5,
+      "voiceDuration": 19.44666666666667,
+      "cues": {}
     },
     {
       "id": "kallor",
       "chapter": 11,
-      "title": "Fortsätt med presentationen och manualen",
+      "title": "Continue with the presentation and manual",
       "visual": "credits",
       "slides": [
         69,
         70
       ],
-      "key": "Sjöskolan · Multimeter och mätfel",
-      "say": "Filmen kompletterar presentationen Multimeter och mätfel. Källor och fler svenska filmer finns i presentationen och under filmspelaren. Instrumentet här är en förenklad undervisningsmodell. Vid praktiskt arbete gäller det verkliga instrumentets manual och arbetets säkerhetsrutiner. Tack för att du följde med ombord!",
-      "start": 866.0,
-      "duration": 25.5,
-      "voiceStart": 866.5,
-      "voiceDuration": 23.590385487528344
+      "key": "Sjöskolan · Multimeters and measurement errors",
+      "say": "This film complements the presentation on multimeters and measurement errors. References and additional Swedish videos are listed in the presentation and below this player. The instrument shown here is a simplified teaching model. For practical work, follow the actual instrument manual and the relevant safety procedures. Thank you for joining us aboard.",
+      "start": 795,
+      "duration": 22.5,
+      "voiceStart": 795.5,
+      "voiceDuration": 20.918666666666667,
+      "cues": {}
     }
   ],
   "captions": [
     {
       "start": 0.5,
-      "end": 2.2182766439909294,
-      "text": "En mörk hyttlampa.",
+      "end": 2.42,
+      "text": "A cabin lamp has gone dark.",
       "scene": "ombord"
     },
     {
-      "start": 2.3782766439909295,
-      "end": 4.340362811791383,
-      "text": "Ska vi gissa, eller mäta?",
+      "start": 2.64,
+      "end": 4.261333333333333,
+      "text": "Shall we guess, or measure?",
       "scene": "ombord"
     },
     {
-      "start": 4.500362811791383,
-      "end": 9.353333333333333,
-      "text": "Följ kadetten Saga och Måsen genom Sjöskolans multimeterlabb.",
+      "start": 4.481333333333333,
+      "end": 7.681333333333333,
+      "text": "Join cadet Saga and the Gull in the multimeter lab.",
       "scene": "ombord"
     },
     {
-      "start": 9.513333333333334,
-      "end": 13.437505668934241,
-      "text": "Vi tränar koppling, instrumentval och beräkningar.",
+      "start": 7.901333333333333,
+      "end": 11.719999999999999,
+      "text": "We will practise connections, instrument selection and calculations.",
       "scene": "ombord"
     },
     {
-      "start": 13.597505668934241,
-      "end": 17.800317460317462,
-      "text": "Till sist skriver vi ett resultat som nästa vakt kan förstå.",
+      "start": 11.94,
+      "end": 15.502666666666666,
+      "text": "Finally, we will record a result that the next watch can understand.",
       "scene": "ombord"
     },
     {
-      "start": 19.5,
-      "end": 23.911791383219956,
-      "text": "Spänning är skillnaden i elektrisk potential mellan två punkter.",
+      "start": 17.5,
+      "end": 21.404,
+      "text": "Voltage is the difference in electrical potential between two points.",
       "scene": "voltbegrepp"
     },
     {
-      "start": 24.071791383219953,
-      "end": 26.6956462585034,
-      "text": "Symbolen är U och enheten volt.",
+      "start": 21.624,
+      "end": 25.570666666666664,
+      "text": "In this course, its symbol is the letter U, and its unit is the volt.",
       "scene": "voltbegrepp"
     },
     {
-      "start": 26.855646258503402,
-      "end": 31.035238095238096,
-      "text": "Mätaren jämför den röda spetsens punkt med den svarta.",
+      "start": 25.790666666666667,
+      "end": 29.950666666666667,
+      "text": "The meter compares the point at the red probe with the point at the black probe.",
       "scene": "voltbegrepp"
     },
     {
-      "start": 31.195238095238096,
-      "end": 35.072970521541954,
-      "text": "Därför behöver en spänningsmätning alltid två mätpunkter.",
+      "start": 30.17066666666667,
+      "end": 33.69066666666667,
+      "text": "A voltage measurement therefore always needs two measurement points.",
       "scene": "voltbegrepp"
     },
     {
-      "start": 37.0,
-      "end": 41.5859410430839,
-      "text": "Ström beskriver hur mycket elektrisk laddning som passerar per sekund.",
+      "start": 35.5,
+      "end": 39.382666666666665,
+      "text": "Current describes how much electric charge passes a point each second.",
       "scene": "amperebegrepp"
     },
     {
-      "start": 41.7459410430839,
-      "end": 44.47428571428571,
-      "text": "Symbolen är I och enheten ampere.",
+      "start": 39.602666666666664,
+      "end": 42.93066666666667,
+      "text": "Its symbol is the letter I, and its unit is the ampere.",
       "scene": "amperebegrepp"
     },
     {
-      "start": 44.63428571428571,
-      "end": 49.40598639455782,
-      "text": "För att mäta ström måste grenens ström gå genom instrumentet.",
+      "start": 43.150666666666666,
+      "end": 46.86266666666667,
+      "text": "To measure current, the current in that branch must pass through the instrument.",
       "scene": "amperebegrepp"
     },
     {
-      "start": 49.565986394557825,
-      "end": 55.48707482993198,
-      "text": "De rörliga markeringarna visar strömriktningen i vår modell, inte laddningarnas verkliga hastighet.",
+      "start": 47.08266666666667,
+      "end": 52.074666666666666,
+      "text": "The moving dots show the current direction in our model, not the actual speed of the charges.",
       "scene": "amperebegrepp"
     },
     {
-      "start": 57.5,
-      "end": 60.5766439909297,
-      "text": "Resistans beskriver motstånd mot ström.",
+      "start": 54,
+      "end": 56.602666666666664,
+      "text": "Resistance describes opposition to current.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 60.73664399092971,
-      "end": 63.27922902494331,
-      "text": "Symbolen är R och enheten ohm.",
+      "start": 56.82266666666666,
+      "end": 59.894666666666666,
+      "text": "Its symbol is the letter R, and its unit is the ohm.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 63.43922902494331,
-      "end": 66.22562358276643,
-      "text": "För en resistiv last gäller Ohms lag.",
+      "start": 60.114666666666665,
+      "end": 62.46133333333333,
+      "text": "For a resistive load, we use Ohm's law.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 66.38562358276644,
-      "end": 70.84385487528345,
-      "text": "Tolv volt över hundratjugo ohm ger noll komma ett ampere.",
+      "start": 62.681333333333335,
+      "end": 67.28933333333333,
+      "text": "Twelve volts across one hundred and twenty ohms gives zero point one amperes.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 71.00385487528345,
-      "end": 74.382358276644,
-      "text": "Lampan behandlas här som ett konstant motstånd.",
+      "start": 67.50933333333333,
+      "end": 70.19733333333333,
+      "text": "Here, we treat the lamp as a constant resistance.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 74.542358276644,
-      "end": 78.55941043083901,
-      "text": "En verklig lampa kan ändra resistans med temperaturen.",
+      "start": 70.41733333333333,
+      "end": 73.42533333333333,
+      "text": "A real lamp's resistance can change with temperature.",
       "scene": "ohmbegrepp"
     },
     {
-      "start": 80.5,
-      "end": 85.70126984126983,
-      "text": "Här finns en tolvvoltskälla med skyddande avskiljning och strömbegränsning.",
+      "start": 75.5,
+      "end": 80.428,
+      "text": "This is a twelve-volt source with protective electrical separation and current limiting.",
       "scene": "rigg"
     },
     {
-      "start": 85.86126984126984,
-      "end": 89.78544217687075,
-      "text": "F ett är säkringen, S ett brytaren och H ett hyttlampan.",
+      "start": 80.648,
+      "end": 84.36,
+      "text": "F one is the fuse, S one the switch, and H one the cabin lamp.",
       "scene": "rigg"
     },
     {
-      "start": 89.94544217687076,
-      "end": 92.7898866213152,
-      "text": "P ett och P två är lampans anslutningar.",
+      "start": 84.58,
+      "end": 87.16133333333333,
+      "text": "P one and P two are the lamp terminals.",
       "scene": "rigg"
     },
     {
-      "start": 92.94988662131519,
-      "end": 95.39959183673469,
-      "text": "Returen går tillbaka till källan.",
+      "start": 87.38133333333333,
+      "end": 89.89866666666666,
+      "text": "The return conductor leads back to the source.",
       "scene": "rigg"
     },
     {
-      "start": 95.5595918367347,
-      "end": 99.11224489795919,
-      "text": "Praktisk inkoppling görs vid handledd laboration.",
+      "start": 90.11866666666667,
+      "end": 93.83066666666667,
+      "text": "Practical connections are made during a supervised laboratory session.",
       "scene": "rigg"
     },
     {
-      "start": 101.0,
-      "end": 103.19428571428571,
-      "text": "Vredet väljer funktionen.",
+      "start": 96,
+      "end": 98.38933333333334,
+      "text": "The rotary selector chooses the function.",
       "scene": "instrument"
     },
     {
-      "start": 103.35428571428571,
-      "end": 106.72117913832199,
-      "text": "Displayen visar tal, enhet och mätläge.",
+      "start": 98.60933333333334,
+      "end": 101.55333333333334,
+      "text": "The display shows the number, unit and measurement mode.",
       "scene": "instrument"
     },
     {
-      "start": 106.881179138322,
-      "end": 109.94621315192744,
-      "text": "Likspänning heter D C, växelspänning A C.",
+      "start": 101.77333333333334,
+      "end": 105.80533333333334,
+      "text": "D C means direct current, and A C means alternating current.",
       "scene": "instrument"
     },
     {
-      "start": 110.10621315192743,
-      "end": 112.90421768707483,
-      "text": "Svart ledning sitter i COM.",
+      "start": 106.02533333333334,
+      "end": 108.116,
+      "text": "The black lead goes into COM.",
       "scene": "instrument"
     },
     {
-      "start": 113.06421768707483,
-      "end": 116.58204081632653,
-      "text": "Röd sitter i volt och ohm, eller i rätt strömingång.",
+      "start": 108.336,
+      "end": 112.432,
+      "text": "The red lead goes into volts and ohms, or the appropriate current socket.",
       "scene": "instrument"
     },
     {
-      "start": 116.74204081632654,
-      "end": 122.23356009070295,
-      "text": "Autorange väljer mätområde, men du väljer fortfarande funktion och uttag.",
+      "start": 112.652,
+      "end": 117.08933333333333,
+      "text": "Autoranging selects the range, but you still choose the function and sockets.",
       "scene": "instrument"
     },
     {
-      "start": 124.0,
-      "end": 128.3305215419501,
-      "text": "Vad ska mätas, mellan vilka punkter och ungefär hur mycket?",
+      "start": 119,
+      "end": 123.24533333333333,
+      "text": "What are you measuring, between which points, and approximately how much do you expect?",
       "scene": "forkontroll"
     },
     {
-      "start": 128.4905215419501,
-      "end": 133.18095238095236,
-      "text": "Kontrollera hela sladdar, mätspetsar och instrument.",
+      "start": 123.46533333333333,
+      "end": 126.43066666666667,
+      "text": "Inspect the leads, probes and instrument for damage.",
       "scene": "forkontroll"
     },
     {
-      "start": 133.3409523809524,
-      "end": 136.22022675736963,
-      "text": "Välj rätt funktion, uttag och område.",
+      "start": 126.65066666666667,
+      "end": 129.44533333333334,
+      "text": "Select the correct function, sockets and range.",
       "scene": "forkontroll"
     },
     {
-      "start": 136.38022675736963,
-      "end": 139.44526077097507,
-      "text": "Kontrollera kopplingen innan matningen slås på.",
+      "start": 129.66533333333334,
+      "end": 132.41733333333335,
+      "text": "Check the connections before switching on the supply.",
       "scene": "forkontroll"
     },
     {
-      "start": 139.60526077097506,
-      "end": 143.57587301587301,
-      "text": "I vår rigg sker omkoppling alltid med matningen frånkopplad.",
+      "start": 132.63733333333334,
+      "end": 137.16000000000003,
+      "text": "In our training circuit, always disconnect the supply before changing connections.",
       "scene": "forkontroll"
     },
     {
-      "start": 145.5,
-      "end": 147.48530612244897,
-      "text": "Vi vill mäta över lampan.",
+      "start": 139,
+      "end": 140.87733333333333,
+      "text": "We want to measure across the lamp.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 147.64530612244897,
-      "end": 151.89455782312925,
-      "text": "Med matningen frånkopplad väljer Saga volt likspänning.",
+      "start": 141.09733333333332,
+      "end": 144.66,
+      "text": "With the supply disconnected, Saga selects D C volts.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 152.05455782312924,
-      "end": 154.52748299319728,
-      "text": "Svart går från COM till P två.",
+      "start": 144.88,
+      "end": 147.33333333333331,
+      "text": "The black lead connects COM to P two.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 154.68748299319728,
-      "end": 157.29972789115646,
-      "text": "Röd går från voltuttaget till P ett.",
+      "start": 147.55333333333334,
+      "end": 150.348,
+      "text": "The red lead connects the voltage socket to P one.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 157.45972789115646,
-      "end": 160.26934240362812,
-      "text": "Lampans strömväg är obruten.",
+      "start": 150.568,
+      "end": 152.91466666666668,
+      "text": "The lamp's current path remains complete.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 160.4293424036281,
-      "end": 163.21573696145123,
-      "text": "Mätaren ligger parallellt med lampan.",
+      "start": 153.13466666666667,
+      "end": 155.716,
+      "text": "The meter is connected in parallel with the lamp.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 163.37573696145125,
-      "end": 165.89510204081634,
-      "text": "COM betyder inte automatiskt jord.",
+      "start": 155.936,
+      "end": 158.53866666666667,
+      "text": "COM does not automatically mean earth.",
       "scene": "voltforkoppling"
     },
     {
-      "start": 168.0,
-      "end": 172.09832199546486,
-      "text": "När kopplingen är kontrollerad slår vi på riggens matning.",
+      "start": 160.5,
+      "end": 163.828,
+      "text": "After checking the connections, we switch on the training circuit.",
       "scene": "voltavlasning"
     },
     {
-      "start": 172.25832199546485,
-      "end": 177.0416326530612,
-      "text": "Modellen visar tolv komma noll noll volt likspänning.",
+      "start": 164.048,
+      "end": 167.14133333333334,
+      "text": "The model reads twelve point zero zero volts D C.",
       "scene": "voltavlasning"
     },
     {
-      "start": 177.2016326530612,
-      "end": 182.9253514739229,
-      "text": "Voltmeterns höga ingångsresistans gör att bara en liten ström går genom mätaren.",
+      "start": 167.36133333333333,
+      "end": 172.012,
+      "text": "The voltmeter has a high input resistance, so only a small current flows through it.",
       "scene": "voltavlasning"
     },
     {
-      "start": 183.0853514739229,
-      "end": 187.99637188208618,
-      "text": "Vi återkommer till varför även den lilla strömmen kan påverka resultatet.",
+      "start": 172.232,
+      "end": 175.88,
+      "text": "Later, we will see why even that small current can affect the result.",
       "scene": "voltavlasning"
     },
     {
-      "start": 190.0,
-      "end": 194.15637188208618,
-      "text": "Vi bryter först matningen och byter plats på spetsarna.",
+      "start": 178,
+      "end": 181.328,
+      "text": "First, we disconnect the supply and swap the probe positions.",
       "scene": "polaritet"
     },
     {
-      "start": 194.31637188208617,
-      "end": 196.99827664399095,
-      "text": "Efter kontroll slås matningen på igen.",
+      "start": 181.548,
+      "end": 184.108,
+      "text": "After checking, we switch the supply on again.",
       "scene": "polaritet"
     },
     {
-      "start": 197.15827664399092,
-      "end": 200.98956916099772,
-      "text": "Nu visar instrumentet minus tolv volt.",
+      "start": 184.328,
+      "end": 186.76,
+      "text": "The meter now reads minus twelve volts.",
       "scene": "polaritet"
     },
     {
-      "start": 201.14956916099774,
-      "end": 203.19292517006804,
-      "text": "Spänningens belopp är detsamma.",
+      "start": 186.98,
+      "end": 188.94266666666667,
+      "text": "The magnitude is unchanged.",
       "scene": "polaritet"
     },
     {
-      "start": 203.35292517006803,
-      "end": 209.32045351473923,
-      "text": "Minustecknet visar att den röda punkten ligger på lägre potential än den svarta.",
+      "start": 189.16266666666667,
+      "end": 193.77066666666667,
+      "text": "The minus sign tells us that the red probe is at a lower potential than the black probe.",
       "scene": "polaritet"
     },
     {
-      "start": 211.0,
-      "end": 213.39165532879818,
-      "text": "Nu vill vi mäta lampans ström.",
+      "start": 195.5,
+      "end": 197.69733333333335,
+      "text": "Now we want to measure the lamp current.",
       "scene": "stromkoppling"
     },
     {
-      "start": 213.55165532879818,
-      "end": 217.99827664399092,
-      "text": "Bryt matningen och öppna länken mellan K ett och K två.",
+      "start": 197.91733333333335,
+      "end": 201.67200000000003,
+      "text": "Disconnect the supply and open the link between K one and K two.",
       "scene": "stromkoppling"
     },
     {
-      "start": 218.15827664399092,
-      "end": 223.67301587301586,
-      "text": "Välj ampere likström och en strömingång med rätt gränser enligt manualen.",
+      "start": 201.892,
+      "end": 207.31066666666666,
+      "text": "Select D C amperes and a current socket with suitable limits, as specified in the manual.",
       "scene": "stromkoppling"
     },
     {
-      "start": 223.83301587301588,
-      "end": 227.91972789115647,
-      "text": "Röd ansluts till K ett och svart COM till K två.",
+      "start": 207.53066666666666,
+      "end": 210.688,
+      "text": "Connect red to K one, and black COM to K two.",
       "scene": "stromkoppling"
     },
     {
-      "start": 228.07972789115647,
-      "end": 230.41333333333333,
-      "text": "Mätaren fyller öppningen.",
+      "start": 210.90800000000002,
+      "end": 212.65733333333336,
+      "text": "The meter bridges the gap.",
       "scene": "stromkoppling"
     },
     {
-      "start": 232.5,
-      "end": 235.86689342403628,
-      "text": "Efter handledarens kontroll slås matningen på.",
+      "start": 214.5,
+      "end": 218.212,
+      "text": "After the instructor has checked the connections, switch on the supply.",
       "scene": "stromavlasning"
     },
     {
-      "start": 236.02689342403627,
-      "end": 239.99750566893422,
-      "text": "All ström i lampgrenen går nu genom mätaren.",
+      "start": 218.432,
+      "end": 221.61066666666665,
+      "text": "All the current in the lamp branch now passes through the meter.",
       "scene": "stromavlasning"
     },
     {
-      "start": 240.15750566893425,
-      "end": 245.21945578231293,
-      "text": "Vår förenklade modell visar noll komma ett ampere, alltså hundra milliampere.",
+      "start": 221.83066666666667,
+      "end": 226.73733333333334,
+      "text": "Our simplified model reads zero point one amperes, or one hundred milliamperes.",
       "scene": "stromavlasning"
     },
     {
-      "start": 245.37945578231293,
-      "end": 248.80439909297053,
-      "text": "Anteckna den verkliga avläsningen med enhet.",
+      "start": 226.95733333333334,
+      "end": 229.26133333333334,
+      "text": "Record the actual reading with its unit.",
       "scene": "stromavlasning"
     },
     {
-      "start": 248.96439909297052,
-      "end": 254.00312925170067,
-      "text": "Instrumentets säkring, tidsgräns och strömgräns måste följas.",
+      "start": 229.48133333333334,
+      "end": 233.53466666666668,
+      "text": "Observe the instrument's fuse requirements, time limit and current limit.",
       "scene": "stromavlasning"
     },
     {
-      "start": 256.0,
-      "end": 258.8908843537415,
-      "text": "Efter strömmätningen bryter vi matningen.",
+      "start": 235.5,
+      "end": 238.14533333333333,
+      "text": "After measuring current, disconnect the supply.",
       "scene": "aterstall"
     },
     {
-      "start": 259.0508843537415,
-      "end": 262.6151473922902,
-      "text": "Ta bort mätaren och återställ länken i kretsen.",
+      "start": 238.36533333333333,
+      "end": 241.26666666666665,
+      "text": "Remove the meter and restore the link in the circuit.",
       "scene": "aterstall"
     },
     {
-      "start": 262.77514739229025,
-      "end": 266.2465306122449,
-      "text": "Flytta den röda ledningen tillbaka till volt och ohm.",
+      "start": 241.48666666666668,
+      "end": 244.26000000000002,
+      "text": "Move the red lead back to the volts and ohms socket.",
       "scene": "aterstall"
     },
     {
-      "start": 266.4065306122449,
-      "end": 272.01414965986396,
-      "text": "Den vanan minskar risken att nästa spänningsmätning börjar med en farlig felkoppling.",
+      "start": 244.48,
+      "end": 249.68533333333332,
+      "text": "This habit reduces the risk of beginning the next voltage measurement with a dangerous connection.",
       "scene": "aterstall"
     },
     {
-      "start": 274.0,
-      "end": 276.1710657596372,
-      "text": "Måsen vill mäta spänning.",
+      "start": 251.5,
+      "end": 253.52666666666667,
+      "text": "The Gull wants to measure voltage.",
       "scene": "feluttag"
     },
     {
-      "start": 276.33106575963717,
-      "end": 281.0795464852608,
-      "text": "Vredet står rätt, men den röda sladden sitter kvar i ampereuttaget.",
+      "start": 253.74666666666667,
+      "end": 257.7146666666667,
+      "text": "The selector is correct, but the red lead is still in the ampere socket.",
       "scene": "feluttag"
     },
     {
-      "start": 281.23954648526075,
-      "end": 282.9926530612245,
-      "text": "Vad måste ändras?",
+      "start": 257.93466666666666,
+      "end": 259.3213333333333,
+      "text": "What must change?",
       "scene": "feluttag"
     },
     {
-      "start": 283.1526530612245,
-      "end": 284.7780498866213,
-      "text": "Pausa gärna filmen.",
+      "start": 259.54133333333334,
+      "end": 261.3546666666667,
+      "text": "Pause the film and decide.",
       "scene": "feluttag"
     },
     {
-      "start": 284.93804988662134,
-      "end": 288.92027210884356,
-      "text": "Strömingången har låg resistans och kan kortsluta en källa.",
+      "start": 261.57466666666664,
+      "end": 265.24399999999997,
+      "text": "The current input has low resistance and can short-circuit a source.",
       "scene": "feluttag"
     },
     {
-      "start": 289.08027210884353,
-      "end": 293.2018140589569,
-      "text": "Att bara vrida till volt gör inte det felaktiga uttaget säkert.",
+      "start": 265.464,
+      "end": 269.368,
+      "text": "Simply turning the selector to volts does not make the wrong socket safe.",
       "scene": "feluttag"
     },
     {
-      "start": 293.3618140589569,
-      "end": 295.1149206349206,
-      "text": "Prova inte felkopplingen.",
+      "start": 269.588,
+      "end": 271.78533333333337,
+      "text": "Do not try this incorrect connection.",
       "scene": "feluttag"
     },
     {
-      "start": 298.5,
-      "end": 303.3413605442177,
-      "text": "Vid resistansmätning skickar mätaren själv en liten testsignal.",
+      "start": 275.5,
+      "end": 279.5106666666667,
+      "text": "For resistance measurements, the meter supplies its own small test signal.",
       "scene": "resistans"
     },
     {
-      "start": 303.5013605442177,
-      "end": 310.0261678004535,
-      "text": "Koppla bort matningen, kontrollera att spänningen är borta och hantera lagrad energi säkert.",
+      "start": 279.73066666666665,
+      "end": 285.04266666666666,
+      "text": "Disconnect the supply, verify that voltage is absent, and deal safely with stored energy.",
       "scene": "resistans"
     },
     {
-      "start": 310.1861678004535,
-      "end": 314.3657596371882,
-      "text": "Isolera komponenten genom att lossa minst en anslutning.",
+      "start": 285.2626666666667,
+      "end": 288.59066666666666,
+      "text": "Isolate the component by disconnecting at least one terminal.",
       "scene": "resistans"
     },
     {
-      "start": 314.52575963718823,
-      "end": 319.4251700680272,
-      "text": "Med COM, volt och ohm, och vredet på ohm mäter vi tusen ohm, alltså ett kiloohm.",
+      "start": 288.8106666666667,
+      "end": 295.68,
+      "text": "With the leads in COM and volts and ohms, and the selector on ohms, we measure one thousand ohms: one kilohm.",
       "scene": "resistans"
     },
     {
-      "start": 321.5,
-      "end": 326.29492063492063,
-      "text": "Med frånskild och kontrollerad utrustning väljer vi summer.",
+      "start": 297.5,
+      "end": 301.76666666666665,
+      "text": "With the equipment isolated and verified dead, select continuity.",
       "scene": "kontinuitet"
     },
     {
-      "start": 326.45492063492065,
-      "end": 328.99750566893425,
-      "text": "Testa först spetsarna mot varandra.",
+      "start": 301.9866666666667,
+      "end": 304.16266666666667,
+      "text": "First, touch the probe tips together.",
       "scene": "kontinuitet"
     },
     {
-      "start": 329.1575056689342,
-      "end": 332.2457596371882,
-      "text": "Låg resistans ger normalt ett pip.",
+      "start": 304.3826666666667,
+      "end": 306.98533333333336,
+      "text": "Low resistance normally produces a beep.",
       "scene": "kontinuitet"
     },
     {
-      "start": 332.4057596371882,
-      "end": 336.0280725623583,
-      "text": "En hel uttagen säkring ger också låg resistans.",
+      "start": 307.20533333333333,
+      "end": 311.2373333333333,
+      "text": "An intact fuse, removed from the circuit, also has low resistance.",
       "scene": "kontinuitet"
     },
     {
-      "start": 336.1880725623583,
-      "end": 338.61455782312925,
-      "text": "En bruten väg kan visa O L.",
+      "start": 311.45733333333334,
+      "end": 313.612,
+      "text": "An open path may display O L.",
       "scene": "kontinuitet"
     },
     {
-      "start": 338.77455782312927,
-      "end": 341.7583219954649,
-      "text": "Det kan även betyda för hög resistans.",
+      "start": 313.832,
+      "end": 316.4773333333333,
+      "text": "This can also mean resistance above the range.",
       "scene": "kontinuitet"
     },
     {
-      "start": 341.91832199546485,
-      "end": 344.99496598639456,
-      "text": "Ett pip bevisar aldrig spänningslöshet.",
+      "start": 316.69733333333335,
+      "end": 319.15066666666667,
+      "text": "A beep never proves that a circuit is dead.",
       "scene": "kontinuitet"
     },
     {
-      "start": 347.0,
-      "end": 351.3421315192744,
-      "text": "Två tusenohmsmotstånd sitter parallellt utan yttre matning.",
+      "start": 321,
+      "end": 325.97066666666666,
+      "text": "Two one-thousand-ohm resistors are connected in parallel, with no external supply.",
       "scene": "parallellohm"
     },
     {
-      "start": 351.50213151927437,
-      "end": 357.16780045351476,
-      "text": "Mätarens testström får två vägar och instrumentet visar femhundra ohm.",
+      "start": 326.1906666666667,
+      "end": 330.5853333333334,
+      "text": "The meter's test current has two paths, and the meter reads five hundred ohms.",
       "scene": "parallellohm"
     },
     {
-      "start": 357.3278004535147,
-      "end": 361.4145124716553,
-      "text": "När en gren lossas återstår en väg och värdet blir tusen ohm.",
+      "start": 330.80533333333335,
+      "end": 335.79733333333337,
+      "text": "Disconnecting one branch leaves a single path, and the reading becomes one thousand ohms.",
       "scene": "parallellohm"
     },
     {
-      "start": 361.57451247165534,
-      "end": 366.55519274376417,
-      "text": "Därför kan en komponent mätas fel om andra strömvägar sitter kvar.",
+      "start": 336.01733333333334,
+      "end": 340.22,
+      "text": "Other connected paths can therefore distort a component's resistance measurement.",
       "scene": "parallellohm"
     },
     {
-      "start": 368.5,
-      "end": 373.7128798185941,
-      "text": "En transient är en mycket kort spänningstopp, till exempel när en motor kopplas från.",
+      "start": 342,
+      "end": 346.8426666666667,
+      "text": "A transient is a very brief voltage spike, for example when a motor is switched off.",
       "scene": "transient"
     },
     {
-      "start": 373.87287981859413,
-      "end": 380.5718367346939,
-      "text": "Om isoleringen bryts igenom kan matningen fortsätta driva en kortslutning och en farlig ljusbåge.",
+      "start": 347.06266666666664,
+      "end": 352.80133333333333,
+      "text": "If insulation breaks down, the supply can continue feeding a short circuit and a dangerous arc.",
       "scene": "transient"
     },
     {
-      "start": 380.7318367346939,
-      "end": 385.38743764172335,
-      "text": "CAT beskriver den mätmiljö som instrumentets skydd har provats för.",
+      "start": 353.02133333333336,
+      "end": 359.0373333333334,
+      "text": "The CAT rating describes the measurement environment for which the instrument's protection has been tested.",
       "scene": "transient"
     },
     {
-      "start": 385.5474376417234,
-      "end": 388.7750113378685,
-      "text": "Samma driftspänning kan kräva olika kategori.",
+      "start": 359.25733333333335,
+      "end": 362.6706666666667,
+      "text": "The same operating voltage can require different categories.",
       "scene": "transient"
     },
     {
-      "start": 390.5,
-      "end": 395.73609977324264,
-      "text": "CAT två gäller exempelvis stickproppsanslutna apparater på förbrukarsidan.",
+      "start": 364.5,
+      "end": 368.36133333333333,
+      "text": "Category two includes plug-connected appliances on the load side.",
       "scene": "katkarta"
     },
     {
-      "start": 395.8960997732426,
-      "end": 402.95496598639454,
-      "text": "CAT tre gäller fast installation, centraler och fast anslutna motorer, även enfas.",
+      "start": 368.5813333333333,
+      "end": 375.38666666666666,
+      "text": "Category three covers fixed installations, distribution boards and fixed motors, including single-phase systems.",
       "scene": "katkarta"
     },
     {
-      "start": 403.11496598639457,
-      "end": 407.3177777777778,
-      "text": "CAT fyra gäller lågspänningsinstallationens matningspunkt.",
+      "start": 375.6066666666667,
+      "end": 379.42533333333336,
+      "text": "Category four covers the origin of the low-voltage installation.",
       "scene": "katkarta"
     },
     {
-      "start": 407.47777777777776,
-      "end": 410.5079818594104,
-      "text": "Det betyder inte alla ledningar utomhus.",
+      "start": 379.6453333333333,
+      "end": 381.90666666666664,
+      "text": "It does not mean every outdoor wire.",
       "scene": "katkarta"
     },
     {
-      "start": 410.6679818594104,
-      "end": 415.33519274376414,
-      "text": "Äldre CAT ett avser kretsar utan direkt nätanslutning.",
+      "start": 382.12666666666667,
+      "end": 386.628,
+      "text": "The older category one refers to circuits without a direct mains connection.",
       "scene": "katkarta"
     },
     {
-      "start": 415.49519274376416,
-      "end": 419.03623582766437,
-      "text": "Kontrollera deras särskilda gränser i manualen.",
+      "start": 386.848,
+      "end": 389.1946666666667,
+      "text": "Check their particular limits in the manual.",
       "scene": "katkarta"
     },
     {
-      "start": 421.0,
-      "end": 426.166439909297,
-      "text": "Kan en CAT två-mätare ha högre voltal än en CAT fyra-mätare?",
+      "start": 391,
+      "end": 395.77866666666665,
+      "text": "Can a category two meter have a higher voltage rating than a category four meter?",
       "scene": "katvolt"
     },
     {
-      "start": 426.32643990929705,
-      "end": 427.10430839002265,
-      "text": "Ja.",
+      "start": 395.9986666666667,
+      "end": 396.916,
+      "text": "Yes.",
       "scene": "katvolt"
     },
     {
-      "start": 427.2643083900227,
-      "end": 430.8750113378685,
-      "text": "Men ett högre voltal ersätter aldrig rätt kategori.",
+      "start": 397.136,
+      "end": 401.12533333333334,
+      "text": "But a higher voltage rating never substitutes for the required category.",
       "scene": "katvolt"
     },
     {
-      "start": 431.03501133786847,
-      "end": 433.85623582766436,
-      "text": "Samma instrument kan ha flera märkningar.",
+      "start": 401.3453333333333,
+      "end": 403.73466666666667,
+      "text": "One instrument can have several ratings.",
       "scene": "katvolt"
     },
     {
-      "start": 434.0162358276644,
-      "end": 438.2190476190476,
-      "text": "Högre kategori kräver inte automatiskt lägre märkspänning.",
+      "start": 403.95466666666664,
+      "end": 408.2853333333333,
+      "text": "A higher category does not automatically require a lower rated voltage.",
       "scene": "katvolt"
     },
     {
-      "start": 438.37904761904764,
-      "end": 443.53387755102045,
-      "text": "Kontrollera spänningen till jord, mellan uttagen och gränserna för den valda funktionen.",
+      "start": 408.50533333333334,
+      "end": 413.49733333333336,
+      "text": "Check voltage to earth, voltage between sockets, and the limits of the selected function.",
       "scene": "katvolt"
     },
     {
-      "start": 445.5,
-      "end": 457.0519274376417,
-      "text": "I tabellens exempel provas CAT två, tusen volt, och CAT tre, sexhundra volt, med sex tusen volts korta impulser.",
+      "start": 415.5,
+      "end": 423.99066666666664,
+      "text": "In this example, category two at one thousand volts and category three at six hundred volts are tested with brief six-thousand-volt impulses.",
       "scene": "katimpuls"
     },
     {
-      "start": 457.21192743764175,
-      "end": 461.8443083900227,
-      "text": "Men provkällans resistans är tolv respektive två ohm.",
+      "start": 424.21066666666667,
+      "end": 428.2853333333333,
+      "text": "But the test-source resistances are twelve ohms and two ohms respectively.",
       "scene": "katimpuls"
     },
     {
-      "start": 462.0043083900227,
-      "end": 465.28993197278913,
-      "text": "Lägre resistans kan ge större ström.",
+      "start": 428.50533333333334,
+      "end": 430.93733333333336,
+      "text": "Lower resistance can deliver more current.",
       "scene": "katimpuls"
     },
     {
-      "start": 465.4499319727891,
-      "end": 469.51342403628115,
-      "text": "CAT fyra, sexhundra volt, provas här med åtta tusen volt.",
+      "start": 431.1573333333333,
+      "end": 435.4026666666667,
+      "text": "Category four at six hundred volts is tested here at eight thousand volts.",
       "scene": "katimpuls"
     },
     {
-      "start": 469.6734240362812,
-      "end": 473.8297959183673,
-      "text": "Detta är provvärden, aldrig tillåtna kontinuerliga mätspänningar.",
+      "start": 435.62266666666665,
+      "end": 439.8893333333333,
+      "text": "These are test values, never permissible continuous measuring voltages.",
       "scene": "katimpuls"
     },
     {
-      "start": 475.5,
-      "end": 479.5286621315193,
-      "text": "Arbetsplanen kräver CAT tre, sexhundra volt.",
+      "start": 442,
+      "end": 445.4773333333333,
+      "text": "The work plan requires category three, six hundred volts.",
       "scene": "katval"
     },
     {
-      "start": 479.68866213151927,
-      "end": 482.55632653061224,
-      "text": "A är CAT två, tusen volt.",
+      "start": 445.69733333333335,
+      "end": 448.57733333333334,
+      "text": "Meter A is category two, one thousand volts.",
       "scene": "katval"
     },
     {
-      "start": 482.71632653061226,
-      "end": 486.280589569161,
-      "text": "B är CAT tre, sexhundra volt.",
+      "start": 448.7973333333333,
+      "end": 451.784,
+      "text": "Meter B is category three, six hundred volts.",
       "scene": "katval"
     },
     {
-      "start": 486.440589569161,
-      "end": 487.71768707482994,
-      "text": "Vilket väljer du?",
+      "start": 452.004,
+      "end": 453.3906666666667,
+      "text": "Which do you choose?",
       "scene": "katval"
     },
     {
-      "start": 487.8776870748299,
-      "end": 489.7004535147392,
-      "text": "B uppfyller båda delarna.",
+      "start": 453.61066666666665,
+      "end": 455.46666666666664,
+      "text": "B meets both requirements.",
       "scene": "katval"
     },
     {
-      "start": 489.8604535147392,
-      "end": 492.7861678004535,
-      "text": "Hela mätutrustningen måste klara kravet.",
+      "start": 455.68666666666667,
+      "end": 458.03333333333336,
+      "text": "The entire measuring system must meet them.",
       "scene": "katval"
     },
     {
-      "start": 492.9461678004535,
-      "end": 497.4972789115646,
-      "text": "En CAT fyra-mätare med CAT två-spetsar räcker inte.",
+      "start": 458.25333333333333,
+      "end": 461.9653333333333,
+      "text": "A category four meter with category two probes is not sufficient.",
       "scene": "katval"
     },
     {
-      "start": 497.6572789115646,
-      "end": 501.00095238095236,
-      "text": "Även borttagna spetsskydd kan ändra märkningen.",
+      "start": 462.18533333333335,
+      "end": 465.236,
+      "text": "Removing probe-tip covers may also change the rating.",
       "scene": "katval"
     },
     {
-      "start": 501.1609523809524,
-      "end": 502.98371882086167,
-      "text": "Läs manualen.",
+      "start": 465.456,
+      "end": 466.7786666666667,
+      "text": "Read the manual.",
       "scene": "katval"
     },
     {
-      "start": 506.5,
-      "end": 509.5418140589569,
-      "text": "Upplösning är det minsta steget på skärmen.",
+      "start": 470,
+      "end": 472.7733333333333,
+      "text": "Resolution is the smallest step on the display.",
       "scene": "upplosning"
     },
     {
-      "start": 509.7018140589569,
-      "end": 517.248299319728,
-      "text": "Här är skillnaden mellan tolv komma noll noll och tolv komma noll ett volt en hundradels volt.",
+      "start": 472.99333333333334,
+      "end": 479.6066666666667,
+      "text": "Here, the difference between twelve point zero zero and twelve point zero one volts is one hundredth of a volt.",
       "scene": "upplosning"
     },
     {
-      "start": 517.4082993197279,
-      "end": 523.4687074829932,
-      "text": "Felgränsen beskriver instrumentets specificerade avvikelse under angivna villkor.",
+      "start": 479.82666666666665,
+      "end": 484.69066666666663,
+      "text": "The error limit describes the instrument's specified deviation under stated conditions.",
       "scene": "upplosning"
     },
     {
-      "start": 523.6287074829931,
-      "end": 527.9360090702947,
-      "text": "Toleransen beskriver i stället vad utrustningen får ligga inom.",
+      "start": 484.91066666666666,
+      "end": 488.51599999999996,
+      "text": "Tolerance describes the range allowed for the equipment being tested.",
       "scene": "upplosning"
     },
     {
-      "start": 528.0960090702948,
-      "end": 530.4180045351475,
-      "text": "Blanda inte ihop begreppen.",
+      "start": 488.736,
+      "end": 490.848,
+      "text": "Keep these three concepts separate.",
       "scene": "upplosning"
     },
     {
-      "start": 532.5,
-      "end": 538.4094784580499,
-      "text": "Anta specifikationen plus minus noll komma fem procent av visningen, plus två siffror.",
+      "start": 493,
+      "end": 498.80266666666665,
+      "text": "Assume a specification of plus or minus zero point five per cent of the reading, plus two counts.",
       "scene": "fel12"
     },
     {
-      "start": 538.5694784580498,
-      "end": 541.1585034013605,
-      "text": "Ett steg är noll komma noll ett volt.",
+      "start": 499.0226666666667,
+      "end": 501.83866666666665,
+      "text": "One count is zero point zero one volts.",
       "scene": "fel12"
     },
     {
-      "start": 541.3185034013605,
-      "end": 548.6443990929705,
-      "text": "Vid tolv volt blir procentdelen noll komma noll sex volt och sifferdelen noll komma noll två.",
+      "start": 502.0586666666667,
+      "end": 506.58133333333336,
+      "text": "At twelve volts, the percentage contribution is zero point zero six volts.",
       "scene": "fel12"
     },
     {
-      "start": 548.8043990929705,
-      "end": 553.1349206349206,
-      "text": "Summan ger plus minus noll komma noll åtta volt.",
+      "start": 506.80133333333333,
+      "end": 510.06533333333334,
+      "text": "The two counts contribute zero point zero two volts.",
       "scene": "fel12"
     },
     {
-      "start": 553.2949206349207,
-      "end": 557.3119727891157,
-      "text": "Intervallet gäller bara denna instrumentfelgräns.",
+      "start": 510.2853333333333,
+      "end": 514.1039999999999,
+      "text": "Adding them gives plus or minus zero point zero eight volts.",
       "scene": "fel12"
     },
     {
-      "start": 559.0,
-      "end": 565.3390476190476,
-      "text": "Samma specifikation och upplösning, men nu visar skärmen tjugofyra volt.",
+      "start": 514.324,
+      "end": 517.6306666666666,
+      "text": "This interval covers only the stated instrument error limit.",
+      "scene": "fel12"
+    },
+    {
+      "start": 519.5,
+      "end": 524.7266666666667,
+      "text": "Use the same specification and resolution, but now the display reads twenty-four volts.",
       "scene": "fel24"
     },
     {
-      "start": 565.4990476190476,
-      "end": 567.4379138321996,
-      "text": "Pausa och räkna först.",
+      "start": 524.9466666666667,
+      "end": 526.8453333333334,
+      "text": "Pause and calculate first.",
       "scene": "fel24"
     },
     {
-      "start": 567.5979138321995,
-      "end": 570.7674376417233,
-      "text": "Procentdelen blir noll komma tolv volt.",
+      "start": 527.0653333333333,
+      "end": 530.564,
+      "text": "The percentage contribution is zero point one two volts.",
       "scene": "fel24"
     },
     {
-      "start": 570.9274376417234,
-      "end": 574.6658503401361,
-      "text": "Två steg ger fortfarande noll komma noll två volt.",
+      "start": 530.784,
+      "end": 534.1333333333333,
+      "text": "Two counts still contribute zero point zero two volts.",
       "scene": "fel24"
     },
     {
-      "start": 574.8258503401361,
-      "end": 579.6672108843537,
-      "text": "Felgränsen blir plus minus noll komma fjorton volt.",
+      "start": 534.3533333333334,
+      "end": 538.0866666666667,
+      "text": "The error limit is plus or minus zero point one four volts.",
       "scene": "fel24"
     },
     {
-      "start": 579.8272108843537,
-      "end": 586.4448979591837,
-      "text": "Intervallet går från tjugotre komma åttiosex till tjugofyra komma fjorton volt.",
+      "start": 538.3066666666666,
+      "end": 543.1706666666666,
+      "text": "The interval runs from twenty-three point eight six to twenty-four point one four volts.",
       "scene": "fel24"
     },
     {
-      "start": 590.0,
-      "end": 594.7368707482993,
-      "text": "I fördjupningsexemplet visar instrumentet åtta volt.",
+      "start": 546.5,
+      "end": 549.572,
+      "text": "In the extension example, the meter reads eight volts.",
       "scene": "fel8"
     },
     {
-      "start": 594.8968707482993,
-      "end": 601.7351473922903,
-      "text": "Specifikationen är plus minus en procent, plus tre siffror, och upplösningen en hundradels volt.",
+      "start": 549.792,
+      "end": 556.64,
+      "text": "Its specification is plus or minus one per cent, plus three counts, with a resolution of one hundredth of a volt.",
       "scene": "fel8"
     },
     {
-      "start": 601.8951473922903,
-      "end": 607.6536961451247,
-      "text": "Bidragen blir noll komma noll åtta och noll komma noll tre volt.",
+      "start": 556.86,
+      "end": 561.6386666666667,
+      "text": "The contributions are zero point zero eight and zero point zero three volts.",
       "scene": "fel8"
     },
     {
-      "start": 607.8136961451247,
-      "end": 609.8338321995465,
-      "text": "Summan är noll komma elva volt.",
+      "start": 561.8586666666666,
+      "end": 564.3546666666666,
+      "text": "Their sum is zero point one one volts.",
       "scene": "fel8"
     },
     {
-      "start": 609.9938321995464,
-      "end": 613.8019047619047,
-      "text": "Använd alltid specifikationen för det aktuella området.",
+      "start": 564.5746666666666,
+      "end": 567.54,
+      "text": "Always use the specification for the actual range.",
       "scene": "fel8"
     },
     {
-      "start": 615.5,
-      "end": 620.0278911564626,
-      "text": "Utrustningen kräver tolv volt plus minus fem procent.",
+      "start": 569.5,
+      "end": 573.2546666666667,
+      "text": "The equipment requires twelve volts, plus or minus five per cent.",
       "scene": "tolerans"
     },
     {
-      "start": 620.1878911564626,
-      "end": 623.3341950113379,
-      "text": "Fem procent är noll komma sex volt.",
+      "start": 573.4746666666666,
+      "end": 580.8773333333332,
+      "text": "Five per cent is zero point six volts, giving an allowed range of eleven point four zero to twelve point six zero volts.",
       "scene": "tolerans"
     },
     {
-      "start": 623.4941950113379,
-      "end": 627.8595464852608,
-      "text": "Tillåtet område blir elva komma fyrtio till tolv komma sextio volt.",
+      "start": 581.0973333333334,
+      "end": 586.5160000000001,
+      "text": "Our measurement is eleven point five zero, plus or minus zero point one zero volts.",
       "scene": "tolerans"
     },
     {
-      "start": 628.0195464852608,
-      "end": 632.5822675736962,
-      "text": "Mätningen är elva komma femtio plus minus noll komma tio volt.",
+      "start": 586.736,
+      "end": 588.4213333333333,
+      "text": "The whole interval fits.",
       "scene": "tolerans"
     },
     {
-      "start": 632.7422675736962,
-      "end": 635.2616326530613,
-      "text": "Hela intervallet ryms.",
+      "start": 588.6413333333334,
+      "end": 591.3506666666667,
+      "text": "This exercise includes the boundary values.",
       "scene": "tolerans"
     },
     {
-      "start": 635.4216326530612,
-      "end": 638.5098866213152,
-      "text": "Här räknas gränsvärdena som tillåtna.",
+      "start": 591.5706666666666,
+      "end": 594.7706666666667,
+      "text": "In real work, acceptance rules must be agreed beforehand.",
       "scene": "tolerans"
     },
     {
-      "start": 638.6698866213152,
-      "end": 642.4547392290249,
-      "text": "Verkliga acceptansregler måste vara bestämda i förväg.",
-      "scene": "tolerans"
-    },
-    {
-      "start": 644.5,
-      "end": 648.0526530612245,
-      "text": "Anteckningen spänningen är elva komma åtta räcker inte.",
+      "start": 596.5,
+      "end": 599.8066666666666,
+      "text": "Writing 'the voltage is eleven point eight' is not enough.",
       "scene": "protokoll"
     },
     {
-      "start": 648.2126530612245,
-      "end": 651.6608163265306,
-      "text": "Skriv enhet, mätpunkter och drifttillstånd.",
+      "start": 600.0266666666666,
+      "end": 603.2693333333333,
+      "text": "Record the unit, measurement points and operating state.",
       "scene": "protokoll"
     },
     {
-      "start": 651.8208163265306,
-      "end": 657.7419047619047,
-      "text": "Ange instrument, funktion, område, upplösning och relevant specifikation.",
+      "start": 603.4893333333333,
+      "end": 608.4813333333333,
+      "text": "Identify the instrument, function, range, resolution and relevant specification.",
       "scene": "protokoll"
     },
     {
-      "start": 657.9019047619048,
-      "end": 663.648843537415,
-      "text": "Redovisa felgräns, krav och slutsats samt datum och utförare.",
+      "start": 608.7013333333333,
+      "end": 613.5013333333333,
+      "text": "Include the error limit, requirement and conclusion, together with the date and operator.",
       "scene": "protokoll"
     },
     {
-      "start": 663.808843537415,
-      "end": 666.8274376417233,
-      "text": "Här visar vi fiktiva undervisningsdata.",
+      "start": 613.7213333333333,
+      "end": 615.7693333333333,
+      "text": "This is fictional teaching data.",
       "scene": "protokoll"
     },
     {
-      "start": 666.9874376417233,
-      "end": 671.2018594104308,
-      "text": "Verkliga uppgifter ska dokumenteras, aldrig gissas.",
+      "start": 615.9893333333333,
+      "end": 619.5733333333333,
+      "text": "Record real information in actual work; never guess it.",
       "scene": "protokoll"
     },
     {
-      "start": 673.0,
-      "end": 676.7035827664399,
-      "text": "Nu lämnar vi lampan och undersöker en givarmodell.",
+      "start": 621.5,
+      "end": 624.2093333333333,
+      "text": "We now leave the lamp and examine a sensor model.",
       "scene": "delare"
     },
     {
-      "start": 676.8635827664399,
-      "end": 680.3930158730159,
-      "text": "Två motstånd på vardera en megaohm delar tio volt lika.",
+      "start": 624.4293333333334,
+      "end": 628.312,
+      "text": "Two resistors, each one megohm, divide ten volts equally.",
       "scene": "delare"
     },
     {
-      "start": 680.5530158730159,
-      "end": 686.4044444444444,
-      "text": "Utan ansluten mätare blir spänningen över det nedre motståndet fem volt.",
+      "start": 628.532,
+      "end": 633.0120000000001,
+      "text": "With no meter connected, the voltage across the lower resistor is five volts.",
       "scene": "delare"
     },
     {
-      "start": 686.5644444444445,
-      "end": 689.7920181405896,
-      "text": "Vad händer när en verklig voltmeter kopplas in?",
+      "start": 633.232,
+      "end": 636.0053333333333,
+      "text": "What happens when a real voltmeter is connected?",
       "scene": "delare"
     },
     {
-      "start": 691.5,
-      "end": 697.1424489795918,
-      "text": "Voltmeterns ingång på tio megaohm hamnar parallellt med det nedre motståndet.",
+      "start": 638,
+      "end": 642.4586666666667,
+      "text": "The voltmeter's ten-megohm input is in parallel with the lower resistor.",
       "scene": "last10"
     },
     {
-      "start": 697.3024489795919,
-      "end": 703.2583673469388,
-      "text": "Parallellvärdet blir ungefär noll komma nio noll nio megaohm.",
+      "start": 642.6786666666667,
+      "end": 647.82,
+      "text": "The equivalent parallel resistance is about zero point nine zero nine megohms.",
       "scene": "last10"
     },
     {
-      "start": 703.4183673469388,
-      "end": 709.4787755102041,
-      "text": "Med spänningsdelarens formel får vi ungefär fyra komma sjuhundrasextiotvå volt.",
+      "start": 648.04,
+      "end": 653.1386666666666,
+      "text": "The voltage-divider equation then gives approximately four point seven six two volts.",
       "scene": "last10"
     },
     {
-      "start": 709.638775510204,
-      "end": 714.6775056689341,
-      "text": "Med hundradels upplösning visas fyra komma sjuttiosex.",
+      "start": 653.3586666666666,
+      "end": 657.5186666666666,
+      "text": "With a resolution of one hundredth, the display reads four point seven six.",
       "scene": "last10"
     },
     {
-      "start": 714.8375056689342,
-      "end": 718.3437188208617,
-      "text": "Mätaren har ändrat spänningen som vi ville undersöka.",
+      "start": 657.7386666666666,
+      "end": 661.0453333333332,
+      "text": "The meter has changed the voltage we wanted to investigate.",
       "scene": "last10"
     },
     {
-      "start": 720.5,
-      "end": 724.2268027210885,
-      "text": "Byt bara mätarens ingångsresistans till en megaohm.",
+      "start": 663,
+      "end": 666.4133333333333,
+      "text": "Change only the meter's input resistance to one megohm.",
       "scene": "last1"
     },
     {
-      "start": 724.3868027210884,
-      "end": 729.6112925170067,
-      "text": "En megaohm parallellt med en megaohm blir en halv megaohm.",
+      "start": 666.6333333333333,
+      "end": 670.58,
+      "text": "One megohm in parallel with one megohm is half a megohm.",
       "scene": "last1"
     },
     {
-      "start": 729.7712925170068,
-      "end": 736.0987301587302,
-      "text": "Tio gånger en halv, delat med ett plus en halv, ger ungefär tre komma tre tre tre volt.",
+      "start": 670.8,
+      "end": 677.1146666666666,
+      "text": "Ten times one half, divided by one plus one half, gives approximately three point three three three volts.",
       "scene": "last1"
     },
     {
-      "start": 736.2587301587301,
-      "end": 739.079954648526,
-      "text": "Pausa gärna och kontrollera beräkningen.",
+      "start": 677.3346666666666,
+      "end": 679.3613333333333,
+      "text": "Pause and check the calculation.",
       "scene": "last1"
     },
     {
-      "start": 742.5,
-      "end": 745.41410430839,
-      "text": "Jämför med fem volt utan mätare.",
+      "start": 683,
+      "end": 686.6906666666666,
+      "text": "Compare the result with the original five volts, without the meter.",
       "scene": "lastprocent"
     },
     {
-      "start": 745.57410430839,
-      "end": 751.622902494331,
-      "text": "Skillnaden dividerad med ursprungsvärdet ger ungefär minus trettiotre komma tre procent.",
+      "start": 686.9106666666667,
+      "end": 692.3293333333334,
+      "text": "Divide the difference by the original value to obtain about minus thirty-three point three per cent.",
       "scene": "lastprocent"
     },
     {
-      "start": 751.7829024943311,
-      "end": 754.5925170068027,
-      "text": "Minustecknet betyder lägre spänning.",
+      "start": 692.5493333333334,
+      "end": 694.8533333333334,
+      "text": "The minus sign means a lower voltage.",
       "scene": "lastprocent"
     },
     {
-      "start": 754.7525170068027,
-      "end": 759.489387755102,
-      "text": "Stora resistanser i givarkretsen gör påverkan tydlig.",
+      "start": 695.0733333333334,
+      "end": 698.5293333333334,
+      "text": "Large resistances in the sensor circuit make the effect clear.",
       "scene": "lastprocent"
     },
     {
-      "start": 759.649387755102,
-      "end": 764.2585487528344,
-      "text": "Högre ingångsresistans belastar mindre i just denna modell.",
+      "start": 698.7493333333333,
+      "end": 701.992,
+      "text": "Higher input resistance causes less loading in this model.",
       "scene": "lastprocent"
     },
     {
-      "start": 764.4185487528345,
-      "end": 769.2366893424036,
-      "text": "Belastningsfel är något annat än instrumentets egen felgräns.",
+      "start": 702.212,
+      "end": 705.4333333333333,
+      "text": "Loading error is separate from the instrument's own error limit.",
       "scene": "lastprocent"
     },
     {
-      "start": 771.0,
-      "end": 775.9458503401361,
-      "text": "Fördjupning: källan är nio volt och alla tre resistanser är två megaohm.",
+      "start": 707.5,
+      "end": 713.1106666666667,
+      "text": "For the extension example, the source is nine volts and all three resistances are two megohms.",
       "scene": "last9"
     },
     {
-      "start": 776.105850340136,
-      "end": 779.8674829931973,
-      "text": "Utan mätare blir spänningen fyra komma fem volt.",
+      "start": 713.3306666666666,
+      "end": 716.5946666666666,
+      "text": "Without the meter, the voltage is four point five volts.",
       "scene": "last9"
     },
     {
-      "start": 780.0274829931973,
-      "end": 782.9648072562359,
-      "text": "Den nedre parallellkopplingen blir en megaohm.",
+      "start": 716.8146666666667,
+      "end": 719.8439999999999,
+      "text": "The lower parallel combination is one megohm.",
       "scene": "last9"
     },
     {
-      "start": 783.1248072562358,
-      "end": 786.2711111111112,
-      "text": "Med mätaren ansluten får vi tre volt.",
+      "start": 720.064,
+      "end": 722.752,
+      "text": "With the meter connected, we obtain three volts.",
       "scene": "last9"
     },
     {
-      "start": 786.4311111111111,
-      "end": 790.6803628117914,
-      "text": "Även här blir förändringen minus trettiotre komma tre procent.",
+      "start": 722.972,
+      "end": 726.5559999999999,
+      "text": "Once again, the change is minus thirty-three point three per cent.",
       "scene": "last9"
     },
     {
-      "start": 792.5,
-      "end": 795.7043537414966,
-      "text": "Även strömmätaren förändrar kretsen.",
+      "start": 728.5,
+      "end": 730.932,
+      "text": "An ammeter also changes the circuit.",
       "scene": "burden"
     },
     {
-      "start": 795.8643537414966,
-      "end": 801.1236734693878,
-      "text": "Med tolv volt och hundratjugo ohm blir strömmen noll komma ett ampere.",
+      "start": 731.152,
+      "end": 735.76,
+      "text": "Twelve volts across one hundred and twenty ohms gives zero point one amperes.",
       "scene": "burden"
     },
     {
-      "start": 801.2836734693877,
-      "end": 810.9547845804989,
-      "text": "Om mätaren tillför en ohm blir totalen hundratjugoen ohm och strömmen ungefär noll komma noll nio nio två ampere.",
+      "start": 735.98,
+      "end": 740.5453333333334,
+      "text": "If the meter adds one ohm, the total becomes one hundred and twenty-one ohms.",
       "scene": "burden"
     },
     {
-      "start": 811.1147845804988,
-      "end": 814.3539682539682,
-      "text": "Shunt och säkring orsakar spänningsfall.",
+      "start": 740.7653333333334,
+      "end": 744.5413333333333,
+      "text": "Current falls to about zero point zero nine nine two amperes.",
       "scene": "burden"
     },
     {
-      "start": 814.5139682539683,
-      "end": 818.1362811791383,
-      "text": "I manualer kallas detta ofta burden voltage.",
+      "start": 744.7613333333334,
+      "end": 747.172,
+      "text": "The shunt and fuse cause a voltage drop.",
       "scene": "burden"
     },
     {
-      "start": 820.0,
-      "end": 823.5526530612245,
-      "text": "Varför mäts volt parallellt och ampere i serie?",
+      "start": 747.392,
+      "end": 750.4000000000001,
+      "text": "Instrument manuals often call this burden voltage.",
+      "scene": "burden"
+    },
+    {
+      "start": 752.5,
+      "end": 755.6573333333333,
+      "text": "Why do we measure volts in parallel and amperes in series?",
       "scene": "repetition"
     },
     {
-      "start": 823.7126530612245,
-      "end": 828.1244444444444,
-      "text": "Varför måste resistans mätas i en frånskild krets?",
+      "start": 755.8773333333334,
+      "end": 759.0773333333334,
+      "text": "Why must resistance be measured in an isolated circuit?",
       "scene": "repetition"
     },
     {
-      "start": 828.2844444444445,
-      "end": 829.7124716553288,
-      "text": "Förklara med ett schema.",
+      "start": 759.2973333333333,
+      "end": 761.132,
+      "text": "Explain using a diagram.",
       "scene": "repetition"
     },
     {
-      "start": 829.8724716553288,
-      "end": 834.5048526077097,
-      "text": "Skilj på upplösning, felgräns, tolerans och belastningsfel.",
+      "start": 761.352,
+      "end": 764.9573333333333,
+      "text": "Distinguish resolution, error limit, tolerance and loading error.",
       "scene": "repetition"
     },
     {
-      "start": 834.6648526077098,
-      "end": 839.9938321995465,
-      "text": "Rätt kategori och spänning skyddar mätningen, men gör inte avläsningen mer noggrann.",
+      "start": 765.1773333333333,
+      "end": 772.4093333333333,
+      "text": "The correct category and voltage rating provide protection for the measurement environment, but they do not make the reading more accurate.",
       "scene": "repetition"
     },
     {
-      "start": 842.0,
-      "end": 845.9241723356009,
-      "text": "Nu har Saga och Måsen ett arbetssätt i stället för en gissning.",
+      "start": 774.5,
+      "end": 777.4013333333334,
+      "text": "Saga and the Gull now have a method instead of a guess.",
       "scene": "egetarbete"
     },
     {
-      "start": 846.0841723356009,
-      "end": 850.9255328798185,
-      "text": "Öppna Multimeterlabbet, förutsäg värdet och välj funktion och uttag.",
+      "start": 777.6213333333334,
+      "end": 781.9946666666667,
+      "text": "Open the Multimeter Lab, predict the value, and select the function and sockets.",
       "scene": "egetarbete"
     },
     {
-      "start": 851.0855328798186,
-      "end": 853.1869387755103,
-      "text": "Koppla, läs av och förklara.",
+      "start": 782.2146666666666,
+      "end": 783.9639999999999,
+      "text": "Connect, read and explain.",
       "scene": "egetarbete"
     },
     {
-      "start": 853.3469387755102,
-      "end": 857.8748299319728,
-      "text": "Rita sedan en korrekt mätkoppling och skriv ett kort protokoll.",
+      "start": 784.184,
+      "end": 787.6826666666666,
+      "text": "Then draw the correct measurement circuit and write a short record.",
       "scene": "egetarbete"
     },
     {
-      "start": 858.0348299319728,
-      "end": 864.3506575963719,
-      "text": "Följ kursens inlämningsanvisning och lärarens instruktioner vid praktisk laboration.",
+      "start": 787.9026666666666,
+      "end": 793.7266666666666,
+      "text": "Follow the course submission instructions and the instructor's directions during practical laboratory work.",
       "scene": "egetarbete"
     },
     {
-      "start": 866.5,
-      "end": 870.9466213151927,
-      "text": "Filmen kompletterar presentationen Multimeter och mätfel.",
+      "start": 795.5,
+      "end": 799.7453333333333,
+      "text": "This film complements the presentation on multimeters and measurement errors.",
       "scene": "kallor"
     },
     {
-      "start": 871.1066213151928,
-      "end": 877.4340589569161,
-      "text": "Källor och fler svenska filmer finns i presentationen och under filmspelaren.",
+      "start": 799.9653333333333,
+      "end": 805.2773333333333,
+      "text": "References and additional Swedish videos are listed in the presentation and below this player.",
       "scene": "kallor"
     },
     {
-      "start": 877.5940589569161,
-      "end": 881.5530612244899,
-      "text": "Instrumentet här är en förenklad undervisningsmodell.",
+      "start": 805.4973333333334,
+      "end": 808.6546666666667,
+      "text": "The instrument shown here is a simplified teaching model.",
       "scene": "kallor"
     },
     {
-      "start": 881.7130612244898,
-      "end": 887.9708390022676,
-      "text": "Vid praktiskt arbete gäller det verkliga instrumentets manual och arbetets säkerhetsrutiner.",
+      "start": 808.8746666666667,
+      "end": 814.0586666666667,
+      "text": "For practical work, follow the actual instrument manual and the relevant safety procedures.",
       "scene": "kallor"
     },
     {
-      "start": 888.1308390022675,
-      "end": 889.9303854875283,
-      "text": "Tack för att du följde med ombord!",
+      "start": 814.2786666666667,
+      "end": 816.1986666666667,
+      "text": "Thank you for joining us aboard.",
       "scene": "kallor"
     }
   ],
   "voice": {
-    "name": "sv_SE-nst-medium",
-    "engine": "Piper (local)",
+    "name": "bf_emma",
+    "engine": "Kokoro-82M / kokoro-onnx 0.4.9 (local)",
     "synthetic": true,
-    "lengthScale": 1.07,
-    "noiseScale": 0,
-    "noiseWScale": 0
+    "speed": 0.96,
+    "language": "en-gb",
+    "modelSHA256": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "voicesSHA256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
   }
 }
