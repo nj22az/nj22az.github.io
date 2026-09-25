@@ -6,7 +6,7 @@
    "8": [
     "th",
     "v45_01_s08_halvering",
-    "Matningskedja med mätpunkterna A till E mellan källa och last; den första mätningen görs i mitten vid C"
+    "Matningskedja med mätpunkterna A till E mellan källa och last; den första mätningen görs i mitten vid C och avgör vilken halva som undersöks"
    ],
    "17": [
     "ovn",
@@ -32,12 +32,12 @@
    "7": [
     "th",
     "v45_02_s07_krav",
-    "Kravintervall 23,00–25,00 V och mätintervall 22,95–23,25 V som går under kravets nedre gräns"
+    "Kravintervall 23,00–25,00 V och mätintervall 24,75–25,05 V som går över kravets övre gräns"
    ],
    "9": [
     "th",
     "v45_02_s09_exempel",
-    "Kravintervall 19,60–20,40 V och mätintervall 19,55–19,85 V; nedre mätgräns 0,05 V under kravet"
+    "Kravintervall 19,60–20,40 V och mätintervall 19,65–19,95 V som ligger helt inom kravet"
    ],
    "17": [
     "ovn",
@@ -47,7 +47,7 @@
    "24": [
     "th",
     "v45_02_s24_exempel",
-    "Seriekrets: källa 12 V, last 9 V, ström 1,5 A; framledningen tappar 2,25 V och returen 0,75 V"
+    "Seriekrets: källa 12 V, last 9 V, ström 1,5 A; framledningen tappar 2,1 V och returen 0,9 V"
    ]
   }
  },
@@ -58,7 +58,7 @@
    "9": [
     "th",
     "v45_03_s09_exempel",
-    "Spänningsdelare: 18 V över 1 kilohm och 2 kilohm med en last på 2 kilohm; utspänningen 9 V"
+    "Spänningsdelare: 18 V över 2 kilohm och 2 kilohm med en last på 2 kilohm; utspänningen 6 V"
    ],
    "13": [
     "ovn",

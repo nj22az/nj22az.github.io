@@ -28,7 +28,7 @@ load(ax, 3.9, 0.9, 1.5); ax.plot([3.9, 3.9], [1.7, 1.5], color=INK, lw=LW); ax.p
 for x, n in zip(xs[1:], "ABCDE"): dot(ax, x, 1.7, 0.05); ax.text(x, 1.88, n, ha="center", fontsize=13, weight="bold", color=BLUE)
 ax.text(2.2, 2.5, "Mät först mitt i kedjan", ha="center", fontsize=13)
 harrow(ax, (2.2, 2.3), (2.2, 2.05), color=BLUE)
-ax.text(1.2, 0.35, "rätt värde: felet efter", ha="center", fontsize=11, color=GRAY); ax.text(3.2, 0.35, "fel värde: felet före", ha="center", fontsize=11, color=GRAY)
+ax.text(2.2, 0.38, "rätt värde vid C: sök mellan C och lasten", ha="center", fontsize=11, color=GRAY); ax.text(2.2, 0.12, "fel värde vid C: sök mellan källan och C", ha="center", fontsize=11, color=GRAY)
 save(F, "v45_01_s08_halvering")
 
 def series(name, src, top_items, load_label, ann=(), ret=None, cur=None):
@@ -68,8 +68,8 @@ def interval(name, req, meas, title, lo, hi):
     ax.text((lo + hi) / 2, 0.04, "mätning ± felgräns", ha="center", fontsize=12, color=BLUE)
     ax.text((lo + hi) / 2, 0.92, title, ha="center", fontsize=12.5)
     save(F, name)
-interval("v45_02_s07_krav", (23.0, 25.0), (23.10, 0.15), "Mätintervallet går under kravets nedre gräns", 22.6, 25.4)
-interval("v45_02_s09_exempel", (19.60, 20.40), (19.70, 0.15), "Nedre mätgräns 0,05 V under kravet", 19.35, 20.65)
+interval("v45_02_s07_krav", (23.0, 25.0), (24.90, 0.15), "Mätintervallet går över kravets övre gräns", 22.6, 25.4)
+interval("v45_02_s09_exempel", (19.60, 20.40), (19.80, 0.15), "Hela mätintervallet ligger inom kravet", 19.35, 20.65)
 
 def fram_retur(name, src, last, cur, fram, retur):
     F = fig(4.3, 3.0); ax = cax(F, (0, 4.3), (-0.2, 2.8))
@@ -80,7 +80,7 @@ def fram_retur(name, src, last, cur, fram, retur):
     harrow(ax, (3.0, 2.1), (3.4, 2.1), color=BLUE); ax.text(3.2, 1.88, cur, ha="center", fontsize=12.5, color=BLUE)
     save(F, name)
 fram_retur("v45_02_s17_ovn4", "24 V", "20 V", "2 A", "ΔU = ?", "ΔU = 1 V")
-fram_retur("v45_02_s24_exempel", "12 V", "9 V", "1,5 A", "ΔU = 2,25 V", "ΔU = 0,75 V")
+fram_retur("v45_02_s24_exempel", "12 V", "9 V", "1,5 A", "ΔU = 2,1 V", "ΔU = 0,9 V")
 
 # ================= v45_03 =================
 def divider(name, uin, r1, r2, rl, uut):
@@ -92,7 +92,7 @@ def divider(name, uin, r1, r2, rl, uut):
     dcsrc(ax, 0.5, 0.7, uin)
     ax.text(3.1, 1.55, uut, ha="center", fontsize=13.5, color=col(uut))
     save(F, name)
-divider("v45_03_s09_exempel", "18 V", "1 kΩ", "2 kΩ", "last 2 kΩ", S("U", "ut") + " = 9 V")
+divider("v45_03_s09_exempel", "18 V", "2 kΩ", "2 kΩ", "last 2 kΩ", S("U", "ut") + " = 6 V")
 divider("v45_03_s15_ovn3", "24 V", S("R", "1") + " = 2 kΩ", S("R", "2") + " = 4 kΩ", "last 4 kΩ", S("U", "ut") + " = ?")
 
 # s13 nodlag
