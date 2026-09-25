@@ -1,0 +1,46 @@
+/* Sjöskolan · grundvärden och komponenter enligt DESIGN.md */
+:root{--sj-blue:#064f91;--sj-blue-dark:#053f74;--sj-ink:#163248;--sj-muted:#4d6579;--sj-line:#cad8e2;--sj-soft:#edf4f9;--sj-paper:#fff;--sj-page:#f4f7fa;--sj-ok:#176844;--sj-warn:#9a4a12;--sj-danger:#b8323c;--sj-focus:#ffd43d;--sj-field:#5d7282}
+.sj{margin:0;background:var(--sj-paper);color:var(--sj-ink);font:17px/1.65 Arial,Helvetica,sans-serif}
+.sj *{box-sizing:border-box}
+.sj [hidden]{display:none!important}
+.sj a{color:var(--sj-blue);text-underline-offset:3px}
+.sj a:hover{text-decoration-thickness:2px}
+.sj :focus-visible{outline:3px solid var(--sj-ink);outline-offset:2px;box-shadow:0 0 0 6px var(--sj-focus)}
+.sj h1{font-size:clamp(34px,4.2vw,44px);line-height:1.15;letter-spacing:-.02em;margin:8px 0 16px}
+.sj h2{font-size:26px;line-height:1.25;margin:0 0 16px}
+.sj h3{font-size:20px;line-height:1.3;margin:24px 0 8px}
+.sj p{margin:8px 0 16px}
+.sj-wrap{max-width:1160px;margin:0 auto;padding:32px 24px 64px}
+.sj-kicker{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sj-muted);margin:0}
+.sj-lead{font-size:20px;line-height:1.5;color:var(--sj-muted);max-width:60ch}
+.sj-muted{color:var(--sj-muted);font-size:15px}
+/* Knappar */
+.sj-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 22px;border-radius:8px;border:1px solid var(--sj-blue);background:var(--sj-paper);color:var(--sj-blue)!important;font:700 17px/1.2 Arial,Helvetica,sans-serif;text-decoration:none;cursor:pointer}
+.sj-btn:hover{background:var(--sj-soft);text-decoration:none}
+.sj-btn.primary{background:var(--sj-blue);color:#fff!important}
+.sj-btn.primary:hover{background:var(--sj-blue-dark)}
+.sj-btn.large{min-height:56px;padding:14px 28px;font-size:18px}
+/* Paneler */
+.sj-panel{background:var(--sj-paper);border:1px solid var(--sj-line);border-left:8px solid var(--sj-blue);border-radius:12px;padding:20px 24px}
+.sj-panel.soft{background:var(--sj-soft)}
+.sj-panel.ok{border-left-color:var(--sj-ok)}.sj-panel.warn{border-left-color:var(--sj-warn)}
+@media(min-width:768px){.sj-panel{border-left-width:16px}}
+/* Numrerade steg */
+.sj-steps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.sj-steps li{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;border:1px solid var(--sj-line);border-radius:8px;background:var(--sj-paper);color:var(--sj-muted);font-size:15px}
+.sj-steps li b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--sj-soft);color:var(--sj-ink);font-size:14px}
+.sj-steps li[aria-current]{border-color:var(--sj-blue);color:var(--sj-blue);font-weight:700;box-shadow:inset 0 -3px 0 var(--sj-blue)}
+.sj-steps li[aria-current] b{background:var(--sj-blue);color:#fff}
+.sj-steps a{color:inherit;text-decoration:none}
+/* Tabeller */
+.sj-table{width:100%;border-collapse:collapse;font-size:16px}
+.sj-table th{background:var(--sj-soft);text-align:left;font-weight:700}
+.sj-table th,.sj-table td{border-bottom:1px solid var(--sj-line);padding:10px 12px;vertical-align:top}
+.sj-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+/* Meny och sidfot */
+.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid var(--sj-line);padding:14px max(24px,calc((100% - 1160px)/2));background:#fff;color:var(--sj-ink);font:16px/1.4 Arial,Helvetica,sans-serif}
+.school-nav a{color:var(--sj-blue);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.school-nav strong{letter-spacing:.08em;font-size:18px}
+footer.school-nav{border-top:1px solid var(--sj-line);border-bottom:0;margin-top:40px;color:var(--sj-muted);justify-content:center}
+@media(max-width:767px){.sj-wrap{padding:24px 16px 48px}.school-nav{padding:10px 16px}.sj h2{font-size:23px}}
+@media print{.school-nav,.no-print{display:none!important}.sj-wrap{padding:0}}

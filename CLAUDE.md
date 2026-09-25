@@ -111,3 +111,7 @@ assets/
   images/               # Photos, icons
   video/                # Video assets
 ```
+
+## Sjöskolan
+
+Kursen under `sjoskolan/` har ett eget designsystem: `sjoskolan/DESIGN.md` (grundvärden i `sjoskolan/gemensamt/sjoskolan.css`). Kurssidor och labbar använder Sjöskolans meny och fasta färger, inte webbplatsens `shared.js`-teman.

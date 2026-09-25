@@ -6,7 +6,7 @@
 <meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/vaxelstromslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260925-ac2"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="equipment.css?v=20260925-3d1"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
+<link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260926"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="workspace.css?v=20260926"><link rel="stylesheet" href="equipment.css?v=20260925-3d1"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 </head>
 <body class="ac-page">
 <nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-40/aktuell/">Vecka 40</a><a href="../vecka-40/aktuell/Lararstod.html">Lärarstöd</a></nav>
@@ -25,8 +25,11 @@
   </header>
 
   <div class="mode-picker" aria-label="Arbetssätt"><button type="button" data-mode="guidad" aria-pressed="true">Guidad labb · grunddel</button><button type="button" data-mode="fri" aria-pressed="false">Utforska och räkna vidare</button><button type="button" data-mode="station" aria-pressed="false">Station B · utökat protokoll</button></div>
-  <section id="guided-workspace" class="guide" aria-label="Guidad grundlabb"></section>
+
+  <div class="ac-workspace">
   <section id="equipment-bench" class="equipment" aria-label="Simulerad utrustning"><p>Instrumentbänken laddas. Uppgifterna ovan kan användas direkt.</p></section>
+  <section id="guided-workspace" class="guide" aria-label="Guidad grundlabb"></section>
+  </div>
   <div id="free-workspace" hidden><p id="free-intro" class="station-intro">Här kan du ändra värden fritt eller välja en räkna-först-uppgift. Grundprotokollet finns under Guidad labb. Börja med genomgången innan du väljer fördjupning.</p>
   <div class="tabs" role="tablist" aria-label="Del av labbet">
     <button role="tab" id="tab-sinus" data-tab="sinus" aria-controls="lab" aria-selected="true"><span>1</span>Sinus och effektivvärde</button>
