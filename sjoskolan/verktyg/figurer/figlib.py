@@ -146,9 +146,12 @@ def contact(ax,x,y,closed,label=None,nc=False,L=0.6,color=INK,unknown=False):
     ax.plot([x-L/2,x+L/2],[y,y],color="white",lw=LW*3,zorder=2)
     dot(ax,x-L/2,y,0.045,color); dot(ax,x+L/2,y,0.045,color)
     c=GRAY if unknown else color; ls="--" if unknown else "-"
-    if closed: ax.plot([x-L/2,x+L/2+0.03],[y,y+0.02],color=c,lw=LW,zorder=3,ls=ls)
+    if nc:  # IEC 60617: kniven vilar mot ett stopp på högra anslutningen och trycks nedåt när den öppnar
+        ax.plot([x+L/2,x+L/2],[y,y+0.2],color=color,lw=LW,zorder=3)
+        if closed: ax.plot([x-L/2,x+L/2+0.06],[y,y+0.24],color=c,lw=LW,zorder=3,ls=ls)
+        else: ax.plot([x-L/2,x+L/2-0.1],[y,y-0.1],color=c,lw=LW,zorder=3,ls=ls)
+    elif closed: ax.plot([x-L/2,x+L/2+0.03],[y,y+0.02],color=c,lw=LW,zorder=3,ls=ls)
     else: ax.plot([x-L/2,x+L/2*0.9],[y,y+0.28],color=c,lw=LW,zorder=3,ls=ls)
-    if nc: ax.plot([x+L/2,x+L/2],[y,y+0.2],color=color,lw=LW,zorder=3)
     if label: ax.text(x,y-0.2,label,ha="center",va="top",fontsize=13,color=color)
 def coil(ax,x,y,label="K1",on=False,w=0.55,h=0.34):
     ax.plot([x-w/2,x+w/2],[y,y],color="white",lw=LW*3,zorder=2)

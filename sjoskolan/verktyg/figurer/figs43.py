@@ -27,7 +27,7 @@ ax.tick_params(labelsize=11, colors=GRAY); ax.set_xticks([1, 10, 100, 1000]); ax
 ax.set_yticks([0.01, 1, 100]); ax.set_yticklabels(["0,01", "1", "100"])
 ax.set_xlabel("ström / märkström", fontsize=12); ax.set_ylabel("tid (s)", fontsize=12)
 ax.text(6, 40, "överlast:\nlångsam", fontsize=12, color=ORANGE); ax.text(12, 0.04, "kortslutning: snabb", fontsize=12, color=ORANGE)
-F.text(0.55, 0.94, "Principskiss, inte ett verkligt skydd", ha="center", fontsize=12, color=GRAY)
+F.text(0.55, 0.94, "Dvärgbrytare, principskiss", ha="center", fontsize=12, color=GRAY)
 save(F, "v43_01_s07_kurva")
 
 # jordfelsbrytare: gemensam ritfunktion
@@ -50,17 +50,19 @@ def rcd(name, iut, iret, idelta, leak=True, note=None, idcol=BLUE):
 rcd("v43_01_s08_jordfel", S("I", "ut"), S("I", "retur"), "|" + S("I", "ut") + " − " + S("I", "retur") + "|")
 rcd("v43_01_s09_exempel", "2,000 A", "1,985 A", "15 mA")
 rcd("v43_01_s16_stod4", "5,000 A", "4,970 A", "?")
-rcd("v43_01_s18_stod5", "för stor ström", "samma ström", "≈ 0", leak=False, note="överlast ≠ jordfel")
+rcd("v43_01_s18_stod5", "för stor ström", "samma ström", "?", leak=False)
 
 # s21: kontaktor och relä
 F = fig(4.3, 3.2); ax = cax(F, (0, 4.3), (0, 3.2))
 coil(ax, 0.9, 1.6, "K1", w=0.7, h=0.45); ax.plot([0.9, 0.9], [2.4, 1.83], color=INK, lw=LW); ax.plot([0.9, 0.9], [1.37, 0.8], color=INK, lw=LW)
-ax.text(0.9, 0.55, "spole", ha="center", fontsize=12)
-contact(ax, 2.6, 2.3, False, "NO (13–14)"); contact(ax, 2.6, 1.0, True, "NC (21–22)", nc=True)
-for y in (2.3, 1.0): ax.plot([1.9, 2.3], [y, y], color=INK, lw=LW); ax.plot([2.9, 3.4], [y, y], color=INK, lw=LW)
-ax.plot([1.25, 2.55], [1.6, 1.6], color=GRAY, lw=1.4, ls=(0, (4, 3))); ax.plot([2.55, 2.55], [1.1, 2.4], color=GRAY, lw=1.4, ls=(0, (4, 3)))
+ax.text(1.02, 2.2, "A1", fontsize=11, color=GRAY); ax.text(1.02, 1.0, "A2", fontsize=11, color=GRAY); ax.text(0.9, 0.55, "spole", ha="center", fontsize=12)
+contact(ax, 2.6, 2.3, False, "NO"); contact(ax, 2.6, 1.0, True, "NC", nc=True)
+for y, (t1, t2) in ((2.3, ("13", "14")), (1.0, ("21", "22"))):
+    ax.plot([1.9, 2.3], [y, y], color=INK, lw=LW); ax.plot([2.9, 3.4], [y, y], color=INK, lw=LW)
+    ax.text(2.2, y + 0.12, t1, ha="center", fontsize=11, color=GRAY); ax.text(3.0, y + 0.12, t2, ha="center", fontsize=11, color=GRAY)
+ax.plot([1.25, 3.3], [1.6, 1.6], color=GRAY, lw=1.4, ls=(0, (4, 3)))
 ax.text(2.15, 2.9, "Opåverkat läge", ha="center", fontsize=13, weight="bold")
-ax.text(3.5, 2.3, "öppen", fontsize=12, va="center", color=BLUE); ax.text(3.5, 1.0, "sluten", fontsize=12, va="center", color=BLUE)
+ax.text(3.38, 1.6, "mekanisk\nkoppling", fontsize=10.5, va="center", color=GRAY)
 save(F, "v43_01_s21_kontaktor")
 
 # s23: selektivitet
@@ -75,6 +77,7 @@ for k, (x, t) in enumerate(((0.15, "grupp A"), (1.5, "grupp B"), (2.85, "grupp C
 ax.add_patch(Polygon([(2.1, 0.75), (2.3, 0.45), (2.17, 0.45), (2.3, 0.15), (2.02, 0.5), (2.15, 0.5)], fc=ORANGE, ec="none"))
 ax.text(2.4, 0.35, "fel", fontsize=12, color=ORANGE)
 ax.text(2.15, 3.52, "Bara skyddet närmast felet löser", ha="center", fontsize=12.5, va="top")
+ax.text(0.05, 0.08, "Ombord: generatorbrytare → huvudtavla → grupptavla", fontsize=10.5, color=GRAY)
 save(F, "v43_01_s23_selektivitet")
 
 # s24: exempel brytförmåga
@@ -92,8 +95,9 @@ save(F, "v43_01_s24_exempel")
 def trafo(name, n1, n2, u1, u2, i1=None, i2=None, load=False):
     F = fig(4.3, 3.0); ax = cax(F, (0, 4.3), (0, 3.0))
     ax.add_patch(Rectangle((1.45, 0.55), 1.4, 1.9, fc="none", ec=CORE, lw=14))
-    for x0, sgn in ((1.45, -1), (2.85, 1)):
-        for k in range(5): ax.add_patch(Arc((x0, 0.9 + k * 0.3), 0.5, 0.3, theta1=90 if sgn < 0 else -90, theta2=270 if sgn < 0 else 90, color=BLUE, lw=2.2, zorder=4))
+    for x0, sgn, n in ((1.45, -1, 8), (2.85, 1, 3)):  # fler varv på den högre spänningens sida
+        sp = 1.2 / n
+        for k in range(n): ax.add_patch(Arc((x0, 0.9 + (k + 0.5) * sp), 0.45, sp, theta1=90 if sgn < 0 else -90, theta2=270 if sgn < 0 else 90, color=BLUE, lw=2.2, zorder=4))
     ax.plot([0.35, 1.2, 1.2], [2.3, 2.3, 2.1], color=INK, lw=LW); ax.plot([0.35, 1.2, 1.2], [0.7, 0.7, 0.9], color=INK, lw=LW)
     ax.plot([3.95, 3.1, 3.1], [2.3, 2.3, 2.1], color=INK, lw=LW); ax.plot([3.95, 3.1, 3.1], [0.7, 0.7, 0.9], color=INK, lw=LW)
     ax.text(1.15, 0.33, n1, ha="center", va="center", fontsize=13, color=BLUE); ax.text(3.15, 0.33, n2, ha="center", va="center", fontsize=13, color=BLUE)
@@ -111,7 +115,7 @@ trafo("v43_02_s11_ovn1", "N₁ = 1 000", "N₂ = 100", "U₁ = 230 V", "U₂ = ?
 trafo("v43_02_s13_ovn2", "N₁", "N₂", "U₁ = 240 V", "U₂ = 24 V", i1="I₁ = ?", i2="I₂ = 3 A", load=True)
 
 # s8: fält och rotor, eftersläpning
-F = fig(4.3, 3.9); ax = cax(F, (-2.15, 2.15), (-1.95, 1.95))
+F = fig(4.3, 4.1); ax = cax(F, (-2.15, 2.15), (-2.1, 2.0))
 ax.add_patch(Circle((0, 0), 1.45, fc="none", ec=CORE, lw=16))
 for k, (a, t) in enumerate(((90, "N"), (180, "S"), (270, "N"), (0, "S"))):
     ax.text(1.05 * np.cos(np.radians(a)), 1.05 * np.sin(np.radians(a)), t, ha="center", va="center", fontsize=13, weight="bold", color=GRAY)
@@ -119,8 +123,8 @@ ax.add_patch(Circle((0, 0), 0.62, fc=PALE, ec=INK, lw=1.8)); ax.text(0, 0, "roto
 ax.add_patch(Arc((0, 0), 2.5, 2.5, theta1=20, theta2=75, color=BLUE, lw=3)); harrow(ax, (0.38, 1.2), (0.28, 1.22), color=BLUE, lw=3)
 ax.add_patch(Arc((0, 0), 1.6, 1.6, theta1=25, theta2=60, color=ORANGE, lw=3)); harrow(ax, (0.43, 0.68), (0.36, 0.72), color=ORANGE, lw=3)
 ax.text(0, 1.8, "fält: " + S("n", "s") + " = 1 800 r/min", ha="center", fontsize=12.5, color=BLUE)
-ax.text(-2.1, -1.65, "rotor: n = 1 746 r/min", fontsize=12.5, color=ORANGE)
-ax.text(2.1, -1.65, "4 poler, 60 Hz", fontsize=12.5, ha="right", color=GRAY)
+ax.text(-2.1, -1.95, "rotor: n = 1 746 r/min", fontsize=12.5, color=ORANGE)
+ax.text(2.1, -1.95, "4 poler, 60 Hz", fontsize=12.5, ha="right", color=GRAY)
 save(F, "v43_02_s08_slip")
 
 # s21: startström, principskiss
@@ -168,13 +172,13 @@ def latch(name, s0=True, s1=False, k1=False, coil_on=False, vq=None, note=None):
     F = fig(4.3, 3.0); ax = F.add_axes((0.0, 0.0, 1.0, 1.0)); ax.set_xlim(-0.4, 5.0); ax.set_ylim(-0.9, 2.85); ax.set_aspect("equal"); ax.axis("off")
     y = 0.9; yl = 0.0
     ax.plot([0, 4.6], [y, y], color=INK, lw=LW); ax.text(-0.05, y + 0.25, "+12 V", fontsize=12, ha="left"); ax.text(4.6, y + 0.25, "0 V", fontsize=12, ha="right")
-    contact(ax, 0.8, y, s0, "S0 NC", nc=True); dot(ax, 1.5, y, 0.05); dot(ax, 3.1, y, 0.05)
-    contact(ax, 2.3, y, s1, "S1 NO"); ax.plot([1.5, 1.5, 3.1, 3.1], [y, yl, yl, y], color=INK, lw=LW)
+    contact(ax, 0.8, y, s0, "S0 STOPP", nc=True); dot(ax, 1.5, y, 0.05); dot(ax, 3.1, y, 0.05)
+    contact(ax, 2.3, y, s1, "S1 START"); ax.plot([1.5, 1.5, 3.1, 3.1], [y, yl, yl, y], color=INK, lw=LW)
     contact(ax, 2.3, yl, k1, "K1 NO"); coil(ax, 3.85, y, "K1", on=coil_on)
     if vq == "spole": vmark(ax, (3.55, y + 0.45), (4.15, y + 0.45), "", color=RED); ax.text(3.85, y + 0.7, S("U", "spole") + " = ?", ha="center", fontsize=14, color=RED)
     if vq == "stopp": vmark(ax, (0.5, y + 0.55), (1.1, y + 0.55), "", color=RED); ax.text(0.8, y + 0.8, S("U", "S0") + " = ?", ha="center", fontsize=14, color=RED)
     if note: ax.text(2.3, 2.45, note, ha="center", fontsize=13)
     save(F, name)
 latch("v43_03_s26_ovn6", vq="spole", note="Vila: S0 sluten, S1 öppen")
-latch("v43_03_s28_ovn7", s1=True, vq="spole", note="Start: S1 hålls sluten")
+latch("v43_03_s28_ovn7", s1=True, k1=True, vq="spole", note="Start: S1 hålls sluten, K1 har dragit")
 latch("v43_03_s30_ovn8", s0=False, s1=True, vq="stopp", note="S1 hålls sluten, S0 öppnas")

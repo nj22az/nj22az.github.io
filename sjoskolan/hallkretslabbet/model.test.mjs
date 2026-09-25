@@ -23,7 +23,7 @@ test('flytande punkter ger inget värde', () => {
   const r = solve({ ...DEFAULTS, fault: 'retur', s0: true }, false); assert.ok(Number.isNaN(meter(r.V, 'b', 'N')));
 });
 test('uppgifter: facit, masker och typfel', () => {
-  const want = { vila: 24, start: 24, strom: 50, stopp: 24, hall: 24, retur: 24 };
+  const want = { vila: 24, start: 24, strom: 50, stopp: 24, hall: 24, retur: 24, hallning: 0, avbrott: 0 };
   assert.equal(CHALLENGES.length, Object.keys(want).length);
   for (const c of CHALLENGES) {
     const e = expected(c); assert.ok(isClose(e, want[c.id]), `${c.id}: ${e}`);

@@ -28,7 +28,8 @@ function contact(x1, x2, y, closed, live, { nc = false, label = '', below = fals
   return b + txt((x1 + x2) / 2, below ? y + 26 : y - 40, label, { size: 14, anchor: 'middle', weight: 700, color: broken ? K.red : K.ink });
 }
 const XY = { P: [60, 150], a: [230, 150], b: [450, 150], c: [610, 150], N: [690, 150] };
-function schematic(s, r) {
+function schematic(s0, r) {
+  const s = state.challenge?.hideFault ? { ...s0, fault: 'ingen' } : s0; // felet visas inte grafiskt under diagnosuppgiften
   const Y = 150, YU = 80, YD = 225, live = r.I > 1e-9 && !masked('nodes');
   const up = live && s.s1, down = live && s.k1 && s.fault !== 'hall';
   let b = '';
@@ -56,7 +57,7 @@ function schematic(s, r) {
     b += `<circle cx="${x}" cy="${y}" r="${probe ? 8 : 5}" fill="${probe || '#fff'}" stroke="${K.ink}" stroke-width="2"/>`;
     if (n !== 'P' && n !== 'N') b += txt(x, y + 24, n, { size: 15, anchor: 'middle', weight: 700, color: K.blue });
   }
-  b += txt(360, 300, s.k1 ? 'K1 dragen: motorn går' : 'K1 släppt: motorn står', { size: 16, anchor: 'middle', weight: 700, color: s.k1 ? K.green : K.muted });
+  b += txt(360, 300, s.k1 ? 'K1 dragen' : 'K1 släppt', { size: 16, anchor: 'middle', weight: 700, color: s.k1 ? K.green : K.muted });
   return `<figure class="fig wide"><figcaption>Hållkrets med S0 STOPP (NC), S1 START (NO) och K1:s hjälpkontakt (NO)</figcaption><svg viewBox="0 0 720 320" role="img" aria-label="Hållkrets. K1 är ${s.k1 ? 'dragen' : 'släppt'}.">${b}</svg></figure>`;
 }
 
@@ -70,14 +71,12 @@ function renderControls() {
       <button type="button" id="b-s0" class="toggle" aria-pressed="${s.s0}">S0 STOPP: ${s.s0 ? 'intryckt' : 'släppt'}</button>
     </div>
     <div class="control control-check"><label class="check"><input type="checkbox" id="c-supply"${s.supply ? ' checked' : ''}> Styrspänning till</label></div>
-    <div class="control control-select"><label for="c-U">Matning</label><select id="c-U"><option value="24"${s.U === 24 ? ' selected' : ''}>24 V DC</option><option value="12"${s.U === 12 ? ' selected' : ''}>12 V DC</option></select></div>
-    <div class="control control-select"><label for="c-fault">Inlagt fel</label><select id="c-fault">${opt(FAULT_TEXT, s.fault)}</select></div>
+    <div class="control control-select"><label for="c-fault">Inlagt fel</label><select id="c-fault">${state.challenge?.hideFault ? '<option>Okänt fel</option>' : opt(FAULT_TEXT, s.fault)}</select></div>
     <div class="control control-select"><label for="c-red">Röd sond</label><select id="c-red">${opt(POINTS, s.red)}</select></div>
     <div class="control control-select"><label for="c-black">Svart sond</label><select id="c-black">${opt(POINTS, s.black)}</select></div>`;
   $('b-s1').onclick = () => update({ s1: !state.s.s1 });
   $('b-s0').onclick = () => update({ s0: !state.s.s0 });
   $('c-supply').onchange = (e) => update({ supply: e.target.checked });
-  $('c-U').onchange = (e) => update({ U: Number(e.target.value) });
   $('c-fault').onchange = (e) => update({ fault: e.target.value });
   $('c-red').onchange = (e) => update({ red: e.target.value });
   $('c-black').onchange = (e) => update({ black: e.target.value });
@@ -88,16 +87,17 @@ function render() {
   const s = state.s; const r = solve(s, s.k1);
   $('figures').innerHTML = schematic(s, r);
   const m = meter(r.V, s.red, s.black);
-  const pot = (n) => (masked('nodes') ? '?' : Number.isFinite(r.V[n]) ? `${fmt(r.V[n])} V` : 'flytande');
+  const pot = (n) => (masked('nodes') ? '?' : Number.isFinite(r.V[n]) ? `${fmt(r.V[n])} V` : 'flytande*');
   const items = [
-    ['Mätare', masked('meter') ? '?' : Number.isFinite(m) ? `${fmt(m)} V` : 'flytande', `röd ${s.red}, svart ${s.black === 'N' ? '0 V' : s.black}`],
+    ['Mätare', masked('meter') ? '?' : Number.isFinite(m) ? `${fmt(m)} V` : 'flytande*', `röd ${s.red}, svart ${s.black === 'N' ? '0 V' : s.black}`],
     ['Spolström', masked('I') ? '?' : `${fmt(r.I * 1000)} mA`, `spolen ${s.R} Ω`],
     ['a', pot('a'), 'efter S0'], ['b', pot('b'), 'spolens matningssida'], ['c', pot('c'), 'spolens retursida'],
   ];
   $('readouts').innerHTML = items.map(([k, v, d]) => `<div class="${v === '?' ? 'hidden-value' : ''}"><dt>${esc(k)}</dt><dd><strong>${esc(v)}</strong><span>${esc(d)}</span></dd></div>`).join('');
-  $('principle').textContent = s.fault !== 'ingen'
+  const floating = !masked('nodes') && (!Number.isFinite(m) || ['a', 'b', 'c'].some((n) => !Number.isFinite(r.V[n])));
+  $('principle').textContent = (floating ? '* Flytande: punkten är inte förbunden med matning eller retur. En verklig mätare visar då ungefär 0 V eller ett ostadigt värde. ' : '') + (s.fault !== 'ingen' && !state.challenge?.hideFault
     ? `Inlagt fel: ${FAULT_TEXT[s.fault]}. Mät mellan två punkter i taget och jämför med vad kretsen borde visa.`
-    : 'S0 ligger i serie före båda grenarna. S1 och K1:s hjälpkontakt ligger parallellt. När K1 drar håller hjälpkontakten kretsen sluten även när START släpps. Försvinner styrspänningen släpper K1 och startar inte själv igen.';
+    : 'S0 ligger i serie före båda grenarna. S1 och K1:s hjälpkontakt ligger parallellt. När K1 drar håller hjälpkontakten kretsen sluten även när START släpps. Försvinner styrspänningen släpper K1 och startar inte själv igen.');
   renderControls();
 }
 
