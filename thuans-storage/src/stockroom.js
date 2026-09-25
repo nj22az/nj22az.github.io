@@ -397,6 +397,10 @@ var Dd = new Set([
   `Space`,
   `KeyR`,
 ]);
+/** Pace scale when facing is not yet aligned with travel (WalkFix). Full forward, zero backward. */
+function alignedStep(angle) {
+  return Math.max(0, Math.cos(Math.min(Math.abs(angle), Math.PI)));
+}
 function Od(e, t, n = 0.15) {
   let r = Math.hypot(e, t);
   if (r < n) return { x: 0, y: 0 };
@@ -424,6 +428,7 @@ function kd() {
     c = 0,
     l = { x: 0, y: 0 },
     u = !1,
+    sprintPointerId = null,
     d = null,
     f = [],
     p = (n) => (t ? t.includes(n) : e.has(n)),
@@ -433,12 +438,18 @@ function kd() {
     h = (t) => {
       e.delete(t.code);
     },
+    clearSprint = () => {
+      u = false;
+      sprintPointerId = null;
+      n.sprint = false;
+    },
     g = () => {
-      e.clear(); t = null; l = {x:0,y:0}; u = false; a = false; c = 0;
+      e.clear(); t = null; l = {x:0,y:0}; u = false; sprintPointerId = null; a = false; c = 0;
       r = i = 0;
       Object.assign(n, {moveX:0,moveY:0,lookX:0,lookY:0,sprint:false,pause:false,lookHoldX:0,lookHoldY:0});
     },
     _ = (e) => {
+      if (e.pointerType === "touch") return; // React owns the two independent touch gestures.
       (e.pointerType !== `mouse` || e.button === 0 || e.button === 2) &&
         ((a = !0),
         (c = 0),
@@ -448,6 +459,7 @@ function kd() {
         e.preventDefault());
     },
     v = (e) => {
+      if (e.pointerType === "touch") return;
       if (document.pointerLockElement === d) {
         ((r += e.movementX), (i += e.movementY));
         return;
@@ -462,7 +474,11 @@ function kd() {
         (i += n));
     },
     y = (e) => {
+      if (e.pointerType === "touch") return;
       ((a = !1), e.currentTarget?.releasePointerCapture?.(e.pointerId));
+    },
+    onSprintPointerEnd = (ev) => {
+      if (sprintPointerId != null && ev.pointerId === sprintPointerId) clearSprint();
     },
     b = (e) => {
       ((d = e),
@@ -470,6 +486,8 @@ function kd() {
         window.addEventListener(`keyup`, h),
         window.addEventListener(`blur`, g),
         document.addEventListener(`visibilitychange`, g),
+        window.addEventListener(`pointerup`, onSprintPointerEnd),
+        window.addEventListener(`pointercancel`, onSprintPointerEnd),
         e.addEventListener(`pointerdown`, _),
         e.addEventListener(`pointermove`, v),
         e.addEventListener(`pointerup`, y),
@@ -480,6 +498,8 @@ function kd() {
             window.removeEventListener(`keyup`, h),
             window.removeEventListener(`blur`, g),
             document.removeEventListener(`visibilitychange`, g),
+            window.removeEventListener(`pointerup`, onSprintPointerEnd),
+            window.removeEventListener(`pointercancel`, onSprintPointerEnd),
             e.removeEventListener(`pointerdown`, _),
             e.removeEventListener(`pointermove`, v),
             e.removeEventListener(`pointerup`, y),
@@ -522,11 +542,13 @@ function kd() {
         (n.moveY = t),
         (n.lookHoldX = Math.max(-1, Math.min(1, r))),
         (n.lookHoldY = Math.max(-1, Math.min(1, i))),
+        // Hold-to-run only: Shift, touch Run button, or gamepad shoulder — never stick magnitude.
         (n.sprint = p(`ShiftLeft`) || p(`ShiftRight`) || u || o));
     };
   return {
     actions: n,
     reset: g,
+    clearSprint,
     attach: b,
     detach: () => {
       for (let e of f) e();
@@ -554,8 +576,13 @@ function kd() {
       // Touch look pad: amplify small flicks so the pad feels as quick as a mouse flick.
       ((r += e * 1.15), (i += t * 1.15));
     },
-    setTouchSprint: (e) => {
-      u = e;
+    setTouchSprint: (pressed, pointerId = null) => {
+      if (pressed) {
+        u = true;
+        if (pointerId != null) sprintPointerId = pointerId;
+      } else {
+        clearSprint();
+      }
     },
     tryPointerLock: (canvas) => {
       if (c > 6 || typeof canvas.requestPointerLock !== 'function' || window.matchMedia?.('(pointer: coarse)').matches) return;

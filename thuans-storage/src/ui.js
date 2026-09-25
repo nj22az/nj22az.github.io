@@ -23,6 +23,66 @@ function writeStorageWonHandshake({ day, assisted }) {
 function returnToJohanssonTown() {
   window.location.href = '/johansson-town/';
 }
+// Touch ownership is per pointer: releasing Look must never stop Move or Run.
+function createStorageTouchControls({ move, look, sprint, changed, activity }) {
+  let movement = null, looking = null, runPointer = null;
+  const publish = () => changed({
+    move: movement ? { ...movement } : null,
+    look: looking ? { ...looking } : null,
+    running: runPointer !== null,
+  });
+  const endRun = () => { runPointer = null; sprint(false); };
+  const update = (event) => {
+    if (movement?.id === event.pointerId) {
+      const x = (event.clientX - movement.startX) / 44;
+      const y = (event.clientY - movement.startY) / 44;
+      const length = Math.max(1, Math.hypot(x, y));
+      movement.x = x / length; movement.y = y / length;
+      move(movement.x, -movement.y);
+    } else if (looking?.id === event.pointerId) {
+      look((event.clientX - looking.lastX) * 2.15, (event.clientY - looking.lastY) * 2.15);
+      looking.lastX = event.clientX; looking.lastY = event.clientY;
+      looking.x = Math.max(-1, Math.min(1, (event.clientX - looking.startX) / 44));
+      looking.y = Math.max(-1, Math.min(1, (event.clientY - looking.startY) / 44));
+    } else return;
+    event.preventDefault(); publish();
+  };
+  return {
+    start(event) {
+      if (event.pointerType !== 'touch') return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const isMove = event.clientX < rect.left + rect.width / 2;
+      if ((isMove && movement) || (!isMove && looking)) return;
+      const point = { id: event.pointerId, startX: event.clientX, startY: event.clientY,
+        ox: event.clientX - rect.left, oy: event.clientY - rect.top,
+        lastX: event.clientX, lastY: event.clientY, x: 0, y: 0 };
+      if (isMove) { movement = point; move(0, 0); } else looking = point;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault(); activity(); publish();
+    },
+    update,
+    end(event) {
+      if (movement?.id === event.pointerId) { movement = null; move(0, 0); endRun(); }
+      else if (looking?.id === event.pointerId) looking = null;
+      else if (runPointer === event.pointerId) endRun();
+      else return;
+      publish();
+    },
+    startRun(event) {
+      if (!movement || runPointer !== null) return;
+      event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId);
+      runPointer = event.pointerId; sprint(true, event.pointerId); publish();
+    },
+    reset() { movement = looking = null; move(0, 0); endRun(); publish(); },
+  };
+}
+function storageTouchIndicator(point, label) {
+  return point && (0, $.jsx)('div', {
+    className: 'storage-stick', 'aria-hidden': true, 'data-stick': label,
+    style: { left: point.ox, top: point.oy },
+    children: (0, $.jsx)('span', { style: { transform: `translate(${point.x * 26}px, ${point.y * 26}px)` } }),
+  });
+}
 function yg() {
   let e = (0, C.useRef)(null),
     t = (0, C.useRef)(null),
@@ -31,10 +91,44 @@ function yg() {
     [i, a] = (0, C.useState)(`thuan`),
     [o, s] = (0, C.useState)(!1),
     [c, l] = (0, C.useState)(!0),
-    u = (0, C.useRef)({ id: -1, x: 0, y: 0, ox: 0, oy: 0 }),
-    [d, f] = (0, C.useState)({ x: 0, y: 0, active: !1 }),
-    p = (0, C.useRef)({ id: -1, x: 0, y: 0 }),
-    [m, h] = (0, C.useState)({ x: 0, y: 0, active: !1 });
+    [panel, setPanel] = (0, C.useState)(null),
+    [touch, setTouch] = (0, C.useState)({ move: null, look: null, running: false }),
+    gestures = (0, C.useRef)(null);
+  if (!gestures.current) gestures.current = createStorageTouchControls({
+    move: (x, y) => n.current?.setTouchMove(x, y),
+    look: (x, y) => n.current?.setTouchLook(x, y),
+    sprint: (held, id) => n.current?.setTouchSprint(held, id),
+    changed: setTouch,
+    activity: () => { setPanel(null); l(false); },
+  });
+  (0, C.useEffect)(() => {
+    gestures.current.reset(); setPanel(null);
+  }, [r.phase]);
+  (0, C.useEffect)(() => {
+    const reset = () => gestures.current.reset();
+    const hide = () => { if (document.hidden) reset(); };
+    const end = event => gestures.current.end(event);
+    const keyboard = event => {
+      if (['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code)) setPanel(null);
+    };
+    window.addEventListener('blur', reset);
+    window.addEventListener('resize', reset);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    window.addEventListener('keydown', keyboard);
+    document.addEventListener('visibilitychange', hide);
+    return () => {
+      window.removeEventListener('blur', reset);
+      window.removeEventListener('resize', reset);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      window.removeEventListener('keydown', keyboard);
+      document.removeEventListener('visibilitychange', hide);
+    };
+  }, []);
+  (0, C.useEffect)(() => {
+    if (r.moving && !r.autoRestocking) setPanel(null);
+  }, [r.moving, r.autoRestocking]);
   ((0, C.useEffect)(() => {
     let e = window.matchMedia(`(any-pointer: coarse)`).matches || navigator.maxTouchPoints > 0;
     (s(e), hm.getState().setHud({ isTouch: e }));
@@ -105,56 +199,11 @@ function yg() {
         () => window.removeEventListener(`keydown`, e)
       );
     }, []));
-  let g = (e) => {
-      let t = e.currentTarget.getBoundingClientRect();
-      ((u.current = {
-        id: e.pointerId,
-        x: 0,
-        y: 0,
-        ox: t.left + t.width / 2,
-        oy: t.top + t.height / 2,
-      }),
-        e.currentTarget.setPointerCapture(e.pointerId),
-        f({ x: 0, y: 0, active: !0 }));
-      _(e);
-    },
-    _ = (e) => {
-      if (u.current.id !== e.pointerId) return;
-      let t = (e.clientX - u.current.ox) / 48,
-        r = (e.clientY - u.current.oy) / 48,
-        i = Math.hypot(t, r) || 1,
-        a = i > 1 ? t / i : t,
-        o = i > 1 ? r / i : r;
-      (f({ x: a, y: o, active: !0 }), n.current?.setTouchMove(a, -o));
-    },
-    v = () => {
-      ((u.current.id = -1),
-        f({ x: 0, y: 0, active: !1 }),
-        n.current?.setTouchMove(0, 0));
-    },
-    y = (e) => {
-      ((p.current = { id: e.pointerId, x: e.clientX, y: e.clientY }),
-        e.currentTarget.setPointerCapture(e.pointerId),
-        h({ x: 0, y: 0, active: !0 }));
-    },
-    b = (e) => {
-      if (p.current.id !== e.pointerId) return;
-      let t = e.clientX - p.current.x,
-        r = e.clientY - p.current.y;
-      ((p.current.x = e.clientX),
-        (p.current.y = e.clientY),
-        n.current?.setTouchLook(t * 2.15, r * 2.15),
-        h((e) => ({
-          x: Math.max(-1, Math.min(1, e.x + t / 48)),
-          y: Math.max(-1, Math.min(1, e.y + r / 48)),
-          active: !0,
-        })));
-    },
-    x = () => {
-      ((p.current.id = -1), h({ x: 0, y: 0, active: !1 }));
-    },
-    S = r.phase === `playing`,
-    w = r.phase === `playing` || r.phase === `paused`;
+  const S = r.phase === 'playing';
+  const showPanel = name => {
+    gestures.current.reset();
+    setPanel(current => current === name ? null : name);
+  };
   return (0, $.jsxs)(`div`, {
     className: `relative h-dvh w-full overflow-hidden bg-ink text-paper`,
     children: [
@@ -162,102 +211,69 @@ function yg() {
         ref: e,
         className: `absolute inset-0 size-full cursor-grab touch-none active:cursor-grabbing`,
         onContextMenu: (e) => e.preventDefault(),
+        onPointerDown: event => {
+          if (!S) return;
+          setPanel(null);
+          gestures.current.start(event);
+        },
+        onPointerMove: event => { if (S) gestures.current.update(event); },
+        onPointerUp: event => gestures.current.end(event),
+        onPointerCancel: event => gestures.current.end(event),
+        onLostPointerCapture: event => gestures.current.end(event),
         onClick: () => {
           hm.getState().phase === `playing` &&
             (n.current?.requestLock(), l(!1));
         },
       }),
-      S && r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.reaction}),
-      S && r.guestPrompt && !r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.guestPrompt}),
+      S && !panel && r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.reaction}),
+      S && !panel && r.guestPrompt && !r.reaction && (0,$.jsx)('p', {className:'storage-speech', 'aria-live':'polite', children:r.guestPrompt}),
       S && r.autoRestocking && (0,$.jsx)('button', {className:'storage-handover',onClick:()=>n.current?.takeControl(),children:'Thuan is restocking · Take control'}),
       i === 'error' && (0,$.jsxs)('div', {className:'storage-error',role:'alert',children:[
         (0,$.jsx)('p',{children:'This browser could not start the 3D stockroom. Open it in a browser with WebGL enabled, then reload.'}),
         (0,$.jsx)('button',{onClick:()=>window.location.reload(),children:'Reload game'})
       ]}),
-      w &&
-        (0, $.jsxs)(`div`, {
-          className: `pointer-events-none absolute inset-0 z-10 p-3 sm:p-5`,
-          children: [
-            (0, $.jsx)(`div`, {
-              className: `flex items-start justify-between gap-3`,
-              children: (0, $.jsxs)(`div`, {
-                className: `storage-checklist flex max-w-[min(100%,18rem)] flex-col gap-2`,
-                children: [
-                  (0, $.jsxs)(`div`, {
-                    className: `hud-chip font-mono text-sm`,
-                    children: [
-                      (0, $.jsx)(D, {
-                        className: `size-4 text-rose`,
-                        strokeWidth: 2,
-                      }),
-                      (0, $.jsx)(`span`, { children: hg(r.time) }),
-                    ],
-                  }),
-                  (0, $.jsxs)(`div`, {
-                    className: `hud-chip font-mono text-sm`,
-                    children: [
-                      (0, $.jsx)(k, {
-                        className: `size-4 text-rose`,
-                        strokeWidth: 2,
-                      }),
-                      (0, $.jsxs)(`span`, {
-                        children: [r.collected, `/`, r.total],
-                      }),
-                    ],
-                  }),
-                  (0, $.jsxs)(`div`, {
-                    className: `hud-chip text-xs tracking-wide uppercase`,
-                    children: [
-                      (0, $.jsx)(O, {
-                        className: `size-3.5 text-rose`,
-                        strokeWidth: 2,
-                      }),
-                      r.zone,
-                    ],
-                  }),
-                  (0, $.jsx)(`ul`, {
-                    className: `flex w-full flex-col gap-1 rounded-[20px] border border-paper/12 bg-ink/72 p-3 backdrop-blur-md`,
-                    children: r.list.map((e) =>
-                      (0, $.jsxs)(
-                        `li`,
-                        {
-                          className: `flex items-center gap-2 text-sm ${e.taken ? `text-muted line-through` : `text-paper`}`,
-                          children: [
-                            (0, $.jsx)(E, {
-                              className: `size-3.5 ${e.taken ? `text-harbour` : `text-paper/25`}`,
-                              strokeWidth: 2.4,
-                            }),
-                            e.name,
-                          ],
-                        },
-                        e.id,
-                      ),
-                    ),
-                  }),
-                ],
-              }),
-            }),
-            S &&
-              !o &&
-              c &&
-              !r.pointerLocked &&
-              !r.readyToStock &&
-              (0, $.jsx)(`p`, {
-                className: `pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full border border-paper/10 bg-ink/55 px-3 py-1 text-xs tracking-wide text-paper-dim uppercase`,
-                children: `Click to look · WASD to walk`,
-              }),
-            r.readyToStock && !r.autoRestocking &&
-              (0, $.jsx)(`p`, {
-                className: `storage-objective absolute bottom-6 left-1/2 w-[min(22rem,calc(100%-2rem))] -translate-x-1/2 rounded-2xl border border-rose/30 bg-ink/80 px-4 py-2 text-center text-sm text-paper`,
-                children: `List complete. Return to the pink shop curtain.`,
-              }),
-          ],
-        }),
-      (0, $.jsx)(`canvas`, {
-        ref: t,
-        width: 176,
-        height: 176,
-        className: `pointer-events-none absolute top-3 right-3 z-20 size-[120px] rounded-full sm:top-5 sm:right-5 sm:size-[168px] ${w ? `` : `hidden`}`,
+      S && (0, $.jsxs)('nav', {
+        className: 'storage-toolbar', 'aria-label': 'Stockroom controls',
+        children: [
+          (0, $.jsx)('button', { type: 'button', 'aria-label': 'Shopping list',
+            'aria-expanded': panel === 'list', 'aria-controls': 'storage-list',
+            onClick: () => showPanel('list'), children: `List ${r.collected}/${r.total}` }),
+          (0, $.jsx)('button', { type: 'button', 'aria-expanded': panel === 'map',
+            'aria-controls': 'storage-map', onClick: () => showPanel('map'), children: 'Map' }),
+          (0, $.jsx)('button', { type: 'button', onClick: () => n.current?.pause(), children: 'Pause' }),
+        ],
+      }),
+      S && panel === 'list' && (0, $.jsxs)('section', {
+        id: 'storage-list', className: 'storage-details', 'aria-label': 'Shopping list details',
+        children: [
+          (0, $.jsxs)('header', { children: [
+            (0, $.jsx)('strong', {children: `Collected ${r.collected} of ${r.total}`}),
+            (0, $.jsx)('button', {type:'button',onClick:()=>setPanel(null),children:'Close'}),
+          ] }),
+          (0, $.jsx)('p', {className:'storage-meta',children:`${hg(r.time)} · ${r.zone}`}),
+          (0, $.jsx)('ul', {children: r.list.map(item => (0, $.jsxs)('li', {
+            className: item.taken ? 'storage-taken' : '',
+            children: [(0, $.jsx)('span', {'aria-label':item.taken?'Collected':'Still needed',children:item.taken?'✓':'○'}),item.name],
+          }, item.id))}),
+        ],
+      }),
+      (0, $.jsxs)('section', {
+        id:'storage-map',className:'storage-details storage-map',hidden:!S || panel !== 'map',
+        'aria-label':'Stockroom map',
+        children:[
+          (0,$.jsxs)('header',{children:[
+            (0,$.jsx)('strong',{children:r.zone || 'Stockroom'}),
+            (0,$.jsx)('button',{type:'button',onClick:()=>setPanel(null),children:'Close'}),
+          ]}),
+          (0,$.jsx)('canvas',{ref:t,width:176,height:176,'aria-label':'Explored stockroom',role:'img'}),
+        ],
+      }),
+      S && c && !panel && !r.autoRestocking && (0,$.jsx)('p',{
+        className:'storage-hint',
+        children:o?'Drag left to move · drag right to look':'WASD to walk · drag to look · hold Shift to run',
+      }),
+      S && r.readyToStock && !r.autoRestocking && !panel && (0,$.jsx)('p',{
+        className:'storage-objective',children:'List complete · Return to the pink shop curtain',
       }),
       r.phase === `title` &&
         (0, $.jsx)(`div`, {
@@ -284,10 +300,10 @@ function yg() {
                     children: `WASD / arrows to walk · drag to look · scroll to zoom`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Shift to run · walk up to marked goods to collect`,
+                    children: `Hold Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry`,
+                    children: `Touch: drag left to move · drag right to look · hold Run while moving`,
                   }),
                 ],
               }),
@@ -437,70 +453,17 @@ function yg() {
             ],
           }),
         }),
-      S &&
-        (0, $.jsx)(`button`, {
-          type: `button`,
-          "aria-label": `Pause`,
-          className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 hidden size-11 -translate-x-1/2 items-center justify-center rounded-2xl border border-paper/12 bg-ink/70 text-paper sm:flex`,
-          onClick: () => n.current?.pause(),
-          children: (0, $.jsx)(A, { className: `size-4` }),
-        }),
-      o &&
-        S &&
-        (0, $.jsxs)($.Fragment, {
-          children: [
-            (0, $.jsx)(`div`, {
-              className: `absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-5 z-20 size-[112px] touch-none rounded-full border border-paper/15 bg-ink/40`,
-              onPointerDown: g,
-              onPointerMove: _,
-              onPointerUp: v,
-              onPointerCancel: v,
-              onLostPointerCapture: v,
-              "aria-label": "Move",
-              role: "group",
-              children: (0, $.jsx)(`div`, {
-                className: `absolute top-1/2 left-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper/85`,
-                style: {
-                  transform: `translate(calc(-50% + ${d.x * 28}px), calc(-50% + ${d.y * 28}px))`,
-                  opacity: d.active ? 1 : 0.7,
-                },
-              }),
-            }),
-            (0, $.jsx)(`div`, {
-              className: `absolute right-5 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] z-20 size-[112px] touch-none rounded-full border border-paper/15 bg-ink/40`,
-              onPointerDown: y,
-              onPointerMove: b,
-              onPointerUp: x,
-              onPointerCancel: x,
-              onLostPointerCapture: x,
-              "aria-label": "Look",
-              role: "group",
-              children: (0, $.jsx)(`div`, {
-                className: `absolute top-1/2 left-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper/70`,
-                style: {
-                  transform: `translate(calc(-50% + ${m.x * 28}px), calc(-50% + ${m.y * 28}px))`,
-                  opacity: m.active ? 1 : 0.7,
-                },
-              }),
-            }),
-            (0, $.jsx)(`button`, {
-              type: `button`,
-              className: `absolute right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl border border-paper/15 bg-ink/55 px-4 text-sm font-semibold`,
-              onPointerDown: (event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); n.current?.setTouchSprint(!0); },
-              onPointerUp: () => n.current?.setTouchSprint(!1),
-              onPointerCancel: () => n.current?.setTouchSprint(!1),
-              onLostPointerCapture: () => n.current?.setTouchSprint(!1),
-              style: {touchAction:"none",userSelect:"none"},
-              children: `Run`,
-            }),
-            (0, $.jsx)(`button`, {
-              type: `button`,
-              className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 -translate-x-1/2 rounded-2xl border border-paper/12 bg-ink/70 px-3 py-2 text-sm`,
-              onClick: () => n.current?.pause(),
-              children: `Pause`,
-            }),
-          ],
-        }),
+      S && storageTouchIndicator(touch.move, 'Move'),
+      S && storageTouchIndicator(touch.look, 'Look'),
+      S && touch.move && (0,$.jsx)('button', {
+        type:'button',className:'storage-run','aria-label':'Hold to run',
+        'aria-pressed':touch.running,
+        onPointerDown:event=>gestures.current.startRun(event),
+        onPointerUp:event=>gestures.current.end(event),
+        onPointerCancel:event=>gestures.current.end(event),
+        onLostPointerCapture:event=>gestures.current.end(event),
+        children:'Run',
+      }),
     ],
   });
 }

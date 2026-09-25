@@ -23,7 +23,7 @@ export async function runtime() {
   const ctx=vm.createContext({document,window,navigator:{getGamepads:()=>[]},console:{log(){},warn:(...args)=>logs.push(args.join(' ')),error:(...args)=>logs.push(args.join(' '))},setTimeout:()=>0,clearTimeout,TextDecoder,TextEncoder,URL,fetch,Request,Response,Headers,AbortController,AbortSignal,Blob,ProgressEvent:class{constructor(type,props){Object.assign(this,props);}},performance:{now:()=>clock},ResizeObserver:class{observe(){}disconnect(){}},TestRenderer:Renderer});
   let code=await buildCode();
   code=code.slice(0,code.lastIndexOf('(0, M.createRoot)'));
-  vm.runInContext(code+`\nthis.api={hd,gd,md,vd,yd,Ed,wd,Td,storageRoute,moveStoragePlayer,kd,xd,createCharacter:$f,GLTFLoader:Id,Vector3:G,Yp};
+  vm.runInContext(code+`\nthis.api={hd,gd,md,vd,yd,Ed,wd,Td,storageRoute,moveStoragePlayer,kd,xd,alignedStep,createCharacter:$f,GLTFLoader:Id,Vector3:G,Yp,createStorageTouchControls};
     rd=TestRenderer; id=()=>({unlock(){},pickup(){},footstep(){},win(){},setMuted(){},dispose(){}}); this.api.createGame=om;`,ctx);
   return {api:ctx.api,canvas,window,document,logs,advance(seconds,step=1/60){const frames=Math.ceil(seconds/step);for(let i=0;i<frames;i++){clock+=step*1000;frame?.();}return rendered;},rendered:()=>rendered};
 }

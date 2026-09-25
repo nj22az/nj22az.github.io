@@ -99,3 +99,78 @@ test('harbour guests spawn on a fraction of seeds and never sit on restock short
   assert.ok(withGuest>=50&&withGuest<=90,`expected ~25–40% guests, got ${withGuest}/200`);
   assert.deepEqual(api.hd(77).guest,api.hd(77).guest);
 });
+
+
+test('sprint is hold-only and clears on pause; stick magnitude never sprints',()=>{
+  const input=api.kd();input.attach(env.canvas());
+  input.setTouchMove(1,0);input.consumeLook();
+  assert.equal(input.actions.sprint,false,'full stick must not sprint');
+  input.setTouchSprint(true,7);input.consumeLook();assert.equal(input.actions.sprint,true);
+  input.setTouchSprint(false,7);input.consumeLook();assert.equal(input.actions.sprint,false,'Run release clears sprint');
+  env.window.dispatch('keydown',{code:'ShiftLeft'});input.consumeLook();assert.equal(input.actions.sprint,true);
+  env.window.dispatch('keyup',{code:'ShiftLeft'});input.consumeLook();assert.equal(input.actions.sprint,false,'Shift is hold-to-run');
+  input.clearSprint();input.consumeLook();assert.equal(input.actions.sprint,false);
+  input.detach();
+
+  let hud;
+  const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:v=>{hud=v;}});
+  game.start();
+  game.setTouchSprint(true);game.setTouchMove(0,1);
+  const runFrom=env.rendered().character.position.clone();
+  env.advance(0.5);
+  const runDist=env.rendered().character.position.distanceTo(runFrom);
+  game.pause();assert.equal(hud.phase,'paused');
+  game.resume();
+  game.setTouchMove(0,1); // move again; sprint must stay cleared after pause
+  const walkFrom=env.rendered().character.position.clone();
+  env.advance(0.5);
+  const walkDist=env.rendered().character.position.distanceTo(walkFrom);
+  assert.ok(runDist>walkDist*1.15,`sprint should outpace walk after pause clears run (${runDist} vs ${walkDist})`);
+  game.dispose();
+});
+
+test('alignedStep matches town WalkFix; start does not moonwalk into the stockroom',()=>{
+  assert.equal(api.alignedStep(0),1);
+  assert.equal(api.alignedStep(Math.PI),0);
+  assert.ok(api.alignedStep(Math.PI/2)<1e-9);
+  let hud;const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:v=>{hud=v;}});
+  // Title poses Thuan sideways; starting play must snap facing into the room before steps.
+  env.advance(0.2);
+  game.start();
+  // After start, advance a short moment with no input — she should stay put (not slide).
+  const origin=env.rendered().character.position.clone();
+  env.advance(0.5);
+  assert.ok(env.rendered().character.position.distanceTo(origin)<0.05,'no drift without input after start');
+  // Auto-restock: first beats may turn in place; displacement should not be opposite facing.
+  game.autoRestock();
+  const startPos=env.rendered().character.position.clone();
+  env.advance(0.35);
+  const moved=env.rendered().character.position.clone().sub(startPos);
+  const dist=Math.hypot(moved.x,moved.z);
+  if(dist>0.08){
+    // Mesh faces rotation.y; travel direction should agree within a quarter turn (no moonwalk).
+    const travelYaw=Math.atan2(-moved.x,-moved.z);
+    const faceYaw=env.rendered().character.rotation.y - Math.PI; // undo mesh offset
+    let delta=travelYaw-faceYaw;
+    while(delta>Math.PI)delta-=Math.PI*2;
+    while(delta<-Math.PI)delta+=Math.PI*2;
+    assert.ok(Math.abs(delta)<Math.PI/2,`moonwalk into stockroom: delta=${delta}`);
+  }
+  game.dispose();
+});
+
+test('holding reverse walks a straight return path without the camera rotating the input',()=>{
+  const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud(){}});
+  game.restart(1988);game.start();game.setTouchMove(0,1);env.advance(2);
+  game.setTouchMove(0,-1);env.advance(0.5);
+  const from=env.rendered().character.position.clone();
+  env.advance(0.8);
+  const to=env.rendered().character.position.clone(),delta=to.clone().sub(from);
+  assert.ok(delta.z < -1.2,`reverse should progress back down the aisle: ${delta.z}`);
+  assert.ok(Math.abs(delta.x)<0.1,`camera steered the held reverse input sideways: ${delta.x}`);
+  const yaw=env.rendered().character.rotation.y-Math.PI;
+  assert.ok((-Math.sin(yaw)*delta.x-Math.cos(yaw)*delta.z)>delta.length()*0.8,'Thuan must face actual travel');
+  game.pause();game.resume();env.advance(0.1);
+  assert.ok(Math.abs(env.rendered().character.rotation.y-Math.PI-yaw)<0.05,'resume must preserve her facing');
+  game.dispose();
+});
