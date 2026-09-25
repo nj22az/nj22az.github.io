@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initialState, network, solve, resistance, measure, lampCurrent } from './model.mjs';
-import { LESSONS } from './lessons.mjs';
+import { LESSONS, acceptsAnswer, numericAnswer } from './lessons.mjs';
+import { protocolCSV } from './protocol.mjs';
 const near=(a,b,e=1e-8)=>assert.ok(Math.abs(a-b)<e,`${a} ≠ ${b}`);
 const lamp=(patch={})=>({...initialState(),mode:'dc',power:true,red:'P1',black:'P2',...patch});
 test('voltage and polarity are calculated between arbitrary nodes',()=>{
@@ -71,8 +72,57 @@ test('every measurement lesson accepts an electrically correct setup',()=>{
     continuity:[{...initialState('fuse'),mode:'continuity',red:'A',black:'B'},{...initialState('fuse'),mode:'continuity',red:'A',black:'B',broken:true}],
     loading:[{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G'},{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G',input:1e6}]
   };
-  for(const lesson of LESSONS.filter(l=>l.circuit!=='category')) lesson.steps.forEach((step,i)=>{
+  for(const lesson of LESSONS.filter(l=>l.circuit!=='category')) lesson.steps.filter(step=>step.test).forEach((step,i)=>{
     assert.equal(Boolean(step.test(setups[lesson.id][i],measure(setups[lesson.id][i]))),true,`${lesson.id} step ${i+1}`);
     assert.equal(Boolean(step.test(initialState(lesson.circuit),measure(initialState(lesson.circuit)))),lesson.id==='current'&&i===1,`${lesson.id} rejects unconfigured meter`);
   });
+});
+
+const loading=LESSONS.find(l=>l.id==='loading');
+const step=key=>loading.steps.find(s=>s.key===key);
+test('predictions accept Swedish decimals and reject missing or malformed answers',()=>{
+  for(const value of ['5','5,00','5.0'])assert.equal(acceptsAnswer(step('unloaded'),{value}),true);
+  for(const value of ['', ' ', '0', '10', '5 V', '5,0,0', 'Infinity'])assert.equal(acceptsAnswer(step('unloaded'),{value}),false);
+  assert.equal(Number.isNaN(numericAnswer('')),true);
+  assert.equal(acceptsAnswer(step('kirchhoff'),{value:'6,67'}),true);
+  assert.equal(acceptsAnswer(step('kirchhoff'),{value:'3,33'}),false);
+  for(const key of ['predict10','predict1']){
+    assert.equal(acceptsAnswer(step(key),{choice:null}),false);
+    assert.equal(acceptsAnswer(step(key),{choice:1}),false);
+    assert.equal(acceptsAnswer(step(key),{choice:0}),true);
+  }
+});
+test('both measurement stages accept either polarity and reject wrong modes, jacks and nodes',()=>{
+  for(const [key,input,expected] of [['measure10',10e6,100/21],['measure1',1e6,10/3]]){
+    const s={...initialState('divider'),power:true,mode:'dc',red:'M',black:'G',input};
+    for(const pair of [{red:'M',black:'G'},{red:'G',black:'M'}]){
+      const setup={...s,...pair};assert.equal(step(key).test(setup,measure(setup)),true);near(Math.abs(measure(setup).value),expected);
+    }
+    for(const patch of [{power:false},{mode:'ac'},{mode:'off'},{jack:'a'},{red:'S'},{black:'M'},{red:null},{input:input===1e6?10e6:1e6},{trip:'short'}]){
+      const setup={...s,...patch};assert.equal(Boolean(step(key).test(setup,measure(setup))),false,JSON.stringify(patch));
+    }
+  }
+});
+test('Kirchhoff compares one loaded circuit; moving a single meter changes the circuit',()=>{
+  const s={...initialState('divider'),mode:'dc',power:true,red:'M',black:'G',input:1e6};
+  const v=solve(network(s),[['M','G',s.input]]).voltage;
+  near(v.M-v.G,10/3);near(v.S-v.M,20/3);near((v.S-v.M)+(v.M-v.G),10);
+  near(measure({...s,red:'S',black:'M'}).value,10/3);
+  assert.ok(Math.abs(measure(s).value+measure({...s,red:'S',black:'M'}).value-10)>3);
+});
+test('completion needs the correct concept and a written explanation',()=>{
+  const comment='Mätaren ligger parallellt med R2 och ändrar spänningsdelningen.';
+  assert.equal(acceptsAnswer(step('explain'),{choice:0,comment}),true);
+  for(const answer of [{choice:1,comment},{choice:null,comment},{choice:0,comment:''},{choice:0,comment:'ja'},{choice:0,comment:'          '}])assert.equal(acceptsAnswer(step('explain'),answer),false);
+});
+test('CSV keeps readings, input resistance and comments; legacy rows remain exportable',()=>{
+  const records=[{lesson:'Mätaren påverkar',step:3,reading:'−4,76 V',input:10e6,moment:'Mät med 10 MΩ'},
+    {lesson:'Mätaren påverkar',step:5,reading:'3,33 V',input:1e6},
+    {lesson:'Mätaren påverkar',step:7,comment:'Parallellt; med "R2"\nEn extra gren.'},
+    {lesson:'Spänning',step:1,reading:'12,00 V'},
+    {lesson:'Mätaren påverkar',comment:'=SUM(1+1)'}];
+  const csv=protocolCSV(records);
+  assert.ok(csv.startsWith('\uFEFF'));assert.ok(csv.includes('"10000000"'));assert.ok(csv.includes('"1000000"'));
+  assert.ok(csv.includes('"Parallellt; med ""R2""\nEn extra gren."'));
+  assert.ok(csv.includes('"12,00 V"'));assert.ok(csv.includes('"\'=SUM(1+1)"'));
 });

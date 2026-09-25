@@ -12,9 +12,19 @@ Välj svart eller röd mätspets och tryck på en mätpunkt, dra en spets till e
 
 Direktlänkar: `?ovning=voltage`, `polarity`, `current`, `resistance`, `parallel`, `continuity`, `loading`, `category` eller `fri`.
 
+## Övning 7 · förutsäg, mät, förklara
+
+Sju korta steg: beräkna 5,00 V utan mätare → förutsäg effekten av 10 MΩ → mät cirka 4,76 V → förutsäg effekten av 1 MΩ → mät cirka 3,33 V → beräkna återstående spänningsfall → välj rätt förklaring och skriv en egen mening.
+
+Kopplingshjälpen visar vad som återstår. Mätarens ingång ritas som en streckad resistor över det anslutna nodparet i V-läge. Omvända spetsar godkänns med förklaring av minustecknet. Begreppet prövas med en valfråga; fritexten sparas för lärarens uppföljning och bedöms inte automatiskt. Formler och jämförelsen med hyttlampan finns som valbar fördjupning. Motståndsväljaren är uttryckligen märkt som en undervisningsmodell.
+
+Kirchhoffs lag gäller samma koppling: med 1 MΩ-mätaren kvar över R2 blir UR1 = 10 − 3,33 ≈ 6,67 V. Att flytta en ensam mätare till R1 förändrar belastningen; den visar då 3,33 V över R1. Dessa två sekventiella avläsningar får därför inte summeras som om de gällde samma krets.
+
+Framsteg för äldre versioner av övning 7 återställs så att de nya begreppsfrågorna måste genomföras. Övriga framsteg och gamla protokollrader behålls. Protokollet kan både visas på sidan och exporteras. Fritext visas som text och skyddas mot formeltolkning i CSV.
+
 ## Teknik och modell
 
-Statisk HTML/CSS/ES-moduler, inga beroenden, byggsteg eller backend. `model.mjs` innehåller nodanalys med hopslagning av idealledningar, resistansbestämning med en 1 V-testkälla samt instrumentmodellen. `lessons.mjs` definierar handledning och godkända moment. `app.mjs` hanterar interaktion, kretsritning, Pointer Events, progress och CSV. `meter.css` formar det gula skyddshöljet, instrumentpanelen och den funktionella vridomkopplaren. Väljaren styr samma mätmodell som övningarna; utseendet representerar inte någon specifik tillverkarmodell.
+Statisk HTML/CSS/ES-moduler, inga körningsberoenden, byggsteg eller backend. DOM-testerna använder jsdom som utvecklingsberoende. `model.mjs` innehåller nodanalys med hopslagning av idealledningar, resistansbestämning med en 1 V-testkälla samt instrumentmodellen. `lessons.mjs` definierar handledning och godkända moment. `app.mjs` hanterar interaktion, kretsritning, Pointer Events och progress. `protocol.mjs` exporterar protokoll med avläsningar, ingångsresistans, svar och elevens egen förklaring. `meter.css` formar det gula skyddshöljet, instrumentpanelen och den funktionella vridomkopplaren. Väljaren styr samma mätmodell som övningarna; utseendet representerar inte någon specifik tillverkarmodell.
 
 Modellen beräknar kretsen oberoende av valt lektions-ID. Voltmeteringång 10 MΩ eller 1 MΩ, strömshunt 0,1 Ω i A och 1 Ω i mA. Amperemeterns låga resistans finns kvar när väljaren står i V eller OFF. Kortslutningsförsök bryter modellmatningen över 2 A; mA-säkringen löser direkt över 200 mA. Skydden är pedagogiska förenklingar, inte modeller av en verklig säkrings tidskurva. Lampan är en konstant resistans. AC-läget avvisar den rena DC-komponenten; inga AC-källor, transienter, temperaturer eller ljusbågar simuleras. Resistanskretsar är frånskilda; en aktiv källa blockerar Ω/summer. Källan tas elektriskt bort när matningen bryts.
 
@@ -29,6 +39,14 @@ python3 -m http.server 8000
 node --test sjoskolan/multimetersimulator/model.test.mjs
 ```
 
+För hela testsviten (Node-version som stöds av jsdom, exempelvis Node 24.15 eller senare i 24-serien):
+
+```sh
+cd sjoskolan/multimetersimulator
+npm ci
+npm test
+```
+
 Öppna `/sjoskolan/multimetersimulator/` via HTTP. Numeriska tester täcker godtyckliga nodpar, omvänd polaritet, serieinkoppling och shunt, förbikopplad amperemeter, kortslutning med fel uttag, mA-säkring, parallellresistans, avbrott, spänningssatt Ω-mätning, mätarbelastning, områdesöverskridande och alla lektionsvillkor.
 
 ## Genomförd kontroll 24 september 2026
@@ -36,6 +54,12 @@ node --test sjoskolan/multimetersimulator/model.test.mjs
 13 numeriska tester godkända. Samtliga åtta övningar genomförda i Chrome, inklusive alla 15 delmoment och felaktigt CAT-svar. Dragning, val i listor, omkopplingsspärr vid tillkopplad matning, kortslutningsstopp även i OFF, skyddsåterställning och sparade framsteg kontrollerade. CSV laddades ned och granskades: 15 moment, 8 kolumner, UTF-8 och svenska decimaler.
 
 Responsiva brytpunkter och Pointer Events finns för pekskärm; fysisk mobil/pekplatta har inte kunnat provas i denna miljö.
+
+## Kontroll av uppdateringen 25 september 2026
+
+18 modell- och valideringstester samt 2 DOM-integrationstester godkända. Hela flödet i övning 7 kontrollerat med felaktiga svar, svensk decimal, omvänd polaritet, båda ingångsresistanserna, Kirchhoff, obligatorisk förklaring, gamla protokoll, versionsbyte, CSV, fri övning och blockerad lokal lagring. De befintliga mätlektionernas elektriska villkor ingår också.
+
+Visuell kontroll i webbläsare av denna uppdatering återstår: granskningsmiljön kunde inte öppna den lokala förhandsvisningen. DOM-tester ersätter inte kontroll av layout eller fysisk pekskärm.
 
 ## Referensprojekt och källor
 
