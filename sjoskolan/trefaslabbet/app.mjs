@@ -1,8 +1,8 @@
 // Trefaslabbet · interaktion och ritning
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
-import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260925';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
+import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260926';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', slate: '#4a6378' };
@@ -318,9 +318,12 @@ mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_3F_PROTOK
   snapshot(plan) {
     if (state.tab !== 'neutral') return { error: 'Byt till fliken ”Neutralledaren” för att mäta på trefasriggen.' };
     if (state.challenge) return { error: 'Lämna uppgiften först (”Utforska fritt”), eller använd knapparna ovan för att ställa in riggen.' };
-    const s = state.values.neutral, r = readouts('neutral', s), q = plan?.q || 'U1';
+    const s = state.values.neutral, r = readouts('neutral', s), q = plan?.q || 'U1', n = plan?.need;
+    if (n && ['UL', 'R1', 'R2', 'R3', 'on1', 'on2', 'on3', 'neutral'].some((k) => s[k] !== n[k])) {
+      return { error: `Mätning ${STATION_B_3F_PROTOKOLL.rows.indexOf(plan) + 1} gäller stationsriggen med N ${n.neutral ? 'hel' : 'bruten'}${n.on2 ? '' : ' och last 2 frånkopplad'}. Ställ in den med knapparna överst i protokollet.` };
+    }
     const on = [1, 2, 3].filter((k) => s[`on${k}`] !== false).map((k) => `L${k}`).join(', ');
-    const drift = `Uᴸ ${fmt(s.UL)} V, N ${s.neutral ? 'hel' : 'bruten'}, laster: ${on || 'inga'} (R1 ${s.R1}, R2 ${s.R2}, R3 ${s.R3} Ω)`;
+    const drift = `Uᴸ ${fmt(s.UL)} V, N ${s.neutral ? 'hel' : 'bruten'}, laster: ${on.replace(/L/g, '') || 'inga'} (R1 ${s.R1}, R2 ${s.R2}, R3 ${s.R3} Ω)`;
     const val = q.startsWith('U') ? `${r[q].toFixed(2).replace('.', ',')} V` : `${(r[q] * 1000).toFixed(1).replace('.', ',')} mA`;
     return { punkter: plan?.punkter, drift, varde: val };
   } });

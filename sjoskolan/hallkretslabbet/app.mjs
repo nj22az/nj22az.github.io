@@ -2,8 +2,8 @@
 import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
 import { FAULTS } from './model.mjs';
 import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
-import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260925';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
+import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260926';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee' };
@@ -12,7 +12,14 @@ const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const state = { s: { ...DEFAULTS }, challenge: null, attempts: 0, solved: load(), module: 0, revealed: false };
 // Felmodul: ett slumpat fel (eller inget) som eleven ska hitta genom att mäta, som instruktörens felmoduler på stationen
 const hidden = () => Boolean(state.challenge?.hideFault || (state.module && !state.revealed));
-function newModule() { state.module += 1; state.revealed = false; update({ fault: FAULTS[Math.floor(Math.random() * FAULTS.length)], s0: false, s1: false }); }
+// Felmodulerna dras utan återläggning, som en låda med moduler: samma fel kommer inte två gånger i rad.
+let bag = [];
+function newModule() {
+  if (!bag.length) bag = [...FAULTS].sort(() => Math.random() - 0.5);
+  state.module += 1; state.revealed = false;
+  state.s = { ...state.s, U: 12, s0: false, s1: false, k1: false, supply: true };
+  update({ fault: bag.pop() });
+}
 function load() { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } }
 function save() { try { localStorage.setItem(STORE, JSON.stringify([...state.solved])); } catch { /* blockerad */ } }
 const masked = (k) => Boolean(state.challenge?.mask.includes(k));
@@ -161,7 +168,13 @@ mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_C_PROTOKOLL
     { label: 'Stationsrigg 12 V utan fel', apply: () => { if (state.challenge) leave(); state.module = 0; state.revealed = false; state.s = { ...DEFAULTS, U: 12 }; render(); }, done: 'Kretsen är i vila med 12 V styrspänning och utan fel.' }],
   snapshot(plan) {
     if (masked('meter') || masked('I')) return { error: 'Lös uppgiften först. Mätvärdena är dolda medan du räknar.' };
-    const s = state.s, r = solve(s, s.k1);
+    const s = state.s, r = solve(s, s.k1), n = plan?.need || {};
+    const states = { vila: !s.s0 && !s.s1 && !s.k1, start: s.s1 && s.k1, hall: !s.s1 && !s.s0 && s.k1 };
+    const stateText = { vila: 'kretsen i vila (K1 släppt, inga knappar intryckta)', start: 'START intryckt och K1 dragen', hall: 'START släppt och K1 dragen' };
+    const nr = STATION_C_PROTOKOLL.rows.indexOf(plan) + 1;
+    if (n.red && (s.red !== n.red || s.black !== n.black)) { const nm = (x) => (x === 'P' ? '+U' : x === 'N' ? '0 V' : x); return { error: `Mätning ${nr} gäller röd sond på ${nm(n.red)} och svart på ${nm(n.black)}.` }; }
+    if (n.state && !states[n.state]) return { error: `Mätning ${nr} gäller ${stateText[n.state]}. Använd START och STOPP först.` };
+    if ((state.module || s.fault !== 'ingen') && nr) return { error: 'Mätning 1–7 gäller kretsen utan fel. Resultat från felmodulen skriver du i felsökningsdelen. Välj ”Stationsrigg 12 V utan fel”. Felmodulerna hör till felsökningsdelen.' };
     const drift = `${s.U} V, S0 ${s.s0 ? 'intryckt' : 'släppt'}, S1 ${s.s1 ? 'intryckt' : 'släppt'}, K1 ${s.k1 ? 'dragen' : 'släppt'}, styrspänning ${s.supply ? 'till' : 'från'}, ${state.module ? `felmodul ${state.module}` : FAULT_TEXT[s.fault].toLowerCase()}`;
     if (plan?.q === 'I') return { punkter: 'spolström', drift, varde: `${fmt(r.I * 1000)} mA` };
     const m = meter(r.V, s.red, s.black);

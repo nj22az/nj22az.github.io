@@ -25,11 +25,18 @@ test('listar vad som saknas och godkänner ett komplett protokoll', () => {
   assert.equal(missing(def, d).length, 5);
   assert.deepEqual(emptyData({ rows: [{ storhet: 'U', forv: 'räkna' }] }).rows[0], { storhet: 'U' });
   Object.assign(d, { head: { namn: 'Kim' }, checks: { a: true }, answers: { q: 'Värdet ligger inom toleransen.' } });
-  d.rows[0] = { forv: '4', uppm: '3,98', bed: 'Inom tolerans' };
-  d.faults[0] = { obs: 'x', hyp: 'y', kontroll: 'z', resultat: 'w' };
+  d.rows[0] = { forv: 'x', uppm: '3,98', avv: '−0,02', tol: '±2 %', bed: 'Inom tolerans' };
+  d.faults[0] = { obs: 'x', hyp: 'y', kontroll: 'z', omsann: 'v', resultat: 'w' };
+  assert.deepEqual(missing(def, d).map((t) => t.split(' ')[0]), ['ett', 'felsökning:']);
+  d.rows[0].forv = '4 mA'; d.faults[0].slutsats = 's';
   assert.deepEqual(missing(def, d), []);
 });
 test('CSV skyddar mot formler', () => {
   const def = { title: 'T', rows: [{}] }; const d = emptyData(def); d.rows[0] = { komm: '=SUM(A1)' };
   assert.ok(protocolCSV(def, d).includes(`"'=SUM(A1)"`));
+});
+
+test('olika enheter jämförs inte', () => {
+  assert.equal(deviationMatches('0,004', '1000 Ω', '1,004 kΩ'), 'enhet');
+  assert.equal(deviationMatches('0,004', '1,000 kΩ', '1,004 kΩ'), true);
 });

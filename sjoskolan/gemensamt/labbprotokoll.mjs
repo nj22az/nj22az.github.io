@@ -9,10 +9,18 @@ export function parseNum(text) {
   return m ? Number(m[0]) : NaN;
 }
 
-/** Avvikelse = uppmätt − förväntat, även i procent av förväntat värde. */
+/** Enheten efter talet, t.ex. "kΩ" i "1,004 kΩ". Tom sträng om ingen enhet anges. */
+export function unitOf(text) {
+  const m = String(text ?? '').replace(/[\s\u00a0\u202f]/g, '').replace(/[−–]/g, '-').replace(',', '.').match(/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?([µumkM]?(V|A|Ω|s|Hz|W))/i);
+  return m ? m[3].replace('u', 'µ') : '';
+}
+
+/** Avvikelse = uppmätt − förväntat, även i procent av förväntat värde. Olika enheter jämförs inte. */
 export function deviation(expected, measured) {
   const e = parseNum(expected), u = parseNum(measured);
   if (!Number.isFinite(e) || !Number.isFinite(u)) return null;
+  const ue = unitOf(expected), um = unitOf(measured);
+  if (ue && um && ue !== um) return { mismatch: [ue, um] };
   return { abs: u - e, rel: e === 0 ? null : (u - e) / Math.abs(e) * 100 };
 }
 
@@ -27,6 +35,7 @@ export function fmtNum(v, digits = 3) {
 /** Rimlighetskontroll av elevens egen avvikelse: stämmer den med uppmätt − förväntat? */
 export function deviationMatches(own, expected, measured) {
   const d = deviation(expected, measured), o = parseNum(own);
+  if (d?.mismatch) return 'enhet';
   if (!d || !Number.isFinite(o)) return null;
   const scale = Math.max(Math.abs(parseNum(expected)), Math.abs(parseNum(measured)));
   return Math.abs(o - d.abs) <= Math.max(0.02 * Math.abs(d.abs), 0.001 * scale, 1e-9);
@@ -61,17 +70,20 @@ export function missing(def, data) {
   if (!String(data.head?.namn || '').trim()) out.push('namn');
   const unchecked = (def.checks || []).filter((c) => !data.checks?.[c.k]).length;
   if (unchecked) out.push(`${unchecked} kontroll${unchecked > 1 ? 'er' : ''} före start`);
-  const open = [];
+  const open = [], noNum = [];
   (def.rows || []).forEach((plan, i) => {
     const r = data.rows?.[i] || {};
-    if (!plan.optional && ['forv', 'uppm', 'bed'].some((k) => !String(r[k] || '').trim())) open.push(i + 1);
+    if (plan.optional) return;
+    if (['forv', 'uppm', 'avv', 'tol', 'bed'].some((k) => !String(r[k] || '').trim())) open.push(i + 1);
+    else if (!/\d/.test(r.forv)) noNum.push(i + 1);
   });
-  if (open.length) out.push(`förväntat, uppmätt och bedömning i mätning ${open.join(', ')}`);
+  if (open.length) out.push(`förväntat, uppmätt, avvikelse, tolerans och bedömning i mätning ${open.join(', ')}`);
+  if (noNum.length) out.push(`ett förväntat värde med siffror i mätning ${noNum.join(', ')}`);
   if (def.faults) {
-    const done = (data.faults || []).filter((f) => ['obs', 'hyp', 'kontroll', 'resultat'].every((k) => String(f[k] || '').trim())).length;
-    if (done < (def.faultsRequired ?? 1)) out.push(`felsökning: minst ${def.faultsRequired ?? 1} fullständig rad`);
+    const done = (data.faults || []).filter((f) => FAULT_FIELDS.every(([k]) => String(f[k] || '').trim())).length;
+    if (done < (def.faultsRequired ?? 1)) out.push(`felsökning: minst ${def.faultsRequired ?? 1} helt ifylld rad`);
   }
-  for (const q of def.questions || []) {
+  for (const q of (def.questions || []).filter((x) => !x.optional)) {
     const words = String(data.answers?.[q.k] || '').trim().split(/\s+/).filter(Boolean).length;
     if (words < (q.minWords ?? 8)) out.push(`${q.short || q.label.toLowerCase()} (minst ${q.minWords ?? 8} ord)`);
   }
@@ -100,13 +112,14 @@ export function protocolCSV(def, data) {
 const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 function formHTML(def, data, ro, idp) {
-  const dis = ro ? ' disabled' : '';
-  const inp = (path, val, label, attrs = '') => `<input data-p="${path}" value="${esc(val)}" aria-label="${esc(label)}"${dis}${attrs}>`;
-  const ta = (path, val, label, attrs = '') => `<textarea data-p="${path}" aria-label="${esc(label)}"${dis}${attrs}>${esc(val)}</textarea>`;
+  // Exemplet visas som vanlig text, så att det går att läsa med skärmläsare och har full kontrast.
+  const val = (v) => `<span class="lp-val">${esc(v) || '–'}</span>`;
+  const inp = (path, v, label, attrs = '') => (ro ? val(v) : `<input data-p="${path}" value="${esc(v)}" aria-label="${esc(label)}"${attrs}>`);
+  const ta = (path, v, label, attrs = '') => (ro ? val(v) : `<textarea data-p="${path}" aria-label="${esc(label)}"${attrs}>${esc(v)}</textarea>`);
   let h = `<div class="lp-head">${HEAD.map(([k, l]) => `<label>${l}${inp(`head.${k}`, data.head?.[k], l)}</label>`).join('')}</div>`;
   if (def.checks?.length) {
     h += `<h3>1. Före start</h3><p class="lp-help">${esc(def.checksIntro || 'Bocka av först när du har gjort kontrollen. I en fysisk station ger instruktören klartecken efter dessa kontroller.')}</p><ul class="lp-checks">`;
-    h += def.checks.map((c) => `<li><label><input type="checkbox" data-p="checks.${c.k}"${data.checks?.[c.k] ? ' checked' : ''}${dis}> <span>${esc(c.text)}</span></label></li>`).join('') + '</ul>';
+    h += def.checks.map((c) => (ro ? `<li><span class="lp-val">${data.checks?.[c.k] ? 'Klar' : 'Inte gjord'}</span> <span>${esc(c.text)}</span></li>` : `<li><label><input type="checkbox" data-p="checks.${c.k}"${data.checks?.[c.k] ? ' checked' : ''}> <span>${esc(c.text)}</span></label></li>`)).join('') + '</ul>';
   }
   if (def.rows?.length) {
     h += `<h3>2. Mätningar</h3><p class="lp-help">${esc(def.rowsIntro || 'Skriv förväntat värde innan du mäter. Mät sedan i simulatorn och tryck ”Hämta avläsning”. Avvikelse = uppmätt − förväntat.')}</p><ol class="lp-rows">`;
@@ -117,7 +130,8 @@ function formHTML(def, data, ro, idp) {
       h += `</div><div class="lp-grid">`;
       for (const [k, l] of ROW_FIELDS) {
         const ph = plan[k] && !SEEDED.includes(k) ? ` placeholder="${esc(plan[k])}"` : '';
-        if (k === 'bed') h += `<label>${l}<select data-p="rows.${i}.bed"${dis}>${BED.map((b) => `<option${(r.bed || '') === b ? ' selected' : ''} value="${b}">${b || 'Välj'}</option>`).join('')}</select></label>`;
+        if (k === 'bed' && ro) h += `<label>${l}${val(r.bed)}</label>`;
+        else if (k === 'bed') h += `<label>${l}<select data-p="rows.${i}.bed">${BED.map((b) => `<option${(r.bed || '') === b ? ' selected' : ''} value="${b}">${b || 'Välj'}</option>`).join('')}</select></label>`;
         else if (k === 'komm') h += `<label class="lp-wide">${l}${ta(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}</label>`;
         else h += `<label>${l}${inp(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}${k === 'uppm' ? `<small class="lp-src" id="${idp}src${i}">${r.tid ? `Hämtat från simulatorn ${esc(r.tid)}` : ''}</small>` : ''}${k === 'avv' ? `<small class="lp-calc" id="${idp}calc${i}"></small>` : ''}</label>`;
       }
@@ -129,13 +143,14 @@ function formHTML(def, data, ro, idp) {
     h += `<h3>3. Felsökning</h3><p class="lp-help">${esc(def.faultsIntro || 'Håll isär observation och hypotes. Välj en kontroll som ger olika resultat för olika orsaker, och skriv vad du väntar dig innan du mäter.')}</p><ol class="lp-rows">`;
     for (let i = 0; i < def.faults; i++) {
       const f = data.faults?.[i] || {};
+      if (ro && !FAULT_FIELDS.some(([k]) => f[k])) continue; // tomma rader visas inte i exemplet
       h += `<li class="lp-row"><div class="lp-row-head"><strong>Fel ${i + 1}</strong></div><div class="lp-grid lp-grid-3">${FAULT_FIELDS.map(([k, l]) => `<label>${l}${ta(`faults.${i}.${k}`, f[k], `${l}, fel ${i + 1}`)}</label>`).join('')}</div></li>`;
     }
     h += '</ol>';
   }
   if (def.questions?.length) {
     h += `<h3>${def.faults ? 4 : 3}. Analys och slutsats</h3>`;
-    h += def.questions.map((q) => `<label class="lp-q">${esc(q.label)}${q.hint ? `<small>${esc(q.hint)}</small>` : ''}${ta(`answers.${q.k}`, data.answers?.[q.k], q.label)}</label>`).join('');
+    h += def.questions.map((q) => `<label class="lp-q">${q.optional ? '<span class="lp-opt">Fördjupning, frivillig</span>' : ''}${esc(q.label)}${q.hint ? `<small>${esc(q.hint)}</small>` : ''}${ta(`answers.${q.k}`, data.answers?.[q.k], q.label)}</label>`).join('');
   }
   return h;
 }
@@ -167,7 +182,7 @@ export function mountProtocol(root, def) {
     ${def.instrument ? `<p class="lp-instrument"><strong>Instrument och rigg:</strong> ${esc(def.instrument)}</p>` : ''}
     <p class="lp-msg" role="status" aria-live="polite"></p>
     <form class="lp-form" autocomplete="off">${formHTML(def, data, false, def.key)}</form>
-    <p class="lp-status" aria-live="polite"></p>
+    <p class="lp-status"></p>
     ${def.example ? `<details class="lp-example"><summary>Visa ifyllt exempel</summary><p class="lp-help">${esc(def.example.note || 'Exemplet visar hur ett fullständigt protokoll kan se ut. Dina egna värden och formuleringar ska komma från din egen mätning.')}</p><div class="lp-form lp-ro">${formHTML(def, def.example, true, def.key + 'ex')}</div></details>` : ''}
     <p class="lp-foot">${storageOK ? 'Det du skriver sparas bara i den här webbläsaren. Skriv ut eller spara som PDF för att lämna in.' : 'Webbläsaren tillåter inte lagring här. Skriv ut innan du stänger sidan.'} Ett simulerat protokoll är övning och underlag. Praktisk bedömning sker på en verklig rigg enligt lärarens plan.</p>`;
   root.setAttribute('aria-labelledby', `${def.key}-title`);
@@ -178,8 +193,8 @@ export function mountProtocol(root, def) {
     (def.rows || []).forEach((_, i) => {
       const r = data.rows[i] || {}, el = root.querySelector(`#${def.key}calc${i}`); if (!el) return;
       const d = deviation(r.forv, r.uppm), ok = deviationMatches(r.avv, r.forv, r.uppm);
-      el.textContent = d && ok === false ? `Kontrollera: uppmätt − förväntat blir ${fmtNum(d.abs)}${d.rel === null ? '' : ` (${fmtNum(d.rel, 2)} %)`}.` : d && ok ? 'Stämmer med uppmätt − förväntat.' : '';
-      el.classList.toggle('warn', ok === false);
+      el.textContent = ok === 'enhet' ? `Skriv förväntat och uppmätt med samma enhet (${d.mismatch.join(' och ')}).` : d && ok === false ? `Kontrollera: uppmätt − förväntat blir ${fmtNum(d.abs)}${d.rel === null ? '' : ` (${fmtNum(d.rel, 2)} %)`}.` : d && ok ? 'Stämmer med uppmätt − förväntat.' : '';
+      el.classList.toggle('warn', ok === false || ok === 'enhet');
     });
     const m = missing(def, data);
     $('.lp-status').textContent = m.length ? `Saknas innan inlämning: ${m.join('; ')}.` : 'Protokollet är komplett. Skriv ut eller spara som PDF.';
