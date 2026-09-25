@@ -1,0 +1,1051 @@
+1
+00:00:00,500 --> 00:00:01,844
+Welcome aboard.
+
+2
+00:00:02,064 --> 00:00:05,072
+This is your Sjöskolan companion for week forty.
+
+3
+00:00:05,292 --> 00:00:11,500
+Saga and the gull will help us follow three connected lessons: alternating voltage, impedance, and power.
+
+4
+00:00:11,720 --> 00:00:14,365
+We begin with what changes during one cycle.
+
+5
+00:00:14,585 --> 00:00:18,980
+Then we connect the timing of voltage and current to the current drawn by a load.
+
+6
+00:00:19,200 --> 00:00:23,701
+Finally, we explain what that means for generators, cables and useful power.
+
+7
+00:00:23,921 --> 00:00:26,887
+Keep your presentation and calculator beside you.
+
+8
+00:00:29,000 --> 00:00:32,200
+Last week, a battery gave us a largely steady voltage.
+
+9
+00:00:32,420 --> 00:00:36,708
+An alternating voltage changes with time and reverses polarity.
+
+10
+00:00:36,928 --> 00:00:39,317
+Follow the marker through one sine wave.
+
+11
+00:00:39,537 --> 00:00:45,788
+It rises from zero, reaches a positive peak, returns to zero, reaches a negative peak, and returns again.
+
+12
+00:00:46,008 --> 00:00:48,248
+That complete pattern is one cycle.
+
+13
+00:00:48,468 --> 00:00:50,943
+The curve is a record of voltage over time.
+
+14
+00:00:51,163 --> 00:00:54,000
+It does not show a particle travelling along the cable.
+
+15
+00:00:56,000 --> 00:01:00,075
+The period, capital T, is the time taken for one complete cycle.
+
+16
+00:01:00,295 --> 00:01:04,028
+Frequency, f, counts cycles per second and is measured in hertz.
+
+17
+00:01:04,248 --> 00:01:06,317
+These quantities are reciprocals.
+
+18
+00:01:06,537 --> 00:01:12,703
+At fifty hertz, one divided by fifty is zero point zero two seconds, or twenty milliseconds.
+
+19
+00:01:12,923 --> 00:01:16,805
+At sixty hertz, the period is about sixteen point seven milliseconds.
+
+20
+00:01:17,025 --> 00:01:22,359
+Measure between matching points on successive cycles, such as two rising zero crossings.
+
+21
+00:01:24,500 --> 00:01:27,060
+We need three different descriptions of voltage.
+
+22
+00:01:27,280 --> 00:01:31,376
+The instantaneous value tells us the voltage at one particular moment.
+
+23
+00:01:31,596 --> 00:01:35,116
+The peak value is the largest magnitude reached by the wave.
+
+24
+00:01:35,336 --> 00:01:39,219
+Peak to peak is the distance from the negative peak to the positive peak.
+
+25
+00:01:39,439 --> 00:01:43,151
+For a sine wave centred on zero, peak to peak is twice the peak.
+
+26
+00:01:43,371 --> 00:01:47,040
+Read the symbol and the description carefully before choosing a formula.
+
+27
+00:01:49,000 --> 00:01:51,325
+R M S stands for root mean square.
+
+28
+00:01:51,545 --> 00:01:53,935
+Its practical meaning is equal heating.
+
+29
+00:01:54,155 --> 00:01:56,629
+Connect twelve volts D C to a resistor.
+
+30
+00:01:56,849 --> 00:02:01,415
+Now compare a sine wave of twelve volts R M S across the same resistance.
+
+31
+00:02:01,635 --> 00:02:04,237
+Both deliver the same average heating power.
+
+32
+00:02:04,457 --> 00:02:09,769
+The alternating voltage changes constantly, so its peak must be higher than twelve volts.
+
+33
+00:02:09,989 --> 00:02:14,640
+R M S gives us a useful steady value for comparing the electrical effect.
+
+34
+00:02:16,500 --> 00:02:22,751
+For a pure sine wave with no D C offset, divide the peak by the square root of two to find R M S.
+
+35
+00:02:22,971 --> 00:02:26,661
+Going the other way, multiply R M S by the square root of two.
+
+36
+00:02:26,881 --> 00:02:33,324
+A two hundred and thirty volt R M S sine wave therefore has a peak of about three hundred and twenty five volts.
+
+37
+00:02:33,544 --> 00:02:37,213
+Its peak to peak value is about six hundred and fifty one volts.
+
+38
+00:02:39,000 --> 00:02:41,155
+Here is the presentation example.
+
+39
+00:02:41,375 --> 00:02:45,855
+A sine wave has thirty volts peak to peak and a period of ten milliseconds.
+
+40
+00:02:46,075 --> 00:02:49,147
+First, halve thirty to obtain a peak of fifteen volts.
+
+41
+00:02:49,367 --> 00:02:52,055
+Next, divide fifteen by the square root of two.
+
+42
+00:02:52,275 --> 00:02:55,645
+The R M S value is about ten point six one volts.
+
+43
+00:02:55,865 --> 00:02:59,897
+Finally, convert ten milliseconds to zero point zero one seconds.
+
+44
+00:03:00,117 --> 00:03:03,189
+One divided by that period gives one hundred hertz.
+
+45
+00:03:03,409 --> 00:03:07,228
+Notice that peak to peak is the largest of these voltage values.
+
+46
+00:03:09,000 --> 00:03:14,227
+Over a complete cycle, the positive and negative areas of a centred sine wave cancel.
+
+47
+00:03:14,447 --> 00:03:16,879
+Its ordinary average voltage is zero.
+
+48
+00:03:17,099 --> 00:03:18,891
+Heating behaves differently.
+
+49
+00:03:19,111 --> 00:03:24,508
+Resistor power depends on voltage squared, so both polarities contribute positive heating.
+
+50
+00:03:24,728 --> 00:03:30,211
+This is why an alternating supply can warm a heater even though the average voltage is zero.
+
+51
+00:03:30,431 --> 00:03:35,721
+Keep average voltage, R M S voltage, and average power as three separate ideas.
+
+52
+00:03:37,500 --> 00:03:41,852
+The worked example in your slides uses a ten volt peak at twenty five hertz.
+
+53
+00:03:42,072 --> 00:03:44,525
+Find the voltage after ten milliseconds.
+
+54
+00:03:44,745 --> 00:03:47,753
+Convert the time to zero point zero one seconds.
+
+55
+00:03:47,973 --> 00:03:54,288
+Two times pi times twenty five times zero point zero one gives pi divided by two radians.
+
+56
+00:03:54,508 --> 00:03:59,009
+The sine of that angle is one, so the instantaneous voltage is ten volts.
+
+57
+00:03:59,229 --> 00:04:02,109
+This is one quarter of the forty millisecond period.
+
+58
+00:04:04,000 --> 00:04:09,291
+To calculate an instantaneous value, use the peak as the amplitude of the sine function.
+
+59
+00:04:09,511 --> 00:04:13,863
+In this example the peak is seventeen volts and the frequency is fifty hertz.
+
+60
+00:04:14,083 --> 00:04:18,093
+At five milliseconds, the angle is pi divided by two radians.
+
+61
+00:04:18,313 --> 00:04:21,919
+The sine is one, so the voltage is positive seventeen volts.
+
+62
+00:04:22,139 --> 00:04:25,957
+At fifteen milliseconds, the angle is three pi divided by two.
+
+63
+00:04:26,177 --> 00:04:29,761
+The sine is minus one, giving negative seventeen volts.
+
+64
+00:04:29,981 --> 00:04:32,691
+Set the calculator to radians for this formula.
+
+65
+00:04:34,500 --> 00:04:38,745
+Phase describes where one repeating signal lies relative to another.
+
+66
+00:04:38,965 --> 00:04:42,613
+One complete period corresponds to three hundred and sixty degrees.
+
+67
+00:04:42,833 --> 00:04:47,847
+At fifty hertz, a five millisecond difference is one quarter of the twenty millisecond period.
+
+68
+00:04:48,067 --> 00:04:49,816
+That means ninety degrees.
+
+69
+00:04:50,036 --> 00:04:52,916
+A two millisecond difference gives thirty six degrees.
+
+70
+00:04:53,136 --> 00:04:55,333
+The size of the gap tells us the angle.
+
+71
+00:04:55,553 --> 00:05:00,503
+To say which signal leads, we must also see which one reaches the matching point first.
+
+72
+00:05:02,500 --> 00:05:05,551
+Compare two signals with the same twelve volt peak.
+
+73
+00:05:05,771 --> 00:05:07,328
+One is a sine wave.
+
+74
+00:05:07,548 --> 00:05:13,137
+The other is a square wave that spends equal time at positive twelve and negative twelve volts.
+
+75
+00:05:13,357 --> 00:05:15,555
+Both have zero average voltage.
+
+76
+00:05:15,775 --> 00:05:18,889
+The sine has about eight point four nine volts R M S.
+
+77
+00:05:19,109 --> 00:05:24,165
+The square wave has twelve volts R M S, because its squared voltage stays constant.
+
+78
+00:05:24,385 --> 00:05:28,311
+Always identify the waveform before using the sine-wave conversion.
+
+79
+00:05:30,500 --> 00:05:33,700
+A centred sine wave measures twenty volts peak to peak.
+
+80
+00:05:33,920 --> 00:05:36,160
+One cycle lasts four milliseconds.
+
+81
+00:05:36,380 --> 00:05:39,943
+What are its peak voltage, R M S voltage and frequency?
+
+82
+00:05:40,163 --> 00:05:43,192
+Pause the film and write the units beside each result.
+
+83
+00:05:49,412 --> 00:05:51,183
+The peak is ten volts.
+
+84
+00:05:51,403 --> 00:05:57,568
+The R M S value is ten divided by the square root of two, about seven point zero seven volts.
+
+85
+00:05:57,788 --> 00:06:03,676
+The period is zero point zero zero four seconds, so the frequency is two hundred and fifty hertz.
+
+86
+00:06:07,000 --> 00:06:09,965
+Our second lesson adds inductors and capacitors.
+
+87
+00:06:10,185 --> 00:06:13,236
+A resistor converts electrical energy into heat.
+
+88
+00:06:13,456 --> 00:06:16,827
+An ideal inductor stores energy in a magnetic field.
+
+89
+00:06:17,047 --> 00:06:20,588
+An ideal capacitor stores energy in an electric field.
+
+90
+00:06:20,808 --> 00:06:23,752
+The last two can return stored energy to the circuit.
+
+91
+00:06:23,972 --> 00:06:26,148
+Their response depends on frequency.
+
+92
+00:06:26,368 --> 00:06:29,333
+We describe this with reactance, measured in ohms.
+
+93
+00:06:29,553 --> 00:06:34,375
+Impedance combines resistance and reactance, including their phase relationship.
+
+94
+00:06:36,500 --> 00:06:38,100
+Begin with a resistor.
+
+95
+00:06:38,320 --> 00:06:41,477
+Current follows voltage immediately in this ideal model.
+
+96
+00:06:41,697 --> 00:06:44,215
+Their zero crossings and peaks occur together.
+
+97
+00:06:44,435 --> 00:06:46,504
+We say the signals are in phase.
+
+98
+00:06:46,724 --> 00:06:51,993
+The two curves use separate amplitude scales because volts and amperes are different quantities.
+
+99
+00:06:52,213 --> 00:06:54,219
+Their timing is what matters here.
+
+100
+00:06:54,439 --> 00:06:58,279
+As the reference arrows rotate, they point in the same direction.
+
+101
+00:06:58,499 --> 00:07:00,867
+Their angle difference is zero degrees.
+
+102
+00:07:03,000 --> 00:07:06,008
+An ideal inductor opposes changes in current.
+
+103
+00:07:06,228 --> 00:07:10,580
+The voltage across it is greatest when current is changing most rapidly.
+
+104
+00:07:10,800 --> 00:07:15,664
+Current therefore lags voltage by ninety degrees in a sinusoidal steady state.
+
+105
+00:07:15,884 --> 00:07:19,105
+Watch the voltage reach its positive peak before the current.
+
+106
+00:07:19,325 --> 00:07:26,152
+A real coil also has resistance, so a practical coil does not generally produce a full ninety degree phase difference.
+
+107
+00:07:26,372 --> 00:07:29,743
+The ideal model helps us understand its reactive part.
+
+108
+00:07:31,500 --> 00:07:36,449
+Calculate the reactance of an ideal zero point one henry inductor at fifty hertz.
+
+109
+00:07:36,669 --> 00:07:39,677
+Multiply two, pi, fifty and zero point one.
+
+110
+00:07:39,897 --> 00:07:43,076
+The result is approximately thirty one point four ohms.
+
+111
+00:07:43,296 --> 00:07:48,544
+If the frequency doubles while inductance stays the same, inductive reactance doubles as well.
+
+112
+00:07:48,764 --> 00:07:52,284
+This does not mean the coil has acquired more ordinary resistance.
+
+113
+00:07:52,504 --> 00:07:58,200
+We are describing the relationship between sinusoidal voltage and current caused by its inductance.
+
+114
+00:08:00,000 --> 00:08:02,091
+A capacitor behaves differently.
+
+115
+00:08:02,311 --> 00:08:07,601
+Current flows as its stored charge changes, and its voltage builds as charge accumulates.
+
+116
+00:08:07,821 --> 00:08:13,496
+In sinusoidal steady state, current leads voltage by ninety degrees for an ideal capacitor.
+
+117
+00:08:13,716 --> 00:08:15,679
+The current peak arrives first.
+
+118
+00:08:15,899 --> 00:08:19,355
+Compare this directly with the inductor, where current lagged.
+
+119
+00:08:19,575 --> 00:08:21,687
+These statements describe timing.
+
+120
+00:08:21,907 --> 00:08:26,792
+They do not mean that a capacitor creates energy or anticipates a future change.
+
+121
+00:08:29,000 --> 00:08:36,936
+For a one hundred microfarad capacitor at fifty hertz, first convert the capacitance to one hundred times ten to the minus six farads.
+
+122
+00:08:37,156 --> 00:08:42,660
+Calculate the complete denominator: two times pi times frequency times capacitance.
+
+123
+00:08:42,880 --> 00:08:44,907
+Then divide one by that result.
+
+124
+00:08:45,127 --> 00:08:49,073
+Capacitive reactance is approximately thirty one point eight ohms.
+
+125
+00:08:49,293 --> 00:08:52,728
+At one hundred hertz it falls to about fifteen point nine ohms.
+
+126
+00:08:52,948 --> 00:08:57,983
+Increasing frequency has the opposite effect on capacitive and inductive reactance.
+
+127
+00:09:00,000 --> 00:09:05,056
+Resistance and reactance do not point in the same direction on an impedance diagram.
+
+128
+00:09:05,276 --> 00:09:09,116
+Draw resistance horizontally, then inductive reactance upwards.
+
+129
+00:09:09,336 --> 00:09:11,341
+The impedance is the diagonal.
+
+130
+00:09:11,561 --> 00:09:18,111
+With thirty ohms of resistance and forty ohms of inductive reactance, Pythagoras gives fifty ohms of impedance.
+
+131
+00:09:18,331 --> 00:09:21,637
+Adding thirty and forty directly would give the wrong answer.
+
+132
+00:09:21,857 --> 00:09:29,111
+With one hundred volts R M S across this series circuit, current is one hundred divided by fifty, or two amperes.
+
+133
+00:09:31,000 --> 00:09:33,944
+Now use the smaller example from the presentation.
+
+134
+00:09:34,164 --> 00:09:40,820
+Resistance is twelve ohms, inductive reactance is sixteen ohms, and the supply is sixty volts R M S.
+
+135
+00:09:41,040 --> 00:09:44,645
+The impedance is twenty ohms, giving a current of three amperes.
+
+136
+00:09:44,865 --> 00:09:49,644
+Multiplying current by resistance gives thirty six volts across the resistor.
+
+137
+00:09:49,864 --> 00:09:55,027
+Multiplying current by inductive reactance gives forty eight volts across the inductor.
+
+138
+00:09:55,247 --> 00:09:59,300
+We must account for their different phases when combining these voltages.
+
+139
+00:10:01,500 --> 00:10:04,145
+The resistor voltage is in phase with current.
+
+140
+00:10:04,365 --> 00:10:07,587
+The inductor voltage leads current by ninety degrees.
+
+141
+00:10:07,807 --> 00:10:10,516
+Their voltage arrows are therefore perpendicular.
+
+142
+00:10:10,736 --> 00:10:16,987
+The supply is the vector sum: the square root of thirty six squared plus forty eight squared, which is sixty volts.
+
+143
+00:10:17,207 --> 00:10:19,276
+Kirchhoff has not stopped working.
+
+144
+00:10:19,496 --> 00:10:22,504
+Instantaneous voltages still add around the loop.
+
+145
+00:10:22,724 --> 00:10:28,377
+It is the separate R M S magnitudes that cannot simply be added as ordinary positive numbers.
+
+146
+00:10:30,500 --> 00:10:35,940
+To find the impedance angle, take the inverse tangent of reactance divided by resistance.
+
+147
+00:10:36,160 --> 00:10:39,957
+Use degrees on your calculator when you want the answer in degrees.
+
+148
+00:10:40,177 --> 00:10:45,169
+Thirty ohms and positive forty ohms give positive fifty three point one degrees.
+
+149
+00:10:45,389 --> 00:10:49,272
+Voltage leads current by that angle, so current lags voltage.
+
+150
+00:10:49,492 --> 00:10:52,436
+We use current as the reference in this series circuit.
+
+151
+00:10:52,656 --> 00:10:57,435
+Keeping the reference clear prevents the common mistake of reversing the meaning of the sign.
+
+152
+00:10:59,500 --> 00:11:06,220
+For the capacitor example, resistance is twelve ohms and capacitive reactance has a magnitude of sixteen ohms.
+
+153
+00:11:06,440 --> 00:11:09,021
+Write the net reactance as negative sixteen.
+
+154
+00:11:09,241 --> 00:11:12,036
+The impedance magnitude remains twenty ohms.
+
+155
+00:11:12,256 --> 00:11:15,029
+At sixty volts the current remains three amperes.
+
+156
+00:11:15,249 --> 00:11:18,535
+But the angle is now negative fifty three point one degrees.
+
+157
+00:11:18,755 --> 00:11:22,872
+The reactive arrow points downwards, and current leads the supply voltage.
+
+158
+00:11:23,092 --> 00:11:27,103
+Equal impedance magnitudes do not mean equal phase relationships.
+
+159
+00:11:29,000 --> 00:11:31,603
+The frequency sweep shows the two trends together.
+
+160
+00:11:31,823 --> 00:11:34,361
+Keep the inductance and capacitance fixed.
+
+161
+00:11:34,581 --> 00:11:39,851
+As frequency rises, inductive reactance increases and capacitive reactance decreases.
+
+162
+00:11:40,071 --> 00:11:42,951
+Their crossing marks equal reactance magnitudes.
+
+163
+00:11:43,171 --> 00:11:46,605
+In a series circuit, use their difference as the net reactance.
+
+164
+00:11:46,825 --> 00:11:49,556
+Below that crossing, the circuit is capacitive.
+
+165
+00:11:49,776 --> 00:11:51,931
+Above it, the circuit is inductive.
+
+166
+00:11:52,151 --> 00:11:55,607
+The curves are calculated from the same equations we have just used.
+
+167
+00:11:57,500 --> 00:12:04,284
+At series resonance, inductive and capacitive reactances have equal magnitude and cancel in the net impedance.
+
+168
+00:12:04,504 --> 00:12:09,240
+Consider twenty ohms of resistance, with both reactances equal to forty ohms.
+
+169
+00:12:09,460 --> 00:12:13,129
+A one hundred volt R M S supply produces five amperes.
+
+170
+00:12:13,349 --> 00:12:16,763
+Each reactive component then has two hundred volts across it.
+
+171
+00:12:16,983 --> 00:12:19,948
+Those voltages oppose one another in the vector sum.
+
+172
+00:12:20,168 --> 00:12:26,056
+Resonance does not mean that every component voltage disappears, and resistance still limits current.
+
+173
+00:12:28,000 --> 00:12:35,637
+Here is a series circuit with thirty ohms of resistance, fifty ohms of inductive reactance and ten ohms of capacitive reactance.
+
+174
+00:12:35,857 --> 00:12:38,545
+The supply is one hundred volts R M S.
+
+175
+00:12:38,765 --> 00:12:42,179
+Find the net reactance, impedance magnitude and current.
+
+176
+00:12:42,399 --> 00:12:44,681
+Decide whether current leads or lags.
+
+177
+00:12:44,901 --> 00:12:46,309
+Pause here.
+
+178
+00:12:52,529 --> 00:12:55,047
+The net reactance is positive forty ohms.
+
+179
+00:12:55,267 --> 00:12:58,723
+The impedance is fifty ohms, so current is two amperes.
+
+180
+00:12:58,943 --> 00:13:02,036
+The circuit is inductive, and current lags voltage.
+
+181
+00:13:05,500 --> 00:13:09,105
+Our final chapter connects these phase relationships to power.
+
+182
+00:13:09,325 --> 00:13:12,269
+Imagine a generator supplying an onboard load.
+
+183
+00:13:12,489 --> 00:13:18,719
+Multiplying R M S voltage by R M S current gives apparent power, measured in volt amperes.
+
+184
+00:13:18,939 --> 00:13:21,584
+It does not always give active power in watts.
+
+185
+00:13:21,804 --> 00:13:24,705
+For a sinusoidal load, the phase difference matters.
+
+186
+00:13:24,925 --> 00:13:30,792
+At two hundred and thirty volts and ten amperes, apparent power is two thousand three hundred volt amperes.
+
+187
+00:13:31,012 --> 00:13:34,084
+We still need the power factor to calculate active power.
+
+188
+00:13:36,000 --> 00:13:41,504
+Active power is the average rate at which electrical energy becomes work and heat in the load.
+
+189
+00:13:41,724 --> 00:13:47,164
+For sinusoidal voltage and current, multiply apparent power by the cosine of the phase angle.
+
+190
+00:13:47,384 --> 00:13:55,085
+With two thousand three hundred volt amperes and a power factor of zero point eight, active power is one thousand eight hundred and forty watts.
+
+191
+00:13:55,305 --> 00:13:58,527
+On the graph, instantaneous power varies during the cycle.
+
+192
+00:13:58,747 --> 00:14:01,008
+The horizontal line marks its average.
+
+193
+00:14:03,000 --> 00:14:09,208
+An ideal reactive component stores energy during part of the cycle and returns it during another part.
+
+194
+00:14:09,428 --> 00:14:11,881
+Reactive power describes this exchange.
+
+195
+00:14:12,101 --> 00:14:13,787
+It is measured in vars.
+
+196
+00:14:14,007 --> 00:14:20,065
+In our convention, inductive reactive power is positive and capacitive reactive power is negative.
+
+197
+00:14:20,285 --> 00:14:26,877
+For the previous sinusoidal example, cosine phi is zero point eight, so sine phi is zero point six.
+
+198
+00:14:27,097 --> 00:14:33,476
+Reactive power is two thousand three hundred times zero point six, or one thousand three hundred and eighty vars.
+
+199
+00:14:35,500 --> 00:14:41,303
+For sinusoidal conditions, active and reactive power form perpendicular sides of the power triangle.
+
+200
+00:14:41,523 --> 00:14:43,571
+Apparent power is the diagonal.
+
+201
+00:14:43,791 --> 00:14:47,396
+Three kilowatts and four kilovars give five kilovolt amperes.
+
+202
+00:14:47,616 --> 00:14:53,973
+Power factor is active power divided by apparent power: three divided by five, or zero point six.
+
+203
+00:14:54,193 --> 00:14:55,943
+Keep the units distinct.
+
+204
+00:14:56,163 --> 00:15:02,200
+Watts describe active power, vars describe reactive power, and volt amperes describe apparent power.
+
+205
+00:15:04,000 --> 00:15:10,955
+The presentation example uses nine hundred watts of active power and twelve hundred vars of inductive reactive power.
+
+206
+00:15:11,175 --> 00:15:14,887
+The square root of their squared sum is fifteen hundred volt amperes.
+
+207
+00:15:15,107 --> 00:15:20,120
+Dividing nine hundred by fifteen hundred gives a power factor of zero point six.
+
+208
+00:15:20,340 --> 00:15:25,268
+At two hundred and thirty volts, supply current is about six point five two amperes.
+
+209
+00:15:25,488 --> 00:15:29,328
+Check the result by multiplying voltage, current and power factor.
+
+210
+00:15:29,548 --> 00:15:32,364
+You should recover approximately nine hundred watts.
+
+211
+00:15:34,500 --> 00:15:36,185
+Power describes a rate.
+
+212
+00:15:36,405 --> 00:15:39,072
+Energy includes how long that rate continues.
+
+213
+00:15:39,292 --> 00:15:45,564
+A load using one point six kilowatts for three hours consumes four point eight kilowatt hours of active energy.
+
+214
+00:15:45,784 --> 00:15:51,053
+Even if its apparent power is two kilovolt amperes, use active power for this calculation.
+
+215
+00:15:51,273 --> 00:15:54,111
+Keep kilowatts with hours to obtain kilowatt hours.
+
+216
+00:15:54,331 --> 00:15:59,984
+Do not confuse a power rating with the accumulated energy recorded over a period of operation.
+
+217
+00:16:02,000 --> 00:16:08,315
+A suitably selected capacitor can supply part of the reactive exchange required by an inductive load.
+
+218
+00:16:08,535 --> 00:16:12,353
+Consider a load taking three kilowatts and positive four kilovars.
+
+219
+00:16:12,573 --> 00:16:19,144
+In the ideal model, a capacitor with negative four kilovars cancels the reactive demand seen by the supply.
+
+220
+00:16:19,364 --> 00:16:22,713
+The required compensation magnitude is four kilovars.
+
+221
+00:16:22,933 --> 00:16:26,795
+Apparent power at the supply falls from five to three kilovolt amperes.
+
+222
+00:16:27,015 --> 00:16:29,745
+The load still needs three kilowatts of active power.
+
+223
+00:16:31,500 --> 00:16:41,271
+To calculate a compensation requirement for sinusoidal conditions, multiply active power by the difference between the tangents of the original and target phase angles.
+
+224
+00:16:41,491 --> 00:16:48,829
+For three kilowatts, improving cosine phi from zero point six to one gives a compensation magnitude of four kilovars.
+
+225
+00:16:49,049 --> 00:16:54,681
+Write the capacitor contribution as negative four kilovars in the signed reactive-power balance.
+
+226
+00:16:54,901 --> 00:17:01,323
+This distinction explains why a compensation requirement may be written as a positive number in a specification.
+
+227
+00:17:03,500 --> 00:17:09,239
+With active power and supply voltage unchanged, a higher power factor means less supply current.
+
+228
+00:17:09,459 --> 00:17:14,131
+Use the presentation example of twelve hundred watts at two hundred and forty volts.
+
+229
+00:17:14,351 --> 00:17:18,105
+At a power factor of zero point five, current is ten amperes.
+
+230
+00:17:18,325 --> 00:17:21,013
+At a power factor of one, it is five amperes.
+
+231
+00:17:21,233 --> 00:17:24,327
+The current has halved, but the useful load has not halved.
+
+232
+00:17:24,547 --> 00:17:28,941
+We have reduced the reactive burden on the supply in this ideal sinusoidal model.
+
+233
+00:17:31,000 --> 00:17:34,285
+Cable heating depends on current squared times resistance.
+
+234
+00:17:34,505 --> 00:17:41,716
+If current falls from ten amperes to five amperes in the same cable, the loss ratio is five divided by ten, squared.
+
+235
+00:17:41,936 --> 00:17:44,837
+One quarter of the original cable loss remains.
+
+236
+00:17:45,057 --> 00:17:50,220
+That is a seventy five per cent reduction in cable heating, under the stated assumptions.
+
+237
+00:17:50,440 --> 00:17:54,856
+It is not a seventy five per cent reduction in the load energy requirement.
+
+238
+00:17:55,076 --> 00:17:57,935
+Be precise about what your percentage describes.
+
+239
+00:18:00,000 --> 00:18:03,669
+Electronic loads can draw distorted current containing harmonics.
+
+240
+00:18:03,889 --> 00:18:08,860
+In that case, the phase angle of the fundamental does not describe the entire waveform.
+
+241
+00:18:09,080 --> 00:18:13,069
+Total power factor remains active power divided by apparent power.
+
+242
+00:18:13,289 --> 00:18:19,561
+If a meter reports eight hundred watts and one thousand volt amperes, total power factor is zero point eight.
+
+243
+00:18:19,781 --> 00:18:25,563
+A fundamental cosine phi reading of zero point nine five can coexist with that result.
+
+244
+00:18:25,783 --> 00:18:29,985
+Do not apply the simple power triangle blindly to distorted waveforms.
+
+245
+00:18:32,000 --> 00:18:37,845
+The correction examples are teaching models, not instructions for adding a capacitor to an installation.
+
+246
+00:18:38,065 --> 00:18:42,545
+Real systems require suitable equipment, protection and a study of the load.
+
+247
+00:18:42,765 --> 00:18:46,136
+Harmonics, resonance and changing demand affect the choice.
+
+248
+00:18:46,356 --> 00:18:50,089
+Overcompensation can make the supply see a capacitive load.
+
+249
+00:18:50,309 --> 00:19:00,315
+The learning objective is to understand what compensation changes: the reactive demand, apparent power and supply current, while the useful active load can remain the same.
+
+250
+00:19:02,500 --> 00:19:09,519
+A sinusoidal inductive single-phase load has six hundred watts of active power and eight hundred vars of reactive power.
+
+251
+00:19:09,739 --> 00:19:12,427
+Its supply is two hundred volts R M S.
+
+252
+00:19:12,647 --> 00:19:15,697
+Find apparent power, power factor and supply current.
+
+253
+00:19:15,917 --> 00:19:18,029
+Pause now and draw the triangle.
+
+254
+00:19:24,249 --> 00:19:26,959
+Apparent power is one thousand volt amperes.
+
+255
+00:19:27,179 --> 00:19:31,851
+Power factor is six hundred divided by one thousand, or zero point six.
+
+256
+00:19:32,071 --> 00:19:36,423
+Current is one thousand divided by two hundred, which gives five amperes.
+
+257
+00:19:40,000 --> 00:19:42,923
+Take three ideas into the week forty exercises.
+
+258
+00:19:43,143 --> 00:19:48,561
+First, identify the waveform and distinguish instantaneous, peak and R M S values.
+
+259
+00:19:48,781 --> 00:19:54,157
+Second, combine resistance and reactance with their phase relationship, using the correct sign.
+
+260
+00:19:54,377 --> 00:20:00,308
+Third, distinguish active, reactive and apparent power, and state when the sinusoidal formulas apply.
+
+261
+00:20:00,528 --> 00:20:02,448
+Show your units and assumptions.
+
+262
+00:20:02,668 --> 00:20:06,337
+The week forty submission is due on Sunday, the fourth of October.
+
+263
+00:20:06,557 --> 00:20:11,123
+Return to the relevant chapter whenever you need to see the relationship move again.

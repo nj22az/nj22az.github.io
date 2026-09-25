@@ -1,0 +1,2717 @@
+{
+  "language": "en-GB",
+  "title": "Alternating Current Aboard",
+  "fps": 30,
+  "bpm": 120,
+  "width": 1920,
+  "height": 1080,
+  "duration": 1212.5,
+  "chapters": [
+    "Sinusoidal AC voltage",
+    "Reactance and impedance",
+    "Power in AC circuits"
+  ],
+  "scenes": [
+    {
+      "id": "welcome",
+      "chapter": 0,
+      "title": "Alternating Current Aboard",
+      "key": "Week 40 · 28 September–2 October 2026",
+      "visual": "intro",
+      "slides": [
+        1,
+        2,
+        3
+      ],
+      "say": "Welcome aboard. This is your Sjöskolan companion for week forty. Saga and the gull will help us follow three connected lessons: alternating voltage, impedance, and power. We begin with what changes during one cycle. Then we connect the timing of voltage and current to the current drawn by a load. Finally, we explain what that means for generators, cables and useful power. Keep your presentation and calculator beside you.",
+      "start": 0,
+      "duration": 28.5,
+      "voiceStart": 0.5,
+      "voiceDuration": 26.606666666666662,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "cycle",
+      "chapter": 0,
+      "title": "One cycle, two polarities",
+      "key": "The curve shows voltage at successive instants.",
+      "visual": "wave",
+      "slides": [
+        4,
+        6
+      ],
+      "say": "Last week, a battery gave us a largely steady voltage. An alternating voltage changes with time and reverses polarity. Follow the marker through one sine wave. It rises from zero, reaches a positive peak, returns to zero, reaches a negative peak, and returns again. That complete pattern is one cycle. The curve is a record of voltage over time. It does not show a particle travelling along the cable.",
+      "wave": "cycle",
+      "formula": "u(t) = û sin(2πft)",
+      "start": 28.5,
+      "duration": 27,
+      "voiceStart": 29,
+      "voiceDuration": 25.219999999999995,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "period",
+      "chapter": 0,
+      "title": "Period and frequency",
+      "key": "T = time per cycle · f = cycles per second",
+      "visual": "wave",
+      "slides": [
+        7,
+        10,
+        11,
+        12,
+        13
+      ],
+      "say": "The period, capital T, is the time taken for one complete cycle. Frequency, f, counts cycles per second and is measured in hertz. These quantities are reciprocals. At fifty hertz, one divided by fifty is zero point zero two seconds, or twenty milliseconds. At sixty hertz, the period is about sixteen point seven milliseconds. Measure between matching points on successive cycles, such as two rising zero crossings.",
+      "wave": "period",
+      "formula": "T = 1/f     50 Hz → 20 ms",
+      "start": 55.5,
+      "duration": 28.5,
+      "voiceStart": 56,
+      "voiceDuration": 26.57866666666666,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "values",
+      "chapter": 0,
+      "title": "Three different voltage values",
+      "key": "For a centred sine wave: Upp = 2û.",
+      "visual": "wave",
+      "slides": [
+        4,
+        8,
+        14,
+        15,
+        18,
+        19
+      ],
+      "say": "We need three different descriptions of voltage. The instantaneous value tells us the voltage at one particular moment. The peak value is the largest magnitude reached by the wave. Peak to peak is the distance from the negative peak to the positive peak. For a sine wave centred on zero, peak to peak is twice the peak. Read the symbol and the description carefully before choosing a formula.",
+      "wave": "values",
+      "formula": "Instantaneous u(t) · Peak û · Peak-to-peak Upp",
+      "start": 84,
+      "duration": 24.5,
+      "voiceStart": 84.5,
+      "voiceDuration": 22.76,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "rms",
+      "chapter": 0,
+      "title": "What RMS actually means",
+      "key": "Equal RMS voltage gives equal average heating in the same resistor.",
+      "visual": "rms",
+      "slides": [
+        8,
+        21,
+        31,
+        32
+      ],
+      "say": "R M S stands for root mean square. Its practical meaning is equal heating. Connect twelve volts D C to a resistor. Now compare a sine wave of twelve volts R M S across the same resistance. Both deliver the same average heating power. The alternating voltage changes constantly, so its peak must be higher than twelve volts. R M S gives us a useful steady value for comparing the electrical effect.",
+      "formula": "12 V DC   ↔   12 V RMS",
+      "steps": [
+        "Same resistor: 24 Ω",
+        "P = U²/R = 144/24 = 6 W"
+      ],
+      "start": 108.5,
+      "duration": 27.5,
+      "voiceStart": 109,
+      "voiceDuration": 25.86,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "mains",
+      "chapter": 0,
+      "title": "230 V is an RMS value",
+      "key": "The √2 conversion applies to a pure sine wave with no DC offset.",
+      "visual": "wave",
+      "slides": [
+        8,
+        14,
+        15,
+        16,
+        17
+      ],
+      "say": "For a pure sine wave with no D C offset, divide the peak by the square root of two to find R M S. Going the other way, multiply R M S by the square root of two. A two hundred and thirty volt R M S sine wave therefore has a peak of about three hundred and twenty five volts. Its peak to peak value is about six hundred and fifty one volts.",
+      "wave": "mains",
+      "formula": "230 V RMS · û ≈ 325 V · Upp ≈ 651 V",
+      "start": 136,
+      "duration": 22.5,
+      "voiceStart": 136.5,
+      "voiceDuration": 20.933333333333334,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "worked-wave",
+      "chapter": 0,
+      "title": "Worked example: read the waveform",
+      "key": "Given → relationship → substitution → unit check",
+      "visual": "calculation",
+      "slides": [
+        5,
+        9
+      ],
+      "say": "Here is the presentation example. A sine wave has thirty volts peak to peak and a period of ten milliseconds. First, halve thirty to obtain a peak of fifteen volts. Next, divide fifteen by the square root of two. The R M S value is about ten point six one volts. Finally, convert ten milliseconds to zero point zero one seconds. One divided by that period gives one hundred hertz. Notice that peak to peak is the largest of these voltage values.",
+      "given": "Upp = 30 V     T = 10 ms",
+      "steps": [
+        "û = 30/2 = 15 V",
+        "Urms = 15/√2 ≈ 10.61 V",
+        "f = 1/0.010 = 100 Hz"
+      ],
+      "stepCues": [
+        "First, halve",
+        "Next, divide",
+        "Finally, convert"
+      ],
+      "start": 158.5,
+      "duration": 30,
+      "voiceStart": 159,
+      "voiceDuration": 28.447999999999993,
+      "stepTimes": [
+        7.574666666666673,
+        10.866666666666674,
+        17.365333333333325
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "mean",
+      "chapter": 0,
+      "title": "Zero average does not mean zero effect",
+      "key": "Both positive and negative half-cycles heat the resistor.",
+      "visual": "wave",
+      "slides": [
+        21
+      ],
+      "say": "Over a complete cycle, the positive and negative areas of a centred sine wave cancel. Its ordinary average voltage is zero. Heating behaves differently. Resistor power depends on voltage squared, so both polarities contribute positive heating. This is why an alternating supply can warm a heater even though the average voltage is zero. Keep average voltage, R M S voltage, and average power as three separate ideas.",
+      "wave": "mean",
+      "formula": "Mean u = 0     but     mean(u²/R) > 0",
+      "start": 188.5,
+      "duration": 28.5,
+      "voiceStart": 189,
+      "voiceDuration": 26.94133333333333,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "instant-example",
+      "chapter": 0,
+      "title": "Worked example: time becomes voltage",
+      "key": "Use the peak value and set the calculator to RAD.",
+      "visual": "calculation",
+      "slides": [
+        24
+      ],
+      "say": "The worked example in your slides uses a ten volt peak at twenty five hertz. Find the voltage after ten milliseconds. Convert the time to zero point zero one seconds. Two times pi times twenty five times zero point zero one gives pi divided by two radians. The sine of that angle is one, so the instantaneous voltage is ten volts. This is one quarter of the forty millisecond period.",
+      "given": "u(t) = 10 sin(2π · 25t) V     t = 10 ms",
+      "steps": [
+        "t = 10 ms = 0.010 s",
+        "2πft = 2π × 25 × 0.010 = π/2 rad",
+        "u = 10 × sin(π/2) = 10 V"
+      ],
+      "stepCues": [
+        "Convert the time",
+        "Two times pi",
+        "The sine of that angle"
+      ],
+      "start": 217,
+      "duration": 26.5,
+      "voiceStart": 217.5,
+      "voiceDuration": 24.829333333333327,
+      "stepTimes": [
+        7.7453333333333205,
+        10.97333333333333,
+        17.50800000000001
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "instant",
+      "chapter": 0,
+      "title": "A value at one instant",
+      "key": "Convert milliseconds to seconds. Use RAD for 2πft.",
+      "visual": "calculation",
+      "slides": [
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "say": "To calculate an instantaneous value, use the peak as the amplitude of the sine function. In this example the peak is seventeen volts and the frequency is fifty hertz. At five milliseconds, the angle is pi divided by two radians. The sine is one, so the voltage is positive seventeen volts. At fifteen milliseconds, the angle is three pi divided by two. The sine is minus one, giving negative seventeen volts. Set the calculator to radians for this formula.",
+      "given": "u(t) = 17 sin(2π · 50t) V",
+      "steps": [
+        "5 ms: angle = π/2 rad → +17 V",
+        "15 ms: angle = 3π/2 rad → −17 V",
+        "RMS is not the sine-wave amplitude."
+      ],
+      "stepCues": [
+        "At five milliseconds",
+        "At fifteen milliseconds",
+        "Set the calculator"
+      ],
+      "start": 243.5,
+      "duration": 30.5,
+      "voiceStart": 244,
+      "voiceDuration": 28.91066666666666,
+      "stepTimes": [
+        10.582666666666654,
+        18.638666666666666,
+        26.48133333333334
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "phase-time",
+      "chapter": 0,
+      "title": "Time difference becomes phase angle",
+      "key": "At 50 Hz: 5 ms = 90° and 2 ms = 36°.",
+      "visual": "phase",
+      "slides": [
+        22,
+        29,
+        30
+      ],
+      "say": "Phase describes where one repeating signal lies relative to another. One complete period corresponds to three hundred and sixty degrees. At fifty hertz, a five millisecond difference is one quarter of the twenty millisecond period. That means ninety degrees. A two millisecond difference gives thirty six degrees. The size of the gap tells us the angle. To say which signal leads, we must also see which one reaches the matching point first.",
+      "phase": 1.5707963267948966,
+      "formula": "|φ| = 360° × Δt/T",
+      "start": 274,
+      "duration": 28,
+      "voiceStart": 274.5,
+      "voiceDuration": 26.22266666666666,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "square",
+      "chapter": 0,
+      "title": "RMS depends on the waveform",
+      "key": "The square-root-of-two shortcut is specific to a sine wave.",
+      "visual": "square",
+      "slides": [
+        23,
+        33,
+        34
+      ],
+      "say": "Compare two signals with the same twelve volt peak. One is a sine wave. The other is a square wave that spends equal time at positive twelve and negative twelve volts. Both have zero average voltage. The sine has about eight point four nine volts R M S. The square wave has twelve volts R M S, because its squared voltage stays constant. Always identify the waveform before using the sine-wave conversion.",
+      "formula": "Sine: 12/√2 ≈ 8.49 V RMS     Square: 12 V RMS",
+      "start": 302,
+      "duration": 28,
+      "voiceStart": 302.5,
+      "voiceDuration": 26.030666666666665,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "question-wave",
+      "chapter": 0,
+      "title": "Your turn: read the signal",
+      "key": "Pause, calculate, then continue for the explanation.",
+      "visual": "question",
+      "slides": [
+        9,
+        18,
+        19,
+        35
+      ],
+      "say": "A centred sine wave measures twenty volts peak to peak. One cycle lasts four milliseconds. What are its peak voltage, R M S voltage and frequency? Pause the film and write the units beside each result. The peak is ten volts. The R M S value is ten divided by the square root of two, about seven point zero seven volts. The period is zero point zero zero four seconds, so the frequency is two hundred and fifty hertz.",
+      "given": "Upp = 20 V     T = 4 ms",
+      "steps": [
+        "û = 20/2 = 10 V",
+        "Urms = 10/√2 ≈ 7.07 V",
+        "f = 1/0.004 = 250 Hz"
+      ],
+      "stepCues": [
+        "The peak is ten",
+        "The R M S value is ten",
+        "The period is zero"
+      ],
+      "pauseBefore": "The peak is ten",
+      "pause": true,
+      "start": 330,
+      "duration": 36.5,
+      "voiceStart": 330.5,
+      "voiceDuration": 33.396,
+      "stepTimes": [
+        19.411999999999978,
+        21.402666666666676,
+        27.78800000000001
+      ],
+      "revealTime": 0,
+      "answerTime": 19.411999999999978
+    },
+    {
+      "id": "reactance",
+      "chapter": 1,
+      "title": "Why AC needs more than resistance",
+      "key": "R dissipates energy · L and C store and return energy.",
+      "visual": "components",
+      "slides": [
+        1,
+        2,
+        4
+      ],
+      "say": "Our second lesson adds inductors and capacitors. A resistor converts electrical energy into heat. An ideal inductor stores energy in a magnetic field. An ideal capacitor stores energy in an electric field. The last two can return stored energy to the circuit. Their response depends on frequency. We describe this with reactance, measured in ohms. Impedance combines resistance and reactance, including their phase relationship.",
+      "formula": "Z = R + jX     R, X and |Z| in Ω",
+      "start": 366.5,
+      "duration": 29.5,
+      "voiceStart": 367,
+      "voiceDuration": 27.59466666666667,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "resistor-phase",
+      "chapter": 1,
+      "title": "Resistor: voltage and current in phase",
+      "key": "Ideal resistor: φ = 0°",
+      "visual": "component",
+      "slides": [
+        4,
+        21
+      ],
+      "say": "Begin with a resistor. Current follows voltage immediately in this ideal model. Their zero crossings and peaks occur together. We say the signals are in phase. The two curves use separate amplitude scales because volts and amperes are different quantities. Their timing is what matters here. As the reference arrows rotate, they point in the same direction. Their angle difference is zero degrees.",
+      "component": "R",
+      "phase": 0,
+      "formula": "uR(t) = R · i(t)",
+      "start": 396,
+      "duration": 26.5,
+      "voiceStart": 396.5,
+      "voiceDuration": 24.58666666666666,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "inductor-phase",
+      "chapter": 1,
+      "title": "Inductor: current lags voltage",
+      "key": "Ideal inductor: current lags by 90°.",
+      "visual": "component",
+      "slides": [
+        6
+      ],
+      "say": "An ideal inductor opposes changes in current. The voltage across it is greatest when current is changing most rapidly. Current therefore lags voltage by ninety degrees in a sinusoidal steady state. Watch the voltage reach its positive peak before the current. A real coil also has resistance, so a practical coil does not generally produce a full ninety degree phase difference. The ideal model helps us understand its reactive part.",
+      "component": "L",
+      "phase": 1.5707963267948966,
+      "formula": "XL = 2πfL",
+      "start": 422.5,
+      "duration": 28.5,
+      "voiceStart": 423,
+      "voiceDuration": 26.962666666666664,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "inductor-calc",
+      "chapter": 1,
+      "title": "Inductive reactance increases with frequency",
+      "key": "L in henries · f in hertz · XL in ohms",
+      "visual": "calculation",
+      "slides": [
+        6,
+        10,
+        11
+      ],
+      "say": "Calculate the reactance of an ideal zero point one henry inductor at fifty hertz. Multiply two, pi, fifty and zero point one. The result is approximately thirty one point four ohms. If the frequency doubles while inductance stays the same, inductive reactance doubles as well. This does not mean the coil has acquired more ordinary resistance. We are describing the relationship between sinusoidal voltage and current caused by its inductance.",
+      "given": "L = 0.10 H     f = 50 Hz",
+      "steps": [
+        "XL = 2π × 50 × 0.10 ≈ 31.4 Ω",
+        "At 100 Hz: XL ≈ 62.8 Ω"
+      ],
+      "stepCues": [
+        "Multiply two",
+        "If the frequency doubles"
+      ],
+      "start": 451,
+      "duration": 28.5,
+      "voiceStart": 451.5,
+      "voiceDuration": 26.919999999999995,
+      "stepTimes": [
+        5.669333333333327,
+        12.295999999999992
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "capacitor-phase",
+      "chapter": 1,
+      "title": "Capacitor: current leads voltage",
+      "key": "Ideal capacitor: current leads by 90°.",
+      "visual": "component",
+      "slides": [
+        7
+      ],
+      "say": "A capacitor behaves differently. Current flows as its stored charge changes, and its voltage builds as charge accumulates. In sinusoidal steady state, current leads voltage by ninety degrees for an ideal capacitor. The current peak arrives first. Compare this directly with the inductor, where current lagged. These statements describe timing. They do not mean that a capacitor creates energy or anticipates a future change.",
+      "component": "C",
+      "phase": -1.5707963267948966,
+      "formula": "XC = 1/(2πfC)",
+      "start": 479.5,
+      "duration": 29,
+      "voiceStart": 480,
+      "voiceDuration": 27.012,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "capacitor-calc",
+      "chapter": 1,
+      "title": "Capacitive reactance decreases with frequency",
+      "key": "Convert microfarads to farads before calculating.",
+      "visual": "calculation",
+      "slides": [
+        7,
+        12,
+        13,
+        29,
+        30
+      ],
+      "say": "For a one hundred microfarad capacitor at fifty hertz, first convert the capacitance to one hundred times ten to the minus six farads. Calculate the complete denominator: two times pi times frequency times capacitance. Then divide one by that result. Capacitive reactance is approximately thirty one point eight ohms. At one hundred hertz it falls to about fifteen point nine ohms. Increasing frequency has the opposite effect on capacitive and inductive reactance.",
+      "given": "C = 100 μF = 0.000100 F     f = 50 Hz",
+      "steps": [
+        "XC = 1/(2π × 50 × 0.000100)",
+        "XC ≈ 31.8 Ω",
+        "At 100 Hz: XC ≈ 15.9 Ω"
+      ],
+      "stepCues": [
+        "Calculate the complete",
+        "Capacitive reactance is",
+        "At one hundred hertz"
+      ],
+      "start": 508.5,
+      "duration": 31,
+      "voiceStart": 509,
+      "voiceDuration": 29.20266666666666,
+      "stepTimes": [
+        8.655999999999949,
+        16.626666666666665,
+        20.793333333333294
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "impedance",
+      "chapter": 1,
+      "title": "The impedance triangle",
+      "key": "Add the perpendicular components as vectors.",
+      "visual": "triangle",
+      "slides": [
+        8,
+        14,
+        15,
+        16,
+        17
+      ],
+      "say": "Resistance and reactance do not point in the same direction on an impedance diagram. Draw resistance horizontally, then inductive reactance upwards. The impedance is the diagonal. With thirty ohms of resistance and forty ohms of inductive reactance, Pythagoras gives fifty ohms of impedance. Adding thirty and forty directly would give the wrong answer. With one hundred volts R M S across this series circuit, current is one hundred divided by fifty, or two amperes.",
+      "triangle": "impedance",
+      "a": 30,
+      "b": 40,
+      "labels": [
+        "R = 30 Ω",
+        "XL = 40 Ω",
+        "|Z| = 50 Ω"
+      ],
+      "formula": "|Z| = √(R² + X²)     I = U/|Z| = 2 A",
+      "start": 539.5,
+      "duration": 31,
+      "voiceStart": 540,
+      "voiceDuration": 29.330666666666662,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "rl-example",
+      "chapter": 1,
+      "title": "Worked example: a series RL circuit",
+      "key": "The same current passes through both series components.",
+      "visual": "calculation",
+      "slides": [
+        5,
+        9
+      ],
+      "say": "Now use the smaller example from the presentation. Resistance is twelve ohms, inductive reactance is sixteen ohms, and the supply is sixty volts R M S. The impedance is twenty ohms, giving a current of three amperes. Multiplying current by resistance gives thirty six volts across the resistor. Multiplying current by inductive reactance gives forty eight volts across the inductor. We must account for their different phases when combining these voltages.",
+      "given": "R = 12 Ω     XL = 16 Ω     U = 60 V RMS",
+      "steps": [
+        "|Z| = √(12² + 16²) = 20 Ω",
+        "I = 60/20 = 3 A",
+        "UR = 36 V     UL = 48 V"
+      ],
+      "stepCues": [
+        "The impedance is",
+        "giving a current",
+        "Multiplying current by resistance"
+      ],
+      "start": 570.5,
+      "duration": 30.5,
+      "voiceStart": 571,
+      "voiceDuration": 28.52,
+      "stepTimes": [
+        10.539999999999964,
+        10.539999999999964,
+        14.365333333333297
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "voltage-triangle",
+      "chapter": 1,
+      "title": "Why 36 V and 48 V make 60 V",
+      "key": "Kirchhoff’s voltage law still holds at every instant.",
+      "visual": "triangle",
+      "slides": [
+        9,
+        18,
+        19,
+        22
+      ],
+      "say": "The resistor voltage is in phase with current. The inductor voltage leads current by ninety degrees. Their voltage arrows are therefore perpendicular. The supply is the vector sum: the square root of thirty six squared plus forty eight squared, which is sixty volts. Kirchhoff has not stopped working. Instantaneous voltages still add around the loop. It is the separate R M S magnitudes that cannot simply be added as ordinary positive numbers.",
+      "triangle": "voltage",
+      "a": 36,
+      "b": 48,
+      "labels": [
+        "UR = 36 V",
+        "UL = 48 V",
+        "U = 60 V"
+      ],
+      "formula": "U = √(UR² + UL²) = 60 V RMS",
+      "start": 601,
+      "duration": 29,
+      "voiceStart": 601.5,
+      "voiceDuration": 27.097333333333328,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "phase-angle",
+      "chapter": 1,
+      "title": "The sign tells us who leads",
+      "key": "φ is the impedance angle: phase of voltage relative to current.",
+      "visual": "triangle",
+      "slides": [
+        21,
+        25,
+        26
+      ],
+      "say": "To find the impedance angle, take the inverse tangent of reactance divided by resistance. Use degrees on your calculator when you want the answer in degrees. Thirty ohms and positive forty ohms give positive fifty three point one degrees. Voltage leads current by that angle, so current lags voltage. We use current as the reference in this series circuit. Keeping the reference clear prevents the common mistake of reversing the meaning of the sign.",
+      "triangle": "impedance",
+      "a": 30,
+      "b": 40,
+      "labels": [
+        "R = 30 Ω",
+        "X = +40 Ω",
+        "φ ≈ +53.1°"
+      ],
+      "formula": "φ = arctan(X/R)     Calculator: DEG",
+      "start": 630,
+      "duration": 29,
+      "voiceStart": 630.5,
+      "voiceDuration": 27.154666666666664,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "rc-example",
+      "chapter": 1,
+      "title": "Worked example: a series RC circuit",
+      "key": "Capacitive net reactance is negative.",
+      "visual": "triangle",
+      "slides": [
+        24,
+        27,
+        28
+      ],
+      "say": "For the capacitor example, resistance is twelve ohms and capacitive reactance has a magnitude of sixteen ohms. Write the net reactance as negative sixteen. The impedance magnitude remains twenty ohms. At sixty volts the current remains three amperes. But the angle is now negative fifty three point one degrees. The reactive arrow points downwards, and current leads the supply voltage. Equal impedance magnitudes do not mean equal phase relationships.",
+      "triangle": "capacitive",
+      "a": 12,
+      "b": -16,
+      "labels": [
+        "R = 12 Ω",
+        "X = −16 Ω",
+        "|Z| = 20 Ω"
+      ],
+      "formula": "φ ≈ −53.1°     I = 60/20 = 3 A",
+      "start": 659,
+      "duration": 29.5,
+      "voiceStart": 659.5,
+      "voiceDuration": 27.822666666666663,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "frequency",
+      "chapter": 1,
+      "title": "Change frequency, change the balance",
+      "key": "Fixed components: XL ∝ f and XC ∝ 1/f.",
+      "visual": "frequency",
+      "slides": [
+        23,
+        29,
+        30
+      ],
+      "say": "The frequency sweep shows the two trends together. Keep the inductance and capacitance fixed. As frequency rises, inductive reactance increases and capacitive reactance decreases. Their crossing marks equal reactance magnitudes. In a series circuit, use their difference as the net reactance. Below that crossing, the circuit is capacitive. Above it, the circuit is inductive. The curves are calculated from the same equations we have just used.",
+      "formula": "X = XL − XC",
+      "start": 688.5,
+      "duration": 28.5,
+      "voiceStart": 689,
+      "voiceDuration": 26.826666666666664,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "resonance",
+      "chapter": 1,
+      "title": "Series resonance",
+      "key": "At resonance, resistance still limits the current.",
+      "visual": "resonance",
+      "slides": [
+        23,
+        31,
+        32,
+        33,
+        34
+      ],
+      "say": "At series resonance, inductive and capacitive reactances have equal magnitude and cancel in the net impedance. Consider twenty ohms of resistance, with both reactances equal to forty ohms. A one hundred volt R M S supply produces five amperes. Each reactive component then has two hundred volts across it. Those voltages oppose one another in the vector sum. Resonance does not mean that every component voltage disappears, and resistance still limits current.",
+      "formula": "X = 40 − 40 = 0 Ω     I = 100/20 = 5 A",
+      "start": 717,
+      "duration": 30.5,
+      "voiceStart": 717.5,
+      "voiceDuration": 28.775999999999996,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "question-impedance",
+      "chapter": 1,
+      "title": "Your turn: combine R, L and C",
+      "key": "Pause and calculate the net reactance first.",
+      "visual": "question",
+      "slides": [
+        31,
+        32,
+        35
+      ],
+      "say": "Here is a series circuit with thirty ohms of resistance, fifty ohms of inductive reactance and ten ohms of capacitive reactance. The supply is one hundred volts R M S. Find the net reactance, impedance magnitude and current. Decide whether current leads or lags. Pause here. The net reactance is positive forty ohms. The impedance is fifty ohms, so current is two amperes. The circuit is inductive, and current lags voltage.",
+      "given": "R = 30 Ω     XL = 50 Ω     XC = 10 Ω     U = 100 V",
+      "steps": [
+        "X = 50 − 10 = +40 Ω",
+        "|Z| = √(30² + 40²) = 50 Ω",
+        "I = 100/50 = 2 A · current lags"
+      ],
+      "stepCues": [
+        "The net reactance is",
+        "The impedance is",
+        "so current is"
+      ],
+      "pauseBefore": "The net reactance is",
+      "pause": true,
+      "start": 747.5,
+      "duration": 37.5,
+      "voiceStart": 748,
+      "voiceDuration": 34.256,
+      "stepTimes": [
+        25.029333333333284,
+        27.76666666666665,
+        27.76666666666665
+      ],
+      "revealTime": 0,
+      "answerTime": 25.029333333333284
+    },
+    {
+      "id": "power-intro",
+      "chapter": 2,
+      "title": "Power: what does the supply deliver?",
+      "key": "Single-phase examples · voltage and current are RMS values.",
+      "visual": "power",
+      "slides": [
+        1,
+        2,
+        4,
+        6
+      ],
+      "say": "Our final chapter connects these phase relationships to power. Imagine a generator supplying an onboard load. Multiplying R M S voltage by R M S current gives apparent power, measured in volt amperes. It does not always give active power in watts. For a sinusoidal load, the phase difference matters. At two hundred and thirty volts and ten amperes, apparent power is two thousand three hundred volt amperes. We still need the power factor to calculate active power.",
+      "mode": "apparent",
+      "formula": "S = U × I = 230 × 10 = 2,300 VA",
+      "start": 785,
+      "duration": 30.5,
+      "voiceStart": 785.5,
+      "voiceDuration": 28.803999999999995,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "active",
+      "chapter": 2,
+      "title": "Active power does work and produces heat",
+      "key": "P in watts · S in volt-amperes",
+      "visual": "power",
+      "slides": [
+        6,
+        10,
+        11,
+        12,
+        13
+      ],
+      "say": "Active power is the average rate at which electrical energy becomes work and heat in the load. For sinusoidal voltage and current, multiply apparent power by the cosine of the phase angle. With two thousand three hundred volt amperes and a power factor of zero point eight, active power is one thousand eight hundred and forty watts. On the graph, instantaneous power varies during the cycle. The horizontal line marks its average.",
+      "mode": "active",
+      "formula": "P = UI cos φ = 2,300 × 0.80 = 1,840 W",
+      "start": 815.5,
+      "duration": 27,
+      "voiceStart": 816,
+      "voiceDuration": 25.227999999999998,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "reactive",
+      "chapter": 2,
+      "title": "Reactive power describes energy exchange",
+      "key": "Course convention: inductive Q positive, capacitive Q negative.",
+      "visual": "energy",
+      "slides": [
+        7,
+        16,
+        17
+      ],
+      "say": "An ideal reactive component stores energy during part of the cycle and returns it during another part. Reactive power describes this exchange. It is measured in vars. In our convention, inductive reactive power is positive and capacitive reactive power is negative. For the previous sinusoidal example, cosine phi is zero point eight, so sine phi is zero point six. Reactive power is two thousand three hundred times zero point six, or one thousand three hundred and eighty vars.",
+      "formula": "Q = UI sin φ = 2,300 × 0.60 = +1,380 var",
+      "start": 842.5,
+      "duration": 32.5,
+      "voiceStart": 843,
+      "voiceDuration": 30.695999999999998,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "power-triangle",
+      "chapter": 2,
+      "title": "The power triangle",
+      "key": "This P–Q–S triangle assumes sinusoidal voltage and current.",
+      "visual": "triangle",
+      "slides": [
+        8,
+        14,
+        15
+      ],
+      "say": "For sinusoidal conditions, active and reactive power form perpendicular sides of the power triangle. Apparent power is the diagonal. Three kilowatts and four kilovars give five kilovolt amperes. Power factor is active power divided by apparent power: three divided by five, or zero point six. Keep the units distinct. Watts describe active power, vars describe reactive power, and volt amperes describe apparent power.",
+      "triangle": "power",
+      "a": 3,
+      "b": 4,
+      "labels": [
+        "P = 3 kW",
+        "Q = +4 kvar",
+        "S = 5 kVA"
+      ],
+      "formula": "S² = P² + Q²     PF = P/S = 0.60",
+      "start": 875,
+      "duration": 28.5,
+      "voiceStart": 875.5,
+      "voiceDuration": 26.919999999999998,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "power-example",
+      "chapter": 2,
+      "title": "Worked example: power and current",
+      "key": "Use the same numerical scale for P and Q.",
+      "visual": "calculation",
+      "slides": [
+        5,
+        9
+      ],
+      "say": "The presentation example uses nine hundred watts of active power and twelve hundred vars of inductive reactive power. The square root of their squared sum is fifteen hundred volt amperes. Dividing nine hundred by fifteen hundred gives a power factor of zero point six. At two hundred and thirty volts, supply current is about six point five two amperes. Check the result by multiplying voltage, current and power factor. You should recover approximately nine hundred watts.",
+      "given": "P = 900 W     Q = +1,200 var     U = 230 V",
+      "steps": [
+        "S = √(900² + 1,200²) = 1,500 VA",
+        "PF = 900/1,500 = 0.60",
+        "I = 1,500/230 ≈ 6.52 A"
+      ],
+      "stepCues": [
+        "The square root",
+        "Dividing nine hundred",
+        "At two hundred and thirty"
+      ],
+      "start": 903.5,
+      "duration": 30.5,
+      "voiceStart": 904,
+      "voiceDuration": 28.583999999999996,
+      "stepTimes": [
+        7.674666666666667,
+        11.606666666666683,
+        16.840000000000032
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "electrical-energy",
+      "chapter": 2,
+      "title": "Power becomes energy over time",
+      "key": "Use active power for active energy in kWh.",
+      "visual": "calculation",
+      "slides": [
+        18,
+        19
+      ],
+      "say": "Power describes a rate. Energy includes how long that rate continues. A load using one point six kilowatts for three hours consumes four point eight kilowatt hours of active energy. Even if its apparent power is two kilovolt amperes, use active power for this calculation. Keep kilowatts with hours to obtain kilowatt hours. Do not confuse a power rating with the accumulated energy recorded over a period of operation.",
+      "given": "P = 1.60 kW     S = 2.0 kVA     t = 3 h",
+      "steps": [
+        "Eactive = P × t",
+        "Eactive = 1.60 × 3 = 4.80 kWh"
+      ],
+      "stepCues": [
+        "Power describes",
+        "A load using"
+      ],
+      "start": 934,
+      "duration": 27.5,
+      "voiceStart": 934.5,
+      "voiceDuration": 25.703999999999997,
+      "stepTimes": [
+        0.5,
+        5.29200000000003
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "correction",
+      "chapter": 2,
+      "title": "Power factor correction",
+      "key": "The model keeps the load’s active power unchanged.",
+      "visual": "correction",
+      "slides": [
+        22,
+        27,
+        28
+      ],
+      "say": "A suitably selected capacitor can supply part of the reactive exchange required by an inductive load. Consider a load taking three kilowatts and positive four kilovars. In the ideal model, a capacitor with negative four kilovars cancels the reactive demand seen by the supply. The required compensation magnitude is four kilovars. Apparent power at the supply falls from five to three kilovolt amperes. The load still needs three kilowatts of active power.",
+      "formula": "Qtotal = +4 + (−4) = 0 kvar",
+      "reveal": "In the ideal model",
+      "start": 961.5,
+      "duration": 29.5,
+      "voiceStart": 962,
+      "voiceDuration": 27.965333333333334,
+      "stepTimes": [],
+      "revealTime": 11.07333333333338,
+      "answerTime": null
+    },
+    {
+      "id": "correction-formula",
+      "chapter": 2,
+      "title": "Calculating the compensation magnitude",
+      "key": "A magnitude is positive; the capacitor’s signed Q is negative.",
+      "visual": "calculation",
+      "slides": [
+        22
+      ],
+      "say": "To calculate a compensation requirement for sinusoidal conditions, multiply active power by the difference between the tangents of the original and target phase angles. For three kilowatts, improving cosine phi from zero point six to one gives a compensation magnitude of four kilovars. Write the capacitor contribution as negative four kilovars in the signed reactive-power balance. This distinction explains why a compensation requirement may be written as a positive number in a specification.",
+      "given": "P = 3 kW     cos φ₁ = 0.60     cos φ₂ = 1.00",
+      "steps": [
+        "|Qc| = P(tan φ₁ − tan φ₂)",
+        "|Qc| = 3 × (4/3 − 0) = 4 kvar",
+        "Signed capacitor contribution: Qc = −4 kvar"
+      ],
+      "stepCues": [
+        "To calculate",
+        "For three kilowatts",
+        "Write the capacitor"
+      ],
+      "start": 991,
+      "duration": 32,
+      "voiceStart": 991.5,
+      "voiceDuration": 30.042666666666666,
+      "stepTimes": [
+        0.5,
+        10.490666666666698,
+        18.04933333333338
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "less-current",
+      "chapter": 2,
+      "title": "The same useful load, less supply current",
+      "key": "For single phase: I = P/(U × PF).",
+      "visual": "calculation",
+      "slides": [
+        23,
+        24,
+        25,
+        26,
+        29,
+        30
+      ],
+      "say": "With active power and supply voltage unchanged, a higher power factor means less supply current. Use the presentation example of twelve hundred watts at two hundred and forty volts. At a power factor of zero point five, current is ten amperes. At a power factor of one, it is five amperes. The current has halved, but the useful load has not halved. We have reduced the reactive burden on the supply in this ideal sinusoidal model.",
+      "given": "P = 1,200 W     U = 240 V RMS",
+      "steps": [
+        "Before: I₁ = 1,200/(240 × 0.50) = 10 A",
+        "After: I₂ = 1,200/(240 × 1.00) = 5 A"
+      ],
+      "stepCues": [
+        "At a power factor of zero",
+        "At a power factor of one"
+      ],
+      "start": 1023,
+      "duration": 27.5,
+      "voiceStart": 1023.5,
+      "voiceDuration": 25.66133333333333,
+      "stepTimes": [
+        11.350666666666712,
+        15.325333333333447
+      ],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "cable-loss",
+      "chapter": 2,
+      "title": "Cable heating falls with current squared",
+      "key": "The 75% reduction is in cable loss, not in the load’s active power.",
+      "visual": "loss",
+      "slides": [
+        24,
+        31,
+        32
+      ],
+      "say": "Cable heating depends on current squared times resistance. If current falls from ten amperes to five amperes in the same cable, the loss ratio is five divided by ten, squared. One quarter of the original cable loss remains. That is a seventy five per cent reduction in cable heating, under the stated assumptions. It is not a seventy five per cent reduction in the load energy requirement. Be precise about what your percentage describes.",
+      "formula": "Ploss,2/Ploss,1 = (5/10)² = 0.25",
+      "start": 1050.5,
+      "duration": 29,
+      "voiceStart": 1051,
+      "voiceDuration": 27.154666666666667,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "harmonics",
+      "chapter": 2,
+      "title": "Power factor and cos φ can differ",
+      "key": "PF = P/S always; PF = cos φ for sinusoidal voltage and current.",
+      "visual": "harmonics",
+      "slides": [
+        21,
+        33,
+        34
+      ],
+      "say": "Electronic loads can draw distorted current containing harmonics. In that case, the phase angle of the fundamental does not describe the entire waveform. Total power factor remains active power divided by apparent power. If a meter reports eight hundred watts and one thousand volt amperes, total power factor is zero point eight. A fundamental cosine phi reading of zero point nine five can coexist with that result. Do not apply the simple power triangle blindly to distorted waveforms.",
+      "formula": "P/S = 800/1,000 = 0.80     cos φ₁ = 0.95",
+      "start": 1079.5,
+      "duration": 32,
+      "voiceStart": 1080,
+      "voiceDuration": 30.20533333333333,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "correction-limits",
+      "chapter": 2,
+      "title": "Correction needs an engineering design",
+      "key": "Consider harmonics, resonance, load variation and equipment ratings.",
+      "visual": "recap",
+      "slides": [
+        22,
+        23
+      ],
+      "say": "The correction examples are teaching models, not instructions for adding a capacitor to an installation. Real systems require suitable equipment, protection and a study of the load. Harmonics, resonance and changing demand affect the choice. Overcompensation can make the supply see a capacitive load. The learning objective is to understand what compensation changes: the reactive demand, apparent power and supply current, while the useful active load can remain the same.",
+      "steps": [
+        "Reactive demand at the supply changes.",
+        "Apparent power and supply current can fall.",
+        "The active load remains the same in this model."
+      ],
+      "start": 1111.5,
+      "duration": 30.5,
+      "voiceStart": 1112,
+      "voiceDuration": 28.534666666666666,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    },
+    {
+      "id": "question-power",
+      "chapter": 2,
+      "title": "Your turn: from power to current",
+      "key": "Pause, identify the units, then calculate.",
+      "visual": "question",
+      "slides": [
+        14,
+        15,
+        35
+      ],
+      "say": "A sinusoidal inductive single-phase load has six hundred watts of active power and eight hundred vars of reactive power. Its supply is two hundred volts R M S. Find apparent power, power factor and supply current. Pause now and draw the triangle. Apparent power is one thousand volt amperes. Power factor is six hundred divided by one thousand, or zero point six. Current is one thousand divided by two hundred, which gives five amperes.",
+      "given": "P = 600 W     Q = +800 var     U = 200 V",
+      "steps": [
+        "S = √(600² + 800²) = 1,000 VA",
+        "PF = 600/1,000 = 0.60",
+        "I = 1,000/200 = 5 A"
+      ],
+      "stepCues": [
+        "Apparent power is one thousand",
+        "Power factor is six hundred",
+        "Current is one thousand"
+      ],
+      "pauseBefore": "Apparent power is one thousand",
+      "pause": true,
+      "start": 1142,
+      "duration": 37.5,
+      "voiceStart": 1142.5,
+      "voiceDuration": 34.14266666666666,
+      "stepTimes": [
+        22.249333333333425,
+        25.178666666666686,
+        30.07066666666674
+      ],
+      "revealTime": 0,
+      "answerTime": 22.249333333333425
+    },
+    {
+      "id": "recap",
+      "chapter": 2,
+      "title": "Three ideas to take into class",
+      "key": "Use the week 40 decks and exercises to practise your own method.",
+      "visual": "outro",
+      "slides": [
+        35,
+        36
+      ],
+      "say": "Take three ideas into the week forty exercises. First, identify the waveform and distinguish instantaneous, peak and R M S values. Second, combine resistance and reactance with their phase relationship, using the correct sign. Third, distinguish active, reactive and apparent power, and state when the sinusoidal formulas apply. Show your units and assumptions. The week forty submission is due on Sunday, the fourth of October. Return to the relevant chapter whenever you need to see the relationship move again.",
+      "steps": [
+        "Waveform and RMS",
+        "Impedance and phase",
+        "Power and its assumptions"
+      ],
+      "start": 1179.5,
+      "duration": 33,
+      "voiceStart": 1180,
+      "voiceDuration": 31.342666666666666,
+      "stepTimes": [],
+      "revealTime": 0,
+      "answerTime": null
+    }
+  ],
+  "captions": [
+    {
+      "start": 0.5,
+      "end": 1.844,
+      "text": "Welcome aboard.",
+      "scene": "welcome"
+    },
+    {
+      "start": 2.064,
+      "end": 5.072,
+      "text": "This is your Sjöskolan companion for week forty.",
+      "scene": "welcome"
+    },
+    {
+      "start": 5.292,
+      "end": 11.5,
+      "text": "Saga and the gull will help us follow three connected lessons: alternating voltage, impedance, and power.",
+      "scene": "welcome"
+    },
+    {
+      "start": 11.72,
+      "end": 14.365333333333334,
+      "text": "We begin with what changes during one cycle.",
+      "scene": "welcome"
+    },
+    {
+      "start": 14.585333333333335,
+      "end": 18.98,
+      "text": "Then we connect the timing of voltage and current to the current drawn by a load.",
+      "scene": "welcome"
+    },
+    {
+      "start": 19.2,
+      "end": 23.70133333333333,
+      "text": "Finally, we explain what that means for generators, cables and useful power.",
+      "scene": "welcome"
+    },
+    {
+      "start": 23.92133333333333,
+      "end": 26.886666666666663,
+      "text": "Keep your presentation and calculator beside you.",
+      "scene": "welcome"
+    },
+    {
+      "start": 29,
+      "end": 32.2,
+      "text": "Last week, a battery gave us a largely steady voltage.",
+      "scene": "cycle"
+    },
+    {
+      "start": 32.42,
+      "end": 36.708,
+      "text": "An alternating voltage changes with time and reverses polarity.",
+      "scene": "cycle"
+    },
+    {
+      "start": 36.928,
+      "end": 39.31733333333333,
+      "text": "Follow the marker through one sine wave.",
+      "scene": "cycle"
+    },
+    {
+      "start": 39.537333333333336,
+      "end": 45.788000000000004,
+      "text": "It rises from zero, reaches a positive peak, returns to zero, reaches a negative peak, and returns again.",
+      "scene": "cycle"
+    },
+    {
+      "start": 46.007999999999996,
+      "end": 48.248,
+      "text": "That complete pattern is one cycle.",
+      "scene": "cycle"
+    },
+    {
+      "start": 48.467999999999996,
+      "end": 50.94266666666666,
+      "text": "The curve is a record of voltage over time.",
+      "scene": "cycle"
+    },
+    {
+      "start": 51.16266666666667,
+      "end": 54,
+      "text": "It does not show a particle travelling along the cable.",
+      "scene": "cycle"
+    },
+    {
+      "start": 56,
+      "end": 60.074666666666666,
+      "text": "The period, capital T, is the time taken for one complete cycle.",
+      "scene": "period"
+    },
+    {
+      "start": 60.294666666666664,
+      "end": 64.02799999999999,
+      "text": "Frequency, f, counts cycles per second and is measured in hertz.",
+      "scene": "period"
+    },
+    {
+      "start": 64.248,
+      "end": 66.31733333333334,
+      "text": "These quantities are reciprocals.",
+      "scene": "period"
+    },
+    {
+      "start": 66.53733333333334,
+      "end": 72.70266666666667,
+      "text": "At fifty hertz, one divided by fifty is zero point zero two seconds, or twenty milliseconds.",
+      "scene": "period"
+    },
+    {
+      "start": 72.92266666666666,
+      "end": 76.80533333333332,
+      "text": "At sixty hertz, the period is about sixteen point seven milliseconds.",
+      "scene": "period"
+    },
+    {
+      "start": 77.02533333333332,
+      "end": 82.35866666666665,
+      "text": "Measure between matching points on successive cycles, such as two rising zero crossings.",
+      "scene": "period"
+    },
+    {
+      "start": 84.5,
+      "end": 87.06,
+      "text": "We need three different descriptions of voltage.",
+      "scene": "values"
+    },
+    {
+      "start": 87.28,
+      "end": 91.376,
+      "text": "The instantaneous value tells us the voltage at one particular moment.",
+      "scene": "values"
+    },
+    {
+      "start": 91.596,
+      "end": 95.116,
+      "text": "The peak value is the largest magnitude reached by the wave.",
+      "scene": "values"
+    },
+    {
+      "start": 95.336,
+      "end": 99.21866666666666,
+      "text": "Peak to peak is the distance from the negative peak to the positive peak.",
+      "scene": "values"
+    },
+    {
+      "start": 99.43866666666666,
+      "end": 103.15066666666667,
+      "text": "For a sine wave centred on zero, peak to peak is twice the peak.",
+      "scene": "values"
+    },
+    {
+      "start": 103.37066666666666,
+      "end": 107.03999999999999,
+      "text": "Read the symbol and the description carefully before choosing a formula.",
+      "scene": "values"
+    },
+    {
+      "start": 109,
+      "end": 111.32533333333333,
+      "text": "R M S stands for root mean square.",
+      "scene": "rms"
+    },
+    {
+      "start": 111.54533333333333,
+      "end": 113.93466666666667,
+      "text": "Its practical meaning is equal heating.",
+      "scene": "rms"
+    },
+    {
+      "start": 114.15466666666667,
+      "end": 116.62933333333334,
+      "text": "Connect twelve volts D C to a resistor.",
+      "scene": "rms"
+    },
+    {
+      "start": 116.84933333333333,
+      "end": 121.41466666666666,
+      "text": "Now compare a sine wave of twelve volts R M S across the same resistance.",
+      "scene": "rms"
+    },
+    {
+      "start": 121.63466666666667,
+      "end": 124.23733333333334,
+      "text": "Both deliver the same average heating power.",
+      "scene": "rms"
+    },
+    {
+      "start": 124.45733333333334,
+      "end": 129.76933333333335,
+      "text": "The alternating voltage changes constantly, so its peak must be higher than twelve volts.",
+      "scene": "rms"
+    },
+    {
+      "start": 129.98933333333332,
+      "end": 134.64,
+      "text": "R M S gives us a useful steady value for comparing the electrical effect.",
+      "scene": "rms"
+    },
+    {
+      "start": 136.5,
+      "end": 142.75066666666666,
+      "text": "For a pure sine wave with no D C offset, divide the peak by the square root of two to find R M S.",
+      "scene": "mains"
+    },
+    {
+      "start": 142.97066666666666,
+      "end": 146.66133333333332,
+      "text": "Going the other way, multiply R M S by the square root of two.",
+      "scene": "mains"
+    },
+    {
+      "start": 146.88133333333334,
+      "end": 153.324,
+      "text": "A two hundred and thirty volt R M S sine wave therefore has a peak of about three hundred and twenty five volts.",
+      "scene": "mains"
+    },
+    {
+      "start": 153.544,
+      "end": 157.21333333333334,
+      "text": "Its peak to peak value is about six hundred and fifty one volts.",
+      "scene": "mains"
+    },
+    {
+      "start": 159,
+      "end": 161.15466666666666,
+      "text": "Here is the presentation example.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 161.37466666666666,
+      "end": 165.85466666666665,
+      "text": "A sine wave has thirty volts peak to peak and a period of ten milliseconds.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 166.07466666666667,
+      "end": 169.14666666666668,
+      "text": "First, halve thirty to obtain a peak of fifteen volts.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 169.36666666666667,
+      "end": 172.05466666666666,
+      "text": "Next, divide fifteen by the square root of two.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 172.27466666666666,
+      "end": 175.64533333333333,
+      "text": "The R M S value is about ten point six one volts.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 175.86533333333333,
+      "end": 179.89733333333334,
+      "text": "Finally, convert ten milliseconds to zero point zero one seconds.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 180.11733333333333,
+      "end": 183.18933333333334,
+      "text": "One divided by that period gives one hundred hertz.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 183.40933333333334,
+      "end": 187.228,
+      "text": "Notice that peak to peak is the largest of these voltage values.",
+      "scene": "worked-wave"
+    },
+    {
+      "start": 189,
+      "end": 194.22666666666666,
+      "text": "Over a complete cycle, the positive and negative areas of a centred sine wave cancel.",
+      "scene": "mean"
+    },
+    {
+      "start": 194.44666666666666,
+      "end": 196.87866666666665,
+      "text": "Its ordinary average voltage is zero.",
+      "scene": "mean"
+    },
+    {
+      "start": 197.09866666666667,
+      "end": 198.89066666666668,
+      "text": "Heating behaves differently.",
+      "scene": "mean"
+    },
+    {
+      "start": 199.11066666666667,
+      "end": 204.508,
+      "text": "Resistor power depends on voltage squared, so both polarities contribute positive heating.",
+      "scene": "mean"
+    },
+    {
+      "start": 204.728,
+      "end": 210.21066666666667,
+      "text": "This is why an alternating supply can warm a heater even though the average voltage is zero.",
+      "scene": "mean"
+    },
+    {
+      "start": 210.43066666666667,
+      "end": 215.72133333333335,
+      "text": "Keep average voltage, R M S voltage, and average power as three separate ideas.",
+      "scene": "mean"
+    },
+    {
+      "start": 217.5,
+      "end": 221.852,
+      "text": "The worked example in your slides uses a ten volt peak at twenty five hertz.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 222.072,
+      "end": 224.52533333333332,
+      "text": "Find the voltage after ten milliseconds.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 224.74533333333332,
+      "end": 227.75333333333333,
+      "text": "Convert the time to zero point zero one seconds.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 227.97333333333333,
+      "end": 234.28799999999998,
+      "text": "Two times pi times twenty five times zero point zero one gives pi divided by two radians.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 234.508,
+      "end": 239.00933333333333,
+      "text": "The sine of that angle is one, so the instantaneous voltage is ten volts.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 239.22933333333333,
+      "end": 242.10933333333332,
+      "text": "This is one quarter of the forty millisecond period.",
+      "scene": "instant-example"
+    },
+    {
+      "start": 244,
+      "end": 249.29066666666665,
+      "text": "To calculate an instantaneous value, use the peak as the amplitude of the sine function.",
+      "scene": "instant"
+    },
+    {
+      "start": 249.51066666666668,
+      "end": 253.86266666666668,
+      "text": "In this example the peak is seventeen volts and the frequency is fifty hertz.",
+      "scene": "instant"
+    },
+    {
+      "start": 254.08266666666665,
+      "end": 258.0933333333333,
+      "text": "At five milliseconds, the angle is pi divided by two radians.",
+      "scene": "instant"
+    },
+    {
+      "start": 258.31333333333333,
+      "end": 261.91866666666664,
+      "text": "The sine is one, so the voltage is positive seventeen volts.",
+      "scene": "instant"
+    },
+    {
+      "start": 262.13866666666667,
+      "end": 265.95733333333334,
+      "text": "At fifteen milliseconds, the angle is three pi divided by two.",
+      "scene": "instant"
+    },
+    {
+      "start": 266.1773333333333,
+      "end": 269.7613333333333,
+      "text": "The sine is minus one, giving negative seventeen volts.",
+      "scene": "instant"
+    },
+    {
+      "start": 269.98133333333334,
+      "end": 272.6906666666667,
+      "text": "Set the calculator to radians for this formula.",
+      "scene": "instant"
+    },
+    {
+      "start": 274.5,
+      "end": 278.74533333333335,
+      "text": "Phase describes where one repeating signal lies relative to another.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 278.9653333333333,
+      "end": 282.61333333333334,
+      "text": "One complete period corresponds to three hundred and sixty degrees.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 282.8333333333333,
+      "end": 287.84666666666664,
+      "text": "At fifty hertz, a five millisecond difference is one quarter of the twenty millisecond period.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 288.06666666666666,
+      "end": 289.816,
+      "text": "That means ninety degrees.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 290.036,
+      "end": 292.916,
+      "text": "A two millisecond difference gives thirty six degrees.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 293.136,
+      "end": 295.33333333333337,
+      "text": "The size of the gap tells us the angle.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 295.55333333333334,
+      "end": 300.5026666666667,
+      "text": "To say which signal leads, we must also see which one reaches the matching point first.",
+      "scene": "phase-time"
+    },
+    {
+      "start": 302.5,
+      "end": 305.55066666666664,
+      "text": "Compare two signals with the same twelve volt peak.",
+      "scene": "square"
+    },
+    {
+      "start": 305.77066666666667,
+      "end": 307.32800000000003,
+      "text": "One is a sine wave.",
+      "scene": "square"
+    },
+    {
+      "start": 307.548,
+      "end": 313.13733333333334,
+      "text": "The other is a square wave that spends equal time at positive twelve and negative twelve volts.",
+      "scene": "square"
+    },
+    {
+      "start": 313.3573333333333,
+      "end": 315.55466666666666,
+      "text": "Both have zero average voltage.",
+      "scene": "square"
+    },
+    {
+      "start": 315.7746666666667,
+      "end": 318.88933333333335,
+      "text": "The sine has about eight point four nine volts R M S.",
+      "scene": "square"
+    },
+    {
+      "start": 319.1093333333333,
+      "end": 324.1653333333333,
+      "text": "The square wave has twelve volts R M S, because its squared voltage stays constant.",
+      "scene": "square"
+    },
+    {
+      "start": 324.38533333333334,
+      "end": 328.3106666666667,
+      "text": "Always identify the waveform before using the sine-wave conversion.",
+      "scene": "square"
+    },
+    {
+      "start": 330.5,
+      "end": 333.7,
+      "text": "A centred sine wave measures twenty volts peak to peak.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 333.92,
+      "end": 336.16,
+      "text": "One cycle lasts four milliseconds.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 336.38,
+      "end": 339.94266666666664,
+      "text": "What are its peak voltage, R M S voltage and frequency?",
+      "scene": "question-wave"
+    },
+    {
+      "start": 340.16266666666667,
+      "end": 343.192,
+      "text": "Pause the film and write the units beside each result.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 349.412,
+      "end": 351.18266666666665,
+      "text": "The peak is ten volts.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 351.4026666666667,
+      "end": 357.568,
+      "text": "The R M S value is ten divided by the square root of two, about seven point zero seven volts.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 357.788,
+      "end": 363.676,
+      "text": "The period is zero point zero zero four seconds, so the frequency is two hundred and fifty hertz.",
+      "scene": "question-wave"
+    },
+    {
+      "start": 367,
+      "end": 369.9653333333333,
+      "text": "Our second lesson adds inductors and capacitors.",
+      "scene": "reactance"
+    },
+    {
+      "start": 370.18533333333335,
+      "end": 373.236,
+      "text": "A resistor converts electrical energy into heat.",
+      "scene": "reactance"
+    },
+    {
+      "start": 373.456,
+      "end": 376.8266666666667,
+      "text": "An ideal inductor stores energy in a magnetic field.",
+      "scene": "reactance"
+    },
+    {
+      "start": 377.0466666666667,
+      "end": 380.588,
+      "text": "An ideal capacitor stores energy in an electric field.",
+      "scene": "reactance"
+    },
+    {
+      "start": 380.808,
+      "end": 383.752,
+      "text": "The last two can return stored energy to the circuit.",
+      "scene": "reactance"
+    },
+    {
+      "start": 383.972,
+      "end": 386.14799999999997,
+      "text": "Their response depends on frequency.",
+      "scene": "reactance"
+    },
+    {
+      "start": 386.368,
+      "end": 389.3333333333333,
+      "text": "We describe this with reactance, measured in ohms.",
+      "scene": "reactance"
+    },
+    {
+      "start": 389.55333333333334,
+      "end": 394.37466666666666,
+      "text": "Impedance combines resistance and reactance, including their phase relationship.",
+      "scene": "reactance"
+    },
+    {
+      "start": 396.5,
+      "end": 398.1,
+      "text": "Begin with a resistor.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 398.32,
+      "end": 401.4773333333333,
+      "text": "Current follows voltage immediately in this ideal model.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 401.69733333333335,
+      "end": 404.2146666666667,
+      "text": "Their zero crossings and peaks occur together.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 404.43466666666666,
+      "end": 406.504,
+      "text": "We say the signals are in phase.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 406.724,
+      "end": 411.99333333333334,
+      "text": "The two curves use separate amplitude scales because volts and amperes are different quantities.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 412.2133333333333,
+      "end": 414.21866666666665,
+      "text": "Their timing is what matters here.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 414.4386666666667,
+      "end": 418.27866666666665,
+      "text": "As the reference arrows rotate, they point in the same direction.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 418.4986666666667,
+      "end": 420.8666666666667,
+      "text": "Their angle difference is zero degrees.",
+      "scene": "resistor-phase"
+    },
+    {
+      "start": 423,
+      "end": 426.008,
+      "text": "An ideal inductor opposes changes in current.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 426.228,
+      "end": 430.58,
+      "text": "The voltage across it is greatest when current is changing most rapidly.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 430.8,
+      "end": 435.664,
+      "text": "Current therefore lags voltage by ninety degrees in a sinusoidal steady state.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 435.884,
+      "end": 439.10533333333336,
+      "text": "Watch the voltage reach its positive peak before the current.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 439.32533333333333,
+      "end": 446.152,
+      "text": "A real coil also has resistance, so a practical coil does not generally produce a full ninety degree phase difference.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 446.372,
+      "end": 449.7426666666667,
+      "text": "The ideal model helps us understand its reactive part.",
+      "scene": "inductor-phase"
+    },
+    {
+      "start": 451.5,
+      "end": 456.44933333333336,
+      "text": "Calculate the reactance of an ideal zero point one henry inductor at fifty hertz.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 456.6693333333333,
+      "end": 459.6773333333333,
+      "text": "Multiply two, pi, fifty and zero point one.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 459.89733333333334,
+      "end": 463.076,
+      "text": "The result is approximately thirty one point four ohms.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 463.296,
+      "end": 468.544,
+      "text": "If the frequency doubles while inductance stays the same, inductive reactance doubles as well.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 468.764,
+      "end": 472.284,
+      "text": "This does not mean the coil has acquired more ordinary resistance.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 472.504,
+      "end": 478.20000000000005,
+      "text": "We are describing the relationship between sinusoidal voltage and current caused by its inductance.",
+      "scene": "inductor-calc"
+    },
+    {
+      "start": 480,
+      "end": 482.09066666666666,
+      "text": "A capacitor behaves differently.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 482.3106666666667,
+      "end": 487.60133333333334,
+      "text": "Current flows as its stored charge changes, and its voltage builds as charge accumulates.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 487.8213333333333,
+      "end": 493.496,
+      "text": "In sinusoidal steady state, current leads voltage by ninety degrees for an ideal capacitor.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 493.716,
+      "end": 495.6786666666667,
+      "text": "The current peak arrives first.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 495.89866666666666,
+      "end": 499.3546666666667,
+      "text": "Compare this directly with the inductor, where current lagged.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 499.57466666666664,
+      "end": 501.68666666666667,
+      "text": "These statements describe timing.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 501.90666666666664,
+      "end": 506.792,
+      "text": "They do not mean that a capacitor creates energy or anticipates a future change.",
+      "scene": "capacitor-phase"
+    },
+    {
+      "start": 509,
+      "end": 516.936,
+      "text": "For a one hundred microfarad capacitor at fifty hertz, first convert the capacitance to one hundred times ten to the minus six farads.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 517.156,
+      "end": 522.66,
+      "text": "Calculate the complete denominator: two times pi times frequency times capacitance.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 522.88,
+      "end": 524.9066666666666,
+      "text": "Then divide one by that result.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 525.1266666666667,
+      "end": 529.0733333333334,
+      "text": "Capacitive reactance is approximately thirty one point eight ohms.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 529.2933333333333,
+      "end": 532.728,
+      "text": "At one hundred hertz it falls to about fifteen point nine ohms.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 532.948,
+      "end": 537.9826666666667,
+      "text": "Increasing frequency has the opposite effect on capacitive and inductive reactance.",
+      "scene": "capacitor-calc"
+    },
+    {
+      "start": 540,
+      "end": 545.056,
+      "text": "Resistance and reactance do not point in the same direction on an impedance diagram.",
+      "scene": "impedance"
+    },
+    {
+      "start": 545.276,
+      "end": 549.116,
+      "text": "Draw resistance horizontally, then inductive reactance upwards.",
+      "scene": "impedance"
+    },
+    {
+      "start": 549.336,
+      "end": 551.3413333333333,
+      "text": "The impedance is the diagonal.",
+      "scene": "impedance"
+    },
+    {
+      "start": 551.5613333333333,
+      "end": 558.1106666666667,
+      "text": "With thirty ohms of resistance and forty ohms of inductive reactance, Pythagoras gives fifty ohms of impedance.",
+      "scene": "impedance"
+    },
+    {
+      "start": 558.3306666666666,
+      "end": 561.6373333333332,
+      "text": "Adding thirty and forty directly would give the wrong answer.",
+      "scene": "impedance"
+    },
+    {
+      "start": 561.8573333333334,
+      "end": 569.1106666666667,
+      "text": "With one hundred volts R M S across this series circuit, current is one hundred divided by fifty, or two amperes.",
+      "scene": "impedance"
+    },
+    {
+      "start": 571,
+      "end": 573.944,
+      "text": "Now use the smaller example from the presentation.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 574.164,
+      "end": 580.8199999999999,
+      "text": "Resistance is twelve ohms, inductive reactance is sixteen ohms, and the supply is sixty volts R M S.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 581.04,
+      "end": 584.6453333333333,
+      "text": "The impedance is twenty ohms, giving a current of three amperes.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 584.8653333333333,
+      "end": 589.644,
+      "text": "Multiplying current by resistance gives thirty six volts across the resistor.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 589.864,
+      "end": 595.0266666666666,
+      "text": "Multiplying current by inductive reactance gives forty eight volts across the inductor.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 595.2466666666667,
+      "end": 599.3,
+      "text": "We must account for their different phases when combining these voltages.",
+      "scene": "rl-example"
+    },
+    {
+      "start": 601.5,
+      "end": 604.1453333333334,
+      "text": "The resistor voltage is in phase with current.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 604.3653333333333,
+      "end": 607.5866666666666,
+      "text": "The inductor voltage leads current by ninety degrees.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 607.8066666666666,
+      "end": 610.516,
+      "text": "Their voltage arrows are therefore perpendicular.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 610.736,
+      "end": 616.9866666666667,
+      "text": "The supply is the vector sum: the square root of thirty six squared plus forty eight squared, which is sixty volts.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 617.2066666666667,
+      "end": 619.2760000000001,
+      "text": "Kirchhoff has not stopped working.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 619.496,
+      "end": 622.504,
+      "text": "Instantaneous voltages still add around the loop.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 622.724,
+      "end": 628.3773333333334,
+      "text": "It is the separate R M S magnitudes that cannot simply be added as ordinary positive numbers.",
+      "scene": "voltage-triangle"
+    },
+    {
+      "start": 630.5,
+      "end": 635.94,
+      "text": "To find the impedance angle, take the inverse tangent of reactance divided by resistance.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 636.16,
+      "end": 639.9573333333333,
+      "text": "Use degrees on your calculator when you want the answer in degrees.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 640.1773333333333,
+      "end": 645.1693333333333,
+      "text": "Thirty ohms and positive forty ohms give positive fifty three point one degrees.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 645.3893333333333,
+      "end": 649.2719999999999,
+      "text": "Voltage leads current by that angle, so current lags voltage.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 649.492,
+      "end": 652.4359999999999,
+      "text": "We use current as the reference in this series circuit.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 652.656,
+      "end": 657.4346666666667,
+      "text": "Keeping the reference clear prevents the common mistake of reversing the meaning of the sign.",
+      "scene": "phase-angle"
+    },
+    {
+      "start": 659.5,
+      "end": 666.22,
+      "text": "For the capacitor example, resistance is twelve ohms and capacitive reactance has a magnitude of sixteen ohms.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 666.44,
+      "end": 669.0213333333334,
+      "text": "Write the net reactance as negative sixteen.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 669.2413333333334,
+      "end": 672.0360000000001,
+      "text": "The impedance magnitude remains twenty ohms.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 672.256,
+      "end": 675.0293333333333,
+      "text": "At sixty volts the current remains three amperes.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 675.2493333333333,
+      "end": 678.5346666666667,
+      "text": "But the angle is now negative fifty three point one degrees.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 678.7546666666667,
+      "end": 682.8720000000001,
+      "text": "The reactive arrow points downwards, and current leads the supply voltage.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 683.092,
+      "end": 687.1026666666667,
+      "text": "Equal impedance magnitudes do not mean equal phase relationships.",
+      "scene": "rc-example"
+    },
+    {
+      "start": 689,
+      "end": 691.6026666666667,
+      "text": "The frequency sweep shows the two trends together.",
+      "scene": "frequency"
+    },
+    {
+      "start": 691.8226666666667,
+      "end": 694.3613333333334,
+      "text": "Keep the inductance and capacitance fixed.",
+      "scene": "frequency"
+    },
+    {
+      "start": 694.5813333333333,
+      "end": 699.8506666666666,
+      "text": "As frequency rises, inductive reactance increases and capacitive reactance decreases.",
+      "scene": "frequency"
+    },
+    {
+      "start": 700.0706666666666,
+      "end": 702.9506666666666,
+      "text": "Their crossing marks equal reactance magnitudes.",
+      "scene": "frequency"
+    },
+    {
+      "start": 703.1706666666666,
+      "end": 706.6053333333333,
+      "text": "In a series circuit, use their difference as the net reactance.",
+      "scene": "frequency"
+    },
+    {
+      "start": 706.8253333333333,
+      "end": 709.556,
+      "text": "Below that crossing, the circuit is capacitive.",
+      "scene": "frequency"
+    },
+    {
+      "start": 709.776,
+      "end": 711.9306666666666,
+      "text": "Above it, the circuit is inductive.",
+      "scene": "frequency"
+    },
+    {
+      "start": 712.1506666666667,
+      "end": 715.6066666666667,
+      "text": "The curves are calculated from the same equations we have just used.",
+      "scene": "frequency"
+    },
+    {
+      "start": 717.5,
+      "end": 724.284,
+      "text": "At series resonance, inductive and capacitive reactances have equal magnitude and cancel in the net impedance.",
+      "scene": "resonance"
+    },
+    {
+      "start": 724.504,
+      "end": 729.24,
+      "text": "Consider twenty ohms of resistance, with both reactances equal to forty ohms.",
+      "scene": "resonance"
+    },
+    {
+      "start": 729.46,
+      "end": 733.1293333333334,
+      "text": "A one hundred volt R M S supply produces five amperes.",
+      "scene": "resonance"
+    },
+    {
+      "start": 733.3493333333333,
+      "end": 736.7626666666666,
+      "text": "Each reactive component then has two hundred volts across it.",
+      "scene": "resonance"
+    },
+    {
+      "start": 736.9826666666667,
+      "end": 739.948,
+      "text": "Those voltages oppose one another in the vector sum.",
+      "scene": "resonance"
+    },
+    {
+      "start": 740.168,
+      "end": 746.056,
+      "text": "Resonance does not mean that every component voltage disappears, and resistance still limits current.",
+      "scene": "resonance"
+    },
+    {
+      "start": 748,
+      "end": 755.6373333333333,
+      "text": "Here is a series circuit with thirty ohms of resistance, fifty ohms of inductive reactance and ten ohms of capacitive reactance.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 755.8573333333334,
+      "end": 758.5453333333334,
+      "text": "The supply is one hundred volts R M S.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 758.7653333333334,
+      "end": 762.1786666666667,
+      "text": "Find the net reactance, impedance magnitude and current.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 762.3986666666667,
+      "end": 764.6813333333333,
+      "text": "Decide whether current leads or lags.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 764.9013333333334,
+      "end": 766.3093333333334,
+      "text": "Pause here.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 772.5293333333333,
+      "end": 775.0466666666666,
+      "text": "The net reactance is positive forty ohms.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 775.2666666666667,
+      "end": 778.7226666666667,
+      "text": "The impedance is fifty ohms, so current is two amperes.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 778.9426666666667,
+      "end": 782.0360000000001,
+      "text": "The circuit is inductive, and current lags voltage.",
+      "scene": "question-impedance"
+    },
+    {
+      "start": 785.5,
+      "end": 789.1053333333333,
+      "text": "Our final chapter connects these phase relationships to power.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 789.3253333333333,
+      "end": 792.2693333333333,
+      "text": "Imagine a generator supplying an onboard load.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 792.4893333333333,
+      "end": 798.7186666666666,
+      "text": "Multiplying R M S voltage by R M S current gives apparent power, measured in volt amperes.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 798.9386666666667,
+      "end": 801.5840000000001,
+      "text": "It does not always give active power in watts.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 801.804,
+      "end": 804.7053333333333,
+      "text": "For a sinusoidal load, the phase difference matters.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 804.9253333333334,
+      "end": 810.792,
+      "text": "At two hundred and thirty volts and ten amperes, apparent power is two thousand three hundred volt amperes.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 811.012,
+      "end": 814.084,
+      "text": "We still need the power factor to calculate active power.",
+      "scene": "power-intro"
+    },
+    {
+      "start": 816,
+      "end": 821.504,
+      "text": "Active power is the average rate at which electrical energy becomes work and heat in the load.",
+      "scene": "active"
+    },
+    {
+      "start": 821.724,
+      "end": 827.1640000000001,
+      "text": "For sinusoidal voltage and current, multiply apparent power by the cosine of the phase angle.",
+      "scene": "active"
+    },
+    {
+      "start": 827.384,
+      "end": 835.0853333333333,
+      "text": "With two thousand three hundred volt amperes and a power factor of zero point eight, active power is one thousand eight hundred and forty watts.",
+      "scene": "active"
+    },
+    {
+      "start": 835.3053333333334,
+      "end": 838.5266666666666,
+      "text": "On the graph, instantaneous power varies during the cycle.",
+      "scene": "active"
+    },
+    {
+      "start": 838.7466666666667,
+      "end": 841.008,
+      "text": "The horizontal line marks its average.",
+      "scene": "active"
+    },
+    {
+      "start": 843,
+      "end": 849.208,
+      "text": "An ideal reactive component stores energy during part of the cycle and returns it during another part.",
+      "scene": "reactive"
+    },
+    {
+      "start": 849.428,
+      "end": 851.8813333333334,
+      "text": "Reactive power describes this exchange.",
+      "scene": "reactive"
+    },
+    {
+      "start": 852.1013333333333,
+      "end": 853.7866666666666,
+      "text": "It is measured in vars.",
+      "scene": "reactive"
+    },
+    {
+      "start": 854.0066666666667,
+      "end": 860.0653333333333,
+      "text": "In our convention, inductive reactive power is positive and capacitive reactive power is negative.",
+      "scene": "reactive"
+    },
+    {
+      "start": 860.2853333333334,
+      "end": 866.8773333333334,
+      "text": "For the previous sinusoidal example, cosine phi is zero point eight, so sine phi is zero point six.",
+      "scene": "reactive"
+    },
+    {
+      "start": 867.0973333333334,
+      "end": 873.476,
+      "text": "Reactive power is two thousand three hundred times zero point six, or one thousand three hundred and eighty vars.",
+      "scene": "reactive"
+    },
+    {
+      "start": 875.5,
+      "end": 881.3026666666667,
+      "text": "For sinusoidal conditions, active and reactive power form perpendicular sides of the power triangle.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 881.5226666666666,
+      "end": 883.5706666666666,
+      "text": "Apparent power is the diagonal.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 883.7906666666667,
+      "end": 887.396,
+      "text": "Three kilowatts and four kilovars give five kilovolt amperes.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 887.616,
+      "end": 893.9733333333334,
+      "text": "Power factor is active power divided by apparent power: three divided by five, or zero point six.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 894.1933333333334,
+      "end": 895.9426666666667,
+      "text": "Keep the units distinct.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 896.1626666666666,
+      "end": 902.1999999999999,
+      "text": "Watts describe active power, vars describe reactive power, and volt amperes describe apparent power.",
+      "scene": "power-triangle"
+    },
+    {
+      "start": 904,
+      "end": 910.9546666666666,
+      "text": "The presentation example uses nine hundred watts of active power and twelve hundred vars of inductive reactive power.",
+      "scene": "power-example"
+    },
+    {
+      "start": 911.1746666666667,
+      "end": 914.8866666666667,
+      "text": "The square root of their squared sum is fifteen hundred volt amperes.",
+      "scene": "power-example"
+    },
+    {
+      "start": 915.1066666666667,
+      "end": 920.12,
+      "text": "Dividing nine hundred by fifteen hundred gives a power factor of zero point six.",
+      "scene": "power-example"
+    },
+    {
+      "start": 920.34,
+      "end": 925.268,
+      "text": "At two hundred and thirty volts, supply current is about six point five two amperes.",
+      "scene": "power-example"
+    },
+    {
+      "start": 925.488,
+      "end": 929.3280000000001,
+      "text": "Check the result by multiplying voltage, current and power factor.",
+      "scene": "power-example"
+    },
+    {
+      "start": 929.548,
+      "end": 932.364,
+      "text": "You should recover approximately nine hundred watts.",
+      "scene": "power-example"
+    },
+    {
+      "start": 934.5,
+      "end": 936.1853333333333,
+      "text": "Power describes a rate.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 936.4053333333334,
+      "end": 939.072,
+      "text": "Energy includes how long that rate continues.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 939.292,
+      "end": 945.5640000000001,
+      "text": "A load using one point six kilowatts for three hours consumes four point eight kilowatt hours of active energy.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 945.784,
+      "end": 951.0533333333333,
+      "text": "Even if its apparent power is two kilovolt amperes, use active power for this calculation.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 951.2733333333333,
+      "end": 954.1106666666667,
+      "text": "Keep kilowatts with hours to obtain kilowatt hours.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 954.3306666666666,
+      "end": 959.9839999999999,
+      "text": "Do not confuse a power rating with the accumulated energy recorded over a period of operation.",
+      "scene": "electrical-energy"
+    },
+    {
+      "start": 962,
+      "end": 968.3146666666667,
+      "text": "A suitably selected capacitor can supply part of the reactive exchange required by an inductive load.",
+      "scene": "correction"
+    },
+    {
+      "start": 968.5346666666667,
+      "end": 972.3533333333334,
+      "text": "Consider a load taking three kilowatts and positive four kilovars.",
+      "scene": "correction"
+    },
+    {
+      "start": 972.5733333333334,
+      "end": 979.144,
+      "text": "In the ideal model, a capacitor with negative four kilovars cancels the reactive demand seen by the supply.",
+      "scene": "correction"
+    },
+    {
+      "start": 979.364,
+      "end": 982.7133333333334,
+      "text": "The required compensation magnitude is four kilovars.",
+      "scene": "correction"
+    },
+    {
+      "start": 982.9333333333333,
+      "end": 986.7946666666666,
+      "text": "Apparent power at the supply falls from five to three kilovolt amperes.",
+      "scene": "correction"
+    },
+    {
+      "start": 987.0146666666667,
+      "end": 989.7453333333334,
+      "text": "The load still needs three kilowatts of active power.",
+      "scene": "correction"
+    },
+    {
+      "start": 991.5,
+      "end": 1001.2706666666667,
+      "text": "To calculate a compensation requirement for sinusoidal conditions, multiply active power by the difference between the tangents of the original and target phase angles.",
+      "scene": "correction-formula"
+    },
+    {
+      "start": 1001.4906666666667,
+      "end": 1008.8293333333334,
+      "text": "For three kilowatts, improving cosine phi from zero point six to one gives a compensation magnitude of four kilovars.",
+      "scene": "correction-formula"
+    },
+    {
+      "start": 1009.0493333333334,
+      "end": 1014.6813333333333,
+      "text": "Write the capacitor contribution as negative four kilovars in the signed reactive-power balance.",
+      "scene": "correction-formula"
+    },
+    {
+      "start": 1014.9013333333334,
+      "end": 1021.3226666666667,
+      "text": "This distinction explains why a compensation requirement may be written as a positive number in a specification.",
+      "scene": "correction-formula"
+    },
+    {
+      "start": 1023.5,
+      "end": 1029.2386666666666,
+      "text": "With active power and supply voltage unchanged, a higher power factor means less supply current.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1029.4586666666667,
+      "end": 1034.1306666666667,
+      "text": "Use the presentation example of twelve hundred watts at two hundred and forty volts.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1034.3506666666667,
+      "end": 1038.1053333333334,
+      "text": "At a power factor of zero point five, current is ten amperes.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1038.3253333333334,
+      "end": 1041.0133333333335,
+      "text": "At a power factor of one, it is five amperes.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1041.2333333333333,
+      "end": 1044.3266666666666,
+      "text": "The current has halved, but the useful load has not halved.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1044.5466666666666,
+      "end": 1048.9413333333332,
+      "text": "We have reduced the reactive burden on the supply in this ideal sinusoidal model.",
+      "scene": "less-current"
+    },
+    {
+      "start": 1051,
+      "end": 1054.2853333333333,
+      "text": "Cable heating depends on current squared times resistance.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1054.5053333333333,
+      "end": 1061.716,
+      "text": "If current falls from ten amperes to five amperes in the same cable, the loss ratio is five divided by ten, squared.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1061.936,
+      "end": 1064.8373333333332,
+      "text": "One quarter of the original cable loss remains.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1065.0573333333334,
+      "end": 1070.22,
+      "text": "That is a seventy five per cent reduction in cable heating, under the stated assumptions.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1070.44,
+      "end": 1074.856,
+      "text": "It is not a seventy five per cent reduction in the load energy requirement.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1075.076,
+      "end": 1077.9346666666668,
+      "text": "Be precise about what your percentage describes.",
+      "scene": "cable-loss"
+    },
+    {
+      "start": 1080,
+      "end": 1083.6693333333333,
+      "text": "Electronic loads can draw distorted current containing harmonics.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1083.8893333333333,
+      "end": 1088.86,
+      "text": "In that case, the phase angle of the fundamental does not describe the entire waveform.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1089.08,
+      "end": 1093.0693333333334,
+      "text": "Total power factor remains active power divided by apparent power.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1093.2893333333334,
+      "end": 1099.5613333333333,
+      "text": "If a meter reports eight hundred watts and one thousand volt amperes, total power factor is zero point eight.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1099.7813333333334,
+      "end": 1105.5626666666667,
+      "text": "A fundamental cosine phi reading of zero point nine five can coexist with that result.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1105.7826666666667,
+      "end": 1109.9853333333333,
+      "text": "Do not apply the simple power triangle blindly to distorted waveforms.",
+      "scene": "harmonics"
+    },
+    {
+      "start": 1112,
+      "end": 1117.8453333333334,
+      "text": "The correction examples are teaching models, not instructions for adding a capacitor to an installation.",
+      "scene": "correction-limits"
+    },
+    {
+      "start": 1118.0653333333332,
+      "end": 1122.5453333333332,
+      "text": "Real systems require suitable equipment, protection and a study of the load.",
+      "scene": "correction-limits"
+    },
+    {
+      "start": 1122.7653333333333,
+      "end": 1126.136,
+      "text": "Harmonics, resonance and changing demand affect the choice.",
+      "scene": "correction-limits"
+    },
+    {
+      "start": 1126.356,
+      "end": 1130.0893333333333,
+      "text": "Overcompensation can make the supply see a capacitive load.",
+      "scene": "correction-limits"
+    },
+    {
+      "start": 1130.3093333333334,
+      "end": 1140.3146666666667,
+      "text": "The learning objective is to understand what compensation changes: the reactive demand, apparent power and supply current, while the useful active load can remain the same.",
+      "scene": "correction-limits"
+    },
+    {
+      "start": 1142.5,
+      "end": 1149.5186666666666,
+      "text": "A sinusoidal inductive single-phase load has six hundred watts of active power and eight hundred vars of reactive power.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1149.7386666666666,
+      "end": 1152.4266666666667,
+      "text": "Its supply is two hundred volts R M S.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1152.6466666666668,
+      "end": 1155.6973333333335,
+      "text": "Find apparent power, power factor and supply current.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1155.9173333333333,
+      "end": 1158.0293333333334,
+      "text": "Pause now and draw the triangle.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1164.2493333333334,
+      "end": 1166.9586666666667,
+      "text": "Apparent power is one thousand volt amperes.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1167.1786666666667,
+      "end": 1171.8506666666667,
+      "text": "Power factor is six hundred divided by one thousand, or zero point six.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1172.0706666666667,
+      "end": 1176.4226666666668,
+      "text": "Current is one thousand divided by two hundred, which gives five amperes.",
+      "scene": "question-power"
+    },
+    {
+      "start": 1180,
+      "end": 1182.9226666666666,
+      "text": "Take three ideas into the week forty exercises.",
+      "scene": "recap"
+    },
+    {
+      "start": 1183.1426666666666,
+      "end": 1188.5613333333333,
+      "text": "First, identify the waveform and distinguish instantaneous, peak and R M S values.",
+      "scene": "recap"
+    },
+    {
+      "start": 1188.7813333333334,
+      "end": 1194.1573333333333,
+      "text": "Second, combine resistance and reactance with their phase relationship, using the correct sign.",
+      "scene": "recap"
+    },
+    {
+      "start": 1194.3773333333334,
+      "end": 1200.308,
+      "text": "Third, distinguish active, reactive and apparent power, and state when the sinusoidal formulas apply.",
+      "scene": "recap"
+    },
+    {
+      "start": 1200.528,
+      "end": 1202.448,
+      "text": "Show your units and assumptions.",
+      "scene": "recap"
+    },
+    {
+      "start": 1202.668,
+      "end": 1206.3373333333332,
+      "text": "The week forty submission is due on Sunday, the fourth of October.",
+      "scene": "recap"
+    },
+    {
+      "start": 1206.5573333333334,
+      "end": 1211.1226666666666,
+      "text": "Return to the relevant chapter whenever you need to see the relationship move again.",
+      "scene": "recap"
+    }
+  ],
+  "voice": {
+    "name": "bf_emma",
+    "engine": "Kokoro-82M / kokoro-onnx 0.4.9 (local)",
+    "synthetic": true,
+    "speed": 0.96,
+    "language": "en-gb",
+    "modelSHA256": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "voicesSHA256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  }
+}
