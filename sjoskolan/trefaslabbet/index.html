@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="sv" data-theme="cobalt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trefaslabbet · Sjöskolan</title>
+<meta name="description" content="Utforska trefas: fas- och linjespänning, neutralström, bruten neutralledare, Y- och Δ-koppling och motorns märkning.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/trefaslabbet/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925">
+</head>
+<body class="ac-page">
+<nav id="site-nav" class="site-nav"></nav>
+<main id="main-content" class="ac-app">
+  <header class="ac-heading">
+    <div>
+      <a class="back-link" href="../vecka-41/aktuell/">← Sjöskolan · vecka 41</a>
+      <h1>Trefaslabbet</h1>
+      <p>Tre faser, en neutralledare och två sätt att koppla. Räkna först, kontrollera sedan.</p>
+    </div>
+    <ul class="deck-links" aria-label="Presentationer vecka 41"><li><a href="../vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx">v41_01 Grunder ↗</a></li><li><a href="../vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx">v41_02 Y, Δ och effekt ↗</a></li><li><a href="../vaxelstromslabbet/">Växelströmslabbet</a></li></ul>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Del av labbet">
+    <button role="tab" id="tab-visare" data-tab="visare" aria-controls="lab" aria-selected="true"><span>1</span>Visare och neutralström</button>
+    <button role="tab" id="tab-neutral" data-tab="neutral" aria-controls="lab" aria-selected="false" tabindex="-1"><span>2</span>Bruten neutralledare</button>
+    <button role="tab" id="tab-ydelta" data-tab="ydelta" aria-controls="lab" aria-selected="false" tabindex="-1"><span>3</span>Y, Δ och motorns märkning</button>
+  </div>
+
+  <div id="lab" class="lab" role="tabpanel" aria-labelledby="tab-visare">
+    <section class="stage" aria-label="Diagram">
+      <div id="figures" class="figures"></div>
+      <dl id="readouts" class="readouts" aria-live="polite"></dl>
+      <p id="principle" class="principle"></p>
+    </section>
+    <aside class="panel">
+      <section class="controls-card" aria-labelledby="controls-title">
+        <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
+        <p id="lock-note" class="lock-note" hidden>Värdena är låsta medan du löser uppgiften.</p>
+        <form id="controls" class="controls" autocomplete="off"></form>
+      </section>
+      <section class="challenge-card" aria-labelledby="challenge-title">
+        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+        <div id="challenge-body" hidden>
+          <p class="deck-ref" id="challenge-deck"></p>
+          <p id="challenge-task" class="task"></p>
+          <form id="answer-form" class="answer-form" autocomplete="off">
+            <label for="answer" id="answer-label">Svar</label>
+            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+          </form>
+          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+        </div>
+        <p id="challenge-intro" class="muted">Välj en uppgift. Värdena ställs in och svaret döljs tills du har räknat.</p>
+      </section>
+    </aside>
+  </div>
+
+  <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
+    <p>Flikarna följer vecka 41: fas- och linjespänning samt neutralström (v41_01 bild 6–8 och 21–24), bruten neutralledare (v41_01 övning 10) och Y, Δ, trefaseffekt och motorns märkning (v41_02). Uppgifterna under ”Räkna först” använder andra tal än presentationernas övningar och exempel.</p>
+    <p>Modellen: symmetrisk, styv källa, stationär sinus, positiv fasföljd L1–L2–L3 (visarna roterar moturs, L2 släpar L1 med 120°). Lasterna i flik 2 är resistiva; lastens stjärnpunkt vid bruten neutral beräknas med Millmans sats. Övertoner, osymmetrisk källa, mättning och inkopplingsförlopp ingår inte. Motorbedömningen jämför bara märkspänning och koppling (±10 %).</p>
+    <p><strong>Säkerhet att ta upp muntligt:</strong> Trefasmätning görs bara på avsedd tränare enligt instruktörens plan. En bruten neutralledare kan ge nästan full linjespänning över enfaslaster. Ombord är nätet ofta ett IT-system med tre ledare utan neutralledare; 230 V-lasterna matas via transformator.</p>
+    <p>Framsteg sparas bara i denna webbläsare. Direktlänkar: <code>?flik=visare</code>, <code>neutral</code> eller <code>ydelta</code>, och <code>&amp;uppgift=</code> med uppgiftens id, till exempel <code>?flik=neutral&amp;uppgift=bruten</code>.</p>
+  </details>
+  <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
+</main>
+<footer id="site-footer" class="site-footer"></footer>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925"></script>
+</body></html>

@@ -8,7 +8,7 @@ for f in font_manager.findSystemFonts():
 plt.rcParams.update({"font.family":"Carlito","font.size":15,"axes.linewidth":1.2,
     "mathtext.fontset":"custom","mathtext.rm":"Carlito","mathtext.it":"Carlito:italic"})
 # Index skrivs som riktiga nedsänkta tecken (X_L, U_R, Q_C, U_F) i stället för upphöjda bokstäver.
-_SUB={"ᴸ":"L","ᶜ":"C","ᴿ":"R","ꜰ":"F"}
+_SUB={"ᵢₙ":"in","ᵤₜ":"ut","ᴸ":"L","ᶜ":"C","ᴿ":"R","ꜰ":"F"}
 def sub(t):
     if not isinstance(t,str): return t
     for k,v in _SUB.items(): t=t.replace(k,r"$_\mathregular{"+v+"}$")
