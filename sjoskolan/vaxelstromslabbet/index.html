@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="sv" data-theme="cobalt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Växelströmslabbet · Sjöskolan</title>
+<meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/vaxelstromslabbet/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="lab.css?v=20260925">
+</head>
+<body class="ac-page">
+<nav id="site-nav" class="site-nav"></nav>
+<main id="main-content" class="ac-app">
+  <header class="ac-heading">
+    <div>
+      <a class="back-link" href="../vecka-40/aktuell/">← Sjöskolan · vecka 40</a>
+      <h1>Växelströmslabbet</h1>
+      <p>Ändra ett värde. Se kurvan, visaren och effekten ändras. Räkna först, kontrollera sedan.</p>
+    </div>
+    <ul class="deck-links" aria-label="Presentationer vecka 40">
+      <li><a href="../vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_elev.pptx">v40_01 Sinus ↗</a></li>
+      <li><a href="../vecka-40/aktuell/v40_02_Reaktans_och_impedans_elev.pptx">v40_02 Impedans ↗</a></li>
+      <li><a href="../vecka-40/aktuell/v40_03_Effekt_i_vaxelstromskretsar_elev.pptx">v40_03 Effekt ↗</a></li>
+    </ul>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Del av labbet">
+    <button role="tab" id="tab-sinus" data-tab="sinus" aria-controls="lab" aria-selected="true"><span>1</span>Sinus och effektivvärde</button>
+    <button role="tab" id="tab-impedans" data-tab="impedans" aria-controls="lab" aria-selected="false" tabindex="-1"><span>2</span>Reaktans och impedans</button>
+    <button role="tab" id="tab-effekt" data-tab="effekt" aria-controls="lab" aria-selected="false" tabindex="-1"><span>3</span>Effekt och kompensering</button>
+  </div>
+
+  <div id="lab" class="lab" role="tabpanel" aria-labelledby="tab-sinus">
+    <section class="stage" aria-label="Diagram">
+      <div id="figures" class="figures"></div>
+      <dl id="readouts" class="readouts" aria-live="polite"></dl>
+      <p id="principle" class="principle"></p>
+    </section>
+    <aside class="panel">
+      <section class="controls-card" aria-labelledby="controls-title">
+        <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
+        <p id="lock-note" class="lock-note" hidden>Värdena är låsta medan du löser uppgiften.</p>
+        <form id="controls" class="controls" autocomplete="off"></form>
+      </section>
+      <section class="challenge-card" aria-labelledby="challenge-title">
+        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+        <div id="challenge-body" hidden>
+          <p class="deck-ref" id="challenge-deck"></p>
+          <p id="challenge-task" class="task"></p>
+          <form id="answer-form" class="answer-form" autocomplete="off">
+            <label for="answer" id="answer-label">Svar</label>
+            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+          </form>
+          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+        </div>
+        <p id="challenge-intro" class="muted">Välj en uppgift. Värdena ställs in och svaret döljs tills du har räknat.</p>
+      </section>
+    </aside>
+  </div>
+
+  <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
+    <p>Varje flik motsvarar en presentation vecka 40. Visa teoribilden, låt eleverna förutsäga vad som händer och dra sedan i ett reglage. Uppgifterna under ”Räkna först” använder andra tal än presentationernas övningar, så inlämningsuppgifterna förblir elevernas egna.</p>
+    <p>Modellen: ideal spänningskälla, stationär sinus, ideala och linjära komponenter. Spolen saknar resistans och kondensatorn saknar läckström. Effektfliken antar sinusformad spänning och ström, så PF = cos φ. Övertoner, mättning, uppvärmning, inkopplingsförlopp och verkliga komponenttoleranser simuleras inte. Kabelförlusten är I²R med en fast slingresistans.</p>
+    <p>Framsteg sparas bara i denna webbläsare. Inga elevdata skickas någonstans. Direktlänkar: <code>?flik=sinus</code>, <code>impedans</code> eller <code>effekt</code>, och <code>&amp;uppgift=</code> följt av uppgiftens id, till exempel <code>?flik=impedans&amp;uppgift=resonans</code>.</p>
+  </details>
+  <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
+</main>
+<footer id="site-footer" class="site-footer"></footer>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925"></script>
+</body></html>

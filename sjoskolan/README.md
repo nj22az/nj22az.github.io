@@ -13,3 +13,10 @@ Version 6 med 46 bilder har flyttats oförändrad till `vecka-39/arkiv/2026-09-2
 ## Multimeterlabbet
 
 `multimetersimulator/` kompletterar vecka 39 och multimeterpresentationen med åtta svenska mätövningar och fri övning. Elever väljer funktion/uttag och kopplar mätspetsar. Direkt återkoppling, lokal progress och CSV-protokoll. Se simulatorns README för modellbegränsningar och tester.
+
+## Växelströmslabbet och figurer vecka 40
+
+`vaxelstromslabbet/` kompletterar de tre presentationerna vecka 40 med tre flikar: sinus, impedans och effekt. Den har tolv räkna-först-uppgifter med andra tal än inlämningsövningarna. Se labbets README.
+
+Den 25 september 2026 fick de tre presentationerna vecka 40 43 figurer: en på varje övningsbild och en på utvalda teoribilder. Bland annat har övning 2 i `v40_01` nu den kurva som uppgiften hänvisar till. Figurerna visar givna värden och markerar det som söks med ”?”. Källkoden finns i `verktyg/figurer/`.
+
