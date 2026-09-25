@@ -6,7 +6,7 @@
 <meta name="description" content="Tryck START och STOPP, lägg in fel och mät mellan punkter i en hållkrets.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/hallkretslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260925">
 <style>.btn-row{display:flex;gap:8px;flex-wrap:wrap}.toggle{font:inherit;font-weight:700;padding:10px 12px;border-radius:10px;border:2px solid #064f91;background:#fff;color:#064f91;cursor:pointer;flex:1 1 8rem;min-width:0}.toggle[aria-pressed="true"]{background:#064f91;color:#fff}.toggle:disabled{opacity:.55;cursor:not-allowed}</style>
 </head>
 <body class="ac-page">
@@ -16,7 +16,7 @@
     <div>
       <a class="back-link" href="../vecka-43/aktuell/">← Sjöskolan · vecka 43</a>
       <h1>Hållkretslabbet</h1>
-      <p>Tryck START och STOPP, lägg in ett fel och mät mellan två punkter. Räkna först, mät sedan.</p>
+      <p>Tryck START och STOPP, lägg in ett fel och mät mellan två punkter. Räkna först, mät sedan. Felmoduler med okänt fel och labbprotokollet för Station C finns under labbet.</p>
     </div>
     <ul class="deck-links" aria-label="Presentationer"><li><a href="../vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx">v43_03 Elscheman ↗</a></li><li><a href="../vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx">v41_03 Mätning ↗</a></li><li><a href="../filmer/#hallkretsen">Film: Hållkretsen</a></li></ul>
   </header>
@@ -50,6 +50,7 @@
       </section>
     </aside>
   </div>
+  <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
     <p>Labbet följer hållkretsen i v41_03 och v43_03 (S0 STOPP NC i serie, S1 START NO parallellt med K1:s NO-hjälpkontakt). Labbet använder bara 24 V och en spole på 480 Ω, så svaren sammanfaller inte med presentationernas 12 V-övningar.</p>
     <p>Modellen: ideala kontakter och ledningar, spolen som enda resistans, idealt voltmeter. En punkt som inte är förbunden med matning eller retur visas som ”flytande”. Utan ström blir det inget spänningsfall i spolen, därför får spolens båda sidor samma potential. Kontaktstudsar, spolens induktans och tillslagstid ingår inte.</p>
@@ -59,5 +60,5 @@
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925"></script>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925-station"></script>
 </body></html>

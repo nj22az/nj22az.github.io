@@ -3,14 +3,14 @@
 // Kontakterna är ideala brytare. Spolen är kretsens enda resistans.
 
 export const NODES = ['P', 'a', 'b', 'c', 'N'];
-export const FAULTS = ['ingen', 's0', 'hall', 'spole', 'retur'];
+export const FAULTS = ['ingen', 's0', 'start', 'hall', 'spole', 'retur'];
 
 /** Slutna förbindelser för ett visst K1-läge. */
 function links(s, k1) {
   const L = [];
   if (s.supply !== false) L.push(['P', 'src']);                       // matningen ansluten till P
   if (!s.s0 && s.fault !== 's0') L.push(['P', 'a']);                  // S0 STOPP, NC
-  if (s.s1) L.push(['a', 'b']);                                       // S1 START, NO
+  if (s.s1 && s.fault !== 'start') L.push(['a', 'b']);               // S1 START, NO
   if (k1 && s.fault !== 'hall') L.push(['a', 'b']);                   // K1 hjälpkontakt, NO
   if (s.fault !== 'retur') L.push(['c', 'N']);                        // returledare
   return L;

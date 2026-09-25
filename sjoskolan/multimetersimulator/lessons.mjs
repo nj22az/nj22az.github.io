@@ -1,3 +1,4 @@
+import { rigOf } from './model.mjs';
 // Answer fields are separate from instrument state: a reading cannot pass a prediction.
 export function numericAnswer(value) {
   const text=String(value??'').trim().replace(',', '.');
@@ -10,6 +11,21 @@ export function acceptsAnswer(step, answer={}) {
 }
 const loadingReading=(input,expected)=>(s,m)=>s.circuit==='divider'&&s.mode==='dc'&&s.jack==='v'&&s.power&&!s.trip&&s.input===input&&
   ['M','G'].includes(s.red)&&['M','G'].includes(s.black)&&s.red!==s.black&&m.code==='reading'&&m.unit==='V ⎓'&&Math.abs(Math.abs(m.value)-expected)<.01;
+
+const pairIs=(s,a,b)=>[s.red,s.black].sort().join()===[a,b].sort().join();
+const near=(m,v,tol)=>m.code==='reading'&&Math.abs(m.value-v)<=tol;
+const rigI=s=>{const g=rigOf(s);return g.U/(g.R1+g.R2);};
+const stationV=(red,black,value)=>(s,m)=>s.circuit==='station'&&s.mode==='dc'&&s.jack==='v'&&s.power&&s.link&&s.red===red&&s.black===black&&near(m,value(s),.006);
+export const STATION_A={id:'stationA',title:'Station A: DC-delare',circuit:'station',slides:'54',goal:'Samma station som den fysiska träffen (v41_03 bild 7): kontrollera instrumentet, mät R1 och R2 spänningslöst, mät spänningar och ström och jämför med dina beräkningar i labbprotokollet.',steps:[
+    {task:'Instrumentkontroll: välj V ⎓ och V Ω. Mät på referensen: röd till Ref+ och svart till Ref−. Den ska visa 5,00 V.',hint:'Referensen är en känd källa, skild från riggen. Visar mätaren fel här kan du inte lita på resten av mätningarna.',test:(s,m)=>s.circuit==='station'&&s.mode==='dc'&&s.jack==='v'&&s.red==='Ref+'&&s.black==='Ref−'&&near(m,5,.006),why:'5,00 V: instrumentet visar rätt mot en känd källa. Skriv det som kontroll i protokollet. Gör samma kontroll efter sista mätningen.'},
+    {task:'Mät R1 spänningslöst. Matningen ska vara bruten. Välj Ω och anslut spetsarna till A och B.',hint:'Ω-läget använder mätarens egen testström. Med bruten matning är källan frånkopplad, så mätaren ser bara R1 mellan A och B.',test:(s,m)=>s.circuit==='station'&&s.mode==='ohm'&&!s.power&&pairIs(s,'A','B')&&near(m,rigOf(s).R1/1000,.0006),why:'Det här är riggens verkliga R1. Jämför med 1 kΩ ±5 % i protokollet. Spara värdet: du behöver det för att räkna ut förväntade spänningar.'},
+    {task:'Mät R2 spänningslöst mellan B och N.',hint:'Samma metod som för R1. Toleransen ±5 % ger gränserna 1,90–2,10 kΩ.',test:(s,m)=>s.circuit==='station'&&s.mode==='ohm'&&!s.power&&pairIs(s,'B','N')&&near(m,rigOf(s).R2/1000,.0006),why:'Det här är riggens verkliga R2. Ligger värdet inom toleransen? Skriv din bedömning i protokollet.'},
+    {task:'Slå på matningen. Mät källspänningen: V ⎓, röd på P och svart på N.',hint:'Källan är märkt med ett nominellt värde. Den verkliga spänningen kan avvika lite.',test:stationV('P','N',s=>rigOf(s).U),why:'Källans verkliga spänning. Använd den i stället för det nominella värdet när du räknar förväntade spänningsfall.'},
+    {task:'Mät spänningen över R1: röd på A och svart på B.',hint:'Voltmetern kopplas parallellt över R1. Räkna först: U1 = Ukälla · R1/(R1 + R2).',test:stationV('A','B',s=>rigI(s)*rigOf(s).R1),why:'Jämför med ditt förväntade värde. Använde du de uppmätta R-värdena blir avvikelsen mycket liten.'},
+    {task:'Mät spänningen över R2: röd på B och svart på N.',hint:'Kontrollera sedan slinglagen: Ukälla − U1 − U2 ska bli nära noll.',test:stationV('B','N',s=>rigI(s)*rigOf(s).R2),why:'Summan U1 + U2 ska vara lika med källspänningen, inom avläsningens upplösning.'},
+    {task:'Mät strömmen. Bryt först matningen. Öppna länken P–A, välj A ⎓ och flytta röd sladd till mA. Röd till P och svart till A. Slå på.',hint:'Ampermetern ersätter länken så att strömmen går genom mätaren. Koppla om bara med bruten matning.',test:(s,m)=>s.circuit==='station'&&s.mode==='current'&&s.jack==='ma'&&!s.link&&s.power&&s.red==='P'&&s.black==='A'&&near(m,rigI(s)*1000,.006),why:'Strömmen genom seriekretsen. Jämför med Ukälla/(R1 + R2). mA-shunten på 1 Ω påverkar nästan inte här.'},
+    {task:'Avsluta: bryt matningen, lossa spetsarna, flytta röd sladd till V Ω och slut länken P–A. Kontrollera sedan instrumentet mot referensen igen.',hint:'Samma avslut som på den fysiska stationen. Nästa grupp ska inte få en rigg med öppen länk eller sladd i strömuttaget.',test:(s,m)=>s.circuit==='station'&&!s.power&&s.link&&s.jack==='v'&&s.mode==='dc'&&s.red==='Ref+'&&s.black==='Ref−'&&near(m,5,.006),why:'Riggen är återställd och instrumentet visar fortfarande rätt. Fyll i analysen i labbprotokollet under simulatorn.'}
+  ]};
 
 export const LESSONS = [
   {id:'voltage',title:'Spänning',circuit:'lamp',slides:'10–16',goal:'Mät spänningen över hyttlampan.',steps:[
@@ -40,5 +56,6 @@ export const LESSONS = [
     {task:'Du ska mäta i en fördelningscentral (CAT III). Högsta relevanta spänning är 400 V. Vilket alternativ uppfyller båda kraven?',choices:['CAT II 1 000 V','CAT III 600 V','CAT III 300 V'],correct:1,hint:'Ett högt volt-tal ersätter inte rätt kategori.',why:'CAT III 600 V uppfyller både kategori och spänning. CAT II 1 000 V har ett högre volt-tal, men fel kategori för denna mätplats.'},
     {task:'Nästa mätplats är vid en lågspänningsanläggnings servisintag (CAT IV), 230 V mot jord. Vilken märkning är tillräcklig?',choices:['CAT III 1 000 V','CAT II 1 000 V','CAT IV 600 V'],correct:2,hint:'Välj kategori för var du mäter, och kontrollera sedan spänningsmärkningen.',why:'CAT IV 600 V passar den angivna CAT IV-miljön och spänningen. CAT III 1 000 V räcker inte här.'},
     {task:'Mätaren är CAT III 1 000 V. Sladdar och spetsar är bara CAT III 300 V. Får kombinationen användas vid 400 V mot jord i CAT III?',choices:['Ja, mätarens märkning avgör','Nej, sladdarnas gräns är för låg'],correct:1,hint:'Den svagaste delen begränsar hela mätuppställningen.',why:'Nej. Mätare, sladdar, spetsar och tillbehör måste alla passa mätplatsen och spänningen. Kontrollera även tillåtna spänningar mellan uttag.'},
-    {task:'Kan en CAT II-mätare ha högre märkspänning än en CAT IV-mätare?',choices:['Ja, kategori och spänningsmärkning är två skilda krav','Nej, högre CAT måste alltid ha högre volt-tal','Ja, därför kan CAT II ersätta CAT IV'],correct:0,hint:'Till exempel CAT II 1 000 V och CAT IV 600 V. Läs alltid hela märkningen.',why:'Ja. CAT II 1 000 V och CAT IV 600 V kan båda finnas. En högre CAT måste inte ha lägre märkspänning; konstruktion och provning avgör vilka kombinationer instrumentet är godkänt för.'}]}
+    {task:'Kan en CAT II-mätare ha högre märkspänning än en CAT IV-mätare?',choices:['Ja, kategori och spänningsmärkning är två skilda krav','Nej, högre CAT måste alltid ha högre volt-tal','Ja, därför kan CAT II ersätta CAT IV'],correct:0,hint:'Till exempel CAT II 1 000 V och CAT IV 600 V. Läs alltid hela märkningen.',why:'Ja. CAT II 1 000 V och CAT IV 600 V kan båda finnas. En högre CAT måste inte ha lägre märkspänning; konstruktion och provning avgör vilka kombinationer instrumentet är godkänt för.'}]},
+  STATION_A
 ];

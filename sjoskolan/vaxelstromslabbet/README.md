@@ -28,3 +28,7 @@ node --test sjoskolan/vaxelstromslabbet/model.test.mjs
 ```
 
 18 tester godkända den 25 september 2026, efter granskning av lärare, elektriker och fartygsingenjör. Testerna täcker presentationernas räkneexempel (230 V → 325 V, 30 V topp-topp, RL 12/16 Ω vid 60 V, RC −53,1°, 0,10 H och 100 µF vid 50 Hz, resonans, effekttriangel 900 W/1 200 var, kompensering PF 0,5 → 1), medeleffekt noll för ren reaktans, svensk talformatering facit för alla tolv uppgifter och att inget av de kända felsvaren godkänns. Alla uppgifter har också lösts i Chromium via direktlänk. Sidan har ingen horisontell rullning vid 390 px bredd.
+
+## Labbprotokoll
+
+Station B, AC (`stationB-protokoll.mjs`): isolerad AC-källa 12,35 V 50 Hz med true RMS-mätare, medelvärdesvisande mätare och oscilloskop för sinus, fyrkant och triangel. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.

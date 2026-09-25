@@ -1,0 +1,54 @@
+/* Sjöskolan · labbprotokoll i simulatorerna */
+.lp{--lp-blue:#064f91;--lp-ink:#163248;--lp-muted:#516679;--lp-line:#cdd9e2;--lp-soft:#edf3f7;--lp-warn:#9a4a12;--lp-ok:#176844;background:#fff;color:var(--lp-ink);border:1px solid var(--lp-line);border-radius:12px;padding:20px;margin:24px 0;font-size:15px;line-height:1.45}
+.lp *{box-sizing:border-box}
+.lp h2{font-size:22px;margin:2px 0 6px}
+.lp h3{font-size:17px;margin:22px 0 4px}
+.lp p{margin:0 0 8px}
+.lp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.lp-top>div:first-child{flex:1 1 30rem;min-width:0}
+.lp-kicker{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:var(--lp-muted)}
+.lp-actions{display:flex;flex-wrap:wrap;gap:8px}
+.lp button{font:inherit;font-weight:600;min-height:40px;padding:6px 12px;border:1px solid var(--lp-line);border-radius:7px;background:#fff;color:var(--lp-blue);cursor:pointer}
+.lp button:hover{border-color:var(--lp-blue);background:#edf5fc}
+.lp .lp-fetch{background:var(--lp-blue);border-color:var(--lp-blue);color:#fff;min-height:36px;padding:4px 12px}
+.lp .lp-fetch:hover{background:#053f74}
+.lp-presets{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.lp-presets button{background:var(--lp-soft)}
+.lp-instrument{background:var(--lp-soft);border-radius:8px;padding:10px 12px}
+.lp-help{color:var(--lp-muted);font-size:14px}
+.lp-msg:empty,.lp-status:empty{display:none}
+.lp-msg{background:#edf5fc;border-radius:8px;padding:8px 12px}
+.lp-msg.warn{background:#fff4e5;color:var(--lp-warn)}
+.lp-status{margin-top:16px;padding:10px 12px;border-radius:8px;background:#fff4e5;color:var(--lp-warn);font-weight:600}
+.lp-status.done{background:#e7f4ec;color:var(--lp-ok)}
+.lp label{display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:600;color:var(--lp-muted);min-width:0}
+.lp input:not([type=checkbox]),.lp textarea,.lp select{font:inherit;font-size:15px;font-weight:400;color:var(--lp-ink);width:100%;min-height:38px;border:1px solid #b9c6d2;border-radius:6px;padding:6px 8px;background:#fff}
+.lp textarea{min-height:3.4em;resize:vertical}
+.lp input:disabled,.lp textarea:disabled,.lp select:disabled{background:#f7fafc;color:var(--lp-ink);opacity:1}
+.lp-head{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px;margin-top:12px}
+.lp-checks{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:6px}
+.lp-checks label{flex-direction:row;align-items:flex-start;gap:10px;font-size:15px;font-weight:400;color:var(--lp-ink)}
+.lp-checks input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--lp-blue)}
+.lp-rows{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:12px}
+.lp-row{border:1px solid var(--lp-line);border-radius:10px;padding:12px}
+.lp-row-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.lp-opt{font-size:12px;color:var(--lp-muted);margin-left:8px;font-weight:400}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:10px}
+.lp-grid-3{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+.lp-wide{grid-column:1/-1}
+.lp small{font-weight:400;font-size:12px;color:var(--lp-muted)}
+.lp-src:empty,.lp-calc:empty{display:none}
+.lp-calc.warn{color:var(--lp-warn);font-weight:600}
+.lp-q{margin-top:10px}
+.lp-q small{font-size:13px}
+.lp-example{margin-top:20px;border-top:1px solid var(--lp-line);padding-top:12px}
+.lp-example summary{cursor:pointer;font-weight:700;color:var(--lp-blue);min-height:32px}
+.lp-foot{margin-top:14px;font-size:13px;color:var(--lp-muted)}
+@media print{
+  body.lp-printing .site-nav,body.lp-printing .site-footer,body.lp-printing main>:not(.lp),body.lp-printing .lp-example,body.lp-printing .lp-actions,body.lp-printing .lp-presets,body.lp-printing .lp-fetch,body.lp-printing .lp-msg{display:none!important}
+  body.lp-printing main{padding:0!important}
+  body.lp-printing .lp{border:0;padding:0;margin:0}
+  .lp-row{break-inside:avoid}
+  .lp textarea{min-height:0;height:auto}
+}
+.lp ::placeholder{font-style:italic;color:#8a9aa8}

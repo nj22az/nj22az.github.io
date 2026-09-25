@@ -31,3 +31,17 @@ test('uppgifter: facit, masker och typfel', () => {
     for (const m of c.mistakes()) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
   }
 });
+
+test('felmodul: START sluter inte ger ingen start men hel hållväg', async () => {
+  const { run } = await import('./lessons.mjs');
+  const { r } = run([{ fault: 'start' }, { s1: true }]);
+  assert.equal(r.k1, false);
+  assert.equal(r.V.a, 24);
+});
+test('Station C: exemplet är komplett och stämmer med modellen', async () => {
+  const { STATION_C_PROTOKOLL: def } = await import('./stationC-protokoll.mjs');
+  const { missing, deviationMatches } = await import('../gemensamt/labbprotokoll.mjs');
+  assert.deepEqual(missing(def, def.example), []);
+  for (const r of def.example.rows) assert.equal(deviationMatches(r.avv, r.forv, r.uppm), true, JSON.stringify(r));
+  assert.match(def.example.faults[1].resultat, /12,0 V/);
+});

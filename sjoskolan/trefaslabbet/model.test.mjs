@@ -56,3 +56,10 @@ test('standardlägen ger ändliga avläsningar', () => {
   for (const tab of Object.keys(DEFAULTS)) for (const [k, v] of Object.entries(readouts(tab, DEFAULTS[tab]))) if (typeof v === 'number') assert.ok(Number.isFinite(v), `${tab}.${k}`);
   assert.equal(fmt(398.37), '398');
 });
+
+test('Station B, trefas: exemplet är komplett och stämmer med modellen', async () => {
+  const { STATION_B_3F_PROTOKOLL: def } = await import('./stationB-protokoll.mjs');
+  const { missing, deviationMatches } = await import('../gemensamt/labbprotokoll.mjs');
+  assert.deepEqual(missing(def, def.example), []);
+  for (const r of def.example.rows) assert.equal(deviationMatches(r.avv, r.forv, r.uppm), true, JSON.stringify(r));
+});

@@ -28,6 +28,15 @@ export function waveform({ urms, f, shape = 'sinus' }) {
   return { peak, pp: 2 * peak, rms: urms, mean: 0, T: 1 / f, f, omega: TAU * f, factor };
 }
 
+/** Likriktat medelvärde |u| i förhållande till toppvärdet för varje kurvform. */
+export const RECT_FACTOR = { sinus: 2 / Math.PI, fyrkant: 1, triangel: 0.5 };
+/** Vad två multimetrar visar: true RMS, och en medelvärdesvisande mätare kalibrerad för sinus (1,111 · likriktat medelvärde). */
+export function meterReadings({ urms, shape = 'sinus' }) {
+  const { peak } = waveform({ urms, shape });
+  const rect = (RECT_FACTOR[shape] ?? RECT_FACTOR.sinus) * peak;
+  return { trueRms: urms, avgResp: rect * Math.PI / (2 * Math.SQRT2), rect };
+}
+
 /** Momentanvärde vid tiden t (s). delay förskjuter kurvan åt höger (s). */
 export function instant({ urms, f, shape = 'sinus' }, t, delay = 0) {
   const { peak } = waveform({ urms, f, shape });

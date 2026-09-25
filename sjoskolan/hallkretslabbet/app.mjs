@@ -1,12 +1,18 @@
 // Hållkretslabbet · interaktion och ritning
 import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
+import { FAULTS } from './model.mjs';
 import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
+import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260925';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee' };
 const STORE = 'sjoskolan-hallkrets-v1';
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const state = { s: { ...DEFAULTS }, challenge: null, attempts: 0, solved: load() };
+const state = { s: { ...DEFAULTS }, challenge: null, attempts: 0, solved: load(), module: 0, revealed: false };
+// Felmodul: ett slumpat fel (eller inget) som eleven ska hitta genom att mäta, som instruktörens felmoduler på stationen
+const hidden = () => Boolean(state.challenge?.hideFault || (state.module && !state.revealed));
+function newModule() { state.module += 1; state.revealed = false; update({ fault: FAULTS[Math.floor(Math.random() * FAULTS.length)], s0: false, s1: false }); }
 function load() { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } }
 function save() { try { localStorage.setItem(STORE, JSON.stringify([...state.solved])); } catch { /* blockerad */ } }
 const masked = (k) => Boolean(state.challenge?.mask.includes(k));
@@ -29,7 +35,7 @@ function contact(x1, x2, y, closed, live, { nc = false, label = '', below = fals
 }
 const XY = { P: [60, 150], a: [230, 150], b: [450, 150], c: [610, 150], N: [690, 150] };
 function schematic(s0, r) {
-  const s = state.challenge?.hideFault ? { ...s0, fault: 'ingen' } : s0; // felet visas inte grafiskt under diagnosuppgiften
+  const s = hidden() ? { ...s0, fault: 'ingen' } : s0; // felet visas inte grafiskt under diagnosuppgiften
   const Y = 150, YU = 80, YD = 225, live = r.I > 1e-9 && !masked('nodes');
   const up = live && s.s1, down = live && s.k1 && s.fault !== 'hall';
   let b = '';
@@ -71,13 +77,17 @@ function renderControls() {
       <button type="button" id="b-s0" class="toggle" aria-pressed="${s.s0}">S0 STOPP: ${s.s0 ? 'intryckt' : 'släppt'}</button>
     </div>
     <div class="control control-check"><label class="check"><input type="checkbox" id="c-supply"${s.supply ? ' checked' : ''}> Styrspänning till</label></div>
-    <div class="control control-select"><label for="c-fault">Inlagt fel</label><select id="c-fault">${state.challenge?.hideFault ? '<option>Okänt fel</option>' : opt(FAULT_TEXT, s.fault)}</select></div>
+    <div class="control control-select"><label for="c-fault">Inlagt fel</label><select id="c-fault">${state.challenge?.hideFault ? '<option>Okänt fel</option>' : (state.module ? `<option value="modul" selected>Felmodul ${state.module}: ${state.revealed ? esc(FAULT_TEXT[s.fault]) : 'okänt fel'}</option>` : '') + opt(FAULT_TEXT, state.module ? '' : s.fault) + '<option value="ny">Ny felmodul (okänt fel)</option>'}</select></div>
+    ${state.module && !state.revealed && !state.challenge ? '<div class="control"><button type="button" id="b-reveal" class="toggle">Visa felmodulens fel</button></div>' : ''}
+    <div class="control control-select"><label for="c-U">Styrspänning</label><select id="c-U">${opt({ 24: '24 V DC (labbets standard)', 12: '12 V DC (som stationsriggen)' }, String(s.U))}</select></div>
     <div class="control control-select"><label for="c-red">Röd sond</label><select id="c-red">${opt(POINTS, s.red)}</select></div>
     <div class="control control-select"><label for="c-black">Svart sond</label><select id="c-black">${opt(POINTS, s.black)}</select></div>`;
   $('b-s1').onclick = () => update({ s1: !state.s.s1 });
   $('b-s0').onclick = () => update({ s0: !state.s.s0 });
   $('c-supply').onchange = (e) => update({ supply: e.target.checked });
-  $('c-fault').onchange = (e) => update({ fault: e.target.value });
+  $('c-fault').onchange = (e) => { if (e.target.value === 'ny') return newModule(); if (e.target.value === 'modul') return; state.module = 0; state.revealed = false; update({ fault: e.target.value }); };
+  $('c-U').onchange = (e) => update({ U: Number(e.target.value) });
+  if ($('b-reveal')) $('b-reveal').onclick = () => { state.revealed = true; render(); };
   $('c-red').onchange = (e) => update({ red: e.target.value });
   $('c-black').onchange = (e) => update({ black: e.target.value });
   $('controls').querySelectorAll('button,select,input').forEach((el) => { el.disabled = locked; });
@@ -95,7 +105,7 @@ function render() {
   ];
   $('readouts').innerHTML = items.map(([k, v, d]) => `<div class="${v === '?' ? 'hidden-value' : ''}"><dt>${esc(k)}</dt><dd><strong>${esc(v)}</strong><span>${esc(d)}</span></dd></div>`).join('');
   const floating = !masked('nodes') && (!Number.isFinite(m) || ['a', 'b', 'c'].some((n) => !Number.isFinite(r.V[n])));
-  $('principle').textContent = (floating ? '* Flytande: punkten är inte förbunden med matning eller retur. En verklig mätare visar då ungefär 0 V eller ett ostadigt värde. ' : '') + (s.fault !== 'ingen' && !state.challenge?.hideFault
+  $('principle').textContent = (floating ? '* Flytande: punkten är inte förbunden med matning eller retur. En verklig mätare visar då ungefär 0 V eller ett ostadigt värde. ' : '') + (state.module && !state.revealed ? `Felmodul ${state.module} är isatt. Felet är okänt. Mät, skriv observation, hypotes och kontroll i labbprotokollet och visa sedan felet.` : s.fault !== 'ingen' && !hidden()
     ? `Inlagt fel: ${FAULT_TEXT[s.fault]}. Mät mellan två punkter i taget och jämför med vad kretsen borde visa.`
     : 'S0 ligger i serie före båda grenarna. S1 och K1:s hjälpkontakt ligger parallellt. När K1 drar håller hjälpkontakten kretsen sluten även när START släpps. Försvinner styrspänningen släpper K1 och startar inte själv igen.');
   renderControls();
@@ -108,7 +118,7 @@ function renderSelect() {
 }
 function start(id) {
   const c = CHALLENGES.find((x) => x.id === id); if (!c) return leave();
-  state.challenge = c; state.attempts = 0; state.s = run(c.steps).s;
+  state.challenge = c; state.attempts = 0; state.s = run(c.steps).s; state.module = 0; state.revealed = false;
   $('challenge-body').hidden = false; $('challenge-intro').hidden = true;
   $('challenge-deck').textContent = c.deck; $('challenge-task').textContent = c.task;
   $('answer-label').textContent = `${c.ask.label} =`; $('answer-unit').textContent = c.ask.unit;
@@ -139,8 +149,22 @@ $('answer-form').addEventListener('submit', (ev) => {
 $('show-answer').addEventListener('click', () => finish(false, 'Facit:'));
 $('leave').addEventListener('click', leave);
 $('challenge-select').addEventListener('change', (e) => (e.target.value ? start(e.target.value) : leave()));
-$('reset').addEventListener('click', () => { if (state.challenge) return; state.s = { ...DEFAULTS }; render(); });
+$('reset').addEventListener('click', () => { if (state.challenge) return; state.s = { ...DEFAULTS }; state.module = 0; state.revealed = false; render(); });
 function url() { const p = new URLSearchParams(); if (state.challenge) p.set('uppgift', state.challenge.id); try { history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname); } catch { /* */ } }
 
 renderSelect(); render();
 const q = new URLSearchParams(location.search).get('uppgift'); if (q) start(q);
+
+// Labbprotokoll för Station C
+mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_C_PROTOKOLL,
+  presets: [{ label: 'Ny felmodul (okänt fel)', apply: () => { if (state.challenge) leave(); newModule(); }, done: 'En ny felmodul är isatt. Felet visas inte förrän du väljer ”Visa felmodulens fel”.' },
+    { label: 'Stationsrigg 12 V utan fel', apply: () => { if (state.challenge) leave(); state.module = 0; state.revealed = false; state.s = { ...DEFAULTS, U: 12 }; render(); }, done: 'Kretsen är i vila med 12 V styrspänning och utan fel.' }],
+  snapshot(plan) {
+    if (masked('meter') || masked('I')) return { error: 'Lös uppgiften först. Mätvärdena är dolda medan du räknar.' };
+    const s = state.s, r = solve(s, s.k1);
+    const drift = `${s.U} V, S0 ${s.s0 ? 'intryckt' : 'släppt'}, S1 ${s.s1 ? 'intryckt' : 'släppt'}, K1 ${s.k1 ? 'dragen' : 'släppt'}, styrspänning ${s.supply ? 'till' : 'från'}, ${state.module ? `felmodul ${state.module}` : FAULT_TEXT[s.fault].toLowerCase()}`;
+    if (plan?.q === 'I') return { punkter: 'spolström', drift, varde: `${fmt(r.I * 1000)} mA` };
+    const m = meter(r.V, s.red, s.black);
+    const name = (n) => (n === 'P' ? '+U' : n === 'N' ? '0 V' : n);
+    return { punkter: `röd ${name(s.red)} / svart ${name(s.black)}`, drift, varde: Number.isFinite(m) ? `${fmt(m)} V` : 'flytande (≈ 0 V, ostadigt)' };
+  } });

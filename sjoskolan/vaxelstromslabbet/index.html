@@ -6,7 +6,7 @@
 <meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/vaxelstromslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="lab.css?v=20260925">
+<link rel="stylesheet" href="lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260925">
 </head>
 <body class="ac-page">
 <nav id="site-nav" class="site-nav"></nav>
@@ -61,6 +61,7 @@
     </aside>
   </div>
 
+  <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
     <p>Varje flik motsvarar en presentation vecka 40. Visa teoribilden, låt eleverna förutsäga vad som händer och dra sedan i ett reglage. Uppgifterna under ”Räkna först” använder andra tal än presentationernas övningar, så inlämningsuppgifterna förblir elevernas egna.</p>
     <p>Modellen: ideal spänningskälla, stationär sinus, ideala och linjära komponenter. Spolen saknar resistans och kondensatorn saknar läckström. Effektfliken antar sinusformad spänning och ström, så PF = cos φ. Övertoner, mättning, uppvärmning, inkopplingsförlopp och verkliga komponenttoleranser simuleras inte. Kabelförlusten är I²R med en fast slingresistans. Källan är styv: kabelns spänningsfall påverkar inte lasten, och generatorns spänningsreglering och lastdelning ingår inte. En kondensator kompenserar bara induktiv last i modellen.</p>
@@ -70,5 +71,5 @@
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925"></script>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925-station"></script>
 </body></html>

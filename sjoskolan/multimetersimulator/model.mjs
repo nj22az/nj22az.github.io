@@ -1,13 +1,32 @@
 // Resistive DC model. Independent of lesson IDs and of the DOM.
 export const MODES = { off: 'OFF', dc: 'V ⎓', ac: 'V ~', current: 'A ⎓', ohm: 'Ω', continuity: 'Summer' };
+// Station A · DC-delare. Riggarna har verkliga komponentvärden inom (och i ett fall utanför) toleransen,
+// precis som fysiska riggar. Nominellt: 12 V, R1 = 1 kΩ ±5 %, R2 = 2 kΩ ±5 %. Rigg 0 följer exemplet i v41_03 bild 9.
+export const RIGS = [
+  { id: 0, name: 'Exempelrigg 9 V', Unom: 9, U: 9.03, R1: 1004, R2: 1991 },
+  { id: 1, name: 'Rigg 1', Unom: 12, U: 12.06, R1: 1012, R2: 1985 },
+  { id: 2, name: 'Rigg 2', Unom: 12, U: 11.91, R1: 987, R2: 2034 },
+  { id: 3, name: 'Rigg 3', Unom: 12, U: 12.12, R1: 1043, R2: 2011 },
+  { id: 4, name: 'Rigg 4', Unom: 12, U: 11.97, R1: 1036, R2: 1943 },
+  { id: 5, name: 'Rigg 5', Unom: 12, U: 12.03, R1: 994, R2: 2141 },
+  { id: 6, name: 'Rigg 6', Unom: 12, U: 12.10, R1: 958, R2: 2052 },
+];
+export const REF = 5; // kalibrerad referens för instrumentkontroll, galvaniskt skild från riggen
+export const REF_NODES = ['Ref+', 'Ref−'];
+export const rigOf = (s) => RIGS[s.rig ?? 1] ?? RIGS[1];
 export function initialState(circuit = 'lamp') {
-  return { circuit, power: false, voltage: 12, load: 120, link: true, parallel: true,
+  return { circuit, rig: 1, power: false, voltage: 12, load: 120, link: true, parallel: true,
     broken: false, input: 10e6, mode: 'off', jack: 'v', red: null, black: null,
     range: 'auto', fuse: false, trip: null };
 }
 export function network(s) {
   if (s.circuit === 'resistor') return { nodes: ['A','B'], edges: [ ['A','B',1000], ...(s.parallel ? [['A','B',1000]] : []) ], fixed: {} };
   if (s.circuit === 'fuse') return { nodes: ['A','B'], edges: s.broken ? [] : [['A','B',0.2]], fixed: {} };
+  if (s.circuit === 'station') {
+    const g = rigOf(s);
+    return { nodes: ['P','A','B','N', ...REF_NODES], edges: [...(s.link ? [['P','A',0]] : []), ['A','B',g.R1], ['B','N',g.R2]],
+      fixed: { ...(s.power ? { P: g.U, N: 0 } : {}), 'Ref+': REF, 'Ref−': 0 } };
+  }
   if (s.circuit === 'divider') return { nodes: ['S','M','G'], edges: [['S','M',1e6],['M','G',1e6]], fixed: s.power ? {S:10,G:0} : {} };
   return { nodes: ['K1','K2','P1','P2'], edges: [['K2','P1',0],['P1','P2',s.load], ...(s.link ? [['K1','K2',0]] : [])], fixed: s.power ? { K1:s.voltage, P2:0 } : {} };
 }
@@ -85,6 +104,11 @@ export function measure(s) {
   if (s.trip) return empty('STOPP', s.trip === 'fuse' ? 'mA-säkringen har löst ut. Bryt matningen och lossa båda mätspetsarna före återställning.' : 'Kortslutningsrisk: strömingången gav en väg med mycket låg resistans. Matningen har brutits i simulatorn.', 'tripped');
   const net = network(s);
   const connected = net.nodes.includes(s.red) && net.nodes.includes(s.black);
+  if (s.circuit === 'station' && connected && s.mode !== 'off') {
+    const onRef = [s.red, s.black].map((n) => REF_NODES.includes(n));
+    if (onRef[0] !== onRef[1]) return empty('—', 'Referensen och riggen är galvaniskt skilda kretsar. Mät med båda spetsarna på referensen eller båda på riggen.', 'separate');
+    if (onRef[0] && ['ohm', 'continuity'].includes(s.mode)) return empty('STOPP', 'Referensen är alltid spänningssatt. Mät den bara i V ⎓.', 'live-ohm');
+  }
   const currentJack = s.jack !== 'v';
   let electrical = null;
   let current = 0;
@@ -93,15 +117,16 @@ export function measure(s) {
     const shunt = s.jack === 'ma' ? 1 : 0.1;
     electrical = solve(net, [[s.red,s.black,shunt]]);
     current = ((electrical.voltage[s.red] ?? 0)-(electrical.voltage[s.black] ?? 0))/shunt;
-    if (s.power && s.jack === 'ma' && Math.abs(current) > 0.2) return {...empty('STOPP','Strömmen överstiger mA-ingångens 200 mA. Säkringen löser ut i denna modell.','fault'),trip:'fuse'};
-    if (s.power && Math.abs(current) > 2) return {...empty('STOPP','Strömingången kortsluter matningen. Modellens skydd bryter vid mer än 2 A.','fault'),trip:'short'};
+    const live = s.power || (s.circuit === 'station' && [s.red, s.black].some((n) => REF_NODES.includes(n)));
+    if (live && s.jack === 'ma' && Math.abs(current) > 0.2) return {...empty('STOPP','Strömmen överstiger mA-ingångens 200 mA. Säkringen löser ut i denna modell.','fault'),trip:'fuse'};
+    if (live && Math.abs(current) > 2) return {...empty('STOPP','Strömingången kortsluter matningen. Modellens skydd bryter vid mer än 2 A.','fault'),trip:'short'};
   }
   if (s.mode === 'off') return empty('—','Välj mätfunktion.');
   if (s.jack === 'ma' && s.fuse) return empty('OL','mA-säkringen är trasig. Återställ den med frånkopplade mätspetsar och bruten matning.','fuse');
   if (!connected) return empty('—','Anslut båda mätspetsarna till märkta mätpunkter.');
   if (currentJack && s.mode !== 'current') return empty('FEL','Fel uttag. Flytta röd sladd till V Ω för denna funktion. A- och mA-uttag kan kortsluta en spänningskälla.','jack');
   if (s.mode === 'current' && !currentJack) return empty('FEL','Strömmätning kräver A- eller mA-uttaget. Bryt matningen innan du kopplar om.','jack');
-  if (s.mode === 'current') return s.jack === 'ma' ? display(current*1000,'mA',1,'Ström genom mätarens shunt, 1 Ω i mA-uttaget.') : display(current,'A',3,'Ström genom mätarens shunt, 0,1 Ω i A-uttaget.');
+  if (s.mode === 'current') return s.jack === 'ma' ? display(current*1000,'mA',2,'Ström genom mätarens shunt, 1 Ω i mA-uttaget.') : display(current,'A',3,'Ström genom mätarens shunt, 0,1 Ω i A-uttaget.');
   if (s.mode === 'ohm' || s.mode === 'continuity') {
     if (s.power) return empty('STOPP','Ω och summer använder mätarens egen testström. Frånskilj spänningskällan före mätningen.','live-ohm');
     const r = resistance(net,s.red,s.black);
