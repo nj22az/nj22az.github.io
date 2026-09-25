@@ -1,0 +1,45 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:05.800
+<v Sigge>Hej! Jag är matrosen Sigge, och det här är måsen Måns. I dag: varför 230 V har en topp på 325 V.
+
+2
+00:00:06.300 --> 00:00:11.300
+<v Sigge>Spänningen i ett 230 V-uttag svänger fram och tillbaka, 50 gånger i sekunden.
+
+3
+00:00:11.500 --> 00:00:16.800
+<v Måns>Men toppen är ju 325 V! Varför står det 230 V då?
+
+4
+00:00:17.300 --> 00:00:23.200
+<v Sigge>Ett värmeelement blir lika varmt åt båda hållen. Värmen beror på u², och u² är aldrig negativ.
+
+5
+00:00:23.500 --> 00:00:29.800
+<v Sigge>Kurvan u² svänger mellan 0 och Û². Medelvärdet blir precis hälften: Û²/2.
+
+6
+00:00:30.300 --> 00:00:33.000
+<v Sigge>Likspänningen U som ger samma värme har U² = Û²/2.
+
+7
+00:00:33.200 --> 00:00:36.800
+<v Måns>Roten ur en halv … då delar man med √2!
+
+8
+00:00:37.000 --> 00:00:43.800
+<v Sigge>Precis. 325 V delat med 1,414 blir ungefär 230 V. Det är effektivvärdet som står på skylten.
+
+9
+00:00:44.300 --> 00:00:48.800
+<v Sigge>Formeln gäller för ren sinus. En true RMS-multimeter visar effektivvärdet.
+
+10
+00:00:49.000 --> 00:00:52.400
+<v Måns>Och isolationen ska klara toppen, inte bara 230 V!
+
+11
+00:00:52.600 --> 00:00:55.800
+<v Sigge>Bra, Måns. Vi ses i nästa film!

@@ -1,0 +1,61 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:05.800
+<v Sigge>Hur kan en motor fortsätta gå när man släpper START-knappen? Vi följer strömmen.
+
+2
+00:00:06.300 --> 00:00:11.800
+<v Sigge>STOPP är en brytande kontakt och är sluten. START är slutande och är öppen.
+
+3
+00:00:12.000 --> 00:00:16.800
+<v Måns>Så ingen ström når spolen. K1 är släppt och motorn står.
+
+4
+00:00:17.300 --> 00:00:22.800
+<v Sigge>Jag trycker START. Ström går genom START till spolen, och K1 drar.
+
+5
+00:00:23.000 --> 00:00:28.800
+<v Sigge>När K1 drar sluter också hållkontakten. Den sitter parallellt med START.
+
+6
+00:00:29.300 --> 00:00:32.000
+<v Måns>Nu släpper du START. Stannar motorn?
+
+7
+00:00:32.200 --> 00:00:40.800
+<v Sigge>Nej! Strömmen tar vägen genom hållkontakten i stället. K1 håller sig själv.
+
+8
+00:00:41.300 --> 00:00:47.200
+<v Sigge>STOPP bryter kretsen. Spolen blir strömlös, K1 släpper och hållkontakten öppnar.
+
+9
+00:00:47.500 --> 00:00:53.800
+<v Måns>Och när STOPP släpps startar motorn inte igen. Den väntar på ett nytt tryck på START.
+
+10
+00:00:54.300 --> 00:00:56.400
+<v Måns>Och om fartyget får strömavbrott?
+
+11
+00:00:56.600 --> 00:01:01.000
+<v Sigge>Då blir spolen strömlös. K1 släpper och hållkontakten öppnar.
+
+12
+00:01:01.200 --> 00:01:07.800
+<v Sigge>När spänningen kommer tillbaka står motorn kvar. Den startar inte av sig själv. Det är ett skydd.
+
+13
+00:01:08.300 --> 00:01:12.600
+<v Sigge>Vid felsökning: mät var i kretsen spänningen försvinner, steg för steg.
+
+14
+00:01:12.800 --> 00:01:16.400
+<v Måns>Men bara om arbetet är riskbedömt och tillåtet!
+
+15
+00:01:16.600 --> 00:01:19.800
+<v Sigge>Precis. Vi ses!
