@@ -4,6 +4,28 @@ My personal website, where I share about my life.
 
 **Live:** [nj22az.github.io](https://nj22az.github.io)
 
+## Ownership and reuse
+
+**My original work is not generally open source. Copyright © Nils Johansson.
+All rights reserved, except for explicitly separately licensed material.**
+
+Commercial sale and licensing of my original teaching materials, writing,
+applications and media are reserved to me. No one else may sell, repackage,
+republish or use that material in paid products or courses without my prior
+written permission. Giving credit alone does not grant permission.
+
+This is a public portfolio repository. Visitors may use the published site as
+provided, and students may use supplied course materials for their own study.
+GitHub's public-repository viewing and forking rights remain unaffected.
+
+Third-party components and previously licensed material retain their own terms,
+including the existing MIT open-model recipes, CC0 audio and GPL-covered
+vectorizer code. I do not claim exclusive rights over those components.
+
+Read the [copyright and permissions notice](LICENSE.md) and
+[third-party credits and licences](THIRD_PARTY_NOTICES.md) for the precise scope,
+upstream repositories, authors and reuse details.
+
 ---
 
 ## Tech Stack
@@ -102,6 +124,7 @@ To remove a project from the public grid without deleting it, move its record fr
 
 None. The site is entirely static.
 
-## License
+## Rights and credits
 
-Copyright Nils Johansson. All rights reserved.
+[Copyright and permissions](LICENSE.md) ·
+[Third-party credits and notices](THIRD_PARTY_NOTICES.md)

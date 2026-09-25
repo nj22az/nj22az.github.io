@@ -336,7 +336,7 @@
           '<span>' + CONFIG.site.footerTagline + '</span>' +
         '</div>' +
         '<div class="footer-columns">' +
-          '<nav class="footer-nav" aria-label="Footer navigation">' + footerNav + '</nav>' +
+          '<nav class="footer-nav" aria-label="Footer navigation">' + footerNav + '<a href="https://github.com/nj22az/nj22az.github.io/blob/main/README.md#ownership-and-reuse">Rights &amp; credits</a></nav>' +
           '<nav class="footer-links" aria-label="Social links">' + socialLinks + '</nav>' +
         '</div>' +
         '<div class="footer-bottom"><span>' + CONFIG.site.copyright + '</span><a href="#main-content">Back to top &uarr;</a></div>' +

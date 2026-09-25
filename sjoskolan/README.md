@@ -2,6 +2,25 @@
 
 Publicerad kursöversikt för kalenderveckor 37–45. `vecka-XX/aktuell/` innehåller aktuella presentationer och övningsstöd.
 
+## Upphovsrätt och användning
+
+Nils Johanssons originalmaterial är inte generellt publicerat som öppen källkod
+eller fria läromedel. Alla rättigheter förbehålls, med undantag för material som
+har en uttrycklig separat licens. Materialet får inte säljas, paketeras om,
+återpubliceras eller ingå i någon annans betalda kurs eller produkt utan Nils
+Johanssons skriftliga tillstånd. En källhänvisning är inte i sig ett tillstånd.
+
+Elever får använda det kursmaterial som tillhandahålls av Nils Johansson för
+egna studier, inklusive nedladdning och utskrift när materialet erbjuds för
+detta ändamål. Tredjepartskod, skolans mallar, bilder, logotyper och andra
+separat licensierade delar behåller sina respektive rättigheter och villkor.
+GitHubs rätt att visa och forka publika repositoryn påverkas inte.
+
+Se [fullständiga rättighetsvillkor](../LICENSE.md) och
+[upphovspersoner, använda repositoryn och licenser](../THIRD_PARTY_NOTICES.md).
+
+## Aktuella versioner
+
 Multimeterpresentationen är version 7 med 70 bilder. Den fullständiga genomgången publiceras enligt Nils Johanssons instruktion den 24 september 2026 och innehåller stegvisa mätkopplingar, CAT-kategorier, undervisningsövningar med efterföljande facit samt läraranteckningar och källor. Den ersätter version 6 och används från början.
 
 Version 6 med 46 bilder har flyttats oförändrad till `vecka-39/arkiv/2026-09-24/` och länkas som tidigare version på veckosidan. Den separata svenska begreppsguiden och formelstödet länkar till version 7.
