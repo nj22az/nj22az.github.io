@@ -1,0 +1,120 @@
+{
+ "v42_01": {
+  "src": "sjoskolan/vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+  "dst": "sjoskolan/vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+  "slides": {
+   "6": [
+    "th",
+    "v42_01_s06_stromvag",
+    "Figur med två strömvägar genom kroppen: hand till hand och hand till fot; båda passerar bröstkorgen nära hjärtat"
+   ],
+   "7": [
+    "th",
+    "v42_01_s07_berorings",
+    "Metallhölje med isolationsfel och bruten skyddsledare; en person rör höljet och står på ledande stålskrov. Beröringsspänningen är skillnaden mellan höljets och däckets potential"
+   ],
+   "8": [
+    "th",
+    "v42_01_s08_ljusbage",
+    "Ljusbåge mellan två strömskenor med pilar för värme, tryck, starkt ljus och splitter"
+   ],
+   "9": [
+    "th",
+    "v42_01_s09_exempel",
+    "Skadad skarvkabel i vatten på däck, avspärrad med band"
+   ],
+   "14": [
+    "th",
+    "v42_01_s14_stod3",
+    "En person rör samtidigt punkt A på ett hölje och punkt B på en ledande struktur; höljet ligger 60 V över strukturen, beröringsspänningen okänd"
+   ],
+   "16": [
+    "th",
+    "v42_01_s16_stod4",
+    "Räknemodell: 24 V likspänning över en antagen resistans på 2 000 ohm; strömmen okänd"
+   ],
+   "18": [
+    "th",
+    "v42_01_s18_stod5",
+    "Kraftkrets med frånskiljare i okänt läge, kontaktor K1 och motor; styrkretsen med STOPP bruten och en släckt panel. Frågan är om det är spänningslöst"
+   ],
+   "21": [
+    "th",
+    "v42_01_s21_kallor",
+    "Fördelning som kan matas från generator, nödgenerator med autostart, landanslutning, batteri och UPS"
+   ],
+   "22": [
+    "th",
+    "v42_01_s22_olycka",
+    "Fem steg vid en elolycka ombord: skydda dig själv, bryt strömmen om det går säkert, larma enligt nödinstruktionen, andning och HLR när platsen är säker, medicinsk rådgivning. Till sjöss TMAS via JRCC, i hamn 112"
+   ],
+   "25": [
+    "th",
+    "v42_01_s25_stod6",
+    "24 V-batteri vars poler kortsluts av ett verktyg; felströmmen ungefär U delat med slingans resistans"
+   ]
+  }
+ },
+ "v42_02": {
+  "src": "sjoskolan/vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+  "dst": "sjoskolan/vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v42_02_s07_metoder",
+    "Områden kring en spänningssatt del: riskområde, närområde och utanför närområdet"
+   ],
+   "8": [
+    "th",
+    "v42_02_s08_fem",
+    "De fem säkerhetsåtgärderna i ordning: frånskilj, skydda mot återinkoppling, kontrollera spänningslöshet, jorda och kortslut, skydda mot närliggande spänningssatta delar"
+   ],
+   "21": [
+    "th",
+    "v42_02_s21_roller",
+    "Besked mellan driftorganisation, elsäkerhetsledare och arbetslag: kopplingsbesked, startbesked, klart och återlämning"
+   ],
+   "24": [
+    "th",
+    "v42_02_s24_exempel",
+    "K3 matas från landanslutning som finns i planen och från UPS som finns i ritningen men inte i planen"
+   ],
+   "31": [
+    "th",
+    "v42_02_s31_stod9",
+    "En fördelning matas från landanslutning, som finns i planen, och från generator"
+   ]
+  }
+ },
+ "v42_03": {
+  "src": "sjoskolan/vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+  "dst": "sjoskolan/vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v42_03_s07_prioritering",
+    "Skyddsåtgärder i prioritetsordning: ta bort faran, ersätt, tekniska skydd, organisatoriska åtgärder, personlig skyddsutrustning"
+   ],
+   "8": [
+    "th",
+    "v42_03_s08_prova",
+    "Prova, mät, prova: spänningsprovaren kontrolleras mot känd källa före och efter mätningen på objektet"
+   ],
+   "16": [
+    "th",
+    "v42_03_s16_stod4",
+    "Brytare med bara en skylt ”Arbete pågår” och frågan om skylten hindrar återinkoppling"
+   ],
+   "21": [
+    "th",
+    "v42_03_s21_jordning",
+    "Tre faser frånskilda; jordning och kortslutning nära arbetsstället och synlig därifrån"
+   ],
+   "24": [
+    "th",
+    "v42_03_s24_matris",
+    "Riskmatris fem gånger fem med poäng; före åtgärd sannolikhet 4 och konsekvens 2, efter åtgärd 2 och 2"
+   ]
+  }
+ }
+}

@@ -68,3 +68,30 @@ def replace_words(prs, pairs):
                     for a, b in pairs: t = t.replace(a, b)
                     if t != r.text: r.text = t; n += 1
     return n
+
+
+def subscript_tokens(prs, tokens):
+    """Skriv index som riktigt nedsänkt text, t.ex. {'Uberöring': ('U', 'beröring')}. Hela ord matchas."""
+    import copy, re
+    from pptx.oxml.ns import qn
+    pat = re.compile(r"(?<![\wåäöÅÄÖ])(" + "|".join(map(re.escape, tokens)) + r")(?![\wåäöÅÄÖ])")
+    n = 0
+    for s in prs.slides:
+        for r in list(s._element.iter(qn("a:r"))):
+            t = r.find(qn("a:t"))
+            if t is None or not t.text or not pat.search(t.text): continue
+            pieces = []
+            for part in pat.split(t.text):
+                if not part: continue
+                if part in tokens: pieces += [(tokens[part][0], False), (tokens[part][1], True)]
+                else: pieces.append((part, False))
+            prev = r
+            for txt, low in pieces:
+                nr = copy.deepcopy(r); nr.find(qn("a:t")).text = txt
+                if low:
+                    pr = nr.find(qn("a:rPr"))
+                    if pr is None: pr = nr.makeelement(qn("a:rPr"), {}); nr.insert(0, pr)
+                    pr.set("baseline", "-25000")
+                prev.addnext(nr); prev = nr
+            r.getparent().remove(r); n += 1
+    return n
