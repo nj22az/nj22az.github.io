@@ -40,13 +40,14 @@ test('motorns koppling ur märkningen', () => {
 });
 
 test('alla uppgifter: facit, masker och att typfel inte godkänns', () => {
-  const want = { uf: 398.4, in2: 12, in3: 4, bruten: 266.7, inr: 8.69, ystrom: 17.32, dstrom: 25.98, p3: 16.19 };
+  const want = { uf: 398.4, in2: 12, in3: 4, bruten: 266.7, inr: 8.69, ystrom: 13.28, dstrom: 25.98, p3: 16.19 };
   assert.equal(CHALLENGES.length, Object.keys(want).length);
   for (const c of CHALLENGES) {
     const e = expected(c);
     assert.ok(Math.abs(e - want[c.id]) <= Math.abs(want[c.id]) * 0.01, `${c.id}: ${e}`);
     assert.ok(c.mask.includes(c.ask.key), `${c.id} döljer inte svaret`);
     for (const k of Object.keys(DEFAULTS[c.tab])) assert.ok(k in c.setup, `${c.id} saknar ${k}`);
+    assert.ok(c.solution, `${c.id} saknar lösning`);
     for (const m of c.mistakes()) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
   }
 });

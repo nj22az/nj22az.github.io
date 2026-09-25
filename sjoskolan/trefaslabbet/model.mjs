@@ -40,7 +40,8 @@ export function starLoads({ UL, R, neutral = true }) {
   let VN = [0, 0];
   if (!neutral) {
     const gs = G.reduce((a, b) => a + b, 0);
-    VN = gs > 0 ? E.reduce((acc, e, k) => C.add(acc, [e[0] * G[k], e[1] * G[k]]), [0, 0]).map((v) => v / gs) : [0, 0];
+    // utan någon last är stjärnpunkten obestämd
+    VN = gs > 0 ? E.reduce((acc, e, k) => C.add(acc, [e[0] * G[k], e[1] * G[k]]), [0, 0]).map((v) => v / gs) : [NaN, NaN];
   }
   const U = E.map((e) => C.sub(e, VN));
   const I = U.map((u, k) => [u[0] * G[k], u[1] * G[k]]);

@@ -6,7 +6,7 @@
  "13":["ovn","v41_01_s13_ovn2","Tre sinusspänningar vid 50 Hz med okänd tidsförskjutning mellan L1 och L2"],
  "15":["ovn","v41_01_s15_ovn3","Ledarna L1, L2, L3 och N; linjespänningen 400 V mellan L1 och L2, fasspänningen okänd"],
  "17":["ovn","v41_01_s17_ovn4","Ledarna L1, L2, L3 och N; fasspänningen 120 V mellan L1 och N, linjespänningen okänd"],
- "19":["ovn","v41_01_s19_ovn5","Symmetrisk Y-last på trefastränare med linjespänningen 12,0 V; grenspänningen okänd"],
+ "19":["ovn","v41_01_s19_ovn5","Symmetrisk Y-last på trefasrigg med linjespänningen 12,0 V; grenspänningen okänd"],
  "21":["th","v41_01_s21_symmetri","Tre lika strömvisare lagda efter varandra bildar en sluten triangel; neutralströmmen blir noll"],
  "22":["th","v41_01_s22_osymmetri","Olika fasströmmar 10, 10 och 4 A sluter inte triangeln; neutralströmmen sluter den"],
  "23":["th","v41_01_s23_matpunkter","Mätpunkter för linjespänningarna U12, U23, U31 och fasspänningen U1N"],
@@ -31,7 +31,7 @@
  "34":["ovn","v41_02_s34_ovn10","Stapeldiagram med faseffekterna 1,2, 1,5 och 0,9 kW; total effekt okänd"]}},
 "v41_03": {"src":"sjoskolan/vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx","dst":"sjoskolan/vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx","slides":{
  "7":["th","v41_03_s07_stationA","Station A: 12 V DC matar R1 1 kiloohm och R2 2 kiloohm i serie"],
- "8":["th","v41_03_s08_stationB","Station B: symmetrisk Y-last på trefastränare med linjespänningen 12 V"],
+ "8":["th","v41_03_s08_stationB","Station B: symmetrisk Y-last på trefasrigg med linjespänningen 12 V"],
  "13":["ovn","v41_03_s13_ovn2","Seriekrets 12 V med 1 och 2 kiloohm; ström och U2 okända"],
  "15":["ovn","v41_03_s15_ovn3","Seriekrets där källan mäts till 11,94 V och spänningsfallen till 3,98 och 7,96 V"],
  "17":["ovn","v41_03_s17_ovn4","Sinus med effektivvärdet 12,1 V; toppvärdet okänt"],

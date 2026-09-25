@@ -43,15 +43,14 @@ def lead(ax,V0,label):
 # s7 teori: fas- och linjespänning som visare
 F=fig(4.3,3.6); ax=pax(F,lim=1.55)
 tips=[phasor(ax,a,1.0,col,l,lr=1.2) for a,col,l in ((90,PHC[0],"U$_\\mathregular{1N}$"),(330,PHC[1],"U$_\\mathregular{2N}$"),(210,PHC[2],"U$_\\mathregular{3N}$"))]
-ax.plot(*zip(tips[0],tips[1]),color=RED,lw=2.2,ls="--"); ax.text((tips[0][0]+tips[1][0])/2+0.1,(tips[0][1]+tips[1][1])/2+0.05,"U₁₂",color=RED,fontsize=15,ha="left")
+ax.plot(*zip(tips[0],tips[1]),color=INK,lw=2.2,ls="--"); ax.text((tips[0][0]+tips[1][0])/2+0.1,(tips[0][1]+tips[1][1])/2+0.05,"U₁₂",color=INK,fontsize=15,ha="left")
 ax.text(0.08,-0.2,"N",fontsize=13,color=GRAY); dot(ax,0,0)
-ax.text(1.5,-1.45,"Uᴸ = √3 · Uꜰ",ha="right",fontsize=15)
 save(F,"v41_01_s07_fas_linje")
 # s8 teori: skillnaden mellan två visare
 F=fig(4.3,3.6); ax=pax(F,xl=(-1.6,1.6),yl=(-1.2,1.5))
 a1=phasor(ax,90,1.0,PHC[0],"U$_\\mathregular{1N}$",lr=1.15); a2=phasor(ax,330,1.0,PHC[1],"U$_\\mathregular{2N}$",lr=1.2)
-ax.add_patch(FancyArrowPatch(a2,a1,arrowstyle="-|>",mutation_scale=18,color=RED,lw=2.6))
-ax.text(-1.55,0.55,"U₁₂ = U$_\\mathregular{1N}$ − U$_\\mathregular{2N}$",color=RED,fontsize=14,ha="left")
+ax.add_patch(FancyArrowPatch(a2,a1,arrowstyle="-|>",mutation_scale=18,color=INK,lw=2.6))
+ax.text(-1.55,0.55,"U₁₂ = U$_\\mathregular{1N}$ − U$_\\mathregular{2N}$",color=INK,fontsize=14,ha="left")
 ax.add_patch(Arc((0,0),0.5,0.5,theta1=-30,theta2=90,color=INK,lw=1.3))
 ax.text(1.55,-0.95,"120° mellan fasvisarna",ha="right",fontsize=13,color=GRAY); ax.text(1.55,-1.15,"|U₁₂| = √3 · Uꜰ",ha="right",fontsize=15)
 save(F,"v41_01_s08_rot3")
@@ -66,7 +65,7 @@ for k,col in enumerate(PHC): ax.plot(t,np.sin(2*np.pi*(t-k*20/3)/20),color=col,l
 ax.set_xlim(0,31); ax.set_ylim(-1.35,1.7); ax.set_xticks([]); ax.set_yticks([])
 ax.plot([5,5],[0,1.05],color=GRAY,lw=1,ls=":"); ax.plot([5+20/3,5+20/3],[0,1.05],color=GRAY,lw=1,ls=":")
 bracket(ax,5,5+20/3,1.12,"Δt = ?",color=RED)
-ax.text(1,1.25,"L1",color=PHC[0],fontsize=14); ax.text(30.5,-1.3,"f = 50 Hz",ha="right",fontsize=13,color=BLUE)
+ax.text(1,1.25,"L1",color=PHC[0],fontsize=14); ax.text(1+20/3+0.4,1.25,"L2",color=PHC[1],fontsize=14); ax.text(30.5,-1.3,"f = 50 Hz",ha="right",fontsize=13,color=BLUE)
 save(F,"v41_01_s13_ovn2")
 # s15 Ö3 / s17 Ö4: spänningar mellan ledare
 def supply(name,lab12,lab1n):
@@ -79,7 +78,7 @@ def supply(name,lab12,lab1n):
     save(F,name)
 supply("v41_01_s15_ovn3","Uᴸ = 400 V","Uꜰ = ?")
 supply("v41_01_s17_ovn4","Uᴸ = ?","Uꜰ = 120 V")
-# s19 Ö5: Y-last på trefastränaren
+# s19 Ö5: Y-last på trefasriggen
 F=fig(4.3,3.0); ax=cax(F,(-1.6,2.6),(-1.4,1.75)); V=yload(ax,0,0,1.15)
 vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 12,0 V",off=(0,-0.25),ha="center")
 ax.text(1.0,0.75,"Ugren = ?",color=RED,fontsize=15)
@@ -132,15 +131,15 @@ for sp in ("top","right"): ax.spines[sp].set_visible(False)
 vals=(400,402,398); ax.bar([0,1,2],[v-394 for v in vals],bottom=394,color=[BLUE,"#4f7fb0","#8fb0d3"],width=0.55)
 for k,v in enumerate(vals): ax.text(k,v+0.3,f"{v} V",ha="center",fontsize=14)
 ax.set_xticks([0,1,2]); ax.set_xticklabels(["U₁₂","U₂₃","U₃₁"],fontsize=14); ax.set_ylim(394,405); ax.set_yticks([395,400,405]); ax.tick_params(labelsize=11,colors=GRAY)
-ax.text(2.45,404.3,"Umedel = ?   avvikelse = ? %",ha="right",color=RED,fontsize=14)
+ax.text(2.45,404.3,"Umedel = ?   avvikelse = ? %",ha="right",color=RED,fontsize=14); F.text(0.98,0.01,"Obs: axeln börjar vid 394 V",ha="right",fontsize=10,color=GRAY)
 save(F,"v41_01_s32_ovn9")
 # s34 Ö10: bruten neutralledare
 F=fig(4.3,3.0); ax=cax(F,(-0.7,4.4),(-0.5,3.1)); ys=(2.6,1.9,1.2,0.3); lines(ax,0.2,1.4,ys)
 ax.plot([1.4,3.0],[2.6,2.6],color=INK,lw=LW); ax.plot([1.4,2.0],[1.9,1.9],color=INK,lw=LW); ax.plot([1.4,2.0],[0.3,0.3],color=INK,lw=LW)
 rresistor(ax,(3.0,2.6),(3.0,0.95),"Ra",loff=0.4); rresistor(ax,(2.0,1.9),(2.0,0.95),"Rb",loff=-0.4)
 ax.plot([2.0,3.0],[0.95,0.95],color=INK,lw=LW); dot(ax,2.5,0.95); ax.plot([2.5,2.5],[0.95,0.3],color=INK,lw=LW); ax.plot([2.0,2.5],[0.3,0.3],color=INK,lw=LW,ls=":")
-ax.plot([2.15,2.35],[0.18,0.42],color=RED,lw=3); ax.plot([2.15,2.35],[0.42,0.18],color=RED,lw=3); ax.text(2.25,-0.05,"brott",color=RED,fontsize=13,ha="center",va="top")
-ax.text(4.35,2.2,"Ua = ?\nUb = ?",ha="right",color=RED,fontsize=14,va="center")
+ax.plot([2.15,2.35],[0.18,0.42],color=ORANGE,lw=3); ax.plot([2.15,2.35],[0.42,0.18],color=ORANGE,lw=3); ax.text(2.25,-0.05,"brott",color=ORANGE,fontsize=13,ha="center",va="top")
+ax.text(4.35,2.2,"Ua och Ub\nändras – varför?",ha="right",color=RED,fontsize=13,va="center")
 save(F,"v41_01_s34_ovn10")
 
 # ================= v41_02 Y, Δ och trefaseffekt =================
@@ -197,8 +196,8 @@ save(F,"v41_02_s21_plint")
 # s22 teori: effektflöde i motorn
 F=fig(4.3,3.0); ax=cax(F,(-0.2,4.4),(-0.6,2.5))
 ax.add_patch(Polygon([(0,1.6),(2.6,1.6),(3.6,1.15),(2.6,0.7),(0,0.7)],closed=True,fc=BLUE,alpha=0.25,ec=BLUE,lw=1.5))
-ax.add_patch(Polygon([(2.0,0.7),(2.35,0.7),(2.35,-0.2),(2.2,-0.4),(2.0,-0.2)],closed=True,fc=RED,alpha=0.25,ec=RED,lw=1.5))
-ax.text(0.2,1.15,"Pᵢₙ elektrisk",fontsize=15,va="center"); ax.text(3.65,1.15,"Paxel",fontsize=15,va="center"); ax.text(2.5,-0.2,"förluster",fontsize=14,color=RED,va="center")
+ax.add_patch(Polygon([(2.0,0.7),(2.35,0.7),(2.35,-0.2),(2.2,-0.4),(2.0,-0.2)],closed=True,fc=ORANGE,alpha=0.25,ec=ORANGE,lw=1.5))
+ax.text(0.2,1.15,"Pᵢₙ elektrisk",fontsize=15,va="center"); ax.text(3.65,1.15,"Paxel",fontsize=15,va="center"); ax.text(2.5,-0.2,"förluster",fontsize=14,color=ORANGE,va="center")
 ax.text(2.2,2.1,"η = Paxel / Pᵢₙ",fontsize=15,ha="center")
 save(F,"v41_02_s22_effektflode")
 # s26 Ö6 / s28 Ö7: märkning och plint
@@ -252,11 +251,11 @@ def divider_meas(name):
     ax.text(-0.36,1.1,"11,94 V",ha="right",va="center",fontsize=14); resistor(ax,2.2,1.6,vert=True,label="R₁",lpos="r"); resistor(ax,2.2,0.6,vert=True,label="R₂",lpos="r")
     meas(ax); save(F,name)
 divider_meas("v41_03_s15_ovn3"); divider_meas("v41_03_s34_ovn10")
-# s8 teori: trefastränare i Y
+# s8 teori: trefasrigg i Y
 F=fig(4.3,3.4); ax=cax(F,(-1.7,2.7),(-1.4,1.8)); V=yload(ax,0,0,1.15)
 vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 12 V",off=(0,-0.25),ha="center"); ax.text(0.95,0.75,"Ugren = Uᴸ/√3",fontsize=14)
 save(F,"v41_03_s08_stationB")
-# s17 Ö4: tränarens toppvärde
+# s17 Ö4: riggens toppvärde
 F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,20,400); ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
 ax.set_xlim(0,21); ax.set_ylim(-1.35,1.5); ax.set_xticks([]); ax.set_yticks([])
 ax.axhline(0.707,color=GREEN,lw=1.8,ls="--"); ax.text(20.6,0.76,"U = 12,1 V (RMS)",ha="right",va="bottom",color=GREEN,fontsize=14)
@@ -288,8 +287,8 @@ def latch(name,s0=True,s1=False,k1=False,coil_on=False,k1_unknown=False,note=Non
         a2.text(3.6,2.4,"K1 släpper med START",fontsize=12,color=INK)
     save(F,name)
 latch("v41_03_s26_ovn6",s0=True,s1=False,k1=False,note="Sluten väg till K1-spolen?")
-latch("v41_03_s28_ovn7",s0=True,s1=True,k1=False,coil_on=True,k1_unknown=True,note="START intryckt, K1 drar")
-latch("v41_03_s30_ovn8",s0=True,s1=True,k1=False,note="Felhypotes = ?",timing=True,h=4.0)
+latch("v41_03_s28_ovn7",s0=True,s1=True,k1=False,coil_on=True,k1_unknown=True,note="START intryckt, K1 drar (aktuellt läge)")
+latch("v41_03_s30_ovn8",s0=True,s1=False,k1=False,note="Efter släpp: K1 släppt. Felhypotes = ?",timing=True,h=4.0)
 # s32 Ö9: toleransgränser
 F=fig(4.3,3.0); ax=F.add_axes((0.06,0.3,0.88,0.4)); ax.set_xlim(0.9,1.1); ax.set_ylim(-1,1); ax.axis("off")
 ax.plot([0.92,1.08],[0,0],color=GRAY,lw=1.5); ax.add_patch(Rectangle((0.95,-0.25),0.10,0.5,fc=GREEN,alpha=0.15,ec=GREEN,lw=1.5))

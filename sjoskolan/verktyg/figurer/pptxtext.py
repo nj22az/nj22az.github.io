@@ -55,3 +55,16 @@ def drop_notes_line(prs):
         if sh.has_text_frame and 'bildanteckningarna' in sh.text_frame.text:
             sh._element.getparent().remove(sh._element)
 
+
+def replace_words(prs, pairs):
+    """Byt ord i alla textkörningar (formatet behålls). pairs: [(gammalt, nytt), ...] i ordning."""
+    n = 0
+    for s in prs.slides:
+        for sh in s.shapes:
+            if not sh.has_text_frame: continue
+            for p in sh.text_frame.paragraphs:
+                for r in p.runs:
+                    t = r.text
+                    for a, b in pairs: t = t.replace(a, b)
+                    if t != r.text: r.text = t; n += 1
+    return n

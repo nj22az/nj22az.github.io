@@ -7,7 +7,7 @@ Live: https://nj22az.github.io/sjoskolan/trefaslabbet/
 ## Innehåll
 
 1. **Visare och neutralström.** Välj linjespänning (230, 400, 440 eller 690 V) och frekvens (50/60 Hz). Ställ fasströmmarna och en gemensam fasförskjutning. Sidan visar spänningsvisare med Uꜰ och Uᴸ, strömvisare lagda i kedja (visarsumma) och strömmarna över tiden med iɴ.
-2. **Bruten neutralledare.** Tre resistiva fas–neutral-laster, där 1 000 Ω betyder frånkopplad. Med hel neutralledare får varje last Uꜰ. Bryts neutralledaren flyttar lastens stjärnpunkt (Millmans sats). Visardiagrammet och staplarna visar vilken last som får överspänning.
+2. **Bruten neutralledare.** Tre resistiva fas–neutral-laster, där varje last kan kopplas bort med en egen kryssruta. Med hel neutralledare får varje last Uꜰ. Bryts neutralledaren flyttar lastens stjärnpunkt (Millmans sats). Visardiagrammet och staplarna visar vilken last som får överspänning.
 3. **Y, Δ och motorns märkning.** Linjespänning, koppling, grenimpedans och cos φ ger Ugren, Igren, Iᴸ, S, P och Q. Märkningarna Δ/Y 230/400, 400/690 och 440/760 V jämförs med nätet. Kopplingsplinten visar rätt eller fel koppling och lindningsspänningen.
 
 **Räkna först:** åtta uppgifter med andra tal än presentationernas övningar och exempel. Typiska fel får en förklaring:
