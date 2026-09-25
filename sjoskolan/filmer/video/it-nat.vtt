@@ -10,15 +10,15 @@ WEBVTT
 
 3
 00:00:16.000 --> 00:00:23.800
-<v Sigge>Isolationsvakten, IMD, mäter hela tiden isolationen mellan nätet och skrovet.
+<v Sigge>Isolationsvakten mäter hela tiden isolationen mellan nätet och skrovet.
 
 4
 00:00:24.800 --> 00:00:31.800
-<v Sigge>Nu får fläkten ett jordfel på L1. Strömmen har ingen väg tillbaka till generatorn.
+<v Sigge>Nu får fläkten ett jordfel på L1. Bara en liten läckström går tillbaka via kablarnas kapacitans.
 
 5
 00:00:32.000 --> 00:00:36.800
-<v Måns>Så det blir bara larm, och fläkten går vidare!
+<v Måns>Så inget skydd löser. Det blir larm, och fläkten går vidare!
 
 6
 00:00:37.000 --> 00:00:45.800
@@ -34,11 +34,11 @@ WEBVTT
 
 9
 00:01:00.000 --> 00:01:05.800
-<v Sigge>Det kan drabba viktiga förbrukare, ibland två på en gång.
+<v Sigge>Endera skyddet kan lösa, eller båda. Det kan drabba viktiga förbrukare.
 
 10
 00:01:06.800 --> 00:01:13.500
-<v Sigge>Därför spårar vi första felet direkt, till exempel genom att koppla bort grupper i tur och ordning.
+<v Sigge>Därför spårar vi första felet direkt enligt rutinen, till exempel med läckströmstång.
 
 11
 00:01:13.800 --> 00:01:19.500
@@ -46,7 +46,7 @@ WEBVTT
 
 12
 00:01:19.800 --> 00:01:26.300
-<v Sigge>Och vi mäter med instrument som är avsedda för 440 V-nätet.
+<v Sigge>Sektionering görs i samråd med vakthavande. Styrmaskinen kopplas aldrig bort utan plan.
 
 13
 00:01:26.500 --> 00:01:29.800
