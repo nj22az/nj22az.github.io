@@ -1,0 +1,85 @@
+{
+ "v45_01": {
+  "src": "sjoskolan/vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+  "dst": "sjoskolan/vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+  "slides": {
+   "8": [
+    "th",
+    "v45_01_s08_halvering",
+    "Matningskedja med mätpunkterna A till E mellan källa och last; den första mätningen görs i mitten vid C"
+   ],
+   "17": [
+    "ovn",
+    "v45_01_s17_ovn4",
+    "24 V matar en resistor via en öppen kontakt; ström och spänning över kontakten okända"
+   ],
+   "24": [
+    "th",
+    "v45_01_s24_exempel",
+    "12 V-källa, extra serieresistans 1 ohm och last med 10 V vid 2 A"
+   ],
+   "28": [
+    "ovn",
+    "v45_01_s28_ovn7",
+    "Källan håller 24 V, lasten får 18 V vid 3 A; den extra serieresistansen okänd"
+   ]
+  }
+ },
+ "v45_02": {
+  "src": "sjoskolan/vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+  "dst": "sjoskolan/vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v45_02_s07_krav",
+    "Kravintervall 23,00–25,00 V och mätintervall 22,95–23,25 V som går under kravets nedre gräns"
+   ],
+   "9": [
+    "th",
+    "v45_02_s09_exempel",
+    "Kravintervall 19,60–20,40 V och mätintervall 19,55–19,85 V; nedre mätgräns 0,05 V under kravet"
+   ],
+   "17": [
+    "ovn",
+    "v45_02_s17_ovn4",
+    "Seriekrets: källa 24 V, last 20 V, ström 2 A och 1 V fall i returen; fallet i framledningen okänt"
+   ],
+   "24": [
+    "th",
+    "v45_02_s24_exempel",
+    "Seriekrets: källa 12 V, last 9 V, ström 1,5 A; framledningen tappar 2,25 V och returen 0,75 V"
+   ]
+  }
+ },
+ "v45_03": {
+  "src": "sjoskolan/vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+  "dst": "sjoskolan/vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+  "slides": {
+   "9": [
+    "th",
+    "v45_03_s09_exempel",
+    "Spänningsdelare: 18 V över 1 kilohm och 2 kilohm med en last på 2 kilohm; utspänningen 9 V"
+   ],
+   "13": [
+    "ovn",
+    "v45_03_s13_ovn2",
+    "Nod med 4,0 A och 1,5 A in samt 2,0 A och Ix ut; Ix okänd"
+   ],
+   "15": [
+    "ovn",
+    "v45_03_s15_ovn3",
+    "Spänningsdelare: 24 V över R1 = 2 kilohm och R2 = 4 kilohm med en last på 4 kilohm; utspänningen okänd"
+   ],
+   "19": [
+    "ovn",
+    "v45_03_s19_ovn5",
+    "Serie-RL med R = 30 ohm och XL = 40 ohm vid 100 V RMS; ström och effektfaktor okända"
+   ],
+   "34": [
+    "ovn",
+    "v45_03_s34_ovn10",
+    "24 V-källa matar en last med 4 A; 20 V vid lasten före och 23,6 V efter åtgärd; slingresistansen okänd"
+   ]
+  }
+ }
+}
