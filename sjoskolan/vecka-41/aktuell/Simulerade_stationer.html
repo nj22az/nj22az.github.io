@@ -1,0 +1,79 @@
+<!doctype html><html lang="sv" data-theme="cobalt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulerade stationer · Sjöskolan</title><meta name="description" content="Stationspaket för träffen vecka 41: station A, B och C i simulatorerna, med labbprotokoll och ifyllda exempel."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-41/aktuell/Simulerade_stationer.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/sjoskolan/course.css">
+<style>.station{border:1px solid #cdd9e2;border-radius:12px;padding:16px 18px;margin:18px 0}.station h2{margin-top:0}.station dl{display:grid;grid-template-columns:minmax(7rem,max-content) 1fr;gap:4px 14px;margin:10px 0}.station dt{font-weight:700}.station dd{margin:0}.go{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px;font-weight:600}.cmp{width:100%;border-collapse:collapse;font-size:15px}.cmp th,.cmp td{border:1px solid #cdd9e2;padding:6px 8px;text-align:left;vertical-align:top}.cmp-wrap{overflow-x:auto}.teacher-notes{margin-top:28px;border:1px solid #cdd9e2;border-radius:12px;padding:14px 18px;font-size:15px}.teacher-notes summary{cursor:pointer;font-weight:700;min-height:32px}@media(max-width:560px){.station dl{grid-template-columns:1fr}.station dt{margin-top:6px}}</style>
+</head><body class="course"><nav id="site-nav" class="site-nav"></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Till kursmaterialet</a></div><article class="course-reading">
+<h1>Simulerade stationer</h1>
+<p>Samma tre stationer som på den fysiska träffen (v41_03 bild 6–9 och 20–24), i simulatorerna. Varje station har ett labbprotokoll direkt under simulatorn. Protokollet har kontroller före start, mätningar med förväntat och uppmätt värde, felsökning och analys. Det har också ett ifyllt exempel.</p>
+
+<h2>Så arbetar du</h2>
+<ol>
+<li><strong>Förbered.</strong> Läs stationens beskrivning nedan och räkna förberedelseövningarna i v41_03.</li>
+<li><strong>Kontrollera.</strong> Gå igenom kontrollerna före start i protokollet. På den fysiska stationen ger instruktören klartecken först efter dem.</li>
+<li><strong>Förutsäg.</strong> Skriv förväntat värde i protokollet. Knappen ”Hämta avläsning” fungerar först när du har gjort det.</li>
+<li><strong>Mät.</strong> Mät i simulatorn och hämta avläsningen till protokollet. Mätpunkter, driftläge och tid följer med. Ändrar du ett hämtat värde för hand syns det.</li>
+<li><strong>Jämför och förklara.</strong> Räkna avvikelsen, bedöm den mot toleransen och förklara minst en avvikelse med egna ord.</li>
+<li><strong>Lämna in.</strong> Protokollet visar vad som saknas. Skriv ut eller spara som PDF. Varje deltagare lämnar in ett eget protokoll.</li>
+</ol>
+
+<section class="station" aria-labelledby="st-a">
+<h2 id="st-a">Station A · DC-delare</h2>
+<dl>
+<dt>Rigg</dt><dd>SELV-källa märkt 12 V med strömgräns 100 mA. R1 = 1 kΩ och R2 = 2 kΩ, båda ±5 %, i serie. Länk P–A för strömmätning. Sex riggar med olika verkliga komponentvärden, som på en fysisk station, och en exempelrigg på 9 V.</dd>
+<dt>Instrument</dt><dd>Multimeter med V ⎓, Ω och mA. Noggrannhet och ingångsresistans står i protokollet. En referens på 5,000 V används för att kontrollera instrumentet före och efter.</dd>
+<dt>Uppgifter</dt><dd>Kontrollera instrumentet, mät R1 och R2 spänningslöst, mät källspänning, U1, U2 och strömmen, och avsluta med att återställa riggen. Kontrollera slinglagen med dina egna värden och bedöm om komponenterna ligger inom toleransen.</dd>
+<dt>Förberedelse</dt><dd>v41_03 övning 1–3 och exemplet på bild 9.</dd>
+</dl>
+<p class="go"><a href="../../multimetersimulator/?ovning=stationA">Öppna Station A</a><a href="../../multimetersimulator/?ovning=stationA#labbprotokoll">Labbprotokollet och exemplet</a></p>
+</section>
+
+<section class="station" aria-labelledby="st-b">
+<h2 id="st-b">Station B · AC och trefas</h2>
+<dl>
+<dt>Rigg, AC</dt><dd>Isolerad AC-källa märkt 12 V 50 Hz. Samma effektivvärde kan visas som sinus, fyrkant och triangel.</dd>
+<dt>Rigg, trefas</dt><dd>SELV-trefasrigg med linjespänning 12,2 V. Tre resistiva laster i Y märkta 100 Ω ±5 %. Neutralledaren kan brytas och varje last kopplas från.</dd>
+<dt>Instrument</dt><dd>True RMS-multimeter, medelvärdesvisande multimeter och oscilloskop. För trefas: RMS-multimeter och strömtång.</dd>
+<dt>Uppgifter</dt><dd>AC: effektivvärde, toppvärde och periodtid. Jämför sedan de två multimetrarna för tre kurvformer. Trefas: grenspänning, fasströmmar och neutralström. Bryt sedan neutralledaren och se hur grenspänningarna ändras.</dd>
+<dt>Förberedelse</dt><dd>v41_03 övning 4 och 5, v41_01 om neutralledaren.</dd>
+</dl>
+<p class="go"><a href="../../vaxelstromslabbet/#labbprotokoll">Station B, AC: Växelströmslabbet</a><a href="../../trefaslabbet/?flik=neutral#labbprotokoll">Station B, trefas: Trefaslabbet</a></p>
+</section>
+
+<section class="station" aria-labelledby="st-c">
+<h2 id="st-c">Station C · hållkrets med felmoduler</h2>
+<dl>
+<dt>Rigg</dt><dd>Hållkrets med 12 V DC styrspänning: S0 STOPP (NC), S1 START (NO) parallellt med K1:s hjälpkontakt (NO), K1-spole 480 Ω och retur. Mätpunkter +U, a, b, c och 0 V.</dd>
+<dt>Felmoduler</dt><dd>Slumpade och okända tills du väljer att visa dem: S0 fastnat öppen, START sluter inte, hjälpkontakten sluter inte, spolen avbruten, returen bruten, eller inget fel.</dd>
+<dt>Uppgifter</dt><dd>Mät den hela kretsen i vila, start, hållning och stopp. Felsök sedan två felmoduler: observation, hypotes, en kontroll som skiljer mellan orsakerna, förväntat resultat, resultat och slutsats.</dd>
+<dt>Förberedelse</dt><dd>v41_03 övning 6–8 och bild 21–23.</dd>
+</dl>
+<p class="go"><a href="../../hallkretslabbet/#labbprotokoll">Öppna Station C</a></p>
+</section>
+
+<h2>Bedömning av protokollet</h2>
+<ul>
+<li>Kontrollerna före start är gjorda och förväntat värde är skrivet före varje mätning.</li>
+<li>Mätpunkter, driftläge och instrument anges så att någon annan kan upprepa mätningen.</li>
+<li>Avvikelsen är rätt räknad och bedömd mot en angiven tolerans eller gräns.</li>
+<li>Minst en avvikelse är förklarad med egna ord och egna siffror.</li>
+<li>Observation och hypotes hålls isär, och kontrollen skiljer faktiskt mellan orsakerna.</li>
+<li>Slutsatsen säger både vad mätningarna visar och vad de inte visar.</li>
+</ul>
+
+<h2>Fysisk och simulerad station</h2>
+<div class="cmp-wrap"><table class="cmp"><thead><tr><th scope="col">Moment</th><th scope="col">Fysisk station</th><th scope="col">Simulerad station</th></tr></thead><tbody>
+<tr><td>Kontroller före start</td><td>Instruktören kontrollerar och ger klartecken</td><td>Samma kontroller i protokollet; eleven bockar av</td></tr>
+<tr><td>Komponentvärden</td><td>Verkliga, inom tolerans</td><td>Sex riggar med olika verkliga värden, en med en resistor utanför toleransen</td></tr>
+<tr><td>Instrumentkontroll</td><td>Mot känd källa</td><td>Mot en referens på 5,000 V före och efter</td></tr>
+<tr><td>Kurvform och mätare</td><td>Oftast bara sinus</td><td>Sinus, fyrkant och triangel med true RMS och medelvärdesvisande mätare</td></tr>
+<tr><td>Trefas</td><td>Kräver en dokumenterad rigg</td><td>Hel och bruten neutralledare, frånkopplade laster</td></tr>
+<tr><td>Felsökning</td><td>Instruktörens förberedda felmoduler</td><td>Slumpade felmoduler, fem feltyper och ”inget fel”</td></tr>
+<tr><td>Spårbarhet</td><td>Handskrivna värden</td><td>Hämtade värden märks med tid, ändringar för hand syns</td></tr>
+<tr><td>Handlag och verkliga risker</td><td>Ja: kontaktgivning, fladdrande värden, värme</td><td>Nej. Simulatorn ersätter inte praktisk bedömning</td></tr>
+</tbody></table></div>
+
+<details class="teacher-notes"><summary>För lärare · förväntade intervall och uppföljning</summary>
+<p><strong>Station A.</strong> Källspänning 11,91–12,12 V (rigg 1–6), U1 cirka 3,8–4,2 V, U2 cirka 7,8–8,3 V, ström cirka 3,8–4,1 mA. Rigg 5 har R2 = 2,141 kΩ, utanför ±5 %. Låt olika elever få olika riggar, så att varje protokoll bygger på egna värden. Exempelriggen (9 V) följer bild 9 och ger inga svar på övningarna.</p>
+<p><strong>Station B.</strong> AC-källan är 12,35 V effektivvärde. Den medelvärdesvisande mätaren visar cirka 11 % för mycket för fyrkant och cirka 4 % för lite för triangel. Trefas: grenspänning 7,04 V med hel N, neutralström cirka 3 mA på grund av lasternas tolerans, cirka 6,0 och 6,2 V över L1- och L3-lasten när N är bruten och L2 frånkopplad.</p>
+<p><strong>Station C.</strong> Vid hållning ligger 12 V över spolen och spolströmmen är 25 mA. En öppen hjälpkontakt ger 12 V på a men 0 V på b efter att START släppts. En bruten retur ger 12 V på c med START intryckt. En avbruten spole ger 0 V på c.</p>
+<p>Protokollen sparas bara i elevens webbläsare. Eleven lämnar in en utskrift eller PDF, eller CSV-filen. Ett simulerat protokoll är övning och underlag. Det visar inte praktisk kompetens. Bekräfta den fysiska stationsplanen separat.</p>
+</details>
+</article></main><footer id="site-footer" class="site-footer"></footer><script src="/config.js"></script><script src="/shared.js"></script></body></html>

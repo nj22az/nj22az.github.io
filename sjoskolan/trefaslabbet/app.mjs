@@ -1,6 +1,8 @@
 // Trefaslabbet · interaktion och ritning
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
+import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260925';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', slate: '#4a6378' };
@@ -17,7 +19,7 @@ const state = { tab: 'visare', values: clone(DEFAULTS), challenge: null, attempt
 function loadSolved() { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } }
 function saveSolved() { try { localStorage.setItem(STORE, JSON.stringify([...state.solved])); } catch { /* blockerad */ } }
 
-const VOLT = [['230', '230 V'], ['400', '400 V'], ['440', '440 V (vanligt ombord)'], ['690', '690 V (större fartyg)']];
+const VOLT = [['12.2', '12,2 V (Station B-rigg)'], ['230', '230 V'], ['400', '400 V'], ['440', '440 V (vanligt ombord)'], ['690', '690 V (större fartyg)']];
 const CONTROLS = {
   visare: [
     { key: 'UL', label: 'Linjespänning Uᴸ', type: 'select', num: true, options: VOLT },
@@ -299,3 +301,26 @@ document.querySelectorAll('[role=tab]').forEach((b) => {
 const params = new URLSearchParams(location.search);
 setTab(DEFAULTS[params.get('flik')] ? params.get('flik') : 'visare');
 if (params.get('uppgift')) startChallenge(params.get('uppgift'));
+
+// Labbprotokoll för Station B, trefasdelen
+function rig3F(patch) {
+  if (state.challenge) leaveChallenge();
+  setTab('neutral', false);
+  state.values.neutral = { ...clone(RIG_3F), ...patch };
+  renderControls(); renderChallengeSelect(); render(); updateUrl();
+}
+mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_3F_PROTOKOLL,
+  presets: [
+    { label: 'Stationens trefasrigg: N hel', apply: () => rig3F({}), done: 'Trefasriggen är inställd: 12,2 V, tre laster, neutralledaren hel.' },
+    { label: 'Bryt N', apply: () => rig3F({ neutral: false }), done: 'Neutralledaren är bruten. Alla tre laster är inkopplade.' },
+    { label: 'Bryt N och koppla från L2-lasten', apply: () => rig3F({ neutral: false, on2: false }), done: 'Neutralledaren är bruten och L2-lasten frånkopplad.' },
+  ],
+  snapshot(plan) {
+    if (state.tab !== 'neutral') return { error: 'Byt till fliken ”Neutralledaren” för att mäta på trefasriggen.' };
+    if (state.challenge) return { error: 'Lämna uppgiften först (”Utforska fritt”), eller använd knapparna ovan för att ställa in riggen.' };
+    const s = state.values.neutral, r = readouts('neutral', s), q = plan?.q || 'U1';
+    const on = [1, 2, 3].filter((k) => s[`on${k}`] !== false).map((k) => `L${k}`).join(', ');
+    const drift = `Uᴸ ${fmt(s.UL)} V, N ${s.neutral ? 'hel' : 'bruten'}, laster: ${on || 'inga'} (R1 ${s.R1}, R2 ${s.R2}, R3 ${s.R3} Ω)`;
+    const val = q.startsWith('U') ? `${r[q].toFixed(2).replace('.', ',')} V` : `${(r[q] * 1000).toFixed(1).replace('.', ',')} mA`;
+    return { punkter: plan?.punkter, drift, varde: val };
+  } });

@@ -32,3 +32,7 @@ node --test sjoskolan/trefaslabbet/model.test.mjs
 ```
 
 Åtta tester godkända den 25 september 2026. De täcker √3-sambandet, neutralström vid symmetri, en fas, två lika faser och 10/10/4 A. De täcker också bruten neutral med två laster i serie och symmetrisk last, presentationens Y/Δ-exempel (20 Ω vid 200 V) och trefaseffekt, motorns koppling, facit för alla uppgifter samt att inga kända felsvar godkänns. Alla uppgifter har lösts i Chromium; sidan har ingen horisontell rullning vid 390 px.
+
+## Labbprotokoll
+
+Station B, trefas (`stationB-protokoll.mjs`): SELV-rigg 12,2 V med lasterna 98, 103 och 101 Ω, hel och bruten neutralledare. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.

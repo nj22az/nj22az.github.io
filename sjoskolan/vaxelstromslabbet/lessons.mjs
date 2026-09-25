@@ -1,5 +1,5 @@
 // Växelströmslabbet · avläsningar och förutsägelseuppgifter
-import { waveform, instant, phaseFromDelay, seriesCircuit, loadPower } from './model.mjs';
+import { waveform, instant, phaseFromDelay, seriesCircuit, loadPower, meterReadings } from './model.mjs';
 
 export const DEFAULTS = {
   // Startvärden som inte sammanfaller med presentationernas övningar
@@ -15,6 +15,7 @@ export function readouts(tab, s) {
     const t = s.t / 1000;
     return {
       peak: w.peak, pp: w.pp, rms: w.rms, mean: 0, T: w.T * 1000, f: s.f,
+      trms: meterReadings(s).trueRms, avg: meterReadings(s).avgResp,
       ut: instant(s, t),
       phi: s.showB ? phaseFromDelay(s.dt / 1000, s.f) : null,
     };

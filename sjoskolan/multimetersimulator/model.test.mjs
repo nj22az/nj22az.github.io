@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState, network, solve, resistance, measure, lampCurrent } from './model.mjs';
+import { initialState, network, solve, resistance, measure, lampCurrent, RIGS } from './model.mjs';
 import { LESSONS, acceptsAnswer, numericAnswer } from './lessons.mjs';
 import { protocolCSV } from './protocol.mjs';
 const near=(a,b,e=1e-8)=>assert.ok(Math.abs(a-b)<e,`${a} ≠ ${b}`);
+const st=(patch={})=>({...initialState('station'),mode:'dc',...patch});
 const lamp=(patch={})=>({...initialState(),mode:'dc',power:true,red:'P1',black:'P2',...patch});
 test('voltage and polarity are calculated between arbitrary nodes',()=>{
   near(measure(lamp()).value,12);near(measure(lamp({red:'P2',black:'P1'})).value,-12);
@@ -70,7 +71,9 @@ test('every measurement lesson accepts an electrically correct setup',()=>{
     resistance:[{...initialState('resistor'),mode:'ohm',red:'A',black:'B',parallel:false}],
     parallel:[{...initialState('resistor'),mode:'ohm',red:'A',black:'B'},{...initialState('resistor'),mode:'ohm',red:'A',black:'B',parallel:false}],
     continuity:[{...initialState('fuse'),mode:'continuity',red:'A',black:'B'},{...initialState('fuse'),mode:'continuity',red:'A',black:'B',broken:true}],
-    loading:[{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G'},{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G',input:1e6}]
+    loading:[{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G'},{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G',input:1e6}],
+    stationA:[st({red:'Ref+',black:'Ref−'}),st({mode:'ohm',red:'B',black:'A'}),st({mode:'ohm',red:'N',black:'B'}),st({power:true,red:'P',black:'N'}),st({power:true,red:'A',black:'B'}),st({power:true,red:'B',black:'N'}),
+      st({power:true,mode:'current',jack:'ma',link:false,red:'P',black:'A'}),st({red:'Ref+',black:'Ref−'})]
   };
   for(const lesson of LESSONS.filter(l=>l.circuit!=='category')) lesson.steps.filter(step=>step.test).forEach((step,i)=>{
     assert.equal(Boolean(step.test(setups[lesson.id][i],measure(setups[lesson.id][i]))),true,`${lesson.id} step ${i+1}`);
@@ -125,4 +128,30 @@ test('CSV keeps readings, input resistance and comments; legacy rows remain expo
   assert.ok(csv.startsWith('\uFEFF'));assert.ok(csv.includes('"10000000"'));assert.ok(csv.includes('"1000000"'));
   assert.ok(csv.includes('"Parallellt; med ""R2""\nEn extra gren."'));
   assert.ok(csv.includes('"12,00 V"'));assert.ok(csv.includes('"\'=SUM(1+1)"'));
+});
+
+test('Station A: every rig gives consistent readings, the reference is isolated and always live',()=>{
+  for(const g of RIGS){
+    const s={...initialState('station'),rig:g.id,mode:'dc',power:true};
+    const I=g.U/(g.R1+g.R2);
+    near(measure({...s,red:'P',black:'N'}).value,g.U,1e-4);
+    near(measure({...s,red:'A',black:'B'}).value,I*g.R1,2e-3);
+    near(measure({...s,red:'B',black:'N'}).value,I*g.R2,2e-3);
+    near(measure({...s,mode:'current',jack:'ma',link:false,red:'P',black:'A'}).value,1000*g.U/(g.R1+g.R2+1),1e-6);
+    near(measure({...s,mode:'ohm',power:false,red:'A',black:'N'}).value,(g.R1+g.R2)/1000,1e-9);
+  }
+  const s={...initialState('station'),mode:'dc'};
+  assert.equal(measure({...s,red:'Ref+',black:'N',power:true}).code,'separate');
+  assert.equal(measure({...s,mode:'ohm',red:'Ref+',black:'Ref−'}).code,'live-ohm');
+  assert.equal(measure({...s,mode:'current',jack:'a',red:'Ref+',black:'Ref−'}).trip,'short');
+  assert.equal(measure({...s,mode:'ohm',power:true,red:'A',black:'B'}).code,'live-ohm');
+  // en rigg har R2 utanför ±5 %, de andra ligger inom
+  assert.deepEqual(RIGS.filter(g=>Math.abs(g.R2/2000-1)>.05||Math.abs(g.R1/1000-1)>.05).map(g=>g.id),[5]);
+});
+test('Station A protocol example matches the simulator and is complete',async()=>{
+  const { STATION_A_PROTOKOLL:def } = await import('./stationA-protokoll.mjs');
+  const { missing, deviationMatches, deviation } = await import('../gemensamt/labbprotokoll.mjs');
+  assert.deepEqual(missing(def,def.example),[]);
+  assert.equal(def.example.rows.length,def.rows.length);
+  for(const r of def.example.rows){assert.equal(deviationMatches(r.avv,r.forv,r.uppm),true,JSON.stringify(r));assert.ok(Math.abs(deviation(r.forv,r.uppm).rel)<1,JSON.stringify(r));}
 });

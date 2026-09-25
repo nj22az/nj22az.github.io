@@ -2,7 +2,7 @@
 import { solve, meter } from './model.mjs';
 
 export const POINTS = { P: '+U (matning)', a: 'a: efter S0', b: 'b: spolens matningssida', c: 'c: spolens retursida', N: '0 V (retur)' };
-export const FAULT_TEXT = { ingen: 'Inget fel', s0: 'S0 har fastnat öppen', hall: 'K1:s hjälpkontakt sluter inte', spole: 'K1-spolen är avbruten', retur: 'Returledaren är bruten' };
+export const FAULT_TEXT = { ingen: 'Inget fel', s0: 'S0 har fastnat öppen', start: 'S1 START sluter inte', hall: 'K1:s hjälpkontakt sluter inte', spole: 'K1-spolen är avbruten', retur: 'Returledaren är bruten' };
 export const DEFAULTS = { U: 24, R: 480, supply: true, s0: false, s1: false, fault: 'ingen', red: 'b', black: 'c', k1: false };
 
 /** Ett uppgiftsläge byggs som en följd av knapptryck, så att hållningen blir rätt. */

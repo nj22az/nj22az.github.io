@@ -1,5 +1,7 @@
-import { initialState, network, measure, lampCurrent, MODES } from './model.mjs';
-import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260925-loading';
+import { initialState, network, measure, lampCurrent, MODES, RIGS, rigOf } from './model.mjs';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
+import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260925';
+import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260925-station';
 import { protocolCSV } from './protocol.mjs';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -34,14 +36,16 @@ const positions = {
   lamp:{K1:[210,75],K2:[365,75],P1:[485,135],P2:[300,235]},
   resistor:{A:[140,165],B:[460,165]},
   fuse:{A:[145,160],B:[455,160]},
-  divider:{S:[150,65],M:[390,165],G:[300,265]}
+  divider:{S:[150,65],M:[390,165],G:[300,265]},
+  station:{P:[170,70],A:[280,70],B:[420,165],N:[300,265],'Ref+':[535,95],'Ref−':[535,160]}
 };
-const titles = {lamp:'Hyttbelysning',resistor:'Resistorer · frikopplad krets',fuse:'Säkring · urtagen',divider:'Spänningsdelare · 10 V DC'};
+const titles = {lamp:'Hyttbelysning',resistor:'Resistorer · frikopplad krets',fuse:'Säkring · urtagen',divider:'Spänningsdelare · 10 V DC',station:'Station A · DC-delare'};
 const principle = {
   lamp:['V parallellt · A i serie','V-ingången har hög resistans. A-ingången har låg resistans och får aldrig kopplas direkt över en spänningskälla.'],
   resistor:['Mätaren ser alla strömvägar','Mät spänningslöst. En parallell komponent ändrar det värde som ohmmetern visar.'],
   fuse:['OL är inte noll','En öppen krets ger OL. Låg resistans ger kontaktsignal i summerläget.'],
   divider:['Mätaren är en del av kretsen','Ingångsresistansen ligger parallellt med den del du mäter över. Därför kan mätvärdet ändras.'],
+  station:['Samma station som på den fysiska träffen','Kontrollera instrumentet mot referensen, mät R spänningslöst och räkna förväntade värden innan du mäter. Riggens verkliga värden avviker lite från de nominella, precis som på en fysisk rigg. Fyll i labbprotokollet under simulatorn.'],
   category:['Läs hela märkningen','Kontrollera mätmiljö, spänning, uttag och tillbehör. Ett högre volt-tal ersätter inte rätt CAT-kategori.']
 };
 function save() {
@@ -86,7 +90,7 @@ function renderLesson() {
   const l=currentLesson(),step=currentStep();
   $('#free-mode').setAttribute('aria-pressed',String(free));
   $('#free-mode').textContent=free?'Till handledd övning':'Fri övning';
-  $('#lesson-number').textContent=free?'Fri övning':`Övning ${String(lessonIndex+1).padStart(2,'0')} / 08`;
+  $('#lesson-number').textContent=free?'Fri övning':`Övning ${String(lessonIndex+1).padStart(2,'0')} / ${String(LESSONS.length).padStart(2,'0')}`;
   $('#slide-ref').textContent=free?'':`Bild ${l.slides}`;
   $('#lesson-title').textContent=free?'Undersök själv':l.title;
   $('#lesson-goal').textContent=free?'Ändra koppling och inställningar. Se vad som händer.':l.goal;
@@ -188,6 +192,15 @@ function circuitSVG() {
       const ys={S:65,M:165,G:265},top=Math.min(ys[state.red],ys[state.black]),bottom=Math.max(ys[state.red],ys[state.black]),mid=(top+bottom)/2;
       body+=`<g class="meter-branch"><title>Mätarens ingångsresistans mellan ${state.red} och ${state.black}</title><path d="M 390 ${top} H 535 V ${mid-19} M 535 ${mid+19} V ${bottom} H 390"/><rect x="522" y="${mid-19}" width="26" height="38"/>${label(535,top-13,'Mätaren')}${label(510,bottom+24,'Rin = '+(state.input/1e6)+' MΩ')}</g>`;
     }
+  } else if(state.circuit==='station') {
+    const g=rigOf(state);
+    body=wire('M 100 150 V 70 H 170 M 280 70 H 420 V 95 M 420 141 V 192 M 420 238 V 265 H 100 V 172')+
+      `<path class="part" d="M 79 150 H 121 M 87 172 H 113"/><text x="64" y="146">+</text><text x="64" y="184">−</text>`+
+      wire(state.link?'M 170 70 H 280':'M 170 70 L 262 46')+label(225,100,state.link?'Länk P–A sluten':'Länk P–A öppen')+
+      `<rect class="part" x="407" y="95" width="26" height="46"/><rect class="part" x="407" y="192" width="26" height="46"/>`+
+      label(100,217,`${g.Unom} V DC`)+label(100,236,'SELV')+label(335,114,'R1 · 1 kΩ')+label(335,134,'±5 %')+label(335,212,'R2 · 2 kΩ')+label(335,232,'±5 %')+
+      `<rect class="part" x="497" y="70" width="76" height="115" rx="6"/>`+label(535,210,'Referens')+label(535,230,'5,000 V')+
+      label(250,325,`${g.name} · strömgräns 100 mA`);
   }
   return `<title id="diagram-title">${titles[state.circuit]}. Använd knapparna för mätpunkterna.</title>${body}`;
 }
@@ -196,6 +209,7 @@ function renderCircuit() {
   $('#diagram').innerHTML=circuitSVG();
   $('#circuit-title').textContent=state.circuit==='lamp'?`${titles.lamp} · ${state.voltage} V DC`:titles[state.circuit];
   $('#source-status').textContent=['resistor','fuse'].includes(state.circuit)?'Frikopplad':state.power?'Matning till':'Matning bruten';
+  if(state.circuit==='station')$('#circuit-title').textContent=`${titles.station} · ${rigOf(state).name}`;
   $('#source-status').classList.toggle('on',state.power);
   const points=positions[state.circuit];
   $('#nodes').innerHTML=Object.entries(points).map(([name,[x,y]])=>`<button class="node" data-node="${name}" data-black="${state.black===name}" data-red="${state.red===name}" style="left:${x/6}%;top:${y/3.4}%" aria-label="Mätpunkt ${name}${state.black===name?', svart ansluten':''}${state.red===name?', röd ansluten':''}"><span class="node-dot"></span><span class="node-name">${name}</span></button>`).join('');
@@ -205,7 +219,8 @@ function renderCircuit() {
     const probe=$(`#probe-${color}`);probe.setAttribute('aria-pressed',String(activeProbe===color));
   }
   let controls='';
-  if(['lamp','divider'].includes(state.circuit))controls+=`<button id="power" aria-pressed="${state.power}">${state.power?'Bryt matningen':'Slå på '+(state.circuit==='lamp'?state.voltage:10)+' V'}</button>`;
+  if(['lamp','divider','station'].includes(state.circuit))controls+=`<button id="power" aria-pressed="${state.power}">${state.power?'Bryt matningen':'Slå på '+(state.circuit==='lamp'?state.voltage:state.circuit==='station'?rigOf(state).Unom:10)+' V'}</button>`;
+  if(state.circuit==='station')controls+=`<button id="link" aria-pressed="${!state.link}">${state.link?'Öppna länken P–A':'Slut länken P–A'}</button><label>Rigg<select id="rig">${RIGS.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></label>`;
   if(state.circuit==='lamp'){
     controls+=`<button id="link" aria-pressed="${!state.link}">${state.link?'Öppna länken K1–K2':'Slut länken K1–K2'}</button>`;
     if(free)controls+=`<label>Källa<select id="voltage"><option value="12">12 V</option><option value="24">24 V</option></select></label><label>Lampa<select id="load"><option value="120">120 Ω</option><option value="30">30 Ω</option></select></label>`;
@@ -214,7 +229,7 @@ function renderCircuit() {
   if(state.circuit==='fuse')controls+=`<button id="broken" aria-pressed="${state.broken}">${state.broken?'Sätt i hel säkring':'Simulera avbrott'}</button>`;
   if(state.circuit==='divider')controls+=`<label>Simulerad ingångsresistans<select id="input" aria-describedby="input-help"><option value="10000000">10 MΩ</option><option value="1000000">1 MΩ</option></select></label>`;
   $('#circuit-controls').innerHTML=controls;
-  for(const k of ['voltage','load','input'])if($(`#${k}`))$(`#${k}`).value=state[k];
+  for(const k of ['voltage','load','input','rig'])if($(`#${k}`))$(`#${k}`).value=state[k];
   renderLoadingCircuit();
   $('#connection-help').textContent=`${activeProbe==='black'?'Svart':'Röd'} spets vald. Tryck på en mätpunkt, dra spetsen eller välj i listan nedan.`;
 }
@@ -254,7 +269,7 @@ function renderMeter() {
 function renderAll(){renderProgress();renderLesson();renderCircuit();renderMeter();requestAnimationFrame(()=>drawLeads());}
 function selectProbe(color){activeProbe=color;renderCircuit();drawLeads();}
 function change(key,value) {
-  const rewiring=['jack','link','voltage','load'].includes(key)||(['red','black'].includes(key)&&state.jack!=='v');
+  const rewiring=['jack','link','voltage','load','rig'].includes(key)||(['red','black'].includes(key)&&state.jack!=='v');
   if(state.power&&rewiring){
     feedback('Bryt matningen före omkoppling','Tryck på ”Bryt matningen”. Ändra sedan kretsen, strömuttaget eller mätspetsarnas placering.','warning');
     renderCircuit();renderMeter();drawLeads();return;
@@ -297,7 +312,7 @@ function next() {
   if(!passed||free)return;
   if(stage<currentLesson().steps.length-1){stage++;passed=false;clearAnswer();if(isLoading()&&currentStep().key==='measure10')state.power=false;$('#hint').open=false;renderLesson();renderCircuit();renderMeter();drawLeads();feedback('Nästa steg',currentStep().task);$('#task-heading').scrollIntoView({behavior:'smooth',block:'nearest'});}
   else if(lessonIndex<LESSONS.length-1)startLesson(lessonIndex+1);
-  else {feedback('Övningen är klar',`Du har klarat ${saved.done.length} av 8 övningar. Ladda ner ditt mätprotokoll eller fortsätt med en annan övning.`,'success');$('#next').hidden=true;$('#record-count').scrollIntoView({behavior:'smooth',block:'center'});}
+  else {feedback('Övningen är klar',`Du har klarat ${saved.done.length} av ${LESSONS.length} övningar. Ladda ner ditt mätprotokoll eller fortsätt med en annan övning.`,'success');$('#next').hidden=true;$('#record-count').scrollIntoView({behavior:'smooth',block:'center'});}
 }
 function beep(){
   try{audioContext??=new(window.AudioContext||window.webkitAudioContext)();if(audioContext.state==='suspended')audioContext.resume();const o=audioContext.createOscillator(),g=audioContext.createGain();o.frequency.value=1800;g.gain.value=.025;o.connect(g);g.connect(audioContext.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+.15);o.stop(audioContext.currentTime+.16);}catch{feedback('Ljud kunde inte spelas','Den synliga signalen KONTAKT visar kontinuitet även utan ljud.');}
@@ -371,7 +386,7 @@ $('#disconnect').addEventListener('click',()=>{state.red=null;state.black=null;r
 $('#circuit-controls').addEventListener('click',e=>{
   const id=e.target.closest('button')?.id;if(['power','link','parallel','broken'].includes(id))change(id,!state[id]);
 });
-$('#circuit-controls').addEventListener('change',e=>{if(['voltage','load','input'].includes(e.target.id))change(e.target.id,Number(e.target.value));});
+$('#circuit-controls').addEventListener('change',e=>{if(['voltage','load','input','rig'].includes(e.target.id))change(e.target.id,Number(e.target.value));});
 $('#reset-protection').addEventListener('click',()=>{
   if(state.power||state.red||state.black){feedback('Lossa mätspetsarna först','Matningen ska vara bruten och båda spetsarna lossade innan skyddet återställs.','warning');return;}
   state.trip=null;state.fuse=false;renderMeter();feedback('Mätarskyddet återställt','Kontrollera funktion, uttag och koppling innan du slår på matningen igen.');
@@ -402,3 +417,14 @@ window.addEventListener('resize',()=>drawLeads());
 const requested=new URLSearchParams(location.search).get('ovning');
 startLesson(Math.max(0,LESSONS.findIndex(l=>l.id===requested)),false);
 if(requested==='fri')$('#free-mode').click();
+
+// Labbprotokoll för Station A: hämtar aktuell avläsning från simulatorn
+mountProtocol(document.getElementById('labbprotokoll'),{...STATION_A_PROTOKOLL,snapshot(){
+  if(state.circuit==='category')return {error:'Välj en övning med mätare, till exempel övning 9 Station A.'};
+  const m=measure(state);
+  if(m.code!=='reading')return {error:`Ingen giltig avläsning: ${m.detail}`};
+  const jack=state.jack==='v'?'V Ω':state.jack==='ma'?'mA':'A';
+  const drift=[`${MODES[state.mode]}, ${jack}-uttag`,['resistor','fuse'].includes(state.circuit)?'frikopplad':`matning ${state.power?'till':'bruten'}`];
+  if(state.circuit==='station')drift.push(`länk ${state.link?'sluten':'öppen'}`,rigOf(state).name);
+  return {punkter:`röd ${state.red} / svart ${state.black}`,drift:drift.join(', '),varde:`${m.text} ${m.unit}`};
+}});

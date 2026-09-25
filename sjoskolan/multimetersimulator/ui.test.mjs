@@ -25,7 +25,7 @@ async function mount(saved=null,{blocked=false,lesson='loading'}={}){
 test('complete lesson flow, wrong answers, both readings, explanation, migration and CSV',async()=>{
   const old={done:['voltage','loading'],records:[{time:'2026-09-24',lesson:'Spänning',step:1,reading:'12,00 V'}]};
   const ui=await mount(old),{q,click,change,answer,choose}=ui;
-  assert.match(q('#progress').textContent,/1 av 8/);
+  assert.match(q('#progress').textContent,/1 av 9/);
   assert.equal(q('#nodes').inert,true);assert.equal(q('#diagram').closest('[inert]'),null);
   assert.match(q('#source-status').textContent,/Matning till/);
   click('#check');assert.equal(q('#next').hidden,true);
@@ -61,7 +61,7 @@ test('complete lesson flow, wrong answers, both readings, explanation, migration
   click('[data-choice="0"]');click('#check');assert.equal(q('#next').hidden,true);
   click('[data-choice="1"]');click('#check');assert.equal(q('#next').hidden,false);
   ui.dom.window.close();
-  const reloaded=await mount(saved);assert.match(reloaded.q('#progress').textContent,/2 av 8/);
+  const reloaded=await mount(saved);assert.match(reloaded.q('#progress').textContent,/2 av 9/);
   reloaded.click('#free-mode');assert.equal(reloaded.q('#nodes').inert,false);
   reloaded.change('#free-circuit','divider');assert.equal(reloaded.q('#input').disabled,false);
   assert.equal(reloaded.q('#lesson-answer').hidden,true);assert.equal(reloaded.q('#loading-comparison').hidden,true);
@@ -75,4 +75,27 @@ test('ordinary voltage lesson and blocked storage continue to work',async()=>{
   assert.equal(q('#lesson-answer').hidden,true);assert.match(q('#record-count').textContent,/Lagring är avstängd/);
   assert.equal(q('#download-log').disabled,false);assert.equal(q('#protocol-rows').children.length,1);
   ui.dom.window.close();
+});
+
+test('Station A: instrument check passes and the lab protocol fetches the reading only after a prediction',async()=>{
+  const {q,click,change,dom}=await mount(null,{lesson:'stationA'});
+  const w=dom.window;
+  assert.match(q('#lesson-number').textContent,/09 \/ 09/);
+  click('#functions [data-mode="dc"]');
+  change('#black-node','Ref−');change('#red-node','Ref+');
+  assert.equal(q('#reading').textContent,'5,00');
+  click('#check');
+  assert.match(q('#feedback-title')?.textContent||q('#next').textContent,/./);
+  assert.equal(q('#next').hidden,false);
+  const fetch=q('#labbprotokoll .lp-fetch[data-row="0"]');
+  fetch.click();
+  assert.match(q('#labbprotokoll .lp-msg').textContent,/Räkna först/);
+  const forv=q('#labbprotokoll [data-p="rows.0.forv"]');forv.value='5,00 V';forv.dispatchEvent(new w.Event('input',{bubbles:true}));
+  fetch.click();
+  assert.equal(q('#labbprotokoll [data-p="rows.0.uppm"]').value,'5,00 V ⎓');
+  assert.match(q('#labbprotokoll [data-p="rows.0.punkter"]').value,/röd Ref\+ \/ svart Ref−/);
+  const saved=JSON.parse(w.localStorage.getItem('sjoskolan-protokoll-stationA'));
+  assert.equal(saved.rows[0].uppm,'5,00 V ⎓');
+  assert.match(q('#labbprotokoll .lp-status').textContent,/Saknas/);
+  assert.ok(q('#labbprotokoll .lp-example [data-p="rows.6.uppm"]').value.endsWith('mA'));
 });

@@ -137,3 +137,17 @@ test('toppvärdesuppgiften: rätt diagnos för 48 V och för topp till topp', ()
   assert.ok(dbl && /dubblat effektivvärdet/.test(dbl.msg) && !/topp till topp/.test(dbl.msg), '48 V ska beskrivas som dubblat effektivvärde');
   assert.ok(pp && /topp till topp/.test(pp.msg), '67,88 V ska beskrivas som topp till topp');
 });
+
+test('medelvärdesvisande mätare visar rätt bara för sinus', async () => {
+  const { meterReadings } = await import('./model.mjs');
+  assert.ok(Math.abs(meterReadings({ urms: 10, shape: 'sinus' }).avgResp - 10) < 1e-9);
+  assert.ok(Math.abs(meterReadings({ urms: 10, shape: 'fyrkant' }).avgResp - 11.107) < 1e-3);
+  assert.ok(Math.abs(meterReadings({ urms: 10, shape: 'triangel' }).avgResp - 9.619) < 1e-3);
+  assert.equal(meterReadings({ urms: 10, shape: 'triangel' }).trueRms, 10);
+});
+test('Station B, AC: exemplet är komplett och stämmer med modellen', async () => {
+  const { STATION_B_AC_PROTOKOLL: def } = await import('./stationB-protokoll.mjs');
+  const { missing, deviationMatches } = await import('../gemensamt/labbprotokoll.mjs');
+  assert.deepEqual(missing(def, def.example), []);
+  for (const r of def.example.rows) assert.equal(deviationMatches(r.avv, r.forv, r.uppm), true, JSON.stringify(r));
+});

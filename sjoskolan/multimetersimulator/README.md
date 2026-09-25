@@ -70,3 +70,7 @@ Visuell kontroll i webbläsare av denna uppdatering återstår: granskningsmilj�
 - [Hioki: multimeteranvändning](https://www.hioki.com/us-en/learning/usage/testers_1.html), [säker användning och CAT](https://www.hioki.com/us-en/support/warranty/safe-operation), [Fluke 114 och IEC 61010-2-033](https://www.fluke.com/en-ie/product/electrical-testing/digital-multimeters/fluke-114).
 
 CAT är inte en indelning efter enbart fasantal eller volt-tal. Den lägst klassade delen av mätuppställningen begränsar användningen. Simulatorn ersätter inte instrumentmanual, riskbedömning, praktisk handledning eller verifiering av spänningslöshet.
+
+## Labbprotokoll
+
+Station A (övning 9, `stationA-protokoll.mjs`): samma DC-delare som på träffen, med sex riggar vars verkliga värden varierar inom toleransen (rigg 5 har R2 utanför), en exempelrigg på 9 V och en referens på 5,000 V för instrumentkontroll. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.

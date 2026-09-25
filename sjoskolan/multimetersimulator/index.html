@@ -6,7 +6,7 @@
 <meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="simulator.css?v=20260925-loading">
+<link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260925"><link rel="stylesheet" href="simulator.css?v=20260925-loading">
 <link rel="stylesheet" href="meter.css?v=20260925-loading">
 </head>
 <body class="multimeter-page">
@@ -91,7 +91,7 @@
       <div id="feedback" class="feedback" role="status" aria-live="polite"><strong id="feedback-title">Börja med mätfunktionen</strong><p id="feedback-text">Följ uppgiften till höger. Mätvärdet ändras när du kopplar eller ändrar en inställning.</p></div>
       <button id="check" class="primary">Kontrollera mätningen</button><button id="next" class="primary" hidden>Nästa steg →</button>
       <button id="restart" class="plain-button">Börja om övningen</button>
-      <div id="free-settings" hidden><label>Övningskrets<select id="free-circuit"><option value="lamp">Hyttbelysning</option><option value="resistor">Två resistorer</option><option value="fuse">Säkring</option><option value="divider">Spänningsdelare</option></select></label><p>Prova olika uttag, områden och kopplingar. Du får återkoppling, men inga övningsresultat sparas.</p></div>
+      <div id="free-settings" hidden><label>Övningskrets<select id="free-circuit"><option value="lamp">Hyttbelysning</option><option value="resistor">Två resistorer</option><option value="fuse">Säkring</option><option value="divider">Spänningsdelare</option><option value="station">Station A · DC-delare</option></select></label><p>Prova olika uttag, områden och kopplingar. Du får återkoppling, men inga övningsresultat sparas.</p></div>
       <section id="loading-comparison" class="loading-comparison" hidden aria-label="Jämför spänningarna">
         <h3>Jämför dina resultat</h3><table><thead><tr><th>Koppling</th><th>U mellan M och G</th></tr></thead><tbody id="loading-results"></tbody></table><p>Vi jämför belopp. Ett minustecken visar att spetsarna är omvända.</p>
         <details id="loading-working"><summary>Visa beräkningen och Kirchhoffs lag</summary><p>R2 och mätaren är parallella:</p><p class="formula">Rnedre = (R2 × Rin) / (R2 + Rin)<br>UM = 10 × Rnedre / (R1 + Rnedre)</p><p>Med 10 MΩ: Rnedre ≈ 909 kΩ → UM ≈ 4,76 V.<br>Med 1 MΩ: Rnedre = 500 kΩ → UM ≈ 3,33 V.</p><p>Med mätaren kvar mellan M och G: UR1 = 10 − UM. Vid 1 MΩ blir det 6,67 + 3,33 = 10,00 V.</p><p><strong>Flytta inte mätaren för att kontrollera denna summa.</strong> Flyttas den till S–M belastar den R1 i stället. En ensam 1 MΩ-mätare visar då 3,33 V där också, eftersom kretsen har ändrats.</p></details>
@@ -102,6 +102,7 @@
   </div>
   <section class="session-strip"><div><h2>Ditt mätprotokoll</h2><p id="record-count">Inga kontrollerade mätningar ännu. Framsteg sparas på denna enhet.</p></div><div><button id="download-log">Ladda ner CSV</button><button id="clear-progress" class="plain-button">Nollställ framsteg</button></div></section>
   <details id="protocol-view" class="protocol-view"><summary>Visa sparade svar och mätningar</summary><div class="protocol-scroll"><table><thead><tr><th>Övning / steg</th><th>Moment</th><th>Resultat</th><th>Egen förklaring</th></tr></thead><tbody id="protocol-rows"></tbody></table></div></details>
+  <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och källor</summary>
     <p>Visa först motsvarande bilder i PowerPointen. Låt sedan eleverna välja funktion och uttag, förutsäga värdet, koppla och förklara resultatet. Använd ”Fri övning” för felkopplingar och diskussion. Inga namn eller elevdata skickas till en server.</p>
     <p>Övning 7 kräver först förutsägelser, sedan två mätningar och till sist en egen förklaring. Valfrågorna prövar begreppet; fritexten sparas för lärarens uppföljning och bedöms inte automatiskt. 5,00 V utan mätare och spänningsfallet över R1 visas som beräknade undervisningsvärden. Vid Kirchhoffskontrollen sitter mätaren kvar över R2: sekventiella mätningar över R1 och R2 med samma mätare gäller olika belastade kretsar. Tidigare genomförd övning 7 behöver göras om efter denna uppdatering; gamla protokollrader behålls.</p>
@@ -114,5 +115,5 @@
   <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
 </main>
 <footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925-loading"></script>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925-station"></script>
 </body></html>
