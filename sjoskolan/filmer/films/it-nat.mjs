@@ -56,8 +56,8 @@ export default compile({
       dur: 22,
       draw(ctx, t) { steps(ctx, t, { f1: prog(t, 1, 1.6) }); heading(ctx, 'Första jordfelet'); },
       say: [[0.8, 7.8, 'Sigge', 'Nu får fläkten ett jordfel på L1. Bara en liten läckström går tillbaka via kablarnas kapacitans.'],
-        [8.0, 12.8, 'Måns', 'Så inget skydd löser. Det blir larm, och fläkten går vidare!'],
-        [13.0, 21.8, 'Sigge', 'Ja. Men nu ligger L1 på skrovets potential. L2 och L3 har hela 440 V mot skrovet.']],
+        [8.0, 12.8, 'Måns', 'Så i det här nätet löser inget skydd. Det blir larm!'],
+        [13.0, 21.8, 'Sigge', 'Ja, nätet är byggt för fortsatt drift. Men L2 och L3 har nu 440 V mot skrovet.']],
     },
     {
       dur: 20,
@@ -70,7 +70,7 @@ export default compile({
       dur: 24, cast: (t) => ({ wave: t > 20.5 }),
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Kom ihåg');
-        const items = [['Första felet i IT-nät: larm, ingen utlösning', COL.ink], ['De friska faserna får 440 V mot skrovet', COL.orange], ['Andra felet: kortslutning via skrovet', COL.orange], ['Spåra felet direkt: läckströmstång, sedan sektionering', COL.ink], ['Styrmaskin och viktiga förbrukare: bara enligt plan', COL.ink]];
+        const items = [['Första felet: larm, om nätet är byggt för det', COL.ink], ['De friska faserna får 440 V mot skrovet', COL.orange], ['Andra felet: kortslutning via skrovet', COL.orange], ['Spåra felet direkt: läckströmstång, sedan sektionering', COL.ink], ['Styrmaskin och viktiga förbrukare: bara enligt plan', COL.ink]];
         const at = [0.8, 2.3, 3.8, 7.8, 13.8];
         items.forEach(([s, c], i) => text(ctx, `${i + 1}.  ${s}`, B.x + 40, B.y + 125 + i * 74, { size: 31, weight: c === COL.orange ? 700 : 600, color: c, alpha: prog(t, at[i], at[i] + 0.7) }));
       },

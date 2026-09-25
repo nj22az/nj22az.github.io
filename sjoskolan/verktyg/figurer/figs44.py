@@ -168,15 +168,16 @@ ct("v44_02_s17_ovn4", "200/5 A", S("I", "1") + " = 120 A", S("I", "2") + " = ?")
 ct("v44_02_s24_exempel", "300/5 A", S("I", "1") + " = 150 A", S("I", "2") + " = 2,5 A")
 
 # ================= v44_03 Fördjupad mätteknik =================
-# s6 strömtång
-F = fig(4.3, 3.0); ax = cax(F, (0, 4.3), (0, 3.0))
-for k, (cx, both) in enumerate(((1.05, False), (3.25, True))):
-    ax.add_patch(Ellipse((cx, 1.7), 1.2, 1.0, fc="none", ec="#E2B400", lw=6))
-    ax.add_patch(Circle((cx - (0.18 if both else 0), 1.7), 0.12, fc=ORANGE, ec=INK)); ax.text(cx - (0.18 if both else 0), 1.7, "·", ha="center", va="center", fontsize=16, color="white")
-    if both: ax.add_patch(Circle((cx + 0.18, 1.7), 0.12, fc=BLUE, ec=INK)); ax.text(cx + 0.18, 1.7, "×", ha="center", va="center", fontsize=11, color="white")
-    ax.text(cx, 0.85, "fram och retur" if both else "en ledare", ha="center", fontsize=13, weight="bold")
-    ax.text(cx, 0.5, "bidragen motverkar\nvarandra" if both else "tången visar lastströmmen", ha="center", va="top", fontsize=11.5)
-ax.text(2.15, 2.65, "Tången mäter summan av omslutna strömmar", ha="center", fontsize=12.5)
+# s6 strömtång: vad tången omsluter avgör vad den visar
+F = fig(4.3, 3.1); ax = cax(F, (0, 4.3), (0, 3.1))
+cases = [(0.72, [ORANGE], "en ledare", "lastström"), (2.15, [ORANGE, BLUE], "fram och retur", "≈ 0"), (3.58, [ORANGE, GRAY, GREEN, BLUE], "L1–L3 och N", "differensström")]
+for cx, cols, t1, t2 in cases:
+    ax.add_patch(Ellipse((cx, 1.85), 1.05, 0.9, fc="none", ec="#E2B400", lw=5))
+    n = len(cols); xs = [cx + (k - (n - 1) / 2) * 0.2 for k in range(n)]
+    for x, c in zip(xs, cols): ax.add_patch(Circle((x, 1.85), 0.08, fc=c, ec=INK, lw=1))
+    ax.text(cx, 1.12, t1, ha="center", fontsize=12, weight="bold"); ax.text(cx, 0.85, t2, ha="center", fontsize=11.5, color=BLUE)
+ax.text(2.15, 0.45, "Trefas utan N: bara L1–L3. PE hålls alltid utanför.", ha="center", fontsize=11.5, color=GRAY)
+ax.text(2.15, 2.8, "Tången mäter summan av omslutna strömmar", ha="center", fontsize=12.5)
 save(F, "v44_03_s06_tang")
 
 # s7 isolationsmätning
@@ -234,3 +235,31 @@ def scope(name, periods_div, amp_div, tb, notes, ask=False):
     save(F, name)
 scope("v44_03_s24_exempel", 5, 1.5, "2 ms/ruta   1 V/ruta", "10:1-prob")
 scope("v44_03_s26_ovn6", 4, 2, "5 ms/ruta", "T = ?   f = ?", ask=True)
+
+# ================= nya bilder efter sjöingenjörens granskning =================
+# v44_01 s35: landanslutning
+F = fig(4.3, 3.4); ax = cax(F, (0, 4.3), (-0.1, 3.3))
+rbox(ax, 0.05, 1.9, 1.1, 0.9, "Land\n400 V 50 Hz", fs=11.5, fc=PALE)
+rbox(ax, 1.55, 1.9, 1.15, 0.9, "anpassning\nU och f", fs=11.5, fc=LBLUE)
+rbox(ax, 3.1, 1.9, 1.15, 0.9, "huvudtavla\n440 V 60 Hz", fs=11.5, fc=PALE)
+harrow(ax, (1.15, 2.35), (1.55, 2.35), color=INK); harrow(ax, (2.7, 2.35), (3.1, 2.35), color=INK)
+ax.plot([0.6, 0.6, 3.67, 3.67], [1.9, 1.35, 1.35, 1.9], color=GREEN, lw=2.2); ax.text(2.15, 1.18, "skyddsjord och potentialutjämning ansluts först", ha="center", fontsize=11, color=GREEN)
+rbox(ax, 3.1, 0.2, 1.15, 0.6, "generatorer", fs=11.5)
+ax.plot([3.67, 3.67], [0.8, 1.2], color=GRAY, lw=1.5, ls=(0, (4, 3))); ax.text(3.0, 0.55, "förregling", ha="right", fontsize=11, color=GRAY)
+ax.text(2.15, 3.12, "Kontrollera fasföljd, spänning och frekvens", ha="center", fontsize=12.5)
+save(F, "v44_01_s35_land")
+
+# v44_02 s35: neutralpunkt jordad via motstånd
+F = fig(4.3, 3.4); ax = cax(F, (0, 4.3), (-0.2, 3.2))
+ys = [2.8, 2.55, 2.3]
+for n, y in zip(("L1", "L2", "L3"), ys): ax.plot([1.2, 3.95], [y, y], color=INK, lw=LW); ax.text(4.0, y, n, fontsize=11.5, va="center")
+rbox(ax, 0.1, 2.1, 0.9, 0.9, "G\n6,6 kV", fs=12, fc=PALE)
+for y in ys: ax.plot([1.0, 1.2], [y, y], color=INK, lw=LW)
+ax.plot([0.55, 0.55], [2.1, 1.65], color=INK, lw=LW); rresistor(ax, (0.55, 1.65), (0.55, 0.7)); ax.text(0.75, 1.18, "NER", fontsize=12, va="center", weight="bold")
+ax.add_patch(Ellipse((0.55, 0.55), 0.3, 0.12, fc="none", ec=BLUE, lw=2)); ax.text(0.8, 0.5, "jordfelsrelä", fontsize=11, color=BLUE, va="center")
+ax.add_patch(Rectangle((-0.1, -0.2), 4.5, 0.3, fc=HULL, ec="none")); ax.text(3.3, -0.05, "skrov", ha="center", va="center", fontsize=11.5, color="white")
+ax.plot([0.55, 0.55], [0.49, 0.1], color=INK, lw=LW)
+ax.plot([3.2, 3.2], [ys[0], 1.1], color=INK, lw=LW); dot(ax, 3.2, ys[0], 0.05); fault(ax, 3.2, 0.9); ax.plot([3.2, 3.2], [0.72, 0.1], color=INK, lw=LW)
+glow(ax, [(1.0, 2.8), (3.2, 2.8), (3.2, -0.05), (0.55, -0.05), (0.55, 2.1)])
+ax.text(2.15, 1.75, "felströmmen begränsas av motståndet", ha="center", fontsize=12, color=ORANGE, weight="bold")
+save(F, "v44_02_s35_ner")

@@ -127,3 +127,13 @@ test('avläsningar för standardlägen är ändliga', () => {
     }
   }
 });
+
+test('toppvärdesuppgiften: rätt diagnos för 48 V och för topp till topp', () => {
+  const c = CHALLENGES.find((x) => x.id === 'topp');
+  assert.ok(isClose(expected(c), 33.94, { rel: 0.001 }));
+  const m = c.mistakes();
+  const dbl = m.find((x) => isClose(x.v, 48, { rel: 0.001 }));
+  const pp = m.find((x) => isClose(x.v, 67.88, { rel: 0.001 }));
+  assert.ok(dbl && /dubblat effektivvärdet/.test(dbl.msg) && !/topp till topp/.test(dbl.msg), '48 V ska beskrivas som dubblat effektivvärde');
+  assert.ok(pp && /topp till topp/.test(pp.msg), '67,88 V ska beskrivas som topp till topp');
+});

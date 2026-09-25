@@ -1,6 +1,7 @@
 // Kontroll av filmernas repliker: läshastighet (högst 15 tecken/s), inga överlapp och att replikerna ryms i scenen.
 import { FILMS } from './films/index.mjs';
 import { duration } from './engine.mjs';
+import { BILD } from './films/transkript.mjs';
 let bad = 0;
 for (const f of FILMS) {
   let prev = -1;
@@ -11,6 +12,7 @@ for (const f of FILMS) {
     prev = l.to;
   }
   let t0 = 0; for (const sc of f.scenes) { for (const [, b] of sc.say || []) if (b > sc.dur) { bad++; console.log(`${f.id}: replik slutar efter scenen (${b} > ${sc.dur})`); } t0 += sc.dur; }
+  if ((BILD[f.id] || []).length !== f.scenes.length) { bad++; console.log(`${f.id}: transkript.mjs har ${(BILD[f.id] || []).length} bildbeskrivningar, filmen ${f.scenes.length} scener`); }
   console.log(`${f.id}: ${duration(f)} s, ${f.lines.length} repliker`);
 }
 process.exit(bad ? 1 : 0);

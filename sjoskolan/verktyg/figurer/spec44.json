@@ -37,6 +37,11 @@
     "ovn",
     "v44_01_s28_ovn7",
     "Förenklad felströmsslinga med U0 = 230 V och Zs = 0,46 ohm; felströmmen okänd"
+   ],
+   "35": [
+    "th",
+    "v44_01_s35_land",
+    "Landanslutning: landström 400 V 50 Hz går via anpassning av spänning och frekvens till huvudtavlan 440 V 60 Hz; skyddsjord och potentialutjämning ansluts först; förregling mot generatorerna"
    ]
   }
  },
@@ -68,6 +73,11 @@
     "th",
     "v44_02_s24_exempel",
     "Strömtransformator 300/5 A med primärström 150 A och sekundärström 2,5 A"
+   ],
+   "35": [
+    "th",
+    "v44_02_s35_ner",
+    "Generator 6,6 kV med neutralpunkten jordad via ett motstånd och ett jordfelsrelä; ett jordfel på L1 ger en felström genom skrovet och motståndet, begränsad av motståndet"
    ]
   }
  },
@@ -78,7 +88,7 @@
    "6": [
     "th",
     "v44_03_s06_tang",
-    "Strömtång runt en ledare visar lastströmmen; runt fram- och returledaren motverkar bidragen varandra"
+    "Strömtång runt en ledare visar lastströmmen, runt fram- och returledaren nästan noll, och runt L1–L3 och N men inte PE differensströmmen (läckströmmen)"
    ],
    "7": [
     "th",

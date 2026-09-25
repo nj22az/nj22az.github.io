@@ -4,7 +4,7 @@ nedsänkta index och ingen hänvisning till saknade bildanteckningar.
 Användning: textfix42.py <in-mapp> <ut-mapp>"""
 import sys
 from pptx import Presentation
-from pptxtext import shape, set_paras, drop_notes_line, subscript_tokens, replace_words
+from pptxtext import shape, set_paras, drop_notes_line, subscript_tokens, replace_words, replace_links
 SUBS = {'Uberöring': ('U', 'beröring'), 'VA': ('V', 'A'), 'VB': ('V', 'B'), 'Ifel': ('I', 'fel'), 'Rslinga': ('R', 'slinga')}
 WORDS = [('skydd mot tillkoppling', 'skydd mot återinkoppling'), ('Skydd mot tillkoppling', 'Skydd mot återinkoppling'),
          ('Landmatningen', 'Landanslutningen')]
@@ -20,6 +20,8 @@ def reasoning_only(prs, calc):
                     for r in p.runs:
                         if r.text == REDOVISA: r.text = 'Motivera ditt beslut.'
 
+OLD_TS = "https://www.transportstyrelsen.se/sv/sjofart/Fartyg/Fartygskonstruktion/Elinstallationer/Lagar-foreskrifter-och-standarder/"
+NEW_TS = "https://www.transportstyrelsen.se/sv/om-oss/dina-rattigheter-lagar-och-regler/lagar-och-regler/regler-for-sjofart/regler-for-nationell-sjofart/regler-kompletterade-upplysningar/elektrisk-utrustning-och-elinstallationer/"  # den gamla adressen ger 404
 src, dst = sys.argv[1], sys.argv[2]
 
 f = "v42_01_Elektriska_risker_elev.pptx"; p = Presentation(f"{src}/{f}")
@@ -32,16 +34,16 @@ set_paras(shape(p.slides[28], 13), ["Arbetsgång: Vad rekommenderar du, och varf
 set_paras(shape(p.slides[34], 3), ["Vilka uppgifter saknas oftast när någon bara säger ”det är 24 V”?"])
 reasoning_only(p, calc={17})
 subscript_tokens(p, SUBS); replace_words(p, WORDS)
-drop_notes_line(p); p.save(f"{dst}/{f}")
+replace_links(p, OLD_TS, NEW_TS); drop_notes_line(p); p.save(f"{dst}/{f}")
 
 f = "v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx"; p = Presentation(f"{src}/{f}")
-set_paras(shape(p.slides[6], 5), ["SS-EN 50110-1: utan spänning, med spänning och nära spänning.", "ESA 2026: utan och med spänning, inom och utanför närområdet."])
+set_paras(shape(p.slides[6], 5), ["Båda använder fyra arbetsmetoder: utan spänning, med spänning,", "inom närområdet och utanför närområdet (SS-EN 50110-1 avsnitt 6.2–6.5)."])
 set_paras(shape(p.slides[13], 10), ["Metoderna skiljer sig i hur nära spänning arbetet sker"])
 set_paras(shape(p.slides[28], 10), ["Kontrollera föreskriftens status i regellistan"])
 set_paras(shape(p.slides[28], 11), ["Transportstyrelsens regellista visar om en föreskrift gäller eller är upphävd. Ett nytt nummer kräver ändå kontroll av tillämpningen."])
 reasoning_only(p, calc=set())
 replace_words(p, WORDS)
-drop_notes_line(p); p.save(f"{dst}/{f}")
+replace_links(p, OLD_TS, NEW_TS); drop_notes_line(p); p.save(f"{dst}/{f}")
 
 f = "v42_03_Riskbedomning_och_skydd_elev.pptx"; p = Presentation(f"{src}/{f}")
 # Exemplet får inte ge samma produkt (12) som övning 8, och poängen är ingen kvotskala
@@ -53,4 +55,4 @@ set_paras(shape(p.slides[32], 11), ["Jämför det som är verifierat med det som
 set_paras(shape(p.slides[7], 3), ["Tvåpolig spänningsprovare väljs för systemets spänning och kategori.", "Låsning och märkning stöder skydd mot återinkoppling."])
 reasoning_only(p, calc={30})
 replace_words(p, WORDS)
-drop_notes_line(p); p.save(f"{dst}/{f}")
+replace_links(p, OLD_TS, NEW_TS); drop_notes_line(p); p.save(f"{dst}/{f}")

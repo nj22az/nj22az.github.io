@@ -48,7 +48,7 @@ export const CHALLENGES = [
     ask: { key: 'peak', label: 'û', unit: 'V', rel: 0.01 },
     mask: ['peak', 'pp', 'ut', 'scale'],
     hint: 'û = √2 · U. Toppvärdet ska bli större än effektivvärdet.',
-    mistakes: () => [{ v: 48, msg: 'Du har räknat topp till topp (2 · û). Toppvärdet är √2 · U.' }],
+    mistakes: () => [{ v: 48, msg: 'Du har dubblat effektivvärdet (2 · 24 V). Toppvärdet är √2 · U, inte 2 · U.' }, { v: 2 * Math.SQRT2 * 24, msg: 'Det är topp till topp-värdet (2 · û). Frågan gäller toppvärdet û = √2 · U.' }],
   },
   {
     id: 'moment', tab: 'sinus', title: 'Momentanvärde', deck: 'v40_01 · övning 6–7',

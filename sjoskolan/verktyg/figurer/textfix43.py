@@ -11,7 +11,7 @@ SUBS = {'IΔ': ('I', 'Δ'), 'Iut': ('I', 'ut'), 'Iretur': ('I', 'retur'), 'Paxel
 src, dst = sys.argv[1], sys.argv[2]
 
 f = "v43_01_Komponenter_och_skydd_elev.pptx"; p = Presentation(f"{src}/{f}")
-set_paras(shape(p.slides[7], 5), ["En ren jordfelsbrytare ersätter inte överströmsskydd.", "Ombord: i 440 V IT-nät ger första jordfelet larm, inte utlösning. Jordfelsbrytare används främst i 230 V uttagsgrupper."])
+set_paras(shape(p.slides[7], 5), ["En ren jordfelsbrytare ersätter inte överströmsskydd.", "Ombord: i ett IT-nät dimensionerat för fortsatt drift ger första jordfelet normalt larm, inte utlösning. Jordfelsbrytare används främst i 230 V uttagsgrupper."])
 set_paras(shape(p.slides[20], 4), ["NO: normalt öppen", "NC: normalt sluten"])
 # stödbilder: vägledning i stället för slutsats
 set_paras(shape(p.slides[9], 10), ["Vad händer när spolen får matning?"])
@@ -29,7 +29,7 @@ subscript_tokens(p, SUBS); drop_notes_line(p); p.save(f"{dst}/{f}")
 
 f = "v43_02_Transformatorer_och_motorer_elev.pptx"; p = Presentation(f"{src}/{f}")
 set_paras(shape(p.slides[1], 6), ["Varför går en fyrpolig asynkronmotor något långsammare än fältets synkrona varvtal?"])
-set_paras(shape(p.slides[22], 5), ["Vid 440 V nät ligger mellanledet på ca 620 V DC (440 · √2) och kan vara laddat efter frånkoppling.", "Vänta tillverkarens tid och mät DC+ mot DC− med avsedd provare före arbete."])
+set_paras(shape(p.slides[22], 5), ["Vid 440 V nät ligger mellanledet på ca 620 V DC och kan vara laddat efter frånkoppling.", "Följ omriktarens säkerhetsanvisning: frånskilj alla energikällor, följ väntetiden och verifiera samtliga föreskrivna mätpunkter. Enbart DC+–DC− räcker inte."])
 set_paras(shape(p.slides[28], 10), ["Följ energin från nät till motor"])
 set_paras(shape(p.slides[28], 11), ["Varje del ändrar energins form. En av delarna lagrar energi mellan de två andra."])
 set_paras(shape(p.slides[5], 5), ["440 V till 110 V ger omsättningen 4:1.", "2 A på sekundären motsvarar idealt 0,50 A på primären."])

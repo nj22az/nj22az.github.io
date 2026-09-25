@@ -95,3 +95,35 @@ def subscript_tokens(prs, tokens):
                 prev.addnext(nr); prev = nr
             r.getparent().remove(r); n += 1
     return n
+
+
+def replace_links(prs, old, new):
+    """Byt en extern länk (hyperlänkrelation) i alla bilder."""
+    n = 0
+    for s in prs.slides:
+        for rel in s.part.rels.values():
+            if rel.is_external and rel.target_ref == old:
+                rel._target = new; n += 1
+    return n
+
+
+def duplicate_slide(prs, idx, pos):
+    """Kopiera bild idx (0-baserad) med layout, former och bildrelationer och placera kopian på plats pos."""
+    import copy
+    src = prs.slides[idx]; new = prs.slides.add_slide(src.slide_layout)
+    for sh in list(new.shapes): sh._element.getparent().remove(sh._element)
+    rmap = {}
+    for rid, rel in src.part.rels.items():
+        if rel.reltype.endswith(('/slideLayout', '/notesSlide')): continue
+        rmap[rid] = new.part.relate_to(rel.target_ref, rel.reltype, is_external=True) if rel.is_external else new.part.relate_to(rel.target_part, rel.reltype)
+    tree = new.shapes._spTree
+    for el in src.shapes._spTree.iterchildren():
+        if el.tag.endswith(('nvGrpSpPr', 'grpSpPr')): continue
+        tree.append(copy.deepcopy(el))
+    bg = src._element.cSld.bg
+    if bg is not None: new._element.cSld.insert(0, copy.deepcopy(bg))
+    for el in new._element.iter():
+        for k, v in list(el.attrib.items()):
+            if k.endswith(('}embed', '}id', '}link')) and v in rmap: el.set(k, rmap[v])
+    lst = prs.slides._sldIdLst; sid = lst[-1]; lst.remove(sid); lst.insert(pos, sid)
+    return new

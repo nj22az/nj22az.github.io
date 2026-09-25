@@ -107,12 +107,12 @@ export default compile({
       dur: 27, cast: (t) => ({ wave: t > 24 }),
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Ombord');
-        const items = [['440 V mellan faserna, 254 V i varje lindning', COL.ink], ['IT-nät: oftast ingen neutralledare', COL.ink], ['Första jordfelet löser inte ut, isolationsvakten larmar', COL.ink], ['Jordfel på en fas: de andra får 440 V mot skrovet', COL.orange], ['Ett andra jordfel blir kortslutning: leta upp felet', COL.orange]];
+        const items = [['440 V mellan faserna, 254 V i varje lindning', COL.ink], ['IT-nät: oftast ingen neutralledare', COL.ink], ['Första jordfelet: normalt larm, inte utlösning', COL.ink], ['Jordfel på en fas: de andra får 440 V mot skrovet', COL.orange], ['Ett andra jordfel blir kortslutning: leta upp felet', COL.orange]];
         const at = [0.8, 3, 7.5, 13.5, 18.5];
         items.forEach(([s, c], i) => text(ctx, `${i + 1}.  ${s}`, B.x + 40, B.y + 125 + i * 74, { size: 30, weight: c === COL.orange ? 700 : 600, color: c, alpha: prog(t, at[i], at[i] + 0.7) }));
       },
       say: [[0.8, 7.3, 'Sigge', 'Ombord är 440 V-nätet oftast ett IT-nät utan neutralledare.'],
-        [7.5, 13.3, 'Sigge', 'Första jordfelet löser inte ut, men isolationsvakten larmar.'],
+        [7.5, 13.3, 'Sigge', 'Första jordfelet ger normalt bara larm från isolationsvakten.'],
         [13.5, 18.3, 'Måns', 'Och de andra faserna får 440 V mot skrovet!'],
         [18.5, 23.8, 'Sigge', 'Ett andra jordfel blir en kortslutning. Leta upp felet direkt.'],
         [24.0, 26.8, 'Sigge', 'Vi ses i nästa film!']],

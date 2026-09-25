@@ -1,6 +1,6 @@
-# EL-LABB
+# EL-LABB (avvecklad)
 
-Live: https://nj22az.github.io/ellab/
-
-Peksk\u00e4rmssimulator f\u00f6r YH-kursen Elteknik och ell\u00e4ra (sj\u00f6fart/industri).
-Elever loggar in med namn. Nio moment mot l\u00e4randem\u00e5l 4\u20139. Framsteg sparas i webbl\u00e4saren.
+Den äldre simulatorn är avvecklad. En granskning den 25 september 2026 visade fel i kretsmodellen
+(batteriets inre resistans, isolerad resistansmätning, hållreläet), att protokollvärden försvann vid
+omritning och att flera moment saknade kontroll. Sidan visar nu en hänvisning till kursens aktuella labb
+under `/sjoskolan/`. Den gamla koden finns kvar i git-historiken.

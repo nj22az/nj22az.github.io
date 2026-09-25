@@ -1,0 +1,27 @@
+name: Sjöskolan kontroller
+
+on:
+  push:
+    paths: ['sjoskolan/**', '.github/workflows/sjoskolan.yml']
+  pull_request:
+    paths: ['sjoskolan/**', '.github/workflows/sjoskolan.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.16.0'
+          package-manager-cache: false
+      - name: Labbens modelltester
+        run: node --test sjoskolan/*/model.test.mjs
+      - name: Multimeterlabbets gränssnittstest
+        working-directory: sjoskolan/multimetersimulator
+        run: npm ci --ignore-scripts --no-audit --no-fund && npm test
+      - name: Filmernas repliker och textversioner
+        run: node sjoskolan/filmer/check.mjs

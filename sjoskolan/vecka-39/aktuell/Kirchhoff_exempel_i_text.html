@@ -1,0 +1,19 @@
+<!doctype html><html lang="sv" data-theme="cobalt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kirchhoff: tre exempel i text · Sjöskolan</title><meta name="description" content="Elevmaterial i elteknik och ellära med enkla fartygsexempel."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-39/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/sjoskolan/course.css"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script></head><body class="course"><nav id="site-nav" class="site-nav"></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a class="" href="index.html">← Till kursmaterialet</a></div><article class="course-reading"><h1>Kirchhoff: tre exempel i text</h1>
+<p>Samma tre exempel som bildtavlorna i presentationen Kirchhoffs lagar (bild 30, 32 och 34), skrivna som text steg för steg.</p>
+<h2>1. Varför sjunker spänningen när lasten ansluts? (bild 30)</h2>
+<p><strong>Utan last.</strong> 18 V matar R₁ = 2 kΩ och R₂ = 4 kΩ i serie. Strömmen blir I = 18 V/6 kΩ = 3 mA. Över R₁ faller 3 mA · 2 kΩ = 6 V. Utspänningen över R₂ blir U<sub>ut</sub> = 18 · 4/(2 + 4) = 12 V.</p>
+<p><strong>Med last.</strong> En last R<sub>last</sub> = 4 kΩ ansluts parallellt med R₂. De två tillsammans blir R<sub>p</sub> = 4 · 4/(4 + 4) = 2 kΩ. Strömmen blir 18 V/4 kΩ = 4,5 mA, och över R₁ faller 4,5 mA · 2 kΩ = 9 V. Utspänningen blir U<sub>ut</sub> = 18 · 2/(2 + 2) = 9 V.</p>
+<p><strong>Slutsats.</strong> Lasten ger en extra strömväg. Mer ström går genom R₁, spänningsfallet över R₁ ökar från 6 till 9 V och det återstår 9 V till lasten.</p>
+<h2>2. Nodspänning stegvis (bild 32)</h2>
+<p>Punkt A matas från en 10 V-källa via 2 Ω och från en 4 V-källa via 2 Ω. Från A går 1 Ω ner till den gemensamma referensen 0 V. Sökt: spänningen V<sub>A</sub>.</p>
+<ol><li><strong>Ström in = ström ut.</strong> All ström som kommer till A måste också lämna A.</li>
+<li><strong>Ohms lag för varje gren.</strong> Ström = spänningsskillnad/resistans: (10 − V<sub>A</sub>)/2 + (4 − V<sub>A</sub>)/2 = V<sub>A</sub>/1.</li>
+<li><strong>Lös ekvationen.</strong> Multiplicera med 2: 10 − V<sub>A</sub> + 4 − V<sub>A</sub> = 2V<sub>A</sub>, alltså 14 = 4V<sub>A</sub> och V<sub>A</sub> = 3,5 V.</li></ol>
+<p><strong>Kontroll.</strong> Från 10 V-sidan kommer (10 − 3,5)/2 = 3,25 A och från 4 V-sidan (4 − 3,5)/2 = 0,25 A. Genom 1 Ω går 3,5 A. 3,25 A + 0,25 A = 3,5 A.</p>
+<h2>3. Thévenin: förenkla kretsen (bild 34)</h2>
+<p>Samma delare som i exempel 1: 18 V, R₁ = 2 kΩ, R₂ = 4 kΩ och en last R<sub>L</sub> = 4 kΩ parallellt med R₂.</p>
+<ol><li><strong>Ta bort lasten.</strong> Spänningen utan last är U<sub>th</sub> = 18 · 4/(2 + 4) = 12 V.</li>
+<li><strong>Hitta inre resistansen.</strong> Ersätt spänningskällan med en ledning i beräkningen. Då ligger R₁ och R₂ parallellt: R<sub>th</sub> = 2 · 4/(2 + 4) = 4/3 kΩ ≈ 1,33 kΩ. Källan ändras bara i modellen.</li>
+<li><strong>Koppla in lasten igen.</strong> I<sub>last</sub> = 12/(4/3 + 4) = 2,25 mA och U<sub>last</sub> = 2,25 mA · 4 kΩ = 9 V.</li></ol>
+<p><strong>Slutsats.</strong> Utan last 12 V, med lasten 9 V. När lasten drar ström faller 3 V över den inre resistansen. Samma svar som i exempel 1, med en annan metod.</p>
+</article></main><footer id="site-footer" class="site-footer"></footer><script src="/config.js"></script><script src="/shared.js"></script></body></html>

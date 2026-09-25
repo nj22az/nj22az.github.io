@@ -15,7 +15,7 @@
     <header class="course-heading">
       <p class="course-kicker">Sjöskolan · Elteknik</p>
       <h1>Förklaringsfilmer</h1>
-      <p>Korta animerade filmer med måsen Måns och matrosen Sigge. Varje film förklarar ett samband från presentationerna, ett steg i taget. Repliken står i pratbubblan och finns också som undertext.</p>
+      <p>Korta animerade filmer med måsen Måns och matrosen Sigge. Varje film förklarar ett samband från presentationerna, ett steg i taget. Filmerna har inget ljud. Repliken står i pratbubblan och finns också som undertext. Under varje film finns en textversion med replikerna och en beskrivning av bilderna.</p>
     </header>
     <div class="film-grid" id="films"></div>
     <p>Vill du stega själv? Öppna den interaktiva spelaren under varje film. Där kan du pausa och dra i tidslinjen.</p>
@@ -29,8 +29,13 @@
   <script type="module">
     import { FILMS } from './films/index.mjs';
     import { duration } from './engine.mjs';
+    import { BILD } from './films/transkript.mjs';
     const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
     const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+    const heads = (f) => f.scenes.map((sc) => (String(sc.draw).match(/heading\(ctx, '([^']*)'/) || [])[1] || f.title);
+    const transcript = (f) => { const h = heads(f); return f.scenes.map((sc, i) => `
+          <h3>${esc(h[i])}</h3><p class="film-bild"><em>Bilden:</em> ${esc((BILD[f.id] || [])[i] || '')}</p>
+          ${(sc.say || []).map(([, , who, t]) => `<p><strong>${esc(who)}:</strong> ${esc(t)}</p>`).join('')}`).join(''); };
     document.getElementById('films').innerHTML = FILMS.map((f) => `
       <article class="film-card" id="${f.id}">
         <video controls preload="none" poster="video/${f.id}.png" width="1280" height="720">
@@ -38,8 +43,9 @@
           <track kind="captions" srclang="sv" label="Svenska" src="video/${f.id}.vtt">
         </video>
         <div><h2>${esc(f.title)}</h2><p>${esc(f.sub)}</p>
-        <p><small>${esc(f.week)} · ${esc(f.deck)} · ${mmss(duration(f))}</small></p>
-        <p><a href="spela.html?film=${f.id}">Interaktiv spelare</a></p></div>
+        <p><small>${esc(f.week)} · ${esc(f.deck)} · ${mmss(duration(f))} · utan ljud, med text</small></p>
+        <p><a href="spela.html?film=${f.id}">Interaktiv spelare</a></p>
+        <details class="film-transcript"><summary>Textversion</summary>${transcript(f)}</details></div>
       </article>`).join('');
   </script>
 </body>
