@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="sv" data-theme="cobalt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hållkretslabbet · Sjöskolan</title>
+<meta name="description" content="Tryck START och STOPP, lägg in fel och mät mellan punkter i en hållkrets.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/hallkretslabbet/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925">
+<style>.btn-row{display:flex;gap:8px;flex-wrap:wrap}.toggle{font:inherit;font-weight:700;padding:10px 12px;border-radius:10px;border:2px solid #064f91;background:#fff;color:#064f91;cursor:pointer;flex:1 1 8rem;min-width:0}.toggle[aria-pressed="true"]{background:#064f91;color:#fff}.toggle:disabled{opacity:.55;cursor:not-allowed}</style>
+</head>
+<body class="ac-page">
+<nav id="site-nav" class="site-nav"></nav>
+<main id="main-content" class="ac-app">
+  <header class="ac-heading">
+    <div>
+      <a class="back-link" href="../vecka-43/aktuell/">← Sjöskolan · vecka 43</a>
+      <h1>Hållkretslabbet</h1>
+      <p>Tryck START och STOPP, lägg in ett fel och mät mellan två punkter. Räkna först, mät sedan.</p>
+    </div>
+    <ul class="deck-links" aria-label="Presentationer"><li><a href="../vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx">v43_03 Elscheman ↗</a></li><li><a href="../vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx">v41_03 Mätning ↗</a></li><li><a href="../filmer/#hallkretsen">Film: Hållkretsen</a></li></ul>
+  </header>
+  <div id="lab" class="lab">
+    <section class="stage" aria-label="Schema och mätvärden">
+      <div id="figures" class="figures"></div>
+      <dl id="readouts" class="readouts" aria-live="polite"></dl>
+      <p id="principle" class="principle"></p>
+    </section>
+    <aside class="panel">
+      <section class="controls-card" aria-labelledby="controls-title">
+        <div class="card-head"><h2 id="controls-title">Knappar och mätare</h2><button id="reset" class="plain">Återställ</button></div>
+        <p id="lock-note" class="lock-note" hidden>Kretsen är låst medan du löser uppgiften.</p>
+        <div id="controls" class="controls"></div>
+      </section>
+      <section class="challenge-card" aria-labelledby="challenge-title">
+        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+        <div id="challenge-body" hidden>
+          <p class="deck-ref" id="challenge-deck"></p>
+          <p id="challenge-task" class="task"></p>
+          <form id="answer-form" class="answer-form" autocomplete="off">
+            <label for="answer" id="answer-label">Svar</label>
+            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+          </form>
+          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+        </div>
+        <p id="challenge-intro" class="muted">Välj en uppgift. Kretsen ställs in och mätvärdena döljs tills du har räknat.</p>
+      </section>
+    </aside>
+  </div>
+  <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
+    <p>Labbet följer hållkretsen i v41_03 och v43_03 (S0 STOPP NC i serie, S1 START NO parallellt med K1:s NO-hjälpkontakt). Uppgifterna använder 24 V och en spole på 480 Ω, så svaren sammanfaller inte med presentationernas 12 V-övningar.</p>
+    <p>Modellen: ideala kontakter och ledningar, spolen som enda resistans, idealt voltmeter. En punkt som inte är förbunden med matning eller retur visas som ”flytande”. Utan ström blir det inget spänningsfall i spolen, därför får spolens båda sidor samma potential. Kontaktstudsar, spolens induktans och tillslagstid ingår inte.</p>
+    <p><strong>Fartyg och säkerhet att ta upp muntligt:</strong> Hållkretsen fungerar som återstartsskydd: efter strömavbrott (prova ”Styrspänning till”) startar motorn inte själv. Viktiga förbrukare ombord, som styrmaskin och vissa pumpar, har i stället automatisk omstart i tur och ordning. Felsökning görs i första hand spänningslöst. Mätning under spänning kräver kompetens, uppdrag, rätt instrument och skyddsutrustning.</p>
+    <p>Framsteg sparas bara i denna webbläsare. Direktlänk till en uppgift: <code>?uppgift=</code> med uppgiftens id, till exempel <code>?uppgift=hall</code>.</p>
+  </details>
+  <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
+</main>
+<footer id="site-footer" class="site-footer"></footer>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925"></script>
+</body></html>
