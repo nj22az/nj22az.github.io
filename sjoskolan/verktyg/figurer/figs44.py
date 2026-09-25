@@ -27,57 +27,62 @@ def loop(ax, pts, label=None, lp=None):
     if label: ax.text(*lp, label, fontsize=12.5, color=ORANGE, weight="bold")
 
 # ================= v44_01 Lågspänningssystem =================
-def source_lines(ax, names, ys, x0=1.0, x1=4.2):
-    for n, y in zip(names, ys): ax.plot([x0, x1], [y, y], color=INK, lw=LW); ax.text(x1, y + 0.1, n, ha="right", fontsize=12)
-    tips = star(ax, 0.55, 2.6)
-    ax.plot([tips[0][0], tips[0][0], x0], [tips[0][1], ys[0], ys[0]], color=INK, lw=LW)
-    ax.plot([tips[1][0], tips[1][0], x0], [tips[1][1], ys[2], ys[2]], color=INK, lw=LW)
-    ax.plot([tips[2][0], x0], [tips[2][1], ys[1]], color=INK, lw=LW)
-    ax.text(0.55, 3.25, "källa", ha="center", fontsize=12, color=GRAY)
-def appliance(ax, x=3.0, y=0.55, w=1.1, h=0.95):
-    ax.add_patch(Rectangle((x, y), w, h, fc=PALE, ec=INK, lw=2)); ax.text(x + w / 2, y - 0.14, "utsatt del (hölje)", ha="center", va="top", fontsize=11.5)
+X1 = 3.85  # ledarnas högra ände
+def source(ax, lines, earthed=True):
+    """Källa som ruta med ledare åt höger. lines: [(namn, y, färg)]. Returnerar stjärnpunktens läge."""
+    top, bot = lines[0][1] + 0.18, lines[-1][1] - 0.18
+    rbox(ax, 0.1, bot, 0.7, top - bot, "källa", fs=12, fc=PALE)
+    for n, y, c in lines: ax.plot([0.8, X1], [y, y], color=c, lw=LW, zorder=3); ax.text(X1 + 0.06, y, n, fontsize=11.5, va="center", color=c)
+    sp = (0.45, bot)
+    if earthed: ax.plot([sp[0], sp[0]], [bot, bot - 0.3], color=GREEN, lw=LW); earth(ax, sp[0], bot - 0.3, GREEN)
+    return sp
+def glow(ax, pts):
+    ax.plot(*zip(*pts), color=ORANGE, lw=9, alpha=0.35, zorder=1, solid_capstyle="round", solid_joinstyle="round")
+def housing(ax, x, y, w=0.9, h=0.75, label="utsatt del"):
+    ax.add_patch(Rectangle((x, y), w, h, fc=PALE, ec=INK, lw=2, zorder=3)); ax.text(x + w / 2, y - 0.1, label, ha="center", va="top", fontsize=11)
 
 # s7 TN-S
 F = fig(4.3, 3.6); ax = cax(F, (0, 4.3), (-0.2, 3.4))
-ys = [3.0, 2.8, 2.6, 2.3, 2.05]; source_lines(ax, ["L1", "L2", "L3"], ys[:3])
-ax.plot([0.55, 0.55, 4.2], [2.6, ys[3], ys[3]], color=BLUE, lw=LW); ax.text(4.2, ys[3] + 0.1, "N", ha="right", fontsize=12, color=BLUE)
-ax.plot([0.55, 0.55, 4.2], [ys[3], ys[4], ys[4]], color=GREEN, lw=LW); ax.text(4.2, ys[4] + 0.1, "PE", ha="right", fontsize=12, color=GREEN)
-ax.plot([0.55, 0.55], [ys[4], 1.55], color=GREEN, lw=LW); earth(ax, 0.55, 1.55)
-appliance(ax); ax.plot([3.3, 3.3], [ys[0], 1.2], color=INK, lw=LW); ax.plot([3.9, 3.9], [ys[4], 1.5], color=GREEN, lw=LW); dot(ax, 3.9, ys[4], 0.05)
-fault(ax, 3.45, 1.0)
-loop(ax, [(0.45, 2.6), (0.45, 3.08), (3.22, 3.08), (3.22, 1.05), (3.55, 0.95), (3.98, 0.95), (3.98, 1.97), (0.47, 1.97), (0.47, 2.55)], S("Z", "s"), (1.6, 1.7))
+ys = {"L1": 3.05, "L2": 2.85, "L3": 2.65, "N": 2.4, "PE": 2.15}
+source(ax, [("L1", ys["L1"], INK), ("L2", ys["L2"], INK), ("L3", ys["L3"], INK), ("N", ys["N"], BLUE), ("PE", ys["PE"], GREEN)])
+housing(ax, 2.7, 0.75); ax.plot([2.95, 2.95], [ys["L1"], 1.2], color=INK, lw=LW, zorder=3); dot(ax, 2.95, ys["L1"], 0.05)
+ax.plot([3.45, 3.45], [ys["PE"], 1.5], color=GREEN, lw=LW, zorder=3); dot(ax, 3.45, ys["PE"], 0.05); fault(ax, 3.12, 1.05)
+glow(ax, [(0.8, ys["L1"]), (2.95, ys["L1"]), (2.95, 1.1), (3.45, 1.1), (3.45, ys["PE"]), (0.8, ys["PE"])])
+ax.text(1.8, 1.8, "felslinga " + S("Z", "s"), fontsize=12.5, color=ORANGE, weight="bold", ha="center")
+ax.text(1.8, 1.45, "N och PE förbundna och", fontsize=11, color=GRAY, ha="center"); ax.text(1.8, 1.2, "jordade vid källan", fontsize=11, color=GRAY, ha="center")
 ax.text(2.15, -0.1, "Felström via PE tillbaka till källan", ha="center", fontsize=12)
 save(F, "v44_01_s07_tns")
 
 # s8 TT
 F = fig(4.3, 3.6); ax = cax(F, (0, 4.3), (-0.2, 3.4))
-ys = [3.0, 2.8, 2.6, 2.3]; source_lines(ax, ["L1", "L2", "L3"], ys[:3])
-ax.plot([0.55, 0.55, 4.2], [2.6, ys[3], ys[3]], color=BLUE, lw=LW); ax.text(4.2, ys[3] + 0.1, "N", ha="right", fontsize=12, color=BLUE)
-ax.plot([0.55, 0.55], [ys[3], 1.1], color=GREEN, lw=LW); earth(ax, 0.55, 1.1); ax.text(0.8, 0.95, S("R", "B") + " systemjord", fontsize=11.5)
-appliance(ax, y=1.0, h=0.8); ax.plot([3.3, 3.3], [ys[0], 1.6], color=INK, lw=LW); fault(ax, 3.45, 1.35)
-ax.plot([3.9, 3.9], [1.0, 0.45], color=GREEN, lw=LW); earth(ax, 3.9, 0.45); ax.text(3.65, 0.3, S("R", "A") + " jordtag", ha="right", fontsize=11.5)
-ax.plot([0.55, 3.9], [0.02, 0.02], color=GRAY, lw=1.2, ls=(0, (4, 3))); ax.text(2.2, 0.1, "jorden", ha="center", fontsize=11, color=GRAY)
-loop(ax, [(0.45, 2.6), (0.45, 3.08), (3.22, 3.08), (3.22, 1.35), (3.55, 1.3), (3.98, 1.3), (3.98, 0.3), (3.9, 0.08), (0.62, 0.08), (0.47, 0.95), (0.47, 2.55)])
-ax.text(2.15, 1.55, "felström genom jorden", ha="center", fontsize=12, color=ORANGE, weight="bold")
+ys = {"L1": 3.05, "L2": 2.85, "L3": 2.65, "N": 2.4}
+sp = source(ax, [("L1", ys["L1"], INK), ("L2", ys["L2"], INK), ("L3", ys["L3"], INK), ("N", ys["N"], BLUE)])
+ax.text(0.7, 1.6, S("R", "B"), fontsize=12)
+housing(ax, 2.7, 1.1); ax.plot([2.95, 2.95], [ys["L1"], 1.55], color=INK, lw=LW, zorder=3); dot(ax, 2.95, ys["L1"], 0.05); fault(ax, 3.12, 1.4)
+ax.plot([3.45, 3.45], [1.1, 0.55], color=GREEN, lw=LW); earth(ax, 3.45, 0.55, GREEN); ax.text(3.65, 0.45, S("R", "A"), fontsize=12)
+ax.plot([0.45, 3.45], [0.2, 0.2], color=GRAY, lw=1.2, ls=(0, (4, 3))); ax.text(1.95, 0.32, "jorden", ha="center", fontsize=11, color=GRAY)
+glow(ax, [(0.8, ys["L1"]), (2.95, ys["L1"]), (2.95, 1.45), (3.45, 1.45), (3.45, 0.2), (0.45, 0.2), (0.45, 2.2)])
+ax.text(1.55, 1.75, "felström genom", fontsize=12, color=ORANGE, weight="bold", ha="center"); ax.text(1.55, 1.48, "jordtagen", fontsize=12, color=ORANGE, weight="bold", ha="center")
+ax.text(2.15, -0.12, "Jordtagens resistans kan begränsa felströmmen", ha="center", fontsize=11.5)
 save(F, "v44_01_s08_tt")
 
-# IT: gemensam ritfunktion för första och andra felet
+# IT: första och andra felet
 def it_fig(name, second=False):
     F = fig(4.3, 3.6); ax = cax(F, (0, 4.3), (-0.2, 3.4))
-    ys = [3.0, 2.8, 2.6]; source_lines(ax, ["L1", "L2", "L3"], ys)
-    ax.add_patch(Rectangle((-0.1, -0.2), 4.5, 0.35, fc=HULL, ec="none")); ax.text(2.15, -0.03, "skrov (jordat)", ha="center", va="center", fontsize=11.5, color="white")
-    rbox(ax, 0.2, 1.2, 0.75, 0.5, "IMD", fs=12, fc=LBLUE); ax.plot([0.55, 0.55], [2.6, 1.7], color=GRAY, lw=1.5, ls=(0, (4, 3))); ax.plot([0.55, 0.55], [1.2, 0.15], color=GRAY, lw=1.5)
-    ax.text(0.55, 1.0, "isolations-\nvakt", ha="center", va="top", fontsize=10.5, color=GRAY)
-    for k, (x, ph) in enumerate(((2.0, 0), (3.3, 1))):
-        ax.add_patch(Rectangle((x, 0.45), 0.8, 0.8, fc=PALE, ec=INK, lw=1.8)); ax.plot([x + 0.8, x + 0.8], [0.45, 0.15], color=GREEN, lw=LW)
-        ax.plot([x + 0.25, x + 0.25], [ys[ph], 1.1], color=INK, lw=LW)
-        if k == 0 or second: fault(ax, x + 0.42, 0.9)
+    ys = {"L1": 3.05, "L2": 2.85, "L3": 2.65}
+    source(ax, [(n, y, INK) for n, y in ys.items()], earthed=False)
+    ax.add_patch(Rectangle((-0.1, -0.2), 4.5, 0.32, fc=HULL, ec="none")); ax.text(3.3, -0.04, "skrov", ha="center", va="center", fontsize=11.5, color="white")
+    rbox(ax, 0.1, 1.35, 0.7, 0.45, "IMD", fs=12, fc=LBLUE); ax.plot([0.45, 0.45], [2.47, 1.8], color=GRAY, lw=1.5, ls=(0, (4, 3))); ax.plot([0.45, 0.45], [1.35, 0.12], color=GRAY, lw=1.5)
+    ax.text(0.9, 2.05, "isolationsvakt", fontsize=10.5, color=GRAY, va="center")
+    for k, (x, ph) in enumerate(((1.9, "L1"), (3.0, "L2"))):
+        ax.add_patch(Rectangle((x, 0.45), 0.8, 0.7, fc=PALE, ec=INK, lw=1.8, zorder=3)); ax.plot([x + 0.65, x + 0.65], [0.45, 0.12], color=GREEN, lw=LW)
+        ax.plot([x + 0.2, x + 0.2], [ys[ph], 1.0], color=INK, lw=LW, zorder=3); dot(ax, x + 0.2, ys[ph], 0.05)
+        if k == 0 or second: fault(ax, x + 0.38, 0.85)
     if second:
-        loop(ax, [(2.17, 3.0), (2.17, 0.95), (2.72, 0.85), (2.82, 0.1), (4.08, 0.1), (4.08, 0.85), (3.62, 0.9), (3.47, 1.05), (3.47, 2.8)])
-        ax.text(2.15, 1.75, "2:a felet: kortslutning via skrovet", ha="center", fontsize=12, color=ORANGE, weight="bold")
+        glow(ax, [(0.8, ys["L1"]), (2.1, ys["L1"]), (2.1, 0.8), (2.55, 0.8), (2.55, 0.0), (3.65, 0.0), (3.65, 0.8), (3.2, 0.8), (3.2, ys["L2"]), (0.8, ys["L2"])])
+        for k, t in enumerate(("2:a felet:", "kortslutning", "via skrovet")): ax.text(1.3, 1.05 - k * 0.25, t, fontsize=11.5, color=ORANGE, weight="bold" if k == 0 else "normal", ha="center")
     else:
-        ax.text(2.15, 1.75, "1:a felet: liten ström, larm", ha="center", fontsize=12, color=ORANGE, weight="bold")
-        ax.text(1.05, 1.45, "larm", fontsize=12, color=RED)
+        for k, t in enumerate(("1:a felet:", "liten ström,", "larm")): ax.text(1.3, 1.05 - k * 0.25, t, fontsize=11.5, color=ORANGE, weight="bold" if k == 0 else "normal", ha="center")
     save(F, name)
 it_fig("v44_01_s21_it"); it_fig("v44_01_s22_andra", second=True)
 
@@ -85,7 +90,7 @@ it_fig("v44_01_s21_it"); it_fig("v44_01_s22_andra", second=True)
 F = fig(4.3, 3.2); ax = F.add_axes((0.17, 0.2, 0.78, 0.7))
 z = np.linspace(0.3, 1.5, 200); ax.plot(z, 230 / z, color=BLUE, lw=2.6)
 for zz in (0.575, 1.15): ax.plot([zz], [230 / zz], "o", color=ORANGE, ms=8); ax.plot([zz, zz], [0, 230 / zz], color=ORANGE, lw=1.2, ls=(0, (3, 3)))
-ax.text(0.62, 420, "0,575 Ω: 400 A", fontsize=12, color=ORANGE); ax.text(1.2, 220, "1,15 Ω: 200 A", fontsize=12, color=ORANGE)
+ax.text(0.62, 420, "0,575 Ω: 400 A", fontsize=12, color=ORANGE); ax.text(1.15, 290, "1,15 Ω: 200 A", fontsize=12, color=ORANGE, ha="center")
 ax.set_xlim(0.3, 1.5); ax.set_ylim(0, 800)
 for s_ in ("top", "right"): ax.spines[s_].set_visible(False)
 ax.set_xlabel(S("Z", "s") + " (Ω)", fontsize=12); ax.set_ylabel(S("I", "k") + " (A)", fontsize=12); ax.tick_params(labelsize=11)
@@ -153,7 +158,7 @@ def ct(name, ratio, i1, i2):
     F = fig(4.3, 2.8); ax = cax(F, (0, 4.3), (0, 2.8))
     ax.plot([0.2, 4.1], [2.1, 2.1], color=INK, lw=3.5); ax.add_patch(Ellipse((1.6, 2.1), 0.35, 0.8, fc="none", ec=BLUE, lw=3))
     harrow(ax, (0.3, 2.3), (0.9, 2.3), color=BLUE); ax.text(0.6, 2.5, i1, ha="center", fontsize=14, color=BLUE)
-    ax.text(1.6, 2.65, ratio, ha="center", fontsize=14, weight="bold")
+    ax.text(1.9, 2.55, ratio, ha="left", fontsize=14, weight="bold")
     ax.plot([1.5, 1.5, 3.2], [1.72, 0.7, 0.7], color=INK, lw=LW); ax.plot([1.7, 1.7, 2.4], [1.72, 1.2, 1.2], color=INK, lw=LW)
     meter(ax, 2.6, 1.2, "A"); ax.plot([2.8, 3.2, 3.2], [1.2, 1.2, 0.7], color=INK, lw=LW)
     ax.text(3.35, 0.95, i2, fontsize=14, color=RED if "?" in i2 else BLUE, va="center")
@@ -183,7 +188,7 @@ ax.add_patch(Rectangle((2.9, 1.9), 1.2, 0.4, fc=PALE, ec=INK, lw=2)); ax.text(3.
 rresistor(ax, (3.5, 1.9), (3.5, 0.15)); ax.text(3.7, 1.0, S("R", "iso"), fontsize=13, va="center")
 harrow(ax, (3.25, 1.6), (3.25, 1.1), color=ORANGE); ax.text(3.15, 1.35, "läckström", ha="right", fontsize=11, color=ORANGE)
 ax.text(1.8, 2.3, S("U", "prov"), fontsize=13, color=RED)
-ax.text(2.15, 2.85, "Spänningslöst objekt, laster och elektronik bortkopplade", ha="center", fontsize=11)
+ax.text(2.15, 2.8, "Objektet spänningslöst, elektronik bortkopplad", ha="center", fontsize=11.5)
 ax.text(0.75, 0.6, "urladda efteråt", ha="center", fontsize=11, color=ORANGE)
 save(F, "v44_03_s07_isolation")
 
@@ -197,15 +202,16 @@ save(F, "v44_03_s17_ovn4")
 
 # s21 oscilloskopets jordade referens
 F = fig(4.3, 3.2); ax = cax(F, (0, 4.3), (-0.2, 3.0))
-rbox(ax, 0.1, 1.3, 1.4, 1.1, "oscilloskop", fs=12.5, fc=PALE)
-ax.plot([0.35, 0.35], [1.3, 0.3], color=GREEN, lw=LW); earth(ax, 0.35, 0.3, GREEN); ax.text(0.5, 0.75, "PE", fontsize=12, color=GREEN)
-ax.plot([1.5, 2.6], [2.1, 2.1], color=INK, lw=1.8); ax.plot([1.5, 2.3, 2.3], [1.6, 1.6, 1.25], color=GREEN, lw=1.8)
-ax.text(2.4, 1.2, "jordklämma", fontsize=11.5, color=GREEN, va="top")
-ax.plot([2.7, 3.9], [2.1, 2.1], color=ORANGE, lw=3); ax.text(3.9, 2.25, "L", ha="right", fontsize=12, color=ORANGE)
-ax.plot([2.3, 3.2], [1.25, 1.25], color=ORANGE, lw=3); ax.text(3.3, 1.25, "fel anslutning", fontsize=11.5, color=ORANGE, va="center")
-loop(ax, [(3.2, 1.2), (2.3, 1.2), (2.3, 1.55), (0.42, 1.55), (0.42, 0.3)])
-ax.text(2.15, 2.75, "Probens jord är förbunden med skyddsjorden", ha="center", fontsize=12)
-ax.text(2.15, -0.05, "Flytande mätning: differentialprob", ha="center", fontsize=12, color=BLUE)
+rbox(ax, 0.1, 1.3, 1.3, 1.0, "oscilloskop", fs=12.5, fc=PALE)
+ax.plot([0.35, 0.35], [1.3, 0.35], color=GREEN, lw=LW); earth(ax, 0.35, 0.35, GREEN); ax.text(0.5, 0.75, "PE", fontsize=12, color=GREEN)
+ax.plot([1.4, 3.2], [2.0, 2.0], color=INK, lw=1.8); ax.text(2.3, 2.12, "prob", fontsize=11.5)
+ax.plot([1.4, 2.6, 2.6], [1.6, 1.6, 1.12], color=GREEN, lw=1.8, zorder=3); ax.text(1.5, 1.72, "probens jord", fontsize=11, color=GREEN)
+ax.plot([2.2, 4.1], [1.05, 1.05], color=ORANGE, lw=3, zorder=3); ax.text(4.1, 0.85, "L (spänningssatt)", ha="right", fontsize=11.5, color=ORANGE)
+glow_pts = [(2.6, 1.05), (2.6, 1.6), (0.35, 1.6), (0.35, 0.35)]
+ax.plot(*zip(*glow_pts), color=ORANGE, lw=9, alpha=0.35, zorder=1, solid_capstyle="round")
+ax.text(1.4, 0.4, "kortslutning via skyddsjorden", fontsize=12, color=ORANGE, weight="bold")
+ax.text(2.15, 2.75, "Probens jord är förbunden med PE", ha="center", fontsize=12.5)
+ax.text(2.15, -0.08, "Flytande mätning: differentialprob", ha="center", fontsize=12, color=BLUE)
 save(F, "v44_03_s21_osc")
 
 # s22 osäkerhetsintervall

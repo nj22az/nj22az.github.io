@@ -1,0 +1,115 @@
+{
+ "v44_01": {
+  "src": "sjoskolan/vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+  "dst": "sjoskolan/vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v44_01_s07_tns",
+    "TN-S-system: källan med L1, L2, L3, N och PE; ett fel mellan L1 och höljet ger en felslinga via PE tillbaka till källan"
+   ],
+   "8": [
+    "th",
+    "v44_01_s08_tt",
+    "TT-system: källans systemjord RB och installationens jordtag RA; felströmmen går genom jorden mellan jordtagen"
+   ],
+   "21": [
+    "th",
+    "v44_01_s21_it",
+    "IT-system ombord: källan isolerad från skrovet, isolationsvakt mellan systemet och skrovet; första jordfelet ger liten ström och larm"
+   ],
+   "22": [
+    "th",
+    "v44_01_s22_andra",
+    "IT-system med ett andra jordfel på en annan fas: kortslutning mellan L1 och L2 via skrovet"
+   ],
+   "24": [
+    "th",
+    "v44_01_s24_exempel",
+    "Felström som funktion av slingimpedans: 0,575 ohm ger 400 A och 1,15 ohm ger 200 A"
+   ],
+   "26": [
+    "ovn",
+    "v44_01_s26_ovn6",
+    "24 V-matning till en last som tar 6 A via ledningar med slingresistansen 0,15 ohm; spänningsfall och lastspänning okända"
+   ],
+   "28": [
+    "ovn",
+    "v44_01_s28_ovn7",
+    "Förenklad felströmsslinga med U0 = 230 V och Zs = 0,46 ohm; felströmmen okänd"
+   ]
+  }
+ },
+ "v44_02": {
+  "src": "sjoskolan/vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+  "dst": "sjoskolan/vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v44_02_s07_stallverk",
+    "Ställverksfack: samlingsskena, frånskiljare, brytare, strömtransformator och jordningskopplare mot kabel till förbrukare, med förregling"
+   ],
+   "8": [
+    "th",
+    "v44_02_s08_skydd",
+    "Strömtransformatorn mäter, skyddsreläet beslutar och brytaren kopplar bort"
+   ],
+   "9": [
+    "th",
+    "v44_02_s09_exempel",
+    "Stapeldiagram: linjeström 72,2 A vid 5 kV och 721,7 A vid 500 V för 500 kW och PF 0,80"
+   ],
+   "17": [
+    "ovn",
+    "v44_02_s17_ovn4",
+    "Strömtransformator 200/5 A med primärström 120 A; sekundärströmmen okänd"
+   ],
+   "24": [
+    "th",
+    "v44_02_s24_exempel",
+    "Strömtransformator 300/5 A med primärström 150 A och sekundärström 2,5 A"
+   ]
+  }
+ },
+ "v44_03": {
+  "src": "sjoskolan/vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+  "dst": "sjoskolan/vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+  "slides": {
+   "6": [
+    "th",
+    "v44_03_s06_tang",
+    "Strömtång runt en ledare visar lastströmmen; runt fram- och returledaren motverkar bidragen varandra"
+   ],
+   "7": [
+    "th",
+    "v44_03_s07_isolation",
+    "Isolationsprovare mellan kabelns ledare och skrovet; provspänning och läckström genom isolationsresistansen"
+   ],
+   "17": [
+    "ovn",
+    "v44_03_s17_ovn4",
+    "Två isolationsvägar på 20 megaohm parallellt mellan en aktiv ledare och jord; ekvivalent resistans okänd"
+   ],
+   "21": [
+    "th",
+    "v44_03_s21_osc",
+    "Oscilloskopets probjord är förbunden med skyddsjorden; kopplas den till en spänningssatt ledare blir det kortslutning via skyddsjorden"
+   ],
+   "22": [
+    "th",
+    "v44_03_s22_intervall",
+    "Visning 50,00 V med felgränsen ±0,53 V ger intervallet 49,47 till 50,53 V"
+   ],
+   "24": [
+    "th",
+    "v44_03_s24_exempel",
+    "Oscilloskopskärm med sinus: en period på fem rutor vid 2 ms per ruta, 10:1-prob"
+   ],
+   "26": [
+    "ovn",
+    "v44_03_s26_ovn6",
+    "Oscilloskopskärm där en period täcker fyra rutor vid 5 ms per ruta; period och frekvens okända"
+   ]
+  }
+ }
+}
