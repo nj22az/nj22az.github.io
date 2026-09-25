@@ -1,34 +1,32 @@
 # Växelströmslabbet · Sjöskolan
 
-Interaktivt stöd till vecka 40: `v40_01 Sinusformad växelspänning`, `v40_02 Reaktans och impedans` och `v40_03 Effekt i växelströmskretsar`.
+Vecka 40 börjar på https://nj22az.github.io/sjoskolan/vecka-40/aktuell/.
 
-Live: https://nj22az.github.io/sjoskolan/vaxelstromslabbet/
+## Tre arbetslägen
 
-## Innehåll
+- **Guidad labb** (standard): åtta uppgifter. Förutsäg, läs av och jämför, förklara. Samma exempel och begrepp används i webbgenomgång, PowerPoint och kortfilm. Båda instrumenten kontrolleras vid 10 V; grundkällan är 12 V RMS/50 Hz. RL använder 40 Ω/95,5 mH och effektdelen 230 V/1 150 W vid PF 1 respektive 0,5.
+- **Fri simulator**: de befintliga reglagen, graferna och tolv räkna-först-uppgifterna. Varje uppgift länkar till förklaringen av metoden. Färdiga svar rensas när flik eller stationsförinställning ändras.
+- **Station B**: utökat protokoll efter undervisning om mätarprinciper. Nio rader, inklusive kontroll av båda instrumenten. Överensstämmelse med mätarmodellen skiljs från visningsfel mot RMS. Gamla åttaradiga svar flyttas till rätt rader; den nya kalibratorraden behöver fyllas i.
 
-1. **Sinus och effektivvärde.** Välj kurvform (sinus, fyrkant, triangel), effektivvärde, frekvens och tidsaxel. Kurvan visar perioden T, effektivvärdet som streckad linje och en flyttbar tidpunkt med momentanvärdet. En andra signal kan förskjutas med Δt, och fasvinkeln visas.
-2. **Reaktans och impedans.** Seriekrets R, RL, RC eller RLC. Visar kretsschema, visardiagram för spänningarna, u och i över tiden och strömmen som funktion av frekvensen med resonansfrekvens.
-3. **Effekt och kompensering.** Enfaslast med P, PF, karaktär och nätfrekvens 50/60 Hz. Överkompensering markeras som kapacitiv; en kondensator påverkar inte en kapacitiv last. Visar effekttriangeln, hur en kondensator (Qᶜ) minskar S och I, kabelförlusten I²R före och efter samt momentan effekt p = u · i.
+Direktlänkar: `?lage=guidad&del=sinus|impedans|effekt`, `?lage=fri&flik=sinus|impedans|effekt`, `?lage=station`. Äldre `?flik=…&uppgift=…` och `#labbprotokoll` fungerar fortfarande.
 
-**Räkna först:** tolv uppgifter, fyra per flik. Parametrarna ställs in och låses, och det sökta värdet döljs med ”?”. Svaret godkänns inom ±1–2 % (vinklar ±0,6–0,8°). Vid fel svar känns vanliga misstag igen och förklaras: effektivvärde i stället för toppvärde, räknaren i DEG/RAD, R + X i stället för Pythagoras, P/U utan effektfaktor, S − P, glömt 2π, faktor 1 000, fel tecken och faktor √2. Ledtråden kan öppnas när som helst; efter två fel svar öppnas den automatiskt och facit kan visas. Uppgifterna och startvärdena använder andra tal än presentationernas övningar och räkneexempel, så inlämningssvaren syns inte i labbet.
+## Modell och lagring
 
-Direktlänkar: `?flik=sinus|impedans|effekt` och `&uppgift=period|topp|moment|fas|xl|strom|rc|resonans|skenbar|reaktiv|matstrom|kompensering`.
+Statisk HTML/CSS/ES-moduler. Inga beroenden eller byggsteg krävs för att använda labbet. `model.mjs` är beräkningskällan. `guided-lessons.mjs` kopplar uppgifterna till den. `../vecka-40/aktuell/lektioner.mjs` är undervisningskällan för webb, kortfilmer och presentationer.
 
-## Teknik och modell
+Svaren lagras bara i aktuell webbläsare: grundprotokoll `sjoskolan-ac-grund-v2`, stationsprotokoll `stationB-ac-v2`, tidigare räkneuppgifter `sjoskolan-vaxelstrom-v1`. PDF skapas genom webbläsarens utskrift. CSV exporteras lokalt. Inget skickas till en server. Antecknade svar är underlag för lärarens bedömning, inte ett automatiskt godkännande.
 
-Statisk HTML/CSS/ES-moduler, inga beroenden eller byggsteg. `model.mjs` innehåller beräkningarna, `lessons.mjs` avläsningar och uppgifter och `app.mjs` reglage och SVG-ritning. Framsteg sparas i `localStorage` (nyckel `sjoskolan-vaxelstrom-v1`) med felhantering om lagring är blockerad.
-
-Modellen förutsätter ideal källa, stationär sinus och ideala, linjära komponenter. Spolen saknar resistans och kondensatorn läckström. Effektfliken antar sinusformad ström (PF = cos φ). Övertoner, mättning, uppvärmning, inkopplingsförlopp och toleranser simuleras inte.
+Modellen förutsätter en ideal källa och ideala linjära komponenter. RL/RC/RLC och effektfliken är stationär enfas med sinusformade signaler (PF = cos φ). Mätarjämförelsen omfattar också ideal fyrkant och triangel med samma RMS. Verkliga instrument har bland annat bandbredds- och toppfaktorgränser. Simulatorn verifierar inte fysisk inkoppling.
 
 ## Verifiering
 
+Från denna katalog:
+
 ```sh
-python3 -m http.server 8000
-node --test sjoskolan/vaxelstromslabbet/model.test.mjs
+npm ci --ignore-scripts --no-audit --no-fund
+npm test
 ```
 
-18 tester godkända den 25 september 2026, efter granskning av lärare, elektriker och fartygsingenjör. Testerna täcker presentationernas räkneexempel (230 V → 325 V, 30 V topp-topp, RL 12/16 Ω vid 60 V, RC −53,1°, 0,10 H och 100 µF vid 50 Hz, resonans, effekttriangel 900 W/1 200 var, kompensering PF 0,5 → 1), medeleffekt noll för ren reaktans, svensk talformatering facit för alla tolv uppgifter och att inget av de kända felsvaren godkänns. Alla uppgifter har också lösts i Chromium via direktlänk. Sidan har ingen horisontell rullning vid 390 px bredd.
+21 modelltester samt DOM-tester av samtliga åtta guidade uppgifter, båda kalibratoravläsningarna, sparade svar, återställning av uppgifter och separata stationsbedömningar. DOM-testerna verifierar beteende; de ersätter inte visuell kontroll i en webbläsare. Det gemensamma protokollet har separata tester i `../gemensamt/labbprotokoll.test.mjs`.
 
-## Labbprotokoll
-
-Station B, AC (`stationB-protokoll.mjs`): isolerad AC-källa 12,35 V 50 Hz med true RMS-mätare, medelvärdesvisande mätare och oscilloskop för sinus, fyrkant och triangel. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.
+Lärarstöd, facit och förberedelser för den verkliga riggen: `../vecka-40/aktuell/Lararstod.html`. Byggkällor för presentationerna och rösten: `../verktyg/ac/`.

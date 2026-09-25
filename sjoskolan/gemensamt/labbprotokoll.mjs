@@ -85,7 +85,8 @@ export function missing(def, data) {
   }
   for (const q of (def.questions || []).filter((x) => !x.optional)) {
     const words = String(data.answers?.[q.k] || '').trim().split(/\s+/).filter(Boolean).length;
-    if (words < (q.minWords ?? 8)) out.push(`${q.short || q.label.toLowerCase()} (minst ${q.minWords ?? 8} ord)`);
+    if (q.requireText) { if (!words) out.push(q.short || q.label.toLowerCase()); }
+    else if (words < (q.minWords ?? 8)) out.push(`${q.short || q.label.toLowerCase()} (minst ${q.minWords ?? 8} ord)`);
   }
   return out;
 }
@@ -128,10 +129,11 @@ function formHTML(def, data, ro, idp) {
       h += `<li class="lp-row" data-row="${i}"><div class="lp-row-head"><strong>Mätning ${i + 1}${plan.title ? ` · ${esc(plan.title)}` : ''}</strong>${plan.optional ? '<span class="lp-opt">frivillig</span>' : ''}`;
       if (!ro && def.snapshot !== false) h += `<button type="button" class="lp-fetch" data-row="${i}">Hämta avläsning</button>`;
       h += `</div><div class="lp-grid">`;
-      for (const [k, l] of ROW_FIELDS) {
+      for (const [k, defaultLabel] of ROW_FIELDS) {
+        const l = plan.labels?.[k] || defaultLabel;
         const ph = plan[k] && !SEEDED.includes(k) ? ` placeholder="${esc(plan[k])}"` : '';
         if (k === 'bed' && ro) h += `<label>${l}${val(r.bed)}</label>`;
-        else if (k === 'bed') h += `<label>${l}<select data-p="rows.${i}.bed">${BED.map((b) => `<option${(r.bed || '') === b ? ' selected' : ''} value="${b}">${b || 'Välj'}</option>`).join('')}</select></label>`;
+        else if (k === 'bed') h += `<label>${l}<select data-p="rows.${i}.bed">${(plan.bedOptions || BED).map((b) => `<option${(r.bed || '') === b ? ' selected' : ''} value="${b}">${b || 'Välj'}</option>`).join('')}</select></label>`;
         else if (k === 'komm') h += `<label class="lp-wide">${l}${ta(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}</label>`;
         else h += `<label>${l}${inp(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}${k === 'uppm' ? `<small class="lp-src" id="${idp}src${i}">${r.tid ? `Hämtat från simulatorn ${esc(r.tid)}` : ''}</small>` : ''}${k === 'avv' ? `<small class="lp-calc" id="${idp}calc${i}"></small>` : ''}</label>`;
       }
@@ -170,6 +172,8 @@ function setPath(obj, path, val) {
 export function mountProtocol(root, def) {
   const KEY = `sjoskolan-protokoll-${def.key}`;
   let data = emptyData(def), storageOK = true, confirmClear = false;
+  // Optional station-specific migration preserves previous student entries.
+  try { if (def.migrate && !localStorage.getItem(KEY)) { const migrated = def.migrate(localStorage); if (migrated) localStorage.setItem(KEY, JSON.stringify(migrated)); } } catch { storageOK = false; }
   try { const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (d) data = { ...data, ...d, rows: (def.rows || []).map((plan, i) => seedRow(plan, d.rows?.[i] || {})), faults: Array.from({ length: def.faults ?? 0 }, (_, i) => d.faults?.[i] || {}) }; } catch { storageOK = false; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch { storageOK = false; } };
 
@@ -242,3 +246,4 @@ export function mountProtocol(root, def) {
   refresh();
   return { get data() { return data; }, refresh };
 }
+

@@ -6,16 +6,16 @@
 <meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/vaxelstromslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
+<link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260925-ac2"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 </head>
 <body class="ac-page">
-<nav id="site-nav" class="site-nav"></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-40/aktuell/">Vecka 40</a><a href="../vecka-40/aktuell/Lararstod.html">Lärarstöd</a></nav>
 <main id="main-content" class="ac-app">
   <header class="ac-heading">
     <div>
       <a class="back-link" href="../vecka-40/aktuell/">← Sjöskolan · vecka 40</a>
       <h1>Växelströmslabbet</h1>
-      <p>Ändra ett värde. Se kurvan, visaren och effekten ändras. Räkna först, kontrollera sedan.</p>
+      <p>Förutsäg ett värde, läs av och förklara. Börja i guidad labb.</p>
     </div>
     <ul class="deck-links" aria-label="Presentationer vecka 40">
       <li><a href="../vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_elev.pptx">v40_01 Sinus ↗</a></li>
@@ -24,6 +24,9 @@
     </ul>
   </header>
 
+  <div class="mode-picker" aria-label="Arbetssätt"><button type="button" data-mode="guidad" aria-pressed="true">Guidad labb · grunddel</button><button type="button" data-mode="fri" aria-pressed="false">Utforska och räkna vidare</button><button type="button" data-mode="station" aria-pressed="false">Station B · utökat protokoll</button></div>
+  <section id="guided-workspace" class="guide" aria-label="Guidad grundlabb"></section>
+  <div id="free-workspace" hidden><p id="free-intro" class="station-intro">Här kan du ändra värden fritt eller välja en räkna-först-uppgift. Grundprotokollet finns under Guidad labb. Börja med genomgången innan du väljer fördjupning.</p>
   <div class="tabs" role="tablist" aria-label="Del av labbet">
     <button role="tab" id="tab-sinus" data-tab="sinus" aria-controls="lab" aria-selected="true"><span>1</span>Sinus och effektivvärde</button>
     <button role="tab" id="tab-impedans" data-tab="impedans" aria-controls="lab" aria-selected="false" tabindex="-1"><span>2</span>Reaktans och impedans</button>
@@ -61,15 +64,17 @@
     </aside>
   </div>
 
-  <section id="labbprotokoll"></section>
+  </div>
+  <section id="station-workspace" hidden><div class="station-intro"><h2>Utökat stationsförsök</h2><p>Detta protokoll hör till Station B. Läs först fördjupningen om likriktat medelvärde och sinuskalibrerade mätare. Grundkälla 12,00 V och stationens källa 12,35 V är två olika undervisningsexempel.</p><p><a href="../vecka-40/aktuell/Genomgang.html?del=sinus&amp;avsnitt=likriktat">Genomgång före stationsförsöket</a></p><details><summary>Mätning och verklig rigg</summary><p>Här läser du simulerade instrument. Fysisk inkoppling görs först med lärarens godkända kopplingsschema och dokumenterade mätpunkter. Se lärarstödet för underlaget som behövs.</p></details></div><section id="labbprotokoll"></section></section>
   <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
-    <p>Varje flik motsvarar en presentation vecka 40. Visa teoribilden, låt eleverna förutsäga vad som händer och dra sedan i ett reglage. Uppgifterna under ”Räkna först” använder andra tal än presentationernas övningar, så inlämningsuppgifterna förblir elevernas egna.</p>
+    <p>Grundläget har åtta guidade uppgifter. Följ genomgången och låt eleven förklara sina resultat. De tolv räkna-först-uppgifterna är fortsatt träning. Se veckans lärarstöd för ordning, facit och stoppunkter.</p>
     <p>Modellen: ideal spänningskälla, stationär sinus, ideala och linjära komponenter. Spolen saknar resistans och kondensatorn saknar läckström. Effektfliken antar sinusformad spänning och ström, så PF = cos φ. Övertoner, mättning, uppvärmning, inkopplingsförlopp och verkliga komponenttoleranser simuleras inte. Kabelförlusten är I²R med en fast slingresistans. Källan är styv: kabelns spänningsfall påverkar inte lasten, och generatorns spänningsreglering och lastdelning ingår inte. En kondensator kompenserar bara induktiv last i modellen.</p>
     <p><strong>Säkerhet att ta upp muntligt:</strong> Mät aldrig nätspänning med oscilloskopets jordade probe. Använd differentialprob och instrument med rätt CAT-klass. Ombord är nätet ofta ett IT-system, och en jordad mätklämma på en fas ger jordfel. En kondensator, även i en frekvensomriktares DC-mellanled, kan hålla farlig spänning efter frånkoppling. Kontrollera urladdningen med mätning innan arbete.</p>
     <p>Framsteg sparas bara i denna webbläsare. Inga elevdata skickas någonstans. Direktlänkar: <code>?flik=sinus</code>, <code>impedans</code> eller <code>effekt</code>, och <code>&amp;uppgift=</code> följt av uppgiftens id, till exempel <code>?flik=impedans&amp;uppgift=resonans</code>.</p>
   </details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
-<footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260926"></script>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="boot.mjs?v=20260925-ac2"></script>
 </body></html>
+

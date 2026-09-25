@@ -1,0 +1,12 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {Window} from 'happy-dom';
+const root=new URL('../../../',import.meta.url).pathname.replace(/\/$/,'');const w=new Window({url:'https://nj22az.github.io/sjoskolan/vaxelstromslabbet/?lage=fri'});
+for(const k of ['window','document','localStorage','history','location','URL','Blob','ResizeObserver','Event'])globalThis[k]=w[k];
+document.write(fs.readFileSync(root+'/sjoskolan/vaxelstromslabbet/index.html','utf8').replace(/<script[\s\S]*?<\/script>/g,''));
+await import(root+'/sjoskolan/vaxelstromslabbet/app.mjs');
+const select=document.getElementById('challenge-select');select.value='period';select.dispatchEvent(new w.Event('change'));document.getElementById('answer').value='2,5';document.getElementById('answer-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(document.getElementById('challenge-body').hidden,false);document.getElementById('tab-impedans').click();assert.equal(document.getElementById('challenge-body').hidden,true,'completed solution cleared on tab switch');
+document.getElementById('tab-sinus').click();select.value='topp';select.dispatchEvent(new w.Event('change'));document.getElementById('answer').value='33,94';document.getElementById('answer-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));document.querySelector('[data-preset="0"]').click();assert.equal(document.getElementById('challenge-body').hidden,true,'completed solution cleared on preset');
+assert.equal(document.querySelectorAll('.lp-form:not(.lp-ro) .lp-row').length,9,'both calibration rows');
+document.querySelector('[data-preset="0"]').click();const expected=document.querySelector('[data-p="rows.1.forv"]');expected.value='10 V';expected.dispatchEvent(new w.Event('input',{bubbles:true}));const second=document.querySelector('.lp-form:not(.lp-ro) .lp-row[data-row="1"] .lp-fetch');second.click();assert.equal(document.querySelector('[data-p="rows.1.uppm"]').value,'10,00 V');
+const f=document.getElementById('ctl-f-n');f.value='60';f.dispatchEvent(new w.Event('input'));document.querySelector('[data-preset="1"]').click();assert.equal(document.getElementById('ctl-f-n').value,'50');
+const b=document.querySelector('[data-p="rows.6.bed"]');assert.match(b.textContent,/mätarmodellen/);assert.ok(!b.textContent.includes('Inom tolerans'));
+console.log('PASS: completed-task reset, preset reset, station meter checks, 9 rows, separate model assessment.');await w.happyDOM.close();

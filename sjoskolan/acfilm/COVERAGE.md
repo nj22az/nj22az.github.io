@@ -1,6 +1,6 @@
 # Week 40 teaching coverage
 
-Three source decks, 36 slides each (108 total). This film explains the core theory, all six worked-example slides (9 and 24 in each deck), and selected practice methods. It does not read every support slide or provide a complete answer key to all thirty exercises. Learners should still complete the exercises in the decks.
+Original source decks, archived on 25 September 2026 under ../vecka-40/arkiv/2026-09-25/: 36 slides each (108 total). Slide numbers below refer to that archive, not the shorter current presentations. This film explains the core theory, all six worked-example slides (9 and 24 in each deck), and selected practice methods. It does not read every support slide or provide a complete answer key to all thirty exercises. The current week page defines the basic guided tasks and optional extension work.
 
 Sources:
 - v40_01_Sinusformad_vaxelspanning_elev.pptx

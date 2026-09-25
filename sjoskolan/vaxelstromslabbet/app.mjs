@@ -1,8 +1,8 @@
 // Växelströmslabbet · interaktion och ritning
 import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClose, SHAPES } from './model.mjs';
-import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
-import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260926';
+import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925-ac2';
+import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260925-ac2';
 
 const $ = (id) => document.getElementById(id);
 const C = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', slate: '#4a6378', purple: '#7a3fa0', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', soft: '#edf3f7' };
@@ -188,7 +188,7 @@ function legend(items) {
 
 // ---------- flikar ----------
 const masked = (key) => Boolean(state.challenge?.mask.includes(key));
-const show = (key, v, unit, digits = 3) => (masked(key) ? '?' : `${fmt(v, digits)} ${unit}`.trim());
+const show = (key, v, unit, digits = 3) => (masked(key) ? '?' : `${state.tab === 'sinus' && ['peak','pp','rms','T'].includes(key) ? v2(v) : fmt(v, digits)} ${unit}`.trim());
 
 function renderSinus(s, r) {
   const W = windowMs(s);
@@ -236,7 +236,7 @@ function renderSinus(s, r) {
     ['Upp', show('pp', r.pp, 'V'), 'topp till topp'],
     ['U', `${fmt(r.rms)} V`, 'effektivvärde (RMS)'],
     ['Umedel', '0 V', 'medelvärde över en period'],
-    ['Multimeter, true RMS', masked('rms') ? '?' : `${v2(r.trms)} V`, 'visar effektivvärdet för alla kurvformer'],
+    ['Multimeter, true RMS', masked('rms') ? '?' : `${v2(r.trms)} V`, 'idealmodell; verkliga instrument har gränser'],
     ['Multimeter, medelvärdesvisande', masked('rms') ? '?' : `${v2(r.avg)} V`, 'kalibrerad för sinus: 1,111 · likriktat medelvärde'],
     ['T', show('T', r.T, 'ms'), 'periodtid'],
     ['f', `${fmt(s.f)} Hz`, 'frekvens'],
@@ -431,7 +431,7 @@ function startChallenge(id) {
   if (c.tab !== state.tab) setTab(c.tab, false);
   state.values[c.tab] = clone(c.setup);
   $('challenge-body').hidden = false; $('challenge-intro').hidden = true;
-  $('challenge-deck').textContent = c.deck;
+  $('challenge-deck').innerHTML = `<a href="../vecka-40/aktuell/Genomgang.html?del=${c.tab}&amp;avsnitt=${c.theory}" target="_blank" rel="noopener">${escHtml(c.deck)} · öppna stöd</a>`;
   $('challenge-task').innerHTML = subHtml(c.task);
   $('answer-label').innerHTML = `${subHtml(c.ask.label)} =`;
   $('answer-unit').textContent = c.ask.unit;
@@ -491,12 +491,12 @@ function setTab(tab, doRender = true) {
   });
   $('lab').setAttribute('aria-labelledby', `tab-${tab}`);
   if (doRender) {
-    if (state.challenge && state.challenge.tab !== tab) { state.challenge = null; $('challenge-body').hidden = true; $('challenge-intro').hidden = false; }
+    state.challenge = null; state.attempts = 0; $('challenge-body').hidden = true; $('challenge-intro').hidden = false; $('feedback').textContent = ''; $('answer').value = '';
     renderControls(); renderChallengeSelect(); render(); updateUrl();
   }
 }
 function updateUrl() {
-  const p = new URLSearchParams(); p.set('flik', state.tab); if (state.challenge) p.set('uppgift', state.challenge.id);
+  const p = new URLSearchParams(location.search); p.set('flik', state.tab); p.delete('del'); p.delete('steg'); p.delete('uppgift'); if (state.challenge) p.set('uppgift', state.challenge.id);
   try { history.replaceState(null, '', `?${p}`); } catch { /* fil-URL */ }
 }
 
@@ -521,7 +521,7 @@ if (params.get('uppgift')) startChallenge(params.get('uppgift'));
 
 // Labbprotokoll för Station B, AC-delen
 function rigAC(shape, rig = RIG_AC) {
-  if (state.challenge) leaveChallenge();
+  leaveChallenge();
   setTab('sinus', false);
   state.values.sinus = { ...clone(DEFAULTS.sinus), ...rig, shape, t: 5, window: 'auto' };
   renderControls(); renderChallengeSelect(); render(); updateUrl();
@@ -538,9 +538,10 @@ mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_AC_PROTOK
     const s = state.values.sinus, r = readouts('sinus', s), c = state.challenge;
     if (c && (c.mask || []).some((k) => ['peak', 'pp', 'T', 'rms'].includes(k))) return { error: 'Lös uppgiften först. Mätvärdena är dolda medan du räknar.' };
     const n = plan?.need;
-    if (n && (s.shape !== n.shape || Math.abs(s.urms - n.urms) > 1e-9)) return { error: `Mätning ${STATION_B_AC_PROTOKOLL.rows.indexOf(plan) + 1} gäller ${n.urms === CAL_AC.urms ? 'kalibratorn' : 'stationens källa'} med kurvformen ${SHAPES[n.shape].label.toLowerCase()}. Ställ in den med knapparna överst i protokollet.` };
+    if (n && (s.shape !== n.shape || Math.abs(s.urms - n.urms) > 1e-9 || Math.abs(s.f - 50) > 1e-9)) return { error: `Mätning ${STATION_B_AC_PROTOKOLL.rows.indexOf(plan) + 1} gäller ${n.urms === CAL_AC.urms ? 'kalibratorn' : 'stationens källa'} med kurvformen ${SHAPES[n.shape].label.toLowerCase()}. Ställ in den med knapparna överst i protokollet.` };
     const q = plan?.q || 'trms';
     const inst = { trms: 'true RMS-multimeter', avg: 'medelvärdesvisande multimeter', peak: 'oscilloskop', T: 'oscilloskop', pp: 'oscilloskop' }[q];
     const val = { trms: `${v2(r.trms)} V`, avg: `${v2(r.avg)} V`, peak: `${v2(r.peak)} V`, pp: `${v2(r.pp)} V`, T: `${v2(r.T)} ms` }[q];
     return { punkter: 'källans mätuttag', drift: `${SHAPES[s.shape].label}, ${fmt(s.f)} Hz, ${inst}`, varde: val };
   } });
+

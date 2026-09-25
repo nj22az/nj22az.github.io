@@ -23,5 +23,9 @@ jobs:
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
+      - name: AC-labbens guidade arbetsgång och gränssnitt
+        working-directory: sjoskolan/vaxelstromslabbet
+        run: npm ci --ignore-scripts --no-audit --no-fund && npm test
       - name: Filmernas repliker och textversioner
         run: node sjoskolan/filmer/check.mjs
+

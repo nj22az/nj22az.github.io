@@ -1,0 +1,2 @@
+import {LESSONS} from './lektioner.mjs?v=20260925-ac2';
+document.getElementById('lesson-list').innerHTML=LESSONS.map(l=>`<li><span class="lesson-number" aria-hidden="true">${l.number}</span><div><h2>${l.title}</h2><p>${l.goal}</p><p class="source-note">${l.minutes} · Grunddel följd av markerad fördjupning</p><div class="lesson-links"><a href="Genomgang.html?del=${l.id}">Genomgång och exempel</a><a href="Kortfilmer.html?del=${l.id}">Kort stegfilm</a><a href="../../vaxelstromslabbet/?lage=guidad&amp;del=${l.id}">Guidad labb</a></div></div></li>`).join('');

@@ -2,10 +2,10 @@
 import { waveform, instant, phaseFromDelay, seriesCircuit, loadPower, meterReadings } from './model.mjs';
 
 export const DEFAULTS = {
-  // Startvärden som inte sammanfaller med presentationernas övningar
-  sinus: { shape: 'sinus', urms: 15, f: 60, t: 3, showB: false, dt: 3, window: 'auto' },
-  impedans: { kind: 'RL', U: 120, f: 60, R: 25, L: 80, C: 150 },
-  effekt: { U: 230, f: 60, P: 1500, pf: 0.7, character: 'induktiv', Qc: 0, Rcable: 0.2 },
+  // Samma grundexempel som genomgångar och guidad labb.
+  sinus: { shape: 'sinus', urms: 12, f: 50, t: 5, showB: false, dt: 3, window: 'auto' },
+  impedans: { kind: 'RL', U: 12, f: 50, R: 40, L: 95.5, C: 150 },
+  effekt: { U: 230, f: 50, P: 1150, pf: 1, character: 'induktiv', Qc: 0, Rcable: 0.2 },
 };
 
 /** Alla avläsningar för en flik. Tider i ms, L i mH, C i µF i tillståndet. */
@@ -34,7 +34,7 @@ export function readouts(tab, s) {
 // Talen skiljer sig från presentationernas övningar, så att inlämningsuppgifterna förblir elevens egna.
 export const CHALLENGES = [
   {
-    id: 'period', tab: 'sinus', title: 'Period vid 400 Hz', deck: 'v40_01 · bild 7 och övning 1',
+    id: 'period', tab: 'sinus', title: 'Period vid 400 Hz', deck: 'Periodtid', theory: 'period',
     setup: { shape: 'sinus', urms: 115, f: 400, t: 0.5, showB: false, dt: 0.5, window: 'auto' },
     task: 'Vissa fartyg har ett separat 400 Hz-nät för elektronik. Beräkna perioden T i millisekunder.',
     ask: { key: 'T', label: 'T', unit: 'ms', rel: 0.01 },
@@ -43,7 +43,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 400 / 1000, msg: 'Du har räknat f/1 000. Perioden är 1/f.' }],
   },
   {
-    id: 'topp', tab: 'sinus', title: 'Toppvärde från effektivvärde', deck: 'v40_01 · bild 8 och övning 3',
+    id: 'topp', tab: 'sinus', title: 'Toppvärde från effektivvärde', deck: 'Toppvärde och RMS', theory: 'rms',
     setup: { shape: 'sinus', urms: 24, f: 50, t: 5, showB: false, dt: 3, window: 'auto' },
     task: 'En sinusspänning har effektivvärdet 24 V. Beräkna toppvärdet û.',
     ask: { key: 'peak', label: 'û', unit: 'V', rel: 0.01 },
@@ -52,7 +52,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 48, msg: 'Du har dubblat effektivvärdet (2 · 24 V). Toppvärdet är √2 · U, inte 2 · U.' }, { v: 2 * Math.SQRT2 * 24, msg: 'Det är topp till topp-värdet (2 · û). Frågan gäller toppvärdet û = √2 · U.' }],
   },
   {
-    id: 'moment', tab: 'sinus', title: 'Momentanvärde', deck: 'v40_01 · övning 6–7',
+    id: 'moment', tab: 'sinus', title: 'Momentanvärde', deck: 'Fördjupning: momentanvärde', theory: 'moment',
     setup: { shape: 'sinus', urms: 10, f: 50, t: 3, showB: false, dt: 3, window: 'auto' },
     task: 'U = 10 V RMS, f = 50 Hz. Beräkna u vid t = 3,0 ms. Räknaren i RAD.',
     ask: { key: 'ut', label: 'u(3,0 ms)', unit: 'V', rel: 0.02, abs: 0.05 },
@@ -66,7 +66,7 @@ export const CHALLENGES = [
     ],
   },
   {
-    id: 'fas', tab: 'sinus', title: 'Fas från tidsavstånd', deck: 'v40_01 · bild 22 och övning 8',
+    id: 'fas', tab: 'sinus', title: 'Fas från tidsavstånd', deck: 'Fördjupning: tid och fas', theory: 'fas',
     setup: { shape: 'sinus', urms: 12, f: 50, t: 5, showB: true, dt: 2.5, window: 'auto' },
     task: 'Två 50 Hz-signaler är förskjutna 2,5 ms. Beräkna fasvinkelns belopp i grader.',
     ask: { key: 'phi', label: '|φ|', unit: '°', abs: 0.6, absolute: true },
@@ -75,7 +75,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 2 * Math.PI * 0.0025 * 50, msg: 'Svaret är i radianer. Frågan gäller grader: φ = 360° · Δt/T.' }],
   },
   {
-    id: 'xl', tab: 'impedans', title: 'Spolens reaktans', deck: 'v40_02 · bild 6 och övning 1',
+    id: 'xl', tab: 'impedans', title: 'Spolens reaktans', deck: 'Spolens reaktans', theory: 'xl',
     setup: { kind: 'RL', U: 100, f: 50, R: 30, L: 159, C: 150 },
     task: 'L = 159 mH och f = 50 Hz. Beräkna Xᴸ.',
     ask: { key: 'XL', label: 'Xᴸ', unit: 'Ω', rel: 0.02 },
@@ -84,7 +84,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 50 * 0.159, msg: 'Du har glömt 2π. Xᴸ = 2πfL.' }],
   },
   {
-    id: 'strom', tab: 'impedans', title: 'Ström i RL-krets', deck: 'v40_02 · övning 3–4',
+    id: 'strom', tab: 'impedans', title: 'Ström i RL-krets', deck: 'Ström i RL-krets', theory: 'strom',
     setup: { kind: 'RL', U: 100, f: 50, R: 40, L: 95.5, C: 150 },
     task: 'U = 100 V RMS, R = 40 Ω och Xᴸ ≈ 30 Ω i serie. Beräkna strömmen I.',
     ask: { key: 'I', label: 'I', unit: 'A', rel: 0.02 },
@@ -96,7 +96,7 @@ export const CHALLENGES = [
     ],
   },
   {
-    id: 'rc', tab: 'impedans', title: 'Fasvinkel i RC-krets', deck: 'v40_02 · bild 21 och övning 7',
+    id: 'rc', tab: 'impedans', title: 'Fasvinkel i RC-krets', deck: 'Fördjupning: RC-krets', theory: 'rc',
     setup: { kind: 'RC', U: 100, f: 50, R: 40, L: 80, C: 106.1 },
     task: 'R = 40 Ω och Xᶜ ≈ 30 Ω i serie. Beräkna fasvinkeln φ med tecken.',
     ask: { key: 'phi', label: 'φ', unit: '°', abs: 0.8 },
@@ -108,7 +108,7 @@ export const CHALLENGES = [
     ],
   },
   {
-    id: 'resonans', tab: 'impedans', title: 'Resonansfrekvens', deck: 'v40_02 · bild 23 och övning 10',
+    id: 'resonans', tab: 'impedans', title: 'Resonansfrekvens', deck: 'Fördjupning: resonansfrekvens', theory: 'resonans',
     setup: { kind: 'RLC', U: 100, f: 40, R: 20, L: 50, C: 150 },
     task: 'L = 50 mH och C = 150 µF. Vid vilken frekvens blir Xᴸ = Xᶜ?',
     ask: { key: 'f0', label: 'f₀', unit: 'Hz', rel: 0.02 },
@@ -118,7 +118,7 @@ export const CHALLENGES = [
     after: 'Dra nu i f-reglaget och se att strömmen blir störst vid f₀.',
   },
   {
-    id: 'skenbar', tab: 'effekt', title: 'Skenbar effekt', deck: 'v40_03 · bild 6 och övning 3',
+    id: 'skenbar', tab: 'effekt', title: 'Skenbar effekt', deck: 'Skenbar effekt', theory: 's',
     setup: { U: 230, f: 60, P: 1200, pf: 0.75, character: 'induktiv', Qc: 0, Rcable: 0.2 },
     task: 'En pump tar P = 1 200 W vid PF = 0,75. Beräkna den skenbara effekten S.',
     ask: { key: 'S', label: 'S', unit: 'VA', rel: 0.01 },
@@ -127,7 +127,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 1200 * 0.75, msg: 'Du har multiplicerat med PF. S är större än P: S = P/PF.' }],
   },
   {
-    id: 'reaktiv', tab: 'effekt', title: 'Reaktiv effekt', deck: 'v40_03 · bild 7 och övning 4',
+    id: 'reaktiv', tab: 'effekt', title: 'Reaktiv effekt', deck: 'Exempel: reaktiv effekt från PF', theory: 'exempel',
     setup: { U: 230, f: 60, P: 1200, pf: 0.75, character: 'induktiv', Qc: 0, Rcable: 0.2 },
     task: 'Samma pump: P = 1 200 W och PF = 0,75. Beräkna den reaktiva effekten Q.',
     ask: { key: 'Q', label: 'Q', unit: 'var', rel: 0.01 },
@@ -136,7 +136,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 1600 - 1200, msg: 'Du har räknat S − P. Effekterna adderas som visare: Q = √(S² − P²).' }],
   },
   {
-    id: 'matstrom', tab: 'effekt', title: 'Matningsström', deck: 'v40_03 · övning 6',
+    id: 'matstrom', tab: 'effekt', title: 'Matningsström', deck: 'Ström och effektfaktor', theory: 'strom',
     setup: { U: 230, f: 60, P: 2300, pf: 0.5, character: 'induktiv', Qc: 0, Rcable: 0.2 },
     task: 'En last i byssan tar P = 2 300 W vid 230 V och PF = 0,50. Beräkna strömmen.',
     ask: { key: 'I', label: 'I', unit: 'A', rel: 0.01 },
@@ -145,7 +145,7 @@ export const CHALLENGES = [
     mistakes: () => [{ v: 10, msg: 'Du har räknat P/U utan effektfaktorn. Strömmen bestäms av S: I = P/(U · PF).' }],
   },
   {
-    id: 'kompensering', tab: 'effekt', title: 'Full kompensation', deck: 'v40_03 · bild 22 och övning 7',
+    id: 'kompensering', tab: 'effekt', title: 'Full kompensation', deck: 'Fördjupning: kompensation', theory: 'kompensering',
     setup: { U: 230, f: 60, P: 2000, pf: 0.8, character: 'induktiv', Qc: 0, Rcable: 0.2 },
     task: 'P = 2 000 W, PF = 0,80 induktivt. Hur stor kapacitiv reaktiv effekt Qᶜ ger PF = 1? Ange beloppet.',
     ask: { key: 'QcFull', label: '|Qᶜ|', unit: 'var', rel: 0.01, absolute: true },
@@ -160,3 +160,4 @@ export function expected(challenge) {
   const v = readouts(challenge.tab, challenge.setup)[challenge.ask.key];
   return challenge.ask.absolute ? Math.abs(v) : v;
 }
+
