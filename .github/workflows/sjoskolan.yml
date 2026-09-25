@@ -19,7 +19,7 @@ jobs:
           node-version: '22.16.0'
           package-manager-cache: false
       - name: Labbens modelltester
-        run: node --test sjoskolan/*/model.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
+        run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
