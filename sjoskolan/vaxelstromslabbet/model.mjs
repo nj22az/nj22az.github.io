@@ -72,7 +72,8 @@ export function seriesCircuit({ kind = 'RL', U, f, R, L, C }) {
     UR: I * R, UL: I * XL, UC: I * XC,
     P, Q, S, PF: S > 0 ? P / S : 1,
     f0: useL && useC ? resonance(L, C) : null,
-    character: Math.abs(X) < 1e-9 ? 'resistiv' : X > 0 ? 'induktiv' : 'kapacitiv',
+    // Inom ±0,5° räknas kretsen som i fas (resonans), annars efter nettoreaktansens tecken
+    character: Math.abs(Math.atan2(X, R) * RAD) < 0.5 ? 'resistiv' : X > 0 ? 'induktiv' : 'kapacitiv',
   };
 }
 
@@ -86,7 +87,9 @@ export function loadPower({ U, P, pf, character = 'induktiv', Qc = 0, Rcable = 0
   const Q = sign * P * Math.tan(phi);
   const S = P / pf;
   const I = S / U;
-  const Q2 = Q - Qc;
+  // En kondensator kompenserar bara induktiv last; för kapacitiv last ignoreras Qc
+  const Qcap = character === 'kapacitiv' ? 0 : Math.max(0, Qc);
+  const Q2 = Q - Qcap;
   const S2 = Math.hypot(P, Q2);
   const I2 = S2 / U;
   return {
@@ -94,6 +97,7 @@ export function loadPower({ U, P, pf, character = 'induktiv', Qc = 0, Rcable = 0
     after: {
       Q: Q2, S: S2, I: I2, PF: S2 > 0 ? P / S2 : 1,
       phi: Math.atan2(Q2, P) * RAD, loss: I2 * I2 * Rcable,
+      character: Math.abs(Q2) < 1e-6 * P ? 'resistiv' : Q2 > 0 ? 'induktiv' : 'kapacitiv',
     },
     QcFull: Q,
   };
@@ -116,7 +120,8 @@ export function fmt(value, digits = 3) {
   let decimals;
   if (abs === 0) decimals = 0;
   else decimals = Math.max(0, Math.min(4, digits - 1 - Math.floor(Math.log10(abs))));
-  const v = Number(value.toFixed(decimals));
+  let v = Number(value.toFixed(decimals));
+  if (decimals > 0 && Math.abs(v) >= 10 ** (digits - decimals)) { decimals -= 1; v = Number(value.toFixed(decimals)); }
   return v.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
 

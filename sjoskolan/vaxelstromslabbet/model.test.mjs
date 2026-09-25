@@ -67,9 +67,19 @@ test('kompensering: PF 0,50 → 1,00 halverar strömmen och kvarterar förlusten
   near(base.I, 10); near(full.after.I, 5); near(full.after.PF, 1); near(full.after.loss / base.loss, 0.25);
 });
 
-test('kapacitiv last har negativ Q', () => {
-  const r = loadPower({ U: 230, P: 1000, pf: 0.8, character: 'kapacitiv' });
-  near(r.Q, -750); near(r.phi, -36.87, 0.01);
+test('kapacitiv last har negativ Q och kondensator ignoreras', () => {
+  const r = loadPower({ U: 230, P: 1000, pf: 0.8, character: 'kapacitiv', Qc: 500 });
+  near(r.Q, -750); near(r.phi, -36.87, 0.01); near(r.after.Q, -750); near(r.after.I, r.I);
+});
+
+test('överkompensering blir kapacitiv', () => {
+  const r = loadPower({ U: 230, P: 1000, pf: 0.8, Qc: 1000 });
+  near(r.after.Q, -250); assert.equal(r.after.character, 'kapacitiv');
+  assert.equal(loadPower({ U: 230, P: 1000, pf: 0.8, Qc: 750 }).after.character, 'resistiv');
+});
+
+test('nära resonans räknas som i fas', () => {
+  assert.equal(seriesCircuit({ kind: 'RLC', U: 100, f: 50, R: 60, L: 0.1, C: 100e-6 }).character, 'resistiv');
 });
 
 test('momentan effekt: ren reaktans har medeleffekt noll', () => {
@@ -86,6 +96,7 @@ test('svensk formatering och tolkning av svar', () => {
   assert.equal(fmt(16.6667), '16,7');
   assert.equal(fmt(0.02), '0,0200');
   assert.equal(fmt(1840), '1 840');
+  assert.equal(fmt(99.99), '100'); assert.equal(fmt(9.999), '10,0');
   near(parseAnswer(' 16,7 '), 16.7); near(parseAnswer('−53,1'), -53.1); near(parseAnswer('1 840'), 1840);
   assert.ok(Number.isNaN(parseAnswer('abc'))); assert.ok(Number.isNaN(parseAnswer('')));
   assert.ok(isClose(16.7, 16.667, { rel: 0.01 })); assert.ok(!isClose(17.5, 16.667, { rel: 0.01 }));
@@ -93,8 +104,8 @@ test('svensk formatering och tolkning av svar', () => {
 
 test('alla uppgifter har rimliga facit och masker', () => {
   const want = {
-    period: 16.667, topp: 33.94, moment: 10.0, fas: 45, xl: 49.95, strom: 2.0, rc: -53.1, resonans: 50.33,
-    skenbar: 1840, reaktiv: 1217, matstrom: 20, kompensering: 1500,
+    period: 2.5, topp: 33.94, moment: 11.44, fas: 45, xl: 49.95, strom: 2.0, rc: -36.87, resonans: 58.12,
+    skenbar: 1600, reaktiv: 1058.3, matstrom: 20, kompensering: 1500,
   };
   assert.equal(CHALLENGES.length, Object.keys(want).length);
   for (const c of CHALLENGES) {
@@ -103,6 +114,9 @@ test('alla uppgifter har rimliga facit och masker', () => {
     assert.ok(c.mask.includes(c.ask.key), `${c.id} döljer inte svaret`);
     for (const k of Object.keys(DEFAULTS[c.tab])) assert.ok(k in c.setup, `${c.id} saknar ${k}`);
     assert.ok(isClose(e, e, c.ask));
+    // inget typfel får godkännas som rätt svar
+    for (const m of (c.mistakes ? c.mistakes() : [])) assert.ok(!isClose(c.ask.absolute ? Math.abs(m.v) : m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
+    if (c.id === 'moment') assert.ok(!isClose(c.setup.urms, e, c.ask), 'effektivvärdet godkänns som momentanvärde');
   }
 });
 

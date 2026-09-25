@@ -39,7 +39,6 @@ F=fig(4.3,3.4); ax=wave_ax(F,(0.16,0.14,0.8,0.8)); t=T(0,20,400); u=325*np.sin(2
 ax.plot(t,u,color=BLUE,lw=2.4); ax.set_xlim(0,21); ax.set_ylim(-400,440); ax.set_yticks([]); ax.set_xticks([0,5,10,15,20]); ax.set_xticklabels(["0","5","10","15","20 ms"])
 ax.axhline(230,color=GREEN,lw=1.8,ls="--"); ax.text(20.6,245,"U = 230 V (RMS)",ha="right",va="bottom",color=GREEN,fontsize=14)
 ax.plot([5],[325],"o",color=BLUE,ms=5); ax.text(5.6,335,"û ≈ 325 V",color=BLUE,fontsize=14,va="bottom")
-ax.text(1.3,-330,"U = û/√2",ha="left",fontsize=15,color=INK)
 save(F,"v40_01_s08_rms")
 # s15 Ö3
 F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,20,400); ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
@@ -62,7 +61,7 @@ ax.plot([5,5],[-4,4],color="#4F727E",lw=1); ax.plot([0,10],[0,0],color="#4F727E"
 tt=T(0,10,500); ax.plot(tt,2.5*np.sin(2*np.pi*tt/5),color="#7CF2B0",lw=2.2)
 ax.annotate("",xy=(8.75,2.5),xytext=(8.75,-2.5),arrowprops=dict(arrowstyle="<|-|>",color="#FFD166",lw=1.6))
 ax.plot([6.25,9.3],[2.5,2.5],color="#FFD166",lw=0.9,ls=":"); ax.plot([3.75,9.3],[-2.5,-2.5],color="#FFD166",lw=0.9,ls=":")
-ax.text(5,3.35,"20,0 V topp–topp",ha="center",va="center",color="#FFD166",fontsize=13)
+ax.text(0.3,-3.45,"û = ?   U = ?",ha="left",va="center",color="#FF8A8A",fontsize=15,zorder=6); ax.text(5,3.35,"20,0 V topp–topp",ha="center",va="center",color="#FFD166",fontsize=13)
 ax.axis("off"); save(F,"v40_01_s19_ovn5")
 # s21 medelvärde
 F=fig(4.3,3.4); ax=wave_ax(F,(0.08,0.12,0.88,0.82)); t=T(0,20,400); u=np.sin(2*np.pi*t/20)
@@ -78,7 +77,7 @@ ax.set_xlim(0,26); ax.set_ylim(-1.35,1.6); ax.set_xticks([0,5,10,15,20,25]); ax.
 ax.plot([5,5],[0,1],color=GRAY,lw=0.8,ls=":"); ax.plot([10,10],[0,1],color=GRAY,lw=0.8,ls=":")
 bracket(ax,5,10,1.1,"Δt = 5 ms")
 ax.text(3.2,0.45,"u₁",color=BLUE,fontsize=15); ax.text(13.2,0.95,"u₂",color=ORANGE,fontsize=15)
-ax.text(25.8,-1.3,"50 Hz: 5 ms = 90°",ha="right",fontsize=13,color=GRAY)
+ax.text(25.8,-1.3,"u₂ släpar u₁ 90° (50 Hz)",ha="right",fontsize=13,color=GRAY)
 save(F,"v40_01_s22_fas")
 # s23 RMS factor sine vs square
 F=fig(4.3,3.4); ax=wave_ax(F,(0.08,0.14,0.88,0.8)); t=T(0,20,800)
@@ -87,18 +86,20 @@ ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
 ax.set_xlim(0,21); ax.set_ylim(-1.35,1.75); ax.set_xticks([]); ax.set_yticks([])
 ax.text(0.4,1.4,"Sinus: U = û/√2",color=BLUE,fontsize=14); ax.text(11,1.4,"Fyrkant: U = û",color=ORANGE,fontsize=14)
 save(F,"v40_01_s23_vagformer")
-# s26 Ö6 / s28 Ö7
+# s26 Ö6 / s28 Ö7: bara tidpunkten markeras, inte kurvans värde
 for name,tp in (("v40_01_s26_ovn6",5),("v40_01_s28_ovn7",15)):
-    sine_basic(name,50,20,17,[0,5,10,15,20],lambda ax,tp=tp:(ax.plot([tp],[17*np.sin(2*np.pi*tp/20)],"o",color=RED,ms=7,zorder=5),
-        ax.plot([tp,tp],[0,17*np.sin(2*np.pi*tp/20)],color=RED,lw=1,ls=":"),
-        ax.text(tp+0.8 if tp<10 else tp-0.8,17*np.sin(2*np.pi*tp/20)*1.1,f"u({tp} ms) = ?",color=RED,fontsize=15,va="center",ha="left" if tp<10 else "right"),
-        ax.text(19.5,21 if tp>10 else -23,"û = 17,0 V, f = 50 Hz",ha="right",fontsize=13,color=BLUE)))
+    F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,20,600); ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
+    ax.set_xlim(0,21); ax.set_ylim(-1.45,1.6); ax.set_yticks([]); ax.set_xticks([0,tp,20]); ax.set_xticklabels(["0",f"{tp}","20 ms"])
+    ax.axvline(tp,color=RED,lw=1.6,ls="--")
+    ax.text(tp+0.6 if tp<10 else tp-0.6,1.45,f"u({tp} ms) = ?",color=RED,fontsize=15,va="top",ha="left" if tp<10 else "right")
+    ax.text(20.8,-1.4,"f = 50 Hz",ha="right",fontsize=13,color=BLUE)
+    save(F,name)
 # s30 Ö8
-F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,22,500)
-ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4); ax.plot(t,np.sin(2*np.pi*(t-2)/20),color=ORANGE,lw=2.4)
-ax.set_xlim(0,23); ax.set_ylim(-1.35,1.6); ax.set_xticks([0,5,10,15,20]); ax.set_xticklabels(["0","5","10","15","20 ms"]); ax.set_yticks([])
-ax.plot([5,5],[0,1],color=GRAY,lw=0.8,ls=":"); ax.plot([7,7],[0,1],color=GRAY,lw=0.8,ls=":")
-bracket(ax,5,7,1.08,"2,0 ms"); ax.text(22.5,-1.3,"φ = ?",ha="right",color=RED,fontsize=15)
+F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,12,500)
+ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.6); ax.plot(t,np.sin(2*np.pi*(t-2)/20),color=ORANGE,lw=2.6)
+ax.set_xlim(0,12.5); ax.set_ylim(-1.35,1.75); ax.set_xticks([0,2,4,6,8,10,12]); ax.set_xticklabels(["0","2","4","6","8","10","12 ms"]); ax.set_yticks([])
+ax.plot([5,5],[0,1.05],color=GRAY,lw=1,ls=":"); ax.plot([7,7],[0,1.05],color=GRAY,lw=1,ls=":")
+bracket(ax,5,7,1.12,"Δt = 2,0 ms"); ax.text(12.3,-1.3,"φ = ?",ha="right",color=RED,fontsize=16); ax.text(0.3,-1.3,"50 Hz",fontsize=13,color=GRAY)
 save(F,"v40_01_s30_ovn8")
 # s32 Ö9 circuit
 F=fig(4.3,3.0); ax=cax(F,(-1.3,3.2),(-0.4,2.75))
@@ -162,34 +163,34 @@ def ex(ax): arrow(ax,(3.4,1.5),(3.4,0.7),label="I = ?",lp=(3.25,1.1),ha="right")
 series_circuit("v40_02_s32_ovn9","100 V\nRMS",[("R","R\n30 Ω"),("L","Xᴸ\n50 Ω"),("C","Xᶜ\n10 Ω")],ex)
 def ex(ax): arrow(ax,(3.4,1.5),(3.4,0.7),label="I = ?",lp=(3.25,1.1),ha="right"); ax.text(1.7,0.55,"φ = ?",ha="center",color=RED,fontsize=15)
 series_circuit("v40_02_s34_ovn10","100 V\nRMS",[("R","R\n20 Ω"),("L","Xᴸ\n40 Ω"),("C","Xᶜ\n40 Ω")],ex)
-F=fig(4.3,3.0); triangle(F,30,40,("R = 30 Ω","Xᴸ = 40 Ω","|Z| = ?"),colors=(BLUE,GREEN,RED),rect=(0.06,0.04,0.9,0.92)); save(F,"v40_02_s15_ovn3")
+F=fig(4.3,3.0); triangle(F,30,40,("R = 30 Ω","Xᴸ = 40 Ω","|Z| = ?"),colors=(BLUE,GREEN,INK),rect=(0.06,0.04,0.9,0.92)); save(F,"v40_02_s15_ovn3")
 F=fig(4.3,3.0); triangle(F,30,40,("R = 30 Ω","Xᴸ = 40 Ω","|Z|"),colors=(BLUE,GREEN,INK),angle_label="φ = ?",rect=(0.06,0.04,0.9,0.92)); save(F,"v40_02_s26_ovn6")
 # s21 RL and RC triangles
 F=fig(4.3,4.4); ax=F.add_axes((0.02,0.02,0.96,0.96)); ax.set_aspect("equal"); ax.axis("off")
-for y0,s_,lab,txt in ((5.0,1,"Xᴸ","RL: strömmen\nsläpar, φ > 0"),(3.3,-1,"Xᶜ","RC: strömmen\nleder, φ < 0")):
-    ax.plot([0,3],[y0,y0],color=BLUE,lw=3); ax.plot([3,3],[y0,y0+s_*4*0.75],color=GREEN,lw=3); ax.plot([0,3],[y0,y0+s_*3],color=INK,lw=3)
+for y0,s_,lab,txt in ((5.2,1,"Xᴸ","RL: strömmen\nsläpar, φ > 0"),(3.6,-1,"Xᶜ","RC: strömmen\nleder, φ < 0")):
+    ax.plot([0,3],[y0,y0],color=BLUE,lw=3); ax.plot([3,3],[y0,y0+s_*4],color=GREEN,lw=3); ax.plot([0,3],[y0,y0+s_*4],color=INK,lw=3)
     ax.text(1.5,y0-s_*0.12,"R",ha="center",va="top" if s_>0 else "bottom",color=BLUE,fontsize=15)
-    ax.text(3.15,y0+s_*1.5,lab,va="center",color=GREEN,fontsize=15)
-    ax.text(1.2,y0+s_*1.75,"Z",ha="right",va="center",fontsize=15)
-    ax.add_patch(Arc((0,y0),1.8,1.8,theta1=0 if s_>0 else -45,theta2=45 if s_>0 else 0,color=INK,lw=1.3))
+    ax.text(3.15,y0+s_*2,lab,va="center",color=GREEN,fontsize=15)
+    ax.text(1.3,y0+s_*2.3,"|Z|",ha="right",va="center",fontsize=15)
+    ax.add_patch(Arc((0,y0),1.8,1.8,theta1=0 if s_>0 else -53.13,theta2=53.13 if s_>0 else 0,color=INK,lw=1.3))
     ax.text(1.0,y0+s_*0.3,"φ",va="center",fontsize=15)
-    ax.text(4.1,y0+s_*1.5,txt,va="center",fontsize=14)
-ax.set_xlim(-0.2,7.2); ax.set_ylim(0.1,8.3)
+    ax.text(4.1,y0+s_*2,txt,va="center",fontsize=14)
+ax.set_xlim(-0.2,7.2); ax.set_ylim(-0.7,9.5)
 save(F,"v40_02_s21_fasvinkel")
 
 # ================= v40_03 Effekt =================
-def ptri(name,P,Q,labs,angle=None,h=3.0,down=False):
-    F=fig(4.3,h); triangle(F,P,abs(Q),labs,angle_label=angle,down=down,rect=(0.06,0.04,0.9,0.92)); save(F,name)
-ptri("v40_03_s06_tre",3,4,("P (W)","Q (var)","S (VA)"),angle="φ",h=3.4)
-ptri("v40_03_s13_ovn2",0.75,0.6614,("P = ?","Q","S = 920 VA"),angle="cos φ = 0,75")
-ptri("v40_03_s15_ovn3",600,800,("P = 600 W","Q = 800 var","S = ?"),angle="PF = ?")
-ptri("v40_03_s17_ovn4",0.8,0.6,("P = ?","Q = ?","S = 2,0 kVA"),angle="cos φ = 0,80")
+def ptri(name,P,Q,labs,angle="φ",h=3.0,down=False,note=None):
+    F=fig(4.3,h); triangle(F,P,abs(Q),labs,angle_label=angle,down=down,rect=(0.06,0.04,0.9,0.92),note=note); save(F,name)
+ptri("v40_03_s06_tre",4,3,("P (W)","Q (var)","S (VA)"),h=3.4,note="cos φ = P/S")
+ptri("v40_03_s13_ovn2",0.75,0.6614,("P = ?","Q","S = 920 VA"),note="cos φ = 0,75")
+ptri("v40_03_s15_ovn3",600,800,("P = 600 W","Q = 800 var","S = ?"),note="PF = ?")
+ptri("v40_03_s17_ovn4",0.8,0.6,("P = ?","Q = ?","S = 2,0 kVA"),note="cos φ = 0,80")
 # s7 reactive p(t)
 F=fig(4.3,3.4); ax=wave_ax(F,(0.08,0.12,0.88,0.82)); t=T(0,20,500); u=np.sin(2*np.pi*t/20); i=0.7*np.sin(2*np.pi*t/20-np.pi/2); p=u*i*1.4
 ax.fill_between(t,p,0,where=p>=0,color=RED,alpha=0.18); ax.fill_between(t,p,0,where=p<0,color=GREEN,alpha=0.22)
 ax.plot(t,u,color=BLUE,lw=2.2); ax.plot(t,i,color=ORANGE,lw=2.2); ax.plot(t,p,color=RED,lw=1.6,ls="--")
 ax.set_xlim(0,21); ax.set_ylim(-1.3,1.55); ax.set_xticks([]); ax.set_yticks([])
-ax.text(0.3,1.25,"u",color=BLUE,fontsize=15); ax.text(1.4,1.25,"i (släpar 90°)",color=ORANGE,fontsize=15); ax.text(11,1.25,"p = u·i, medel 0",color=RED,fontsize=15)
+ax.text(0.3,1.25,"u",color=BLUE,fontsize=15); ax.text(2.6,1.25,"i släpar 90°",color=ORANGE,fontsize=15); ax.text(11,1.25,"p = u·i, medel 0",color=RED,fontsize=15)
 save(F,"v40_03_s07_reaktiv")
 # circuit loads
 def load_circ(name,src,loadtxt,extra):
@@ -213,25 +214,26 @@ def harm(name,extra):
 harm("v40_03_s21_overtoner",lambda ax:(ax.text(0.3,1.3,"u (sinus)",color=BLUE,fontsize=14),ax.text(8,1.3,"i med övertoner",color=ORANGE,fontsize=14),ax.text(20.7,-1.3,"PF = P/S ≠ cos φ₁",ha="right",fontsize=14)))
 harm("v40_03_s34_ovn10",lambda ax:(ax.text(0.3,1.3,"u",color=BLUE,fontsize=14),ax.text(2,1.3,"i",color=ORANGE,fontsize=14),ax.text(20.7,1.3,"P = 800 W   S = 1 000 VA",ha="right",fontsize=13),ax.text(20.7,-1.3,"PF = ?",ha="right",fontsize=15,color=RED)))
 # s22 compensation / s28 Ö7
-def comp(name,P,QL,QC,labs,h=3.4):
+def comp(name,P,QL,QC,labs,h=3.4,exercise=False):
     F=fig(4.3,h); ax=F.add_axes((0.04,0.04,0.92,0.92)); ax.set_aspect("equal"); ax.axis("off")
-    ax.plot([0,P],[0,0],color=BLUE,lw=3); ax.plot([P,P],[0,QL],color=GREEN,lw=3); ax.plot([0,P],[0,QL],color=RED,lw=3)
-    ax.plot([0,P],[0,QL-QC],color=RED,lw=2,ls="--")
-    ax.add_patch(FancyArrowPatch((P+2.1,QL),(P+2.1,QL-QC),arrowstyle="-|>",mutation_scale=16,color=ORANGE,lw=2.4))
-    ax.text(P/2,-0.3,labs[0],ha="center",va="top",color=BLUE,fontsize=15); ax.text(P+0.12,QL*0.72,labs[1],ha="left",va="center",color=GREEN,fontsize=15)
-    ax.text(P+2.25,QL-QC/2,labs[2],ha="left",va="center",color=ORANGE,fontsize=15); ax.text(P*0.3,QL*0.45,labs[3],ha="right",color=RED,fontsize=15)
-    if len(labs)>4: ax.text(P*0.42,(QL-QC)*0.42-0.08,labs[4],ha="left",va="top",color=RED,fontsize=14)
-    ax.set_xlim(-0.6,P+4.0); ax.set_ylim(-0.9,QL+0.4); save(F,name)
-comp("v40_03_s22_kompensering",3,4,2.6,("P oförändrad","Qᴸ","Qᶜ","S före","S efter"))
-comp("v40_03_s28_ovn7",3,4,4,("P = 3 kW","Q =\n+4 kvar","Qᶜ = ?","S före"),h=3.0)
+    ax.plot([0,P],[0,0],color=BLUE,lw=3); ax.plot([P,P],[0,QL],color=GREEN,lw=3); ax.plot([0,P],[0,QL],color=INK,lw=3)
+    L_=QL*0.5 if exercise else QC
+    ax.add_patch(FancyArrowPatch((P+2.2,QL),(P+2.2,QL-L_),arrowstyle="-|>",mutation_scale=16,color=RED if exercise else ORANGE,lw=2.6))
+    ax.text(P/2,-0.3,labs[0],ha="center",va="top",color=BLUE,fontsize=15); ax.text(P+0.15,QL*0.3,labs[1],ha="left",va="center",color=GREEN,fontsize=15)
+    ax.text(P+2.4,QL-L_/2,labs[2],ha="left",va="center",color=RED if exercise else ORANGE,fontsize=15); ax.text(P*0.38,QL*0.62,labs[3],ha="right",color=INK,fontsize=15)
+    if len(labs)>4: ax.text(P*0.5,-0.9,labs[4],ha="center",va="top",color=INK,fontsize=14)
+    ax.set_xlim(-2.4,P+4.1); ax.set_ylim(-1.5 if len(labs)>4 else -0.9,QL+0.4); save(F,name)
+comp("v40_03_s22_kompensering",3,4,4,("P = 3 kW oförändrad","Qᴸ =\n4 kvar","Qᶜ =\n4 kvar","S före = 5 kVA","S efter = P = 3 kVA"))
+comp("v40_03_s28_ovn7",3,4,4,("P = 3 kW","Q =\n+4 kvar","Qᶜ = ?","S före"),h=3.0,exercise=True)
 # s30 Ö8 two triangles same P
 F=fig(4.3,3.0); ax=F.add_axes((0.03,0.04,0.94,0.92)); ax.set_aspect("equal"); ax.axis("off")
 P=3.0
-for pf,col,lab,dy in ((0.6,RED,"PF 0,60",0),(0.9,BLUE,"PF 0,90",0)):
-    Q=P*np.tan(np.arccos(pf)); ax.plot([0,P,P,0],[0,0,Q,0],color=col,lw=2.6); ax.text(P+0.12,Q,f"{lab}: I = ?",color=col,fontsize=14,va="center")
+for pf,col,lab,dy in ((0.6,INK,"PF 0,60",0),(0.9,BLUE,"PF 0,90",0)):
+    Q=P*np.tan(np.arccos(pf)); ax.plot([0,P,P,0],[0,0,Q,0],color=col,lw=2.6); ax.text(P+0.12,Q,f"{lab}: I = ?",color=RED,fontsize=14,va="center")
 ax.text(P/2,-0.25,"P = 1 800 W, 230 V",ha="center",va="top",fontsize=14); ax.set_xlim(-0.2,6.1); ax.set_ylim(-0.8,4.3); save(F,"v40_03_s30_ovn8")
 # s32 Ö9 loss bars
-F=fig(4.3,3.0); ax=xf_axes(F,(0.14,0.16,0.82,0.66)); ax.bar([0,1],[144,64],color=[RED,BLUE],width=0.55,alpha=0.85)
-ax.set_xticks([0,1]); ax.set_xticklabels(["I = 12 A","I = 8 A"],fontsize=14,color=INK); ax.set_yticks([]); ax.spines["left"].set_visible(False)
-ax.text(0,150,"I² = 144",ha="center",fontsize=14); ax.text(1,70,"I² = ?",ha="center",fontsize=14,color=RED)
-ax.set_ylim(0,180); ax.set_title("Förlust = I²R  (samma kabel)",fontsize=14,color=INK); save(F,"v40_03_s32_ovn9")
+F=fig(4.3,3.0); ax=xf_axes(F,(0.14,0.16,0.82,0.66)); ax.bar([0,1],[12,8],color=[BLUE,"#6f9bc6"],width=0.55)
+ax.set_xticks([0,1]); ax.set_xticklabels(["före","efter"],fontsize=14,color=INK); ax.set_yticks([]); ax.spines["left"].set_visible(False)
+ax.text(0,12.4,"I = 12 A",ha="center",fontsize=14); ax.text(1,8.4,"I = 8 A",ha="center",fontsize=14)
+ax.text(1.55,6,"P₂/P₁ = ?",ha="left",fontsize=16,color=RED); ax.set_xlim(-0.5,2.6)
+ax.set_ylim(0,15); ax.set_title("Strömmen i samma kabel, Pförlust = I²R",fontsize=13,color=INK); save(F,"v40_03_s32_ovn9")

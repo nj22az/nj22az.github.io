@@ -13,9 +13,6 @@ K=1.25
 def fig(w=4.3,h=3.0):
     f=plt.figure(figsize=(w/K,h/K)); return f
 def save(f,name):
-    for ax in f.axes:
-        ax.xaxis.set_zorder(6)
-        for l in ax.get_xticklabels(): l.set_bbox(dict(fc="white",ec="none",pad=0.6))
     f.savefig(f"{OUT}/{name}.png",dpi=int(250*1.25),transparent=True); plt.close(f)
 def c(x):  # swedish decimal
     return str(x).replace(".",",")
@@ -24,7 +21,8 @@ def c(x):  # swedish decimal
 def wave_ax(f,rect=(0.13,0.16,0.83,0.78)):
     ax=f.add_axes(rect)
     for s in ("top","right"): ax.spines[s].set_visible(False)
-    ax.spines["bottom"].set_position(("data",0)); ax.spines["left"].set_color(GRAY); ax.spines["bottom"].set_color(GRAY)
+    ax.spines["left"].set_color(GRAY); ax.spines["bottom"].set_color(GRAY)
+    ax.axhline(0,color=GRAY,lw=1.0,zorder=1)
     ax.tick_params(colors=GRAY,labelsize=12,length=3)
     return ax
 def bracket(ax,x1,x2,y,text,color=INK,above=True,fs=14):
@@ -76,11 +74,12 @@ def _lab(ax,x,y,label,vert,lpos,off=0.28):
     d={"t":(0,off,"center","bottom"),"b":(0,-off,"center","top"),"l":(-off,0,"right","center"),"r":(off,0,"left","center")}[lpos]
     ax.text(x+d[0],y+d[1],label,ha=d[2],va=d[3],fontsize=14,color=INK,linespacing=1.15)
 def arrow(ax,p1,p2,color=BLUE,lw=1.8,ms=14,label=None,lp=None,ha="center",va="center",fs=14):
+    if label and "?" in label: color=RED
     ax.add_patch(FancyArrowPatch(p1,p2,arrowstyle="-|>",mutation_scale=ms,color=color,lw=lw,zorder=5,shrinkA=0,shrinkB=0))
     if label: ax.text(*(lp or ((p1[0]+p2[0])/2,(p1[1]+p2[1])/2)),label,color=color,ha=ha,va=va,fontsize=fs)
 
 # ---------- triangle (effekt/impedans) ----------
-def triangle(f,a,b,labels,colors=(BLUE,GREEN,RED),angle_label=None,down=False,rect=(0.02,0.02,0.96,0.96),pad=None):
+def triangle(f,a,b,labels,colors=(BLUE,GREEN,INK),angle_label=None,down=False,rect=(0.02,0.02,0.96,0.96),pad=None,note=None):
     """a=horizontal leg, b=vertical leg (data units, proportional). labels=(horiz,vert,hyp)."""
     ax=f.add_axes(rect); ax.set_aspect("equal"); ax.axis("off")
     s=-1 if down else 1
@@ -90,16 +89,18 @@ def triangle(f,a,b,labels,colors=(BLUE,GREEN,RED),angle_label=None,down=False,re
     ax.plot([0,a],[0,s*b],color=colors[2],lw=3,solid_capstyle="round")
     m=max(a,b)*0.07
     ax.plot([a-m,a-m,a],[0,s*m,s*m],color=GRAY,lw=1)
-    ax.text(a/2,-s*m*1.2,labels[0],ha="center",va="top" if not down else "bottom",color=colors[0],fontsize=15)
-    ax.text(a+m*1.2,s*b/2,labels[1],ha="left",va="center",color=colors[1],fontsize=15)
+    lc=[RED if "?" in l else c_ for l,c_ in zip(labels,colors)]
+    ax.text(a/2,-s*m*1.2,labels[0],ha="center",va="top" if not down else "bottom",color=lc[0],fontsize=15)
+    ax.text(a+m*1.2,s*b/2,labels[1],ha="left",va="center",color=lc[1],fontsize=15)
     ang=np.degrees(np.arctan2(b,a))
-    ax.text(a/2-m*1.2*np.sin(np.radians(ang)),s*(b/2+m*1.2*np.cos(np.radians(ang))),labels[2],ha="right",va="bottom" if not down else "top",color=colors[2],fontsize=15,rotation=0)
+    ax.text(a/2-m*1.2*np.sin(np.radians(ang)),s*(b/2+m*1.2*np.cos(np.radians(ang))),labels[2],ha="right",va="bottom" if not down else "top",color=lc[2],fontsize=15,rotation=0)
+    if note: ax.text(-max(a,b)*0.1,s*(b+max(a,b)*0.32),note,ha="left",va="top" if not down else "bottom",fontsize=15,color=RED if "?" in note else INK)
     if angle_label:
         r=a*0.28
         t1,t2=(0,ang) if not down else (-ang,0)
         ax.add_patch(Arc((0,0),2*r,2*r,theta1=t1,theta2=t2,color=INK,lw=1.3))
-        am=np.radians(s*ang/2); ax.text(r*1.12*np.cos(am),r*1.12*np.sin(am),angle_label,ha="left",va="center",fontsize=15)
+        am=np.radians(s*ang/2); ax.text(r*1.12*np.cos(am),r*1.12*np.sin(am),angle_label,ha="left",va="center",fontsize=15,color=RED if "?" in angle_label else INK)
     W=a+ (pad or max(a,b)*0.75); ax.set_xlim(-max(a,b)*0.12, W)
-    lo,hi=(-m*4, b+m*2) if not down else (-b-m*2, m*4)
+    lo,hi=(-m*4, b+m*2+(max(a,b)*0.3 if note else 0)) if not down else (-b-m*2, m*4)
     ax.set_ylim(lo,hi)
     return ax

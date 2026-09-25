@@ -3,7 +3,7 @@ import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClo
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs';
 
 const $ = (id) => document.getElementById(id);
-const C = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', soft: '#edf3f7' };
+const C = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', slate: '#4a6378', purple: '#7a3fa0', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', soft: '#edf3f7' };
 const STORE = 'sjoskolan-vaxelstrom-v1';
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -21,7 +21,7 @@ function saveSolved() {
 const CONTROLS = {
   sinus: [
     { key: 'shape', label: 'Kurvform', type: 'select', options: Object.entries(SHAPES).map(([v, s]) => [v, s.label]) },
-    { key: 'urms', label: 'Effektivvärde U', unit: 'V', min: 1, max: 250, step: 0.1 },
+    { key: 'urms', label: 'Effektivvärde U', unit: 'V', min: 1, max: 690, step: 0.1 },
     { key: 'f', label: 'Frekvens f', unit: 'Hz', min: 1, max: 400, step: 1 },
     { key: 'window', label: 'Tidsaxel', type: 'select', options: [['auto', 'Två perioder'], ['20', '0–20 ms'], ['40', '0–40 ms'], ['100', '0–100 ms']] },
     { key: 't', label: 'Tidpunkt t', unit: 'ms', min: 0, max: (s) => windowMs(s), step: 0.05 },
@@ -38,9 +38,10 @@ const CONTROLS = {
   ],
   effekt: [
     { key: 'U', label: 'Spänning U (RMS)', unit: 'V', min: 12, max: 690, step: 1 },
+    { key: 'f', label: 'Nätfrekvens', type: 'select', options: [['60', '60 Hz (vanligt ombord)'], ['50', '50 Hz (land)']] },
     { key: 'P', label: 'Aktiv effekt P', unit: 'W', min: 100, max: 20000, step: 10 },
     { key: 'pf', label: 'Effektfaktor PF = cos φ', unit: '', min: 0.1, max: 1, step: 0.01 },
-    { key: 'character', label: 'Lastens karaktär', type: 'select', options: [['induktiv', 'Induktiv (motor, spole)'], ['kapacitiv', 'Kapacitiv']] },
+    { key: 'character', label: 'Lastens karaktär', type: 'select', options: [['induktiv', 'Induktiv (motor, pump, fläkt)'], ['kapacitiv', 'Kapacitiv (t.ex. filter, lätt belastad kabel)']] },
     { key: 'Qc', label: 'Kompensering Qᶜ (kondensator)', unit: 'var', min: 0, max: (s) => Math.max(100, Math.ceil(readouts('effekt', s).QcFull * 1.5 / 10) * 10), step: 10, show: (s) => s.character === 'induktiv' },
     { key: 'Rcable', label: 'Kabelns slingresistans', unit: 'Ω', min: 0, max: 2, step: 0.01 },
   ],
@@ -95,7 +96,9 @@ function onControl(c, el) {
     const range = $(`ctl-${c.key}`);
     if (range) range.setAttribute('aria-valuetext', `${fmt(v)} ${c.unit}`);
   }
+  if (c.key === 'f' && c.type === 'select') v = Number(v);
   s[c.key] = v;
+  if (c.key === 'character' && v === 'kapacitiv') s.Qc = 0;
   // val och kryssrutor kan ändra vilka reglage som visas; skjutreglage byts inte ut under dragning
   if (c.type === 'select' || c.type === 'check') renderControls();
   else refreshLimits();
@@ -139,13 +142,13 @@ function figure(title, content, cls = '') {
 }
 
 /** Tidsdiagram. series: [{fn, color, width, dash, label}], x i ms. */
-function timePlot({ w = 640, h = 300, t0 = 0, t1, ymax, yTick, series, yLabel = 'V', showScale = true, extra = () => '', label, xLabelUnit = 'ms' }) {
+function timePlot({ w = 640, h = 300, t0 = 0, t1, ymax, yTick, series, yLabel = 'V', showScale = true, showTicks = true, extra = () => '', label, xLabelUnit = 'ms' }) {
   const m = { l: 56, r: 18, t: 18, b: 38 };
   const X = (t) => m.l + ((t - t0) / (t1 - t0)) * (w - m.l - m.r);
   const Y = (v) => m.t + (1 - (v + ymax) / (2 * ymax)) * (h - m.t - m.b);
   let b = `<rect x="${m.l}" y="${m.t}" width="${w - m.l - m.r}" height="${h - m.t - m.b}" fill="#fff"/>`;
   const ticks = niceTicks(t0, t1, 6);
-  for (const t of ticks) b += line(X(t), m.t, X(t), h - m.b, C.grid, 1) + txt(X(t), h - m.b + 16, fmt(t, 3), { color: C.muted, size: 12, anchor: 'middle' });
+  for (const t of ticks) b += line(X(t), m.t, X(t), h - m.b, C.grid, 1) + (showTicks ? txt(X(t), h - m.b + 16, fmt(t, 3), { color: C.muted, size: 12, anchor: 'middle' }) : '');
   b += txt(w - m.r, h - 8, `t (${xLabelUnit})`, { color: C.muted, size: 12, anchor: 'end' });
   if (showScale) {
     const yt = yTick ?? ymax / 1.25;
@@ -216,20 +219,20 @@ function renderSinus(s, r) {
     }
     return b;
   };
-  const plot = timePlot({ t1: W, ymax, yTick: peak, series, showScale: !hideScale, extra, label: `Tidsdiagram för ${SHAPES[s.shape].label.toLowerCase()} med effektivvärde ${fmt(s.urms)} volt och frekvens ${s.f} hertz` });
+  const plot = timePlot({ t1: W, ymax, yTick: peak, series, showScale: !hideScale, showTicks: !masked('ticks'), extra, label: `Tidsdiagram för ${SHAPES[s.shape].label.toLowerCase()} med effektivvärde ${fmt(s.urms)} volt och frekvens ${s.f} hertz` });
   const leg = legend([[C.blue, 'u(t)'], ...(s.showB ? [[C.orange, 'andra signalen']] : []), [C.green, 'effektivvärde', true], [C.red, 'vald tidpunkt']]);
   $('figures').innerHTML = figure('Spänning över tiden', plot + leg, 'wide');
 
   const items = [
     ['û', show('peak', r.peak, 'V'), 'toppvärde'],
-    ['Uₜₜ', show('pp', r.pp, 'V'), 'topp till topp'],
+    ['Upp', show('pp', r.pp, 'V'), 'topp till topp'],
     ['U', `${fmt(r.rms)} V`, 'effektivvärde (RMS)'],
-    ['Uₘₑ𝒹', '0 V', 'medelvärde över en period'],
+    ['Umedel', '0 V', 'medelvärde över en period'],
     ['T', show('T', r.T, 'ms'), 'periodtid'],
     ['f', `${fmt(s.f)} Hz`, 'frekvens'],
     [`u(${fmt(t)} ms)`, show('ut', r.ut, 'V'), 'momentanvärde'],
   ];
-  if (s.showB) items.push(['φ', masked('phi') ? '?' : `${fmt(r.phi, 3)}°`, 'fasförskjutning']);
+  if (s.showB) items.push(['φ', masked('phi') ? '?' : `${fmt(r.phi, 3)}°`, 'fasförskjutning; positiv: signal 2 släpar']);
   readoutList(items);
   const factor = { sinus: 'û/√2', fyrkant: 'û', triangel: 'û/√3' }[s.shape];
   $('principle').innerHTML = `För ${SHAPES[s.shape].label.toLowerCase()} gäller U = ${factor}. Medelvärdet är noll eftersom positiv och negativ halvperiod tar ut varandra, men effektivvärdet värmer en resistor lika mycket som en likspänning med samma värde.`;
@@ -260,16 +263,16 @@ function renderImpedans(s, r) {
   const sc = 150 / vmax; const ox = 60, oy = 170;
   let pb = line(ox - 10, oy, 400, oy, C.grid, 1) + line(ox, 20, ox, 320, C.grid, 1);
   const x1 = ox + r.UR * sc; const y2 = oy - (r.UL - r.UC) * sc;
-  pb += arrow(ox, oy, x1, oy, C.blue);
-  pb += txt((ox + x1) / 2, oy + 18, hideVals || masked('UR') ? 'Uᴿ' : `Uᴿ = ${fmt(r.UR)} V`, { color: C.blue, size: 13, anchor: 'middle' });
+  pb += arrow(ox, oy, x1, oy, C.slate);
+  pb += txt((ox + x1) / 2, oy + 18, hideVals || masked('UR') ? 'Uᴿ' : `Uᴿ = ${fmt(r.UR)} V`, { color: C.slate, size: 13, anchor: 'middle' });
   if (hasL) { pb += arrow(x1, oy, x1, oy - r.UL * sc, C.green); pb += txt(x1 + 8, oy - r.UL * sc * 0.78, hideVals || masked('UL') ? 'Uᴸ' : `Uᴸ = ${fmt(r.UL)} V`, { color: C.green, size: 13 }); }
   if (hasC) {
     const xs = hasL ? x1 + 16 : x1; const ys = hasL ? oy - r.UL * sc : oy;
-    pb += arrow(xs, ys, xs, ys + r.UC * sc, C.orange);
-    pb += txt(xs + 8, ys + r.UC * sc * 0.78, hideVals ? 'Uᶜ' : `Uᶜ = ${fmt(r.UC)} V`, { color: C.orange, size: 13 });
+    pb += arrow(xs, ys, xs, ys + r.UC * sc, C.purple);
+    pb += txt(xs + 8, ys + r.UC * sc * 0.78, hideVals ? 'Uᶜ' : `Uᶜ = ${fmt(r.UC)} V`, { color: C.purple, size: 13 });
   }
-  pb += arrow(ox, oy, x1, y2, C.red, 3.4);
-  pb += txt(ox + (x1 - ox) * 0.45 - 8, oy + (y2 - oy) * 0.45 - 8, `U = ${fmt(s.U)} V`, { color: C.red, size: 13, anchor: 'end', weight: 700 });
+  pb += arrow(ox, oy, x1, y2, C.blue, 3.4);
+  pb += txt(ox + (x1 - ox) * 0.45 - 8, oy + (y2 - oy) * 0.45 - 8, `U = ${fmt(s.U)} V`, { color: C.blue, size: 13, anchor: 'end', weight: 700 });
   if (Math.abs(r.phi) > 1) {
     const rr = 44; const a = (-r.phi * Math.PI) / 180;
     pb += `<path d="M${ox + rr},${oy} A${rr},${rr} 0 0 ${r.phi > 0 ? 0 : 1} ${(ox + rr * Math.cos(a)).toFixed(1)},${(oy + rr * Math.sin(a)).toFixed(1)}" fill="none" stroke="${C.ink}" stroke-width="1.5"/>`;
@@ -284,12 +287,12 @@ function renderImpedans(s, r) {
   const plot = timePlot({
     w: 640, h: 250, t1: 2 * T, ymax: umax * 1.25, yTick: umax, showScale: true, xLabelUnit: 'ms',
     series: [
-      { fn: (ms) => umax * Math.sin((2 * Math.PI * ms) / T), color: C.red },
+      { fn: (ms) => umax * Math.sin((2 * Math.PI * ms) / T), color: C.blue },
       { fn: (ms) => k * imax * Math.sin((2 * Math.PI * ms) / T - (r.phi * Math.PI) / 180), color: C.orange },
     ],
     label: 'Spänning och ström över tiden',
   });
-  const plotFig = figure('u och i över tiden', plot + legend([[C.red, 'u(t)'], [C.orange, 'i(t), skalad för jämförelse']]) + `<p class="fig-note">${r.character === 'induktiv' ? 'Strömmen släpar efter spänningen.' : r.character === 'kapacitiv' ? 'Strömmen leder före spänningen.' : 'Strömmen är i fas med spänningen.'}</p>`, 'wide');
+  const plotFig = figure('u och i över tiden', plot + legend([[C.blue, 'u(t)'], [C.orange, 'i(t), skalad för jämförelse']]) + (masked('character') ? '' : `<p class="fig-note">${r.character === 'induktiv' ? 'Strömmen släpar efter spänningen.' : r.character === 'kapacitiv' ? 'Strömmen leder före spänningen.' : 'Strömmen är i fas med spänningen (resonans eller ren resistans).'}</p>`), 'wide');
 
   // I som funktion av f
   let freqFig = '';
@@ -300,7 +303,7 @@ function renderImpedans(s, r) {
     const w = 420, h = 220, m = { l: 48, r: 14, t: 16, b: 36 };
     const X = (f) => m.l + (f / fmax) * (w - m.l - m.r); const Y = (i) => h - m.b - (i / (peakI * 1.15)) * (h - m.t - m.b);
     let fb = '';
-    for (const f of niceTicks(0, fmax, 5)) fb += line(X(f), m.t, X(f), h - m.b, C.grid, 1) + txt(X(f), h - m.b + 15, fmt(f, 3), { size: 11, color: C.muted, anchor: 'middle' });
+    for (const f of niceTicks(0, fmax, 5)) fb += line(X(f), m.t, X(f), h - m.b, C.grid, 1) + (masked('freqTicks') ? '' : txt(X(f), h - m.b + 15, fmt(f, 3), { size: 11, color: C.muted, anchor: 'middle' }));
     fb += line(m.l, h - m.b, w - m.r, h - m.b, '#9fb2c1', 1.5) + line(m.l, m.t, m.l, h - m.b, '#9fb2c1', 1.5);
     let d = ''; for (let j = 1; j <= 240; j++) { const f = (fmax * j) / 240; d += `${j > 1 ? 'L' : 'M'}${X(f).toFixed(1)},${Y(Iat(f)).toFixed(1)}`; }
     fb += `<path d="${d}" fill="none" stroke="${C.orange}" stroke-width="2.6"/>`;
@@ -315,35 +318,38 @@ function renderImpedans(s, r) {
   if (hasL) items.push(['Xᴸ', show('XL', r.XL, 'Ω'), 'induktiv reaktans, 2πfL']);
   if (hasC) items.push(['Xᶜ', show('XC', r.XC, 'Ω'), 'kapacitiv reaktans, 1/(2πfC)']);
   if (hasL || hasC) items.push(['X', show('X', r.X, 'Ω'), 'nettoreaktans Xᴸ − Xᶜ']);
-  items.push(['|Z|', show('Z', r.Z, 'Ω'), 'impedansens belopp'], ['I', show('I', r.I, 'A'), 'ström (RMS)'], ['φ', phiTxt, r.character === 'resistiv' ? 'i fas' : r.phi > 0 ? 'strömmen släpar' : 'strömmen leder']);
+  items.push(['|Z|', show('Z', r.Z, 'Ω'), 'impedansens belopp'], ['I', show('I', r.I, 'A'), 'ström (RMS)'], ['φ', phiTxt, masked('character') ? 'fasvinkel' : r.character === 'resistiv' ? 'i fas' : r.phi > 0 ? 'strömmen släpar' : 'strömmen leder']);
   items.push(['Uᴿ', show('UR', r.UR, 'V'), 'över resistorn']);
   if (hasL) items.push(['Uᴸ', show('UL', r.UL, 'V'), 'över spolen']);
   if (hasC) items.push(['Uᶜ', show('UC', r.UC, 'V'), 'över kondensatorn']);
   if (r.f0) items.push(['f₀', show('f0', r.f0, 'Hz'), 'resonansfrekvens']);
   readoutList(items);
-  $('principle').innerHTML = hasL && hasC
+  const over = Math.max(r.UL, r.UC) > s.U * 1.001;
+  $('principle').innerHTML = (over && !masked('phasorValues') ? '<strong>Obs:</strong> Spänningen över spolen eller kondensatorn är större än källspänningen. Nära resonans kan komponentspänningar bli farligt höga. Samma fenomen gör kondensatorbatterier tillsammans med övertoner från frekvensomriktare till en risk ombord. ' : '') + (hasL && hasC
     ? 'Delspänningarna är visare. Uᴸ och Uᶜ pekar åt motsatta håll och tar delvis ut varandra, därför kan de var för sig bli större än källspänningen. Vid resonans är Xᴸ = Xᶜ och bara R begränsar strömmen.'
-    : 'Resistorns spänning ligger i fas med strömmen och den reaktiva spänningen 90° från den. Därför adderas beloppen med Pythagoras, inte direkt: |Z| = √(R² + X²).';
+    : 'Resistorns spänning ligger i fas med strömmen och den reaktiva spänningen 90° från den. Därför adderas beloppen med Pythagoras, inte direkt: |Z| = √(R² + X²).');
 }
 
 function renderEffekt(s, r) {
   const hideTri = masked('triangleValues');
   const Pk = s.P; const Qk = r.Q; const Q2 = r.Q2;
-  const vmax = Math.max(Pk, Math.abs(Qk), 1);
-  const w = 500, h = 330; const sc = 200 / vmax; const ox = 50; const oy = Qk >= 0 ? 290 : 50;
+  const qTop = Math.max(Qk, Q2, 0), qBot = Math.min(Qk, Q2, 0);
+  const vmax = Math.max(Pk, qTop - qBot, 1);
+  const w = 500, h = 330; const sc = 240 / vmax; const ox = 50; const oy = 40 + qTop * sc;
   const up = (q) => oy - q * sc;
   let tb = '';
   tb += arrow(ox, oy, ox + Pk * sc, oy, C.blue, 3.4);
   tb += arrow(ox + Pk * sc, oy, ox + Pk * sc, up(Qk), C.green, 3.4);
-  tb += arrow(ox, oy, ox + Pk * sc, up(Qk), C.red, 3.4);
-  tb += txt(ox + (Pk * sc) / 2, oy + (Qk >= 0 ? 20 : -16), `P = ${fmt(Pk)} W`, { color: C.blue, size: 13, anchor: 'middle' });
+  tb += arrow(ox, oy, ox + Pk * sc, up(Qk), C.ink, 3.4);
+  tb += txt(ox + (Pk * sc) / 2, oy + (Qk >= 0 && Q2 >= 0 ? 20 : Qk < 0 ? -16 : -12), `P = ${fmt(Pk)} W`, { color: C.blue, size: 13, anchor: 'middle' });
   tb += txt(ox + Pk * sc + 10, (oy + up(Qk)) / 2, hideTri || masked('Q') ? 'Q = ?' : `Q = ${fmt(Qk)} var`, { color: C.green, size: 13 });
-  tb += txt(ox + (Pk * sc) / 2 - 12, (oy + up(Qk)) / 2 - 8, hideTri || masked('S') ? 'S = ?' : `S = ${fmt(r.S)} VA`, { color: C.red, size: 13, anchor: 'end' });
+  tb += txt(ox + (Pk * sc) / 2 - 12, (oy + up(Qk)) / 2 - 8, hideTri || masked('S') ? 'S = ?' : `S = ${fmt(r.S)} VA`, { color: C.ink, size: 13, anchor: 'end' });
   if (s.Qc > 0 && s.character === 'induktiv') {
+    if (Q2 < 0) tb += line(ox - 10, oy, ox + Pk * sc + 20, oy, C.grid, 1);
     tb += arrow(ox + Pk * sc + 135, up(Qk), ox + Pk * sc + 135, up(Q2), C.orange, 3);
     tb += txt(ox + Pk * sc + 145, (up(Qk) + up(Q2)) / 2, `Qᶜ = ${fmt(s.Qc)} var`, { color: C.orange, size: 13 });
-    tb += `<line x1="${ox}" y1="${oy}" x2="${(ox + Pk * sc).toFixed(1)}" y2="${up(Q2).toFixed(1)}" stroke="${C.red}" stroke-width="2.4" stroke-dasharray="7 6"/>`;
-    tb += txt(ox + Pk * sc * 0.55, up(Q2 * 0.55) + (Q2 >= 0 ? 16 : -12), hideTri ? 'S efter' : `S efter = ${fmt(r.S2)} VA`, { color: C.red, size: 12 });
+    tb += `<line x1="${ox}" y1="${oy}" x2="${(ox + Pk * sc).toFixed(1)}" y2="${up(Q2).toFixed(1)}" stroke="${C.ink}" stroke-width="2.4" stroke-dasharray="7 6"/>`;
+    tb += txt(ox + Pk * sc * 0.6, up(Q2 * 0.6) + (Q2 >= 0 ? 16 : 18), hideTri ? 'S efter' : `S efter = ${fmt(r.S2)} VA`, { color: C.ink, size: 12 });
   }
   const tri = svg(w, h, tb, 'Effekttriangel');
 
@@ -359,32 +365,33 @@ function renderEffekt(s, r) {
   const bars = svg(bw, bh, bb, 'Ström och kabelförlust före och efter kompensering');
 
   // u, i, p
-  const T = 20; const U = s.U; const I = r.I; const phi = r.phi;
+  const fN = Number(s.f) || 50; const T = 1000 / fN; const U = s.U; const I = r.I; const phi = r.phi;
   const umax = U * Math.SQRT2; const pmax = 2 * U * I;
   const kI = (umax * 0.6) / (I * Math.SQRT2 || 1); const kP = (umax * 0.9) / pmax;
   const plot = timePlot({
     w: 640, h: 260, t1: 2 * T, ymax: umax * 1.2, showScale: false,
     series: [
-      { fn: (ms) => kP * instantPower({ U, I, f: 50, phiDeg: phi }, ms / 1000).p, color: C.red, width: 2, dash: '6 4', fill: C.red },
-      { fn: (ms) => instantPower({ U, I, f: 50, phiDeg: phi }, ms / 1000).u, color: C.blue },
-      { fn: (ms) => kI * instantPower({ U, I, f: 50, phiDeg: phi }, ms / 1000).i, color: C.orange },
+      { fn: (ms) => kP * instantPower({ U, I, f: fN, phiDeg: phi }, ms / 1000).p, color: C.red, width: 2, dash: '6 4', fill: C.red },
+      { fn: (ms) => instantPower({ U, I, f: fN, phiDeg: phi }, ms / 1000).u, color: C.blue },
+      { fn: (ms) => kI * instantPower({ U, I, f: fN, phiDeg: phi }, ms / 1000).i, color: C.orange },
     ],
     extra: ({ X, Y, m, w: ww }) => line(m.l, Y(kP * s.P), ww - m.r, Y(kP * s.P), C.red, 2) + txt(m.l + 6, Y(kP * s.P) - 10, 'medeleffekt P', { color: C.red, size: 12, weight: 700 }),
     label: 'Momentan spänning, ström och effekt',
   });
-  $('figures').innerHTML = figure('Effekttriangel', tri) + figure('Före och efter kompensering', bars) + figure('Momentan effekt p = u · i (utan kompensering, 50 Hz)', plot + legend([[C.blue, 'u'], [C.orange, 'i (skalad)'], [C.red, 'p (skalad)', true]]), 'wide');
+  $('figures').innerHTML = figure('Effekttriangel', tri) + figure('Före och efter kompensering', bars) + figure(`Momentan effekt p = u · i (utan kompensering, ${fN} Hz)`, plot + legend([[C.blue, 'u'], [C.orange, 'i (skalad)'], [C.red, 'p (skalad)', true]]), 'wide');
 
   readoutList([
     ['S', show('S', r.S, 'VA'), 'skenbar effekt, P/PF'],
     ['Q', show('Q', r.Q, 'var'), 'reaktiv effekt'],
     ['φ', `${fmt(r.phi)}°`, 'fasvinkel, cos φ = PF'],
     ['I', show('I', r.I, 'A'), 'matningsström'],
-    ['Qᶜ för PF 1', show('QcFull', r.QcFull, 'var'), 'kompensering som krävs'],
-    ['PF efter', `${fmt(r.PF2, 3)}`, 'med vald Qᶜ'],
+    ['Qᶜ för PF 1', s.character === 'kapacitiv' ? '–' : show('QcFull', r.QcFull, 'var'), s.character === 'kapacitiv' ? 'kondensator hjälper inte vid kapacitiv last' : 'kondensator som krävs'],
+    ['PF efter', `${fmt(r.PF2, 3)}${r.character2 === 'resistiv' ? '' : r.character2 === 'kapacitiv' ? ' kap.' : ' ind.'}`, r.character2 === 'kapacitiv' && s.character === 'induktiv' ? 'överkompenserat: matningen blir kapacitiv' : 'med vald Qᶜ'],
     ['I efter', show('I2', r.I2, 'A'), 'med vald Qᶜ'],
     ['Förlust', masked('loss') || masked('loss2') ? '?' : `${fmt(r.loss)} → ${fmt(r.loss2)} W`, 'i kabeln, I²R'],
   ]);
-  $('principle').innerHTML = 'P utför arbete. Q pendlar mellan källa och last och ger medeleffekt noll, men kräver ändå ström i kabeln. En kondensator levererar reaktiv effekt lokalt, så matningens S och I minskar medan lastens P är oförändrad.';
+  const overcomp = s.character === 'induktiv' && r.character2 === 'kapacitiv';
+  $('principle').innerHTML = (overcomp ? '<strong>Överkompenserat:</strong> matningen blir kapacitiv. Det undviks ombord, där generatorns spänningsregulator och skydd är gjorda för induktiv last. ' : '') + 'P utför arbete. Q pendlar mellan källa och last och ger medeleffekt noll, men kräver ändå ström i kabeln. En kondensator levererar reaktiv effekt lokalt, så matningens S och I minskar medan lastens P är oförändrad. Ombord används kondensatorbatterier sällan: generatorn är märkt i kVA vid cos φ 0,8 och levererar Q själv. Låg PF syns som hög ström i generator och brytare fast kW-lasten är låg.';
 }
 
 function readoutList(items) {
@@ -455,7 +462,9 @@ function checkAnswer(ev) {
   state.attempts += 1;
   fb.className = 'feedback warn';
   let msg = 'Inte ännu. ';
-  if (isClose(ans * 1000, e, c.ask) || isClose(ans / 1000, e, c.ask)) msg += 'Talet stämmer men enheten är fel med en faktor 1 000. ';
+  const typical = (c.mistakes ? c.mistakes() : []).find((m) => isClose(ans, c.ask.absolute ? Math.abs(m.v) : m.v, { rel: 0.02, abs: c.ask.abs || 0 }));
+  if (typical) msg += `${typical.msg} `;
+  else if (isClose(ans * 1000, e, c.ask) || isClose(ans / 1000, e, c.ask)) msg += 'Talet stämmer men enheten är fel med en faktor 1 000. ';
   else if (!c.ask.absolute && isClose(-ans, e, c.ask)) msg += 'Beloppet stämmer, men tecknet är fel. ';
   else if (isClose(ans * Math.SQRT2, e, c.ask) || isClose(ans / Math.SQRT2, e, c.ask)) msg += 'Du är en faktor √2 fel. Blanda inte ihop topp- och effektivvärde. ';
   else msg += 'Kontrollera formeln och enheterna. ';
