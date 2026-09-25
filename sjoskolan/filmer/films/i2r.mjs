@@ -17,7 +17,7 @@ function cable(ctx, t, I) {
   for (let i = 0; i < n; i++) { const x = x0 + 40 + ((off + i * (x1 - x0) / n) % (x1 - x0 - 100)); arrow(ctx, x, y, x + 46, y, '#ffffff', 5, 16); }
   text(ctx, `Ledning, R = ${nf(R, 1)} Ω`, x0, y - 50, { size: 26, color: COL.muted, weight: 400 });
   text(ctx, `I = ${nf(I)} A`, x0, y + 58, { size: 34, weight: 700, color: COL.blue });
-  text(ctx, `P = I² · R = ${nf(P)} W`, x1, y + 58, { size: 34, weight: 700, color: COL.orange, align: 'right' });
+  text(ctx, `P_{förlust} = I² · R = ${nf(P)} W`, x1, y + 58, { size: 34, weight: 700, color: COL.orange, align: 'right' });
 }
 /** P som funktion av I, 0–30 A, med markerad punkt. */
 function curve(ctx, I, { upto = 1 } = {}) {
@@ -35,49 +35,52 @@ export default compile({
   id: 'dubbel-strom', title: 'Dubbel ström', sub: 'Fyra gånger förlust: P = I² · R', week: 'Vecka 39', deck: 'v39_01 Effekt och energi',
   scenes: [
     {
-      dur: 6, cast: (t) => ({ wave: t < 3 }),
+      dur: 12, cast: (t) => ({ wave: t < 5 }),
       draw(ctx, t) { titleCard(ctx, t, 'Dubbel ström', 'Fyra gånger förlust: P = I² · R', 'Vecka 39'); },
-      say: [[0.5, 5.8, 'Sigge', 'Varför blir kablar och klämmor varma? Och varför så mycket varmare vid hög last?']],
-    },
-    {
-      dur: 11,
-      draw(ctx, t) { stage(ctx, t); heading(ctx, 'Ström värmer ledningen'); cable(ctx, t, 10); },
-      say: [[0.3, 5.3, 'Sigge', 'All ledning har lite resistans. Här 0,1 Ω. När ström går blir det värme i ledningen.'],
-        [5.5, 10.8, 'Sigge', 'Förlusten är P = I² · R. Med 10 A blir det 10 · 10 · 0,1 = 10 W.']],
+      say: [[0.8, 6.0, 'Sigge', 'Hej! Jag är matrosen Sigge, och det här är måsen Måns.'],
+        [6.2, 11.8, 'Måns', 'Varför blir kablar och klämmor varma? Och så mycket varmare vid hög last?']],
     },
     {
       dur: 14,
-      draw(ctx, t) {
-        stage(ctx, t); heading(ctx, 'Öka strömmen');
-        const I = 10 + 10 * prog(t, 3.5, 7.5); cable(ctx, t, I); curve(ctx, I, { upto: 20 / 30 + 10 / 30 * prog(t, 3.5, 7.5) });
-        if (t > 8) text(ctx, '4 gånger', B.x + 620, B.y + 330, { size: 44, weight: 700, color: COL.orange, alpha: prog(t, 8, 8.8) });
-      },
-      say: [[0.3, 3.3, 'Måns', 'Dubbla strömmen … dubbelt så varmt?'],
-        [3.5, 7.8, 'Sigge', 'Titta. Vi går från 10 A till 20 A.'],
-        [8.0, 13.8, 'Sigge', 'Nej, fyra gånger! 20 · 20 · 0,1 blir 40 W. Strömmen står i kvadrat.']],
+      draw(ctx, t) { stage(ctx, t); heading(ctx, 'Ström värmer ledningen'); cable(ctx, t, 10); },
+      say: [[0.8, 6.8, 'Sigge', 'All ledning har lite resistans, här 0,1 Ω. Strömmen ger värme i ledningen.'],
+        [7.0, 13.8, 'Sigge', 'Förlusten är P = I² · R. Med 10 A blir det 10 · 10 · 0,1 = 10 W.']],
     },
     {
-      dur: 13,
+      dur: 17,
+      draw(ctx, t) {
+        stage(ctx, t); heading(ctx, 'Öka strömmen');
+        const I = 10 + 10 * prog(t, 4.5, 8.5); cable(ctx, t, I); curve(ctx, I, { upto: I / 30 });
+        if (t > 9) text(ctx, '4 gånger', B.x + 620, B.y + 330, { size: 44, weight: 700, color: COL.orange, alpha: prog(t, 9, 9.8) });
+      },
+      say: [[0.8, 4.2, 'Måns', 'Dubbla strömmen … dubbelt så varmt?'],
+        [4.4, 8.6, 'Sigge', 'Titta. Vi går från 10 A till 20 A.'],
+        [8.8, 16.8, 'Sigge', 'Nej, fyra gånger så mycket värmeförlust! 20 · 20 · 0,1 = 40 W. Strömmen ingår i kvadrat.']],
+    },
+    {
+      dur: 16,
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Strömmen i kvadrat');
-        const I = t < 6 ? 20 : 20 + 10 * prog(t, 6, 9); cable(ctx, t, I); curve(ctx, I, { upto: 1 });
+        const I = t < 6 ? 20 : 20 + 10 * prog(t, 6, 9); cable(ctx, t, I); curve(ctx, I, { upto: I / 30 });
         const rows = [[10, 10], [20, 40], [30, 90]]; const tx = B.x + 640;
         text(ctx, 'I', tx, B.y + 290, { size: 26, color: COL.muted }); text(ctx, 'P', tx + 110, B.y + 290, { size: 26, color: COL.muted });
         rows.forEach(([i, p], k) => { const a = k < 2 ? 1 : prog(t, 8.5, 9.3); text(ctx, `${i} A`, tx, B.y + 330 + k * 44, { size: 30, weight: 700, color: COL.blue, alpha: a }); text(ctx, `${p} W`, tx + 110, B.y + 330 + k * 44, { size: 30, weight: 700, color: COL.orange, alpha: a }); });
       },
-      say: [[0.3, 5.8, 'Måns', 'Så tre gånger strömmen … blir nio gånger värmen?'],
-        [6.0, 12.8, 'Sigge', 'Ja! 30 A ger 90 W. Därför klarar en kabel bara en viss ström, och därför har den en säkring.']],
+      say: [[0.8, 5.8, 'Måns', 'Så tre gånger strömmen ger nio gånger förlusten?'],
+        [6.0, 10.8, 'Sigge', 'Ja! 30 A ger 90 W i samma ledning.'],
+        [11.0, 15.8, 'Sigge', 'Därför skyddas kabeln av en säkring eller brytare.']],
     },
     {
-      dur: 14, cast: (t) => ({ wave: t > 10.5 }),
+      dur: 21, cast: (t) => ({ wave: t > 17.5 }),
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Ombord');
-        const items = [['Överlast värmer kabeln fyra gånger mer vid dubbel ström', COL.ink], ['En lös klämma har större R och blir varm', COL.orange], ['Värmekamera hittar varma anslutningar', COL.ink], ['Högre spänning ger lägre ström för samma effekt', COL.ink]];
-        items.forEach(([s, c], i) => text(ctx, `${i + 1}.  ${s}`, B.x + 40, B.y + 140 + i * 80, { size: 31, weight: i === 1 ? 700 : 600, color: c, alpha: prog(t, 0.4 + i * 1.4, 1.1 + i * 1.4) }));
+        const items = [['Dubbel ström ger fyra gånger så stor förlusteffekt', COL.ink], ['En lös klämma har större R och blir varm', COL.orange], ['Värmekamera hittar varma klämmor under last', COL.ink], ['Skanna med skydden på eller genom IR-fönster', COL.ink]];
+        items.forEach(([s, c], i) => text(ctx, `${i + 1}.  ${s}`, B.x + 40, B.y + 140 + i * 80, { size: 31, weight: i === 1 ? 700 : 600, color: c, alpha: prog(t, 0.6 + i * 3, 1.3 + i * 3) }));
       },
-      say: [[0.3, 5.3, 'Sigge', 'En lös klämma har större resistans. Samma ström ger då mer värme just där.'],
-        [5.5, 10.3, 'Måns', 'Så därför letar maskinisterna efter varma klämmor med värmekamera!'],
-        [10.5, 13.8, 'Sigge', 'Precis. Vi ses i nästa film!']],
+      say: [[0.8, 6.3, 'Sigge', 'En lös klämma har större resistans. Då blir det varmt just där.'],
+        [6.5, 12.0, 'Måns', 'Så därför letar elektrikern efter varma klämmor med värmekamera!'],
+        [12.2, 17.3, 'Sigge', 'Ja, när tavlan går under last. Utan ström syns ingen värme.'],
+        [17.5, 20.8, 'Sigge', 'Vi ses i nästa film!']],
     },
   ],
 });

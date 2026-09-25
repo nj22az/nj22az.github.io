@@ -12,11 +12,16 @@ export const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 export const prog = (t, a, b) => ease((t - a) / (b - a));
 
 const SUB = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F', 'ɴ': 'N' };
-/** Text med nedsänkta index för tecknen ᴸ ᶜ ᴿ ꜰ ɴ. align: left|center|right */
+/** Text med nedsänkta index för tecknen ᴸ ᶜ ᴿ ꜰ ɴ och för _{…}. align: left|center|right */
 export function text(ctx, s, x, y, { size = 34, color = COL.ink, weight = 600, align = 'left', font = 'Carlito, Calibri, Arial, sans-serif', alpha = 1 } = {}) {
   ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.textBaseline = 'middle';
   const parts = []; let buf = '';
-  for (const ch of String(s)) { if (SUB[ch]) { if (buf) parts.push([buf, false]); parts.push([SUB[ch], true]); buf = ''; } else buf += ch; }
+  const str = String(s);
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '_' && str[i + 1] === '{') { const j = str.indexOf('}', i); if (buf) parts.push([buf, false]); parts.push([str.slice(i + 2, j), true]); buf = ''; i = j; }
+    else if (SUB[ch]) { if (buf) parts.push([buf, false]); parts.push([SUB[ch], true]); buf = ''; } else buf += ch;
+  }
   if (buf) parts.push([buf, false]);
   const fnt = (sub) => `${weight} ${sub ? Math.round(size * 0.7) : size}px ${font}`;
   let total = 0; for (const [p, sub] of parts) { ctx.font = fnt(sub); total += ctx.measureText(p).width; }
@@ -137,7 +142,7 @@ export function drawFrame(ctx, film, time) {
 /** Undertexter i WebVTT-format ur filmens repliker */
 export function toVTT(film) {
   const ts = (s) => { const m = Math.floor(s / 60), r = s - m * 60; return `00:${String(m).padStart(2, '0')}:${r.toFixed(3).padStart(6, '0')}`; };
-  return 'WEBVTT\n\n' + film.lines.map((l, i) => `${i + 1}\n${ts(l.at)} --> ${ts(l.to)}\n${l.who ? `<v ${l.who}>` : ''}${l.text}\n`).join('\n');
+  return 'WEBVTT\n\n' + film.lines.map((l, i) => `${i + 1}\n${ts(l.at)} --> ${ts(l.to)}\n${l.who ? `<v ${l.who}>` : ''}${l.text.replace(/_\{([^}]*)\}/g, '$1').replace(/[ᴸᶜᴿꜰɴ]/g, (c) => SUB[c])}\n`).join('\n');
 }
 /** Repliken som gäller vid global tid */
 export const lineAt = (film, time) => film.lines.find((l) => time >= l.at && time < l.to);

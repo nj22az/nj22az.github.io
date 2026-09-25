@@ -24,8 +24,8 @@ async function render(browser, id) {
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'slow', '-crf', '26', '-tune', 'animation', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(OUT, `${id}.mp4`)], { stdio: ['pipe', 'inherit', 'inherit'] });
   for (let i = 0; i < n; i++) { const buf = await grab(p, i / FPS); if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once('drain', r)); }
   ff.stdin.end(); await new Promise((r, j) => ff.on('close', (c) => (c ? j(new Error(`ffmpeg ${c}`)) : r())));
-  // Affisch från titelkortet och undertexter
-  fs.writeFileSync(path.join(OUT, `${id}.png`), await grab(p, 3));
+  // Affisch från titelkortet (före första repliken) och undertexter
+  fs.writeFileSync(path.join(OUT, `${id}.png`), await grab(p, 0.5));
   const vtt = await p.evaluate(async () => { const m = await import('./engine.mjs'); const f = (await import('./films/index.mjs')).FILMS.find((x) => x.id === window.__film.id); return m.toVTT(f); });
   fs.writeFileSync(path.join(OUT, `${id}.vtt`), vtt);
   await p.close(); console.log(`${id}: ${n} bilder, ${duration} s`);

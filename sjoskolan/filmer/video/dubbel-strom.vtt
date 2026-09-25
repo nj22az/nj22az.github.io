@@ -1,45 +1,57 @@
 WEBVTT
 
 1
-00:00:00.500 --> 00:00:05.800
-<v Sigge>Varför blir kablar och klämmor varma? Och varför så mycket varmare vid hög last?
+00:00:00.800 --> 00:00:06.000
+<v Sigge>Hej! Jag är matrosen Sigge, och det här är måsen Måns.
 
 2
-00:00:06.300 --> 00:00:11.300
-<v Sigge>All ledning har lite resistans. Här 0,1 Ω. När ström går blir det värme i ledningen.
+00:00:06.200 --> 00:00:11.800
+<v Måns>Varför blir kablar och klämmor varma? Och så mycket varmare vid hög last?
 
 3
-00:00:11.500 --> 00:00:16.800
-<v Sigge>Förlusten är P = I² · R. Med 10 A blir det 10 · 10 · 0,1 = 10 W.
+00:00:12.800 --> 00:00:18.800
+<v Sigge>All ledning har lite resistans, här 0,1 Ω. Strömmen ger värme i ledningen.
 
 4
-00:00:17.300 --> 00:00:20.300
-<v Måns>Dubbla strömmen … dubbelt så varmt?
+00:00:19.000 --> 00:00:25.800
+<v Sigge>Förlusten är P = I² · R. Med 10 A blir det 10 · 10 · 0,1 = 10 W.
 
 5
-00:00:20.500 --> 00:00:24.800
-<v Sigge>Titta. Vi går från 10 A till 20 A.
+00:00:26.800 --> 00:00:30.200
+<v Måns>Dubbla strömmen … dubbelt så varmt?
 
 6
-00:00:25.000 --> 00:00:30.800
-<v Sigge>Nej, fyra gånger! 20 · 20 · 0,1 blir 40 W. Strömmen står i kvadrat.
+00:00:30.400 --> 00:00:34.600
+<v Sigge>Titta. Vi går från 10 A till 20 A.
 
 7
-00:00:31.300 --> 00:00:36.800
-<v Måns>Så tre gånger strömmen … blir nio gånger värmen?
+00:00:34.800 --> 00:00:42.800
+<v Sigge>Nej, fyra gånger så mycket värmeförlust! 20 · 20 · 0,1 = 40 W. Strömmen ingår i kvadrat.
 
 8
-00:00:37.000 --> 00:00:43.800
-<v Sigge>Ja! 30 A ger 90 W. Därför klarar en kabel bara en viss ström, och därför har den en säkring.
+00:00:43.800 --> 00:00:48.800
+<v Måns>Så tre gånger strömmen ger nio gånger förlusten?
 
 9
-00:00:44.300 --> 00:00:49.300
-<v Sigge>En lös klämma har större resistans. Samma ström ger då mer värme just där.
+00:00:49.000 --> 00:00:53.800
+<v Sigge>Ja! 30 A ger 90 W i samma ledning.
 
 10
-00:00:49.500 --> 00:00:54.300
-<v Måns>Så därför letar maskinisterna efter varma klämmor med värmekamera!
+00:00:54.000 --> 00:00:58.800
+<v Sigge>Därför skyddas kabeln av en säkring eller brytare.
 
 11
-00:00:54.500 --> 00:00:57.800
-<v Sigge>Precis. Vi ses i nästa film!
+00:00:59.800 --> 00:01:05.300
+<v Sigge>En lös klämma har större resistans. Då blir det varmt just där.
+
+12
+00:01:05.500 --> 00:01:11.000
+<v Måns>Så därför letar elektrikern efter varma klämmor med värmekamera!
+
+13
+00:01:11.200 --> 00:01:16.300
+<v Sigge>Ja, när tavlan går under last. Utan ström syns ingen värme.
+
+14
+00:01:16.500 --> 00:01:19.800
+<v Sigge>Vi ses i nästa film!

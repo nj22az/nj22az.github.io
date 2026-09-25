@@ -1,61 +1,85 @@
 WEBVTT
 
 1
-00:00:00.500 --> 00:00:05.800
-<v Sigge>Hur kan en motor fortsätta gå när man släpper START-knappen? Vi följer strömmen.
+00:00:00.800 --> 00:00:07.800
+<v Måns>Hur kan motorn gå vidare när man släpper START-knappen?
 
 2
-00:00:06.300 --> 00:00:11.800
-<v Sigge>STOPP är en brytande kontakt och är sluten. START är slutande och är öppen.
+00:00:08.800 --> 00:00:15.800
+<v Sigge>S0 STOPP är normalt sluten, NC. S1 START är normalt öppen, NO.
 
 3
-00:00:12.000 --> 00:00:16.800
-<v Måns>Så ingen ström når spolen. K1 är släppt och motorn står.
+00:00:16.000 --> 00:00:21.800
+<v Sigge>F1 är överlastskyddets kontakt. Den är också sluten.
 
 4
-00:00:17.300 --> 00:00:22.800
-<v Sigge>Jag trycker START. Ström går genom START till spolen, och K1 drar.
+00:00:22.000 --> 00:00:27.800
+<v Måns>Men START är öppen. Ingen ström når spolen, och motorn står.
 
 5
-00:00:23.000 --> 00:00:28.800
-<v Sigge>När K1 drar sluter också hållkontakten. Den sitter parallellt med START.
+00:00:28.800 --> 00:00:35.300
+<v Sigge>Jag trycker START. Ström når spolen och K1 drar.
 
 6
-00:00:29.300 --> 00:00:32.000
-<v Måns>Nu släpper du START. Stannar motorn?
+00:00:35.500 --> 00:00:42.800
+<v Sigge>Då sluter också K1:s hjälpkontakt, som sitter parallellt med START.
 
 7
-00:00:32.200 --> 00:00:40.800
-<v Sigge>Nej! Strömmen tar vägen genom hållkontakten i stället. K1 håller sig själv.
+00:00:43.800 --> 00:00:48.000
+<v Måns>Nu släpper du START. Stannar motorn?
 
 8
-00:00:41.300 --> 00:00:47.200
-<v Sigge>STOPP bryter kretsen. Spolen blir strömlös, K1 släpper och hållkontakten öppnar.
+00:00:48.200 --> 00:00:56.800
+<v Sigge>Nej! Strömmen går genom hjälpkontakten i stället. K1 håller sig själv.
 
 9
-00:00:47.500 --> 00:00:53.800
-<v Måns>Och när STOPP släpps startar motorn inte igen. Den väntar på ett nytt tryck på START.
+00:00:57.800 --> 00:01:05.300
+<v Sigge>STOPP bryter kretsen. Spolen blir strömlös, K1 släpper och hjälpkontakten öppnar.
 
 10
-00:00:54.300 --> 00:00:56.400
-<v Måns>Och om fartyget får strömavbrott?
+00:01:05.500 --> 00:01:12.800
+<v Måns>När STOPP släpps står motorn kvar. Den väntar på ett nytt tryck på START.
 
 11
-00:00:56.600 --> 00:01:01.000
-<v Sigge>Då blir spolen strömlös. K1 släpper och hållkontakten öppnar.
+00:01:13.800 --> 00:01:21.300
+<v Sigge>Blir motorn överbelastad blir den varm. Då öppnar överlastskyddets kontakt F1.
 
 12
-00:01:01.200 --> 00:01:07.800
-<v Sigge>När spänningen kommer tillbaka står motorn kvar. Den startar inte av sig själv. Det är ett skydd.
+00:01:21.500 --> 00:01:26.300
+<v Måns>Samma I² · R som i filmen om dubbel ström!
 
 13
-00:01:08.300 --> 00:01:12.600
-<v Sigge>Vid felsökning: mät var i kretsen spänningen försvinner, steg för steg.
+00:01:26.500 --> 00:01:29.800
+<v Sigge>Ta reda på orsaken innan du återställer.
 
 14
-00:01:12.800 --> 00:01:16.400
-<v Måns>Men bara om arbetet är riskbedömt och tillåtet!
+00:01:30.800 --> 00:01:35.300
+<v Måns>Och om fartyget får strömavbrott?
 
 15
-00:01:16.600 --> 00:01:19.800
+00:01:35.500 --> 00:01:41.800
+<v Sigge>Då blir spolen strömlös. K1 släpper och hjälpkontakten öppnar.
+
+16
+00:01:42.000 --> 00:01:47.800
+<v Sigge>När spänningen kommer tillbaka står motorn kvar. Det kallas återstartsskydd.
+
+17
+00:01:48.000 --> 00:01:54.800
+<v Sigge>Men viktiga pumpar och styrmaskinen startar om automatiskt, i tur och ordning.
+
+18
+00:01:55.800 --> 00:02:02.300
+<v Sigge>Kort sagt: START sluter, STOPP och F1 bryter, K1 håller.
+
+19
+00:02:02.500 --> 00:02:09.300
+<v Sigge>Felsök i första hand spänningslöst: frånskilj, lås, prova och mät resistans.
+
+20
+00:02:09.500 --> 00:02:16.300
+<v Måns>Mätning under spänning bara med kompetens, uppdrag, rätt instrument och skydd!
+
+21
+00:02:16.500 --> 00:02:19.800
 <v Sigge>Precis. Vi ses!
