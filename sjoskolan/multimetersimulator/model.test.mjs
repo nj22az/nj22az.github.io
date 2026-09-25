@@ -72,7 +72,7 @@ test('every measurement lesson accepts an electrically correct setup',()=>{
     parallel:[{...initialState('resistor'),mode:'ohm',red:'A',black:'B'},{...initialState('resistor'),mode:'ohm',red:'A',black:'B',parallel:false}],
     continuity:[{...initialState('fuse'),mode:'continuity',red:'A',black:'B'},{...initialState('fuse'),mode:'continuity',red:'A',black:'B',broken:true}],
     loading:[{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G'},{...initialState('divider'),mode:'dc',power:true,red:'M',black:'G',input:1e6}],
-    stationA:[st({red:'Ref+',black:'Ref−'}),st({mode:'ohm',red:'B',black:'A'}),st({mode:'ohm',red:'N',black:'B'}),st({power:true,red:'P',black:'N'}),st({power:true,red:'A',black:'B'}),st({power:true,red:'B',black:'N'}),
+    stationA:[st({red:'Ref+',black:'Ref−'}),st({link:false,red:'A',black:'B'}),st({link:false,mode:'ohm',red:'B',black:'A'}),st({link:false,mode:'ohm',red:'N',black:'B'}),st({power:true,red:'P',black:'N'}),st({power:true,red:'A',black:'B'}),st({power:true,red:'B',black:'N'}),
       st({power:true,mode:'current',jack:'ma',link:false,red:'P',black:'A'}),st({red:'Ref+',black:'Ref−'})]
   };
   for(const lesson of LESSONS.filter(l=>l.circuit!=='category')) lesson.steps.filter(step=>step.test).forEach((step,i)=>{
@@ -134,11 +134,14 @@ test('Station A: every rig gives consistent readings, the reference is isolated 
   for(const g of RIGS){
     const s={...initialState('station'),rig:g.id,mode:'dc',power:true};
     const I=g.U/(g.R1+g.R2);
-    near(measure({...s,red:'P',black:'N'}).value,g.U,1e-4);
-    near(measure({...s,red:'A',black:'B'}).value,I*g.R1,2e-3);
-    near(measure({...s,red:'B',black:'N'}).value,I*g.R2,2e-3);
-    near(measure({...s,mode:'current',jack:'ma',link:false,red:'P',black:'A'}).value,1000*g.U/(g.R1+g.R2+1),1e-6);
-    near(measure({...s,mode:'ohm',power:false,red:'A',black:'N'}).value,(g.R1+g.R2)/1000,1e-9);
+    near(measure({...s,red:'P',black:'N'}).value,1.0025*g.U,1e-4);
+    near(measure({...s,red:'A',black:'B'}).value,1.0025*I*g.R1,2e-3);
+    near(measure({...s,red:'B',black:'N'}).value,1.0025*I*g.R2,2e-3);
+    near(measure({...s,mode:'current',jack:'ma',link:false,red:'P',black:'A'}).value,0.995*1000*g.U/(g.R1+g.R2+1),1e-6);
+    near(measure({...s,mode:'ohm',power:false,link:false,red:'A',black:'N'}).value,1.004*(g.R1+g.R2)/1000,1e-9);
+    // med sluten länk ser mätaren den frånslagna källan parallellt
+    const closed=measure({...s,mode:'ohm',power:false,red:'A',black:'B'});
+    assert.ok((closed.unit==='kΩ'?closed.value*1000:closed.value)<0.95*g.R1);
   }
   const s={...initialState('station'),mode:'dc'};
   assert.equal(measure({...s,red:'Ref+',black:'N',power:true}).code,'separate');
@@ -154,4 +157,12 @@ test('Station A protocol example matches the simulator and is complete',async()=
   assert.deepEqual(missing(def,def.example),[]);
   assert.equal(def.example.rows.length,def.rows.length);
   for(const r of def.example.rows){assert.equal(deviationMatches(r.avv,r.forv,r.uppm),true,JSON.stringify(r));assert.ok(Math.abs(deviation(r.forv,r.uppm).rel)<1,JSON.stringify(r));}
+});
+test('Station A: no rig displays the numbers from the v41_03 exercises',()=>{
+  const bad=['4,00','8,00','11,94','3,98','7,96','12,00','6,93','6,90'];
+  for(const g of RIGS.slice(1)){
+    const b={...initialState('station'),rig:g.id};const r=p=>measure({...b,...p}).text;
+    for(const v of [r({mode:'dc',power:true,red:'P',black:'N'}),r({mode:'dc',power:true,red:'A',black:'B'}),r({mode:'dc',power:true,red:'B',black:'N'}),r({mode:'current',jack:'ma',link:false,power:true,red:'P',black:'A'})])
+      assert.ok(!bad.includes(v),`rig ${g.id}: ${v}`);
+  }
 });

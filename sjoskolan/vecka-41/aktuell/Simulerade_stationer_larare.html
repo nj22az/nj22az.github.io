@@ -1,0 +1,43 @@
+<!doctype html><html lang="sv" data-theme="cobalt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulerade stationer, lärare · Sjöskolan</title><meta name="description" content="Lärarstöd till de simulerade stationerna vecka 41: förväntade värden, bedömning och modellsvar."><meta name="robots" content="noindex"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/sjoskolan/course.css">
+<style>.cmp{width:100%;border-collapse:collapse;font-size:15px}.cmp th,.cmp td{border:1px solid #cdd9e2;padding:6px 8px;text-align:left;vertical-align:top}.cmp-wrap{overflow-x:auto}</style>
+</head><body class="course"><nav id="site-nav" class="site-nav"></nav><main id="main-content" class="course-main"><article class="course-reading">
+<h1>Simulerade stationer: lärarstöd</h1>
+<p>Den här sidan är inte länkad från elevsidorna. Den innehåller förväntade värden och modellsvar. Dela inte adressen med eleverna. Sidan är ändå offentlig, eftersom hela webbplatsen är det. Elevsidan: <a href="Simulerade_stationer.html">Simulerade stationer</a>.</p>
+
+<h2>Station A · DC-delare</h2>
+<p>Eleven får en rigg (1–6) när uppgiften öppnas. Riggen sparas i webbläsaren. Tilldela en bestämd rigg med länken <code>/sjoskolan/multimetersimulator/?ovning=stationA&amp;rigg=3</code>. Exempelriggen (9 V) går bara att välja i fri övning. Mätaren har små fasta fel inom sin specifikation (V ⎓ +0,25 %, Ω +0,4 %, mA −0,5 %), så avvikelserna blir inte exakt noll. Ingen rigg visar talen från övningarna i v41_03.</p>
+<div class="cmp-wrap"><table class="cmp"><thead><tr><th scope="col">Rigg</th><th scope="col">U källa</th><th scope="col">U1</th><th scope="col">U2</th><th scope="col">I</th><th scope="col">R1</th><th scope="col">R2</th></tr></thead><tbody>
+<tr><td>1</td><td>12,09 V</td><td>4,11 V</td><td>7,98 V</td><td>4,03 mA</td><td>1,016 kΩ</td><td>1,970 kΩ</td></tr>
+<tr><td>2</td><td>11,90 V</td><td>3,89 V</td><td>8,01 V</td><td>3,91 mA</td><td>990,9 Ω</td><td>2,042 kΩ</td></tr>
+<tr><td>3</td><td>12,15 V</td><td>4,13 V</td><td>8,02 V</td><td>3,93 mA</td><td>1,047 kΩ</td><td>2,036 kΩ</td></tr>
+<tr><td>4</td><td>11,96 V</td><td>4,14 V</td><td>7,82 V</td><td>3,96 mA</td><td>1,040 kΩ</td><td>1,966 kΩ</td></tr>
+<tr><td>5</td><td>12,06 V</td><td>3,82 V</td><td>8,24 V</td><td>3,82 mA</td><td>998,0 Ω</td><td>2,150 kΩ</td></tr>
+<tr><td>6</td><td>12,13 V</td><td>3,89 V</td><td>8,24 V</td><td>4,03 mA</td><td>961,8 Ω</td><td>2,039 kΩ</td></tr>
+</tbody></table></div>
+<ul>
+<li>Rigg 5: R2 ligger utanför ±5 % även med mätarens osäkerhet. Rätt bedömning är ”Utanför tolerans”.</li>
+<li>Rigg 3: R1 visar 1,047 kΩ. Med mätarens osäkerhet ±(0,8 % + 2 siffror) ≈ ±0,010 kΩ når intervallet över 1,050 kΩ. ”Kan inte avgöras” är det bästa svaret, och ett bra tillfälle att diskutera instrumentets bidrag (v41_03 bild 24).</li>
+<li>Mäter eleven Ω med sluten länk ser mätaren den frånslagna källan parallellt (cirka 850–910 Ω över R1). Det är avsiktligt: en frånslagen nätdel är fortfarande ansluten.</li>
+</ul>
+<p><strong>Modellsvar.</strong> Vad som inte är kontrollerat: strömgränsens funktion, sladdarnas och klämmornas skick under belastning, om värdena är stabila över tid. Fysisk rigg: kontaktresistans i klämmor och spetsar, värden som fladdrar i sista siffran, temperaturens inverkan, instrumentets verkliga fel, spetsar som glider.</p>
+
+<h2>Station B · AC</h2>
+<p>Stationens källa är 12,35 V effektivvärde, 50 Hz: û = 17,47 V och T = 20,00 ms. Den medelvärdesvisande mätaren visar 12,35 V för sinus, 13,72 V för fyrkant (+11,07 %) och 11,88 V för triangel (−3,81 %). Exemplet i protokollet bygger på 11,8 V och 60 Hz. Instrumenten i simulatorn är ideala.</p>
+<p><strong>Modellsvar, toppvärde.</strong> Spänningen når √2 gånger effektivvärdet i varje period. För 440 V blir toppen cirka 622 V, och transienter kommer ovanpå, till exempel vid koppling och från omriktare. Isolationen måste klara toppen och transienterna, inte bara effektivvärdet.</p>
+<p><strong>Modellsvar, true RMS.</strong> En medelvärdesvisande mätare mäter det likriktade medelvärdet och multiplicerar med 1,111, vilket bara stämmer för sinus. Efter frekvensomriktare och i övertonsrika nät behövs true RMS. På omriktarens utgång kan även true RMS visa fel på grund av switchfrekvensen, där används lågpassfilter (VFD-läge) och CAT III-klassade instrument. På matningssidan är strömmen övertonsrik, så strömtången måste vara true RMS.</p>
+
+<h2>Station B · trefas</h2>
+<p>Stationsriggen: UL = 12,2 V, lasterna 98, 103 och 101 Ω. Fasspänning 7,04 V med hel N. Fasströmmar 71,9, 68,4 och 69,7 mA. Neutralström cirka 3,0 mA. Med bruten N: last 1 cirka 6,95 V. Med bruten N och last 2 frånkopplad: last 1 cirka 6,01 V och last 3 cirka 6,19 V. Exemplet bygger på UL = 13,0 V och lasterna 95, 104 och 100 Ω.</p>
+<p><strong>Modellsvar, bruten neutral.</strong> Utan N ligger last 1 och 3 i serie över huvudspänningen och delar den efter sina resistanser. En last med liten effekt (hög resistans) kan få nästan hela huvudspänningen och förstöras. Ombord är 440 V-nätet oftast ett IT-nät med tre ledare utan N, där felet inte kan uppstå. Det gäller nät med N, till exempel 400/230 V hotellnät på passagerarfartyg och landström. I land med TN-C kan ett PEN-avbrott också ge beröringsspänning på utsatta delar.</p>
+<p><strong>Modellsvar, jordfel i IT-nät (fördjupning).</strong> L2 och L3 får cirka 440 V mot skrovet. Instrument, sladdar och spetsar måste klara det, till exempel CAT III 1000 V. Ett andra jordfel på en annan fas blir en kortslutning via skrovet, därför ska det första felet spåras direkt.</p>
+
+<h2>Station C · hållkrets</h2>
+<p>Stationsriggen har 12 V: 12 V över spolen vid start och hållning, spolström 25 mA. Felsignaturer med START intryckt: S0 öppen ger 0 V på a. START sluter inte ger 12 V på a men 0 V över spolen. Spolen avbruten ger 0 V på c. Returen bruten ger 12 V på c. Hjälpkontakten sluter inte: K1 drar med START men släpper efteråt, då är a 12 V och b 0 V. Felmodulerna dras utan återläggning, så samma fel kommer inte två gånger i rad.</p>
+<p><strong>Modellsvar, hållkontakt mot retur.</strong> Öppen hållkontakt: K1 drar med START intryckt men släpper sedan, efter släpp är a–0 V full spänning och b–0 V 0 V. Bruten retur: K1 drar aldrig, med START intryckt är b–0 V och c–0 V båda full spänning eftersom ingen ström går.</p>
+<p><strong>Modellsvar, spänningslös felsökning.</strong> Kontinuitet över hjälpkontakten och resistans i spole och retur. Det räcker inte att bryta styrspänningen: huvudkontaktorn kan ha 440 V kvar, och det kan finnas främmande spänning från fjärrstart, PMS eller förreglingar. Frånskilj och lås både huvudkraft och styrmatning, även matning från andra tavlor. Kontrollera spänningslöshet med kontrollerad spänningsprovare (prova–mät–prova). Kontrollera parallella vägar, till exempel signallampor och PLC-ingångar, innan kontinuitet mäts. Arbeta enligt arbetstillstånd och fartygets SMS. Spänningsmätning under drift görs bara efter riskbedömning, med rätt instrument och skyddsutrustning.</p>
+<p><strong>Modellsvar, black-out (fördjupning).</strong> K1 släpper när spänningen försvinner och hjälpkontakten öppnar, så kretsen är ett återstartsskydd. Styrmaskin, smörjolje- och kylvattenpumpar och liknande startas om automatiskt i tur och ordning av PMS eller tidsreläer, så att startströmmarna inte överbelastar generatorn igen. Preferential trip kopplar bort icke-väsentliga laster, till exempel pentry och luftkonditionering, vid överlast på generatorn.</p>
+<p>Ombord har styrkretsar ofta 230 V AC och långa kablar. En högohmig multimeter kan då visa spökspänning på en öppen ledare, där simulatorn visar ”flytande”. Ta upp LoZ-läge muntligt.</p>
+
+<h2>Uppföljning</h2>
+<p>Protokollen sparas bara i elevens webbläsare. Eleven lämnar in en utskrift eller PDF, eller CSV-filen. Hämtade värden är märkta med tid, och värden som ändrats för hand syns. Ett simulerat protokoll är övning och underlag. Det visar inte praktisk kompetens. Bekräfta den fysiska stationsplanen separat.</p>
+</article></main><footer id="site-footer" class="site-footer"></footer><script src="/config.js"></script><script src="/shared.js"></script></body></html>

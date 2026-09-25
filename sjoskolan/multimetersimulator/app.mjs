@@ -1,7 +1,7 @@
 import { initialState, network, measure, lampCurrent, MODES, RIGS, rigOf } from './model.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925';
-import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260925';
-import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260925-station';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
+import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260926';
+import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260926';
 import { protocolCSV } from './protocol.mjs';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -14,6 +14,12 @@ try {
 let lessonIndex = 0, stage = 0, passed = false, free = false, choice = null;
 let state = initialState(), activeProbe = 'black', sound = false, audioContext = null;
 let answers = {};
+// Varje elev får en egen rigg (1–6), som på en fysisk station. Läraren kan tilldela med ?rigg=3.
+function myRig(){
+  const asked=Number(new URLSearchParams(location.search).get('rigg'));
+  if(asked>=1&&asked<=6)return asked;
+  try{const r=Number(localStorage.getItem('sjoskolan-station-a-rigg'));if(r>=1&&r<=6)return r;const n=1+Math.floor(Math.random()*6);localStorage.setItem('sjoskolan-station-a-rigg',String(n));return n;}catch{return 1+Math.floor(Math.random()*6);}
+}
 let drag = null, ignoreClickUntil = 0, confirmClear = false;
 const dialStops = $$('#functions [data-mode]').map(button => ({
   mode:button.dataset.mode, angle:Number(button.dataset.angle), button
@@ -82,6 +88,7 @@ function renderProgress(){
 function startLesson(index, updateURL=true) {
   lessonIndex=index;stage=0;passed=false;free=false;answers={};clearAnswer();
   const l=currentLesson();state={...initialState(l.circuit),...l.setup};
+  if(l.circuit==='station')state.rig=myRig();
   activeProbe='black';$('#hint').open=false;
   if(updateURL) history.replaceState(null,'',`?ovning=${l.id}`);
   renderAll();feedback('Börja med uppgiften',l.id==='loading'?'Läs schemat och svara först utan att koppla. Mätaren används i mätstegen.':l.circuit==='category'?'Läs situationen, välj ett alternativ och kontrollera ditt svar.':'Förutsäg mätvärdet. Välj sedan funktion och uttag, och anslut mätspetsarna.');
@@ -220,7 +227,7 @@ function renderCircuit() {
   }
   let controls='';
   if(['lamp','divider','station'].includes(state.circuit))controls+=`<button id="power" aria-pressed="${state.power}">${state.power?'Bryt matningen':'Slå på '+(state.circuit==='lamp'?state.voltage:state.circuit==='station'?rigOf(state).Unom:10)+' V'}</button>`;
-  if(state.circuit==='station')controls+=`<button id="link" aria-pressed="${!state.link}">${state.link?'Öppna länken P–A':'Slut länken P–A'}</button><label>Rigg<select id="rig">${RIGS.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></label>`;
+  if(state.circuit==='station')controls+=`<button id="link" aria-pressed="${!state.link}">${state.link?'Öppna länken P–A':'Slut länken P–A'}</button><label>Rigg<select id="rig">${RIGS.filter(g=>free||g.id>0).map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select></label>`;
   if(state.circuit==='lamp'){
     controls+=`<button id="link" aria-pressed="${!state.link}">${state.link?'Öppna länken K1–K2':'Slut länken K1–K2'}</button>`;
     if(free)controls+=`<label>Källa<select id="voltage"><option value="12">12 V</option><option value="24">24 V</option></select></label><label>Lampa<select id="load"><option value="120">120 Ω</option><option value="30">30 Ω</option></select></label>`;
@@ -419,8 +426,17 @@ startLesson(Math.max(0,LESSONS.findIndex(l=>l.id===requested)),false);
 if(requested==='fri')$('#free-mode').click();
 
 // Labbprotokoll för Station A: hämtar aktuell avläsning från simulatorn
-mountProtocol(document.getElementById('labbprotokoll'),{...STATION_A_PROTOKOLL,snapshot(){
-  if(state.circuit==='category')return {error:'Välj en övning med mätare, till exempel övning 9 Station A.'};
+mountProtocol(document.getElementById('labbprotokoll'),{...STATION_A_PROTOKOLL,snapshot(plan){
+  if(state.circuit==='category')return {error:'Välj uppgiften ”Station A: DC-delare” i simulatorn.'};
+  if(state.circuit!=='station')return {error:'Protokollet gäller Station A. Välj uppgiften ”Station A: DC-delare” eller kretsen Station A i fri övning.'};
+  const n=plan?.need||{},pts=[state.red,state.black];
+  const wrong=[];
+  if(n.mode&&state.mode!==n.mode)wrong.push(`välj ${MODES[n.mode]}`);
+  if(n.red&&(state.red!==n.red||state.black!==n.black))wrong.push(`röd på ${n.red} och svart på ${n.black}`);
+  if(n.pair&&pts.slice().sort().join()!==n.pair.slice().sort().join())wrong.push(`spetsarna på ${n.pair.join(' och ')}`);
+  if(n.power!==undefined&&state.power!==n.power)wrong.push(n.power?'slå på matningen':'bryt matningen');
+  if(n.link!==undefined&&state.link!==n.link)wrong.push(n.link?'slut länken P–A':'öppna länken P–A');
+  if(wrong.length)return {error:`Mätning ${STATION_A_PROTOKOLL.rows.indexOf(plan)+1} gäller en annan koppling: ${wrong.join(', ')}.`};
   const m=measure(state);
   if(m.code!=='reading')return {error:`Ingen giltig avläsning: ${m.detail}`};
   const jack=state.jack==='v'?'V Ω':state.jack==='ma'?'mA':'A';

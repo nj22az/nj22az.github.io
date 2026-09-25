@@ -6,7 +6,7 @@
 <meta name="description" content="Tryck START och STOPP, lägg in fel och mät mellan punkter i en hållkrets.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/hallkretslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260925">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 <style>.btn-row{display:flex;gap:8px;flex-wrap:wrap}.toggle{font:inherit;font-weight:700;padding:10px 12px;border-radius:10px;border:2px solid #064f91;background:#fff;color:#064f91;cursor:pointer;flex:1 1 8rem;min-width:0}.toggle[aria-pressed="true"]{background:#064f91;color:#fff}.toggle:disabled{opacity:.55;cursor:not-allowed}</style>
 </head>
 <body class="ac-page">
@@ -52,7 +52,7 @@
   </div>
   <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
-    <p>Labbet följer hållkretsen i v41_03 och v43_03 (S0 STOPP NC i serie, S1 START NO parallellt med K1:s NO-hjälpkontakt). Labbet använder bara 24 V och en spole på 480 Ω, så svaren sammanfaller inte med presentationernas 12 V-övningar.</p>
+    <p>Labbet följer hållkretsen i v41_03 och v43_03 (S0 STOPP NC i serie, S1 START NO parallellt med K1:s NO-hjälpkontakt). Uppgifterna använder 24 V och en spole på 480 Ω, så svaren sammanfaller inte med presentationernas 12 V-övningar. För Station C kan styrspänningen ställas på 12 V, som stationsriggen. Ombord har styrkretsar ofta 230 V AC och långa kablar: en högohmig multimeter kan då visa spökspänning på en öppen ledare, där simulatorn visar ”flytande”.</p>
     <p>Modellen: ideala kontakter och ledningar, spolen som enda resistans, idealt voltmeter. En punkt som inte är förbunden med matning eller retur visas som ”flytande”. Utan ström blir det inget spänningsfall i spolen, därför får spolens båda sidor samma potential. Kontaktstudsar, spolens induktans och tillslagstid ingår inte.</p>
     <p><strong>Fartyg och säkerhet att ta upp muntligt:</strong> Hållkretsen fungerar som återstartsskydd: efter strömavbrott (prova ”Styrspänning till”) startar motorn inte själv. Viktiga förbrukare ombord, som styrmaskin och vissa pumpar, har i stället automatisk omstart i tur och ordning. Felsökning görs i första hand spänningslöst. Mätning under spänning kräver kompetens, uppdrag, rätt instrument och skyddsutrustning.</p>
     <p>Framsteg sparas bara i denna webbläsare. Direktlänk till en uppgift: <code>?uppgift=</code> med uppgiftens id, till exempel <code>?uppgift=hall</code>.</p>
@@ -60,5 +60,5 @@
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer id="site-footer" class="site-footer"></footer>
-<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260925-station"></script>
+<script src="/config.js"></script><script src="/shared.js"></script><script type="module" src="app.mjs?v=20260926"></script>
 </body></html>

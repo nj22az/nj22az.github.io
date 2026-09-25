@@ -63,3 +63,9 @@ test('Station B, trefas: exemplet är komplett och stämmer med modellen', async
   assert.deepEqual(missing(def, def.example), []);
   for (const r of def.example.rows) assert.equal(deviationMatches(r.avv, r.forv, r.uppm), true, JSON.stringify(r));
 });
+
+test('Station B, trefas: exemplets bedömningar följer toleransen ±2 %', async () => {
+  const { STATION_B_3F_PROTOKOLL: def } = await import('./stationB-protokoll.mjs');
+  const { deviation } = await import('../gemensamt/labbprotokoll.mjs');
+  for (const r of def.example.rows) if (r.tol === '±2 %') assert.equal(r.bed, Math.abs(deviation(r.forv, r.uppm).rel) > 2 ? 'Utanför tolerans' : 'Inom tolerans', JSON.stringify(r));
+});

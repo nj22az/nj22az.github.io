@@ -43,5 +43,7 @@ test('Station C: exemplet är komplett och stämmer med modellen', async () => {
   const { missing, deviationMatches } = await import('../gemensamt/labbprotokoll.mjs');
   assert.deepEqual(missing(def, def.example), []);
   for (const r of def.example.rows) assert.equal(deviationMatches(r.avv, r.forv, r.uppm), true, JSON.stringify(r));
-  assert.match(def.example.faults[1].resultat, /12,0 V/);
+  assert.match(def.example.faults[0].resultat, /a–0 V: 0 V/);
+  // kontrollen skiljer: med START intryckt har a full spänning för de tre andra orsakerna
+  for (const fault of ['start', 'spole', 'retur']) assert.equal(run([{ fault, U: 24 }, { s1: true }]).r.V.a, 24, fault);
 });

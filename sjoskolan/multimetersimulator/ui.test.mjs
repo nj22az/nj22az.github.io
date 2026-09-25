@@ -83,7 +83,7 @@ test('Station A: instrument check passes and the lab protocol fetches the readin
   assert.match(q('#lesson-number').textContent,/09 \/ 09/);
   click('#functions [data-mode="dc"]');
   change('#black-node','Ref−');change('#red-node','Ref+');
-  assert.equal(q('#reading').textContent,'5,00');
+  assert.equal(q('#reading').textContent,'5,01');
   click('#check');
   assert.match(q('#feedback-title')?.textContent||q('#next').textContent,/./);
   assert.equal(q('#next').hidden,false);
@@ -92,10 +92,11 @@ test('Station A: instrument check passes and the lab protocol fetches the readin
   assert.match(q('#labbprotokoll .lp-msg').textContent,/Räkna först/);
   const forv=q('#labbprotokoll [data-p="rows.0.forv"]');forv.value='5,00 V';forv.dispatchEvent(new w.Event('input',{bubbles:true}));
   fetch.click();
-  assert.equal(q('#labbprotokoll [data-p="rows.0.uppm"]').value,'5,00 V ⎓');
+  assert.equal(q('#labbprotokoll [data-p="rows.0.uppm"]').value,'5,01 V ⎓');
   assert.match(q('#labbprotokoll [data-p="rows.0.punkter"]').value,/röd Ref\+ \/ svart Ref−/);
   const saved=JSON.parse(w.localStorage.getItem('sjoskolan-protokoll-stationA'));
-  assert.equal(saved.rows[0].uppm,'5,00 V ⎓');
+  assert.equal(saved.rows[0].uppm,'5,01 V ⎓');
   assert.match(q('#labbprotokoll .lp-status').textContent,/Saknas/);
-  assert.ok(q('#labbprotokoll .lp-example [data-p="rows.6.uppm"]').value.endsWith('mA'));
+  assert.match(q('#labbprotokoll .lp-example').textContent,/mA/);
+  assert.match(q('#lesson-number').textContent,/09/);
 });

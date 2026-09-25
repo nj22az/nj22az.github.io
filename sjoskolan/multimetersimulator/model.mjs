@@ -4,16 +4,22 @@ export const MODES = { off: 'OFF', dc: 'V ⎓', ac: 'V ~', current: 'A ⎓', ohm
 // precis som fysiska riggar. Nominellt: 12 V, R1 = 1 kΩ ±5 %, R2 = 2 kΩ ±5 %. Rigg 0 följer exemplet i v41_03 bild 9.
 export const RIGS = [
   { id: 0, name: 'Exempelrigg 9 V', Unom: 9, U: 9.03, R1: 1004, R2: 1991 },
-  { id: 1, name: 'Rigg 1', Unom: 12, U: 12.06, R1: 1012, R2: 1985 },
-  { id: 2, name: 'Rigg 2', Unom: 12, U: 11.91, R1: 987, R2: 2034 },
-  { id: 3, name: 'Rigg 3', Unom: 12, U: 12.12, R1: 1043, R2: 2011 },
-  { id: 4, name: 'Rigg 4', Unom: 12, U: 11.97, R1: 1036, R2: 1943 },
+  { id: 1, name: 'Rigg 1', Unom: 12, U: 12.06, R1: 1012, R2: 1962 },
+  { id: 2, name: 'Rigg 2', Unom: 12, U: 11.87, R1: 987, R2: 2034 },
+  { id: 3, name: 'Rigg 3', Unom: 12, U: 12.12, R1: 1043, R2: 2028 },
+  { id: 4, name: 'Rigg 4', Unom: 12, U: 11.93, R1: 1036, R2: 1958 },
   { id: 5, name: 'Rigg 5', Unom: 12, U: 12.03, R1: 994, R2: 2141 },
-  { id: 6, name: 'Rigg 6', Unom: 12, U: 12.10, R1: 958, R2: 2052 },
+  { id: 6, name: 'Rigg 6', Unom: 12, U: 12.10, R1: 958, R2: 2031 },
 ];
 export const REF = 5; // kalibrerad referens för instrumentkontroll, galvaniskt skild från riggen
 export const REF_NODES = ['Ref+', 'Ref−'];
 export const rigOf = (s) => RIGS[s.rig ?? 1] ?? RIGS[1];
+// En frånslagen nätdel är fortfarande ansluten: utgångskondensatorer och avledningsresistor ger en väg P–N.
+// Därför ska länken P–A öppnas före resistansmätning, precis som på en verklig rigg.
+export const R_OFF = 4700;
+// Stationsmätaren har små, fasta fel inom sin specifikation, som ett verkligt instrument:
+// V ⎓ ±(0,5 % + 2 siffror), Ω ±(0,8 % + 2 siffror), mA ±(1,0 % + 3 siffror).
+export const STATION_GAIN = { dc: 1.0025, ohm: 1.004, current: 0.995 };
 export function initialState(circuit = 'lamp') {
   return { circuit, rig: 1, power: false, voltage: 12, load: 120, link: true, parallel: true,
     broken: false, input: 10e6, mode: 'off', jack: 'v', red: null, black: null,
@@ -24,7 +30,7 @@ export function network(s) {
   if (s.circuit === 'fuse') return { nodes: ['A','B'], edges: s.broken ? [] : [['A','B',0.2]], fixed: {} };
   if (s.circuit === 'station') {
     const g = rigOf(s);
-    return { nodes: ['P','A','B','N', ...REF_NODES], edges: [...(s.link ? [['P','A',0]] : []), ['A','B',g.R1], ['B','N',g.R2]],
+    return { nodes: ['P','A','B','N', ...REF_NODES], edges: [...(s.link ? [['P','A',0]] : []), ['A','B',g.R1], ['B','N',g.R2], ...(s.power ? [] : [['P','N',R_OFF]])],
       fixed: { ...(s.power ? { P: g.U, N: 0 } : {}), 'Ref+': REF, 'Ref−': 0 } };
   }
   if (s.circuit === 'divider') return { nodes: ['S','M','G'], edges: [['S','M',1e6],['M','G',1e6]], fixed: s.power ? {S:10,G:0} : {} };
@@ -126,10 +132,11 @@ export function measure(s) {
   if (!connected) return empty('—','Anslut båda mätspetsarna till märkta mätpunkter.');
   if (currentJack && s.mode !== 'current') return empty('FEL','Fel uttag. Flytta röd sladd till V Ω för denna funktion. A- och mA-uttag kan kortsluta en spänningskälla.','jack');
   if (s.mode === 'current' && !currentJack) return empty('FEL','Strömmätning kräver A- eller mA-uttaget. Bryt matningen innan du kopplar om.','jack');
-  if (s.mode === 'current') return s.jack === 'ma' ? display(current*1000,'mA',2,'Ström genom mätarens shunt, 1 Ω i mA-uttaget.') : display(current,'A',3,'Ström genom mätarens shunt, 0,1 Ω i A-uttaget.');
+  const gain = s.circuit === 'station' ? STATION_GAIN : { dc: 1, ohm: 1, current: 1 };
+  if (s.mode === 'current') return s.jack === 'ma' ? display(current*1000*gain.current,'mA',2,'Ström genom mätarens shunt, 1 Ω i mA-uttaget.') : display(current,'A',3,'Ström genom mätarens shunt, 0,1 Ω i A-uttaget.');
   if (s.mode === 'ohm' || s.mode === 'continuity') {
     if (s.power) return empty('STOPP','Ω och summer använder mätarens egen testström. Frånskilj spänningskällan före mätningen.','live-ohm');
-    const r = resistance(net,s.red,s.black);
+    const r = resistance(net,s.red,s.black)*gain.ohm;
     if (!Number.isFinite(r)) return empty('OL','Öppen krets: ingen sammanhängande strömväg mellan mätspetsarna.','open');
     if (s.mode === 'continuity') return {...display(r,'Ω',1,r < 30 ? 'Kontakt: summerns gräns är 30 Ω i denna modell.' : 'Ingen ton: resistansen är minst 30 Ω.'),beep:r < 30};
     return r >= 1000 ? display(r/1000,'kΩ',3,'Visar den sammanlagda resistansen mellan mätspetsarna.') : display(r,'Ω',1,'Visar den sammanlagda resistansen mellan mätspetsarna.');
@@ -139,7 +146,7 @@ export function measure(s) {
   const volts = (a ?? 0)-(b ?? 0);
   if (s.mode === 'ac') return display(0,'V ~',2,'Källorna här ger ren likspänning. Modellens AC-kopplade V ~ visar därför 0 V. Välj V ⎓ för likspänning.');
   if (s.range !== 'auto' && Math.abs(volts) >= Number(s.range)) return empty('OL','Mätvärdet överskrider valt spänningsområde. Välj ett högre område eller AUTO.','overrange');
-  return display(volts,'V ⎓',2,'Spänning vid röd spets minus spänning vid svart spets.');
+  return display(volts*gain.dc,'V ⎓',2,'Spänning vid röd spets minus spänning vid svart spets.');
 }
 export function lampCurrent(s) {
   if (s.circuit !== 'lamp' || s.trip) return 0;
