@@ -1,0 +1,78 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { JSDOM } from 'jsdom';
+import { protocolCSV } from './protocol.mjs';
+const html=await readFile(new URL('./index.html',import.meta.url),'utf8');
+const key='sjoskolan-multimeter-v1';
+let instance=0;
+async function mount(saved=null,{blocked=false,lesson='loading'}={}){
+  const dom=new JSDOM(html,{url:`https://example.test/sjoskolan/multimetersimulator/?ovning=${lesson}`});
+  const {window}=dom;
+  window.HTMLElement.prototype.scrollIntoView=()=>{};
+  if(saved)window.localStorage.setItem(key,JSON.stringify(saved));
+  Object.assign(globalThis,{window,document:window.document,history:window.history,location:window.location,
+    localStorage:blocked?{getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}}:window.localStorage,
+    requestAnimationFrame:()=>0,ResizeObserver:class{observe(){}}});
+  await import(`./app.mjs?ui-test=${++instance}`);
+  const q=s=>window.document.querySelector(s);
+  const change=(selector,value)=>{q(selector).value=value;q(selector).dispatchEvent(new window.Event('change',{bubbles:true}));};
+  const click=selector=>q(selector).click();
+  const answer=value=>{q('#number-answer').value=value;click('#check');};
+  const choose=i=>click(`[data-answer-choice="${i}"]`);
+  return {dom,q,click,change,answer,choose,saved:()=>JSON.parse(window.localStorage.getItem(key))};
+}
+test('complete lesson flow, wrong answers, both readings, explanation, migration and CSV',async()=>{
+  const old={done:['voltage','loading'],records:[{time:'2026-09-24',lesson:'Spänning',step:1,reading:'12,00 V'}]};
+  const ui=await mount(old),{q,click,change,answer,choose}=ui;
+  assert.match(q('#progress').textContent,/1 av 8/);
+  assert.equal(q('#nodes').inert,true);assert.equal(q('#diagram').closest('[inert]'),null);
+  assert.match(q('#source-status').textContent,/Matning till/);
+  click('#check');assert.equal(q('#next').hidden,true);
+  answer('10');assert.equal(q('#next').hidden,true);
+  answer('5,00');assert.equal(q('#next').hidden,false);
+  assert.match(q('#loading-observation').textContent,/Beräknat utan mätare/);
+  click('#next');choose(1);click('#check');assert.equal(q('#next').hidden,true);
+  choose(0);click('#check');click('#next');
+  assert.equal(q('#nodes').inert,false);assert.equal(q('#input').disabled,true);
+  click('#check-reading');assert.match(q('#feedback-text').textContent,/Välj V/);
+  click('[data-mode="dc"]');change('#red-node','G');change('#black-node','M');click('#power');
+  assert.equal(q('#reading').textContent,'-4,76');assert.ok(q('.meter-branch'));
+  assert.equal(q('#wiring-checklist').querySelectorAll('.complete').length,5);
+  click('#check-reading');assert.match(q('#feedback-text').textContent,/Minustecknet/);
+  assert.equal(q('#nodes').inert,true);click('#next-reading');
+  assert.match(q('#task-heading').textContent,/Förutsäg med 1/);
+  choose(0);click('#check');click('#next');
+  assert.equal(q('#input').disabled,false);click('#check');assert.match(q('#feedback-text').textContent,/Välj 1 MΩ/);
+  change('#input','1000000');assert.equal(q('#reading').textContent,'-3,33');
+  click('#check');click('#next');answer('3,33');assert.equal(q('#next').hidden,true);
+  answer('6.67');assert.equal(q('#next').hidden,false);click('#next');
+  choose(0);click('#check');assert.equal(q('#next').hidden,true);assert.match(q('#feedback-text').textContent,/egen förklaring/);
+  const comment='Mätaren ligger parallellt med R2 och sänker spänningen mellan M och G.';
+  q('#lesson-comment').value=comment;choose(1);click('#check');assert.equal(q('#next').hidden,true);
+  choose(0);click('#check');assert.equal(q('#next').hidden,false);
+  const saved=ui.saved();assert.deepEqual(saved.done,['voltage','loading']);assert.equal(saved.revisions.loading,2);
+  assert.equal(saved.records.length,8);assert.equal(saved.records.at(-1).comment,comment);
+  assert.equal(saved.records[3].input,10e6);assert.equal(saved.records[5].input,1e6);
+  assert.match(q('#loading-results').textContent,/4,76 V/);assert.match(q('#loading-results').textContent,/3,33 V/);
+  assert.match(q('#protocol-rows').textContent,/Mätaren ligger parallellt/);
+  const csv=protocolCSV(saved.records);assert.ok(csv.includes(comment));assert.ok(csv.includes('10000000'));
+  click('#next');assert.match(q('#lesson-title').textContent,/CAT/);
+  click('[data-choice="0"]');click('#check');assert.equal(q('#next').hidden,true);
+  click('[data-choice="1"]');click('#check');assert.equal(q('#next').hidden,false);
+  ui.dom.window.close();
+  const reloaded=await mount(saved);assert.match(reloaded.q('#progress').textContent,/2 av 8/);
+  reloaded.click('#free-mode');assert.equal(reloaded.q('#nodes').inert,false);
+  reloaded.change('#free-circuit','divider');assert.equal(reloaded.q('#input').disabled,false);
+  assert.equal(reloaded.q('#lesson-answer').hidden,true);assert.equal(reloaded.q('#loading-comparison').hidden,true);
+  reloaded.click('#free-mode');assert.match(reloaded.q('#task-heading').textContent,/Steg 1 av 7/);
+  reloaded.dom.window.close();
+});
+test('ordinary voltage lesson and blocked storage continue to work',async()=>{
+  const ui=await mount(null,{blocked:true,lesson:'voltage'}),{q,click,change}=ui;
+  click('[data-mode="dc"]');change('#red-node','P1');change('#black-node','P2');click('#power');click('#check');
+  assert.equal(q('#reading').textContent,'12,00');assert.equal(q('#next').hidden,false);
+  assert.equal(q('#lesson-answer').hidden,true);assert.match(q('#record-count').textContent,/Lagring är avstängd/);
+  assert.equal(q('#download-log').disabled,false);assert.equal(q('#protocol-rows').children.length,1);
+  ui.dom.window.close();
+});
