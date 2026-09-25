@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="sv" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Förklaringsfilmer · Sjöskolan</title>
+  <meta name="description" content="Korta animerade förklaringsfilmer i elteknik med måsen Måns och matrosen Sigge.">
+  <link rel="canonical" href="https://nj22az.github.io/sjoskolan/filmer/">
+  <link rel="icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/sjoskolan/course.css"><link rel="stylesheet" href="filmer.css">
+</head>
+<body class="course">
+  <nav id="site-nav" class="site-nav"></nav>
+  <main id="main-content" class="course-main film-main">
+    <div class="course-breadcrumb"><a href="../index.html">← Alla veckor</a></div>
+    <header class="course-heading">
+      <p class="course-kicker">Sjöskolan · Elteknik</p>
+      <h1>Förklaringsfilmer</h1>
+      <p>Korta animerade filmer med måsen Måns och matrosen Sigge. Varje film förklarar ett samband från presentationerna, ett steg i taget. Repliken står i pratbubblan och finns också som undertext.</p>
+    </header>
+    <div class="film-grid" id="films"></div>
+    <p>Vill du stega själv? Öppna den interaktiva spelaren under varje film. Där kan du pausa och dra i tidslinjen.</p>
+    <details class="teacher-notes"><summary>För lärare · så görs filmerna</summary>
+      <p>Filmerna ritas med JavaScript på en canvas (<code>engine.mjs</code>, figurerna i <code>mascots.mjs</code>, en fil per film i <code>films/</code>). Samma kod driver den interaktiva spelaren och renderingen till MP4 med <code>render.cjs</code> (Playwright och ffmpeg). Undertexterna (WebVTT) skapas ur filmernas repliker. Se <code>README.md</code>.</p>
+    </details>
+  </main>
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js"></script>
+  <script src="/shared.js"></script>
+  <script type="module">
+    import { FILMS } from './films/index.mjs';
+    import { duration } from './engine.mjs';
+    const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+    document.getElementById('films').innerHTML = FILMS.map((f) => `
+      <article class="film-card" id="${f.id}">
+        <video controls preload="none" poster="video/${f.id}.png" width="1280" height="720">
+          <source src="video/${f.id}.mp4" type="video/mp4">
+          <track kind="captions" srclang="sv" label="Svenska" src="video/${f.id}.vtt">
+        </video>
+        <div><h2>${esc(f.title)}</h2><p>${esc(f.sub)}</p>
+        <p><small>${esc(f.week)} · ${esc(f.deck)} · ${mmss(duration(f))}</small></p>
+        <p><a href="spela.html?film=${f.id}">Interaktiv spelare</a></p></div>
+      </article>`).join('');
+  </script>
+</body>
+</html>

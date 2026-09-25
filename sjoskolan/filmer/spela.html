@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="sv" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Filmspelare · Sjöskolan</title>
+  <meta name="description" content="Animerade förklaringsfilmer i elteknik med måsen Måns och matrosen Sigge.">
+  <link rel="icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/sjoskolan/course.css"><link rel="stylesheet" href="filmer.css">
+</head>
+<body class="course">
+  <nav id="site-nav" class="site-nav"></nav>
+  <main id="main-content" class="course-main film-main">
+    <div class="course-breadcrumb"><a href="./">← Alla filmer</a></div>
+    <h1 id="film-title">Film</h1>
+    <p id="film-sub" class="film-sub"></p>
+    <div class="film-stage"><canvas id="c" width="1280" height="720" role="img" aria-label="Animerad film"></canvas></div>
+    <div class="film-controls">
+      <button id="play" type="button">Spela</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Tid i filmen">
+      <span id="time" class="film-time">0:00</span>
+    </div>
+    <p class="film-line" id="line" aria-live="polite"></p>
+  </main>
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js"></script>
+  <script src="/shared.js"></script>
+  <script type="module" src="spela.mjs"></script>
+</body>
+</html>
