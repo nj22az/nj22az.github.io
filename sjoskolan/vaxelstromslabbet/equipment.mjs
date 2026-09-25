@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {canvasRenderer} from './equipment-canvas.mjs';
 import {subscribeEquipment,adjustEquipment} from './equipment-state.mjs';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 export function mountEquipment(root){
@@ -11,10 +12,10 @@ export function mountEquipment(root){
  const camera=new THREE.OrthographicCamera(-9,9,5,-5,.1,100);camera.position.set(0,5.5,20);
  const models=new Map(),textures=new Set(),materials=new Set(),geometries=new Set();
  const material=(color,extra={})=>{const m=new THREE.MeshStandardMaterial({color,roughness:.65,metalness:.08,...extra});materials.add(m);return m;};
- const rubber=material('#172a3b'),panel=material('#e3e8eb'),blue=material('#1763a3'),gold=material('#eeb441'),copper=material('#b96535',{metalness:.65,roughness:.3});
+ const rubber=material('#172a3b'),dial=material('#536674'),panel=material('#e3e8eb'),blue=material('#1763a3'),gold=material('#eeb441'),copper=material('#b96535',{metalness:.65,roughness:.3});
  function mesh(g,geometry,mat,x,y,z){geometries.add(geometry);const m=new THREE.Mesh(geometry,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m;}
  const box=(g,w,h,d,x,y,z,mat,r=.08)=>mesh(g,new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/4,h/4,d/4)),mat,x,y,z);
- function knob(g,x,y,z,r=.23){const k=mesh(g,new THREE.CylinderGeometry(r,r,.15,28),rubber,x,y,z);k.rotation.x=Math.PI/2;box(g,.035,r*.9,.03,x,y+r*.18,z+.095,panel,.005);return k;}
+ function knob(g,x,y,z,r=.23){const k=mesh(g,new THREE.CylinderGeometry(r,r,.15,28),dial,x,y,z);k.rotation.x=Math.PI/2;box(g,.035,r*.9,.03,x,y+r*.18,z+.095,panel,.005);return k;}
  function jack(g,x,y,z,color){const m=mesh(g,new THREE.TorusGeometry(.085,.025,8,20),material(color),x,y,z);mesh(g,new THREE.CircleGeometry(.06,20),rubber,x,y,z-.004);return m;}
  function screen(g,w,h,x,y,z,cw=1024,ch=512){
   const canvas=document.createElement('canvas');canvas.width=cw;canvas.height=ch;const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas unavailable');
@@ -74,8 +75,8 @@ export function mountEquipment(root){
  }
  function fallback(){failed=true;flatMode=true;root.dataset.renderer='flat';if(renderer)renderer.domElement.hidden=true;flat.hidden=false;$('.equipment-status').textContent='Enkel instrumentvy. Avläsningar och uppgifter fungerar även utan 3D.';$('[data-action=rotate]').disabled=true;paintFlat();}
  try{
-  renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.domElement.setAttribute('aria-label','Tredimensionell labbänk. Välj instrument med knapparna ovan.');renderer.domElement.setAttribute('role','img');view.prepend(renderer.domElement);root.dataset.renderer='three';
+  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});}catch{renderer=canvasRenderer();$('.equipment-status').textContent='Förenklad 3D-vy';}renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.domElement.setAttribute('aria-label','Tredimensionell labbänk. Välj instrument med knapparna ovan.');renderer.domElement.setAttribute('role','img');view.prepend(renderer.domElement);root.dataset.renderer=renderer.isCanvasRenderer?'canvas3d':'three';
   scene.add(new THREE.HemisphereLight('#ffffff','#68859b',2.1));const light=new THREE.DirectionalLight('#fff5e2',2.6);light.position.set(-4,10,8);light.castShadow=true;light.shadow.mapSize.set(1024,1024);Object.assign(light.shadow.camera,{left:-12,right:12,top:9,bottom:-9,near:.5,far:35});light.shadow.bias=-.0008;scene.add(light);
   box(scene,18,.18,4,0,-.12,0,material('#bdcbd5'),.05);
   for(const [id,type]of [['source','source'],['trms','meter'],['avg','meter'],['scope','scope'],['load','load'],['power','power']])instrument(id,type);
@@ -108,7 +109,7 @@ export function mountEquipment(root){
   for(const m of models.values()){const i=data.instruments.find(i=>i.id===m.id);m.g.visible=Boolean(i)&&(!closeup||m.id===selected);if(i){m.g.position.x=positions[m.id]||0;if(m.id==='load'){m.g.userData.coil.visible=data.values.kind.includes('L');m.g.userData.capacitor.visible=data.values.kind.includes('C');}drawScreen(m,i);}}
   $('.equipment-choices').innerHTML=data.instruments.map(i=>`<button type="button" data-instrument="${i.id}" aria-pressed="${i.id===selected}">${esc(i.name)}</button>`).join('');paintFlat();detail();frame();
  });
- root.addEventListener('click',e=>{const instrument=e.target.closest('[data-instrument]');if(instrument){select(instrument.dataset.instrument);return;}const action=e.target.closest('[data-action]')?.dataset.action;if(action==='overview'){closeup=false;select(selected,false);}if(action==='rotate'&&!failed){rotate=!rotate;controls.enabled=rotate;renderer.domElement.style.touchAction=rotate?'none':'pan-y';$('[data-action=rotate]').setAttribute('aria-pressed',String(rotate));$('.equipment-status').textContent=rotate?'Dra för att vrida. Stäng av för att rulla sidan.':'';}if(action==='flat'){flatMode=failed||!flatMode;flat.hidden=!flatMode;if(renderer)renderer.domElement.hidden=flatMode;$('[data-action=flat]').setAttribute('aria-pressed',String(flatMode));$('[data-action=rotate]').disabled=flatMode;root.dataset.renderer=flatMode?'flat':'three';frame();}});
+ root.addEventListener('click',e=>{const instrument=e.target.closest('[data-instrument]');if(instrument){select(instrument.dataset.instrument);return;}const action=e.target.closest('[data-action]')?.dataset.action;if(action==='overview'){closeup=false;select(selected,false);}if(action==='rotate'&&!failed){rotate=!rotate;controls.enabled=rotate;renderer.domElement.style.touchAction=rotate?'none':'pan-y';$('[data-action=rotate]').setAttribute('aria-pressed',String(rotate));$('.equipment-status').textContent=rotate?'Dra för att vrida. Stäng av för att rulla sidan.':'';}if(action==='flat'){flatMode=failed||!flatMode;flat.hidden=!flatMode;if(renderer)renderer.domElement.hidden=flatMode;$('[data-action=flat]').setAttribute('aria-pressed',String(flatMode));$('[data-action=rotate]').disabled=flatMode;root.dataset.renderer=flatMode?'flat':renderer.isCanvasRenderer?'canvas3d':'three';frame();}});
  observer=new ResizeObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);});observer.observe(view);
  return{dispose(){unsubscribe();observer.disconnect();cancelAnimationFrame(raf);controls?.dispose();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();renderer?.dispose();}};
 }

@@ -9,4 +9,4 @@ async function choose(next){mode=next;document.querySelectorAll('[data-mode]').f
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.mode)));choose(mode);
 
-import('./equipment.js?v=20260925-3d1').then(({mountEquipment})=>mountEquipment(document.getElementById('equipment-bench'))).catch(()=>{document.getElementById('equipment-bench').innerHTML='<p>Instrumentvyn kunde inte laddas. Uppgifterna och deras avläsningar fungerar fortfarande.</p>';});
+import('./equipment.js?v=20260925-3d2').then(({mountEquipment})=>mountEquipment(document.getElementById('equipment-bench'))).catch(()=>{document.getElementById('equipment-bench').innerHTML='<p>Instrumentvyn kunde inte laddas. Uppgifterna och deras avläsningar fungerar fortfarande.</p>';});

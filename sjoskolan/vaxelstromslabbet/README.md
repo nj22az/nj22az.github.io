@@ -33,6 +33,6 @@ Lärarstöd, facit och förberedelser för den verkliga riggen: `../vecka-40/akt
 
 ## Instrumentbänk i Three.js
 
-Källa, två multimetrar, oscilloskop, komponentplatta och effektanalysator är egenbyggda 3D-modeller. `equipment-state.mjs` använder samma `readouts()` som resten av labbet. Avläsningarna är dolda under förutsägelsen. Instrument kan förstoras med klick eller knappar; källans värden kan ändras i fritt läge. Bänken behöver inte rotera för att uppgiften ska gå att lösa. Enkel instrumentvy finns för tangentbord och när WebGL2 saknas.
+Källa, två multimetrar, oscilloskop, komponentplatta och effektanalysator är egenbyggda 3D-modeller. `equipment-state.mjs` använder samma `readouts()` som resten av labbet. Avläsningarna är dolda under förutsägelsen. Instrument kan förstoras med klick eller knappar; källans värden kan ändras i fritt läge. Bänken behöver inte rotera för att uppgiften ska gå att lösa. En förenklad Canvas2D-rendering av samma Three.js-geometri används om WebGL2 saknas. Enkel instrumentvy kan också väljas manuellt.
 
 Källkod: `equipment.mjs`. Kör `npm run build` efter ändringar. Färdig `equipment.js` och Three.js MIT-licens i `vendor/` publiceras med sidan. Renderingen sker bara vid ändring; ingen ständig animationsslinga behövs. `equipment-state.mjs` innehåller inga hårdkodade mätresultat. Instrumentens form är generell och motsvarar inte en verifierad fysisk modell eller inkopplingsanvisning.
