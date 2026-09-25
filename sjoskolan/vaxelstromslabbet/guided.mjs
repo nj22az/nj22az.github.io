@@ -1,3 +1,4 @@
+import {publishEquipment} from './equipment-state.mjs';
 import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber} from './guided-lessons.mjs?v=20260925-ac2';
 import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260925-ac2';
 import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260925-ac2';
@@ -14,6 +15,7 @@ export function mountGuide(root){
  const ready=()=>task.fields.every(([k])=>Number.isFinite(row().predicted?.[k]));
  function setTask(id){task=GUIDE_TASKS.find(t=>t.id===id)||GUIDE_TASKS[0];phase=row().measured&&ready()?2:0;render();}
  function render(){
+  publishEquipment({tab:task.lesson,values:task.setup,locked:phase===0,editable:false,taskId:task.id});
   const lesson=LESSONS.find(l=>l.id===task.lesson),r=row(),items=GUIDE_TASKS.filter(t=>t.lesson===task.lesson);
   root.innerHTML=`<div class="guide-pickers"><label>Del<select id="guide-lesson">${LESSONS.map(l=>`<option value="${l.id}"${l.id===lesson.id?' selected':''}>${l.number}. ${l.title}</option>`).join('')}</select></label><label>Uppgift<select id="guide-task">${items.map(t=>`<option value="${t.id}"${t.id===task.id?' selected':''}>${esc(t.title)}${data.rows[t.id]?.explanation?' · antecknad':''}</option>`).join('')}</select></label></div>
   <p class="guide-label">GUIDAD LABB · ${items.indexOf(task)+1} AV ${items.length} I DENNA DEL</p><h2>${task.title}</h2><p class="guide-source">${task.source}</p>

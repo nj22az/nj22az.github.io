@@ -3,9 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test model.test.mjs tests/*.test.mjs"
+    "test": "node --test model.test.mjs tests/*.test.mjs",
+    "build": "node tools/build-equipment.mjs"
   },
   "devDependencies": {
+    "esbuild": "0.25.5",
     "happy-dom": "20.14.5"
+  },
+  "dependencies": {
+    "three": "0.186.1"
   }
 }

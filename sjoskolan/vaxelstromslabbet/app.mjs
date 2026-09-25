@@ -1,3 +1,4 @@
+import {publishEquipment,setEquipmentControl} from './equipment-state.mjs';
 // Växelströmslabbet · interaktion och ritning
 import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClose, SHAPES } from './model.mjs';
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
@@ -410,10 +411,19 @@ function readoutList(items) {
 
 function render() {
   const s = state.values[state.tab];
+  publishEquipment({tab:state.tab,values:s,locked:Boolean(state.challenge),editable:true});
   const r = readouts(state.tab, s);
   ({ sinus: renderSinus, impedans: renderImpedans, effekt: renderEffekt })[state.tab](s, r);
   const pr = $('principle'); pr.innerHTML = pr.innerHTML.replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`);
 }
+
+export function refreshEquipment(){publishEquipment({tab:state.tab,values:state.values[state.tab],locked:Boolean(state.challenge),editable:true});}
+setEquipmentControl((key,value)=>{
+ if(state.challenge||!Number.isFinite(value))return;
+ const c=CONTROLS[state.tab].find(c=>c.key===key);if(!c)return;
+ if(c.type==='select'&&!c.options.some(([v])=>Number(v)===value))return;
+ const el=$(`ctl-${key}-n`)||$(`ctl-${key}`);if(!el)return;el.value=String(value);onControl(c,el);renderControls();
+});
 
 // ---------- uppgifter ----------
 function renderChallengeSelect() {
