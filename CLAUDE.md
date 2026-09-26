@@ -128,3 +128,9 @@ presentationer, bildspel, lärarguiden eller boken: ändra posten, kör `innehal
 En storhet har ett enda skrivsätt i allt elevmaterial: den kanoniska formen i `sjoskolan/innehall/beteckningar.json`
 (U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L} …). Index skrivs `X_{L}` och renderas nedsänkt, aldrig XL, Upp eller Xᴸ.
 Nya varianter läggs i `avradda`; `innehall.py kontrollera` (CI) stoppar dem, `notation.py skriv-om` rättar dem.
+
+### Översättning
+
+Elevsidorna är `lang="sv"` och laddar `/sjoskolan/gemensamt/oversattning.js` (i `<head>`, `defer`). Skriptet markerar formler,
+storhetssymboler med index och tal med enhet `translate="no"`, så att maskinöversättning (Chrome, Edge, tillägg i Safari)
+inte ändrar dem. Safaris inbyggda översättning stöder inte svenska. Nya sidor och sidgeneratorer ska ta med skriptet; CI kontrollerar det.

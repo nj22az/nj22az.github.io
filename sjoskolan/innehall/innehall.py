@@ -175,6 +175,14 @@ def cmd_kontrollera(a):
         print('INAKTUELL', f)
     brister = rapport(kat, con, tyst=True)
     brister['fel'] += oforklarade(kat)
+    # Maskinöversättning: varje elevsida laddar gemensamt/oversattning.js (formler och enheter markeras translate="no").
+    for f in sorted(SJO.rglob('*.html')):
+        rel = f.relative_to(SJO).as_posix()
+        if any(d in rel for d in ('/arkiv/', 'node_modules/', 'innehall/')) or rel.startswith('innehall/'):
+            continue
+        s = f.read_text(encoding='utf-8')
+        if 'lock-data' not in s and 'oversattning.js' not in s:
+            brister['fel'].append(f'{rel}: saknar gemensamt/oversattning.js (översättningsskydd för formler och enheter)')
     import notation
     brister['fel'] += [f'{plats}: notation {besk} (beteckningar.json, avradda; rätta med notation.py skriv-om)' for plats, besk in notation.kontrollera(kat.poster)]
     for b in brister['fel']:
