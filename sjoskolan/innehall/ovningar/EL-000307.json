@@ -3,7 +3,7 @@
   "titel": "Linjeström i Δ",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

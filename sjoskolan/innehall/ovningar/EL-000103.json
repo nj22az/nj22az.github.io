@@ -3,7 +3,7 @@
   "titel": "Samma resistorer i Δ",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
