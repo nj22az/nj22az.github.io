@@ -1,184 +1,154 @@
 {
- "beskrivning": "Genererat ur sjoskolan/innehall. Skyddade poster visas bara med id och status.",
+ "beskrivning": "Genererat ur sjoskolan/innehall. Skyddade poster visas bara med id, revision och publik.",
  "poster": [
   {
    "id": "EL-000001",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000002",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000003",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000004",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000005",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000006",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000007",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000008",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000009",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000010",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000011",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000012",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000013",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000014",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000015",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000016",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000017",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000018",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000019",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000020",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000021",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000022",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000023",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000024",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000025",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000026",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000027",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000028",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000029",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000030",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
@@ -624,61 +594,51 @@
   {
    "id": "EL-000051",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000052",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000053",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000054",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000055",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000056",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000057",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000058",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000059",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {
    "id": "EL-000060",
    "revision": 1,
-   "status": "migrerad",
    "publik": "bok"
   },
   {

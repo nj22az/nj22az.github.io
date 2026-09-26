@@ -157,7 +157,7 @@ Eleverna möter presentationerna som bildspel på webben (`bildspel/?d=<id>`): b
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
-| `verktyg/facit/facit.py` | facit under övningarna i Formelstöd och övningar |
+| `innehall/` | innehållsdatabasen: övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit (`innehall/README.md`). `innehall.py bygg` skriver kurssidornas övningar, `*/uppgifter.gen.mjs`, arbetsblad, inlämning, tenta, presentationer, lärarguiden och boken |
 | `verktyg/bildspel/bygg.py` | webbildspel av presentationerna: `bildspel/<id>/` med bilder och text, visaren `bildspel/index.html` |
 
 Alla sidor använder Sjöskolans meny (`nav.school-nav`) och sidfot (`footer.school-nav`). Webbplatsens `styles.css`, `config.js` och `shared.js` och dess färgteman används inte i kursen.
