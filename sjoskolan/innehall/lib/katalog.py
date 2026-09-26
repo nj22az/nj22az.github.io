@@ -202,7 +202,7 @@ class Katalog:
                     self.fel.append(f'placeringar/{namn}.json: dubbel ordning {nyckel}')
                 sett.add(nyckel)
                 for a in pl.get('alias', []) + ([pl['ankare']] if pl.get('ankare') else []):
-                    k = (namn.split('-')[0], a)
+                    k = (namn, pl['plats'], a)  # ankare och alias är unika per fil
                     if alias.get(k, i) != i:
                         self.fel.append(f'alias {a} på {namn} pekar på både {alias[k]} och {i}')
                     alias[k] = i
@@ -211,6 +211,10 @@ class Katalog:
 
     def berakningar_kontroll(self):
         import berakningar
+        labbfn = berakningar.labbfunktioner()
+        if labbfn is None:
+            self.varningar.append('labbarnas funktioner.mjs kunde inte läsas (saknas uppgifter.gen.mjs? kör innehall.py bygg simulatorer); labbfunktioner kontrolleras inte')
+            labbfn = None
         for i, p in self.poster.items():
             param = {k: v['varde'] for k, v in (p.get('parametrar') or {}).items()}
             for s in (p.get('losning') or {}).get('svar', []):
@@ -230,11 +234,11 @@ class Katalog:
                     self.fel.append(f'{i}: {s["storhet"]} = {s["varde"]} men {s["berakning"]} ger {v:.6g}')
             sim = p.get('simulator') or {}
             fnid = (sim.get('validering') or {}).get('funktion')
-            if fnid and fnid not in berakningar.labbfunktioner():
+            if fnid and labbfn is not None and fnid not in labbfn:
                 self.fel.append(f'{i}: okänd labbfunktion {fnid}')
             for st in (p.get('labb') or {}).get('steg', []):
                 k = (st.get('kod') or {}).get('test')
-                if k and k not in berakningar.labbfunktioner():
+                if k and labbfn is not None and k not in labbfn:
                     self.fel.append(f'{i}: steg {st["id"]}: okänd labbfunktion {k}')
 
     # ------------------------------------------------------------------ hjälp

@@ -1,5 +1,6 @@
 // Trefaslabbet · interaktion och ritning
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
+import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
 import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260926';
@@ -13,7 +14,7 @@ const SUBS = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F', 'ɴ': 'N' };
 const SUBRE = /[ᴸᶜᴿꜰɴ]/g;
 const plain = (t) => String(t).replace(SUBRE, (ch) => SUBS[ch]);
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const subHtml = (t) => escHtml(t).replace(SUBRE, (ch) => `<sub>${SUBS[ch]}</sub>`);
+const subHtml = (t) => markHtml(String(t).replace(SUBRE, (ch) => `_{${SUBS[ch]}}`));
 
 const state = { tab: 'visare', values: clone(DEFAULTS), challenge: null, attempts: 0, solved: loadSolved() };
 function loadSolved() { try { return new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch { return new Set(); } }
@@ -274,7 +275,7 @@ $('answer-form').addEventListener('submit', (ev) => {
   if (!Number.isFinite(ans)) { fb.className = 'feedback warn'; fb.textContent = 'Skriv ett tal, till exempel 17,3.'; return; }
   const e = expected(c); if (isClose(ans, e, c.ask)) return finish(true, 'Rätt!');
   state.attempts += 1; let msg = 'Inte ännu. ';
-  const typical = c.mistakes().find((m) => isClose(ans, m.v, { rel: 0.02 }));
+  const typical = (c.mistakes || []).find((m) => isClose(ans, m.v, { rel: 0.02 }));
   if (typical) msg += `${typical.msg} `;
   else if (isClose(ans * 1000, e, c.ask) || isClose(ans / 1000, e, c.ask)) msg += 'Talet stämmer men enheten är fel med en faktor 1 000. ';
   else if (isClose(ans * Math.sqrt(3), e, c.ask) || isClose(ans / Math.sqrt(3), e, c.ask)) msg += 'Du är en faktor √3 fel. Kontrollera om det gäller fas- eller linjevärde. ';

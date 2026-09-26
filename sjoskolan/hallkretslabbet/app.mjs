@@ -1,6 +1,7 @@
 // Hållkretslabbet · interaktion och ritning
 import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
 import { FAULTS } from './model.mjs';
+import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
 import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260926';
@@ -127,9 +128,9 @@ function start(id) {
   const c = CHALLENGES.find((x) => x.id === id); if (!c) return leave();
   state.challenge = c; state.attempts = 0; state.s = run(c.steps).s; state.module = 0; state.revealed = false;
   $('challenge-body').hidden = false; $('challenge-intro').hidden = true;
-  $('challenge-deck').textContent = c.deck; $('challenge-task').textContent = c.task;
-  $('answer-label').textContent = `${c.ask.label} =`; $('answer-unit').textContent = c.ask.unit;
-  $('answer').value = ''; $('hint-text').textContent = c.hint; $('hint').open = false;
+  $('challenge-deck').textContent = c.deck; $('challenge-task').innerHTML = markHtml(c.task);
+  $('answer-label').innerHTML = `${markHtml(c.ask.label)} =`; $('answer-unit').textContent = c.ask.unit;
+  $('answer').value = ''; $('hint-text').innerHTML = markHtml(c.hint); $('hint').open = false;
   $('feedback').className = 'feedback'; $('feedback').textContent = ''; $('show-answer').hidden = true;
   renderSelect(); render(); url();
 }
@@ -139,7 +140,7 @@ function finish(ok, msg) {
   if (ok) { state.solved.add(c.id); save(); }
   state.challenge = null;
   $('feedback').className = `feedback ${ok ? 'ok' : 'info'}`;
-  $('feedback').innerHTML = `<strong>${msg}</strong> ${esc(c.ask.label)} = ${fmt(e, 4)} ${esc(c.ask.unit)}.<br><span class="solution">${esc(c.solution)}</span><br>Knapparna är nu upplåsta. Prova själv.`;
+  $('feedback').innerHTML = `<strong>${msg}</strong> ${markHtml(c.ask.label)} = ${fmt(e, 4)} ${esc(c.ask.unit)}.<br><span class="solution">${markHtml(c.solution)}</span><br>Knapparna är nu upplåsta. Prova själv.`;
   $('show-answer').hidden = true; renderSelect(); render();
 }
 $('answer-form').addEventListener('submit', (ev) => {
@@ -148,7 +149,7 @@ $('answer-form').addEventListener('submit', (ev) => {
   if (!Number.isFinite(a)) { fb.className = 'feedback warn'; fb.textContent = 'Skriv ett tal, till exempel 24.'; return; }
   const e = expected(c); if (isClose(a, e, c.ask)) return finish(true, 'Rätt!');
   state.attempts += 1; let msg = 'Inte ännu. ';
-  const typ = c.mistakes().find((m) => isClose(a, m.v, { rel: 0.02, abs: 0.01 }));
+  const typ = (c.mistakes || []).find((m) => isClose(a, m.v, { rel: 0.02, abs: 0.01 }));
   msg += typ ? typ.msg : 'Följ strömvägen och ange potentialen på mätpunkternas båda sidor.';
   if (state.attempts >= 2) { $('hint').open = true; $('show-answer').hidden = false; }
   fb.className = 'feedback warn'; fb.textContent = msg;

@@ -32,7 +32,7 @@ SJO = ROT.parent
 BUILD = ROT / 'build'
 UTGAVA = ROT / 'utgava.json'
 # Exportörer i körordning. Lätta körs alltid; tunga bara på begäran (de kräver LibreOffice, python-pptx, boken …).
-LATTA = ['kurssidor', 'idregister']
+LATTA = ['kurssidor', 'simulatorer', 'idregister']
 TUNGA = []
 
 

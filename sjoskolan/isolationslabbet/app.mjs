@@ -1,5 +1,6 @@
 // Isolationslabbet · interaktion och ritning
 import { itNet, insulationTest, fmt, fmtR, fmtI, parseAnswer, isClose, OBJECTS, PAIRS, PHASES, SOLID_LIMIT } from './model.mjs';
+import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, expected } from './lessons.mjs';
 import { ISO_PROTOKOLL, LAGEN } from './protokoll.mjs?v=20260927';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
@@ -122,9 +123,9 @@ function start(id) {
   const c = CHALLENGES.find((x) => x.id === id); if (!c) return leave();
   state.challenge = c; state.attempts = 0; state.lage = null; state.s = { ...DEFAULTS, ...c.set };
   $('challenge-body').hidden = false; $('challenge-intro').hidden = true;
-  $('challenge-deck').textContent = c.deck; $('challenge-task').textContent = c.task;
-  $('answer-label').textContent = `${c.ask.label} =`; $('answer-unit').textContent = c.ask.unit;
-  $('answer').value = ''; $('hint-text').textContent = c.hint; $('hint').open = false;
+  $('challenge-deck').textContent = c.deck; $('challenge-task').innerHTML = markHtml(c.task);
+  $('answer-label').innerHTML = `${markHtml(c.ask.label)} =`; $('answer-unit').textContent = c.ask.unit;
+  $('answer').value = ''; $('hint-text').innerHTML = markHtml(c.hint); $('hint').open = false;
   $('feedback').className = 'feedback'; $('feedback').textContent = ''; $('show-answer').hidden = true;
   renderSelect(); render(); url();
 }
@@ -134,7 +135,7 @@ function finish(ok, msg) {
   if (ok) { state.solved.add(c.id); save(); }
   state.challenge = null;
   $('feedback').className = `feedback ${ok ? 'ok' : 'info'}`;
-  $('feedback').innerHTML = `<strong>${msg}</strong> ${esc(c.ask.label)} = ${fmt(e, 3)} ${esc(c.ask.unit)}.<br><span class="solution">${esc(c.solution)}</span><br>Reglagen är nu upplåsta. Prova själv.`;
+  $('feedback').innerHTML = `<strong>${msg}</strong> ${markHtml(c.ask.label)} = ${fmt(e, 3)} ${esc(c.ask.unit)}.<br><span class="solution">${markHtml(c.solution)}</span><br>Reglagen är nu upplåsta. Prova själv.`;
   renderSelect(); render();
 }
 $('answer-form').addEventListener('submit', (ev) => {

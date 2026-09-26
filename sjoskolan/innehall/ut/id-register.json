@@ -2,6 +2,186 @@
  "beskrivning": "Genererat ur sjoskolan/innehall. Skyddade poster visas bara med id och status.",
  "poster": [
   {
+   "id": "EL-000001",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000002",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000003",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000004",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000005",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000006",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000007",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000008",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000009",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000010",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000011",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000012",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000013",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000014",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000015",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000016",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000017",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000018",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000019",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000020",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000021",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000022",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000023",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000024",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000025",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000026",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000027",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000028",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000029",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000030",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
    "id": "EL-000031",
    "revision": 1,
    "status": "migrerad",
@@ -440,6 +620,66 @@
      "ankare": null
     }
    ]
+  },
+  {
+   "id": "EL-000051",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000052",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000053",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000054",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000055",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000056",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000057",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000058",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000059",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
+  },
+  {
+   "id": "EL-000060",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "bok"
   },
   {
    "id": "EL-000061",
@@ -4218,6 +4458,1142 @@
      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
      "nummer": "Övning 10",
      "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000301",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fasspänning vid 690 V",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Fasspänning vid 690 V",
+     "ankare": "uf"
+    }
+   ]
+  },
+  {
+   "id": "EL-000302",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två lika faslaster",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Två lika faslaster",
+     "ankare": "in2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000303",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Osymmetrisk last",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Osymmetrisk last",
+     "ankare": "in3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000304",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Bruten neutralledare",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Bruten neutralledare",
+     "ankare": "bruten"
+    }
+   ]
+  },
+  {
+   "id": "EL-000305",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Neutralström med två laster",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Neutralström med två laster",
+     "ankare": "inr"
+    }
+   ]
+  },
+  {
+   "id": "EL-000306",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Linjeström i Y",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Linjeström i Y",
+     "ankare": "ystrom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000307",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Linjeström i Δ",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Linjeström i Δ",
+     "ankare": "dstrom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000308",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Trefaseffekt",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "trefaslabbet/uppgifter.gen.mjs",
+     "nummer": "Trefaseffekt",
+     "ankare": "p3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000309",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Period vid 400 Hz",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Period vid 400 Hz",
+     "ankare": "period"
+    }
+   ]
+  },
+  {
+   "id": "EL-000310",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Toppvärde från effektivvärde",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Toppvärde från effektivvärde",
+     "ankare": "topp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000311",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Momentanvärde",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Momentanvärde",
+     "ankare": "moment"
+    }
+   ]
+  },
+  {
+   "id": "EL-000312",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fas från tidsavstånd",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Fas från tidsavstånd",
+     "ankare": "fas"
+    }
+   ]
+  },
+  {
+   "id": "EL-000313",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolens reaktans",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Spolens reaktans",
+     "ankare": "xl"
+    }
+   ]
+  },
+  {
+   "id": "EL-000314",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström i RL-krets",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Ström i RL-krets",
+     "ankare": "strom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000315",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fasvinkel i RC-krets",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Fasvinkel i RC-krets",
+     "ankare": "rc"
+    }
+   ]
+  },
+  {
+   "id": "EL-000316",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Resonansfrekvens",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Resonansfrekvens",
+     "ankare": "resonans"
+    }
+   ]
+  },
+  {
+   "id": "EL-000317",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skenbar effekt",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Skenbar effekt",
+     "ankare": "skenbar"
+    }
+   ]
+  },
+  {
+   "id": "EL-000318",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reaktiv effekt",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Reaktiv effekt",
+     "ankare": "reaktiv"
+    }
+   ]
+  },
+  {
+   "id": "EL-000319",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Matningsström",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Matningsström",
+     "ankare": "matstrom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000320",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Full kompensation",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Full kompensation",
+     "ankare": "kompensering"
+    }
+   ]
+  },
+  {
+   "id": "EL-000321",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Vila: efter STOPP",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Vila: efter STOPP",
+     "ankare": "vila"
+    }
+   ]
+  },
+  {
+   "id": "EL-000322",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Start: över spolen",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Start: över spolen",
+     "ankare": "start"
+    }
+   ]
+  },
+  {
+   "id": "EL-000323",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolens ström",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Spolens ström",
+     "ankare": "strom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000324",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Över den öppna STOPP",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Över den öppna STOPP",
+     "ankare": "stopp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000325",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fel: K1 håller inte",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Fel: K1 håller inte",
+     "ankare": "hall"
+    }
+   ]
+  },
+  {
+   "id": "EL-000326",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fel: bruten retur",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Fel: bruten retur",
+     "ankare": "retur"
+    }
+   ]
+  },
+  {
+   "id": "EL-000327",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållning: över hjälpkontakten",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Hållning: över hjälpkontakten",
+     "ankare": "hallning"
+    }
+   ]
+  },
+  {
+   "id": "EL-000328",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Efter strömavbrott",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "hallkretslabbet/uppgifter.gen.mjs",
+     "nummer": "Efter strömavbrott",
+     "ankare": "avbrott"
+    }
+   ]
+  },
+  {
+   "id": "EL-000329",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Vad mäter isolationsövervakningen?",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Vad mäter isolationsövervakningen?",
+     "ankare": "riso"
+    }
+   ]
+  },
+  {
+   "id": "EL-000330",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Larmar övervakningen?",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Larmar övervakningen?",
+     "ankare": "larm"
+    }
+   ]
+  },
+  {
+   "id": "EL-000331",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fas mot skrov i friskt nät",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Fas mot skrov i friskt nät",
+     "ankare": "symmetri"
+    }
+   ]
+  },
+  {
+   "id": "EL-000332",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Första jordfelet",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Första jordfelet",
+     "ankare": "forsta"
+    }
+   ]
+  },
+  {
+   "id": "EL-000333",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström i jordfelet",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Ström i jordfelet",
+     "ankare": "kapstrom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000334",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Andra jordfelet",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Andra jordfelet",
+     "ankare": "andra"
+    }
+   ]
+  },
+  {
+   "id": "EL-000335",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Isolationsprovning: resistans",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Isolationsprovning: resistans",
+     "ankare": "prov"
+    }
+   ]
+  },
+  {
+   "id": "EL-000336",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Isolationsprovning: skadad kabel",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "isolationslabbet/uppgifter.gen.mjs",
+     "nummer": "Isolationsprovning: skadad kabel",
+     "ankare": "kabel"
+    }
+   ]
+  },
+  {
+   "id": "EL-000337",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontrollera båda mätarna",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Kontrollera båda mätarna",
+     "ankare": "kalibrator"
+    }
+   ]
+  },
+  {
+   "id": "EL-000338",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Läs av periodtiden",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Läs av periodtiden",
+     "ankare": "grund-period"
+    }
+   ]
+  },
+  {
+   "id": "EL-000339",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jämför toppvärde och RMS",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Jämför toppvärde och RMS",
+     "ankare": "grund-topp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000340",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beräkna spolens reaktans",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Beräkna spolens reaktans",
+     "ankare": "grund-xl"
+    }
+   ]
+  },
+  {
+   "id": "EL-000341",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beräkna impedansens belopp",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Beräkna impedansens belopp",
+     "ankare": "grund-z"
+    }
+   ]
+  },
+  {
+   "id": "EL-000342",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jämför strömmen med och utan spole",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Jämför strömmen med och utan spole",
+     "ankare": "grund-strom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000343",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström vid effektfaktorn 1,00",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Ström vid effektfaktorn 1,00",
+     "ankare": "grund-pf1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000344",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma aktiva effekt, lägre effektfaktor",
+   "typ": "simulator",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+     "nummer": "Samma aktiva effekt, lägre effektfaktor",
+     "ankare": "grund-pf05"
+    }
+   ]
+  },
+  {
+   "id": "EL-000345",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänning",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 01",
+     "ankare": "voltage"
+    }
+   ]
+  },
+  {
+   "id": "EL-000346",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Polaritet",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 02",
+     "ankare": "polarity"
+    }
+   ]
+  },
+  {
+   "id": "EL-000347",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström i serie",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 03",
+     "ankare": "current"
+    }
+   ]
+  },
+  {
+   "id": "EL-000348",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Resistans",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 04",
+     "ankare": "resistance"
+    }
+   ]
+  },
+  {
+   "id": "EL-000349",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Parallella vägar",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 05",
+     "ankare": "parallel"
+    }
+   ]
+  },
+  {
+   "id": "EL-000350",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontinuitet",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 06",
+     "ankare": "continuity"
+    }
+   ]
+  },
+  {
+   "id": "EL-000351",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätaren påverkar",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 07",
+     "ankare": "loading"
+    }
+   ]
+  },
+  {
+   "id": "EL-000352",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Välj CAT-klass",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 08",
+     "ankare": "category"
+    }
+   ]
+  },
+  {
+   "id": "EL-000353",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Station A: DC-delare",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "simulator",
+     "plats": "multimetersimulator/uppgifter.gen.mjs",
+     "nummer": "Övning 09",
+     "ankare": "stationA"
+    }
+   ]
+  },
+  {
+   "id": "EL-000401",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Elevprotokoll och riskmall",
+   "typ": "mall",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vecka-41/aktuell/Elevprotokoll.html",
+     "nummer": "Elevprotokoll och riskmall",
+     "ankare": "elevprotokoll"
+    }
+   ]
+  },
+  {
+   "id": "EL-000402",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Labbprotokoll, Station A",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "multimetersimulator/protokoll.gen.mjs",
+     "nummer": "Labbprotokoll, Station A",
+     "ankare": "stationA"
+    }
+   ]
+  },
+  {
+   "id": "EL-000403",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Station A: DC-delare, fysisk station",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+     "nummer": "Station A",
+     "ankare": "station-a"
+    }
+   ]
+  },
+  {
+   "id": "EL-000404",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Labbprotokoll, Station B, AC",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vaxelstromslabbet/protokoll.gen.mjs",
+     "nummer": "Labbprotokoll, Station B, AC",
+     "ankare": "stationB-ac-v2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000405",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Station B: AC, fysisk station",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+     "nummer": "Station B, AC",
+     "ankare": "station-b-ac"
+    }
+   ]
+  },
+  {
+   "id": "EL-000406",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Labbprotokoll, Station B, trefas",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "trefaslabbet/protokoll.gen.mjs",
+     "nummer": "Labbprotokoll, Station B, trefas",
+     "ankare": "stationB-3f"
+    }
+   ]
+  },
+  {
+   "id": "EL-000407",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Station B: trefas, fysisk station",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+     "nummer": "Station B, trefas",
+     "ankare": "station-b-3f"
+    }
+   ]
+  },
+  {
+   "id": "EL-000408",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Labbprotokoll, Station C",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "hallkretslabbet/protokoll.gen.mjs",
+     "nummer": "Labbprotokoll, Station C",
+     "ankare": "stationC"
+    }
+   ]
+  },
+  {
+   "id": "EL-000409",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Station C: hållkrets, fysisk station",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+     "nummer": "Station C",
+     "ankare": "station-c"
+    }
+   ]
+  },
+  {
+   "id": "EL-000410",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Labbprotokoll, isolation och jordfel i IT-nät",
+   "typ": "laboration",
+   "placeringar": [
+    {
+     "yta": "protokoll",
+     "plats": "isolationslabbet/protokoll.gen.mjs",
+     "nummer": "Labbprotokoll, isolation och jordfel i IT-nät",
+     "ankare": "isolation"
+    }
+   ]
+  },
+  {
+   "id": "EL-000501",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Periodtid och frekvens",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Periodtid och frekvens",
+     "ankare": "sinus:period"
+    }
+   ]
+  },
+  {
+   "id": "EL-000502",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Toppvärde och topp till topp",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Toppvärde och topp till topp",
+     "ankare": "sinus:topp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000503",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Medelvärde och RMS är olika",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Medelvärde och RMS är olika",
+     "ankare": "sinus:medel"
+    }
+   ]
+  },
+  {
+   "id": "EL-000504",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Eget försök med andra värden: sinus och mätvärden",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Eget försök med andra värden",
+     "ankare": "sinus:eget"
+    }
+   ]
+  },
+  {
+   "id": "EL-000505",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reaktans och enheter",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Reaktans och enheter",
+     "ankare": "impedans:xl"
+    }
+   ]
+  },
+  {
+   "id": "EL-000506",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömmen med spolen inkopplad",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Strömmen med spolen inkopplad",
+     "ankare": "impedans:strom"
+    }
+   ]
+  },
+  {
+   "id": "EL-000507",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Eget försök med andra värden: spole, motstånd och ström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Eget försök med andra värden",
+     "ankare": "impedans:eget"
+    }
+   ]
+  },
+  {
+   "id": "EL-000508",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Eget försök med andra värden: effekt och effektfaktor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Eget försök med andra värden",
+     "ankare": "effekt:eget"
     }
    ]
   }

@@ -48,7 +48,7 @@ test('alla uppgifter: facit, masker och att typfel inte godkänns', () => {
     assert.ok(c.mask.includes(c.ask.key), `${c.id} döljer inte svaret`);
     for (const k of Object.keys(DEFAULTS[c.tab])) assert.ok(k in c.setup, `${c.id} saknar ${k}`);
     assert.ok(c.solution, `${c.id} saknar lösning`);
-    for (const m of c.mistakes()) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
+    for (const m of (typeof c.mistakes === 'function' ? c.mistakes() : c.mistakes)) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
   }
 });
 

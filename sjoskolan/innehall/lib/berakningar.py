@@ -116,7 +116,10 @@ def labbfunktioner():
         return frozenset()
     kod = ';'.join(f"import('{f.as_uri()}').then(m=>Object.keys(m.FUNKTIONER))" for f in filer)
     js = f"Promise.all([{kod.replace(';', ',')}]).then(a=>console.log(JSON.stringify(a.flat())))"
-    r = subprocess.run(['node', '--input-type=module', '-e', js], capture_output=True, text=True, check=True)
+    r = subprocess.run(['node', '--input-type=module', '-e', js], capture_output=True, text=True)
+    if r.returncode:
+        # Första bygget: labbarnas lessons.mjs importerar uppgifter.gen.mjs som inte finns ännu. Då kan registret inte läsas.
+        return None
     return frozenset(json.loads(r.stdout))
 
 # ---------------------------------------------------------------- tillägg för simulatorernas uppgifter

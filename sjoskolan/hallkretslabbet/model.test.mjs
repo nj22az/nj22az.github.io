@@ -28,7 +28,7 @@ test('uppgifter: facit, masker och typfel', () => {
   for (const c of CHALLENGES) {
     const e = expected(c); assert.ok(isClose(e, want[c.id]), `${c.id}: ${e}`);
     assert.ok(c.mask.includes('meter') && c.solution, c.id);
-    for (const m of c.mistakes()) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
+    for (const m of (typeof c.mistakes === 'function' ? c.mistakes() : c.mistakes)) assert.ok(!isClose(m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
   }
 });
 

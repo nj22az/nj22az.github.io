@@ -115,7 +115,7 @@ test('alla uppgifter har rimliga facit och masker', () => {
     for (const k of Object.keys(DEFAULTS[c.tab])) assert.ok(k in c.setup, `${c.id} saknar ${k}`);
     assert.ok(isClose(e, e, c.ask));
     // inget typfel får godkännas som rätt svar
-    for (const m of (c.mistakes ? c.mistakes() : [])) assert.ok(!isClose(c.ask.absolute ? Math.abs(m.v) : m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
+    for (const m of (c.mistakes ? (typeof c.mistakes === 'function' ? c.mistakes() : c.mistakes) : [])) assert.ok(!isClose(c.ask.absolute ? Math.abs(m.v) : m.v, e, c.ask), `${c.id}: felsvar ${m.v} godkänns`);
     if (c.id === 'moment') assert.ok(!isClose(c.setup.urms, e, c.ask), 'effektivvärdet godkänns som momentanvärde');
   }
 });
@@ -131,7 +131,7 @@ test('avläsningar för standardlägen är ändliga', () => {
 test('toppvärdesuppgiften: rätt diagnos för 48 V och för topp till topp', () => {
   const c = CHALLENGES.find((x) => x.id === 'topp');
   assert.ok(isClose(expected(c), 33.94, { rel: 0.001 }));
-  const m = c.mistakes();
+  const m = (typeof c.mistakes === 'function' ? c.mistakes() : c.mistakes);
   const dbl = m.find((x) => isClose(x.v, 48, { rel: 0.001 }));
   const pp = m.find((x) => isClose(x.v, 67.88, { rel: 0.001 }));
   assert.ok(dbl && /dubblat effektivvärdet/.test(dbl.msg) && !/topp till topp/.test(dbl.msg), '48 V ska beskrivas som dubblat effektivvärde');

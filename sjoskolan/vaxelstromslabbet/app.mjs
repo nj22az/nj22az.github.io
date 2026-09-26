@@ -1,6 +1,7 @@
 import {publishEquipment,setEquipmentControl} from './equipment-state.mjs';
 // Växelströmslabbet · interaktion och ritning
 import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClose, SHAPES } from './model.mjs';
+import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925-ac2';
 import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260925-ac2';
@@ -13,7 +14,7 @@ const clone = (o) => JSON.parse(JSON.stringify(o));
 const SUBS = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F' };
 const plain = (t) => String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => SUBS[ch]);
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const subHtml = (t) => escHtml(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`);
+const subHtml = (t) => markHtml(String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `_{${SUBS[ch]}}`));
 
 const state = { tab: 'sinus', values: clone(DEFAULTS), challenge: null, attempts: 0, solved: loadSolved() };
 
@@ -483,7 +484,7 @@ function checkAnswer(ev) {
   state.attempts += 1;
   fb.className = 'feedback warn';
   let msg = 'Inte ännu. ';
-  const typical = (c.mistakes ? c.mistakes() : []).find((m) => isClose(ans, c.ask.absolute ? Math.abs(m.v) : m.v, { rel: 0.02, abs: c.ask.abs || 0 }));
+  const typical = (typeof c.mistakes === 'function' ? c.mistakes() : c.mistakes || []).find((m) => isClose(ans, c.ask.absolute ? Math.abs(m.v) : m.v, { rel: 0.02, abs: c.ask.abs || 0 }));
   if (typical) msg += `${typical.msg} `;
   else if (isClose(ans * 1000, e, c.ask) || isClose(ans / 1000, e, c.ask)) msg += 'Talet stämmer men enheten är fel med en faktor 1 000. ';
   else if (!c.ask.absolute && isClose(-ans, e, c.ask)) msg += 'Beloppet stämmer, men tecknet är fel. ';
