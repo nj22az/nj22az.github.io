@@ -1,0 +1,32 @@
+{
+  "id": "EL-000709",
+  "titel": "Startfråga: v41_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken information visar att en 12 V-utrustning verkligen är en SELV-rigg?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

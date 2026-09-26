@@ -1,0 +1,40 @@
+{
+  "id": "EL-000616",
+  "titel": "Kamratgranskning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Granska din kamrats E6. Finns rätt objekt och observation? Hänger risk och åtgärd ihop? Är ansvar, kontroll och osäkerhet tydliga? Skriv en styrka och en konkret förbättring. Om du arbetar ensam: granska texten ”Lampan fungerar. Vi använder handskar och fortsätter. Någon kontrollerar senare.”",
+    "fall": "EL-000609",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Går det att hitta rätt utrustning? Följer åtgärden av den beskrivna risken? Är ansvar, kontroll och osäkerhet tydliga?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E7; v37_04 bild 33",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

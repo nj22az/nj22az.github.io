@@ -1,0 +1,45 @@
+{
+  "id": "EL-000601",
+  "titel": "Avbrott i återledaren",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Batteriet och lampan fungerar. Brytaren är sluten, men återledaren har ett avbrott. Kan lampan lysa i modellen? Följ strömvägen och motivera.",
+    "instruktion": "Mitt svar och min motivering.",
+    "kortfraga": "Lyser lampan? Följ vägen och motivera."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E1; v37_02 bild 11",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1A och presentationsbild"
+      }
+    ],
+    "publik": "elev",
+    "tillgangar": [
+      {
+        "id": "bild",
+        "fil": "assets/87a19e070e36_bild_11.png",
+        "alt": "Öppna tillhörande bild 11"
+      }
+    ]
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37"
+  }
+}

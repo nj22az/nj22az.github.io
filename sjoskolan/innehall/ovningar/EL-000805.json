@@ -1,0 +1,67 @@
+{
+  "id": "EL-000805",
+  "titel": "Välj instrument och funktion",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Använd instrumentkorten M1 och M2.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "24 V DC över ett batteri."
+      },
+      {
+        "id": "b",
+        "text": "230 V AC 50 Hz i ett eluttag i en hytt."
+      },
+      {
+        "id": "c",
+        "text": "Cirka 150 mA DC i en givarslinga."
+      },
+      {
+        "id": "d",
+        "text": "Resistansen hos ett urkopplat motstånd märkt 4,7 kΩ."
+      }
+    ],
+    "svarsformat": "För varje mätning: instrument, funktion, uttag, hur det ansluts och varför. Ange vilka mätningar M1 inte klarar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[38][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "gemensamt/Underlagskort.html",
+        "titel": "Instrument- och komponentkort"
+      },
+      {
+        "url": "Elevuppgifter.html",
+        "titel": "Elevuppgift V2-2"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

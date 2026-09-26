@@ -1,0 +1,40 @@
+{
+  "id": "EL-000611",
+  "titel": "Beslutet nu",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kollega vill använda lampan tio minuter till eftersom den fortfarande lyser. Vad beslutar du? Motivera med uppgifterna i fall A. Beskriv också vad som behöver hanteras på platsen.",
+    "fall": "EL-000608",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Lampan behövs i ytterligare tio minuter. En kollega vill fortsätta eftersom den lyser. Formulera ditt beslut och din motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E2; v37_04 bild 13",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "EL-000817",
+  "titel": "Riskbedömning före arbete",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En armatur i ett kylrum ombord ska bytas. Den matas från en grupp i en fördelning och har ett inbyggt nödljusbatteri. Golvet är fuktigt.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Fyll i riskbedömningen: fara, händelse, konsekvens, befintliga skydd och åtgärder."
+      },
+      {
+        "id": "b",
+        "text": "Välj arbetsmetod och motivera valet."
+      },
+      {
+        "id": "c",
+        "text": "Skriv vem som gör vad och hur varje åtgärd verifieras."
+      },
+      {
+        "id": "d",
+        "text": "Vilken energikälla är lätt att missa?"
+      }
+    ],
+    "svarsformat": "Ifylld mall med spårbara åtgärder."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[42][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v42_03_Riskbedomning_och_skydd",
+        "titel": "Bildspel: Riskbedömning och skydd"
+      },
+      {
+        "url": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html",
+        "titel": "Mall för riskbedömning"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

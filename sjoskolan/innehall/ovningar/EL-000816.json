@@ -1,0 +1,63 @@
+{
+  "id": "EL-000816",
+  "titel": "Stationerna A, B och C",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Genomför stationerna enligt stationssidan.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Protokoll för Station A och Station C med en felmodul."
+      },
+      {
+        "id": "b",
+        "text": "Protokoll för Station B och en andra felmodul i Station C."
+      },
+      {
+        "id": "c",
+        "text": "Välj en mätning där uppmätt värde avvek från förväntat och förklara avvikelsen med dina siffror."
+      }
+    ],
+    "svarsformat": "Protokollen som PDF och förklaringen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[41][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "Simulerade_stationer.html",
+        "titel": "Simulerade stationer A, B och C"
+      },
+      {
+        "url": "Elevprotokoll.html",
+        "titel": "Elevprotokoll"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

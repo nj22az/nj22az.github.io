@@ -1,0 +1,39 @@
+{
+  "id": "EL-000630",
+  "titel": "Två matningar",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Använd figur 04. Källa A är ordinarie och B är reserv. A:s brytare är öppen. Väljarens verkliga ställning och spärrstatus är okända.",
+    "fraga": "Ange varför A:s öppna brytare inte räcker som säkerhetsbevis. Skriv ett underlagskrav och en verifieringsfråga.",
+    "instruktion": "egen lösning med metod och motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Elevuppgifter.html V2-1",
+        "revision": "8cabde3",
+        "roll": "elevuppgift vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarguiden vecka 38"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "EL-000856",
+  "titel": "Samma värmare i Y och Δ",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre värmeelement på 23 Ω vardera ansluts till ett 400 V-nät. Beräkna grenspänning, linjeström och total effekt i Y och i Δ."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 6",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Y: Ugren = 400/√3 ≈ 231 V, I_{L} = 231/23 ≈ 10,0 A, P = 3 · 231²/23 ≈ 6,96 kW. Δ: Ugren = 400 V, Igren = 400/23 ≈ 17,4 A, I_{L} = √3 · 17,4 ≈ 30,1 A, P = 3 · 400²/23 ≈ 20,9 kW, tre gånger effekten i Y.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "I_{L} (Y)",
+        "varde": 10.0,
+        "enhet": "A",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "trefas.linjestrom_y"
+      }
+    ]
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 400
+    },
+    "Z": {
+      "varde": 23
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v41"
+  }
+}

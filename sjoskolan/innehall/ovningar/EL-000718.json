@@ -1,0 +1,33 @@
+{
+  "id": "EL-000718",
+  "titel": "Avslutsfråga: v43_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Varför bevisar olika märkströmmar inte att två skydd är selektiva?",
+    "instruktion": "Identifiera skydd och manöverkomponenter inför veckans motorstyrningsschema. Dokumentera funktion och vilken data som behövs."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

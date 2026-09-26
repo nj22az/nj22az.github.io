@@ -1,0 +1,62 @@
+{
+  "id": "EL-000861",
+  "titel": "IT-nätet ombord",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett 440 V IT-nät larmar för låg isolation. Isolationsprovning av en utgående grupp med 500 V DC ger en läckström på 0,80 mA. Fartygets instruktion anger minst 1 MΩ. a) Beräkna isolationsresistansen och bedöm den. b) Anta ett fullständigt jordfel på L1. Vilken spänning har L2 och L3 mot skrovet? c) Vad händer vid ett andra jordfel på L2?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 11",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "a) R = 500/0,00080 = 625 kΩ = 0,625 MΩ, under 1 MΩ. Gruppen ska utredas. b) Omkring 440 V, huvudspänningen, i stället för normalt cirka 254 V. c) Ett andra fel på en annan fas blir en kortslutning mellan L1 och L2 via skrovet. Skydden ska lösa, och stor felström kan ge ljusbåge och brand.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 0.625,
+        "enhet": "MΩ",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "isolation.resistans_mohm"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 500
+    },
+    "I": {
+      "varde": 0.0008
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v44"
+  }
+}

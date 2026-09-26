@@ -1,0 +1,33 @@
+{
+  "id": "EL-000720",
+  "titel": "Avslutsfråga: v43_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken del av en omriktare kan lagra energi efter att matningen brutits?",
+    "instruktion": "Förbered en funktionsbeskrivning av motorstartaren. Skilj elektrisk inmatning, skyddsfunktion och mekanisk last."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "EL-000811",
+  "titel": "Egen RL-last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En seriekrets har R = (20 + D) Ω och L = 0,10 H. Källan ger 230 V, 50 Hz.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna X_{L}, |Z|, strömmen och fasvinkeln. Leder eller släpar strömmen?"
+      },
+      {
+        "id": "b",
+        "text": "Ställ in samma värden i labbet och jämför."
+      },
+      {
+        "id": "c",
+        "text": "Förutsäg vad som händer med strömmen om frekvensen fördubblas. Kontrollera i labbet."
+      }
+    ],
+    "svarsformat": "Beräkningar med enhet, avlästa värden och en förklaring till frekvensberoendet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[40][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "Genomgang.html?del=impedans",
+        "titel": "Genomgång del 2: spole, motstånd och ström"
+      },
+      {
+        "url": "vaxelstromslabbet/",
+        "titel": "Växelströmslabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

@@ -130,3 +130,120 @@ registrera('isolation.resistans_mohm')(lambda p: p['U'] / p['I'] / 1e6)
 registrera('spanningsdelare.belastad')(lambda p: p['U'] * (1 / (1 / p['R2'] + 1 / p['Rin'])) / (p['R1'] + 1 / (1 / p['R2'] + 1 / p['Rin'])))
 registrera('ac.z_rl')(lambda p: math.hypot(p['R'], 2 * math.pi * p['f'] * p['L']))
 registrera('ac.strom_rl')(lambda p: p['U'] / math.hypot(p['R'], 2 * math.pi * p['f'] * p['L']))
+
+
+# ---------------------------------------------------------------- lärarfacit för inlämningsuppgifterna (elevens tal D)
+# Registrerade med id larare.facit_rader[].funktion = 'inlamning.<id>'. Returnerar facittext för ett givet D (1–31).
+LARARFACIT = {}
+
+
+def lararfacit(namn):
+    def dek(fn):
+        LARARFACIT[f'inlamning.{namn}'] = fn
+        return fn
+    return dek
+
+
+def n(v, d=2):
+    """Tal i svensk form: decimalkomma och hårt mellanslag som tusentalsavgränsare."""
+    return f'{v:,.{d}f}'.replace(',', ' ').replace('.', ',')
+
+
+UF = 400 / R3
+lararfacit('37-1i')(lambda D: f'I = 24/(40 + {D}) = {n(24 / (40 + D), 3)} A')
+lararfacit('37-1p')(lambda D: f'P = 24²/{40 + D} = {n(576 / (40 + D), 1)} W')
+lararfacit('37-2i')(lambda D: f'IA = 0,400 A, IB = {n(24 / (100 + D), 3)} A, Itot = {n(0.4 + 24 / (100 + D), 3)} A')
+lararfacit('37-2p')(lambda D: f'PA = 9,6 W, PB = {n(576 / (100 + D), 2)} W. A lyser starkast (lägre R ger större ström vid samma U).')
+lararfacit('38-3v')(lambda D: f'{n(23.5 + D / 100, 2)} V')
+
+
+@lararfacit('38-3d')
+def _f383d(D):
+    x = 23.5 + D / 100
+    d = 0.008 * x + 0.02
+    return f'δ = {n(d, 2)} V, intervall {n(x - d, 2)}–{n(x + d, 2)} V'
+
+
+@lararfacit('38-3k')
+def _f383k(D):
+    x = 23.5 + D / 100
+    d = 0.008 * x + 0.02
+    return 'Ja, hela intervallet ligger inom kravet.' if x - d >= 23.76 and x + d <= 24.24 else 'Nej, intervallet går under 23,76 V. Kravet kan inte intygas.'
+
+
+lararfacit('39-1e')(lambda D: f'Ljus 1 500 Wh, radar 1 728 Wh, pump {n(24 * (5 + D / 10) * 1.5, 0)} Wh, totalt {n(3228 + 24 * (5 + D / 10) * 1.5, 0)} Wh')
+lararfacit('39-1ah')(lambda D: f'{n((3228 + 24 * (5 + D / 10) * 1.5) / 24, 1)} Ah')
+
+
+@lararfacit('40-1')
+def _f401(D):
+    U, f = 10 + D, 60 if D % 2 == 0 else 50
+    return f'U = {U} V, f = {f} Hz: û = {n(U * math.sqrt(2), 1)} V, Upp = {n(2 * U * math.sqrt(2), 1)} V, T = {n(1000 / f, 2)} ms'
+
+
+@lararfacit('40-2')
+def _f402(D):
+    R, X = 20 + D, 2 * math.pi * 50 * 0.1
+    Z = math.hypot(R, X)
+    return f'R = {R} Ω, X_L = 31,4 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A, φ = {n(math.degrees(math.atan(X / R)), 1)}°, strömmen släpar'
+
+
+@lararfacit('40-2b')
+def _f402b(D):
+    R, X = 20 + D, 2 * math.pi * 100 * 0.1
+    Z = math.hypot(R, X)
+    return f'X_L = 62,8 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A (minskar)'
+
+
+@lararfacit('40-3')
+def _f403(D):
+    P = 1 + D / 10
+    S = P / 0.7
+    Q = S * math.sqrt(1 - 0.49)
+    return f'P = {n(P, 1)} kW, S = {n(S, 2)} kVA, Q = {n(Q, 2)} kvar, I = {n(S * 1000 / 230, 1)} A'
+
+
+@lararfacit('40-3b')
+def _f403b(D):
+    P = 1 + D / 10
+    Q = P / 0.7 * math.sqrt(0.51)
+    Q2 = P * math.tan(math.acos(0.95))
+    I1, I2 = P * 1000 / (230 * 0.7), P * 1000 / (230 * 0.95)
+    return f'Qc = {n(Q - Q2, 2)} kvar, ny I = {n(I2, 1)} A, förlusten blir {n((I2 / I1) ** 2 * 100, 0)} % av den tidigare'
+
+
+@lararfacit('41-1')
+def _f411(D):
+    I3 = round((5 + D / 5) * 10) / 10
+    return f'I3 = {n(I3, 1)} A, IN = |10 − {n(I3, 1)}| = {n(abs(10 - I3), 1)} A'
+
+
+lararfacit('41-2y')(lambda D: f'R = {20 + D} Ω: Ugren = 231 V, Igren = I_L = {n(UF / (20 + D), 2)} A, P = {n(3 * UF * UF / (20 + D) / 1000, 2)} kW')
+lararfacit('41-2d')(lambda D: f'Ugren = 400 V, Igren = {n(400 / (20 + D), 2)} A, I_L = {n(R3 * 400 / (20 + D), 2)} A, P = {n(3 * 160000 / (20 + D) / 1000, 2)} kW')
+lararfacit('42-3')(lambda D: f'I = 230/({1000 + 10 * D}) = {n(230000 / (1000 + 10 * D), 0)} mA')
+lararfacit('43-1c')(lambda D: f'f = {30 + D} Hz: nₛ = 120 · {30 + D}/4 = {30 * (30 + D)} r/min')
+
+
+@lararfacit('43-2a')
+def _f432a(D):
+    k = 3 + D / 5
+    return f'Ik = {n(k, 1)} kA: ' + ('räcker (≤ 6 kA)' if k <= 6 else 'räcker inte (> 6 kA) utan dokumenterad backup')
+
+
+@lararfacit('43-2b')
+def _f432b(D):
+    m = 10 + D
+    return f'IΔ = {m} mA: ' + ('löser (≥ 30 mA)' if m >= 30 else 'kan lösa; ska lösa senast vid 30 mA' if m >= 15 else 'löser inte (under 15 mA)')
+
+
+@lararfacit('44-3')
+def _f443(D):
+    P = (1.5 + D / 10) * 1e6
+    I = P / (R3 * 6600 * 0.88)
+    return f'P = {n(P / 1e6, 1)} MW: I_L = {n(I, 0)} A vid 6,6 kV, {n(I * 15, 0)} A vid 440 V, CT sekundärt {n(I / 200, 2)} A'
+
+
+@lararfacit('45-2')
+def _f452(D):
+    u = 20 + D / 100
+    return f'Före: (24,1 − {n(u, 2)})/6 = {n((24.1 - u) / 6, 3)} Ω. Efter: (24,1 − 23,5)/6 = 0,100 Ω'

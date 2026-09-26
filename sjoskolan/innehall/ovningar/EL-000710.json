@@ -1,0 +1,33 @@
+{
+  "id": "EL-000710",
+  "titel": "Avslutsfråga: v41_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken slutsats kan ditt protokoll stödja, och vad har du ännu inte kontrollerat?",
+    "instruktion": "Färdigställ individuellt protokoll. Praktisk bedömning och eventuella kompletteringar följer lärarens separata plan för träffen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

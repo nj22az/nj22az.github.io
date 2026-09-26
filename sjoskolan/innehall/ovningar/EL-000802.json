@@ -1,0 +1,72 @@
+{
+  "id": "EL-000802",
+  "titel": "Två lampor parallellt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två lampor sitter parallellt över 24 V. Lampa A har 60 Ω och lampa B har (100 + D) Ω.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna strömmen i varje gren och den totala strömmen från batteriet."
+      },
+      {
+        "id": "b",
+        "text": "Beräkna effekten i varje lampa. Vilken lyser starkast, och varför?"
+      },
+      {
+        "id": "c",
+        "text": "Ledaren till lampa B bryts. Vilken ström går nu från batteriet?"
+      },
+      {
+        "id": "d",
+        "text": "Den gemensamma återledaren bryts i stället. Vad händer då med båda lamporna?"
+      }
+    ],
+    "svarsformat": "Beräkningar med enhet och en mening som förklarar varje svar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[37][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "01A_Elens_grunder/Elens_grunder.html",
+        "titel": "Elens grunder, avsnitt 8"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

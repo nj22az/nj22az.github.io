@@ -1,0 +1,72 @@
+{
+  "id": "EL-000818",
+  "titel": "Beröringsspänning i en modell",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Skyddsledaren till en maskin är av och ett isolationsfel har gjort höljet spänningssatt: 230 V mot det jordade däcket.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Vilken beröringsspänning får en person som tar i höljet och står på däcket?"
+      },
+      {
+        "id": "b",
+        "text": "Beräkna strömmen i en modell där kroppens resistans är (1 000 + 10 · D) Ω. Svara i mA."
+      },
+      {
+        "id": "c",
+        "text": "Varför kan modellen inte användas som säkerhetsgräns?"
+      },
+      {
+        "id": "d",
+        "text": "Vilket skydd borde ha löst, och varför gjorde det kanske inte det när skyddsledaren är av?"
+      }
+    ],
+    "svarsformat": "Beräkning och resonemang."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[42][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v42_01_Elektriska_risker",
+        "titel": "Bildspel: Elektriska risker"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

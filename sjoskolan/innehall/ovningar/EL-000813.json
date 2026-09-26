@@ -1,0 +1,59 @@
+{
+  "id": "EL-000813",
+  "titel": "Grundprotokollet från den guidade labben",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör den guidade labben när du har gått igenom de tre delarna och uppgift 1–3.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara."
+      },
+      {
+        "id": "b",
+        "text": "Spara grundprotokollet som PDF."
+      },
+      {
+        "id": "c",
+        "text": "Välj en uppgift där din förutsägelse inte stämde och förklara vad du hade missat."
+      }
+    ],
+    "svarsformat": "Grundprotokollet som PDF och förklaringen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[40][3]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "vaxelstromslabbet/?lage=guidad",
+        "titel": "Växelströmslabbet, guidad labb"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "EL-000637",
+  "titel": "Fel instrumentläge",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "På träningsriggen står instrumentet kvar i strömläge. Nästa uppgift är att mäta spänningen över källan. Beskriv kontrollen före anslutning och den möjliga konsekvensen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx bild 17",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas"
+  }
+}

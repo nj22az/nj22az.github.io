@@ -232,6 +232,9 @@ class Katalog:
                 tol = s.get('tolerans') or {'rel': 0.01}
                 if isinstance(s.get('varde'), (int, float)) and not berakningar.inom(v, s['varde'], tol):
                     self.fel.append(f'{i}: {s["storhet"]} = {s["varde"]} men {s["berakning"]} ger {v:.6g}')
+            for rad in (p.get('larare') or {}).get('facit_rader', []):
+                if rad.get('funktion') and rad['funktion'] not in berakningar.LARARFACIT:
+                    self.fel.append(f'{i}: okänd lärarfacitfunktion {rad["funktion"]}')
             sim = p.get('simulator') or {}
             fnid = (sim.get('validering') or {}).get('funktion')
             if fnid and labbfn is not None and fnid not in labbfn:

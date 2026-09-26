@@ -1,0 +1,45 @@
+{
+  "id": "EL-000607",
+  "titel": "Samlad tillämpning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En resistor på 2 kΩ får 12 V. Återledaren kan brytas. Beräkna strömmen när vägen är sluten. Beskriv följden när återledaren öppnas. Förklara om 12 V vid batteriet ensamt bevisar att lasten fungerar eller är säker.",
+    "instruktion": "Mitt svar och min motivering.",
+    "kortfraga": "Beräkna, förklara avbrottet och bedöm vad mätvärdet visar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E7; v37_02 bild 37",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1A och presentationsbild"
+      }
+    ],
+    "publik": "elev",
+    "tillgangar": [
+      {
+        "id": "bild",
+        "fil": "assets/7f975ecc875c_bild_39.png",
+        "alt": "Öppna tillhörande bild 37"
+      }
+    ]
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37"
+  }
+}

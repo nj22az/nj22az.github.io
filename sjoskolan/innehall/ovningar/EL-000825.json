@@ -1,0 +1,64 @@
+{
+  "id": "EL-000825",
+  "titel": "Isolationslabbet",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör de 8 räkna-först-uppgifterna och labbprotokollet i Isolationslabbet.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Spara labbprotokollet som PDF."
+      },
+      {
+        "id": "b",
+        "text": "Ställ in 440 V, f = 60 Hz och kapacitansen 2 µF per fas. Ge L1 ett fullständigt jordfel. Förutsäg felströmmen och kontrollera i labbet."
+      },
+      {
+        "id": "c",
+        "text": "Förklara varför ett stort fartyg med långa kablar får större ström vid första jordfelet än ett litet."
+      }
+    ],
+    "svarsformat": "Protokollet som PDF, förutsägelse, avläst värde och förklaring."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[44][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "isolationslabbet/",
+        "titel": "Isolationslabbet"
+      },
+      {
+        "url": "bildspel/?d=v44_01_Lagspanningssystem",
+        "titel": "Bildspel: Lågspänningssystem"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "EL-000801",
+  "titel": "Arbetslampans strömväg",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En arbetslampa ombord matas från ett 24 V-batteri via en brytare och en säkring. Lampans glödtråd har resistansen (40 + D) Ω när den lyser.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Rita kretsen med batteri, säkring, brytare, lampa och återledare. Markera strömvägen med pilar."
+      },
+      {
+        "id": "b",
+        "text": "Beräkna strömmen och effekten med ditt värde på resistansen."
+      },
+      {
+        "id": "c",
+        "text": "Återledaren får ett avbrott. Markera var i ritningen och förklara vad som händer med strömmen."
+      },
+      {
+        "id": "d",
+        "text": "Du mäter 24 V mellan batteriets poler. Förklara varför det inte bevisar att lampan fungerar eller att kretsen är säker."
+      }
+    ],
+    "svarsformat": "Ritning, beräkning med givna värden, samband, insättning och svar med enhet, och förklaringar med egna ord."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[37][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "01A_Elens_grunder/Elens_grunder.html",
+        "titel": "Elens grunder steg för steg"
+      },
+      {
+        "url": "01B_Elsakerhet_och_riskbedomning/Lampkretsen_bildguide.html",
+        "titel": "Lampkretsen: delar och symboler"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

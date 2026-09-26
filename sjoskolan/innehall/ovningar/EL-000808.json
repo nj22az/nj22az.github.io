@@ -1,0 +1,68 @@
+{
+  "id": "EL-000808",
+  "titel": "Mätaren påverkar kretsen",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör övningen ”Mätaren påverkar” i Multimeterlabbet.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Skriv din förutsägelse av spänningen innan du mäter, och varför."
+      },
+      {
+        "id": "b",
+        "text": "Skriv mätvärdet du fick."
+      },
+      {
+        "id": "c",
+        "text": "Beräkna vilken ingångsresistans som förklarar skillnaden mot det obelastade värdet. Använd den belastade spänningsdelaren."
+      },
+      {
+        "id": "d",
+        "text": "När är ett högohmigt instrument viktigt ombord? Ge ett exempel."
+      }
+    ],
+    "svarsformat": "Förutsägelse, mätvärde, beräkning och förklaring."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[39][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "multimetersimulator/",
+        "titel": "Multimeterlabbet"
+      },
+      {
+        "url": "bildspel/?d=v39_03_Multimeter_och_matfel",
+        "titel": "Bildspel: Multimeter och mätfel"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

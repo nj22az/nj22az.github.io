@@ -1,0 +1,45 @@
+{
+  "id": "EL-000606",
+  "titel": "Länspump och arbetsbelysning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En gemensam matning försörjer en länspump och arbetsbelysning. Ett fel misstänks i belysningen. Frånkoppling stoppar båda funktionerna. Beskriv vad som måste klarläggas och vilken samordning som behövs före åtgärden.",
+    "instruktion": "Mitt svar och min motivering.",
+    "kortfraga": "Vad måste klarläggas innan den gemensamma matningen kopplas bort?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E6; v37_02 bild 34",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1A och presentationsbild"
+      }
+    ],
+    "publik": "elev",
+    "tillgangar": [
+      {
+        "id": "bild",
+        "fil": "assets/725658840356_bild_36.png",
+        "alt": "Öppna tillhörande bild 34"
+      }
+    ]
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "EL-000827",
+  "titel": "Övningstentan",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör övningstentan utan att titta på lösningarna. Rätta den sedan.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Ange vilka uppgifter du klarade och vilka du inte klarade."
+      },
+      {
+        "id": "b",
+        "text": "Välj de tre områden du är mest osäker på och skriv vad du ska repetera och med vilket material."
+      }
+    ],
+    "svarsformat": "Din rättade övningstenta och din repetitionsplan."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[45][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "tentamen.html",
+        "titel": "Tentamen och övningstenta"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

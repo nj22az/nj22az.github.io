@@ -1,0 +1,41 @@
+{
+  "id": "EL-000852",
+  "titel": "Belastad spänningsdelare",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "24 V matar R_{1} = 3 kΩ i serie med R_{2} = 6 kΩ. Beräkna utspänningen över R_{2} utan last och när en last på 6 kΩ ansluts över R_{2}."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 2",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Utan last: 24 · 6/9 = 16 V. Med last: Rp = 6 · 6/12 = 3 kΩ, Uut = 24 · 3/6 = 12 V. Lasten sänker utspänningen eftersom den nedre resistansen minskar.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning"
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v39"
+  }
+}

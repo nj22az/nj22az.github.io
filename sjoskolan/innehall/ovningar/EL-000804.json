@@ -1,0 +1,63 @@
+{
+  "id": "EL-000804",
+  "titel": "De fem stegen för ett verkligt fall",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fläkt i maskinrummet ska bytas. Den matas från grupp 7 i fördelning D3. Fläktens styrkort matas dessutom från en UPS.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beskriv de fem stegen för just detta fall: vad du gör, var, och hur det verifieras."
+      },
+      {
+        "id": "b",
+        "text": "Vilken matning är lätt att missa, och vad blir följden om den missas?"
+      },
+      {
+        "id": "c",
+        "text": "Vilka uppgifter behöver du ur ritningar eller från ansvarig innan du kan börja? Skriv dem som frågor."
+      }
+    ],
+    "svarsformat": "Steg för steg med motivering. Hitta inte på uppgifter som saknas, skriv dem som öppna frågor."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[38][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v38_01_Franskiljning_och_matteknik",
+        "titel": "Bildspel: Frånskiljning och mätteknik"
+      },
+      {
+        "url": "filmer/#fem-steg",
+        "titel": "Film: Fem steg"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

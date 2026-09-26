@@ -1,0 +1,69 @@
+{
+  "id": "EL-000815",
+  "titel": "Neutralström med egna laster",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-01",
+      "T-labb-trefaslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I Trefaslabbet, flik 1: 400 V, ström i L1 och L2 10 A, ström i L3 (5 + D/5) A avrundat till en decimal. Alla laster har samma cos φ.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Förutsäg neutralströmmen innan du tittar. Tips: tre lika strömmar ger summan noll."
+      },
+      {
+        "id": "b",
+        "text": "Läs av neutralströmmen i labbet och jämför."
+      },
+      {
+        "id": "c",
+        "text": "Rita visardiagrammet för dina tre strömmar."
+      }
+    ],
+    "svarsformat": "Förutsägelse, avläst värde och visardiagram."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[41][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v41_01_Trefassystemets_grunder",
+        "titel": "Bildspel: Trefassystemets grunder"
+      },
+      {
+        "url": "trefaslabbet/",
+        "titel": "Trefaslabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

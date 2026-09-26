@@ -1,0 +1,68 @@
+{
+  "id": "EL-000822",
+  "titel": "Hållkretsen med nödstopp",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v43-03",
+      "T-labb-hallkretslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör de 8 räkna-först-uppgifterna i Hållkretslabbet. Rita sedan om hållkretsen med ett nödstopp S2 vid pumpen och en lampa H1 som lyser när K1 är dragen.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Var ska S2 sitta, och ska den vara NO eller NC? Motivera."
+      },
+      {
+        "id": "b",
+        "text": "Hur ansluts H1 så att den bara lyser när K1 är dragen?"
+      },
+      {
+        "id": "c",
+        "text": "Beskriv vila, start, hållning, stopp och nödstopp i ord."
+      },
+      {
+        "id": "d",
+        "text": "Sätt i en felmodul i labbet och felsök den: observation, hypotes, kontroll, förväntat resultat, resultat och slutsats."
+      }
+    ],
+    "svarsformat": "Ritning, beskrivning och felsökningsrad ur protokollet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[43][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v43_03_Elscheman_och_dokumentation",
+        "titel": "Bildspel: Elscheman och dokumentation"
+      },
+      {
+        "url": "hallkretslabbet/",
+        "titel": "Hållkretslabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

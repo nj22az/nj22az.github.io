@@ -1,0 +1,54 @@
+{
+  "id": "EL-000656",
+  "titel": "Två parallella grenar",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v39-04",
+      "T-kurs-v39-02"
+    ]
+  },
+  "uppgift": {
+    "scenario": "R_{1} = 6 Ω och R_{2} = 4 Ω ligger parallellt över 12 V.",
+    "fraga": "Bestäm I_{1}, I_{2} och källströmmen I. Visa både sling- och nodekvationer.",
+    "samband": [
+      "E − R_{1}I_{1} = 0 E − R_{2}I_{2} = 0 I = I_{1} + I_{2}"
+    ],
+    "givet": "E = 12 V, R_{1} = 6 Ω, R_{2} = 4 Ω. Ideala ledningar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "seminarieövning med stödbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Båda parallellgrenarna har samma spänning. Grenströmmarna bestäms var för sig med Ohms lag.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Lös varje slingekvation. Använd sedan strömlagen i förgreningen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "status": "saknas",
+    "kalla": "Löses gemensamt på seminariet"
+  }
+}

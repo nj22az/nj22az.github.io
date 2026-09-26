@@ -64,5 +64,47 @@
     "plats": "vecka-40/aktuell/lektioner.mjs (bilder med check/answer)",
     "slag": "kontrollfråga med svar i genomgång och presentation",
     "antal": 8
+  },
+  {
+    "kalla": "kurs",
+    "plats": "vecka-37 Arbetsblad 1A/1B (E1–E7, fall A/B + E1–E8); v37_02/v37_04 bilder; förberedelsefrågor v37_01/v37_03",
+    "slag": "arbetsbladsuppgift, fall och förberedelsefråga",
+    "antal": 29
+  },
+  {
+    "kalla": "kurs",
+    "plats": "vecka-38 Elevuppgifter V2-1..4, Fördjupning fall A/B/F, v38_01 bild 17 och 19",
+    "slag": "elevuppgift, fördjupningsfall, övning och exitfråga",
+    "antal": 11
+  },
+  {
+    "kalla": "presentation",
+    "plats": "v39_03 Multimeter och mätfel, övning 1–10 med facitbilder",
+    "slag": "övning i presentationen",
+    "antal": 10
+  },
+  {
+    "kalla": "presentation",
+    "plats": "v39_04 Kirchhoff-seminarium, övning 1–10 med stödbilder och kontrollfrågor",
+    "slag": "seminarieövning",
+    "antal": 13
+  },
+  {
+    "kalla": "presentation",
+    "plats": "17 presentationer, bild 2 (startfråga) och sista bilden (avslutsfråga)",
+    "slag": "start- och avslutsfråga",
+    "antal": 34
+  },
+  {
+    "kalla": "kurs",
+    "plats": "verktyg/inlamning/bygg.py UPPGIFTER; lärarguidens facittabeller",
+    "slag": "inlämningsuppgift med lärarfacit",
+    "antal": 28
+  },
+  {
+    "kalla": "kurs",
+    "plats": "tentamen.html övningstenta",
+    "slag": "tentauppgift med lösning",
+    "antal": 12
   }
 ]

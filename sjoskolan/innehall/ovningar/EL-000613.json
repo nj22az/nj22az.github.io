@@ -1,0 +1,40 @@
+{
+  "id": "EL-000613",
+  "titel": "Tydligt meddelande",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Utgå från att användningen har stoppats, men att ingen elektrisk kontroll har redovisats. Formulera ett meddelande om fall A: objekt, plats, observation, aktuell status och nästa behov. Låt en kamrat återge det viktiga. Skriv ingen teknisk åtgärd som genomförd om underlaget inte säger det.",
+    "fall": "EL-000608",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Beskriv objekt, plats och observation. Ange den aktuella begränsningen. Be mottagaren återge vad som gäller."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E4; v37_04 bild 23",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "EL-000732",
+  "titel": "Avslutsfråga: v45_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "När behöver du skriva ”underlaget räcker inte” i stället för ”godkänt”?",
+    "instruktion": "Färdigställ felsökningsrapporten och markera minst en osäkerhet. Förbered fredagens blandade repetitionsuppgifter."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

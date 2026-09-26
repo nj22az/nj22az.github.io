@@ -1,0 +1,39 @@
+{
+  "id": "EL-000633",
+  "titel": "Högspänningsfall på skärm",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Ett 6,6 kV-ställverk har två möjliga matningar och energilagrande komponenter. Inget fastställt arbetsområde eller kopplingsprogram är tillgängligt.",
+    "fraga": "Beskriv vilka uppgifter/roller som behöver finnas. Gör inga förslag på manöverordning eller generella säkerhetsavstånd.",
+    "instruktion": "egen lösning med metod och motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Elevuppgifter.html V2-4",
+        "revision": "8cabde3",
+        "roll": "elevuppgift vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarguiden vecka 38"
+  }
+}

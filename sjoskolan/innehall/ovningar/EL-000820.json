@@ -1,0 +1,68 @@
+{
+  "id": "EL-000820",
+  "titel": "Motorns märkskylt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fyrpolig motor är märkt 4,0 kW, Δ/Y 400/690 V, 50 Hz, 1 440 r/min, η = 0,86 och cos φ = 0,82. Nätet är 400 V.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Vilken koppling används? Motivera."
+      },
+      {
+        "id": "b",
+        "text": "Beräkna synkront varvtal, eftersläpning, elektrisk inmatning och linjeström vid märklast."
+      },
+      {
+        "id": "c",
+        "text": "Motorn matas från en frekvensomriktare med (30 + D) Hz. Beräkna det synkrona varvtalet."
+      }
+    ],
+    "svarsformat": "Beräkningar med enhet och motivering av kopplingen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[43][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v43_02_Transformatorer_och_motorer",
+        "titel": "Bildspel: Transformatorer och motorer"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

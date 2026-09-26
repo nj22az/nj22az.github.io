@@ -13,7 +13,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000032",
@@ -23,7 +32,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000033",
@@ -33,7 +51,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000034",
@@ -43,7 +70,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000035",
@@ -53,7 +89,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000036",
@@ -63,7 +108,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000037",
@@ -73,7 +127,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000038",
@@ -83,7 +146,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000039",
@@ -93,7 +165,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000040",
@@ -103,7 +184,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000041",
@@ -113,7 +203,16 @@
       "nummer": "Övning 1",
       "bild": 16,
       "roll": "ovning",
-      "stodbild": 15
+      "stodbild": 15,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000042",
@@ -123,7 +222,16 @@
       "nummer": "Övning 2",
       "bild": 18,
       "roll": "ovning",
-      "stodbild": 17
+      "stodbild": 17,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000043",
@@ -133,7 +241,16 @@
       "nummer": "Övning 3",
       "bild": 20,
       "roll": "ovning",
-      "stodbild": 19
+      "stodbild": 19,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000044",
@@ -143,7 +260,16 @@
       "nummer": "Övning 4",
       "bild": 22,
       "roll": "ovning",
-      "stodbild": 21
+      "stodbild": 21,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "8",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000045",
@@ -153,7 +279,16 @@
       "nummer": "Övning 5",
       "bild": 24,
       "roll": "ovning",
-      "stodbild": 23
+      "stodbild": 23,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000046",
@@ -163,7 +298,16 @@
       "nummer": "Övning 6",
       "bild": 36,
       "roll": "ovning",
-      "stodbild": 35
+      "stodbild": 35,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "8",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000047",
@@ -173,7 +317,16 @@
       "nummer": "Övning 7",
       "bild": 38,
       "roll": "ovning",
-      "stodbild": 37
+      "stodbild": 37,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000048",
@@ -183,7 +336,16 @@
       "nummer": "Övning 8",
       "bild": 40,
       "roll": "ovning",
-      "stodbild": 39
+      "stodbild": 39,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "8",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000049",
@@ -193,7 +355,16 @@
       "nummer": "Övning 9",
       "bild": 42,
       "roll": "ovning",
-      "stodbild": 41
+      "stodbild": 41,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000050",
@@ -203,7 +374,16 @@
       "nummer": "Övning 10",
       "bild": 44,
       "roll": "ovning",
-      "stodbild": 43
+      "stodbild": 43,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000091",
@@ -213,7 +393,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000092",
@@ -223,7 +412,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000093",
@@ -233,7 +431,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000094",
@@ -243,7 +450,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000095",
@@ -253,7 +469,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000096",
@@ -263,7 +488,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000097",
@@ -273,7 +507,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000098",
@@ -283,7 +526,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000099",
@@ -293,7 +545,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000100",
@@ -303,7 +564,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000101",
@@ -313,7 +583,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000102",
@@ -323,7 +602,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000103",
@@ -333,7 +621,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000104",
@@ -343,7 +640,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000105",
@@ -353,7 +659,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000106",
@@ -363,7 +678,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000107",
@@ -373,7 +697,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000108",
@@ -383,7 +716,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000109",
@@ -393,7 +735,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000110",
@@ -403,7 +754,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000111",
@@ -413,7 +773,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000112",
@@ -423,7 +792,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000113",
@@ -433,7 +811,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000114",
@@ -443,7 +830,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000115",
@@ -453,7 +849,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000116",
@@ -463,7 +868,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000117",
@@ -473,7 +887,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000118",
@@ -483,7 +906,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000119",
@@ -493,7 +925,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000120",
@@ -503,7 +944,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000121",
@@ -513,7 +963,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000122",
@@ -523,7 +982,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000123",
@@ -533,7 +1001,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000124",
@@ -543,7 +1020,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000125",
@@ -553,7 +1039,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000126",
@@ -563,7 +1058,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000127",
@@ -573,7 +1077,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000128",
@@ -583,7 +1096,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000129",
@@ -593,7 +1115,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000130",
@@ -603,7 +1134,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000131",
@@ -613,7 +1153,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000132",
@@ -623,7 +1172,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000133",
@@ -633,7 +1191,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000134",
@@ -643,7 +1210,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000135",
@@ -653,7 +1229,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000136",
@@ -663,7 +1248,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000137",
@@ -673,7 +1267,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000138",
@@ -683,7 +1286,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000139",
@@ -693,7 +1305,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000140",
@@ -703,7 +1324,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000141",
@@ -713,7 +1343,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000142",
@@ -723,7 +1362,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000143",
@@ -733,7 +1381,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000144",
@@ -743,7 +1400,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000145",
@@ -753,7 +1419,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000146",
@@ -763,7 +1438,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000147",
@@ -773,7 +1457,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000148",
@@ -783,7 +1476,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000149",
@@ -793,7 +1495,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000150",
@@ -803,7 +1514,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000151",
@@ -813,7 +1533,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000152",
@@ -823,7 +1552,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000153",
@@ -833,7 +1571,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000154",
@@ -843,7 +1590,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000155",
@@ -853,7 +1609,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000156",
@@ -863,7 +1628,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000157",
@@ -873,7 +1647,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000158",
@@ -883,7 +1666,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000159",
@@ -893,7 +1685,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000160",
@@ -903,7 +1704,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000161",
@@ -913,7 +1723,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000162",
@@ -923,7 +1742,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000163",
@@ -933,7 +1761,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000164",
@@ -943,7 +1780,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000165",
@@ -953,7 +1799,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000166",
@@ -963,7 +1818,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000167",
@@ -973,7 +1837,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000168",
@@ -983,7 +1856,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000169",
@@ -993,7 +1875,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000170",
@@ -1003,7 +1894,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000171",
@@ -1013,7 +1913,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000172",
@@ -1023,7 +1932,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000173",
@@ -1033,7 +1951,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000174",
@@ -1043,7 +1970,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000175",
@@ -1053,7 +1989,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000176",
@@ -1063,7 +2008,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000177",
@@ -1073,7 +2027,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000178",
@@ -1083,7 +2046,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000179",
@@ -1093,7 +2065,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000180",
@@ -1103,7 +2084,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000181",
@@ -1113,7 +2103,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000182",
@@ -1123,7 +2122,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000183",
@@ -1133,7 +2141,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000184",
@@ -1143,7 +2160,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000185",
@@ -1153,7 +2179,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000186",
@@ -1163,7 +2198,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000187",
@@ -1173,7 +2217,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000188",
@@ -1183,7 +2236,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000189",
@@ -1193,7 +2255,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000190",
@@ -1203,7 +2274,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000191",
@@ -1213,7 +2293,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000192",
@@ -1223,7 +2312,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000193",
@@ -1233,7 +2331,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000194",
@@ -1243,7 +2350,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000195",
@@ -1253,7 +2369,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000196",
@@ -1263,7 +2388,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000197",
@@ -1273,7 +2407,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000198",
@@ -1283,7 +2426,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000199",
@@ -1293,7 +2445,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000200",
@@ -1303,7 +2464,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000201",
@@ -1313,7 +2483,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000202",
@@ -1323,7 +2502,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000203",
@@ -1333,7 +2521,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000204",
@@ -1343,7 +2540,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000205",
@@ -1353,7 +2559,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000206",
@@ -1363,7 +2578,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000207",
@@ -1373,7 +2597,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000208",
@@ -1383,7 +2616,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000209",
@@ -1393,7 +2635,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000210",
@@ -1403,7 +2654,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000211",
@@ -1413,7 +2673,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000212",
@@ -1423,7 +2692,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000213",
@@ -1433,7 +2711,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000214",
@@ -1443,7 +2730,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000215",
@@ -1453,7 +2749,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000216",
@@ -1463,7 +2768,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000217",
@@ -1473,7 +2787,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000218",
@@ -1483,7 +2806,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000219",
@@ -1493,7 +2825,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000220",
@@ -1503,7 +2844,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000221",
@@ -1513,7 +2863,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000222",
@@ -1523,7 +2882,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000223",
@@ -1533,7 +2901,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000224",
@@ -1543,7 +2920,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000225",
@@ -1553,7 +2939,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000226",
@@ -1563,7 +2958,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000227",
@@ -1573,7 +2977,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000228",
@@ -1583,7 +2996,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000229",
@@ -1593,7 +3015,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000230",
@@ -1603,7 +3034,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000231",
@@ -1613,7 +3053,16 @@
       "nummer": "Övning 1",
       "bild": 11,
       "roll": "ovning",
-      "stodbild": 10
+      "stodbild": 10,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000232",
@@ -1623,7 +3072,16 @@
       "nummer": "Övning 2",
       "bild": 13,
       "roll": "ovning",
-      "stodbild": 12
+      "stodbild": 12,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000233",
@@ -1633,7 +3091,16 @@
       "nummer": "Övning 3",
       "bild": 15,
       "roll": "ovning",
-      "stodbild": 14
+      "stodbild": 14,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000234",
@@ -1643,7 +3110,16 @@
       "nummer": "Övning 4",
       "bild": 17,
       "roll": "ovning",
-      "stodbild": 16
+      "stodbild": 16,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000235",
@@ -1653,7 +3129,16 @@
       "nummer": "Övning 5",
       "bild": 19,
       "roll": "ovning",
-      "stodbild": 18
+      "stodbild": 18,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000236",
@@ -1663,7 +3148,16 @@
       "nummer": "Övning 6",
       "bild": 26,
       "roll": "ovning",
-      "stodbild": 25
+      "stodbild": 25,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000237",
@@ -1673,7 +3167,16 @@
       "nummer": "Övning 7",
       "bild": 28,
       "roll": "ovning",
-      "stodbild": 27
+      "stodbild": 27,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000238",
@@ -1683,7 +3186,16 @@
       "nummer": "Övning 8",
       "bild": 30,
       "roll": "ovning",
-      "stodbild": 29
+      "stodbild": 29,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000239",
@@ -1693,7 +3205,16 @@
       "nummer": "Övning 9",
       "bild": 32,
       "roll": "ovning",
-      "stodbild": 31
+      "stodbild": 31,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     },
     {
       "ovning": "EL-000240",
@@ -1703,7 +3224,16 @@
       "nummer": "Övning 10",
       "bild": 34,
       "roll": "ovning",
-      "stodbild": 33
+      "stodbild": 33,
+      "former": {
+        "titel": "3",
+        "fraga": "4",
+        "instruktion": "5",
+        "stod/samband": "10",
+        "stod/begrepp": "11",
+        "stod/givet": "12",
+        "stod/metod": "13"
+      }
     }
   ]
 }

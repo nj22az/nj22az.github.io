@@ -1,0 +1,40 @@
+{
+  "id": "EL-000610",
+  "titel": "Vad är belagt?",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Sortera: A. Ytterhöljet är sprucket. B. Sladden har klämts. C. Däcket är fuktigt. D. Alla skydd fungerar. Ange observation, hypotes eller okänd uppgift. Motivera ett val.",
+    "fall": "EL-000608",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Sortera fyra påståenden i arbetsbladet. Markera observation, hypotes eller okänd uppgift. Motivera ett av dina val."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E1; v37_04 bild 6",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

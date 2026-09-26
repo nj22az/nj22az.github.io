@@ -1,0 +1,1204 @@
+{
+  "yta": "presentation-fragor",
+  "titel": "Frågor i presentationerna",
+  "beskrivning": "Start- och avslutsfrågor, förberedelsefrågor, arbetsbladens bilder, multimeterövningarna och seminariets övningar.",
+  "publik": "elev",
+  "exportor": "presentationer",
+  "placeringar": [
+    {
+      "ovning": "EL-000618",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 1,
+      "nummer": "1",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/1"
+      }
+    },
+    {
+      "ovning": "EL-000619",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 2,
+      "nummer": "2",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/2"
+      }
+    },
+    {
+      "ovning": "EL-000620",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 3,
+      "nummer": "3",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/3"
+      }
+    },
+    {
+      "ovning": "EL-000621",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 4,
+      "nummer": "4",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/4"
+      }
+    },
+    {
+      "ovning": "EL-000622",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 5,
+      "nummer": "5",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/5"
+      }
+    },
+    {
+      "ovning": "EL-000623",
+      "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+      "del": "v37_01",
+      "ordning": 6,
+      "nummer": "6",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/6"
+      }
+    },
+    {
+      "ovning": "EL-000601",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 1,
+      "nummer": "E1",
+      "bild": 11,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "36"
+      }
+    },
+    {
+      "ovning": "EL-000602",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 2,
+      "nummer": "E2",
+      "bild": 16,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "43"
+      }
+    },
+    {
+      "ovning": "EL-000604",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 4,
+      "nummer": "E4",
+      "bild": 25,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "7"
+      }
+    },
+    {
+      "ovning": "EL-000605",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 5,
+      "nummer": "E5",
+      "bild": 29,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "42"
+      }
+    },
+    {
+      "ovning": "EL-000606",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 6,
+      "nummer": "E6",
+      "bild": 34,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "7"
+      }
+    },
+    {
+      "ovning": "EL-000607",
+      "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+      "del": "v37_02",
+      "ordning": 7,
+      "nummer": "E7",
+      "bild": 37,
+      "roll": "ovning",
+      "former": {
+        "kortfraga": "7"
+      }
+    },
+    {
+      "ovning": "EL-000624",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 1,
+      "nummer": "1",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/1"
+      }
+    },
+    {
+      "ovning": "EL-000625",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 2,
+      "nummer": "2",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/2"
+      }
+    },
+    {
+      "ovning": "EL-000626",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 3,
+      "nummer": "3",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/3"
+      }
+    },
+    {
+      "ovning": "EL-000627",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 4,
+      "nummer": "4",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/4"
+      }
+    },
+    {
+      "ovning": "EL-000628",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 5,
+      "nummer": "5",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/5"
+      }
+    },
+    {
+      "ovning": "EL-000629",
+      "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+      "del": "v37_03",
+      "ordning": 6,
+      "nummer": "6",
+      "bild": 1,
+      "roll": "forberedelse",
+      "former": {
+        "fraga": "2/6"
+      }
+    },
+    {
+      "ovning": "EL-000610",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 1,
+      "nummer": "E1",
+      "bild": 6,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000611",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 2,
+      "nummer": "E2",
+      "bild": 13,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000612",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 3,
+      "nummer": "E3",
+      "bild": 20,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000613",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 4,
+      "nummer": "E4",
+      "bild": 23,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000614",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 5,
+      "nummer": "E5",
+      "bild": 29,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000615",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 6,
+      "nummer": "E6",
+      "bild": 32,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000616",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 7,
+      "nummer": "E7",
+      "bild": 33,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000617",
+      "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+      "del": "v37_04",
+      "ordning": 8,
+      "nummer": "E8",
+      "bild": 37,
+      "roll": "ovning",
+      "former": {
+        "titel": "4",
+        "kortfraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000638",
+      "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+      "del": "v38_01",
+      "ordning": 1,
+      "nummer": "1",
+      "bild": 19,
+      "roll": "avslut",
+      "former": {
+        "fraga": "2/1"
+      }
+    },
+    {
+      "ovning": "EL-000639",
+      "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+      "del": "v38_01",
+      "ordning": 2,
+      "nummer": "2",
+      "bild": 19,
+      "roll": "avslut",
+      "former": {
+        "fraga": "2/2"
+      }
+    },
+    {
+      "ovning": "EL-000640",
+      "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+      "del": "v38_01",
+      "ordning": 3,
+      "nummer": "3",
+      "bild": 19,
+      "roll": "avslut",
+      "former": {
+        "fraga": "2/3"
+      }
+    },
+    {
+      "ovning": "EL-000637",
+      "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+      "del": "v38_01",
+      "ordning": 1,
+      "nummer": "Övning",
+      "bild": 17,
+      "roll": "ovning",
+      "former": {
+        "fraga": "2"
+      }
+    },
+    {
+      "ovning": "EL-000702",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000701",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000704",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 45,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000703",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000641",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 10,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "35",
+        "fraga/2": "33",
+        "fraga/3": "34"
+      },
+      "kontroll": true
+    },
+    {
+      "ovning": "EL-000642",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 17,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "39",
+        "fraga/2": "37",
+        "fraga/3": "38"
+      },
+      "kontroll": true
+    },
+    {
+      "ovning": "EL-000643",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 22,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "29",
+        "fraga/2": "30",
+        "fraga/3": "31",
+        "stod/losning/1": "29",
+        "stod/losning/2": "30",
+        "stod/losning/3": "31",
+        "stod/losning/4": "32"
+      },
+      "kontroll": true,
+      "stodbild": 23
+    },
+    {
+      "ovning": "EL-000644",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 30,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "26",
+        "stod/losning/1": "27",
+        "stod/losning/2": "28"
+      },
+      "kontroll": true,
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000645",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 38,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "6",
+        "stod/losning/1": "6",
+        "stod/losning/2": "7"
+      },
+      "kontroll": true,
+      "stodbild": 39
+    },
+    {
+      "ovning": "EL-000646",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 47,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "19",
+        "fraga/2": "20",
+        "fraga/3": "21",
+        "fraga/4": "22",
+        "stod/losning/1": "4",
+        "stod/losning/2": "5",
+        "stod/losning/3": "6",
+        "stod/losning/4": "7"
+      },
+      "kontroll": true,
+      "stodbild": 48
+    },
+    {
+      "ovning": "EL-000647",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 50,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "5",
+        "fraga/3": "6",
+        "fraga/4": "7",
+        "stod/losning/1": "4",
+        "stod/losning/2": "22"
+      },
+      "kontroll": true,
+      "stodbild": 51
+    },
+    {
+      "ovning": "EL-000648",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 53,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "5",
+        "fraga/3": "6",
+        "fraga/4": "7"
+      },
+      "kontroll": true
+    },
+    {
+      "ovning": "EL-000649",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 58,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "26",
+        "stod/losning/1": "4",
+        "stod/losning/2": "26",
+        "stod/losning/3": "27"
+      },
+      "kontroll": true,
+      "stodbild": 59
+    },
+    {
+      "ovning": "EL-000650",
+      "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+      "del": "v39_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 60,
+      "roll": "ovning",
+      "former": {
+        "fraga/1": "4",
+        "fraga/2": "33",
+        "stod/losning/1": "4",
+        "stod/losning/2": "27",
+        "stod/losning/3": "26"
+      },
+      "kontroll": true,
+      "stodbild": 61
+    },
+    {
+      "ovning": "EL-000661",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 1,
+      "nummer": "1",
+      "bild": 41,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3"
+      }
+    },
+    {
+      "ovning": "EL-000662",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 2,
+      "nummer": "2",
+      "bild": 41,
+      "roll": "avslut",
+      "former": {
+        "fraga": "4"
+      }
+    },
+    {
+      "ovning": "EL-000663",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 3,
+      "nummer": "3",
+      "bild": 41,
+      "roll": "avslut",
+      "former": {
+        "fraga": "5"
+      }
+    },
+    {
+      "ovning": "EL-000651",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 1,
+      "nummer": "1",
+      "bild": 20,
+      "stodbild": 19,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "23",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000652",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 2,
+      "nummer": "2",
+      "bild": 22,
+      "stodbild": 21,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "28",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000653",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 3,
+      "nummer": "3",
+      "bild": 24,
+      "stodbild": 23,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "23",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000654",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 4,
+      "nummer": "4",
+      "bild": 26,
+      "stodbild": 25,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "27",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000655",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 5,
+      "nummer": "5",
+      "bild": 28,
+      "stodbild": 27,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "26",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000656",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 6,
+      "nummer": "6",
+      "bild": 32,
+      "stodbild": 31,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "35",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000657",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 7,
+      "nummer": "7",
+      "bild": 34,
+      "stodbild": 33,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "38",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000658",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 8,
+      "nummer": "8",
+      "bild": 36,
+      "stodbild": 35,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "29",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000659",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 9,
+      "nummer": "9",
+      "bild": 38,
+      "stodbild": 37,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "46",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000660",
+      "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+      "del": "v39_04",
+      "ordning": 10,
+      "nummer": "10",
+      "bild": 40,
+      "stodbild": 39,
+      "roll": "ovning",
+      "former": {
+        "titel": "2",
+        "scenario": "3",
+        "fraga": "46",
+        "stod/samband": "16",
+        "stod/begrepp": "17",
+        "stod/givet": "18",
+        "stod/metod": "19"
+      }
+    },
+    {
+      "ovning": "EL-000706",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000705",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000708",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000707",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000710",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000709",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000712",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000711",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000714",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000713",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000716",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000715",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000718",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000717",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000720",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000719",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000722",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000721",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000724",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 36,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000723",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000726",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 36,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000725",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000728",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000727",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000730",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000729",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000732",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000731",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    },
+    {
+      "ovning": "EL-000734",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 1,
+      "nummer": "Avslutsfråga",
+      "bild": 35,
+      "roll": "avslut",
+      "former": {
+        "fraga": "3",
+        "instruktion": "4"
+      }
+    },
+    {
+      "ovning": "EL-000733",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 1,
+      "nummer": "Startfråga",
+      "bild": 2,
+      "roll": "start",
+      "former": {
+        "fraga": "6"
+      }
+    }
+  ]
+}

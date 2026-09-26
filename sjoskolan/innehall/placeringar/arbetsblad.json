@@ -1,0 +1,203 @@
+{
+  "yta": "arbetsblad",
+  "titel": "Arbetsblad, elevuppgifter och fördjupning",
+  "beskrivning": "Vecka 37:s arbetsblad 1A och 1B, vecka 38:s elevuppgifter och fördjupning.",
+  "publik": "elev",
+  "exportor": "arbetsblad",
+  "placeringar": [
+    {
+      "ovning": "EL-000601",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 1,
+      "nummer": "E1",
+      "ankare": "e1"
+    },
+    {
+      "ovning": "EL-000602",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 2,
+      "nummer": "E2",
+      "ankare": "e2"
+    },
+    {
+      "ovning": "EL-000603",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 3,
+      "nummer": "E3",
+      "ankare": "e3"
+    },
+    {
+      "ovning": "EL-000604",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 4,
+      "nummer": "E4",
+      "ankare": "e4"
+    },
+    {
+      "ovning": "EL-000605",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 5,
+      "nummer": "E5",
+      "ankare": "e5"
+    },
+    {
+      "ovning": "EL-000606",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 6,
+      "nummer": "E6",
+      "ankare": "e6"
+    },
+    {
+      "ovning": "EL-000607",
+      "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+      "del": "1A",
+      "ordning": 7,
+      "nummer": "E7",
+      "ankare": "e7"
+    },
+    {
+      "ovning": "EL-000610",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 3,
+      "nummer": "E1",
+      "ankare": "e1"
+    },
+    {
+      "ovning": "EL-000611",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 4,
+      "nummer": "E2",
+      "ankare": "e2"
+    },
+    {
+      "ovning": "EL-000612",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 5,
+      "nummer": "E3",
+      "ankare": "e3"
+    },
+    {
+      "ovning": "EL-000613",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 6,
+      "nummer": "E4",
+      "ankare": "e4"
+    },
+    {
+      "ovning": "EL-000614",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 7,
+      "nummer": "E5",
+      "ankare": "e5"
+    },
+    {
+      "ovning": "EL-000615",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 8,
+      "nummer": "E6",
+      "ankare": "e6"
+    },
+    {
+      "ovning": "EL-000616",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 9,
+      "nummer": "E7",
+      "ankare": "e7"
+    },
+    {
+      "ovning": "EL-000617",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 10,
+      "nummer": "E8",
+      "ankare": "e8"
+    },
+    {
+      "ovning": "EL-000608",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 1,
+      "nummer": "Fall A",
+      "ankare": "fall-a",
+      "roll": "fall"
+    },
+    {
+      "ovning": "EL-000609",
+      "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+      "del": "1B",
+      "ordning": 2,
+      "nummer": "Fall B",
+      "ankare": "fall-b",
+      "roll": "fall"
+    },
+    {
+      "ovning": "EL-000630",
+      "plats": "vecka-38/aktuell/Elevuppgifter.html",
+      "del": "v38",
+      "ordning": 1,
+      "nummer": "V2-1",
+      "ankare": "v2-1"
+    },
+    {
+      "ovning": "EL-000631",
+      "plats": "vecka-38/aktuell/Elevuppgifter.html",
+      "del": "v38",
+      "ordning": 2,
+      "nummer": "V2-2",
+      "ankare": "v2-2"
+    },
+    {
+      "ovning": "EL-000632",
+      "plats": "vecka-38/aktuell/Elevuppgifter.html",
+      "del": "v38",
+      "ordning": 3,
+      "nummer": "V2-3",
+      "ankare": "v2-3"
+    },
+    {
+      "ovning": "EL-000633",
+      "plats": "vecka-38/aktuell/Elevuppgifter.html",
+      "del": "v38",
+      "ordning": 4,
+      "nummer": "V2-4",
+      "ankare": "v2-4"
+    },
+    {
+      "ovning": "EL-000634",
+      "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+      "del": "fordjupning",
+      "ordning": 1,
+      "nummer": "Fall A",
+      "ankare": "fall-a"
+    },
+    {
+      "ovning": "EL-000635",
+      "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+      "del": "fordjupning",
+      "ordning": 2,
+      "nummer": "Fall B",
+      "ankare": "fall-b"
+    },
+    {
+      "ovning": "EL-000636",
+      "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+      "del": "fordjupning",
+      "ordning": 3,
+      "nummer": "Fall F",
+      "ankare": "fall-f"
+    }
+  ]
+}

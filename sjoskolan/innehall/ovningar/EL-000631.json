@@ -1,0 +1,39 @@
+{
+  "id": "EL-000631",
+  "titel": "Instrumentval",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Använd instrumentkorten M1 och M2. M1 har DC-spänningsmätning. M2 har DC, true-RMS AC 40–400 Hz, Ω för frånskilt mätobjekt och säkrad mA-ingång högst 200 mA. Korten gäller endast det beskrivna utbildningsfallet.",
+    "fraga": "Välj instrument/funktion för 12 V DC, 12 V AC vid 50 Hz, cirka 4 mA DC och ett löst 1 kΩ-motstånd. Beskriv anslutning.",
+    "instruktion": "egen lösning med metod och motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Elevuppgifter.html V2-2",
+        "revision": "8cabde3",
+        "roll": "elevuppgift vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarguiden vecka 38"
+  }
+}

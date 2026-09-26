@@ -1,0 +1,54 @@
+{
+  "id": "EL-000658",
+  "titel": "Källor som motverkar varandra",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v39-04",
+      "T-kurs-v39-02"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Två ideala källor, 18 V och 6 V, motverkar varandra. R_{1} = R_{2} = 3 Ω.",
+    "fraga": "A. Bestäm I och båda spänningsfallen. B. Vad blir I om 6 V-källan vänds?",
+    "samband": [
+      "Motverkande: I = (E_{1} − E_{2})/(R_{1} + R_{2}) Medverkande: I = (E_{1} + E_{2})/(R_{1} + R_{2})"
+    ],
+    "givet": "E_{1} = 18 V, E_{2} = 6 V, R_{1} = R_{2} = 3 Ω. Samma valda strömpil i båda delarna."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx bild 35 och 36",
+        "revision": "8cabde3",
+        "roll": "seminarieövning med stödbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Polaritetsmarkeringarna avgör källornas tecken. Resistorfall räknas med U = RI.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna källsumman med tecken. Dividera med serieresistansen och beräkna fallen. Vänd bara E_{2} i del B.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "status": "saknas",
+    "kalla": "Löses gemensamt på seminariet"
+  }
+}

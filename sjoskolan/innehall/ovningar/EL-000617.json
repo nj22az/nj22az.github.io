@@ -1,0 +1,40 @@
+{
+  "id": "EL-000617",
+  "titel": "Egen slutsats",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Svara självständigt: 1. Vilka uppgifter motiverar att lampan tas ur bruk? 2. Vilken följdrisk behöver hanteras? 3. Vilken uppgift eller kontroll återstår före återgång till användning?",
+    "fall": "EL-000609",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Vad visar att lampan behöver tas ur bruk? Vilken följdrisk måste hanteras? Vilken uppgift saknas före återgång?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E8; v37_04 bild 37",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

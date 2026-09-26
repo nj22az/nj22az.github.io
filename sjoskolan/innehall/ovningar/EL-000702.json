@@ -1,0 +1,33 @@
+{
+  "id": "EL-000702",
+  "titel": "Avslutsfråga: v39_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Varför ökar en kabels förlust fyra gånger när strömmen fördubblas?",
+    "instruktion": "Spara beräkningarna till v39-inlämningen. Redovisa antaganden, formel, insättning och enhet. Deadline: söndag 27 september."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

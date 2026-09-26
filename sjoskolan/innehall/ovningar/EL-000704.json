@@ -1,0 +1,33 @@
+{
+  "id": "EL-000704",
+  "titel": "Avslutsfråga: v39_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad gör du först när en last kopplas till en spänningsdelare?",
+    "instruktion": "Redovisa särskilt tecken och valda strömriktningar i v39-inlämningen. Uppgift 8 kan slutföras hemma om algebra behöver repeteras."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx bild 45",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

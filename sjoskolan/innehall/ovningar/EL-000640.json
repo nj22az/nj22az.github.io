@@ -1,0 +1,32 @@
+{
+  "id": "EL-000640",
+  "titel": "Exitfråga 3",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad gör du om ritningen och riggen skiljer sig?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx bild 19",
+        "revision": "8cabde3",
+        "roll": "exitfråga"
+      }
+    ],
+    "publik": "elev"
+  }
+}

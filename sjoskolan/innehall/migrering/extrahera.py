@@ -264,8 +264,20 @@ def kapitelovningar(kapmal):
                                           'nummer': f'Övning {n}', 'ankare': a})
             if d and d.get('ovning_bild'):
                 pl = {'ovning': id_, 'plats': kallor.DECK[kid], 'del': kid, 'ordning': n, 'nummer': f'Övning {n}', 'bild': d['ovning_bild'], 'roll': 'ovning'}
+                # Textformer på bilderna, så att presentationsexportören kan skriva om dem.
+                former = {}
+                rest = [(sid, t) for sid, t in d['ovning_shapes'].items() if not re.fullmatch(r'\d+', t)]
+                for namn, (sid, _) in zip(('titel', 'fraga', 'instruktion'), rest):
+                    former[namn] = str(sid)
                 if d.get('stod_bild'):
                     pl['stodbild'] = d['stod_bild']
+                    rest = [(sid, t) for sid, t in d['stod_shapes'].items() if not re.fullmatch(r'\d+', t)]
+                    if rest:
+                        former['stod/samband'] = str(rest[0][0])
+                    for sid, t in rest[1:]:
+                        namn = 'stod/givet' if t.startswith('Förutsättningar:') else 'stod/metod' if t.startswith('Arbetsgång:') else 'stod/begrepp'
+                        former[namn] = str(sid)
+                pl['former'] = former
                 yt['presentation'].append(pl)
     return poster, yt
 

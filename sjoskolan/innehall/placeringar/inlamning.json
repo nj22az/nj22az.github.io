@@ -1,0 +1,233 @@
+{
+  "yta": "inlamning",
+  "titel": "Inlämningsuppgifter",
+  "beskrivning": "Veckornas inlämningsuppgifter med elevens tal D. Lärarfacit ligger i skyddat/larare.enc.",
+  "publik": "elev",
+  "exportor": "inlamning",
+  "placeringar": [
+    {
+      "ovning": "EL-000801",
+      "plats": "vecka-37/aktuell/Inlamning.html",
+      "del": "37",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000802",
+      "plats": "vecka-37/aktuell/Inlamning.html",
+      "del": "37",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000803",
+      "plats": "vecka-37/aktuell/Inlamning.html",
+      "del": "37",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000804",
+      "plats": "vecka-38/aktuell/Inlamning.html",
+      "del": "38",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000805",
+      "plats": "vecka-38/aktuell/Inlamning.html",
+      "del": "38",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000806",
+      "plats": "vecka-38/aktuell/Inlamning.html",
+      "del": "38",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000807",
+      "plats": "vecka-39/aktuell/Inlamning.html",
+      "del": "39",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000808",
+      "plats": "vecka-39/aktuell/Inlamning.html",
+      "del": "39",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000809",
+      "plats": "vecka-39/aktuell/Inlamning.html",
+      "del": "39",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000810",
+      "plats": "vecka-40/aktuell/Inlamning.html",
+      "del": "40",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000811",
+      "plats": "vecka-40/aktuell/Inlamning.html",
+      "del": "40",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000812",
+      "plats": "vecka-40/aktuell/Inlamning.html",
+      "del": "40",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000813",
+      "plats": "vecka-40/aktuell/Inlamning.html",
+      "del": "40",
+      "ordning": 4,
+      "nummer": "Uppgift 4",
+      "ankare": "uppgift-4"
+    },
+    {
+      "ovning": "EL-000814",
+      "plats": "vecka-41/aktuell/Inlamning.html",
+      "del": "41",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000815",
+      "plats": "vecka-41/aktuell/Inlamning.html",
+      "del": "41",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000816",
+      "plats": "vecka-41/aktuell/Inlamning.html",
+      "del": "41",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000817",
+      "plats": "vecka-42/aktuell/Inlamning.html",
+      "del": "42",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000818",
+      "plats": "vecka-42/aktuell/Inlamning.html",
+      "del": "42",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000819",
+      "plats": "vecka-42/aktuell/Inlamning.html",
+      "del": "42",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000820",
+      "plats": "vecka-43/aktuell/Inlamning.html",
+      "del": "43",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000821",
+      "plats": "vecka-43/aktuell/Inlamning.html",
+      "del": "43",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000822",
+      "plats": "vecka-43/aktuell/Inlamning.html",
+      "del": "43",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000823",
+      "plats": "vecka-44/aktuell/Inlamning.html",
+      "del": "44",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000824",
+      "plats": "vecka-44/aktuell/Inlamning.html",
+      "del": "44",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000825",
+      "plats": "vecka-44/aktuell/Inlamning.html",
+      "del": "44",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    },
+    {
+      "ovning": "EL-000826",
+      "plats": "vecka-45/aktuell/Inlamning.html",
+      "del": "45",
+      "ordning": 1,
+      "nummer": "Uppgift 1",
+      "ankare": "uppgift-1"
+    },
+    {
+      "ovning": "EL-000827",
+      "plats": "vecka-45/aktuell/Inlamning.html",
+      "del": "45",
+      "ordning": 2,
+      "nummer": "Uppgift 2",
+      "ankare": "uppgift-2"
+    },
+    {
+      "ovning": "EL-000828",
+      "plats": "vecka-45/aktuell/Inlamning.html",
+      "del": "45",
+      "ordning": 3,
+      "nummer": "Uppgift 3",
+      "ankare": "uppgift-3"
+    }
+  ]
+}

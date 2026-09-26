@@ -1,0 +1,64 @@
+{
+  "id": "EL-000853",
+  "titel": "Kabelns spänningsfall",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 24 V-last tar 10 A. Enkel kabellängd är 15 m och arean 4 mm² koppar (ρ = 0,0175 Ω·mm²/m). Beräkna slingresistans, spänningsfall i volt och procent, och förlusteffekt i kabeln."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 3",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "R = 0,0175 · 30/4 ≈ 0,131 Ω. ΔU = 10 · 0,131 ≈ 1,31 V ≈ 5,5 % av 24 V. P = 10² · 0,131 ≈ 13 W.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "R_{slinga}",
+        "varde": 0.131,
+        "enhet": "Ω",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "ledare.slingresistans"
+      }
+    ]
+  },
+  "parametrar": {
+    "rho": {
+      "varde": 0.0175
+    },
+    "l": {
+      "varde": 15
+    },
+    "A": {
+      "varde": 4
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v39"
+  }
+}

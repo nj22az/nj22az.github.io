@@ -1,0 +1,68 @@
+{
+  "id": "EL-000632",
+  "titel": "Osäkerhet",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Ett konstruerat instrument visar 12,00 V. Specifikation: ±(0,5 % av visat värde + 2 siffror). Upplösning 0,01 V.",
+    "fraga": "Beräkna gränsen enligt denna specifikation. Bedöm om 12,04 V avviker säkert från ett referensvärde 12,00 V om övriga osäkerheter försummas.",
+    "instruktion": "egen lösning med metod och motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Elevuppgifter.html V2-3",
+        "revision": "8cabde3",
+        "roll": "elevuppgift vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "text": "δ = 0,005 · 12,00 + 2 · 0,01 = 0,08 V. Intervall 11,92–12,08 V. 12,04 V ligger inom intervallet: avvikelsen kan inte hävdas säkert.",
+    "svar": [
+      {
+        "storhet": "δ",
+        "varde": 0.08,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.001
+        },
+        "berakning": "matosakerhet.grans"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Bildspel v38 och lärarguiden"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 12.0,
+      "enhet": "V"
+    },
+    "rel": {
+      "varde": 0.005
+    },
+    "siffror": {
+      "varde": 2
+    },
+    "upplosning": {
+      "varde": 0.01,
+      "enhet": "V"
+    }
+  }
+}

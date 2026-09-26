@@ -1,0 +1,66 @@
+{
+  "id": "EL-000649",
+  "titel": "Spänningen med ansluten mätare",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "R_{1} = 1 MΩ. R_{p} ≈ 0,909 MΩ. Källan ger 10 V. U_{m} = 10 V · R_{p} / (1 MΩ + R_{p})"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 58 och facit bild 59",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "U_{m} ≈ 10 V · 0,909 MΩ / (1 MΩ + 0,909 MΩ) Avrundat till 0,01 V: 4,76 V Mätaren har ändrat den spänning vi försöker mäta.",
+    "status": "migrerad",
+    "kalla": "Facitbild 59",
+    "svar": [
+      {
+        "storhet": "U_{m}",
+        "varde": 4.762,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.001
+        },
+        "berakning": "spanningsdelare.belastad"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 10
+    },
+    "R1": {
+      "varde": 1000000.0
+    },
+    "R2": {
+      "varde": 1000000.0
+    },
+    "Rin": {
+      "varde": 10000000.0
+    }
+  }
+}

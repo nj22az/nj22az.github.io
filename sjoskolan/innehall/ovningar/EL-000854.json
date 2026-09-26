@@ -1,0 +1,58 @@
+{
+  "id": "EL-000854",
+  "titel": "Sinusspänning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Nätet ger 230 V, 50 Hz. Beräkna toppvärde och period. Vilket momentanvärde har spänningen 2,5 ms efter en uppåtgående nollgenomgång?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 4",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "û = √2 · 230 ≈ 325 V. T = 20 ms. 2,5 ms är en åttondels period, alltså 45°: u = 325 · sin 45° ≈ 230 V.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "û",
+        "varde": 325,
+        "enhet": "V",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "ac.topp"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 230
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v40"
+  }
+}

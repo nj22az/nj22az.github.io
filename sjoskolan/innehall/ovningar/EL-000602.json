@@ -1,0 +1,45 @@
+{
+  "id": "EL-000602",
+  "titel": "Spänning och ström",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Batteriet ger 12 V mellan polerna. Lampans brytare är öppen. Beskriv lastströmmen och spänningen mellan batteriets poler. Vad skiljer dessa två uppgifter?",
+    "instruktion": "Mitt svar och min motivering.",
+    "kortfraga": "Vad händer med lastströmmen och batteriets spänning?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E2; v37_02 bild 16",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1A och presentationsbild"
+      }
+    ],
+    "publik": "elev",
+    "tillgangar": [
+      {
+        "id": "bild",
+        "fil": "assets/972e449937d7_bild_17.png",
+        "alt": "Öppna tillhörande bild 16"
+      }
+    ]
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37"
+  }
+}

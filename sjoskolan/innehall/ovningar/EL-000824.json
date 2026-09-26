@@ -1,0 +1,68 @@
+{
+  "id": "EL-000824",
+  "titel": "Högspänning och strömtransformator",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En bogpropellermotor på 6,6 kV tar P = (1,5 + D/10) MW med PF = 0,88.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna linjeströmmen."
+      },
+      {
+        "id": "b",
+        "text": "Vilken ström skulle samma effekt kräva vid 440 V? Varför används högspänning för stora laster?"
+      },
+      {
+        "id": "c",
+        "text": "Strömtransformatorn har omsättningen 200/1 A. Beräkna sekundärströmmen."
+      }
+    ],
+    "svarsformat": "Beräkningar och förklaring."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[44][1]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v44_02_Hogspanningssystem",
+        "titel": "Bildspel: Högspänningssystem"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

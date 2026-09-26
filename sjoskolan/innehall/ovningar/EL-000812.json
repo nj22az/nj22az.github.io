@@ -1,0 +1,72 @@
+{
+  "id": "EL-000812",
+  "titel": "Effekt och kompensering",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En induktiv enfaslast tar P = (1,0 + D/10) kW vid 230 V med cos φ = 0,70.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna S, Q och strömmen."
+      },
+      {
+        "id": "b",
+        "text": "Hur stor kapacitiv reaktiv effekt behövs för att höja effektfaktorn till 0,95? Beräkna den nya strömmen."
+      },
+      {
+        "id": "c",
+        "text": "Ställ in lasten och kompenseringen i labbet och jämför."
+      },
+      {
+        "id": "d",
+        "text": "Hur mycket minskar förlusten i matningskabeln? Använd strömkvoten."
+      }
+    ],
+    "svarsformat": "Beräkningar, avlästa värden och slutsats om ström och förlust."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[40][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "Genomgang.html?del=effekt",
+        "titel": "Genomgång del 3: effekt och effektfaktor"
+      },
+      {
+        "url": "vaxelstromslabbet/",
+        "titel": "Växelströmslabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

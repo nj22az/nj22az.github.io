@@ -1,0 +1,33 @@
+{
+  "id": "EL-000712",
+  "titel": "Avslutsfråga: v42_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka uppgifter saknas oftast när någon bara säger ”det är 24 V”?",
+    "instruktion": "Påbörja v42-riskbedömningen. Beskriv arbetsmoment, miljö, energikällor och möjliga konsekvenser."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

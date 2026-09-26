@@ -1,0 +1,72 @@
+{
+  "id": "EL-000807",
+  "titel": "Energibudget för ett 24 V-system",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett 24 V-system ombord matar under ett dygn: fem navigationsljus på 25 W vardera i 12 h, en radar som tar 6,0 A i 12 h och en länspump som tar (5 + D/10) A i 1,5 h.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna energin i Wh för varje last och totalt."
+      },
+      {
+        "id": "b",
+        "text": "Hur många Ah tas ur batteriet under dygnet?"
+      },
+      {
+        "id": "c",
+        "text": "Radarn matas via en kabel med enkel längd 18 m och arean 4 mm² koppar. Beräkna spänningsfallet i volt och procent."
+      },
+      {
+        "id": "d",
+        "text": "Vilken last dominerar energin? Föreslå en åtgärd som minskar den."
+      }
+    ],
+    "svarsformat": "Beräkningar med samband, insättning och enhet. Skilj på Wh och Ah."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[39][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v39_01_Effekt_och_energi",
+        "titel": "Bildspel: Effekt och energi"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

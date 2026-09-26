@@ -1,0 +1,44 @@
+{
+  "id": "EL-000603",
+  "titel": "Beräkning med stöd",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En resistor på 3 kΩ får 12 V. Fyll i: 3 kΩ = ____ Ω. I = 12 / ____ A = ____ A = ____ mA. Förklara stegen.",
+    "instruktion": "Mitt svar och min motivering."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E3; v37_02 bild None",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1A och presentationsbild"
+      }
+    ],
+    "publik": "elev",
+    "tillgangar": [
+      {
+        "id": "bild",
+        "fil": "assets/27d2bffa06c9_bild_25.png",
+        "alt": "Öppna tillhörande bild 24"
+      }
+    ]
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37"
+  }
+}

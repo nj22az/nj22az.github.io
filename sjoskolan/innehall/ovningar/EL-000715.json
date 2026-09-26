@@ -1,0 +1,32 @@
+{
+  "id": "EL-000715",
+  "titel": "Startfråga: v42_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad saknas i en riskbedömning som bara säger ”använd skyddshandskar”?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

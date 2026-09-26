@@ -1,0 +1,60 @@
+{
+  "id": "EL-000819",
+  "titel": "Rätt mätutrustning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör övningen ”Välj CAT-klass” i Multimeterlabbet.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Välj kategori och spänning för hela mätutrustningen på tre mätplatser: huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt."
+      },
+      {
+        "id": "b",
+        "text": "Motivera varje val. Varför räcker det inte att bara instrumentet har rätt kategori?"
+      }
+    ],
+    "svarsformat": "Val och motivering för varje mätplats."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[42][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "multimetersimulator/?ovning=category",
+        "titel": "Multimeterlabbet: Välj CAT-klass"
+      },
+      {
+        "url": "bildspel/?d=v42_01_Elektriska_risker",
+        "titel": "Bildspel: Elektriska risker"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

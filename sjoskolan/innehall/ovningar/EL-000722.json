@@ -1,0 +1,33 @@
+{
+  "id": "EL-000722",
+  "titel": "Avslutsfråga: v43_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka två punkter och vilket driftläge hör till ditt förväntade mätvärde?",
+    "instruktion": "Lämna schemauppgiften senast söndag 25 oktober. Använd hållkretsen som underlag och redovisa funktion, komponenter, mätpunkter och dokumentrevision."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

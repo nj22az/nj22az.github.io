@@ -1,0 +1,33 @@
+{
+  "id": "EL-000714",
+  "titel": "Avslutsfråga: v42_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur visar du att en regelhänvisning verkligen gäller ditt arbetsfall?",
+    "instruktion": "Komplettera riskbedömningen med ansvar, vald arbetsmetod och motiverad regelhänvisning. Inlämning senast 18 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

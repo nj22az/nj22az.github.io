@@ -5596,6 +5596,2282 @@
      "ankare": "effekt:eget"
     }
    ]
+  },
+  {
+   "id": "EL-000601",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avbrott i återledaren",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E1",
+     "ankare": "e1"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000602",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänning och ström",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E2",
+     "ankare": "e2"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000603",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beräkning med stöd",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E3",
+     "ankare": "e3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000604",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen beräkning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E4",
+     "ankare": "e4"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000605",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ett grenfel och ett gemensamt fel",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E5",
+     "ankare": "e5"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000606",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Länspump och arbetsbelysning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E6",
+     "ankare": "e6"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000607",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samlad tillämpning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html",
+     "nummer": "E7",
+     "ankare": "e7"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_02_Elens_grunder_ombord_elev.pptx",
+     "nummer": "E7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000608",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fall A: arbetslampan på däck",
+   "typ": "fall",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "Fall A",
+     "ankare": "fall-a"
+    }
+   ]
+  },
+  {
+   "id": "EL-000609",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fall B: gångvägen, reservlampor och pumpen",
+   "typ": "fall",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "Fall B",
+     "ankare": "fall-b"
+    }
+   ]
+  },
+  {
+   "id": "EL-000610",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Vad är belagt?",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E1",
+     "ankare": "e1"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000611",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beslutet nu",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E2",
+     "ankare": "e2"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000612",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mörk gångväg",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E3",
+     "ankare": "e3"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000613",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Tydligt meddelande",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E4",
+     "ankare": "e4"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000614",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reservlampor",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E5",
+     "ankare": "e5"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000615",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen riskbedömning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E6",
+     "ankare": "e6"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000616",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kamratgranskning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E7",
+     "ankare": "e7"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000617",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen slutsats",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html",
+     "nummer": "E8",
+     "ankare": "e8"
+    },
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_04_Elsakerhet_och_riskbedomning_elev.pptx",
+     "nummer": "E8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000618",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 1",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000619",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 2",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000620",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 3",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000621",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 4",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000622",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 5",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000623",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1A: 6",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx",
+     "nummer": "6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000624",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 1",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000625",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 2",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000626",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 3",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000627",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 4",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000628",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 5",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000629",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberedelsefråga 1B: 6",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx",
+     "nummer": "6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000630",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två matningar",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Elevuppgifter.html",
+     "nummer": "V2-1",
+     "ankare": "v2-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000631",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Instrumentval",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Elevuppgifter.html",
+     "nummer": "V2-2",
+     "ankare": "v2-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000632",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Osäkerhet",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Elevuppgifter.html",
+     "nummer": "V2-3",
+     "ankare": "v2-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000633",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Högspänningsfall på skärm",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Elevuppgifter.html",
+     "nummer": "V2-4",
+     "ankare": "v2-4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000634",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fall A: Vilken mätning svarar på frågan?",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+     "nummer": "Fall A",
+     "ankare": "fall-a"
+    }
+   ]
+  },
+  {
+   "id": "EL-000635",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fall B: Upplösning är inte noggrannhet",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+     "nummer": "Fall B",
+     "ankare": "fall-b"
+    }
+   ]
+  },
+  {
+   "id": "EL-000636",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fall F: Granska ett ofullständigt mätprotokoll",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "arbetsblad",
+     "plats": "vecka-38/aktuell/Fordjupning_elev.html",
+     "nummer": "Fall F",
+     "ankare": "fall-f"
+    }
+   ]
+  },
+  {
+   "id": "EL-000637",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fel instrumentläge",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+     "nummer": "Övning",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000638",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Exitfråga 1",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+     "nummer": "1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000639",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Exitfråga 2",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+     "nummer": "2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000640",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Exitfråga 3",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+     "nummer": "3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000641",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningen över H1",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000642",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömmen genom H1",
+   "typ": "matning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000643",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Vad är fel före anslutning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000644",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två möjliga mätvägar",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000645",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Vilken märkning räcker",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000646",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Multimetern visar 24,00 V",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000647",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ryms hela mätintervallet",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000648",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Nästa vakt behöver förstå mätningen",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000649",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningen med ansluten mätare",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000650",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Lägre ingångsresistans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000651",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström i en förgrening",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000652",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Flera strömmar vid en nod",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000653",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "En antagen strömriktning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000654",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Det saknade spänningsfallet",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000655",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström och spänning i serie",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000656",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två parallella grenar",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000657",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Serie och parallell samtidigt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000658",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Källor som motverkar varandra",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000659",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två källor matar samma last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000660",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömmen byter riktning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000661",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontrollfråga 1 efter seminariet",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000662",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontrollfråga 2 efter seminariet",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000663",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontrollfråga 3 efter seminariet",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx",
+     "nummer": "3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000701",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v39_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000702",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v39_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000703",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v39_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000704",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v39_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000705",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v41_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000706",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v41_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000707",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v41_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000708",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v41_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000709",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v41_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000710",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v41_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000711",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v42_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000712",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v42_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000713",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v42_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000714",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v42_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000715",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v42_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000716",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v42_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000717",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v43_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000718",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v43_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000719",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v43_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000720",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v43_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000721",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v43_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000722",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v43_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000723",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v44_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000724",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v44_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000725",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v44_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000726",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v44_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000727",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v44_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000728",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v44_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000729",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v45_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000730",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v45_01",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000731",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v45_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000732",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v45_02",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000733",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Startfråga: v45_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Startfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000734",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Avslutsfråga: v45_03",
+   "typ": "reflektion",
+   "placeringar": [
+    {
+     "yta": "presentation-fragor",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Avslutsfråga",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000801",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Arbetslampans strömväg",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-37/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000802",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två lampor parallellt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-37/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000803",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Riskbedömning av en länspump",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-37/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000804",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "De fem stegen för ett verkligt fall",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-38/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000805",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Välj instrument och funktion",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-38/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000806",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Instrumentets felgräns",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-38/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000807",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Energibudget för ett 24 V-system",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-39/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000808",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätaren påverkar kretsen",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-39/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000809",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Multimeterlabbets protokoll",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-39/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000810",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen sinusspänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-40/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000811",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen RL-last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-40/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000812",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Effekt och kompensering",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-40/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000813",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Grundprotokollet från den guidade labben",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-40/aktuell/Inlamning.html",
+     "nummer": "Uppgift 4",
+     "ankare": "uppgift-4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000814",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma värmare i Y och Δ",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-41/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000815",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Neutralström med egna laster",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-41/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000816",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Stationerna A, B och C",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-41/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000817",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Riskbedömning före arbete",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-42/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000818",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beröringsspänning i en modell",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-42/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000819",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Rätt mätutrustning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-42/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000820",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorns märkskylt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-43/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000821",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skyddsdata",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-43/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000822",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållkretsen med nödstopp",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-43/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000823",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jämför jordningssystemen",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-44/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000824",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Högspänning och strömtransformator",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-44/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000825",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Isolationslabbet",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-44/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000826",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Analys av mätdata",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-45/aktuell/Inlamning.html",
+     "nummer": "Uppgift 1",
+     "ankare": "uppgift-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000827",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Övningstentan",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-45/aktuell/Inlamning.html",
+     "nummer": "Uppgift 2",
+     "ankare": "uppgift-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000828",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Felsökningsrapport",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-45/aktuell/Inlamning.html",
+     "nummer": "Uppgift 3",
+     "ankare": "uppgift-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000851",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Länspumpens energi",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "1",
+     "ankare": "tenta-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000852",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Belastad spänningsdelare",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "2",
+     "ankare": "tenta-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000853",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kabelns spänningsfall",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "3",
+     "ankare": "tenta-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000854",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Sinusspänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "4",
+     "ankare": "tenta-4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000855",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "RL-last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "5",
+     "ankare": "tenta-5"
+    }
+   ]
+  },
+  {
+   "id": "EL-000856",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma värmare i Y och Δ",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "6",
+     "ankare": "tenta-6"
+    }
+   ]
+  },
+  {
+   "id": "EL-000857",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Bruten neutralledare",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "7",
+     "ankare": "tenta-7"
+    }
+   ]
+  },
+  {
+   "id": "EL-000858",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Riskbedömning före arbete",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "8",
+     "ankare": "tenta-8"
+    }
+   ]
+  },
+  {
+   "id": "EL-000859",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorn",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "9",
+     "ankare": "tenta-9"
+    }
+   ]
+  },
+  {
+   "id": "EL-000860",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållkrets som inte startar",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "10",
+     "ankare": "tenta-10"
+    }
+   ]
+  },
+  {
+   "id": "EL-000861",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "IT-nätet ombord",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "11",
+     "ankare": "tenta-11"
+    }
+   ]
+  },
+  {
+   "id": "EL-000862",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Uppfyller spänningen kravet?",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "tentamen",
+     "plats": "tentamen.html",
+     "nummer": "12",
+     "ankare": "tenta-12"
+    }
+   ]
   }
  ]
 }

@@ -1,0 +1,55 @@
+{
+  "id": "EL-000809",
+  "titel": "Multimeterlabbets protokoll",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Gör övning 01–08 i Multimeterlabbet.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Spara mätprotokollet som PDF."
+      },
+      {
+        "id": "b",
+        "text": "Välj en övning där du först gjorde fel eller var osäker. Beskriv felet och vad som hade hänt med ett verkligt instrument."
+      }
+    ],
+    "svarsformat": "Protokollet som PDF och en kort reflektion."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[39][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "multimetersimulator/",
+        "titel": "Multimeterlabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

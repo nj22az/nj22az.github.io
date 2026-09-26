@@ -1,0 +1,40 @@
+{
+  "id": "EL-000612",
+  "titel": "Mörk gångväg",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Lampan tas ur bruk och gångvägen blir mörk. Fyll i en riskrad: vem kan beröras, vad kan hända, vilken åtgärd föreslår du och hur följs den upp?",
+    "fall": "EL-000608",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Lampan tas ur bruk. Gångvägen blir mörk. Beskriv vem som berörs och vad som kan hända. Föreslå åtgärd och kontroll."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E3; v37_04 bild 20",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}

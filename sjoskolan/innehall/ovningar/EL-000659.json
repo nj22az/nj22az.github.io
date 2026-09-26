@@ -1,0 +1,54 @@
+{
+  "id": "EL-000659",
+  "titel": "Två källor matar samma last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bildspel-v39-04",
+      "T-kurs-v39-02"
+    ]
+  },
+  "uppgift": {
+    "scenario": "Källorna ger 12 V och 9 V. R_{1} = R_{2} = 3 Ω och R_{3} = 2 Ω. Pilarna visar antagna riktningar.",
+    "fraga": "Bestäm I_{1}, I_{2}, I_{3} och nodspänningen V_{a} relativt B.",
+    "samband": [
+      "I_{3} = I_{1} + I_{2} E_{1} − R_{1}I_{1} − R_{3}I_{3} = 0, E_{2} − R_{2}I_{2} − R_{3}I_{3} = 0"
+    ],
+    "givet": "E_{1} = 12 V, E_{2} = 9 V, R_{1} = R_{2} = 3 Ω, R_{3} = 2 Ω. Pilar och polariteter följer schemat."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx bild 37 och 38",
+        "revision": "8cabde3",
+        "roll": "seminarieövning med stödbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "V_{a} = R_{3}I_{3} relativt B = 0 V. Tre okända strömmar kräver tre oberoende ekvationer.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Sätt in nodlagen i båda slingorna. Lös de två återstående ekvationerna genom elimination eller substitution.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "status": "saknas",
+    "kalla": "Löses gemensamt på seminariet"
+  }
+}

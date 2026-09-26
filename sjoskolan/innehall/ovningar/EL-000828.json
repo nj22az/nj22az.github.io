@@ -1,0 +1,64 @@
+{
+  "id": "EL-000828",
+  "titel": "Felsökningsrapport",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Sätt i två felmoduler i Hållkretslabbet och felsök en i taget.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Skriv observationen innan du mäter."
+      },
+      {
+        "id": "b",
+        "text": "Skriv två möjliga orsaker och välj en mätning som skiljer dem åt. Motivera mätningen och skriv förväntat resultat innan du ser resultatet."
+      },
+      {
+        "id": "c",
+        "text": "Skriv resultat och slutsats. Visa felet först när raden är ifylld."
+      }
+    ],
+    "svarsformat": "Två ifyllda felsökningsrader ur protokollet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[45][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "hallkretslabbet/",
+        "titel": "Hållkretslabbet"
+      },
+      {
+        "url": "bildspel/?d=v45_01_Systematisk_felsokning",
+        "titel": "Bildspel: Systematisk felsökning"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

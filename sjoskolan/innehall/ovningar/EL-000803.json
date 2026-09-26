@@ -1,0 +1,67 @@
+{
+  "id": "EL-000803",
+  "titel": "Riskbedömning av en länspump",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sladdansluten länspump i en fuktig skans har en synligt skadad kabel vid införingen i pumpen. Pumpen behövs för att hålla skansen länsad.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Fyll i mallen: observation, fara, möjlig händelse och konsekvens."
+      },
+      {
+        "id": "b",
+        "text": "Skriv vilket beslut som tas nu och vem som tar det."
+      },
+      {
+        "id": "c",
+        "text": "Föreslå en direkt åtgärd och en förebyggande åtgärd, och hur länsningen säkras under tiden."
+      },
+      {
+        "id": "d",
+        "text": "Skilj på vad du har observerat och vad du antar."
+      }
+    ],
+    "svarsformat": "Ifylld riskbedömningsmall med egna formuleringar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[37][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "01B_Elsakerhet_och_riskbedomning/Elsakerhet_steg_for_steg.html",
+        "titel": "Elsäkerhet steg för steg"
+      },
+      {
+        "url": "01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html",
+        "titel": "Mall för riskbedömning"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

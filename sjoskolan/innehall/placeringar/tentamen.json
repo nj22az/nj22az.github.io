@@ -1,0 +1,105 @@
+{
+  "yta": "tentamen",
+  "titel": "Övningstentan",
+  "beskrivning": "De tolv uppgifterna i övningstentan med lösningar.",
+  "publik": "elev",
+  "exportor": "tentamen",
+  "placeringar": [
+    {
+      "ovning": "EL-000851",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 1,
+      "nummer": "1",
+      "ankare": "tenta-1"
+    },
+    {
+      "ovning": "EL-000852",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 2,
+      "nummer": "2",
+      "ankare": "tenta-2"
+    },
+    {
+      "ovning": "EL-000853",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 3,
+      "nummer": "3",
+      "ankare": "tenta-3"
+    },
+    {
+      "ovning": "EL-000854",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 4,
+      "nummer": "4",
+      "ankare": "tenta-4"
+    },
+    {
+      "ovning": "EL-000855",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 5,
+      "nummer": "5",
+      "ankare": "tenta-5"
+    },
+    {
+      "ovning": "EL-000856",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 6,
+      "nummer": "6",
+      "ankare": "tenta-6"
+    },
+    {
+      "ovning": "EL-000857",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 7,
+      "nummer": "7",
+      "ankare": "tenta-7"
+    },
+    {
+      "ovning": "EL-000858",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 8,
+      "nummer": "8",
+      "ankare": "tenta-8"
+    },
+    {
+      "ovning": "EL-000859",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 9,
+      "nummer": "9",
+      "ankare": "tenta-9"
+    },
+    {
+      "ovning": "EL-000860",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 10,
+      "nummer": "10",
+      "ankare": "tenta-10"
+    },
+    {
+      "ovning": "EL-000861",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 11,
+      "nummer": "11",
+      "ankare": "tenta-11"
+    },
+    {
+      "ovning": "EL-000862",
+      "plats": "tentamen.html",
+      "del": "ovningstenta",
+      "ordning": 12,
+      "nummer": "12",
+      "ankare": "tenta-12"
+    }
+  ]
+}

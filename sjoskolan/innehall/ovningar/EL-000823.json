@@ -1,0 +1,67 @@
+{
+  "id": "EL-000823",
+  "titel": "Jämför jordningssystemen",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Jämför TN-S, TT och IT i en tabell.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Hur går felströmmen vid ett fel mellan fas och utsatt del?"
+      },
+      {
+        "id": "b",
+        "text": "Vilket skydd kopplar bort felet?"
+      },
+      {
+        "id": "c",
+        "text": "Vad händer vid första och andra felet i IT-systemet?"
+      },
+      {
+        "id": "d",
+        "text": "Varför används IT-system ofta ombord?"
+      }
+    ],
+    "svarsformat": "Tabell och kort förklaring."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[44][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v44_01_Lagspanningssystem",
+        "titel": "Bildspel: Lågspänningssystem"
+      },
+      {
+        "url": "filmer/#it-nat",
+        "titel": "Film: IT-nätet ombord"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

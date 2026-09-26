@@ -1,0 +1,32 @@
+{
+  "id": "EL-000733",
+  "titel": "Startfråga: v45_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket område behöver du mest träna: kretsar, AC/trefas, säkerhet eller mätanalys?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

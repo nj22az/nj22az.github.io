@@ -1,0 +1,32 @@
+{
+  "id": "EL-000701",
+  "titel": "Startfråga: v39_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 24 V-lampa drar 2 A. Vad beskriver 48 W, och vad beskriver 48 Wh?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

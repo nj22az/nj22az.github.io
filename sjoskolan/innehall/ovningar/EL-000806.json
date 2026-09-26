@@ -1,0 +1,68 @@
+{
+  "id": "EL-000806",
+  "titel": "Instrumentets felgräns",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett instrument har specifikationen ±(0,8 % av visat värde + 2 siffror) och upplösningen 0,01 V. Det visar (23,50 + D/100) V.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Beräkna felgränsen och intervallet som det sanna värdet ligger i."
+      },
+      {
+        "id": "b",
+        "text": "Kravet är 24,0 V ±1 %. Kan du intyga att kravet är uppfyllt?"
+      },
+      {
+        "id": "c",
+        "text": "Förklara skillnaden mellan upplösning och noggrannhet med ditt exempel."
+      }
+    ],
+    "svarsformat": "Beräkning med enhet och en bedömning som jämför hela intervallet med kravet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[38][2]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "bildspel/?d=v38_01_Franskiljning_och_matteknik",
+        "titel": "Bildspel: Frånskiljning och mätteknik"
+      },
+      {
+        "url": "gemensamt/Formelblad_och_begrepp.html",
+        "titel": "Formelbladet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

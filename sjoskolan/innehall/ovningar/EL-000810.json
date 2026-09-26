@@ -1,0 +1,68 @@
+{
+  "id": "EL-000810",
+  "titel": "Egen sinusspänning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ställ Växelströmslabbet på en sinus med effektivvärdet (10 + D) V och frekvensen 50 Hz, eller 60 Hz om D är jämnt.",
+    "delfragor": [
+      {
+        "id": "a",
+        "text": "Räkna ut toppvärde, topp-till-topp-värde och period innan du tittar i labbet."
+      },
+      {
+        "id": "b",
+        "text": "Läs av samma storheter på oscilloskopet. Anteckna tidsaxel och skala."
+      },
+      {
+        "id": "c",
+        "text": "Jämför och förklara eventuella skillnader."
+      }
+    ],
+    "svarsformat": "Beräkning före avläsning, avlästa värden och förklaring."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "verktyg/inlamning/bygg.py UPPGIFTER[40][0]",
+        "revision": "8cabde3",
+        "roll": "inlämningsuppgift"
+      }
+    ],
+    "publik": "elev",
+    "resurser": [
+      {
+        "url": "Genomgang.html?del=sinus",
+        "titel": "Genomgång del 1: sinus och mätvärden"
+      },
+      {
+        "url": "vaxelstromslabbet/",
+        "titel": "Växelströmslabbet"
+      }
+    ],
+    "losning_publik": false
+  },
+  "parametrar": {
+    "D": {
+      "varde": "D",
+      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Lärarfacit (skyddat)"
+  }
+}

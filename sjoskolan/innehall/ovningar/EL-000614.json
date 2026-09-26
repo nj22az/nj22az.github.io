@@ -1,0 +1,40 @@
+{
+  "id": "EL-000614",
+  "titel": "Reservlampor",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Utgå från fall B. Vilken lampa undersöker du först? Ange två kvarstående kontroller. Vad behöver ni göra om ingen lampa visar sig lämplig?",
+    "fall": "EL-000609",
+    "instruktion": "Mitt svar.",
+    "kortfraga": "Vilken reservlampa undersöker du först? Vad måste fortfarande kontrolleras? Vad gör ni om kraven inte går att uppfylla?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E5; v37_04 bild 29",
+        "revision": "8cabde3",
+        "roll": "arbetsblad 1B och presentationsbild"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Gås igenom på lektionen"
+  }
+}
