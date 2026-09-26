@@ -1,6 +1,6 @@
 # PowerPoint coverage
 
-Source: Multimeter_Sjoskolan_v7_SV.pptx, 70 slides.
+Source: v39_03_Multimeter_och_matfel_elev.pptx, 70 slides.
 
 The English edition retains all 37 scenes and all numerical examples from the Swedish film. Linked external films on slide 69 are referenced, not reproduced.
 

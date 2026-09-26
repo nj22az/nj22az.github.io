@@ -100,3 +100,30 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
   .course-reading img{max-height:140mm}
   .course-main a{color:inherit}
 }
+
+/* Veckosida: mål, delar i ordning och veckans grundarbete (verktyg/veckosidor/bygg.py) */
+.week-heading .course-lead{color:var(--sj-ink,#163248)}
+.course-actions{margin:24px 0 0}
+.week-note{margin:24px 0 0;max-width:72ch}
+.week-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:40px;margin-top:16px}
+.lesson-list{list-style:none;margin:0;padding:0}
+.lesson-list>li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;border-top:1px solid var(--sj-line,#cad8e2);padding:24px 0;margin:0;scroll-margin-top:16px}
+.lesson-number{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--sj-blue,#064f91);color:#fff;font-weight:700;font-size:18px}
+.course-main .lesson-list h3{margin:4px 0 4px;font-size:22px}
+.lesson-list p{margin:0 0 12px;color:var(--sj-muted,#4d6579)}
+.lesson-items{list-style:none;margin:0;padding:0}
+.lesson-items li{display:grid;grid-template-columns:110px minmax(0,1fr);column-gap:12px;padding:8px 0;margin:0;border-bottom:1px solid var(--sj-soft,#edf4f9)}
+.lesson-items .kind{grid-row:span 2;font-size:14px;font-weight:700;color:var(--sj-muted,#4d6579);padding-top:3px}
+.lesson-items a{font-weight:700}
+.lesson-items small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.lesson-items small a{font-weight:700}
+.week-aside{background:var(--sj-soft,#edf4f9);border-radius:12px;padding:24px;align-self:start}
+.course-main .week-aside h2{font-size:22px;margin-top:0}
+.week-aside ul{padding-left:22px}
+.week-aside ul.plain,.week-aside .lesson-items{padding-left:0;list-style:none}
+.week-aside .lesson-items li{grid-template-columns:1fr;border-color:var(--sj-line,#cad8e2)}
+.week-aside .lesson-items .kind{grid-row:auto}
+.week-aside li{margin:8px 0}
+@media(max-width:900px){.week-grid{grid-template-columns:1fr;gap:24px}}
+@media(max-width:520px){.lesson-list>li{grid-template-columns:1fr;gap:8px}.lesson-items li{grid-template-columns:1fr}.lesson-items .kind{grid-row:auto}}
+@media print{.week-grid{display:block}.week-aside{background:none;border:1px solid #999}.course-actions{display:none}}

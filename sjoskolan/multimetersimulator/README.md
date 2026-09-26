@@ -1,6 +1,6 @@
 # Multimeterlabbet · Sjöskolan
 
-Svensk multimeterträning som kompletterar `Multimeter_Sjoskolan_v7_SV.pptx`.
+Svensk multimeterträning som kompletterar `v39_03_Multimeter_och_matfel_elev.pptx`.
 
 Live: https://nj22az.github.io/sjoskolan/multimetersimulator/
 
