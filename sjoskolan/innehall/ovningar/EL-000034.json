@@ -1,0 +1,89 @@
+{
+  "id": "EL-000034",
+  "titel": "Motorns inmatning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor ger 600 W mekanisk effekt. Verkningsgraden är 75 %. Beräkna den tillförda elektriska effekten och förlusten.",
+    "samband": [
+      "P_{in} = P_{ut}/η; Pförlust = P_{in} − P_{ut}"
+    ],
+    "givet": "η = 75 % = 0,75. Motorn går med jämn belastning.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "η skrivs som decimaltal. P_{ut} är effekten på axeln och P_{in} den tillförda elektriska effekten.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Dela uteffekten med verkningsgraden och dra sedan bort uteffekten från den tillförda effekten.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P_{in} = 600 W / 0,75 = 800 W. Förlust = 800 − 600 = 200 W.",
+    "svar": [
+      {
+        "storhet": "P_{in}",
+        "varde": 800.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "W"
+      },
+      {
+        "storhet": "förlust",
+        "varde": 200.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "W"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q4 och ch037.xhtml#sol4-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

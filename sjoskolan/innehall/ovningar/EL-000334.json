@@ -1,0 +1,105 @@
+{
+  "id": "EL-000334",
+  "titel": "Andra jordfelet",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "L1 har kvar sitt jordfel. Nu får L2 också ett fullständigt jordfel. Slingan L1–skrov–L2 har 0,08 Ω. Beräkna felströmmen i kA."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[5] (id andra)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Två jordfel på olika faser är en kortslutning mellan faserna via skrovet. Drivande spänning är huvudspänningen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 440/0,08 = 5 500 A = 5,5 kA. Skydden ska lösa. Därför ska första felet hittas och åtgärdas innan ett andra uppstår.",
+    "svar": [
+      {
+        "storhet": "Ik",
+        "varde": 5.5,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kA",
+        "berakning": "it.andra_felet_ka"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 440,
+      "enhet": "V"
+    },
+    "Rloop": {
+      "varde": 0.08,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 5.5
+    },
+    "initial": {
+      "R": [
+        0,
+        0,
+        10000000
+      ],
+      "C": 1e-06,
+      "Rloop": 0.08
+    },
+    "fraga": {
+      "storhet": "second",
+      "etikett": "Ik",
+      "enhet": "kA",
+      "skala": 1000
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 3.18,
+          "text": "Drivande spänning är huvudspänningen mellan L1 och L2, inte fasspänningen."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_01 · övning 4",
+    "alias": "andra"
+  }
+}

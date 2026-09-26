@@ -1,0 +1,71 @@
+{
+  "id": "EL-000229",
+  "titel": "Förändrade driftvillkor",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En funktion är kontrollerad i normal drift men inte på reservmatning. Hur ska slutsatsen skrivas?",
+    "samband": [
+      "Verifierat driftfall ska anges i slutsatsen"
+    ],
+    "givet": "Funktionen har provats i normal drift. Ingen kontroll på reservmatning är redovisad.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Att funktionen fungerar i normal drift säger inget om hur den fungerar på reservmatning.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv vad som är kontrollerat och vad som återstår, utan att godkänna allt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Exempel: ”Funktionen är verifierad i normaldrift. Reservdrift är inte kontrollerad och måste provas separat.”",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q9 och ch056.xhtml#sol23-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

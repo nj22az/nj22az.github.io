@@ -1,0 +1,90 @@
+{
+  "id": "EL-000040",
+  "titel": "Energibehov för en pump",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 24 V-pump ger 120 W mekaniskt med η = 80 %. Den går i 2 h. Beräkna den tillförda energin och hur många Ah som går åt.",
+    "samband": [
+      "P_{in} = P_{ut}/η; E = P_{in} · t",
+      "I = P_{in}/U; Q = I · t"
+    ],
+    "givet": "Konstant 24 V och 120 W uteffekt under 2 h. η = 0,80. Ingen marginal i batteriet är medräknad.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Med W och h får du E i Wh, och med A och h får du Q i Ah. Skriv η som decimaltal.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna i tur och ordning tillförd effekt, energi och ström, och sist Ah – en annan storhet än Wh.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P_{in} = 120/0,80 = 150 W. E = 150 W · 2 h = 300 Wh. I = 150/24 = 6,25 A. Q = 6,25 A · 2 h = 12,5 Ah.",
+    "svar": [
+      {
+        "storhet": "E",
+        "varde": 300.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Wh"
+      },
+      {
+        "storhet": "Q",
+        "varde": 12.5,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ah"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q10 och ch037.xhtml#sol4-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

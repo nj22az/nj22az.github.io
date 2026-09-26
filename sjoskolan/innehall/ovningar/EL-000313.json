@@ -1,0 +1,111 @@
+{
+  "id": "EL-000313",
+  "titel": "Spolens reaktans",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "L = 159 mH och f = 50 Hz. Beräkna X_{L}."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[4] (id xl)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "X_{L} = 2πfL. Omvandla först mH till H.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "X_{L}",
+        "varde": 49.9513,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω",
+        "berakning": "ac.xl"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    },
+    "L": {
+      "varde": 0.159,
+      "enhet": "H"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 49.9513,
+      "tolerans": {
+        "rel": 0.02
+      }
+    },
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RL",
+      "U": 100,
+      "f": 50,
+      "R": 30,
+      "L": 159,
+      "C": 150
+    },
+    "fraga": {
+      "storhet": "XL",
+      "etikett": "X_{L}",
+      "enhet": "Ω"
+    },
+    "dolj": [
+      "XL",
+      "X",
+      "Z",
+      "I",
+      "phi",
+      "UR",
+      "UL"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 7.95,
+          "text": "Du har glömt 2π. X_{L} = 2πfL."
+        }
+      ]
+    },
+    "kallhanvisning": "Spolens reaktans",
+    "teoriavsnitt": "xl",
+    "alias": "xl"
+  }
+}

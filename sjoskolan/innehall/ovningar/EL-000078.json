@@ -1,0 +1,61 @@
+{
+  "id": "EL-000078",
+  "titel": "Dubbel frekvens",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Frekvensen ökas från 50 till 100 Hz. Hur ändras XL och XC när komponenterna är desamma?",
+    "samband": [
+      "XL = 2πfL; XC = 1/(2πfC)"
+    ],
+    "givet": "Bara frekvensen ändras, från 50 till 100 Hz. L och C är desamma."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "XL ökar med f. XC minskar när f ökar, eftersom f står i nämnaren.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Byt f mot 2f i båda formlerna och jämför med de ursprungliga värdena.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "X_{L} fördubblas. X_{C} halveras.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q8 och ch041.xhtml#sol8-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

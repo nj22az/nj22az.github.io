@@ -1,0 +1,108 @@
+{
+  "yta": "protokoll",
+  "titel": "Labbprotokoll och stationer",
+  "beskrivning": "Simulerade labbprotokoll under simulatorerna, de fysiska stationerna och protokollmallen.",
+  "publik": "elev",
+  "exportor": "protokoll",
+  "placeringar": [
+    {
+      "ovning": "EL-000408",
+      "plats": "hallkretslabbet/protokoll.gen.mjs",
+      "del": "protokoll",
+      "ordning": 1,
+      "nummer": "Labbprotokoll, Station C",
+      "ankare": "stationC",
+      "alias": [
+        "STATION_C_PROTOKOLL"
+      ]
+    },
+    {
+      "ovning": "EL-000410",
+      "plats": "isolationslabbet/protokoll.gen.mjs",
+      "del": "protokoll",
+      "ordning": 1,
+      "nummer": "Labbprotokoll, isolation och jordfel i IT-nät",
+      "ankare": "isolation",
+      "alias": [
+        "ISO_PROTOKOLL"
+      ]
+    },
+    {
+      "ovning": "EL-000402",
+      "plats": "multimetersimulator/protokoll.gen.mjs",
+      "del": "protokoll",
+      "ordning": 1,
+      "nummer": "Labbprotokoll, Station A",
+      "ankare": "stationA",
+      "alias": [
+        "STATION_A_PROTOKOLL"
+      ]
+    },
+    {
+      "ovning": "EL-000406",
+      "plats": "trefaslabbet/protokoll.gen.mjs",
+      "del": "protokoll",
+      "ordning": 1,
+      "nummer": "Labbprotokoll, Station B, trefas",
+      "ankare": "stationB-3f",
+      "alias": [
+        "STATION_B_3F_PROTOKOLL"
+      ]
+    },
+    {
+      "ovning": "EL-000404",
+      "plats": "vaxelstromslabbet/protokoll.gen.mjs",
+      "del": "protokoll",
+      "ordning": 1,
+      "nummer": "Labbprotokoll, Station B, AC",
+      "ankare": "stationB-ac-v2",
+      "alias": [
+        "STATION_B_AC_PROTOKOLL"
+      ]
+    },
+    {
+      "ovning": "EL-000401",
+      "plats": "vecka-41/aktuell/Elevprotokoll.html",
+      "del": "mall",
+      "ordning": 1,
+      "nummer": "Elevprotokoll och riskmall",
+      "ankare": "elevprotokoll"
+    },
+    {
+      "ovning": "EL-000403",
+      "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+      "del": "stationer",
+      "ordning": 1,
+      "nummer": "Station A",
+      "ankare": "station-a",
+      "roll": "fysisk"
+    },
+    {
+      "ovning": "EL-000405",
+      "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+      "del": "stationer",
+      "ordning": 2,
+      "nummer": "Station B, AC",
+      "ankare": "station-b-ac",
+      "roll": "fysisk"
+    },
+    {
+      "ovning": "EL-000407",
+      "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+      "del": "stationer",
+      "ordning": 3,
+      "nummer": "Station B, trefas",
+      "ankare": "station-b-3f",
+      "roll": "fysisk"
+    },
+    {
+      "ovning": "EL-000409",
+      "plats": "vecka-41/aktuell/Simulerade_stationer.html",
+      "del": "stationer",
+      "ordning": 4,
+      "nummer": "Station C",
+      "ankare": "station-c",
+      "roll": "fysisk"
+    }
+  ]
+}

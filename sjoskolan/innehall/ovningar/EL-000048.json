@@ -1,0 +1,80 @@
+{
+  "id": "EL-000048",
+  "titel": "Två källor och en last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "att-granska",
+    "kommentar": "Bokens svar innehåller tal som inte finns i kursens facit: [1.0]"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-05",
+      "T-kurs-v39-02",
+      "T-bildspel-v39-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två ideala källor på 12 V och 9 V matar punkten A genom var sin 3 Ω-resistor. Mellan A och den gemensamma 0 V-punkten sitter 2 Ω. Bestäm V_{a}.",
+    "samband": [
+      "(E_{1} − V_{a})/R_{1} + (E_{2} − V_{a})/R_{2} = V_{a}/R_{3}"
+    ],
+    "givet": "E_{1} = 12 V, E_{2} = 9 V, R_{1} = R_{2} = 3 Ω, R_{3} = 2 Ω. Båda minuspolerna är anslutna till 0 V.",
+    "instruktion": "+"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "V_{a} är spänningen i A mot 0 V. Varje bråk är en grenström enligt Ohms lag.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera hela ekvationen med 6 så försvinner nämnarna. Samla termerna med V_{a} och lös ut V_{a}.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "2(12 − V_{a}) + 2(9 − V_{a}) = 3V_{a} ger 42 = 7V_{a} och V_{a} = 6,0 V.",
+    "svar": [
+      {
+        "storhet": "V_{a}",
+        "varde": 6.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch010.xhtml#ch5-q8 och ch038.xhtml#sol5-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx bild 39 och 40",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

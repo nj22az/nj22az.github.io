@@ -1,0 +1,68 @@
+{
+  "id": "EL-000158",
+  "titel": "Selektivitetsfall",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett fel i en undercentral gör att både gruppskyddet och huvudskyddet löser ut. Vad behöver utredas?",
+    "samband": [
+      "Vilket skydd borde ha löst?"
+    ],
+    "givet": "Gruppskydd och huvudskydd löser ut för samma fel. Utlösningskurvor och felström är inte kända.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "När skydden är rätt samordnade kopplar det närmaste skyddet bort felet, och de felfria delarna fortsätter att fungera.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vad som behöver utredas och vilka data från tillverkaren som behövs.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Selektiviteten mellan gruppskydd och huvudskydd. Det krävs tillverkarens ström–tidskurvor och den möjliga felströmmen.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q8 och ch049.xhtml#sol16-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

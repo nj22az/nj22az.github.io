@@ -1,0 +1,1609 @@
+{
+  "yta": "kurs-formelstod",
+  "titel": "Formelstöd och övningar",
+  "beskrivning": "Övningarna under varje kapitel på veckans sida Formelstöd och övningar.",
+  "publik": "elev",
+  "exportor": "kurssidor",
+  "placeringar": [
+    {
+      "ovning": "EL-000031",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v39_01-q1"
+    },
+    {
+      "ovning": "EL-000032",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v39_01-q2"
+    },
+    {
+      "ovning": "EL-000033",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v39_01-q3"
+    },
+    {
+      "ovning": "EL-000034",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v39_01-q4"
+    },
+    {
+      "ovning": "EL-000035",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v39_01-q5"
+    },
+    {
+      "ovning": "EL-000036",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v39_01-q6"
+    },
+    {
+      "ovning": "EL-000037",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v39_01-q7"
+    },
+    {
+      "ovning": "EL-000038",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v39_01-q8"
+    },
+    {
+      "ovning": "EL-000039",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v39_01-q9"
+    },
+    {
+      "ovning": "EL-000040",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v39_01-q10"
+    },
+    {
+      "ovning": "EL-000041",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v39_02-q1"
+    },
+    {
+      "ovning": "EL-000042",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v39_02-q2"
+    },
+    {
+      "ovning": "EL-000043",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v39_02-q3"
+    },
+    {
+      "ovning": "EL-000044",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v39_02-q4"
+    },
+    {
+      "ovning": "EL-000045",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v39_02-q5"
+    },
+    {
+      "ovning": "EL-000046",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v39_02-q6"
+    },
+    {
+      "ovning": "EL-000047",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v39_02-q7"
+    },
+    {
+      "ovning": "EL-000048",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v39_02-q8"
+    },
+    {
+      "ovning": "EL-000049",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v39_02-q9"
+    },
+    {
+      "ovning": "EL-000050",
+      "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+      "del": "v39_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v39_02-q10"
+    },
+    {
+      "ovning": "EL-000061",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v40_01-q1"
+    },
+    {
+      "ovning": "EL-000062",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v40_01-q2"
+    },
+    {
+      "ovning": "EL-000063",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v40_01-q3"
+    },
+    {
+      "ovning": "EL-000064",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v40_01-q4"
+    },
+    {
+      "ovning": "EL-000065",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v40_01-q5"
+    },
+    {
+      "ovning": "EL-000066",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v40_01-q6"
+    },
+    {
+      "ovning": "EL-000067",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v40_01-q7"
+    },
+    {
+      "ovning": "EL-000068",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v40_01-q8"
+    },
+    {
+      "ovning": "EL-000069",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v40_01-q9"
+    },
+    {
+      "ovning": "EL-000070",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v40_01-q10"
+    },
+    {
+      "ovning": "EL-000071",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v40_02-q1"
+    },
+    {
+      "ovning": "EL-000072",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v40_02-q2"
+    },
+    {
+      "ovning": "EL-000073",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v40_02-q3"
+    },
+    {
+      "ovning": "EL-000074",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v40_02-q4"
+    },
+    {
+      "ovning": "EL-000075",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v40_02-q5"
+    },
+    {
+      "ovning": "EL-000076",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v40_02-q6"
+    },
+    {
+      "ovning": "EL-000077",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v40_02-q7"
+    },
+    {
+      "ovning": "EL-000078",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v40_02-q8"
+    },
+    {
+      "ovning": "EL-000079",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v40_02-q9"
+    },
+    {
+      "ovning": "EL-000080",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v40_02-q10"
+    },
+    {
+      "ovning": "EL-000081",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v40_03-q1"
+    },
+    {
+      "ovning": "EL-000082",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v40_03-q2"
+    },
+    {
+      "ovning": "EL-000083",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v40_03-q3"
+    },
+    {
+      "ovning": "EL-000084",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v40_03-q4"
+    },
+    {
+      "ovning": "EL-000085",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v40_03-q5"
+    },
+    {
+      "ovning": "EL-000086",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v40_03-q6"
+    },
+    {
+      "ovning": "EL-000087",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v40_03-q7"
+    },
+    {
+      "ovning": "EL-000088",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v40_03-q8"
+    },
+    {
+      "ovning": "EL-000089",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v40_03-q9"
+    },
+    {
+      "ovning": "EL-000090",
+      "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+      "del": "v40_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v40_03-q10"
+    },
+    {
+      "ovning": "EL-000091",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v41_01-q1"
+    },
+    {
+      "ovning": "EL-000092",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v41_01-q2"
+    },
+    {
+      "ovning": "EL-000093",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v41_01-q3"
+    },
+    {
+      "ovning": "EL-000094",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v41_01-q4"
+    },
+    {
+      "ovning": "EL-000095",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v41_01-q5"
+    },
+    {
+      "ovning": "EL-000096",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v41_01-q6"
+    },
+    {
+      "ovning": "EL-000097",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v41_01-q7"
+    },
+    {
+      "ovning": "EL-000098",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v41_01-q8"
+    },
+    {
+      "ovning": "EL-000099",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v41_01-q9"
+    },
+    {
+      "ovning": "EL-000100",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v41_01-q10"
+    },
+    {
+      "ovning": "EL-000101",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v41_02-q1"
+    },
+    {
+      "ovning": "EL-000102",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v41_02-q2"
+    },
+    {
+      "ovning": "EL-000103",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v41_02-q3"
+    },
+    {
+      "ovning": "EL-000104",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v41_02-q4"
+    },
+    {
+      "ovning": "EL-000105",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v41_02-q5"
+    },
+    {
+      "ovning": "EL-000106",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v41_02-q6"
+    },
+    {
+      "ovning": "EL-000107",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v41_02-q7"
+    },
+    {
+      "ovning": "EL-000108",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v41_02-q8"
+    },
+    {
+      "ovning": "EL-000109",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v41_02-q9"
+    },
+    {
+      "ovning": "EL-000110",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v41_02-q10"
+    },
+    {
+      "ovning": "EL-000111",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v41_03-q1"
+    },
+    {
+      "ovning": "EL-000112",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v41_03-q2"
+    },
+    {
+      "ovning": "EL-000113",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v41_03-q3"
+    },
+    {
+      "ovning": "EL-000114",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v41_03-q4"
+    },
+    {
+      "ovning": "EL-000115",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v41_03-q5"
+    },
+    {
+      "ovning": "EL-000116",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v41_03-q6"
+    },
+    {
+      "ovning": "EL-000117",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v41_03-q7"
+    },
+    {
+      "ovning": "EL-000118",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v41_03-q8"
+    },
+    {
+      "ovning": "EL-000119",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v41_03-q9"
+    },
+    {
+      "ovning": "EL-000120",
+      "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+      "del": "v41_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v41_03-q10"
+    },
+    {
+      "ovning": "EL-000121",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v42_01-q1"
+    },
+    {
+      "ovning": "EL-000122",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v42_01-q2"
+    },
+    {
+      "ovning": "EL-000123",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v42_01-q3"
+    },
+    {
+      "ovning": "EL-000124",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v42_01-q4"
+    },
+    {
+      "ovning": "EL-000125",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v42_01-q5"
+    },
+    {
+      "ovning": "EL-000126",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v42_01-q6"
+    },
+    {
+      "ovning": "EL-000127",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v42_01-q7"
+    },
+    {
+      "ovning": "EL-000128",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v42_01-q8"
+    },
+    {
+      "ovning": "EL-000129",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v42_01-q9"
+    },
+    {
+      "ovning": "EL-000130",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v42_01-q10"
+    },
+    {
+      "ovning": "EL-000131",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v42_02-q1"
+    },
+    {
+      "ovning": "EL-000132",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v42_02-q2"
+    },
+    {
+      "ovning": "EL-000133",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v42_02-q3"
+    },
+    {
+      "ovning": "EL-000134",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v42_02-q4"
+    },
+    {
+      "ovning": "EL-000135",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v42_02-q5"
+    },
+    {
+      "ovning": "EL-000136",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v42_02-q6"
+    },
+    {
+      "ovning": "EL-000137",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v42_02-q7"
+    },
+    {
+      "ovning": "EL-000138",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v42_02-q8"
+    },
+    {
+      "ovning": "EL-000139",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v42_02-q9"
+    },
+    {
+      "ovning": "EL-000140",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v42_02-q10"
+    },
+    {
+      "ovning": "EL-000141",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v42_03-q1"
+    },
+    {
+      "ovning": "EL-000142",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v42_03-q2"
+    },
+    {
+      "ovning": "EL-000143",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v42_03-q3"
+    },
+    {
+      "ovning": "EL-000144",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v42_03-q4"
+    },
+    {
+      "ovning": "EL-000145",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v42_03-q5"
+    },
+    {
+      "ovning": "EL-000146",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v42_03-q6"
+    },
+    {
+      "ovning": "EL-000147",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v42_03-q7"
+    },
+    {
+      "ovning": "EL-000148",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v42_03-q8"
+    },
+    {
+      "ovning": "EL-000149",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v42_03-q9"
+    },
+    {
+      "ovning": "EL-000150",
+      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+      "del": "v42_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v42_03-q10"
+    },
+    {
+      "ovning": "EL-000151",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v43_01-q1"
+    },
+    {
+      "ovning": "EL-000152",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v43_01-q2"
+    },
+    {
+      "ovning": "EL-000153",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v43_01-q3"
+    },
+    {
+      "ovning": "EL-000154",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v43_01-q4"
+    },
+    {
+      "ovning": "EL-000155",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v43_01-q5"
+    },
+    {
+      "ovning": "EL-000156",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v43_01-q6"
+    },
+    {
+      "ovning": "EL-000157",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v43_01-q7"
+    },
+    {
+      "ovning": "EL-000158",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v43_01-q8"
+    },
+    {
+      "ovning": "EL-000159",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v43_01-q9"
+    },
+    {
+      "ovning": "EL-000160",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v43_01-q10"
+    },
+    {
+      "ovning": "EL-000161",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v43_02-q1"
+    },
+    {
+      "ovning": "EL-000162",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v43_02-q2"
+    },
+    {
+      "ovning": "EL-000163",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v43_02-q3"
+    },
+    {
+      "ovning": "EL-000164",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v43_02-q4"
+    },
+    {
+      "ovning": "EL-000165",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v43_02-q5"
+    },
+    {
+      "ovning": "EL-000166",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v43_02-q6"
+    },
+    {
+      "ovning": "EL-000167",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v43_02-q7"
+    },
+    {
+      "ovning": "EL-000168",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v43_02-q8"
+    },
+    {
+      "ovning": "EL-000169",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v43_02-q9"
+    },
+    {
+      "ovning": "EL-000170",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v43_02-q10"
+    },
+    {
+      "ovning": "EL-000171",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v43_03-q1"
+    },
+    {
+      "ovning": "EL-000172",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v43_03-q2"
+    },
+    {
+      "ovning": "EL-000173",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v43_03-q3"
+    },
+    {
+      "ovning": "EL-000174",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v43_03-q4"
+    },
+    {
+      "ovning": "EL-000175",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v43_03-q5"
+    },
+    {
+      "ovning": "EL-000176",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v43_03-q6"
+    },
+    {
+      "ovning": "EL-000177",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v43_03-q7"
+    },
+    {
+      "ovning": "EL-000178",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v43_03-q8"
+    },
+    {
+      "ovning": "EL-000179",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v43_03-q9"
+    },
+    {
+      "ovning": "EL-000180",
+      "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+      "del": "v43_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v43_03-q10"
+    },
+    {
+      "ovning": "EL-000181",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v44_01-q1"
+    },
+    {
+      "ovning": "EL-000182",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v44_01-q2"
+    },
+    {
+      "ovning": "EL-000183",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v44_01-q3"
+    },
+    {
+      "ovning": "EL-000184",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v44_01-q4"
+    },
+    {
+      "ovning": "EL-000185",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v44_01-q5"
+    },
+    {
+      "ovning": "EL-000186",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v44_01-q6"
+    },
+    {
+      "ovning": "EL-000187",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v44_01-q7"
+    },
+    {
+      "ovning": "EL-000188",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v44_01-q8"
+    },
+    {
+      "ovning": "EL-000189",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v44_01-q9"
+    },
+    {
+      "ovning": "EL-000190",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v44_01-q10"
+    },
+    {
+      "ovning": "EL-000191",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v44_02-q1"
+    },
+    {
+      "ovning": "EL-000192",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v44_02-q2"
+    },
+    {
+      "ovning": "EL-000193",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v44_02-q3"
+    },
+    {
+      "ovning": "EL-000194",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v44_02-q4"
+    },
+    {
+      "ovning": "EL-000195",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v44_02-q5"
+    },
+    {
+      "ovning": "EL-000196",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v44_02-q6"
+    },
+    {
+      "ovning": "EL-000197",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v44_02-q7"
+    },
+    {
+      "ovning": "EL-000198",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v44_02-q8"
+    },
+    {
+      "ovning": "EL-000199",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v44_02-q9"
+    },
+    {
+      "ovning": "EL-000200",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v44_02-q10"
+    },
+    {
+      "ovning": "EL-000201",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v44_03-q1"
+    },
+    {
+      "ovning": "EL-000202",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v44_03-q2"
+    },
+    {
+      "ovning": "EL-000203",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v44_03-q3"
+    },
+    {
+      "ovning": "EL-000204",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v44_03-q4"
+    },
+    {
+      "ovning": "EL-000205",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v44_03-q5"
+    },
+    {
+      "ovning": "EL-000206",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v44_03-q6"
+    },
+    {
+      "ovning": "EL-000207",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v44_03-q7"
+    },
+    {
+      "ovning": "EL-000208",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v44_03-q8"
+    },
+    {
+      "ovning": "EL-000209",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v44_03-q9"
+    },
+    {
+      "ovning": "EL-000210",
+      "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+      "del": "v44_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v44_03-q10"
+    },
+    {
+      "ovning": "EL-000211",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v45_01-q1"
+    },
+    {
+      "ovning": "EL-000212",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v45_01-q2"
+    },
+    {
+      "ovning": "EL-000213",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v45_01-q3"
+    },
+    {
+      "ovning": "EL-000214",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v45_01-q4"
+    },
+    {
+      "ovning": "EL-000215",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v45_01-q5"
+    },
+    {
+      "ovning": "EL-000216",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v45_01-q6"
+    },
+    {
+      "ovning": "EL-000217",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v45_01-q7"
+    },
+    {
+      "ovning": "EL-000218",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v45_01-q8"
+    },
+    {
+      "ovning": "EL-000219",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v45_01-q9"
+    },
+    {
+      "ovning": "EL-000220",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v45_01-q10"
+    },
+    {
+      "ovning": "EL-000221",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v45_02-q1"
+    },
+    {
+      "ovning": "EL-000222",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v45_02-q2"
+    },
+    {
+      "ovning": "EL-000223",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v45_02-q3"
+    },
+    {
+      "ovning": "EL-000224",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v45_02-q4"
+    },
+    {
+      "ovning": "EL-000225",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v45_02-q5"
+    },
+    {
+      "ovning": "EL-000226",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v45_02-q6"
+    },
+    {
+      "ovning": "EL-000227",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v45_02-q7"
+    },
+    {
+      "ovning": "EL-000228",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v45_02-q8"
+    },
+    {
+      "ovning": "EL-000229",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v45_02-q9"
+    },
+    {
+      "ovning": "EL-000230",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v45_02-q10"
+    },
+    {
+      "ovning": "EL-000231",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "ankare": "v45_03-q1"
+    },
+    {
+      "ovning": "EL-000232",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "ankare": "v45_03-q2"
+    },
+    {
+      "ovning": "EL-000233",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "ankare": "v45_03-q3"
+    },
+    {
+      "ovning": "EL-000234",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "ankare": "v45_03-q4"
+    },
+    {
+      "ovning": "EL-000235",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "ankare": "v45_03-q5"
+    },
+    {
+      "ovning": "EL-000236",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "ankare": "v45_03-q6"
+    },
+    {
+      "ovning": "EL-000237",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "ankare": "v45_03-q7"
+    },
+    {
+      "ovning": "EL-000238",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "ankare": "v45_03-q8"
+    },
+    {
+      "ovning": "EL-000239",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "ankare": "v45_03-q9"
+    },
+    {
+      "ovning": "EL-000240",
+      "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+      "del": "v45_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "ankare": "v45_03-q10"
+    }
+  ]
+}

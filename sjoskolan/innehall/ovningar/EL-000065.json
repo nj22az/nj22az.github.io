@@ -1,0 +1,74 @@
+{
+  "id": "EL-000065",
+  "titel": "Topp till topp",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett oscilloskop visar 20,0 V mellan sinusens positiva och negativa topp. Beräkna toppvärde och effektivvärde.",
+    "samband": [
+      "U_{pp} = 2û; û = U_{pp}/2",
+      "U = û/√2"
+    ],
+    "givet": "Sinus utan likspänningsdel. De 20,0 V som oscilloskopet visar är topp-till-topp-värdet."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U_{pp} är avståndet mellan positiv och negativ topp, alltså dubbla toppvärdet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Halvera först U_{pp} och räkna sedan om toppvärdet till effektivvärde.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "û = 10,0 V. U = 10,0/1,414 ≈ 7,07 V.",
+    "svar": [
+      {
+        "storhet": "U",
+        "varde": 7.07,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q5 och ch040.xhtml#sol7-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

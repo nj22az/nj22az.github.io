@@ -1,0 +1,84 @@
+{
+  "id": "EL-000407",
+  "titel": "Station B: trefas, fysisk station",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-03",
+      "T-labb-trefaslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Mät grenspänning, fasströmmar och neutralström på trefasriggen. Undersök hur grenspänningarna ändras när neutralledaren bryts."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 8; Simulerade_stationer.html",
+        "revision": "8cabde3",
+        "roll": "fysisk station vid träffen 9 oktober"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "fysisk",
+    "station": "Station B, trefas",
+    "utrustning": "SELV-trefasrigg med huvudspänning (linjespänning) 12,2 V. Tre resistiva laster i Y märkta 100 Ω ±5 %. Neutralledaren kan brytas och varje last kopplas från. Strömmätlänkar i alla fyra ledare.",
+    "sakerhet": [
+      {
+        "id": "rigg",
+        "text": "Instruktören kontrollerar rigg, strömgräns och instrument."
+      },
+      {
+        "id": "selv",
+        "text": "Elevpraktik sker på avsedd SELV-utrustning eller spänningslöst."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling sker frånskilt. Avbryt vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "trefas",
+        "text": "Trefasmätning kräver en avsedd, dokumenterad rigg."
+      }
+    ],
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Förberedelse: övning 5 i v41_03 och v41_01 om neutralledaren. U_{gren} = U_{L}/√3 i symmetrisk Y."
+      },
+      {
+        "id": "s2",
+        "text": "Saknas trefasrigg: räkna på övningsdata eller i Trefaslabbet och dokumentera det som teori."
+      },
+      {
+        "id": "s3",
+        "text": "Fyll i elevprotokollet och förklara minst en avvikelse med egna ord."
+      }
+    ],
+    "simulerad_variant": "EL-000406",
+    "protokoll": {
+      "mall": "EL-000401",
+      "titel": "Elevprotokoll och riskmall"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Bedöms vid stationen enligt bedömningsraderna i elevprotokollet"
+  }
+}

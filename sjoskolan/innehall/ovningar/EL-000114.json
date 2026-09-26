@@ -1,0 +1,71 @@
+{
+  "id": "EL-000114",
+  "titel": "AC-riggens toppvärde",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinusformad övningskälla mäts till 12,1 V RMS. Beräkna förväntat toppvärde.",
+    "samband": [
+      "û = √2 · U_{rms}"
+    ],
+    "givet": "Ren sinus utan likspänningsdel. Mätvärdet 12,1 V är effektivvärdet.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "û är toppvärdet och U_{rms} effektivvärdet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera med √2 och skriv att sambandet bara gäller sinusform.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "û = 1,414 · 12,1 ≈ 17,1 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q4 och ch045.xhtml#sol12-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

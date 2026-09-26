@@ -1,0 +1,68 @@
+{
+  "id": "EL-000128",
+  "titel": "Efter strömgenomgång",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kollega säger att en strömgenomgång ”inte var så farlig” och vill fortsätta. Vilket råd ger du?",
+    "samband": [
+      "Strömgenomgång kan ge skador som inte syns"
+    ],
+    "givet": "Kollegan har varit utsatt för strömgenomgång och vill fortsätta arbeta.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Upplevd liten påverkan utesluter inte skada. Elsäkerhetsverket rekommenderar kontakt med sjukvården.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Vad rekommenderar du, och varför? Beskriv även rapporteringen enligt rutinen ombord.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Avbryt arbetet och gå till säker plats. Kontakta sjukvården, eftersom skador kan visa sig senare. Rapportera händelsen enligt arbetsplatsens rutin.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q8 och ch046.xhtml#sol13-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "EL-000071",
+  "titel": "Spolens reaktans",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "L = 0,10 H och f = 50 Hz. Beräkna XL.",
+    "samband": [
+      "XL = 2πfL"
+    ],
+    "givet": "Sinusformad spänning. Ideal spole, L = 0,10 H och f = 50 Hz."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "XL är den induktiva reaktansen i Ω, f frekvensen i Hz och L induktansen i H.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera 2, π, f och L. Kontrollera att L är i henry.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "X_{L} = 2π · 50 · 0,10 ≈ 31,4 Ω.",
+    "svar": [
+      {
+        "storhet": "XL",
+        "varde": 31.4,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q1 och ch041.xhtml#sol8-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "EL-000163",
+  "titel": "Synkront varvtal",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Beräkna n_{s} för en fyrpolig motor vid 50 Hz.",
+    "samband": [
+      "n_{s} = 120f/p"
+    ],
+    "givet": "Fyrpolig motor: p = 4. Frekvensen f = 50 Hz. I den här formeln är p antalet poler, inte polpar.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "n_{s} är magnetfältets varvtal i r/min.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera frekvensen med 120 och dela med antalet poler.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "n_{s} = 120 · 50/4 = 1 500 r/min.",
+    "svar": [
+      {
+        "storhet": "n_{s}",
+        "varde": 1500.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "r/min"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q3 och ch050.xhtml#sol17-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

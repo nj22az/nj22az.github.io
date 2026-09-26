@@ -1,0 +1,80 @@
+{
+  "id": "EL-000092",
+  "titel": "Tidsförskjutning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-10",
+      "T-kurs-v41-01",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett symmetriskt trefassystem har f = 50 Hz. Hur många ms motsvarar 120°?",
+    "samband": [
+      "T = 1/f; Δt = T · φ/360°"
+    ],
+    "givet": "f = 50 Hz och φ = 120°.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "T är periodtiden, Δt tidsförskjutningen och φ vinkeln i grader. 1 s = 1 000 ms.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut periodtiden och sedan hur stor del av den som 120° motsvarar.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "T = 20 ms. Δt = 20 · 120/360 ≈ 6,67 ms.",
+    "svar": [
+      {
+        "storhet": "Δt",
+        "varde": 6.67,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "ms"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch016.xhtml#ch10-q2 och ch043.xhtml#sol10-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_01-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

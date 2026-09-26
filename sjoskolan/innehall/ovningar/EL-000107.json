@@ -1,0 +1,68 @@
+{
+  "id": "EL-000107",
+  "titel": "Motor 400/690 V",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor är märkt Δ/Y 400/690 V. Nätet ger 400 V mellan faserna. Vilken driftkoppling stämmer?",
+    "samband": [
+      "Jämför nätets U_{L} med båda märkvärdena"
+    ],
+    "givet": "Nätet ger 400 V mellan faserna. Frågan gäller bara vilken koppling motorn ska ha i drift.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Δ/Y-märkningen anger vilken linjespänning som gäller för respektive koppling.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför nätets linjespänning med respektive märkspänning. Full dokumentation styr verklig anslutning.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Δ. Då får varje lindning 400 V, vilket stämmer med Δ-märkningen 400 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q7 och ch044.xhtml#sol11-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

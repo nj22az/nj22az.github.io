@@ -1,0 +1,71 @@
+{
+  "id": "EL-000119",
+  "titel": "Mätvärde med avvikelse",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 1 kΩ-resistor med tolerans ±5 % mäts till 1,03 kΩ. Bortse från instrumentets fel. Ligger värdet inom toleransen?",
+    "samband": [
+      "R_{min} = R_{nom} · (1 − p/100)",
+      "R_{max} = R_{nom} · (1 + p/100)"
+    ],
+    "givet": "R_{nom} = 1 kΩ, p = 5, uppmätt 1,03 kΩ. Instrumentets fel räknas inte med.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "R_{nom} är det nominella värdet och p toleransen i procent. Ett värde precis på gränsen är godkänt.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut nedre och övre gräns och jämför mätvärdet med båda.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Gränser 950–1 050 Ω. 1,03 kΩ = 1 030 Ω ligger inom toleransen.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q9 och ch045.xhtml#sol12-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

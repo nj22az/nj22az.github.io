@@ -1,0 +1,112 @@
+{
+  "id": "EL-000323",
+  "titel": "Spolens ström",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "K1 håller efter start. Spolen har resistansen 480 Ω och matningen är 24 V. Beräkna spolströmmen i mA."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[2] (id strom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Börja med spänningen över spolen när K1 håller. Använd sedan Ohms lag.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 24/480 = 0,050 A = 50 mA.",
+    "svar": [
+      {
+        "storhet": "Ispole",
+        "varde": 50,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "mA",
+        "berakning": "hallkrets.spolstrom_ma"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 24,
+      "enhet": "V"
+    },
+    "R": {
+      "varde": 480,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 50
+    },
+    "initial": {
+      "steg": [
+        {},
+        {
+          "s1": true
+        },
+        {
+          "s1": false
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "I",
+      "etikett": "Ispole",
+      "enhet": "mA"
+    },
+    "dolj": [
+      "meter",
+      "nodes",
+      "I"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0.05,
+          "text": "Svaret ska anges i mA. 0,05 A = 50 mA."
+        },
+        {
+          "varde": 20,
+          "text": "Dela spänningen med resistansen: I = U/R."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · övning 7 och formelbladet",
+    "alias": "strom"
+  }
+}

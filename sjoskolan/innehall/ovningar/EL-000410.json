@@ -1,0 +1,283 @@
+{
+  "id": "EL-000410",
+  "titel": "Labbprotokoll, isolation och jordfel i IT-nät",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Fyll i medan du använder labbet. Ställ in läget med knapparna, skriv förväntat värde och tryck ”Hämta avläsning”. Del 1 gäller isolationsövervakningen i fartygets 440 V IT-nät. Del 2 gäller isolationsprovning av motor M3."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/protokoll.mjs ISO_PROTOKOLL",
+        "revision": "8cabde3",
+        "roll": "labbprotokoll under simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "station": "Isolationslabbet · vecka 44 · simulerad",
+    "utrustning": "IT-nät 440 V, 50 Hz, utan neutralledare. Isolationsövervakning (IMD) med larmgräns 100 kΩ. Nätkapacitans 1 µF per fas mot skrovet. Isolationsprovare med provspänning 250, 500 eller 1 000 V DC. Motor M3 med kabel, gräns enligt fartygets instruktion: minst 1 MΩ mot PE. I simulatorn är instrumenten ideala.",
+    "sakerhet": [
+      {
+        "id": "instr",
+        "text": "Instrumenten är avsedda för nätets spänning och mätkategori. Isolationsprovaren är kontrollerad och sladdarna är hela."
+      },
+      {
+        "id": "frans",
+        "text": "Före isolationsprovning: objektet är frånskilt, låst och kontrollerat spänningslöst."
+      },
+      {
+        "id": "elektronik",
+        "text": "Elektronik som kan skadas av provspänningen (omriktare, styrkort, filter) är bortkopplad enligt instruktion."
+      },
+      {
+        "id": "urladdning",
+        "text": "Efter provning laddas objektet ur innan någon rör ledarna. Kabel och lindning kan hålla laddning."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före provning. Ombord ger den ansvarige det. I simulatorn ger du det själv när punkterna ovan är gjorda."
+      }
+    ],
+    "matningar": [
+      {
+        "id": "m1",
+        "titel": "Isolationsvärde, friskt nät",
+        "storhet": "Riso (IMD)",
+        "punkter": "IMD: nät / skrov",
+        "forvantat": "tre vägar parallellt",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "Riso",
+          "need": {
+            "lage": "friskt"
+          }
+        }
+      },
+      {
+        "id": "m2",
+        "titel": "L1 mot skrov, friskt nät",
+        "storhet": "U(L1–skrov)",
+        "punkter": "L1 / skrov",
+        "forvantat": "UL/√3",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U1",
+          "need": {
+            "lage": "friskt"
+          }
+        }
+      },
+      {
+        "id": "m3",
+        "titel": "Isolationsvärde, L1 nedsatt",
+        "storhet": "Riso (IMD)",
+        "punkter": "IMD: nät / skrov",
+        "forvantat": "tre vägar parallellt",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "Riso",
+          "need": {
+            "lage": "nedsatt"
+          }
+        }
+      },
+      {
+        "id": "m4",
+        "titel": "L2 mot skrov, jordfel på L1",
+        "storhet": "U(L2–skrov)",
+        "punkter": "L2 / skrov",
+        "forvantat": "vilken potential har skrovet?",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U2",
+          "need": {
+            "lage": "jordfel"
+          }
+        }
+      },
+      {
+        "id": "m5",
+        "titel": "Ström i jordfelet",
+        "storhet": "Ifel",
+        "punkter": "tång runt felstället",
+        "forvantat": "3ωC·UF",
+        "tolerans": "±5 %",
+        "kod": {
+          "q": "Ifel",
+          "need": {
+            "lage": "jordfel"
+          }
+        }
+      },
+      {
+        "id": "m6",
+        "titel": "M3 L1 mot PE",
+        "storhet": "R(L1–PE)",
+        "punkter": "L1 / PE",
+        "forvantat": "minst 1 MΩ",
+        "tolerans": "minst 1 MΩ",
+        "kod": {
+          "q": "prov",
+          "need": {
+            "lage": "m3",
+            "par": "L1-PE"
+          }
+        }
+      },
+      {
+        "id": "m7",
+        "titel": "M3 L2 mot PE",
+        "storhet": "R(L2–PE)",
+        "punkter": "L2 / PE",
+        "forvantat": "minst 1 MΩ",
+        "tolerans": "minst 1 MΩ",
+        "kod": {
+          "q": "prov",
+          "need": {
+            "lage": "m3",
+            "par": "L2-PE"
+          }
+        }
+      },
+      {
+        "id": "m8",
+        "titel": "M3 L3 mot PE",
+        "storhet": "R(L3–PE)",
+        "punkter": "L3 / PE",
+        "forvantat": "minst 1 MΩ",
+        "tolerans": "minst 1 MΩ",
+        "kod": {
+          "q": "prov",
+          "need": {
+            "lage": "m3",
+            "par": "L3-PE"
+          }
+        }
+      }
+    ],
+    "fragor": [
+      {
+        "id": "larm",
+        "text": "Larmade övervakningen när L1 var nedsatt till 80 kΩ? Varför visar övervakningen inte 80 kΩ? Använd dina värden.",
+        "kort": "larm och parallella vägar",
+        "min_ord": 12
+      },
+      {
+        "id": "forsta",
+        "text": "Varför kan driften fortsätta efter första jordfelet, och varför måste felet ändå hittas snabbt? Använd din spänning mot skrov och din felström.",
+        "kort": "första och andra felet",
+        "min_ord": 15
+      },
+      {
+        "id": "m3",
+        "text": "Är motor M3 godkänd? Vilken fas avviker, och vad gör du härnäst?",
+        "kort": "bedömning av M3",
+        "min_ord": 12
+      },
+      {
+        "id": "villkor",
+        "text": "Vilka mätvillkor ska antecknas för att en senare isolationsmätning ska kunna jämföras med din?",
+        "kort": "mätvillkor",
+        "min_ord": 10
+      },
+      {
+        "id": "slutsats",
+        "text": "Slutsats: vad visar dina mätningar, och vad visar de inte?",
+        "kort": "slutsats",
+        "min_ord": 12
+      }
+    ],
+    "protokoll": {
+      "nyckel": "isolation",
+      "titel": "Labbprotokoll: isolation och jordfel i IT-nät",
+      "matningsinledning": "Mätning 1–5 gäller nätet (del 1), 6–8 motor M3 (del 2). Använd knapparna för rätt läge.",
+      "lagen": {
+        "friskt": {
+          "label": "Friskt nät 440 V",
+          "set": {
+            "del": "overvakning",
+            "R": [
+              5000000,
+              5000000,
+              5000000
+            ],
+            "C": 1e-06,
+            "f": 50,
+            "larm": 100000
+          },
+          "text": "friskt nät, 5 MΩ och 1 µF per fas"
+        },
+        "nedsatt": {
+          "label": "L1 nedsatt till 80 kΩ",
+          "set": {
+            "del": "overvakning",
+            "R": [
+              80000,
+              5000000,
+              5000000
+            ],
+            "C": 1e-06,
+            "f": 50,
+            "larm": 100000
+          },
+          "text": "L1 80 kΩ mot skrov, övriga 5 MΩ"
+        },
+        "jordfel": {
+          "label": "Fullständigt jordfel på L1",
+          "set": {
+            "del": "overvakning",
+            "R": [
+              0,
+              5000000,
+              5000000
+            ],
+            "C": 1e-06,
+            "f": 50,
+            "larm": 100000
+          },
+          "text": "fullständigt jordfel L1, 1 µF per fas"
+        },
+        "m3": {
+          "label": "Isolationsprovning av motor M3",
+          "set": {
+            "del": "prov",
+            "obj": "motor-m3",
+            "Uprov": 500,
+            "frans": true
+          },
+          "text": "motor M3 med kabel, frånskild, 500 V DC"
+        }
+      }
+    }
+  },
+  "losning": {
+    "status": "saknas"
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "protokoll"
+    },
+    "alias": "isolation"
+  }
+}

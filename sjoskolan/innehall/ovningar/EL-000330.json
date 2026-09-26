@@ -1,0 +1,104 @@
+{
+  "id": "EL-000330",
+  "titel": "Larmar övervakningen?",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Isolationen i L1 har sjunkit till 120 kΩ. L2 och L3 har 10 MΩ. Larmgränsen är 100 kΩ. Beräkna Riso i kΩ. Larmar övervakningen?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[1] (id larm)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Räkna i kΩ: 10 MΩ = 10 000 kΩ. Jämför sedan med larmgränsen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "1/Riso = 1/120 + 2/10 000 kΩ⁻¹. Riso ≈ 118 kΩ. Det är över 100 kΩ, så övervakningen larmar inte ännu, trots att L1 är klart försämrad.",
+    "svar": [
+      {
+        "storhet": "Riso",
+        "varde": 117.187,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kΩ",
+        "berakning": "it.riso"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "R": {
+      "varde": [
+        120,
+        10000,
+        10000
+      ]
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 117.187
+    },
+    "initial": {
+      "R": [
+        120000,
+        10000000,
+        10000000
+      ],
+      "C": 0,
+      "larm": 100000
+    },
+    "fraga": {
+      "storhet": "Riso",
+      "etikett": "Riso",
+      "enhet": "kΩ",
+      "skala": 1000
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 120,
+          "text": "Nästan, men L2 och L3 leder också lite. Räkna med alla tre parallellt."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_01 · övning 3 och 4",
+    "alias": "larm"
+  }
+}

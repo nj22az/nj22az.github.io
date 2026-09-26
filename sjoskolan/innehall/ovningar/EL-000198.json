@@ -1,0 +1,69 @@
+{
+  "id": "EL-000198",
+  "titel": "Säkerhetsavstånd",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kollega säger att ”en meter brukar räcka”, men nämner varken spänning eller arbetsmetod. Duger det som arbetsgräns?",
+    "samband": [
+      "Arbetsgräns bestäms för spänning, metod och rörelser"
+    ],
+    "givet": "Till ”en meter” finns ingen spänningsnivå och ingen fastställd arbetsmetod.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Avståndet ska räcka även för verktyg, material och de rörelser som kan behövas.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vilka uppgifter som saknas. Det går inte att räkna fram något avstånd med de här uppgifterna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. Spänningsnivå, arbetsmetod, verktyg och möjliga rörelser saknas. Avståndet måste bestämmas enligt gällande krav.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q8 och ch053.xhtml#sol20-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

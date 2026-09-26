@@ -1,0 +1,90 @@
+{
+  "id": "EL-000108",
+  "titel": "Motorström från axeleffekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor ger Paxel = 5,5 kW med η = 0,88 och PF = 0,80 vid U_{L} = 400 V. Bestäm den tillförda elektriska effekten och linjeströmmen.",
+    "samband": [
+      "P_{in} = Paxel/η",
+      "I_{L} = P_{in}/(√3 · U_{L} · PF)"
+    ],
+    "givet": "Paxel = 5,5 kW, η = 0,88, PF = 0,80 och U_{L} = 400 V. Symmetrisk trefas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Paxel är effekten på axeln och P_{in} den tillförda elektriska effekten. η och PF saknar enhet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först P_{in} och gör om kW till W innan du räknar linjeströmmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P_{in} = 5,5/0,88 = 6,25 kW. I_{L} = 6 250/(1,732 · 400 · 0,80) ≈ 11,3 A.",
+    "svar": [
+      {
+        "storhet": "P_{in}",
+        "varde": 6.25,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kW"
+      },
+      {
+        "storhet": "I_{L}",
+        "varde": 11.3,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q8 och ch044.xhtml#sol11-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

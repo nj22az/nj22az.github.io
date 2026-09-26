@@ -1,0 +1,73 @@
+{
+  "id": "EL-000208",
+  "titel": "Instrumentgräns",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Instrumentet visar 100,0 V. Specifikationen är ±(0,5 % + 2 siffror) och upplösningen 0,1 V. Beräkna felgränsen och intervallet.",
+    "samband": [
+      "δ = (a/100) · visning + n · steg",
+      "Intervall: visning − δ till visning + δ"
+    ],
+    "givet": "Visat värde 100,0 V, a = 0,5, n = 2 och steg = 0,1 V.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "a är procenttalet, n antalet siffror, steg upplösningen och δ den totala felgränsen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna de två delarna var för sig, lägg ihop dem och räkna ut intervallets båda gränser.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "δ = 0,5 V + 0,2 V = 0,7 V. Intervall 99,3–100,7 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q8 och ch054.xhtml#sol21-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

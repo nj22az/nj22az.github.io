@@ -1,0 +1,72 @@
+{
+  "id": "EL-000215",
+  "titel": "Felström i en förenklad beräkning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-6",
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-22",
+      "T-kurs-v45-01",
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En ideal 24 V-källa kortsluts av misstag genom en väg med den totala resistansen R = 0,10 Ω. Beräkna strömmen och ange varför svaret bara är en uppskattning.",
+    "samband": [
+      "I = U/R_{total}"
+    ],
+    "givet": "Ideal 24 V-källa och total resistans 0,10 Ω. Inget begränsar strömmen i beräkningen.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "R_{total} är resistansen i hela den oavsiktliga strömvägen. V/Ω ger A.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut strömmen och förklara att källans verkliga inre resistans och skydden påverkar vad som händer.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 24/0,10 = 240 A. I verkligheten begränsar källans inre impedans och skyddet strömmen.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch030.xhtml#ch22-q5 och ch055.xhtml#sol22-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_01-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

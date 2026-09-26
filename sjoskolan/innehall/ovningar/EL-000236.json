@@ -1,0 +1,81 @@
+{
+  "id": "EL-000236",
+  "titel": "Trefaseffekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-24",
+      "T-kurs-v45-03",
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En symmetrisk trefaslast har U_{L} = 400 V, I_{L} = 8 A och PF = 0,80. Beräkna den aktiva effekten.",
+    "samband": [
+      "P = √3 · U_{L} · I_{L} · PF"
+    ],
+    "givet": "Symmetrisk trefas, U_{L} = 400 V, I_{L} = 8 A och PF = 0,80.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "P är den totala aktiva effekten i W. U_{L} och I_{L} är linjevärden.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera faktorerna och gör om W till kW. Använd inte grenspänningen i den här formeln.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P = 1,732 · 400 · 8 · 0,80 ≈ 4 430 W ≈ 4,43 kW.",
+    "svar": [
+      {
+        "storhet": "P",
+        "varde": 4.43,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kW"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch032.xhtml#ch24-q6 och ch057.xhtml#sol24-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_03-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

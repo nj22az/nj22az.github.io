@@ -1,0 +1,364 @@
+{
+  "id": "EL-000402",
+  "titel": "Labbprotokoll, Station A",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Välj uppgiften ”Station A: DC-delare” i simulatorn och fyll i protokollet medan du arbetar. Samma protokoll som på den fysiska stationen: kontroller före start, räkna först, mät, jämför och förklara."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/stationA-protokoll.mjs STATION_A_PROTOKOLL",
+        "revision": "8cabde3",
+        "roll": "labbprotokoll under simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "station": "Station A · DC-delare · simulerad",
+    "utrustning": "Rigg: SELV-källa märkt 12 V (exempelriggen 9 V) via säkerhetstransformator, skyddande separation dokumenterad, källans tolerans ±0,2 V, strömgräns 100 mA. R1 = 1 kΩ ±5 % och R2 = 2 kΩ ±5 % i serie, länk P–A för strömmätning och frånkoppling av källan. Referens 5,000 V för instrumentkontroll. Multimeter: V ⎓ ±(0,5 % + 2 siffror), Ω ±(0,8 % + 2 siffror), mA ±(1,0 % + 3 siffror), ingångsresistans 10 MΩ. En siffra är den sista decimalen i displayen, till exempel 0,01 V.",
+    "sakerhet": [
+      {
+        "id": "selv",
+        "text": "Riggens dokumentation visar SELV med skyddande separation. Märkningen ”12 V” räcker inte som bevis."
+      },
+      {
+        "id": "rigg",
+        "text": "Riggen är oskadad, strömgränsen är inställd och jag vet vilken rigg jag har (skriv riggnumret i huvudet)."
+      },
+      {
+        "id": "instr",
+        "text": "Instrument, sladdar och spetsar är hela, mA-säkringen är hel och röd sladd sitter i V Ω. CAT-klassen kontrolleras av vana även på en SELV-rigg."
+      },
+      {
+        "id": "plan",
+        "text": "Mätplanen är klar: storhet, mätpunkter, instrumentläge och förväntat värde för varje mätning."
+      },
+      {
+        "id": "omk",
+        "text": "Jag kopplar om bara med frånskild matning och avbryter vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning. På den fysiska stationen ger instruktören det. I simulatorn ger du det själv när punkterna ovan är gjorda."
+      }
+    ],
+    "matningar": [
+      {
+        "id": "m1",
+        "titel": "Instrumentkontroll före",
+        "storhet": "U referens",
+        "punkter": "Ref+ / Ref−",
+        "forvantat": "referensens värde",
+        "tolerans": "±(0,5 % + 2 siffror)",
+        "kod": {
+          "need": {
+            "mode": "dc",
+            "red": "Ref+",
+            "black": "Ref−"
+          }
+        }
+      },
+      {
+        "id": "m2",
+        "titel": "R1 spänningslöst",
+        "storhet": "R1",
+        "punkter": "A / B, länk P–A öppen",
+        "forvantat": "nominellt värde",
+        "tolerans": "±5 %",
+        "kod": {
+          "need": {
+            "mode": "ohm",
+            "pair": [
+              "A",
+              "B"
+            ],
+            "link": false
+          }
+        }
+      },
+      {
+        "id": "m3",
+        "titel": "R2 spänningslöst",
+        "storhet": "R2",
+        "punkter": "B / N, länk P–A öppen",
+        "forvantat": "nominellt värde",
+        "tolerans": "±5 %",
+        "kod": {
+          "need": {
+            "mode": "ohm",
+            "pair": [
+              "B",
+              "N"
+            ],
+            "link": false
+          }
+        }
+      },
+      {
+        "id": "m4",
+        "titel": "Källspänning",
+        "storhet": "U källa",
+        "punkter": "P / N",
+        "forvantat": "märkt värde",
+        "tolerans": "±0,2 V (riggdata)",
+        "kod": {
+          "need": {
+            "mode": "dc",
+            "red": "P",
+            "black": "N",
+            "power": true
+          }
+        }
+      },
+      {
+        "id": "m5",
+        "titel": "Spänning över R1",
+        "storhet": "U1",
+        "punkter": "A / B",
+        "forvantat": "räkna med uppmätta R och U",
+        "tolerans": "±(0,5 % + 2 siffror)",
+        "kod": {
+          "need": {
+            "mode": "dc",
+            "red": "A",
+            "black": "B",
+            "power": true,
+            "link": true
+          }
+        }
+      },
+      {
+        "id": "m6",
+        "titel": "Spänning över R2",
+        "storhet": "U2",
+        "punkter": "B / N",
+        "forvantat": "räkna med uppmätta R och U",
+        "tolerans": "±(0,5 % + 2 siffror)",
+        "kod": {
+          "need": {
+            "mode": "dc",
+            "red": "B",
+            "black": "N",
+            "power": true,
+            "link": true
+          }
+        }
+      },
+      {
+        "id": "m7",
+        "titel": "Ström",
+        "storhet": "I",
+        "punkter": "P / A, länk P–A öppen",
+        "forvantat": "U/(R1 + R2)",
+        "tolerans": "±(1,0 % + 3 siffror)",
+        "kod": {
+          "need": {
+            "mode": "current",
+            "red": "P",
+            "black": "A",
+            "power": true,
+            "link": false
+          }
+        }
+      },
+      {
+        "id": "m8",
+        "titel": "Instrumentkontroll efter",
+        "storhet": "U referens",
+        "punkter": "Ref+ / Ref−",
+        "forvantat": "referensens värde",
+        "tolerans": "±(0,5 % + 2 siffror)",
+        "kod": {
+          "need": {
+            "mode": "dc",
+            "red": "Ref+",
+            "black": "Ref−"
+          }
+        }
+      }
+    ],
+    "fragor": [
+      {
+        "id": "slinga",
+        "text": "Slinglagen med dina mätvärden: Ukälla − U1 − U2 = ? Vad visar resten?",
+        "kort": "slinglagen",
+        "min_ord": 5
+      },
+      {
+        "id": "avvikelse",
+        "text": "Förklara en avvikelse",
+        "kort": "förklaring av en avvikelse",
+        "min_ord": 15,
+        "ledtrad": "Välj en mätning där uppmätt skiljer sig från förväntat. Är orsaken komponentens tolerans, källans verkliga spänning, instrumentets bidrag eller ett fel i kretsen? Motivera med dina siffror."
+      },
+      {
+        "id": "slutsats",
+        "text": "Slutsats: vad visar dina mätningar, och vad visar de inte?",
+        "kort": "slutsats",
+        "min_ord": 15
+      },
+      {
+        "id": "ejkontroll",
+        "text": "Vad har du inte kontrollerat?",
+        "kort": "vad som inte är kontrollerat",
+        "min_ord": 6
+      },
+      {
+        "id": "verklighet",
+        "text": "Vad kan skilja mot en fysisk rigg?",
+        "kort": "jämförelse med fysisk rigg",
+        "min_ord": 8,
+        "ledtrad": "Till exempel kontaktresistans, temperatur, ett värde som fladdrar eller att mätspetsen glider."
+      }
+    ],
+    "protokoll": {
+      "nyckel": "stationA",
+      "titel": "Labbprotokoll: Station A",
+      "exempel": {
+        "note": "Ifyllt exempel för Exempelrigg 9 V (samma krets som exemplet i v41_03 bild 9). Välj ”Exempelrigg 9 V” i fri övning för att göra om mätningarna. Din rigg har andra värden. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
+        "head": {
+          "namn": "Exempel Elevsson",
+          "datum": "2026-10-09",
+          "rigg": "Exempelrigg 9 V, simulator"
+        },
+        "checks": {
+          "selv": true,
+          "rigg": true,
+          "instr": true,
+          "plan": true,
+          "omk": true,
+          "klar": true
+        },
+        "rows": [
+          {
+            "storhet": "U referens",
+            "punkter": "röd Ref+ / svart Ref−",
+            "drift": "V ⎓, V Ω-uttag",
+            "forv": "5,00 V",
+            "uppm": "5,01 V ⎓",
+            "avv": "0,01 V",
+            "tol": "±(0,5 % + 2 siffror) ≈ ±0,05 V",
+            "bed": "Inom tolerans",
+            "komm": "Instrumentet visar rätt mot känd källa, inom sin noggrannhet. Samma princip som prova–mät–prova före arbete."
+          },
+          {
+            "storhet": "R1",
+            "punkter": "röd A / svart B",
+            "drift": "Ω, matning frånskild, länk P–A öppen",
+            "forv": "1,000 kΩ",
+            "uppm": "1,008 kΩ",
+            "avv": "0,008 kΩ",
+            "tol": "0,950–1,050 kΩ",
+            "bed": "Inom tolerans",
+            "komm": "Först 0 V kontrollerat över R1. Länken öppen så att den frånslagna källan inte ligger parallellt. Mätarens osäkerhet (≈ ±0,01 kΩ) ändrar inte bedömningen."
+          },
+          {
+            "storhet": "R2",
+            "punkter": "röd B / svart N",
+            "drift": "Ω, matning frånskild, länk P–A öppen",
+            "forv": "2,000 kΩ",
+            "uppm": "1,999 kΩ",
+            "avv": "−0,001 kΩ",
+            "tol": "1,900–2,100 kΩ",
+            "bed": "Inom tolerans",
+            "komm": ""
+          },
+          {
+            "storhet": "U källa",
+            "punkter": "röd P / svart N",
+            "drift": "V ⎓, matning till, länk sluten",
+            "forv": "9,00 V (märkt)",
+            "uppm": "9,05 V ⎓",
+            "avv": "0,05 V",
+            "tol": "±0,2 V (riggdata)",
+            "bed": "Inom tolerans",
+            "komm": "Det uppmätta värdet används i nästa beräkningar."
+          },
+          {
+            "storhet": "U1",
+            "punkter": "röd A / svart B",
+            "drift": "V ⎓, matning till",
+            "forv": "3,03 V",
+            "uppm": "3,03 V ⎓",
+            "avv": "0,00 V",
+            "tol": "±(0,5 % + 2 siffror) ≈ ±0,04 V",
+            "bed": "Inom tolerans",
+            "komm": "Förväntat = 9,05 · 1,008/3,007 med uppmätta värden."
+          },
+          {
+            "storhet": "U2",
+            "punkter": "röd B / svart N",
+            "drift": "V ⎓, matning till",
+            "forv": "6,02 V",
+            "uppm": "6,02 V ⎓",
+            "avv": "0,00 V",
+            "tol": "±(0,5 % + 2 siffror) ≈ ±0,05 V",
+            "bed": "Inom tolerans",
+            "komm": ""
+          },
+          {
+            "storhet": "I",
+            "punkter": "röd P / svart A",
+            "drift": "A ⎓, mA-uttag, länk öppen",
+            "forv": "3,01 mA",
+            "uppm": "3,00 mA",
+            "avv": "−0,01 mA",
+            "tol": "±(1,0 % + 3 siffror) ≈ ±0,06 mA",
+            "bed": "Inom tolerans",
+            "komm": "Omkopplat med frånskild matning. mA-uttagets inre resistans är liten mot 3 kΩ."
+          },
+          {
+            "storhet": "U referens",
+            "punkter": "röd Ref+ / svart Ref−",
+            "drift": "V ⎓, V Ω-uttag",
+            "forv": "5,00 V",
+            "uppm": "5,01 V ⎓",
+            "avv": "0,01 V",
+            "tol": "±0,05 V",
+            "bed": "Inom tolerans",
+            "komm": "Instrumentet visar fortfarande rätt. Riggen återställd: länk sluten, röd sladd i V Ω."
+          }
+        ],
+        "answers": {
+          "slinga": "9,05 − 3,03 − 6,02 = 0,00 V. Resten ligger inom avläsningens upplösning, alltså stämmer slinglagen.",
+          "avvikelse": "Strömmen blev 3,00 mA mot förväntade 3,01 mA, alltså −0,01 mA. Spänningarna stämde nästan exakt, så kretsen är hel. Skillnaden ligger inom mA-områdets noggrannhet ±(1,0 % + 3 siffror) och kan komma från instrumentet och från mätarens inre resistans.",
+          "slutsats": "Riggen fungerar som en seriekopplad spänningsdelare. Båda resistorerna ligger inom ±5 % och instrumentet visade rätt före och efter. Mätningarna visar inte hur kretsen beter sig vid högre ström eller temperatur, och de säger inget om skyddet mot högre spänning utöver dokumentationen.",
+          "ejkontroll": "Så kan svaret byggas: nämn minst två saker som inte mättes, till exempel en funktion hos riggen eller hur stabila värdena är över tid.",
+          "verklighet": "Så kan svaret byggas: nämn två saker som finns på en fysisk rigg men inte i simulatorn, och förklara hur de skulle påverka ett av dina mätvärden."
+        }
+      }
+    },
+    "fysisk_variant": "EL-000403"
+  },
+  "losning": {
+    "text": "Protokollet har ett ifyllt exempel för en annan rigg. Förväntade värden räknas av eleven före mätningen.",
+    "status": "migrerad"
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "validering": {
+      "typ": "protokoll"
+    },
+    "alias": "stationA"
+  }
+}

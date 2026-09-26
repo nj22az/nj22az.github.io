@@ -1,0 +1,107 @@
+{
+  "id": "EL-000329",
+  "titel": "Vad mäter isolationsövervakningen?",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Isolationsresistansen mot skrovet är 3 MΩ i L1, 3 MΩ i L2 och 1,5 MΩ i L3. Vilket värde visar isolationsövervakningen?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[0] (id riso)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Övervakningen lägger en likspänning mellan nätet och skrovet. Alla tre isolationsvägarna leder då parallellt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "1/Riso = 1/3 + 1/3 + 1/1,5 = 4/3. Riso = 0,75 MΩ. Den sämsta fasen drar ned hela nätets värde.",
+    "svar": [
+      {
+        "storhet": "Riso",
+        "varde": 0.75,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "MΩ",
+        "berakning": "it.riso"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "R": {
+      "varde": [
+        3,
+        3,
+        1.5
+      ]
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 0.75
+    },
+    "initial": {
+      "R": [
+        3000000,
+        3000000,
+        1500000
+      ],
+      "C": 0
+    },
+    "fraga": {
+      "storhet": "Riso",
+      "etikett": "Riso",
+      "enhet": "MΩ",
+      "skala": 1000000
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 1.5,
+          "text": "Övervakningen ser inte bara den sämsta fasen. Vägarna ligger parallellt."
+        },
+        {
+          "varde": 7.5,
+          "text": "Parallella resistanser adderas inte. Använd 1/R = 1/R_{1} + 1/R_{2} + 1/R_{3}."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_03 · övning 4",
+    "alias": "riso"
+  }
+}

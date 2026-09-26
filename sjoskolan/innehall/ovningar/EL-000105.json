@@ -1,0 +1,90 @@
+{
+  "id": "EL-000105",
+  "titel": "Skenbar och reaktiv effekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma last som i uppgift 4 är induktiv och sinusformad. Beräkna S och Q.",
+    "samband": [
+      "S = √3 U_{L}I_{L} Q = S sin φ",
+      "sin φ = √(1 − cos²φ)"
+    ],
+    "givet": "U_{L} = 400 V, I_{L} = 10 A, cos φ = 0,80. Symmetrisk last med rena sinussignaler.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "S är den totala skenbara effekten i VA och Q den reaktiva effekten i var, positiv för induktiv last.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut S och sin φ var för sig, multiplicera och gör om till kVA och kvar.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "S ≈ 6,93 kVA. sin φ = 0,60. Q ≈ 4,16 kvar.",
+    "svar": [
+      {
+        "storhet": "S",
+        "varde": 6.93,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kVA"
+      },
+      {
+        "storhet": "Q",
+        "varde": 4.16,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kvar"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q5 och ch044.xhtml#sol11-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -8,3 +8,9 @@ node_modules/
 # Cloudflare Pages local dev secrets
 .dev.vars
 .wrangler/
+
+# Sjöskolans innehållsdatabas: genererat och dekrypterat arbetsmaterial
+sjoskolan/innehall/build/
+sjoskolan/innehall/.skyddat/
+sjoskolan/innehall/bok/.bok/
+__pycache__/

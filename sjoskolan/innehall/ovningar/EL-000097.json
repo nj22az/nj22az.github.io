@@ -1,0 +1,80 @@
+{
+  "id": "EL-000097",
+  "titel": "Bara en belastad fas",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-10",
+      "T-kurs-v41-01",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En last mellan en fas och neutral tar 5,0 A. De två andra faserna är obelastade. Bestäm strömmen i neutralledaren.",
+    "samband": [
+      "Nodlagen: Σ in = Σ ut"
+    ],
+    "givet": "En fas tar 5,0 A, de andra två ingenting. Neutralledaren är hel.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I_{N} är neutralledarens ström. Den för tillbaka strömmen från fas–neutral-lasterna.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Använd nodlagen. All utgående lastström måste återkomma genom neutralledaren.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "IN = 5,0 A. All ström från den enda lasten återvänder i neutralledaren.",
+    "svar": [
+      {
+        "storhet": "I_{N}",
+        "varde": 5.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch016.xhtml#ch10-q7 och ch043.xhtml#sol10-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

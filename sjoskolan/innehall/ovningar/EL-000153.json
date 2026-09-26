@@ -1,0 +1,68 @@
+{
+  "id": "EL-000153",
+  "titel": "Två märkdata",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En dvärgbrytare är märkt 16 A och 6 kA. Förklara varför båda uppgifterna behövs.",
+    "samband": [
+      "Märkström och brytförmåga är olika apparatdata"
+    ],
+    "givet": "Dvärgbrytaren är märkt 16 A och 6 kA. Brytförmågan gäller under de villkor som anges i märkningen.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Märkströmmen anges i A och brytförmågan ofta i kA (1 kA = 1 000 A).",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Koppla den ena uppgiften till normal last och den andra till den största felström som måste kunna brytas.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "16 A är den ström brytaren tål i normal drift. 6 kA är den största kortslutningsström den säkert kan bryta.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q3 och ch049.xhtml#sol16-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

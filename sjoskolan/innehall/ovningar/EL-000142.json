@@ -1,0 +1,72 @@
+{
+  "id": "EL-000142",
+  "titel": "Fara och konsekvens",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-6",
+      "LM-7",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-15",
+      "T-kurs-v42-03",
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Formulera en fara och en möjlig konsekvens för en skadad kabel i en våt miljö.",
+    "samband": [
+      "Fara, möjlig händelse och konsekvens"
+    ],
+    "givet": "En kabel med synlig skada i våt miljö. Ingen har kontrollerat om den är spänningssatt.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Fara är det som kan skada. Händelsen är det som kan inträffa. Konsekvensen är skadan som kan följa.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Bygg en orsakskedja utan att framställa en antagen spänningssättning som observation.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Exempel: Fara: skadad isolation i våt miljö. Händelse: någon berör den skadade delen. Konsekvens: strömgenomgång.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch022.xhtml#ch15-q2 och ch048.xhtml#sol15-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_03-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

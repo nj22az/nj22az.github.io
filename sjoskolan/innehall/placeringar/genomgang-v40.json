@@ -1,0 +1,73 @@
+{
+  "yta": "genomgang-v40",
+  "titel": "Vecka 40: kontrollfrågor i genomgångarna",
+  "beskrivning": "Prova själv-frågorna i genomgångarna och presentationerna för vecka 40.",
+  "publik": "elev",
+  "exportor": "simulatorer",
+  "placeringar": [
+    {
+      "ovning": "EL-000508",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "effekt",
+      "ordning": 1,
+      "nummer": "Eget försök med andra värden",
+      "ankare": "effekt:eget"
+    },
+    {
+      "ovning": "EL-000505",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "impedans",
+      "ordning": 1,
+      "nummer": "Reaktans och enheter",
+      "ankare": "impedans:xl"
+    },
+    {
+      "ovning": "EL-000506",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "impedans",
+      "ordning": 2,
+      "nummer": "Strömmen med spolen inkopplad",
+      "ankare": "impedans:strom"
+    },
+    {
+      "ovning": "EL-000507",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "impedans",
+      "ordning": 3,
+      "nummer": "Eget försök med andra värden",
+      "ankare": "impedans:eget"
+    },
+    {
+      "ovning": "EL-000501",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 1,
+      "nummer": "Periodtid och frekvens",
+      "ankare": "sinus:period"
+    },
+    {
+      "ovning": "EL-000502",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 2,
+      "nummer": "Toppvärde och topp till topp",
+      "ankare": "sinus:topp"
+    },
+    {
+      "ovning": "EL-000503",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 3,
+      "nummer": "Medelvärde och RMS är olika",
+      "ankare": "sinus:medel"
+    },
+    {
+      "ovning": "EL-000504",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 4,
+      "nummer": "Eget försök med andra värden",
+      "ankare": "sinus:eget"
+    }
+  ]
+}

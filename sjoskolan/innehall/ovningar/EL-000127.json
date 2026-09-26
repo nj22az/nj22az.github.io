@@ -1,0 +1,68 @@
+{
+  "id": "EL-000127",
+  "titel": "Räddning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En person har skadats vid en elinstallation. Platsen kan fortfarande vara spänningssatt. Vad måste du tänka på innan du rör vid personen?",
+    "samband": [
+      "Hjälparen får inte utsättas för elektrisk fara"
+    ],
+    "givet": "Platsen kan vara spänningssatt. Larm enligt nödinstruktionen. Vid högspänning säkrar behörig person platsen.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Den skadade eller något föremål kan fortfarande ha kontakt med spänningssatta delar.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Förklara varför din egen säkerhet kommer först och vad du gör innan du rör personen. Följ larm- och räddningsinstruktionerna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Hjälparen får inte själv bli exponerad. Bryt strömmen eller se till att platsen är säkrad innan du rör personen. Larma 112.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q7 och ch046.xhtml#sol13-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

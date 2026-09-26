@@ -1,0 +1,100 @@
+{
+  "id": "EL-000340",
+  "titel": "Beräkna spolens reaktans",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur stor reaktans ger spolen vid 50 Hz? Börja med att omvandla mH till H."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[3] (id grund-xl)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "L = 95,5/1 000 = 0,0955 H. XL = 2πfL.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    },
+    "L": {
+      "varde": 0.0955,
+      "enhet": "H"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Reaktans XL",
+        "varde": 30.0022,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω",
+        "berakning": "ac.xl"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RL",
+      "U": 12,
+      "f": 50,
+      "R": 40,
+      "L": 95.5,
+      "C": 150
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "XL",
+          "Reaktans XL",
+          "Ω"
+        ]
+      ]
+    },
+    "teoriavsnitt": "xl",
+    "visualisering": "rl",
+    "forklaring": {
+      "fraga": "Hur ändras spolens reaktans om frekvensen fördubblas?",
+      "ledtrad": "L hålls konstant. Läs hur f ingår i XL = 2πfL."
+    },
+    "kalla": "RL: 12,00 V RMS, 50 Hz, R = 40 Ω, L = 95,5 mH",
+    "alias": "grund-xl"
+  }
+}

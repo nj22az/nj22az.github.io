@@ -1,0 +1,81 @@
+{
+  "id": "EL-000234",
+  "titel": "Sinus och period",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-24",
+      "T-kurs-v45-03",
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinusspänning har effektivvärdet 24 V och frekvensen 60 Hz. Beräkna toppvärde och periodtid.",
+    "samband": [
+      "û = √2 · U_{rms}; T = 1/f"
+    ],
+    "givet": "Ren sinus utan likspänningsdel, U_{rms} = 24 V och f = 60 Hz.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "û är toppvärde. T är period i s. Multiplicera T med 1 000 för ms.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Beräkna toppvärde och period separat. Använd RMS endast i omvandlingen, inte som toppvärde.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "û ≈ 33,9 V. T ≈ 16,7 ms.",
+    "svar": [
+      {
+        "storhet": "T",
+        "varde": 16.7,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "ms"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch032.xhtml#ch24-q4 och ch057.xhtml#sol24-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_03-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

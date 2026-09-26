@@ -1,0 +1,73 @@
+{
+  "id": "EL-000086",
+  "titel": "Matningsström",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-09",
+      "T-kurs-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En enfaslast tar P = 1 840 W vid 230 V och PF = 0,80. Bestäm strömmen.",
+    "samband": [
+      "I = P/(U · PF)"
+    ],
+    "givet": "Enfas, P = 1 840 W, U = 230 V RMS och PF = 0,80."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Formeln kommer från P = U · I · PF. Med P i W och U i V får du I i A.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut nämnaren och dela P med den.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 1 840/(230 · 0,80) = 10,0 A.",
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 10.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch015.xhtml#ch9-q6 och ch042.xhtml#sol9-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_03-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

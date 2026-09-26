@@ -1,0 +1,101 @@
+{
+  "id": "EL-000335",
+  "titel": "Isolationsprovning: resistans",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor som stått i fukt provas mellan L1 och PE med 500 V. Läckströmmen blir 0,40 mA. Beräkna isolationsresistansen i MΩ."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[6] (id prov)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "R = Uprov/Iläck. Omvandla mA till A först.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "R = 500/0,00040 = 1 250 000 Ω = 1,25 MΩ. Det klarar en gräns på 1 MΩ med liten marginal. Jämför med samma motor torr.",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 1.25,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "MΩ",
+        "berakning": "isolation.resistans_mohm"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 500,
+      "enhet": "V"
+    },
+    "I": {
+      "varde": 0.0004,
+      "enhet": "A"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 1.25
+    },
+    "initial": {
+      "del": "prov",
+      "obj": "motor-fukt",
+      "par": "L1-PE",
+      "Uprov": 500
+    },
+    "fraga": {
+      "storhet": "prov",
+      "etikett": "R",
+      "enhet": "MΩ"
+    },
+    "dolj": [
+      "prov"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 1250,
+          "text": "Svaret ska vara i MΩ. 1 250 kΩ = 1,25 MΩ."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_03 · övning 3",
+    "alias": "prov"
+  }
+}

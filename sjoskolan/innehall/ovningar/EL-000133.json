@@ -1,0 +1,70 @@
+{
+  "id": "EL-000133",
+  "titel": "Arbetsmetoder",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Nämn de fyra arbetsmetoderna i ESA 2026.",
+    "samband": [
+      "Metoderna skiljer sig i hur nära spänning arbetet sker"
+    ],
+    "givet": "Namnen följer EBR ESA 2026. Boken ger ingen ESA-behörighet.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Metoderna skiljer sig i hur nära spänningsförande delar man arbetar och vilka säkerhetskrav som gäller.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange de fyra namnen. Vid ett verkligt arbete måste valet av metod motiveras.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Arbete utan spänning, arbete med spänning, arbete inom närområde och arbete utanför närområde.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q3 och ch047.xhtml#sol14-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

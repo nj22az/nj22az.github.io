@@ -1,0 +1,72 @@
+{
+  "id": "EL-000222",
+  "titel": "Kravjämförelse",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Kravet är 12,0 V ±5 %. Mätningen är 11,45 V ±0,10 V. Är hela mätintervallet inom kravet?",
+    "samband": [
+      "Krav: U_{nom} · (1 ± p/100)",
+      "Mätintervall: U_{m} ± δ"
+    ],
+    "givet": "U_{nom} = 12,0 V, p = 5, U_{m} = 11,45 V, δ = 0,10 V. Ett värde precis på gränsen är godkänt.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "p är toleransen i procent och δ felgränsen. Svaret är ja bara om hela mätintervallet ligger inom kravet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut båda intervallen och jämför särskilt de nedre gränserna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Krav: 11,40–12,60 V. Mätning: 11,35–11,55 V. Nej, den nedre mätgränsen 11,35 V ligger under 11,40 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q2 och ch056.xhtml#sol23-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "EL-000103",
+  "titel": "Samma resistorer i Δ",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre resistorer på 40 Ω kopplas i Δ till 400 V. Bestäm grenströmmen och linjeströmmen.",
+    "samband": [
+      "Δ: U_{gren} = U_{L}; I_{gren} = U_{gren}/R",
+      "I_{L} = √3 · I_{gren}"
+    ],
+    "givet": "Symmetrisk Δ-last, tre resistorer på 40 Ω och U_{L} = 400 V RMS.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I Δ är linjeströmmen skillnaden mellan två grenströmmar, räknad som visare.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut grenströmmen och multiplicera sedan med √3 för att få linjeströmmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Igren = 400/40 = 10 A. I_{L} = 1,732 · 10 ≈ 17,3 A, tre gånger linjeströmmen i Y.",
+    "svar": [
+      {
+        "storhet": "I_{gren}",
+        "varde": 10.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      },
+      {
+        "storhet": "I_{L}",
+        "varde": 17.3,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q3 och ch044.xhtml#sol11-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

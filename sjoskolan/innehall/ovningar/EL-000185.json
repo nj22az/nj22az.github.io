@@ -1,0 +1,69 @@
+{
+  "id": "EL-000185",
+  "titel": "Fartygssystem",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-19",
+      "T-kurs-v44-01",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett fartyg har flera transformatorer och delnät. Kan man utan schema säga att hela fartyget har ett och samma jordningssystem?",
+    "samband": [
+      "Transformatorer och systemgränser skiljer delnät"
+    ],
+    "givet": "Fartyget har flera transformatorer och delnät. Det finns inget enlinjeschema.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Olika delnät kan vara jordade på olika sätt och ha olika skydd och källor.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vilket underlag du behöver för att avgöra jordningssystemet för varje del.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. Varje delnät kan ha eget jordningssystem. Enlinjeschemat och uppgifter om transformatorer, jordning och skydd behövs för varje del.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch027.xhtml#ch19-q5 och ch052.xhtml#sol19-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_01-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

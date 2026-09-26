@@ -1,0 +1,68 @@
+[
+  {
+    "kalla": "bok.epub (dekrypterad)",
+    "plats": "EPUB/text/ch006–ch032",
+    "slag": "kapitelövning (uppgift, samband, förutsättningar, metod, figurer)",
+    "antal": 240
+  },
+  {
+    "kalla": "bok.epub (dekrypterad)",
+    "plats": "EPUB/text/ch034–ch057",
+    "slag": "lösning (steg, svar, kontroll, figurer)",
+    "antal": 240
+  },
+  {
+    "kalla": "kurs",
+    "plats": "vecka-39…45/aktuell/Formelstod_och_ovningar.html",
+    "slag": "övning med formelstöd, symboler, förutsättningar, arbetsgång och facit",
+    "antal": 200
+  },
+  {
+    "kalla": "presentation",
+    "plats": "vecka-39, 41–45 *_elev.pptx",
+    "slag": "bilderna ”Stöd till övning N” och ”Övning N”",
+    "antal": 170
+  },
+  {
+    "kalla": "simulatorer",
+    "plats": "trefas-, växelströms-, hållkrets- och isolationslabbet: lessons.mjs CHALLENGES",
+    "slag": "räkna-först-uppgift med facit, ledtråd och vanliga fel",
+    "antal": 36
+  },
+  {
+    "kalla": "simulatorer",
+    "plats": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS",
+    "slag": "guidad uppgift med förutsägelse, avläsning och förklaring",
+    "antal": 8
+  },
+  {
+    "kalla": "simulatorer",
+    "plats": "multimetersimulator/lessons.mjs LESSONS (inkl. STATION_A)",
+    "slag": "stegvis övning med kontrollfunktion per steg",
+    "antal": 9
+  },
+  {
+    "kalla": "simulatorer",
+    "plats": "fem protokollmoduler (stationA, stationB AC och trefas, stationC, isolation)",
+    "slag": "labbprotokoll med kontroller, mätningar, frågor och ifyllt exempel",
+    "antal": 5
+  },
+  {
+    "kalla": "kurs",
+    "plats": "vecka-41/aktuell/Elevprotokoll.html",
+    "slag": "protokollmall för fysiska stationer med bedömningsrader",
+    "antal": 1
+  },
+  {
+    "kalla": "presentation",
+    "plats": "v41_03 bild 6–8 och 21",
+    "slag": "fysiska stationer A, B (AC och trefas) och C",
+    "antal": 4
+  },
+  {
+    "kalla": "kurs",
+    "plats": "vecka-40/aktuell/lektioner.mjs (bilder med check/answer)",
+    "slag": "kontrollfråga med svar i genomgång och presentation",
+    "antal": 8
+  }
+]

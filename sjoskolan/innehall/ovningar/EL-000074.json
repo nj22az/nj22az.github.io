@@ -1,0 +1,73 @@
+{
+  "id": "EL-000074",
+  "titel": "Strömmen i RL-kretsen",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "100 V RMS matar en krets med R = 30 Ω och XL = 40 Ω i serie. Beräkna strömmen.",
+    "samband": [
+      "I = U/|Z|; |Z| = √(R² + X²)"
+    ],
+    "givet": "RL i serie: U = 100 V, R = 30 Ω, XL = 40 Ω."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U och I är effektivvärden. |Z| innehåller både den resistiva och den reaktiva delen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut impedansen och dela sedan U med den.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "|Z| = 50 Ω. I = 100/50 = 2,0 A.",
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 2.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q4 och ch041.xhtml#sol8-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

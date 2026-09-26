@@ -1,0 +1,96 @@
+{
+  "id": "EL-000326",
+  "titel": "Fel: bruten retur",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Returledaren är bruten. S1 hålls intryckt men K1 drar inte. Vad visar mätaren mellan c (spolens retursida) och 0 V?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[5] (id retur)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Utan ström finns inget spänningsfall i spolen. Vilken potential får c då?",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ingen ström går. c får samma potential som b, alltså +24 V, och mätaren visar 24 V över avbrottet i returen.",
+    "svar": [
+      {
+        "storhet": "U(c–0 V)",
+        "varde": 24,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 24
+    },
+    "initial": {
+      "steg": [
+        {
+          "fault": "retur"
+        },
+        {
+          "s1": true,
+          "red": "c",
+          "black": "N"
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(c–0 V)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0,
+          "text": "Punkten c är inte längre förbunden med 0 V. Den följer b genom den strömlösa spolen."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · bild 22",
+    "alias": "retur"
+  }
+}

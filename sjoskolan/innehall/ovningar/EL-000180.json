@@ -1,0 +1,70 @@
+{
+  "id": "EL-000180",
+  "titel": "Kort funktionsbeskrivning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-5",
+      "LM-9"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-18",
+      "T-kurs-v43-03",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Beskriv hållkretsen i ord för vila, start, hållning och stopp.",
+    "samband": [
+      "Tillstånd: vila, start, hållning och stopp"
+    ],
+    "givet": "STOPP-knappen S0 (NC) ligger i serie med START-knappen S1, som i sin tur ligger parallellt med K1:s hållkontakt (NO). Returen är hel.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "K1 drar när spolen får spänning och släpper när den blir strömlös. Hållkontakten följer K1.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Beskriv kontakternas lägen och strömvägen i varje läge och förklara vad som ändras när en knapp släpps.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Vila: START och hållkontakt öppna, K1 släppt. Start: START sluter, K1 drar, hållkontakten sluter. Hållning: START släpps, strömmen går genom hållkontakten. Stopp: S0 öppnar, K1 släpper och hållkontakten öppnar.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch025.xhtml#ch18-q10 och ch051.xhtml#sol18-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_03-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

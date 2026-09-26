@@ -1,0 +1,70 @@
+{
+  "id": "EL-000138",
+  "titel": "Gammal föreskrift",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett dokument anger att TSFS 2014:1 gäller. Vad säger Transportstyrelsens regellista?",
+    "samband": [
+      "Kontrollera föreskriftens status i regellistan"
+    ],
+    "givet": "Dokumentet säger att TSFS 2014:1 gäller. Inget i fallet stöder det.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Transportstyrelsens regellista visar om en föreskrift gäller eller är upphävd. Ett nytt nummer kräver ändå kontroll av tillämpningen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vilken hänvisning som är inaktuell och vad som behöver verifieras i ersättningsregelverket.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "TSFS 2014:1 är upphävd genom TSFS 2019:4. Kontrollera att ersättningsföreskriften gäller för just detta fartyg och arbete.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q8 och ch047.xhtml#sol14-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

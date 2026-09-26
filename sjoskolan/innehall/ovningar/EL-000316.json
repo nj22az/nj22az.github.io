@@ -1,0 +1,107 @@
+{
+  "id": "EL-000316",
+  "titel": "Resonansfrekvens",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "L = 50 mH och C = 150 µF. Vid vilken frekvens blir X_{L} = X_{C}?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[7] (id resonans)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "f_{0} = 1/(2π√(LC)). Omvandla mH till H och µF till F först.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "f_{0}",
+        "varde": 58.1152,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Hz",
+        "berakning": "ac.resonans"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "L": {
+      "varde": 0.05,
+      "enhet": "H"
+    },
+    "C": {
+      "varde": 0.00015,
+      "enhet": "F"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 58.1152,
+      "tolerans": {
+        "rel": 0.02
+      }
+    },
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RLC",
+      "U": 100,
+      "f": 40,
+      "R": 20,
+      "L": 50,
+      "C": 150
+    },
+    "fraga": {
+      "storhet": "f0",
+      "etikett": "f_{0}",
+      "enhet": "Hz"
+    },
+    "dolj": [
+      "f0",
+      "freqTicks"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 365.148,
+          "text": "Du har glömt 2π. Svaret är vinkelfrekvensen ω_{0} i rad/s, inte f_{0} i Hz."
+        }
+      ],
+      "ratt": "Dra nu i f-reglaget och se att strömmen blir störst vid f_{0}."
+    },
+    "kallhanvisning": "Fördjupning: resonansfrekvens",
+    "teoriavsnitt": "resonans",
+    "alias": "resonans"
+  }
+}

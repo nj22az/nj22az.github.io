@@ -1,0 +1,73 @@
+{
+  "id": "EL-000148",
+  "titel": "Riskpoäng",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-6",
+      "LM-7",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-15",
+      "T-kurs-v42-03",
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I en riskmatris för övningen är sannolikheten 3 och konsekvensen 4. Riskpoängen är produkten av de två. Efter en åtgärd bedöms värdena till 1 och 4. Beräkna poängen och förklara vad den inte säger.",
+    "samband": [
+      "Riskpoäng = sannolikhet · konsekvens"
+    ],
+    "givet": "Före: 3 och 4. Efter: 1 och 4. Det finns ingen gräns för vad som är godtagbart.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Poängen gäller bara i den här matrisen. Siffrorna är uppskattningar och har ingen enhet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna poängen före och efter och förklara varför en lägre poäng inte bevisar att kraven är uppfyllda.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Före 3 · 4 = 12. Efter 1 · 4 = 4. Konsekvensen är oförändrad, och en lägre poäng visar inte att krav och kontroller är uppfyllda.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch022.xhtml#ch15-q8 och ch048.xhtml#sol15-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_03-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

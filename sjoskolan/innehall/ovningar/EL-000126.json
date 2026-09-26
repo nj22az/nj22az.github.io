@@ -1,0 +1,68 @@
+{
+  "id": "EL-000126",
+  "titel": "Batteriets risk",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett 24 V-batteri har stor kortslutningsförmåga. Ange en viktig risk som inte avgörs av spänningstalet ensamt.",
+    "samband": [
+      "Ifel ≈ U/R_{slinga} i en enkel modell"
+    ],
+    "givet": "Ett 24 V-batteri som kan ge stor kortslutningsström. Felkretsens resistans är inte känd, så strömmen kan inte räknas ut.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Även vid låg spänning kan liten total resistans ge stor kortslutningsström och kraftig uppvärmning.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Vad händer i slingan när R_{slinga} är liten? Hitta inte på ett amperetal.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Mycket stor kortslutningsström kan ge kraftig värme, ljusbåge, brand eller brännskador, till exempel om ett verktyg eller en ring kortsluter polerna.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q6 och ch046.xhtml#sol13-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

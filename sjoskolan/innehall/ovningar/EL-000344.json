@@ -1,0 +1,104 @@
+{
+  "id": "EL-000344",
+  "titel": "Samma aktiva effekt, lägre effektfaktor",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "U och P är oförändrade. Hur stor ström krävs vid PF = 0,50?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[7] (id grund-pf05)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I = P/(U · PF). Skriv hela nämnaren inom parentes.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "P": {
+      "varde": 1150,
+      "enhet": "W"
+    },
+    "U": {
+      "varde": 230,
+      "enhet": "V"
+    },
+    "PF": {
+      "varde": 0.5
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Matningsström I",
+        "varde": 10,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A",
+        "berakning": "ac.strom_pf"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 50,
+      "P": 1150,
+      "pf": 0.5,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "I",
+          "Matningsström I",
+          "A"
+        ]
+      ]
+    },
+    "teoriavsnitt": "strom",
+    "visualisering": "power",
+    "forklaring": {
+      "fraga": "Jämför med PF = 1,00. Vad ändrades och vad var oförändrat?",
+      "ledtrad": "Ange de två strömmarna. Skilj matningsström från lastens aktiva effekt."
+    },
+    "kalla": "Enfas: U = 230 V RMS, P = 1 150 W, PF = 0,50",
+    "alias": "grund-pf05"
+  }
+}

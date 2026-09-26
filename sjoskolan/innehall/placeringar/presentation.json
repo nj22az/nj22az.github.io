@@ -1,0 +1,1709 @@
+{
+  "yta": "presentation",
+  "titel": "Presentationer",
+  "beskrivning": "Bilderna Stöd till övning N och Övning N i veckornas presentationer.",
+  "publik": "elev",
+  "exportor": "presentationer",
+  "placeringar": [
+    {
+      "ovning": "EL-000031",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000032",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000033",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000034",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000035",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000036",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000037",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000038",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000039",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000040",
+      "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+      "del": "v39_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000041",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 16,
+      "roll": "ovning",
+      "stodbild": 15
+    },
+    {
+      "ovning": "EL-000042",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 18,
+      "roll": "ovning",
+      "stodbild": 17
+    },
+    {
+      "ovning": "EL-000043",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 20,
+      "roll": "ovning",
+      "stodbild": 19
+    },
+    {
+      "ovning": "EL-000044",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 22,
+      "roll": "ovning",
+      "stodbild": 21
+    },
+    {
+      "ovning": "EL-000045",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 24,
+      "roll": "ovning",
+      "stodbild": 23
+    },
+    {
+      "ovning": "EL-000046",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 36,
+      "roll": "ovning",
+      "stodbild": 35
+    },
+    {
+      "ovning": "EL-000047",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 38,
+      "roll": "ovning",
+      "stodbild": 37
+    },
+    {
+      "ovning": "EL-000048",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 40,
+      "roll": "ovning",
+      "stodbild": 39
+    },
+    {
+      "ovning": "EL-000049",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 42,
+      "roll": "ovning",
+      "stodbild": 41
+    },
+    {
+      "ovning": "EL-000050",
+      "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+      "del": "v39_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 44,
+      "roll": "ovning",
+      "stodbild": 43
+    },
+    {
+      "ovning": "EL-000091",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000092",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000093",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000094",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000095",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000096",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000097",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000098",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000099",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000100",
+      "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+      "del": "v41_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000101",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000102",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000103",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000104",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000105",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000106",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000107",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000108",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000109",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000110",
+      "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+      "del": "v41_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000111",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000112",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000113",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000114",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000115",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000116",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000117",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000118",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000119",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000120",
+      "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+      "del": "v41_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000121",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000122",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000123",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000124",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000125",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000126",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000127",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000128",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000129",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000130",
+      "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+      "del": "v42_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000131",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000132",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000133",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000134",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000135",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000136",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000137",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000138",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000139",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000140",
+      "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+      "del": "v42_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000141",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000142",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000143",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000144",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000145",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000146",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000147",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000148",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000149",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000150",
+      "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+      "del": "v42_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000151",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000152",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000153",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000154",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000155",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000156",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000157",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000158",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000159",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000160",
+      "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+      "del": "v43_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000161",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000162",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000163",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000164",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000165",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000166",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000167",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000168",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000169",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000170",
+      "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+      "del": "v43_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000171",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000172",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000173",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000174",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000175",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000176",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000177",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000178",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000179",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000180",
+      "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+      "del": "v43_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000181",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000182",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000183",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000184",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000185",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000186",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000187",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000188",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000189",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000190",
+      "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+      "del": "v44_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000191",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000192",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000193",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000194",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000195",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000196",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000197",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000198",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000199",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000200",
+      "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+      "del": "v44_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000201",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000202",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000203",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000204",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000205",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000206",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000207",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000208",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000209",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000210",
+      "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+      "del": "v44_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000211",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000212",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000213",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000214",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000215",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000216",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000217",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000218",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000219",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000220",
+      "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+      "del": "v45_01",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000221",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000222",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000223",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000224",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000225",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000226",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000227",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000228",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000229",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000230",
+      "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+      "del": "v45_02",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    },
+    {
+      "ovning": "EL-000231",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 1,
+      "nummer": "Övning 1",
+      "bild": 11,
+      "roll": "ovning",
+      "stodbild": 10
+    },
+    {
+      "ovning": "EL-000232",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 2,
+      "nummer": "Övning 2",
+      "bild": 13,
+      "roll": "ovning",
+      "stodbild": 12
+    },
+    {
+      "ovning": "EL-000233",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 3,
+      "nummer": "Övning 3",
+      "bild": 15,
+      "roll": "ovning",
+      "stodbild": 14
+    },
+    {
+      "ovning": "EL-000234",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 4,
+      "nummer": "Övning 4",
+      "bild": 17,
+      "roll": "ovning",
+      "stodbild": 16
+    },
+    {
+      "ovning": "EL-000235",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 5,
+      "nummer": "Övning 5",
+      "bild": 19,
+      "roll": "ovning",
+      "stodbild": 18
+    },
+    {
+      "ovning": "EL-000236",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 6,
+      "nummer": "Övning 6",
+      "bild": 26,
+      "roll": "ovning",
+      "stodbild": 25
+    },
+    {
+      "ovning": "EL-000237",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 7,
+      "nummer": "Övning 7",
+      "bild": 28,
+      "roll": "ovning",
+      "stodbild": 27
+    },
+    {
+      "ovning": "EL-000238",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 8,
+      "nummer": "Övning 8",
+      "bild": 30,
+      "roll": "ovning",
+      "stodbild": 29
+    },
+    {
+      "ovning": "EL-000239",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 9,
+      "nummer": "Övning 9",
+      "bild": 32,
+      "roll": "ovning",
+      "stodbild": 31
+    },
+    {
+      "ovning": "EL-000240",
+      "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+      "del": "v45_03",
+      "ordning": 10,
+      "nummer": "Övning 10",
+      "bild": 34,
+      "roll": "ovning",
+      "stodbild": 33
+    }
+  ]
+}

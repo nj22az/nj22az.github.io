@@ -1,0 +1,68 @@
+{
+  "id": "EL-000170",
+  "titel": "Larm efter överlast",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Överlastskyddet för en motor löser ut gång på gång. Föreslå två olika möjliga orsaker och vilken information som kan skilja dem åt.",
+    "samband": [
+      "Överlastlarm är ett symtom som kräver orsakssökning"
+    ],
+    "givet": "Skyddet löser ut gång på gång. Det finns inga mätvärden som visar orsaken än.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Den mekaniska lasten, matningen och skyddets inställning påverkar motorströmmen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Formulera två olika hypoteser och ange vilka data som kan skilja dem åt, till exempel fasströmmarna och hur lasten varierar.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Exempel: 1) mekanisk överlast eller tröghet i pumpen, 2) obalans eller fasbortfall i matningen. Fasströmmar, spänning per fas och belastningsförlopp skiljer dem. Kontrollera också skyddets inställning.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q10 och ch050.xhtml#sol17-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

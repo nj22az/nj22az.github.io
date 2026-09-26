@@ -1,0 +1,592 @@
+{
+  "yta": "simulator",
+  "titel": "Simulatorernas uppgifter",
+  "beskrivning": "Räkna-först-uppgifter, guidade uppgifter och stegvisa övningar i labbarna.",
+  "publik": "elev",
+  "exportor": "simulatorer",
+  "placeringar": [
+    {
+      "ovning": "EL-000321",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 1,
+      "nummer": "Vila: efter STOPP",
+      "ankare": "vila",
+      "alias": [
+        "hallkretslabbet?uppgift=vila"
+      ]
+    },
+    {
+      "ovning": "EL-000322",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 2,
+      "nummer": "Start: över spolen",
+      "ankare": "start",
+      "alias": [
+        "hallkretslabbet?uppgift=start"
+      ]
+    },
+    {
+      "ovning": "EL-000323",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 3,
+      "nummer": "Spolens ström",
+      "ankare": "strom",
+      "alias": [
+        "hallkretslabbet?uppgift=strom"
+      ]
+    },
+    {
+      "ovning": "EL-000324",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 4,
+      "nummer": "Över den öppna STOPP",
+      "ankare": "stopp",
+      "alias": [
+        "hallkretslabbet?uppgift=stopp"
+      ]
+    },
+    {
+      "ovning": "EL-000325",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 5,
+      "nummer": "Fel: K1 håller inte",
+      "ankare": "hall",
+      "alias": [
+        "hallkretslabbet?uppgift=hall"
+      ]
+    },
+    {
+      "ovning": "EL-000326",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 6,
+      "nummer": "Fel: bruten retur",
+      "ankare": "retur",
+      "alias": [
+        "hallkretslabbet?uppgift=retur"
+      ]
+    },
+    {
+      "ovning": "EL-000327",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 7,
+      "nummer": "Hållning: över hjälpkontakten",
+      "ankare": "hallning",
+      "alias": [
+        "hallkretslabbet?uppgift=hallning"
+      ]
+    },
+    {
+      "ovning": "EL-000328",
+      "plats": "hallkretslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 8,
+      "nummer": "Efter strömavbrott",
+      "ankare": "avbrott",
+      "alias": [
+        "hallkretslabbet?uppgift=avbrott"
+      ]
+    },
+    {
+      "ovning": "EL-000329",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 1,
+      "nummer": "Vad mäter isolationsövervakningen?",
+      "ankare": "riso",
+      "alias": [
+        "isolationslabbet?uppgift=riso"
+      ]
+    },
+    {
+      "ovning": "EL-000330",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 2,
+      "nummer": "Larmar övervakningen?",
+      "ankare": "larm",
+      "alias": [
+        "isolationslabbet?uppgift=larm"
+      ]
+    },
+    {
+      "ovning": "EL-000331",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 3,
+      "nummer": "Fas mot skrov i friskt nät",
+      "ankare": "symmetri",
+      "alias": [
+        "isolationslabbet?uppgift=symmetri"
+      ]
+    },
+    {
+      "ovning": "EL-000332",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 4,
+      "nummer": "Första jordfelet",
+      "ankare": "forsta",
+      "alias": [
+        "isolationslabbet?uppgift=forsta"
+      ]
+    },
+    {
+      "ovning": "EL-000333",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 5,
+      "nummer": "Ström i jordfelet",
+      "ankare": "kapstrom",
+      "alias": [
+        "isolationslabbet?uppgift=kapstrom"
+      ]
+    },
+    {
+      "ovning": "EL-000334",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 6,
+      "nummer": "Andra jordfelet",
+      "ankare": "andra",
+      "alias": [
+        "isolationslabbet?uppgift=andra"
+      ]
+    },
+    {
+      "ovning": "EL-000335",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 7,
+      "nummer": "Isolationsprovning: resistans",
+      "ankare": "prov",
+      "alias": [
+        "isolationslabbet?uppgift=prov"
+      ]
+    },
+    {
+      "ovning": "EL-000336",
+      "plats": "isolationslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 8,
+      "nummer": "Isolationsprovning: skadad kabel",
+      "ankare": "kabel",
+      "alias": [
+        "isolationslabbet?uppgift=kabel"
+      ]
+    },
+    {
+      "ovning": "EL-000345",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 1,
+      "nummer": "Övning 01",
+      "ankare": "voltage",
+      "alias": [
+        "multimetersimulator?lektion=voltage"
+      ]
+    },
+    {
+      "ovning": "EL-000346",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 2,
+      "nummer": "Övning 02",
+      "ankare": "polarity",
+      "alias": [
+        "multimetersimulator?lektion=polarity"
+      ]
+    },
+    {
+      "ovning": "EL-000347",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 3,
+      "nummer": "Övning 03",
+      "ankare": "current",
+      "alias": [
+        "multimetersimulator?lektion=current"
+      ]
+    },
+    {
+      "ovning": "EL-000348",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 4,
+      "nummer": "Övning 04",
+      "ankare": "resistance",
+      "alias": [
+        "multimetersimulator?lektion=resistance"
+      ]
+    },
+    {
+      "ovning": "EL-000349",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 5,
+      "nummer": "Övning 05",
+      "ankare": "parallel",
+      "alias": [
+        "multimetersimulator?lektion=parallel"
+      ]
+    },
+    {
+      "ovning": "EL-000350",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 6,
+      "nummer": "Övning 06",
+      "ankare": "continuity",
+      "alias": [
+        "multimetersimulator?lektion=continuity"
+      ]
+    },
+    {
+      "ovning": "EL-000351",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 7,
+      "nummer": "Övning 07",
+      "ankare": "loading",
+      "alias": [
+        "multimetersimulator?lektion=loading"
+      ]
+    },
+    {
+      "ovning": "EL-000352",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 8,
+      "nummer": "Övning 08",
+      "ankare": "category",
+      "alias": [
+        "multimetersimulator?lektion=category"
+      ]
+    },
+    {
+      "ovning": "EL-000353",
+      "plats": "multimetersimulator/uppgifter.gen.mjs",
+      "del": "ovningar",
+      "ordning": 9,
+      "nummer": "Övning 09",
+      "ankare": "stationA",
+      "alias": [
+        "multimetersimulator?lektion=stationA"
+      ]
+    },
+    {
+      "ovning": "EL-000301",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 1,
+      "nummer": "Fasspänning vid 690 V",
+      "ankare": "uf",
+      "alias": [
+        "trefaslabbet?uppgift=uf"
+      ]
+    },
+    {
+      "ovning": "EL-000302",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 2,
+      "nummer": "Två lika faslaster",
+      "ankare": "in2",
+      "alias": [
+        "trefaslabbet?uppgift=in2"
+      ]
+    },
+    {
+      "ovning": "EL-000303",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 3,
+      "nummer": "Osymmetrisk last",
+      "ankare": "in3",
+      "alias": [
+        "trefaslabbet?uppgift=in3"
+      ]
+    },
+    {
+      "ovning": "EL-000304",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 4,
+      "nummer": "Bruten neutralledare",
+      "ankare": "bruten",
+      "alias": [
+        "trefaslabbet?uppgift=bruten"
+      ]
+    },
+    {
+      "ovning": "EL-000305",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 5,
+      "nummer": "Neutralström med två laster",
+      "ankare": "inr",
+      "alias": [
+        "trefaslabbet?uppgift=inr"
+      ]
+    },
+    {
+      "ovning": "EL-000306",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 6,
+      "nummer": "Linjeström i Y",
+      "ankare": "ystrom",
+      "alias": [
+        "trefaslabbet?uppgift=ystrom"
+      ]
+    },
+    {
+      "ovning": "EL-000307",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 7,
+      "nummer": "Linjeström i Δ",
+      "ankare": "dstrom",
+      "alias": [
+        "trefaslabbet?uppgift=dstrom"
+      ]
+    },
+    {
+      "ovning": "EL-000308",
+      "plats": "trefaslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 8,
+      "nummer": "Trefaseffekt",
+      "ankare": "p3",
+      "alias": [
+        "trefaslabbet?uppgift=p3"
+      ]
+    },
+    {
+      "ovning": "EL-000337",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 1,
+      "nummer": "Kontrollera båda mätarna",
+      "ankare": "kalibrator",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=kalibrator"
+      ]
+    },
+    {
+      "ovning": "EL-000338",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 2,
+      "nummer": "Läs av periodtiden",
+      "ankare": "grund-period",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-period"
+      ]
+    },
+    {
+      "ovning": "EL-000339",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 3,
+      "nummer": "Jämför toppvärde och RMS",
+      "ankare": "grund-topp",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-topp"
+      ]
+    },
+    {
+      "ovning": "EL-000340",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 4,
+      "nummer": "Beräkna spolens reaktans",
+      "ankare": "grund-xl",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-xl"
+      ]
+    },
+    {
+      "ovning": "EL-000341",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 5,
+      "nummer": "Beräkna impedansens belopp",
+      "ankare": "grund-z",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-z"
+      ]
+    },
+    {
+      "ovning": "EL-000342",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 6,
+      "nummer": "Jämför strömmen med och utan spole",
+      "ankare": "grund-strom",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-strom"
+      ]
+    },
+    {
+      "ovning": "EL-000343",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 7,
+      "nummer": "Ström vid effektfaktorn 1,00",
+      "ankare": "grund-pf1",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-pf1"
+      ]
+    },
+    {
+      "ovning": "EL-000344",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "guidad",
+      "ordning": 8,
+      "nummer": "Samma aktiva effekt, lägre effektfaktor",
+      "ankare": "grund-pf05",
+      "alias": [
+        "vaxelstromslabbet?lage=guidad&steg=grund-pf05"
+      ]
+    },
+    {
+      "ovning": "EL-000309",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 1,
+      "nummer": "Period vid 400 Hz",
+      "ankare": "period",
+      "alias": [
+        "vaxelstromslabbet?uppgift=period"
+      ]
+    },
+    {
+      "ovning": "EL-000310",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 2,
+      "nummer": "Toppvärde från effektivvärde",
+      "ankare": "topp",
+      "alias": [
+        "vaxelstromslabbet?uppgift=topp"
+      ]
+    },
+    {
+      "ovning": "EL-000311",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 3,
+      "nummer": "Momentanvärde",
+      "ankare": "moment",
+      "alias": [
+        "vaxelstromslabbet?uppgift=moment"
+      ]
+    },
+    {
+      "ovning": "EL-000312",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 4,
+      "nummer": "Fas från tidsavstånd",
+      "ankare": "fas",
+      "alias": [
+        "vaxelstromslabbet?uppgift=fas"
+      ]
+    },
+    {
+      "ovning": "EL-000313",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 5,
+      "nummer": "Spolens reaktans",
+      "ankare": "xl",
+      "alias": [
+        "vaxelstromslabbet?uppgift=xl"
+      ]
+    },
+    {
+      "ovning": "EL-000314",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 6,
+      "nummer": "Ström i RL-krets",
+      "ankare": "strom",
+      "alias": [
+        "vaxelstromslabbet?uppgift=strom"
+      ]
+    },
+    {
+      "ovning": "EL-000315",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 7,
+      "nummer": "Fasvinkel i RC-krets",
+      "ankare": "rc",
+      "alias": [
+        "vaxelstromslabbet?uppgift=rc"
+      ]
+    },
+    {
+      "ovning": "EL-000316",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 8,
+      "nummer": "Resonansfrekvens",
+      "ankare": "resonans",
+      "alias": [
+        "vaxelstromslabbet?uppgift=resonans"
+      ]
+    },
+    {
+      "ovning": "EL-000317",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 9,
+      "nummer": "Skenbar effekt",
+      "ankare": "skenbar",
+      "alias": [
+        "vaxelstromslabbet?uppgift=skenbar"
+      ]
+    },
+    {
+      "ovning": "EL-000318",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 10,
+      "nummer": "Reaktiv effekt",
+      "ankare": "reaktiv",
+      "alias": [
+        "vaxelstromslabbet?uppgift=reaktiv"
+      ]
+    },
+    {
+      "ovning": "EL-000319",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 11,
+      "nummer": "Matningsström",
+      "ankare": "matstrom",
+      "alias": [
+        "vaxelstromslabbet?uppgift=matstrom"
+      ]
+    },
+    {
+      "ovning": "EL-000320",
+      "plats": "vaxelstromslabbet/uppgifter.gen.mjs",
+      "del": "rakna-forst",
+      "ordning": 12,
+      "nummer": "Full kompensation",
+      "ankare": "kompensering",
+      "alias": [
+        "vaxelstromslabbet?uppgift=kompensering"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "EL-000076",
+  "titel": "Fasvinkel i RL",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "R = 30 Ω, XL = 40 Ω. Bestäm φ och ange om strömmen leder eller släpar spänningen.",
+    "samband": [
+      "φ = arctan(X/R)"
+    ],
+    "givet": "R = 30 Ω, X = +40 Ω. Använd arctan (tan^{−1}) med räknaren i grader (DEG)."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "φ är impedansvinkeln. Positiv φ betyder att spänningen ligger före strömmen, alltså att strömmen ligger efter.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Dela X med R, ta arctan och tolka tecknet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "φ = arctan(40/30) ≈ 53,1°. Strömmen släpar spänningen.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q6 och ch041.xhtml#sol8-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

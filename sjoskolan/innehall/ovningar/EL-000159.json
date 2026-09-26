@@ -1,0 +1,68 @@
+{
+  "id": "EL-000159",
+  "titel": "Brytförmåga",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Den beräknade kortslutningsströmmen är 8 kA. Det föreslagna skyddet har brytförmågan 6 kA, och det finns inget dokumenterat backupskydd. Kan valet godkännas?",
+    "samband": [
+      "Brytförmåga måste täcka möjlig felström"
+    ],
+    "givet": "Möjlig kortslutningsström 8 kA, brytförmåga 6 kA. Inget dokumenterat backupskydd.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Ett dokumenterat backupskydd hade kunnat ändra bedömningen, men du får inte anta att det finns.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför värdena och motivera om valet uppfyller kravet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. 6 kA är mindre än 8 kA, och ingen backupkombination är dokumenterad.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q9 och ch049.xhtml#sol16-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

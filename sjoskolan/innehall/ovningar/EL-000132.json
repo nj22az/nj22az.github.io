@@ -1,0 +1,71 @@
+{
+  "id": "EL-000132",
+  "titel": "Aktuell utgåva",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En äldre pärm hänvisar till SS-EN 50110-1 utgåva 3:2013. Vilken utgåva bygger den här boken på?",
+    "samband": [
+      "Utgåvans grund: SS-EN 50110-1 utgåva 4:2024"
+    ],
+    "givet": "Enligt SEK löpte övergångstiden för utgåva 3 ut den 29 maj 2026.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Utgåvenumret visar vilken version det är. En äldre utgåva kan ha slutat gälla.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför pärmens utgåva med den aktuella och kontrollera även de lokala anvisningarna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "SS-EN 50110-1 utgåva 4:2024. Utgåva 3:2013 är inaktuell efter 29 maj 2026. Kontrollera också lokala anvisningar.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q2 och ch047.xhtml#sol14-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,410 @@
+{
+  "id": "EL-000404",
+  "titel": "Labbprotokoll, Station B, AC",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Utökat försök efter mätarprinciperna. Använd fliken ”Sinus och effektivvärde” och ställ in källan med knapparna nedan. Mät med true RMS-multimeter, medelvärdesvisande multimeter och oscilloskop, och jämför med dina beräkningar. Riggen har 50 Hz. Vid 60 Hz blir perioden cirka 16,7 ms."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/stationB-protokoll.mjs STATION_B_AC_PROTOKOLL",
+        "revision": "8cabde3",
+        "roll": "labbprotokoll under simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "station": "Station B · AC · simulerad",
+    "utrustning": "Rigg: isolerad funktionsgenerator med effektförstärkare, märkt 12 V 50 Hz, skyddande separation dokumenterad, tolerans ±0,5 V. Den kan ge sinus, fyrkant och triangel med samma effektivvärde. Kalibrator 10,00 V sinus för instrumentkontroll. Instrument: true RMS-multimeter, medelvärdesmätande multimeter kalibrerad för sinus och oscilloskop för û, topp till topp och periodtid. I simulatorn är instrumenten ideala. Angivna gränser är övningsgränser, inte instrumentens specifikationer. Skilj källans avvikelse, modellens visning och felet mot verkligt RMS.",
+    "sakerhet": [
+      {
+        "id": "kalla",
+        "text": "Källan är avsedd för övningen och isolerad. Skyddande separation är dokumenterad, märkningen ”12 V” räcker inte som bevis."
+      },
+      {
+        "id": "instr",
+        "text": "Jag vet vilket instrument som är true RMS och vilket som är medelvärdesvisande. Båda kontrolleras mot kalibratorn."
+      },
+      {
+        "id": "punkter",
+        "text": "Jag mäter bara vid riggens dokumenterade mätpunkter."
+      },
+      {
+        "id": "osc",
+        "text": "Bänkoscilloskopets referens är förbunden med skyddsjord och jordar den punkt den ansluts till. Anslut den bara enligt riggens anvisning. Nätspänning mäts aldrig med jordad probe: använd differentialprob eller isolerade kanaler med rätt CAT-klass. Skyddsjorden lyfts aldrig. Ombord i ett IT-nät ger en jordad klämma på en fas ett jordfel."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling sker med frånskild källa. Jag avbryter vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning. På den fysiska stationen ger instruktören det. I simulatorn ger du det själv när punkterna ovan är gjorda."
+      }
+    ],
+    "matningar": [
+      {
+        "id": "m1",
+        "titel": "Instrumentkontroll mot kalibratorn",
+        "storhet": "U (true RMS)",
+        "punkter": "kalibratorns utgång",
+        "forvantat": "kalibratorns värde",
+        "tolerans": "±1 %",
+        "kod": {
+          "q": "trms",
+          "need": {
+            "shape": "sinus",
+            "urms": 10
+          }
+        }
+      },
+      {
+        "id": "m2",
+        "titel": "Instrumentkontroll, sinuskalibrerad mätare",
+        "storhet": "U (sinuskalibrerad)",
+        "punkter": "kalibratorns utgång",
+        "forvantat": "kalibratorns värde",
+        "tolerans": "±1 % (övningsgräns)",
+        "kod": {
+          "q": "avg",
+          "need": {
+            "shape": "sinus",
+            "urms": 10
+          }
+        }
+      },
+      {
+        "id": "m3",
+        "titel": "Effektivvärde, sinus",
+        "storhet": "U (true RMS)",
+        "punkter": "källans mätuttag",
+        "forvantat": "märkt värde",
+        "tolerans": "±0,5 V (källdata)",
+        "kod": {
+          "q": "trms",
+          "need": {
+            "shape": "sinus",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m4",
+        "titel": "Toppvärde, sinus",
+        "storhet": "û (oscilloskop)",
+        "punkter": "källans mätuttag",
+        "forvantat": "räkna från uppmätt U",
+        "tolerans": "±3 %",
+        "kod": {
+          "q": "peak",
+          "need": {
+            "shape": "sinus",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m5",
+        "titel": "Periodtid",
+        "storhet": "T (oscilloskop)",
+        "punkter": "källans mätuttag",
+        "forvantat": "1/f",
+        "tolerans": "±3 %",
+        "kod": {
+          "q": "T",
+          "need": {
+            "shape": "sinus",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m6",
+        "titel": "Medelvärdesvisande mätare, sinus",
+        "storhet": "U (medelvärdesvisande)",
+        "punkter": "källans mätuttag",
+        "forvantat": "jämför med mätning 3",
+        "tolerans": "±1 %",
+        "kod": {
+          "q": "avg",
+          "need": {
+            "shape": "sinus",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m7",
+        "titel": "Medelvärdesvisande mätare, fyrkant",
+        "storhet": "U (visat värde)",
+        "punkter": "källans mätuttag",
+        "forvantat": "förutsäg: 1,111 · likriktat medelvärde",
+        "tolerans": "±0,02 V mot beräknad visning",
+        "kod": {
+          "labels": {
+            "tol": "Gräns mot mätarmodellen",
+            "bed": "Stämmer visningen med modellen?"
+          },
+          "bedOptions": [
+            "",
+            "Stämmer med mätarmodellen",
+            "Avviker från mätarmodellen",
+            "Kan inte avgöras"
+          ],
+          "q": "avg",
+          "need": {
+            "shape": "fyrkant",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m8",
+        "titel": "Medelvärdesvisande mätare, triangel",
+        "storhet": "U (visat värde)",
+        "punkter": "källans mätuttag",
+        "forvantat": "förutsäg: 1,111 · likriktat medelvärde",
+        "tolerans": "±0,02 V mot beräknad visning",
+        "kod": {
+          "labels": {
+            "tol": "Gräns mot mätarmodellen",
+            "bed": "Stämmer visningen med modellen?"
+          },
+          "bedOptions": [
+            "",
+            "Stämmer med mätarmodellen",
+            "Avviker från mätarmodellen",
+            "Kan inte avgöras"
+          ],
+          "q": "avg",
+          "need": {
+            "shape": "triangel",
+            "urms": 12.35
+          }
+        }
+      },
+      {
+        "id": "m9",
+        "titel": "True RMS, triangel",
+        "storhet": "U (true RMS)",
+        "punkter": "källans mätuttag",
+        "forvantat": "samma källa, samma effektivvärde",
+        "tolerans": "±1 %",
+        "kod": {
+          "q": "trms",
+          "need": {
+            "shape": "triangel",
+            "urms": 12.35
+          }
+        }
+      }
+    ],
+    "fragor": [
+      {
+        "id": "topp",
+        "text": "Varför behöver isolationen i en 440 V-installation klara mer än 440 V? Använd ditt toppvärde från mätning 4.",
+        "kort": "toppvärde och isolation",
+        "krav_text": true
+      },
+      {
+        "id": "truerms",
+        "text": "Jämför mätning 7 och 8 med true RMS-värdet. Är den medelvärdesvisande mätaren rätt instrument här? När behövs true RMS ombord?",
+        "kort": "true RMS",
+        "krav_text": true
+      },
+      {
+        "id": "rmsfel",
+        "text": "Beräkna felet mot true RMS i procent för fyrkant och triangel: 100 · (visning − RMS)/RMS. Vilket instrument ger RMS i idealmodellen?",
+        "kort": "fel mot RMS och instrumentval",
+        "krav_text": true
+      },
+      {
+        "id": "avvikelse",
+        "text": "Förklara en avvikelse",
+        "kort": "förklaring av en avvikelse",
+        "ledtrad": "Välj en mätning där uppmätt skiljer sig från förväntat och förklara orsaken med dina siffror.",
+        "krav_text": true
+      },
+      {
+        "id": "slutsats",
+        "text": "Slutsats: vad visar dina mätningar, och vad visar de inte?",
+        "kort": "slutsats",
+        "krav_text": true
+      }
+    ],
+    "protokoll": {
+      "nyckel": "stationB-ac-v2",
+      "titel": "Labbprotokoll: Station B, AC",
+      "matningsinledning": "Förutsäg varje instruments visning före avläsningen. Avvikelse här betyder avläst minus förväntad visning. För fyrkant och triangel bedöms modellöverensstämmelse. RMS-felet bedöms separat i analysfrågorna.",
+      "exempel": {
+        "note": "Ifyllt exempel med en annan källa än din: 11,8 V och 60 Hz, som ombord. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
+        "head": {
+          "namn": "Exempel Elevsson",
+          "datum": "2026-10-09",
+          "rigg": "Exempelkälla 12 V 60 Hz, simulator"
+        },
+        "checks": {
+          "kalla": true,
+          "instr": true,
+          "punkter": true,
+          "osc": true,
+          "omk": true,
+          "klar": true
+        },
+        "rows": [
+          {
+            "storhet": "U (true RMS)",
+            "punkter": "kalibratorns utgång",
+            "drift": "Sinus, 50 Hz, true RMS",
+            "forv": "10,00 V",
+            "uppm": "10,00 V",
+            "avv": "0,00 V",
+            "tol": "±1 %",
+            "bed": "Inom tolerans",
+            "komm": "Medelvärdesvisande mätaren visade 10,00 V. Båda stämmer för sinus."
+          },
+          {
+            "storhet": "U (sinuskalibrerad)",
+            "punkter": "kalibratorns utgång",
+            "drift": "Sinus, 50 Hz, sinuskalibrerad",
+            "forv": "10,00 V",
+            "uppm": "10,00 V",
+            "avv": "0,00 V",
+            "tol": "±1 % (övningsgräns)",
+            "bed": "Inom tolerans",
+            "komm": "Separat avläsning av det andra instrumentet. Båda visar samma för kalibratorns sinus."
+          },
+          {
+            "storhet": "U (true RMS)",
+            "punkter": "källans mätuttag",
+            "drift": "Sinus, 60 Hz, true RMS",
+            "forv": "12,00 V",
+            "uppm": "11,80 V",
+            "avv": "−0,20 V",
+            "tol": "±0,5 V (källdata)",
+            "bed": "Inom tolerans",
+            "komm": "Källan ligger under märkt värde. Det uppmätta värdet används i nästa rader."
+          },
+          {
+            "storhet": "û (oscilloskop)",
+            "punkter": "källans mätuttag",
+            "drift": "Sinus, 60 Hz, oscilloskop",
+            "forv": "16,69 V",
+            "uppm": "16,69 V",
+            "avv": "0,00 V",
+            "tol": "±3 %",
+            "bed": "Inom tolerans",
+            "komm": "û = √2 · 11,80 V."
+          },
+          {
+            "storhet": "T (oscilloskop)",
+            "punkter": "källans mätuttag",
+            "drift": "Sinus, 60 Hz, oscilloskop",
+            "forv": "16,67 ms",
+            "uppm": "16,67 ms",
+            "avv": "0,00 ms",
+            "tol": "±3 %",
+            "bed": "Inom tolerans",
+            "komm": "T = 1/60 Hz."
+          },
+          {
+            "storhet": "U (medelvärdesvisande)",
+            "punkter": "källans mätuttag",
+            "drift": "Sinus, 60 Hz",
+            "forv": "11,80 V",
+            "uppm": "11,80 V",
+            "avv": "0,00 V",
+            "tol": "±1 %",
+            "bed": "Inom tolerans",
+            "komm": "För ren sinus visar båda mätarna samma värde."
+          },
+          {
+            "storhet": "U (visat värde)",
+            "punkter": "källans mätuttag",
+            "drift": "Symmetrisk fyrkant, samma effektivvärde",
+            "forv": "13,11 V",
+            "uppm": "13,11 V",
+            "avv": "0,00 V",
+            "tol": "±0,02 V mot beräknad visning",
+            "bed": "Stämmer med mätarmodellen",
+            "komm": "Förutsägelsen stämde: likriktat medelvärde = û = U för fyrkant, så mätaren visar 1,111 · U. Mot true RMS 11,80 V är det 11,07 % för mycket."
+          },
+          {
+            "storhet": "U (visat värde)",
+            "punkter": "källans mätuttag",
+            "drift": "Triangel, samma effektivvärde",
+            "forv": "11,35 V",
+            "uppm": "11,35 V",
+            "avv": "0,00 V",
+            "tol": "±0,02 V mot beräknad visning",
+            "bed": "Stämmer med mätarmodellen",
+            "komm": "Förutsägelsen stämde: 1,111 · √3/2 · U. Mot true RMS är det 3,81 % för lite."
+          },
+          {
+            "storhet": "U (true RMS)",
+            "punkter": "källans mätuttag",
+            "drift": "Triangel, true RMS",
+            "forv": "11,80 V",
+            "uppm": "11,80 V",
+            "avv": "0,00 V",
+            "tol": "±1 %",
+            "bed": "Inom tolerans",
+            "komm": "I idealmodellen visar true RMS samma effektivvärde för de tre kurvformerna. Verkliga instrument har begränsningar."
+          }
+        ],
+        "answers": {
+          "topp": "Så kan svaret byggas: 1) ditt uppmätta û och U, 2) förhållandet mellan dem, 3) vad det ger för 440 V, 4) vad mer än toppvärdet isolationen måste klara.",
+          "truerms": "Så kan svaret byggas: 1) vad den medelvärdesvisande mätaren egentligen mäter, 2) dina två avvikelser mot true RMS i procent, 3) var ombord kurvformen inte är sinus, 4) vilket instrument och vilken funktion du väljer där.",
+          "rmsfel": "Fyrkantens RMS-fel är +11,07 %. Triangelns RMS-fel är −3,81 %. Visningarna stämmer med mätarmodellen, men är olika de verkliga effektivvärdena. True RMS ger effektivvärdet inom idealmodellens antaganden.",
+          "avvikelse": "Källan mättes till 11,80 V i stället för märkta 12,00 V. Avvikelsen −0,20 V ligger inom källans tolerans ±0,5 V och beror på källan, inte på mätaren. Räknar jag med det uppmätta värdet stämmer toppvärdet.",
+          "slutsats": "Toppvärdet var √2 gånger effektivvärdet för sinus, och bara true RMS visade samma effektivvärde för alla tre kurvformer. Mätningarna visar inte hur en verklig omriktarspänning med övertoner och transienter ser ut, och inte instrumentens verkliga fel."
+        }
+      },
+      "rigg": {
+        "CAL_AC": {
+          "urms": 10,
+          "f": 50
+        },
+        "EX_AC": {
+          "urms": 11.8,
+          "f": 60
+        },
+        "RIG_AC": {
+          "urms": 12.35,
+          "f": 50
+        }
+      }
+    },
+    "fysisk_variant": "EL-000405"
+  },
+  "losning": {
+    "text": "Protokollet har ett ifyllt exempel för en annan rigg. Förväntade värden räknas av eleven före mätningen.",
+    "status": "migrerad"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "protokoll"
+    },
+    "alias": "stationB-ac-v2"
+  }
+}

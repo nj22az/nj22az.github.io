@@ -1,0 +1,69 @@
+{
+  "id": "EL-000200",
+  "titel": "Skydd som löser för mycket",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett fel på ett ställe gör att två felfria fördelningar slocknar. Vad bör utredas?",
+    "samband": [
+      "Skyddszon och selektivitet prövas mot händelseförlopp"
+    ],
+    "givet": "Ett fel på ett ställe kopplar bort två felfria fördelningar. Orsaken är inte känd.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Reläinställningar, mätvärden och i vilken ordning brytarna löste visar vad som hände.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vilka data som behövs för att skilja mellan fel inställning, fel signal och en brytare som inte fungerade som den skulle.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Reläinställningar, mätdata och händelselogg samt brytarnas tidsordning. De skiljer fel inställning, fel signal och fel brytförlopp.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q10 och ch053.xhtml#sol20-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

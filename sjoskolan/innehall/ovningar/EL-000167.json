@@ -1,0 +1,68 @@
+{
+  "id": "EL-000167",
+  "titel": "Rätt motor för Δ-drift",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Nätet är 400 V. Motor A är Δ/Y 230/400 V, motor B Δ/Y 400/690 V. Vilken av motorerna ska kopplas i Δ på det här nätet?",
+    "samband": [
+      "Δ-koppling ger U_{gren} = U_{L}"
+    ],
+    "givet": "Nät 400 V. Motor A: Δ/Y 230/400 V. Motor B: Δ/Y 400/690 V.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Märkningen Δ/Y anger nätspänningen för de två kopplingarna.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför 400 V med motorernas Δ-spänning. Frågan gäller normal drift, inte hur motorn ska startas.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Motor B, Δ/Y 400/690 V. Motor A ska kopplas i Y på 400 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q7 och ch050.xhtml#sol17-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

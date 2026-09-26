@@ -1,0 +1,71 @@
+{
+  "id": "EL-000213",
+  "titel": "Mittpunkt",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-6",
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-22",
+      "T-kurs-v45-01",
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Källan visar 24 V men punkt B i mitten har 0 V mot hel retur. Vilken del prioriteras?",
+    "samband": [
+      "Mätpunkter delar upp en matningskedja"
+    ],
+    "givet": "Källan har 24 V. B har 0 V mot hel retur. En enkel kedja och samma referens antas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Rätt spänning i en mellanpunkt tyder på att delen före punkten fungerar.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför punkterna och ringa in sträckan där spänningen försvinner.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Sträckan mellan B och lastens pluspunkt. Före B finns rätt spänning.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch030.xhtml#ch22-q3 och ch055.xhtml#sol22-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_01-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

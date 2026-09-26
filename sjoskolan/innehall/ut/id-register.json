@@ -1,0 +1,4225 @@
+{
+ "beskrivning": "Genererat ur sjoskolan/innehall. Skyddade poster visas bara med id och status.",
+ "poster": [
+  {
+   "id": "EL-000031",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Pumpens effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v39_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000032",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Värmarens energi",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v39_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000033",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Tre laster",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v39_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000034",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorns inmatning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v39_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000035",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström genom en värmeresistor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v39_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000036",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kabelns resistans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v39_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000037",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänning vid lasten",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v39_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000038",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Dubbel ström",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v39_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000039",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Val av area i en modell",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v39_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000040",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Energibehov för en pump",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v39_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000041",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Nod med en okänd ström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v39_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000042",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Negativt svar",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v39_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000043",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningsfall i en slinga",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v39_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000044",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två serieresistorer",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v39_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000045",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Parallellgrenar",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v39_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000046",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Belastad delare",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v39_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000047",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömdelare",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v39_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000048",
+   "revision": 1,
+   "status": "att-granska",
+   "publik": "elev",
+   "titel": "Två källor och en last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v39_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000049",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Thévenin vid tomgång",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v39_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000050",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Last på Théveninkällan",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-39/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v39_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000061",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Period vid 50 Hz",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v40_01-q1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000062",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Frekvens från kurvan",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v40_01-q2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000063",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Toppvärde",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v40_01-q3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000064",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Effektivvärde",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v40_01-q4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000065",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Topp till topp",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v40_01-q5"
+    }
+   ]
+  },
+  {
+   "id": "EL-000066",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Momentanvärde",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v40_01-q6"
+    }
+   ]
+  },
+  {
+   "id": "EL-000067",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Negativ halvvåg",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v40_01-q7"
+    }
+   ]
+  },
+  {
+   "id": "EL-000068",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fas från tidsavstånd",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v40_01-q8"
+    }
+   ]
+  },
+  {
+   "id": "EL-000069",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Effekt i resistor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v40_01-q9"
+    }
+   ]
+  },
+  {
+   "id": "EL-000070",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jämförelse av vågformer",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v40_01-q10"
+    }
+   ]
+  },
+  {
+   "id": "EL-000071",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolens reaktans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v40_02-q1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000072",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kondensatorns reaktans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v40_02-q2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000073",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "RL-kretsens impedans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v40_02-q3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000074",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömmen i RL-kretsen",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v40_02-q4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000075",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningar i serie",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v40_02-q5"
+    }
+   ]
+  },
+  {
+   "id": "EL-000076",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fasvinkel i RL",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v40_02-q6"
+    }
+   ]
+  },
+  {
+   "id": "EL-000077",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "RC-krets",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v40_02-q7"
+    }
+   ]
+  },
+  {
+   "id": "EL-000078",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Dubbel frekvens",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v40_02-q8"
+    }
+   ]
+  },
+  {
+   "id": "EL-000079",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "RLC-krets",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v40_02-q9"
+    }
+   ]
+  },
+  {
+   "id": "EL-000080",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Serieresonans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v40_02-q10"
+    }
+   ]
+  },
+  {
+   "id": "EL-000081",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skenbar effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v40_03-q1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000082",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Aktiv effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v40_03-q2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000083",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Effekttriangel",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v40_03-q3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000084",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reaktiv effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v40_03-q4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000085",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Energin på elmätaren",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v40_03-q5"
+    }
+   ]
+  },
+  {
+   "id": "EL-000086",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Matningsström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v40_03-q6"
+    }
+   ]
+  },
+  {
+   "id": "EL-000087",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Full kompensering",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v40_03-q7"
+    }
+   ]
+  },
+  {
+   "id": "EL-000088",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström före och efter",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v40_03-q8"
+    }
+   ]
+  },
+  {
+   "id": "EL-000089",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ledningsförlust",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v40_03-q9"
+    }
+   ]
+  },
+  {
+   "id": "EL-000090",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Övertoner",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-40/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v40_03-q10"
+    }
+   ]
+  },
+  {
+   "id": "EL-000091",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fasförskjutning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v41_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000092",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Tidsförskjutning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v41_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000093",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fasspänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v41_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000094",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Linjespänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v41_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000095",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Trefasriggen",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v41_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000096",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Neutralström vid symmetri",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v41_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000097",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Bara en belastad fas",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v41_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000098",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två lika faslaster",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v41_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000099",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätvärden i protokollet",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v41_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000100",
+   "revision": 1,
+   "status": "att-granska",
+   "publik": "elev",
+   "titel": "Avbrott i neutralledaren",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v41_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000101",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Y-lastens grenspänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v41_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000102",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström i Y",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v41_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000103",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma resistorer i Δ",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v41_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000104",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Aktiv effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v41_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000105",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skenbar och reaktiv effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v41_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000106",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motor 230/400 V",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v41_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000107",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motor 400/690 V",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v41_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000108",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorström från axeleffekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v41_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000109",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Transformatorns märkström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v41_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000110",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Osymmetrisk aktiv effekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v41_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000111",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontroll före stationen",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v41_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000112",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Plan för DC-mätning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v41_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000113",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Observerade DC-värden",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v41_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000114",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "AC-riggens toppvärde",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v41_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000115",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Trefasdata",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v41_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000116",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållkretsens vila",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v41_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000117",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållkretsens start",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v41_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000118",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förberett fel",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v41_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000119",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätvärde med avvikelse",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v41_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000120",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Egen slutsats",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v41_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000121",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fuktig miljö",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v42_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000122",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två sorters skada",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v42_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000123",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Beröringspunkter",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v42_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000124",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Räkneexempel med begränsning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v42_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000125",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Släckt panel",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v42_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000126",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Batteriets risk",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v42_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000127",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Räddning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v42_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000128",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Efter strömgenomgång",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v42_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000129",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Tillbud",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v42_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000130",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förebyggande åtgärder",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v42_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000131",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Föreskrift eller standard",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v42_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000132",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Aktuell utgåva",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v42_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000133",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Arbetsmetoder",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v42_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000134",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Säkerhetsåtgärder",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v42_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000135",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Otydligt besked",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v42_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000136",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Rollfördelning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v42_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000137",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Regelval ombord",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v42_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000138",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Gammal föreskrift",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v42_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000139",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två matningar",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v42_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000140",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Rätt hänvisning i riskbedömning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v42_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000141",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Arbetsgräns",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v42_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000142",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fara och konsekvens",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v42_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000143",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skyddsutrustning som enda åtgärd",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v42_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000144",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Lås och skylt",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v42_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000145",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Provare med skada",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v42_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000146",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jordningsutrustning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v42_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000147",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ändrade förutsättningar",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v42_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000148",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Riskpoäng",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v42_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000149",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontroll av åtgärden",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v42_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000150",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samlad bedömning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v42_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000151",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontaktor",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v43_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000152",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Säkringens uppgift",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v43_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000153",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två märkdata",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v43_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000154",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Differensström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v43_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000155",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Överlast utan jordfel",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v43_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000156",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hjälpkontakt",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v43_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000157",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolspänning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v43_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000158",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Selektivitetsfall",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v43_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000159",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Brytförmåga",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v43_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000160",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorpaket",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v43_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000161",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Omsättning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v43_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000162",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Transformatorström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v43_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000163",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Synkront varvtal",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v43_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000164",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Sex poler",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v43_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000165",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Eftersläpning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v43_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000166",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ändrad frekvens",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v43_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000167",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Rätt motor för Δ-drift",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v43_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000168",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Omriktarens funktioner",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v43_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000169",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Motorförluster",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v43_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000170",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Larm efter överlast",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v43_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000171",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "NO och NC",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v43_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000172",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma relä",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v43_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000173",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v43_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000174",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "STOPP-funktionen",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v43_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000175",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två schematyper",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v43_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000176",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolspänning i vila",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v43_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000177",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spolspänning under start",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v43_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000178",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänning över STOPP",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v43_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000179",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Brist i en ritning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v43_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000180",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kort funktionsbeskrivning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v43_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000181",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "TN-S",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v44_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000182",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "TT-princip",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v44_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000183",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "IT-princip",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v44_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000184",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Larm utan stopp",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v44_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000185",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Fartygssystem",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v44_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000186",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "DC-fördelning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v44_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000187",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förenklad felström",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v44_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000188",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ändrad slingimpedans",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v44_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000189",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reservkraft",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v44_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000190",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Nödmatning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v44_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000191",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningsbegrepp",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v44_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000192",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Ström vid 6,6 kV",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v44_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000193",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samma effekt vid 400 V",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v44_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000194",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömtransformator",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v44_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000195",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Reläskyddets kedja",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v44_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000196",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Frånskiljare och brytare",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v44_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000197",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förregling",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v44_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000198",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Säkerhetsavstånd",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v44_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000199",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Saknade uppgifter",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v44_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000200",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skydd som löser för mycket",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v44_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000201",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två ledare i tången",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v44_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000202",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Tångens utgång",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v44_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000203",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Isolationsdata",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v44_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000204",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Parallell isolation",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v44_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000205",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Jordresistansmodell",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v44_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000206",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Oscilloskopets tidsbas",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v44_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000207",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Probens dämpning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v44_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000208",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Instrumentgräns",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v44_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000209",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Upprepade mätningar",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v44_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000210",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spårbar slutsats",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-44/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v44_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000211",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Observation eller diagnos",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v45_01-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000212",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Uppdelning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v45_01-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000213",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mittpunkt",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v45_01-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000214",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänning över avbrott",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v45_01-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000215",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Felström i en förenklad beräkning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v45_01-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000216",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kontaktförlust",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v45_01-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000217",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Utan last och med last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v45_01-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000218",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållningen uteblir",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v45_01-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000219",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Intermittent fel",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v45_01-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000220",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Efter åtgärd",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v45_01-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000221",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätningens räckvidd",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v45_02-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000222",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Kravjämförelse",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v45_02-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000223",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Skillnad mellan instrument",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v45_02-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000224",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätning under last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v45_02-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000225",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Resistansfördelning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v45_02-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000226",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Två felhypoteser",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v45_02-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000227",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Åtgärd utan orsak",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v45_02-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000228",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Dokumentation",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v45_02-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000229",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Förändrade driftvillkor",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v45_02-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000230",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Samlad slutsats",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v45_02-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000231",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Energi och verkningsgrad",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 1",
+     "ankare": "v45_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000232",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Strömlagen",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2",
+     "ankare": "v45_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000233",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Spänningsdelare med last",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3",
+     "ankare": "v45_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000234",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Sinus och period",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 4",
+     "ankare": "v45_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000235",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "RL och effektfaktor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 5",
+     "ankare": "v45_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000236",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Trefaseffekt",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 6",
+     "ankare": "v45_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000237",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Mätgräns",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 7",
+     "ankare": "v45_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000238",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Riskbedömning",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 8",
+     "ankare": "v45_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000239",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Hållkrets",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 9",
+     "ankare": "v45_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000240",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Felsökning med data",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-45/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 10",
+     "ankare": "v45_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
+     "nummer": "Övning 10",
+     "ankare": null
+    }
+   ]
+  }
+ ]
+}

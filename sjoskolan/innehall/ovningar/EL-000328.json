@@ -1,0 +1,104 @@
+{
+  "id": "EL-000328",
+  "titel": "Efter strömavbrott",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "K1 höll när styrspänningen försvann. Nu är spänningen tillbaka, men ingen har tryckt START. Vilken spänning ligger över K1-spolen?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[7] (id avbrott)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Vad hände med K1 och hjälpkontakten när spänningen försvann? Finns det nu en sluten väg till spolen?",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "K1 släppte vid avbrottet och hjälpkontakten öppnade. START är öppen, så ingen väg når spolen: 0 V. Motorn startar inte av sig själv.",
+    "svar": [
+      {
+        "storhet": "U(spole)",
+        "varde": 0,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 0
+    },
+    "initial": {
+      "steg": [
+        {},
+        {
+          "s1": true
+        },
+        {
+          "s1": false
+        },
+        {
+          "supply": false
+        },
+        {
+          "supply": true,
+          "red": "b",
+          "black": "c"
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(spole)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes",
+      "I"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 24,
+          "text": "Då skulle K1 dra igen av sig själv. Hjälpkontakten öppnade när spänningen försvann."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · bild 9",
+    "alias": "avbrott"
+  }
+}

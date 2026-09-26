@@ -1,0 +1,45 @@
+{
+  "id": "EL-000401",
+  "titel": "Elevprotokoll och riskmall",
+  "sprak": "sv",
+  "typ": "mall",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-6",
+      "LM-7",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Fyll i direkt på sidan eller skriv ut och fyll i för hand: riskbedömning före start, mätplan, resultat, analys och avslut."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Elevprotokoll.html",
+        "revision": "8cabde3",
+        "roll": "protokollmall för de fysiska stationerna"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "bedomning": {
+    "kriterier": [
+      "Arbetsgränsen och alla energikällor är angivna, och varje fara har en åtgärd, en ansvarig och en verifiering.",
+      "Varje mätning har mätpunkt, referens, driftläge och ett förväntat värde skrivet före mätningen.",
+      "Instrument, ingång, läge och område passar mätningen.",
+      "Resultatet anges med enhet och osäkerhet, och en avvikelse från det förväntade förklaras.",
+      "Slutsatsen går inte längre än mätningarna visar. Kvarstående osäkerhet anges.",
+      "Varje elev förklarar själv minst en avvikelse, inte bara gruppens tabell."
+    ]
+  }
+}

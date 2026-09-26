@@ -1,0 +1,58 @@
+{
+  "id": "EL-000346",
+  "titel": "Polaritet",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ta reda på vad ett minustecken betyder."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[1] (id polarity)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Mät över lampan med svart på P1 och röd på P2. Använd V ⎓ och slå på 12 V.",
+        "ledtrad": "Displayen visar potentialen vid röd spets minus potentialen vid svart. Om spetsarna byter plats byter värdet tecken.",
+        "varfor": "−12,00 V betyder omvänd polaritet. Spänningens belopp är fortfarande 12 V.",
+        "kod": {
+          "test": "multimetersimulator.polarity.1"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "lamp",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 15–16",
+    "alias": "polarity"
+  }
+}

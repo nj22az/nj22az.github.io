@@ -1,0 +1,108 @@
+{
+  "id": "EL-000342",
+  "titel": "Jämför strömmen med och utan spole",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Beräkna strömmen i RL-kretsen. Med endast resistorn skulle strömmen vara 0,30 A."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[5] (id grund-strom)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I = U/|Z|. Använd hela impedansen för RL-kretsen.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "U": {
+      "varde": 12,
+      "enhet": "V"
+    },
+    "R": {
+      "varde": 40,
+      "enhet": "Ω"
+    },
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    },
+    "L": {
+      "varde": 0.0955,
+      "enhet": "H"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Ström i RL-kretsen",
+        "varde": 0.239994,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A",
+        "berakning": "ac.strom_rl"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RL",
+      "U": 12,
+      "f": 50,
+      "R": 40,
+      "L": 95.5,
+      "C": 150
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "I",
+          "Ström i RL-kretsen",
+          "A"
+        ]
+      ]
+    },
+    "teoriavsnitt": "strom",
+    "visualisering": "rl",
+    "forklaring": {
+      "fraga": "Hur ändras strömmens storlek och fas när spolen läggs till?",
+      "ledtrad": "Jämför med 0,30 A. Ange vilken kurva som når sin topp först."
+    },
+    "kalla": "RL: 12,00 V RMS och |Z| ≈ 50 Ω. Enbart R: 40 Ω.",
+    "alias": "grund-strom"
+  }
+}

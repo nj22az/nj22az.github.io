@@ -1,0 +1,80 @@
+{
+  "id": "EL-000110",
+  "titel": "Osymmetrisk aktiv effekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Den aktiva effekten i de tre faserna har mätts till 1,2, 1,5 och 0,9 kW. Bestäm den totala aktiva effekten. Varför kan du inte bara ta en av fasströmmarna och sätta in i formeln för symmetrisk last?",
+    "samband": [
+      "Ptotal = P_{1} + P_{2} + P_{3}"
+    ],
+    "givet": "Uppmätt effekt per fas: 1,2, 1,5 och 0,9 kW. Lasten är inte symmetrisk.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Aktiva faseffekter kan adderas även när faslasterna är olika.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Summera faseffekterna. Förklara vilken symmetri som saknas för att använda en godtycklig I_{L} i √3-formeln.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ptotal = 3,6 kW. Formeln med √3 förutsätter lika ström och lika effektfaktor i alla faser. Här skiljer sig faserna.",
+    "svar": [
+      {
+        "storhet": "Ptotal",
+        "varde": 3.6,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kW"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q10 och ch044.xhtml#sol11-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

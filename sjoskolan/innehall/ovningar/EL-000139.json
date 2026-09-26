@@ -1,0 +1,70 @@
+{
+  "id": "EL-000139",
+  "titel": "Två matningar",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fördelning kan få el från landanslutning eller generator. Planen nämner bara landanslutningen. Vilken brist finns?",
+    "samband": [
+      "Alla möjliga matningsvägar ingår i avgränsningen"
+    ],
+    "givet": "Fördelningen kan matas från land eller generator. Planen nämner bara landanslutningen.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Normal matning, reservmatning och risken att spänningen kommer tillbaka påverkar samma arbetsområde.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför energikällorna i planen med dem i fallet och ange vad som måste läggas till innan arbetet kan börja.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Generatorn saknas i planen och kan spänningssätta fördelningen. Planen behöver kompletteras med alla matningsvägar och hur var och en frånskiljs och låses.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q9 och ch047.xhtml#sol14-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

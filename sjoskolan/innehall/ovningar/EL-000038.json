@@ -1,0 +1,68 @@
+{
+  "id": "EL-000038",
+  "titel": "Dubbel ström",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kabel har R = 0,20 Ω. Jämför kabelns värmeförlust vid 5 A och 10 A.",
+    "samband": [
+      "Pförlust = I² · R; P_{2}/P_{1} = (I_{2}/I_{1})²"
+    ],
+    "givet": "Samma kabelresistans 0,20 Ω vid 5 A och 10 A. Temperaturändring försummas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I² betyder I · I. Förlusten är värmeeffekt i kabeln, i W.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut båda förlusterna och dela den nya med den gamla.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Vid 5 A: 25 · 0,20 = 5 W. Vid 10 A: 100 · 0,20 = 20 W. Dubbel ström ger fyra gånger förlusten.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q8 och ch037.xhtml#sol4-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

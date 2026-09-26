@@ -1,0 +1,70 @@
+{
+  "id": "EL-000237",
+  "titel": "Mätgräns",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-24",
+      "T-kurs-v45-03",
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett instrument visar 24,00 V. Specifikationen är ±(1,0 % + 2 siffror) och upplösningen 0,01 V. Beräkna felgränsen.",
+    "samband": [
+      "δ = (a/100) · visning + n · upplösning"
+    ],
+    "givet": "Visat värde 24,00 V, a = 1,0, n = 2 och upplösning 0,01 V.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "δ är felgränsen. n siffror betyder n steg i sista siffran, inte n decimaler.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna procentdelen och siffrornas del var för sig, lägg ihop och skriv svaret som visat värde ± δ.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "δ = 0,24 + 0,02 = 0,26 V. 24,00 ± 0,26 V, alltså 23,74–24,26 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch032.xhtml#ch24-q7 och ch057.xhtml#sol24-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_03-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

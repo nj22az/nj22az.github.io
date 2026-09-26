@@ -1,0 +1,72 @@
+{
+  "id": "EL-000145",
+  "titel": "Provare med skada",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-6",
+      "LM-7",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-15",
+      "T-kurs-v42-03",
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Spänningsprovarens kabel har synlig skada. Vad blir beslutet före kontrollen?",
+    "samband": [
+      "En skadad provare ger otillförlitliga förutsättningar"
+    ],
+    "givet": "Skadan syns innan kontrollen har börjat. Ingen har bedömt att provaren kan användas.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Mätsladdarna och deras isolering är en del av provarens funktion och skydd.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange hur provaren tas ur bruk och vad som krävs innan kontrollen kan göras.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Provaren tas ur bruk och märks. Kontrollen görs inte förrän en hel och kontrollerad provare finns.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch022.xhtml#ch15-q5 och ch048.xhtml#sol15-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_03-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

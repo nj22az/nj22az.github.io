@@ -1,0 +1,93 @@
+{
+  "id": "EL-000209",
+  "titel": "Upprepade mätningar",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre mätningar ger 9,8, 10,0 och 10,2 V. Beräkna medelvärde och variationsbredd.",
+    "samband": [
+      "Medel = (x_{1} + x_{2} + x_{3})/3",
+      "Variationsbredd = xmax − xmin"
+    ],
+    "givet": "Mätvärdena 9,8, 10,0 och 10,2 V. Ingen statistisk analys behövs.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Medelvärdet visar var värdena ligger, och variationsbredden är största minus minsta värdet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Lägg ihop värdena och dela med tre. Räkna sedan variationsbredden för sig.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Medel = 10,0 V. Variationsbredd = 0,4 V.",
+    "svar": [
+      {
+        "storhet": "Medel",
+        "varde": 10.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "bredd",
+        "varde": 0.4,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q9 och ch054.xhtml#sol21-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

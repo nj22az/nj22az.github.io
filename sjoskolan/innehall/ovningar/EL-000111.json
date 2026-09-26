@@ -1,0 +1,70 @@
+{
+  "id": "EL-000111",
+  "titel": "Kontroll före stationen",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En rigg är märkt 12 V men saknar dokumentation om skyddande separation. Kan spänningsvärdet ensamt användas som bevis för SELV?",
+    "samband": [
+      "SELV kräver skyddande separation"
+    ],
+    "givet": "Riggen är märkt 12 V, men det finns ingen dokumentation om skyddet. Inget praktiskt moment får bygga på en gissning.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "SELV handlar om hur systemet är skyddat, bland annat om det är skilt från kretsar med högre spänning.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Håll isär märkspänning och kontrollerat skydd. Ange vilken dokumentation instruktören måste kontrollera.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. 12 V säger inget om skyddande separation. Instruktören behöver dokumentation om matande transformator eller källa, separation och märkning innan riggen används.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q1 och ch045.xhtml#sol12-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

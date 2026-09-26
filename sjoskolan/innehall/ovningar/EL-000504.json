@@ -1,0 +1,39 @@
+{
+  "id": "EL-000504",
+  "titel": "Eget försök med andra värden: sinus och mätvärden",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-01",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinus har U = 24,00 V RMS och f = 100 Hz. Beräkna T och û. Ange både tal och enhet. Förklara vilken avläsning en true RMS-multimeter visar.",
+    "instruktion": "Räkna innan facit visas."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS sinus bild eget",
+        "revision": "8cabde3",
+        "roll": "kontrollfråga i genomgången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "T = 10,00 ms. û ≈ 33,94 V. Multimetern visar 24,00 V.",
+    "status": "migrerad"
+  }
+}

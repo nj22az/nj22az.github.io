@@ -1,0 +1,67 @@
+{
+  "id": "EL-000350",
+  "titel": "Kontinuitet",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Skilj en hel säkring från ett avbrott."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[5] (id continuity)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Välj Summer och V Ω-uttaget. Anslut spetsarna till A och B på den urtagna, hela säkringen.",
+        "ledtrad": "En hel säkring har mycket låg resistans. Summern ger en synlig signal; ljud kan slås på under displayen.",
+        "varfor": "0,2 Ω och kontaktsignal visar en sammanhängande ledande väg. En summer är inte en provare för spänningslöshet.",
+        "kod": {
+          "test": "multimetersimulator.continuity.1"
+        }
+      },
+      {
+        "id": "s2",
+        "text": "Välj ”Simulera avbrott” och kontrollera säkringen igen.",
+        "ledtrad": "OL betyder här öppen krets, inte noll ohm.",
+        "varfor": "OL och ingen ton visar avbrott. Säkringen är bortkopplad från spänningskällor under hela övningen.",
+        "kod": {
+          "test": "multimetersimulator.continuity.2"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "fuse",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 27–29",
+    "alias": "continuity"
+  }
+}

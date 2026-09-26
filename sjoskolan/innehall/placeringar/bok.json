@@ -1,0 +1,2649 @@
+{
+  "yta": "bok",
+  "titel": "Boken Elteknik och ellära för sjöfart och industri",
+  "beskrivning": "Kapitelövningarna i bokens ordning (EPUB, krypterad).",
+  "publik": "bok",
+  "exportor": "bok",
+  "placeringar": [
+    {
+      "ovning": "EL-000001",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 1,
+      "nummer": "1.1",
+      "ankare": "ch1-q1",
+      "alias": [
+        "sol1-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000002",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 2,
+      "nummer": "1.2",
+      "ankare": "ch1-q2",
+      "alias": [
+        "sol1-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000003",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 3,
+      "nummer": "1.3",
+      "ankare": "ch1-q3",
+      "alias": [
+        "sol1-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000004",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 4,
+      "nummer": "1.4",
+      "ankare": "ch1-q4",
+      "alias": [
+        "sol1-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000005",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 5,
+      "nummer": "1.5",
+      "ankare": "ch1-q5",
+      "alias": [
+        "sol1-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000006",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 6,
+      "nummer": "1.6",
+      "ankare": "ch1-q6",
+      "alias": [
+        "sol1-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000007",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 7,
+      "nummer": "1.7",
+      "ankare": "ch1-q7",
+      "alias": [
+        "sol1-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000008",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 8,
+      "nummer": "1.8",
+      "ankare": "ch1-q8",
+      "alias": [
+        "sol1-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000009",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 9,
+      "nummer": "1.9",
+      "ankare": "ch1-q9",
+      "alias": [
+        "sol1-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000010",
+      "plats": "bok:ch006.xhtml",
+      "del": "kapitel-01",
+      "ordning": 10,
+      "nummer": "1.10",
+      "ankare": "ch1-q10",
+      "alias": [
+        "sol1-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000011",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 1,
+      "nummer": "2.1",
+      "ankare": "ch2-q1",
+      "alias": [
+        "sol2-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000012",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 2,
+      "nummer": "2.2",
+      "ankare": "ch2-q2",
+      "alias": [
+        "sol2-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000013",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 3,
+      "nummer": "2.3",
+      "ankare": "ch2-q3",
+      "alias": [
+        "sol2-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000014",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 4,
+      "nummer": "2.4",
+      "ankare": "ch2-q4",
+      "alias": [
+        "sol2-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000015",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 5,
+      "nummer": "2.5",
+      "ankare": "ch2-q5",
+      "alias": [
+        "sol2-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000016",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 6,
+      "nummer": "2.6",
+      "ankare": "ch2-q6",
+      "alias": [
+        "sol2-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000017",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 7,
+      "nummer": "2.7",
+      "ankare": "ch2-q7",
+      "alias": [
+        "sol2-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000018",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 8,
+      "nummer": "2.8",
+      "ankare": "ch2-q8",
+      "alias": [
+        "sol2-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000019",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 9,
+      "nummer": "2.9",
+      "ankare": "ch2-q9",
+      "alias": [
+        "sol2-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000020",
+      "plats": "bok:ch007.xhtml",
+      "del": "kapitel-02",
+      "ordning": 10,
+      "nummer": "2.10",
+      "ankare": "ch2-q10",
+      "alias": [
+        "sol2-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000021",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 1,
+      "nummer": "3.1",
+      "ankare": "ch3-q1",
+      "alias": [
+        "sol3-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000022",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 2,
+      "nummer": "3.2",
+      "ankare": "ch3-q2",
+      "alias": [
+        "sol3-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000023",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 3,
+      "nummer": "3.3",
+      "ankare": "ch3-q3",
+      "alias": [
+        "sol3-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000024",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 4,
+      "nummer": "3.4",
+      "ankare": "ch3-q4",
+      "alias": [
+        "sol3-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000025",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 5,
+      "nummer": "3.5",
+      "ankare": "ch3-q5",
+      "alias": [
+        "sol3-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000026",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 6,
+      "nummer": "3.6",
+      "ankare": "ch3-q6",
+      "alias": [
+        "sol3-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000027",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 7,
+      "nummer": "3.7",
+      "ankare": "ch3-q7",
+      "alias": [
+        "sol3-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000028",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 8,
+      "nummer": "3.8",
+      "ankare": "ch3-q8",
+      "alias": [
+        "sol3-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000029",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 9,
+      "nummer": "3.9",
+      "ankare": "ch3-q9",
+      "alias": [
+        "sol3-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000030",
+      "plats": "bok:ch008.xhtml",
+      "del": "kapitel-03",
+      "ordning": 10,
+      "nummer": "3.10",
+      "ankare": "ch3-q10",
+      "alias": [
+        "sol3-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000031",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 1,
+      "nummer": "4.1",
+      "ankare": "ch4-q1",
+      "alias": [
+        "sol4-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000032",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 2,
+      "nummer": "4.2",
+      "ankare": "ch4-q2",
+      "alias": [
+        "sol4-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000033",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 3,
+      "nummer": "4.3",
+      "ankare": "ch4-q3",
+      "alias": [
+        "sol4-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000034",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 4,
+      "nummer": "4.4",
+      "ankare": "ch4-q4",
+      "alias": [
+        "sol4-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000035",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 5,
+      "nummer": "4.5",
+      "ankare": "ch4-q5",
+      "alias": [
+        "sol4-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000036",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 6,
+      "nummer": "4.6",
+      "ankare": "ch4-q6",
+      "alias": [
+        "sol4-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000037",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 7,
+      "nummer": "4.7",
+      "ankare": "ch4-q7",
+      "alias": [
+        "sol4-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000038",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 8,
+      "nummer": "4.8",
+      "ankare": "ch4-q8",
+      "alias": [
+        "sol4-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000039",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 9,
+      "nummer": "4.9",
+      "ankare": "ch4-q9",
+      "alias": [
+        "sol4-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000040",
+      "plats": "bok:ch009.xhtml",
+      "del": "kapitel-04",
+      "ordning": 10,
+      "nummer": "4.10",
+      "ankare": "ch4-q10",
+      "alias": [
+        "sol4-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000041",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 1,
+      "nummer": "5.1",
+      "ankare": "ch5-q1",
+      "alias": [
+        "sol5-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000042",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 2,
+      "nummer": "5.2",
+      "ankare": "ch5-q2",
+      "alias": [
+        "sol5-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000043",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 3,
+      "nummer": "5.3",
+      "ankare": "ch5-q3",
+      "alias": [
+        "sol5-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000044",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 4,
+      "nummer": "5.4",
+      "ankare": "ch5-q4",
+      "alias": [
+        "sol5-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000045",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 5,
+      "nummer": "5.5",
+      "ankare": "ch5-q5",
+      "alias": [
+        "sol5-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000046",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 6,
+      "nummer": "5.6",
+      "ankare": "ch5-q6",
+      "alias": [
+        "sol5-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000047",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 7,
+      "nummer": "5.7",
+      "ankare": "ch5-q7",
+      "alias": [
+        "sol5-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000048",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 8,
+      "nummer": "5.8",
+      "ankare": "ch5-q8",
+      "alias": [
+        "sol5-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000049",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 9,
+      "nummer": "5.9",
+      "ankare": "ch5-q9",
+      "alias": [
+        "sol5-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000050",
+      "plats": "bok:ch010.xhtml",
+      "del": "kapitel-05",
+      "ordning": 10,
+      "nummer": "5.10",
+      "ankare": "ch5-q10",
+      "alias": [
+        "sol5-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000051",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 1,
+      "nummer": "6.1",
+      "ankare": "ch6-q1",
+      "alias": [
+        "sol6-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000052",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 2,
+      "nummer": "6.2",
+      "ankare": "ch6-q2",
+      "alias": [
+        "sol6-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000053",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 3,
+      "nummer": "6.3",
+      "ankare": "ch6-q3",
+      "alias": [
+        "sol6-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000054",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 4,
+      "nummer": "6.4",
+      "ankare": "ch6-q4",
+      "alias": [
+        "sol6-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000055",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 5,
+      "nummer": "6.5",
+      "ankare": "ch6-q5",
+      "alias": [
+        "sol6-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000056",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 6,
+      "nummer": "6.6",
+      "ankare": "ch6-q6",
+      "alias": [
+        "sol6-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000057",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 7,
+      "nummer": "6.7",
+      "ankare": "ch6-q7",
+      "alias": [
+        "sol6-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000058",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 8,
+      "nummer": "6.8",
+      "ankare": "ch6-q8",
+      "alias": [
+        "sol6-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000059",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 9,
+      "nummer": "6.9",
+      "ankare": "ch6-q9",
+      "alias": [
+        "sol6-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000060",
+      "plats": "bok:ch011.xhtml",
+      "del": "kapitel-06",
+      "ordning": 10,
+      "nummer": "6.10",
+      "ankare": "ch6-q10",
+      "alias": [
+        "sol6-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000061",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 1,
+      "nummer": "7.1",
+      "ankare": "ch7-q1",
+      "alias": [
+        "sol7-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000062",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 2,
+      "nummer": "7.2",
+      "ankare": "ch7-q2",
+      "alias": [
+        "sol7-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000063",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 3,
+      "nummer": "7.3",
+      "ankare": "ch7-q3",
+      "alias": [
+        "sol7-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000064",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 4,
+      "nummer": "7.4",
+      "ankare": "ch7-q4",
+      "alias": [
+        "sol7-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000065",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 5,
+      "nummer": "7.5",
+      "ankare": "ch7-q5",
+      "alias": [
+        "sol7-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000066",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 6,
+      "nummer": "7.6",
+      "ankare": "ch7-q6",
+      "alias": [
+        "sol7-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000067",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 7,
+      "nummer": "7.7",
+      "ankare": "ch7-q7",
+      "alias": [
+        "sol7-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000068",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 8,
+      "nummer": "7.8",
+      "ankare": "ch7-q8",
+      "alias": [
+        "sol7-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000069",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 9,
+      "nummer": "7.9",
+      "ankare": "ch7-q9",
+      "alias": [
+        "sol7-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000070",
+      "plats": "bok:ch013.xhtml",
+      "del": "kapitel-07",
+      "ordning": 10,
+      "nummer": "7.10",
+      "ankare": "ch7-q10",
+      "alias": [
+        "sol7-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000071",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 1,
+      "nummer": "8.1",
+      "ankare": "ch8-q1",
+      "alias": [
+        "sol8-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000072",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 2,
+      "nummer": "8.2",
+      "ankare": "ch8-q2",
+      "alias": [
+        "sol8-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000073",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 3,
+      "nummer": "8.3",
+      "ankare": "ch8-q3",
+      "alias": [
+        "sol8-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000074",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 4,
+      "nummer": "8.4",
+      "ankare": "ch8-q4",
+      "alias": [
+        "sol8-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000075",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 5,
+      "nummer": "8.5",
+      "ankare": "ch8-q5",
+      "alias": [
+        "sol8-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000076",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 6,
+      "nummer": "8.6",
+      "ankare": "ch8-q6",
+      "alias": [
+        "sol8-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000077",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 7,
+      "nummer": "8.7",
+      "ankare": "ch8-q7",
+      "alias": [
+        "sol8-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000078",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 8,
+      "nummer": "8.8",
+      "ankare": "ch8-q8",
+      "alias": [
+        "sol8-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000079",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 9,
+      "nummer": "8.9",
+      "ankare": "ch8-q9",
+      "alias": [
+        "sol8-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000080",
+      "plats": "bok:ch014.xhtml",
+      "del": "kapitel-08",
+      "ordning": 10,
+      "nummer": "8.10",
+      "ankare": "ch8-q10",
+      "alias": [
+        "sol8-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000081",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 1,
+      "nummer": "9.1",
+      "ankare": "ch9-q1",
+      "alias": [
+        "sol9-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000082",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 2,
+      "nummer": "9.2",
+      "ankare": "ch9-q2",
+      "alias": [
+        "sol9-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000083",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 3,
+      "nummer": "9.3",
+      "ankare": "ch9-q3",
+      "alias": [
+        "sol9-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000084",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 4,
+      "nummer": "9.4",
+      "ankare": "ch9-q4",
+      "alias": [
+        "sol9-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000085",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 5,
+      "nummer": "9.5",
+      "ankare": "ch9-q5",
+      "alias": [
+        "sol9-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000086",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 6,
+      "nummer": "9.6",
+      "ankare": "ch9-q6",
+      "alias": [
+        "sol9-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000087",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 7,
+      "nummer": "9.7",
+      "ankare": "ch9-q7",
+      "alias": [
+        "sol9-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000088",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 8,
+      "nummer": "9.8",
+      "ankare": "ch9-q8",
+      "alias": [
+        "sol9-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000089",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 9,
+      "nummer": "9.9",
+      "ankare": "ch9-q9",
+      "alias": [
+        "sol9-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000090",
+      "plats": "bok:ch015.xhtml",
+      "del": "kapitel-09",
+      "ordning": 10,
+      "nummer": "9.10",
+      "ankare": "ch9-q10",
+      "alias": [
+        "sol9-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000091",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 1,
+      "nummer": "10.1",
+      "ankare": "ch10-q1",
+      "alias": [
+        "sol10-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000092",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 2,
+      "nummer": "10.2",
+      "ankare": "ch10-q2",
+      "alias": [
+        "sol10-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000093",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 3,
+      "nummer": "10.3",
+      "ankare": "ch10-q3",
+      "alias": [
+        "sol10-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000094",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 4,
+      "nummer": "10.4",
+      "ankare": "ch10-q4",
+      "alias": [
+        "sol10-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000095",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 5,
+      "nummer": "10.5",
+      "ankare": "ch10-q5",
+      "alias": [
+        "sol10-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000096",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 6,
+      "nummer": "10.6",
+      "ankare": "ch10-q6",
+      "alias": [
+        "sol10-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000097",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 7,
+      "nummer": "10.7",
+      "ankare": "ch10-q7",
+      "alias": [
+        "sol10-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000098",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 8,
+      "nummer": "10.8",
+      "ankare": "ch10-q8",
+      "alias": [
+        "sol10-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000099",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 9,
+      "nummer": "10.9",
+      "ankare": "ch10-q9",
+      "alias": [
+        "sol10-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000100",
+      "plats": "bok:ch016.xhtml",
+      "del": "kapitel-10",
+      "ordning": 10,
+      "nummer": "10.10",
+      "ankare": "ch10-q10",
+      "alias": [
+        "sol10-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000101",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 1,
+      "nummer": "11.1",
+      "ankare": "ch11-q1",
+      "alias": [
+        "sol11-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000102",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 2,
+      "nummer": "11.2",
+      "ankare": "ch11-q2",
+      "alias": [
+        "sol11-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000103",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 3,
+      "nummer": "11.3",
+      "ankare": "ch11-q3",
+      "alias": [
+        "sol11-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000104",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 4,
+      "nummer": "11.4",
+      "ankare": "ch11-q4",
+      "alias": [
+        "sol11-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000105",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 5,
+      "nummer": "11.5",
+      "ankare": "ch11-q5",
+      "alias": [
+        "sol11-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000106",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 6,
+      "nummer": "11.6",
+      "ankare": "ch11-q6",
+      "alias": [
+        "sol11-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000107",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 7,
+      "nummer": "11.7",
+      "ankare": "ch11-q7",
+      "alias": [
+        "sol11-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000108",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 8,
+      "nummer": "11.8",
+      "ankare": "ch11-q8",
+      "alias": [
+        "sol11-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000109",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 9,
+      "nummer": "11.9",
+      "ankare": "ch11-q9",
+      "alias": [
+        "sol11-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000110",
+      "plats": "bok:ch017.xhtml",
+      "del": "kapitel-11",
+      "ordning": 10,
+      "nummer": "11.10",
+      "ankare": "ch11-q10",
+      "alias": [
+        "sol11-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000111",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 1,
+      "nummer": "12.1",
+      "ankare": "ch12-q1",
+      "alias": [
+        "sol12-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000112",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 2,
+      "nummer": "12.2",
+      "ankare": "ch12-q2",
+      "alias": [
+        "sol12-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000113",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 3,
+      "nummer": "12.3",
+      "ankare": "ch12-q3",
+      "alias": [
+        "sol12-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000114",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 4,
+      "nummer": "12.4",
+      "ankare": "ch12-q4",
+      "alias": [
+        "sol12-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000115",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 5,
+      "nummer": "12.5",
+      "ankare": "ch12-q5",
+      "alias": [
+        "sol12-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000116",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 6,
+      "nummer": "12.6",
+      "ankare": "ch12-q6",
+      "alias": [
+        "sol12-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000117",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 7,
+      "nummer": "12.7",
+      "ankare": "ch12-q7",
+      "alias": [
+        "sol12-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000118",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 8,
+      "nummer": "12.8",
+      "ankare": "ch12-q8",
+      "alias": [
+        "sol12-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000119",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 9,
+      "nummer": "12.9",
+      "ankare": "ch12-q9",
+      "alias": [
+        "sol12-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000120",
+      "plats": "bok:ch018.xhtml",
+      "del": "kapitel-12",
+      "ordning": 10,
+      "nummer": "12.10",
+      "ankare": "ch12-q10",
+      "alias": [
+        "sol12-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000121",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 1,
+      "nummer": "13.1",
+      "ankare": "ch13-q1",
+      "alias": [
+        "sol13-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000122",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 2,
+      "nummer": "13.2",
+      "ankare": "ch13-q2",
+      "alias": [
+        "sol13-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000123",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 3,
+      "nummer": "13.3",
+      "ankare": "ch13-q3",
+      "alias": [
+        "sol13-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000124",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 4,
+      "nummer": "13.4",
+      "ankare": "ch13-q4",
+      "alias": [
+        "sol13-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000125",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 5,
+      "nummer": "13.5",
+      "ankare": "ch13-q5",
+      "alias": [
+        "sol13-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000126",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 6,
+      "nummer": "13.6",
+      "ankare": "ch13-q6",
+      "alias": [
+        "sol13-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000127",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 7,
+      "nummer": "13.7",
+      "ankare": "ch13-q7",
+      "alias": [
+        "sol13-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000128",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 8,
+      "nummer": "13.8",
+      "ankare": "ch13-q8",
+      "alias": [
+        "sol13-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000129",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 9,
+      "nummer": "13.9",
+      "ankare": "ch13-q9",
+      "alias": [
+        "sol13-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000130",
+      "plats": "bok:ch020.xhtml",
+      "del": "kapitel-13",
+      "ordning": 10,
+      "nummer": "13.10",
+      "ankare": "ch13-q10",
+      "alias": [
+        "sol13-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000131",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 1,
+      "nummer": "14.1",
+      "ankare": "ch14-q1",
+      "alias": [
+        "sol14-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000132",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 2,
+      "nummer": "14.2",
+      "ankare": "ch14-q2",
+      "alias": [
+        "sol14-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000133",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 3,
+      "nummer": "14.3",
+      "ankare": "ch14-q3",
+      "alias": [
+        "sol14-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000134",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 4,
+      "nummer": "14.4",
+      "ankare": "ch14-q4",
+      "alias": [
+        "sol14-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000135",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 5,
+      "nummer": "14.5",
+      "ankare": "ch14-q5",
+      "alias": [
+        "sol14-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000136",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 6,
+      "nummer": "14.6",
+      "ankare": "ch14-q6",
+      "alias": [
+        "sol14-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000137",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 7,
+      "nummer": "14.7",
+      "ankare": "ch14-q7",
+      "alias": [
+        "sol14-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000138",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 8,
+      "nummer": "14.8",
+      "ankare": "ch14-q8",
+      "alias": [
+        "sol14-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000139",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 9,
+      "nummer": "14.9",
+      "ankare": "ch14-q9",
+      "alias": [
+        "sol14-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000140",
+      "plats": "bok:ch021.xhtml",
+      "del": "kapitel-14",
+      "ordning": 10,
+      "nummer": "14.10",
+      "ankare": "ch14-q10",
+      "alias": [
+        "sol14-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000141",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 1,
+      "nummer": "15.1",
+      "ankare": "ch15-q1",
+      "alias": [
+        "sol15-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000142",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 2,
+      "nummer": "15.2",
+      "ankare": "ch15-q2",
+      "alias": [
+        "sol15-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000143",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 3,
+      "nummer": "15.3",
+      "ankare": "ch15-q3",
+      "alias": [
+        "sol15-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000144",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 4,
+      "nummer": "15.4",
+      "ankare": "ch15-q4",
+      "alias": [
+        "sol15-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000145",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 5,
+      "nummer": "15.5",
+      "ankare": "ch15-q5",
+      "alias": [
+        "sol15-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000146",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 6,
+      "nummer": "15.6",
+      "ankare": "ch15-q6",
+      "alias": [
+        "sol15-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000147",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 7,
+      "nummer": "15.7",
+      "ankare": "ch15-q7",
+      "alias": [
+        "sol15-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000148",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 8,
+      "nummer": "15.8",
+      "ankare": "ch15-q8",
+      "alias": [
+        "sol15-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000149",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 9,
+      "nummer": "15.9",
+      "ankare": "ch15-q9",
+      "alias": [
+        "sol15-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000150",
+      "plats": "bok:ch022.xhtml",
+      "del": "kapitel-15",
+      "ordning": 10,
+      "nummer": "15.10",
+      "ankare": "ch15-q10",
+      "alias": [
+        "sol15-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000151",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 1,
+      "nummer": "16.1",
+      "ankare": "ch16-q1",
+      "alias": [
+        "sol16-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000152",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 2,
+      "nummer": "16.2",
+      "ankare": "ch16-q2",
+      "alias": [
+        "sol16-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000153",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 3,
+      "nummer": "16.3",
+      "ankare": "ch16-q3",
+      "alias": [
+        "sol16-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000154",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 4,
+      "nummer": "16.4",
+      "ankare": "ch16-q4",
+      "alias": [
+        "sol16-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000155",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 5,
+      "nummer": "16.5",
+      "ankare": "ch16-q5",
+      "alias": [
+        "sol16-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000156",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 6,
+      "nummer": "16.6",
+      "ankare": "ch16-q6",
+      "alias": [
+        "sol16-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000157",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 7,
+      "nummer": "16.7",
+      "ankare": "ch16-q7",
+      "alias": [
+        "sol16-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000158",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 8,
+      "nummer": "16.8",
+      "ankare": "ch16-q8",
+      "alias": [
+        "sol16-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000159",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 9,
+      "nummer": "16.9",
+      "ankare": "ch16-q9",
+      "alias": [
+        "sol16-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000160",
+      "plats": "bok:ch023.xhtml",
+      "del": "kapitel-16",
+      "ordning": 10,
+      "nummer": "16.10",
+      "ankare": "ch16-q10",
+      "alias": [
+        "sol16-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000161",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 1,
+      "nummer": "17.1",
+      "ankare": "ch17-q1",
+      "alias": [
+        "sol17-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000162",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 2,
+      "nummer": "17.2",
+      "ankare": "ch17-q2",
+      "alias": [
+        "sol17-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000163",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 3,
+      "nummer": "17.3",
+      "ankare": "ch17-q3",
+      "alias": [
+        "sol17-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000164",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 4,
+      "nummer": "17.4",
+      "ankare": "ch17-q4",
+      "alias": [
+        "sol17-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000165",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 5,
+      "nummer": "17.5",
+      "ankare": "ch17-q5",
+      "alias": [
+        "sol17-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000166",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 6,
+      "nummer": "17.6",
+      "ankare": "ch17-q6",
+      "alias": [
+        "sol17-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000167",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 7,
+      "nummer": "17.7",
+      "ankare": "ch17-q7",
+      "alias": [
+        "sol17-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000168",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 8,
+      "nummer": "17.8",
+      "ankare": "ch17-q8",
+      "alias": [
+        "sol17-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000169",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 9,
+      "nummer": "17.9",
+      "ankare": "ch17-q9",
+      "alias": [
+        "sol17-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000170",
+      "plats": "bok:ch024.xhtml",
+      "del": "kapitel-17",
+      "ordning": 10,
+      "nummer": "17.10",
+      "ankare": "ch17-q10",
+      "alias": [
+        "sol17-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000171",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 1,
+      "nummer": "18.1",
+      "ankare": "ch18-q1",
+      "alias": [
+        "sol18-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000172",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 2,
+      "nummer": "18.2",
+      "ankare": "ch18-q2",
+      "alias": [
+        "sol18-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000173",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 3,
+      "nummer": "18.3",
+      "ankare": "ch18-q3",
+      "alias": [
+        "sol18-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000174",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 4,
+      "nummer": "18.4",
+      "ankare": "ch18-q4",
+      "alias": [
+        "sol18-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000175",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 5,
+      "nummer": "18.5",
+      "ankare": "ch18-q5",
+      "alias": [
+        "sol18-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000176",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 6,
+      "nummer": "18.6",
+      "ankare": "ch18-q6",
+      "alias": [
+        "sol18-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000177",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 7,
+      "nummer": "18.7",
+      "ankare": "ch18-q7",
+      "alias": [
+        "sol18-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000178",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 8,
+      "nummer": "18.8",
+      "ankare": "ch18-q8",
+      "alias": [
+        "sol18-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000179",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 9,
+      "nummer": "18.9",
+      "ankare": "ch18-q9",
+      "alias": [
+        "sol18-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000180",
+      "plats": "bok:ch025.xhtml",
+      "del": "kapitel-18",
+      "ordning": 10,
+      "nummer": "18.10",
+      "ankare": "ch18-q10",
+      "alias": [
+        "sol18-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000181",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 1,
+      "nummer": "19.1",
+      "ankare": "ch19-q1",
+      "alias": [
+        "sol19-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000182",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 2,
+      "nummer": "19.2",
+      "ankare": "ch19-q2",
+      "alias": [
+        "sol19-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000183",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 3,
+      "nummer": "19.3",
+      "ankare": "ch19-q3",
+      "alias": [
+        "sol19-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000184",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 4,
+      "nummer": "19.4",
+      "ankare": "ch19-q4",
+      "alias": [
+        "sol19-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000185",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 5,
+      "nummer": "19.5",
+      "ankare": "ch19-q5",
+      "alias": [
+        "sol19-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000186",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 6,
+      "nummer": "19.6",
+      "ankare": "ch19-q6",
+      "alias": [
+        "sol19-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000187",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 7,
+      "nummer": "19.7",
+      "ankare": "ch19-q7",
+      "alias": [
+        "sol19-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000188",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 8,
+      "nummer": "19.8",
+      "ankare": "ch19-q8",
+      "alias": [
+        "sol19-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000189",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 9,
+      "nummer": "19.9",
+      "ankare": "ch19-q9",
+      "alias": [
+        "sol19-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000190",
+      "plats": "bok:ch027.xhtml",
+      "del": "kapitel-19",
+      "ordning": 10,
+      "nummer": "19.10",
+      "ankare": "ch19-q10",
+      "alias": [
+        "sol19-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000191",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 1,
+      "nummer": "20.1",
+      "ankare": "ch20-q1",
+      "alias": [
+        "sol20-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000192",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 2,
+      "nummer": "20.2",
+      "ankare": "ch20-q2",
+      "alias": [
+        "sol20-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000193",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 3,
+      "nummer": "20.3",
+      "ankare": "ch20-q3",
+      "alias": [
+        "sol20-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000194",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 4,
+      "nummer": "20.4",
+      "ankare": "ch20-q4",
+      "alias": [
+        "sol20-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000195",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 5,
+      "nummer": "20.5",
+      "ankare": "ch20-q5",
+      "alias": [
+        "sol20-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000196",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 6,
+      "nummer": "20.6",
+      "ankare": "ch20-q6",
+      "alias": [
+        "sol20-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000197",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 7,
+      "nummer": "20.7",
+      "ankare": "ch20-q7",
+      "alias": [
+        "sol20-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000198",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 8,
+      "nummer": "20.8",
+      "ankare": "ch20-q8",
+      "alias": [
+        "sol20-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000199",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 9,
+      "nummer": "20.9",
+      "ankare": "ch20-q9",
+      "alias": [
+        "sol20-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000200",
+      "plats": "bok:ch028.xhtml",
+      "del": "kapitel-20",
+      "ordning": 10,
+      "nummer": "20.10",
+      "ankare": "ch20-q10",
+      "alias": [
+        "sol20-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000201",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 1,
+      "nummer": "21.1",
+      "ankare": "ch21-q1",
+      "alias": [
+        "sol21-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000202",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 2,
+      "nummer": "21.2",
+      "ankare": "ch21-q2",
+      "alias": [
+        "sol21-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000203",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 3,
+      "nummer": "21.3",
+      "ankare": "ch21-q3",
+      "alias": [
+        "sol21-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000204",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 4,
+      "nummer": "21.4",
+      "ankare": "ch21-q4",
+      "alias": [
+        "sol21-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000205",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 5,
+      "nummer": "21.5",
+      "ankare": "ch21-q5",
+      "alias": [
+        "sol21-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000206",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 6,
+      "nummer": "21.6",
+      "ankare": "ch21-q6",
+      "alias": [
+        "sol21-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000207",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 7,
+      "nummer": "21.7",
+      "ankare": "ch21-q7",
+      "alias": [
+        "sol21-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000208",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 8,
+      "nummer": "21.8",
+      "ankare": "ch21-q8",
+      "alias": [
+        "sol21-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000209",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 9,
+      "nummer": "21.9",
+      "ankare": "ch21-q9",
+      "alias": [
+        "sol21-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000210",
+      "plats": "bok:ch029.xhtml",
+      "del": "kapitel-21",
+      "ordning": 10,
+      "nummer": "21.10",
+      "ankare": "ch21-q10",
+      "alias": [
+        "sol21-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000211",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 1,
+      "nummer": "22.1",
+      "ankare": "ch22-q1",
+      "alias": [
+        "sol22-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000212",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 2,
+      "nummer": "22.2",
+      "ankare": "ch22-q2",
+      "alias": [
+        "sol22-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000213",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 3,
+      "nummer": "22.3",
+      "ankare": "ch22-q3",
+      "alias": [
+        "sol22-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000214",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 4,
+      "nummer": "22.4",
+      "ankare": "ch22-q4",
+      "alias": [
+        "sol22-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000215",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 5,
+      "nummer": "22.5",
+      "ankare": "ch22-q5",
+      "alias": [
+        "sol22-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000216",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 6,
+      "nummer": "22.6",
+      "ankare": "ch22-q6",
+      "alias": [
+        "sol22-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000217",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 7,
+      "nummer": "22.7",
+      "ankare": "ch22-q7",
+      "alias": [
+        "sol22-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000218",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 8,
+      "nummer": "22.8",
+      "ankare": "ch22-q8",
+      "alias": [
+        "sol22-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000219",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 9,
+      "nummer": "22.9",
+      "ankare": "ch22-q9",
+      "alias": [
+        "sol22-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000220",
+      "plats": "bok:ch030.xhtml",
+      "del": "kapitel-22",
+      "ordning": 10,
+      "nummer": "22.10",
+      "ankare": "ch22-q10",
+      "alias": [
+        "sol22-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000221",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 1,
+      "nummer": "23.1",
+      "ankare": "ch23-q1",
+      "alias": [
+        "sol23-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000222",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 2,
+      "nummer": "23.2",
+      "ankare": "ch23-q2",
+      "alias": [
+        "sol23-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000223",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 3,
+      "nummer": "23.3",
+      "ankare": "ch23-q3",
+      "alias": [
+        "sol23-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000224",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 4,
+      "nummer": "23.4",
+      "ankare": "ch23-q4",
+      "alias": [
+        "sol23-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000225",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 5,
+      "nummer": "23.5",
+      "ankare": "ch23-q5",
+      "alias": [
+        "sol23-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000226",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 6,
+      "nummer": "23.6",
+      "ankare": "ch23-q6",
+      "alias": [
+        "sol23-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000227",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 7,
+      "nummer": "23.7",
+      "ankare": "ch23-q7",
+      "alias": [
+        "sol23-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000228",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 8,
+      "nummer": "23.8",
+      "ankare": "ch23-q8",
+      "alias": [
+        "sol23-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000229",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 9,
+      "nummer": "23.9",
+      "ankare": "ch23-q9",
+      "alias": [
+        "sol23-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000230",
+      "plats": "bok:ch031.xhtml",
+      "del": "kapitel-23",
+      "ordning": 10,
+      "nummer": "23.10",
+      "ankare": "ch23-q10",
+      "alias": [
+        "sol23-s10"
+      ]
+    },
+    {
+      "ovning": "EL-000231",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 1,
+      "nummer": "24.1",
+      "ankare": "ch24-q1",
+      "alias": [
+        "sol24-s1"
+      ]
+    },
+    {
+      "ovning": "EL-000232",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 2,
+      "nummer": "24.2",
+      "ankare": "ch24-q2",
+      "alias": [
+        "sol24-s2"
+      ]
+    },
+    {
+      "ovning": "EL-000233",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 3,
+      "nummer": "24.3",
+      "ankare": "ch24-q3",
+      "alias": [
+        "sol24-s3"
+      ]
+    },
+    {
+      "ovning": "EL-000234",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 4,
+      "nummer": "24.4",
+      "ankare": "ch24-q4",
+      "alias": [
+        "sol24-s4"
+      ]
+    },
+    {
+      "ovning": "EL-000235",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 5,
+      "nummer": "24.5",
+      "ankare": "ch24-q5",
+      "alias": [
+        "sol24-s5"
+      ]
+    },
+    {
+      "ovning": "EL-000236",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 6,
+      "nummer": "24.6",
+      "ankare": "ch24-q6",
+      "alias": [
+        "sol24-s6"
+      ]
+    },
+    {
+      "ovning": "EL-000237",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 7,
+      "nummer": "24.7",
+      "ankare": "ch24-q7",
+      "alias": [
+        "sol24-s7"
+      ]
+    },
+    {
+      "ovning": "EL-000238",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 8,
+      "nummer": "24.8",
+      "ankare": "ch24-q8",
+      "alias": [
+        "sol24-s8"
+      ]
+    },
+    {
+      "ovning": "EL-000239",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 9,
+      "nummer": "24.9",
+      "ankare": "ch24-q9",
+      "alias": [
+        "sol24-s9"
+      ]
+    },
+    {
+      "ovning": "EL-000240",
+      "plats": "bok:ch032.xhtml",
+      "del": "kapitel-24",
+      "ordning": 10,
+      "nummer": "24.10",
+      "ankare": "ch24-q10",
+      "alias": [
+        "sol24-s10"
+      ]
+    }
+  ]
+}

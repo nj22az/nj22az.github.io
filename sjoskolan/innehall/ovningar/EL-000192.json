@@ -1,0 +1,81 @@
+{
+  "id": "EL-000192",
+  "titel": "Ström vid 6,6 kV",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En symmetrisk trefaslast tar P = 1,0 MW vid U_{L} = 6,6 kV och PF = 0,90. Beräkna linjeströmmen.",
+    "samband": [
+      "I_{L} = P/(√3 · U_{L} · PF)"
+    ],
+    "givet": "Symmetrisk last: P = 1,0 MW, U_{L} = 6,6 kV, PF = 0,90.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "P är den aktiva effekten i W, U_{L} linjespänningen i V och I_{L} linjeströmmen i A.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Gör om MW till W och kV till V och sätt in värdena.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{L} = 1 000 000/(1,732 · 6 600 · 0,90) ≈ 97 A.",
+    "svar": [
+      {
+        "storhet": "I_{L}",
+        "varde": 97.2,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q2 och ch053.xhtml#sol20-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

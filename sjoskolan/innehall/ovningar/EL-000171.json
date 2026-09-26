@@ -1,0 +1,70 @@
+{
+  "id": "EL-000171",
+  "titel": "NO och NC",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-5",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-18",
+      "T-kurs-v43-03",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad betyder NO och NC när en apparat är ritad i opåverkat läge?",
+    "samband": [
+      "NO = normalt öppen; NC = normalt sluten"
+    ],
+    "givet": "Ingen har tryckt på något och spolen är strömlös.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I schemat ritas kontakten i det läge den har när apparaten inte är påverkad.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv ut båda förkortningarna och ange om strömvägen är öppen eller sluten i vila.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "NO: normalt öppen, ingen strömväg i vila. NC: normalt sluten, strömväg i vila.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch025.xhtml#ch18-q1 och ch051.xhtml#sol18-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_03-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

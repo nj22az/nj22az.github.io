@@ -1,0 +1,70 @@
+{
+  "id": "EL-000173",
+  "titel": "Hållning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-5",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-18",
+      "T-kurs-v43-03",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Varför ligger K1:s NO-kontakt parallellt med START i hållkretsen?",
+    "samband": [
+      "Parallell hållkontakt kan ersätta START-vägen"
+    ],
+    "givet": "S0 och returen är hela. K1:s kontakt ligger parallellt med START-knappen S1.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "När K1 drar sluter dess NO-kontakt, och den kan hålla kvar matningen när START går tillbaka till öppet läge.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Följ strömvägen före start, under start och efter att S1 har släppts.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "När K1 drar sluter NO-kontakten och tar över strömvägen. K1 hålls kvar när START släpps.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch025.xhtml#ch18-q3 och ch051.xhtml#sol18-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_03-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "EL-000211",
+  "titel": "Observation eller diagnos",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-6",
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-22",
+      "T-kurs-v45-01",
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "”Motorn startar inte” och ”kontaktorn är trasig” skrivs i en rapport. Vilket är observation och vilket är hypotes?",
+    "samband": [
+      "Observation beskriver vad som faktiskt hänt"
+    ],
+    "givet": "Rapporten innehåller ”motorn startar inte” och ”kontaktorn är trasig”. Ingen har provat kontaktorn.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "En hypotes är en föreslagen orsak som måste prövas.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Avgör vilken mening som beskriver vad som hänt och vilken som gissar på en orsak.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Observation: ”motorn startar inte”. Hypotes: ”kontaktorn är trasig”.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch030.xhtml#ch22-q1 och ch055.xhtml#sol22-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_01-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

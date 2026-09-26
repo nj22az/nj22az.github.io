@@ -1,0 +1,71 @@
+{
+  "id": "EL-000210",
+  "titel": "Spårbar slutsats",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En isolationsmätning ändras från 100 MΩ till 10 MΩ. Varför räcker det inte att direkt säga att isoleringen har skadats?",
+    "samband": [
+      "Jämförbara mätvillkor krävs för en trend"
+    ],
+    "givet": "Värdet har gått från 100 till 10 MΩ, men det står inget om under vilka förhållanden mätningarna gjordes.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Provspänning, mättid, temperatur, fukt och inkopplad utrustning påverkar värdet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vilka förhållanden som måste jämföras innan du drar en slutsats. Håll isär ett lägre mätvärde och en bevisad skada.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Provspänning, mättid, temperatur, fukt och inkopplad utrustning kan skilja mellan mätningarna. Jämför villkoren innan du drar slutsatsen att isolationen är skadad.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q10 och ch054.xhtml#sol21-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

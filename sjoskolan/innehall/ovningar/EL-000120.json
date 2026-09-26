@@ -1,0 +1,70 @@
+{
+  "id": "EL-000120",
+  "titel": "Egen slutsats",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Skriv en kort slutsats till protokollet: källan mäts till 11,94 V och seriekretsens spänningsfall är 3,98 och 7,96 V.",
+    "samband": [
+      "Slutsats kopplas till data och driftfall"
+    ],
+    "givet": "Källan 11,94 V och spänningsfallen 3,98 V och 7,96 V är givna övningsdata.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "En slutsats ska ange vad jämförelsen visar. Mätvillkor och kvarstående osäkerhet avgränsar slutsatsen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Visa summan och jämför med källan. Vad visar jämförelsen, och vad visar den inte?",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Exempel: Summan av spänningsfallen, 3,98 + 7,96 = 11,94 V, är lika med källspänningen. Mätningen stöder slinglagen i detta driftfall. Den visar inget om andra laster eller om mätarens osäkerhet.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q10 och ch045.xhtml#sol12-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

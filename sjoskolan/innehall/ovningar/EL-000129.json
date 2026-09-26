@@ -1,0 +1,68 @@
+{
+  "id": "EL-000129",
+  "titel": "Tillbud",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En felansluten mätsladd orsakar en kortslutning, men ingen skadas. Varför ska händelsen ändå rapporteras?",
+    "samband": [
+      "Tillbud är en händelse som kunde ha skadat"
+    ],
+    "givet": "En felansluten mätsladd orsakade en kortslutning. Ingen skadades den här gången.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Att ingen skadades säger inget om hur illa det kan gå nästa gång.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Förklara hur rapporten leder till åtgärder som förebygger. Beskriv vad som hände, inte vad personen kan ha tänkt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ett tillbud visar en brist som nästa gång kan ge personskada. Rapporten gör det möjligt att hitta orsaken och förebygga upprepning.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q9 och ch046.xhtml#sol13-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "EL-000064",
+  "titel": "Effektivvärde",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinus har toppvärdet 34,0 V. Beräkna effektivvärdet.",
+    "samband": [
+      "U = û/√2"
+    ],
+    "givet": "Ren sinus utan likspänningsdel, û = 34,0 V."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U är effektivvärdet och û toppvärdet, båda i V.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Dela toppvärdet med √2. Avrunda inte förrän i svaret.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "U = 34,0/1,414 ≈ 24,0 V.",
+    "svar": [
+      {
+        "storhet": "U",
+        "varde": 24.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q4 och ch040.xhtml#sol7-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "id": "EL-000343",
+  "titel": "Ström vid effektfaktorn 1,00",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur stor ström krävs när effektfaktorn är 1,00?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[6] (id grund-pf1)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I = P/(U · PF). Vid PF = 1 blir detta P/U.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "P": {
+      "varde": 1150,
+      "enhet": "W"
+    },
+    "U": {
+      "varde": 230,
+      "enhet": "V"
+    },
+    "PF": {
+      "varde": 1
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Matningsström I",
+        "varde": 5,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A",
+        "berakning": "ac.strom_pf"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 50,
+      "P": 1150,
+      "pf": 1,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "I",
+          "Matningsström I",
+          "A"
+        ]
+      ]
+    },
+    "teoriavsnitt": "resistiv",
+    "visualisering": "power",
+    "forklaring": {
+      "fraga": "Vad betyder effektfaktorn 1,00 i vår resistiva sinusmodell?",
+      "ledtrad": "Beskriv förhållandet mellan P och S samt kurvornas fas."
+    },
+    "kalla": "Enfas: U = 230 V RMS, P = 1 150 W, PF = 1,00",
+    "alias": "grund-pf1"
+  }
+}

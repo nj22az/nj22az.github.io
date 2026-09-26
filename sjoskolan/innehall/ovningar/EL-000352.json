@@ -1,0 +1,101 @@
+{
+  "id": "EL-000352",
+  "titel": "Välj CAT-klass",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Bedöm mätplats, spänning och hela mätutrustningen.",
+    "alternativ": [
+      "CAT II 1 000 V",
+      "CAT III 600 V",
+      "CAT III 300 V"
+    ]
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[7] (id category)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Du ska mäta i en fördelningscentral (CAT III). Högsta relevanta spänning är 400 V. Vilket alternativ uppfyller båda kraven?",
+        "ledtrad": "Ett högt volt-tal ersätter inte rätt kategori.",
+        "varfor": "CAT III 600 V uppfyller både kategori och spänning. CAT II 1 000 V har ett högre volt-tal, men fel kategori för denna mätplats.",
+        "alternativ": [
+          "CAT II 1 000 V",
+          "CAT III 600 V",
+          "CAT III 300 V"
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "s2",
+        "text": "Nästa mätplats är vid en lågspänningsanläggnings servisintag (CAT IV), 230 V mot jord. Vilken märkning är tillräcklig?",
+        "ledtrad": "Välj kategori för var du mäter, och kontrollera sedan spänningsmärkningen.",
+        "varfor": "CAT IV 600 V passar den angivna CAT IV-miljön och spänningen. CAT III 1 000 V räcker inte här.",
+        "alternativ": [
+          "CAT III 1 000 V",
+          "CAT II 1 000 V",
+          "CAT IV 600 V"
+        ],
+        "ratt": 2
+      },
+      {
+        "id": "s3",
+        "text": "Mätaren är CAT III 1 000 V. Sladdar och spetsar är bara CAT III 300 V. Får kombinationen användas vid 400 V mot jord i CAT III?",
+        "ledtrad": "Den svagaste delen begränsar hela mätuppställningen.",
+        "varfor": "Nej. Mätare, sladdar, spetsar och tillbehör måste alla passa mätplatsen och spänningen. Kontrollera även tillåtna spänningar mellan uttag.",
+        "alternativ": [
+          "Ja, mätarens märkning avgör",
+          "Nej, sladdarnas gräns är för låg"
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "s4",
+        "text": "Kan en CAT II-mätare ha högre märkspänning än en CAT IV-mätare?",
+        "ledtrad": "Till exempel CAT II 1 000 V och CAT IV 600 V. Läs alltid hela märkningen.",
+        "varfor": "Ja. CAT II 1 000 V och CAT IV 600 V kan båda finnas. En högre CAT måste inte ha lägre märkspänning; konstruktion och provning avgör vilka kombinationer instrumentet är godkänt för.",
+        "alternativ": [
+          "Ja, kategori och spänningsmärkning är två skilda krav",
+          "Nej, högre CAT måste alltid ha högre volt-tal",
+          "Ja, därför kan CAT II ersätta CAT IV"
+        ],
+        "ratt": 0
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "category",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 33–39",
+    "alias": "category"
+  }
+}

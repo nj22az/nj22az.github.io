@@ -1,0 +1,80 @@
+{
+  "id": "EL-000162",
+  "titel": "Transformatorström",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En ideal transformator matar en resistiv last med 24 V och 3 A. Primärspänningen är 240 V. Bestäm effekten och primärströmmen.",
+    "samband": [
+      "U_{1} · I_{1} = U_{2} · I_{2}; I_{1} = U_{2} · I_{2}/U_{1}"
+    ],
+    "givet": "Ideal enfastransformator med resistiv last, PF = 1. U_{2} = 24 V, I_{2} = 3 A och U_{1} = 240 V. Förluster försummas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Spänning gånger ström ger skenbar effekt i VA, och för en resistiv last är det också den aktiva effekten i W.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut effekten på sekundärsidan och dela med primärspänningen. Håll isär primär- och sekundärsidan.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{1} = 24 · 3/240 = 0,30 A.",
+    "svar": [
+      {
+        "storhet": "I_{1}",
+        "varde": 0.3,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q2 och ch050.xhtml#sol17-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

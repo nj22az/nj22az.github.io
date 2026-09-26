@@ -1,0 +1,69 @@
+{
+  "id": "EL-000195",
+  "titel": "Reläskyddets kedja",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ordna dessa funktioner i en signalväg: brytare, mättransformator, skyddsrelä. Vad händer om skyddsreläet saknar hjälpspänning?",
+    "samband": [
+      "Mätning, beslut och bortkoppling"
+    ],
+    "givet": "En förenklad bild av ett reläskydd.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Mättransformatorn ger en signal, skyddsreläet bedömer den och brytaren bryter när den får kommando.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Sätt delarna i ordning från mätning till bortkoppling.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Mättransformator → skyddsrelä → brytare.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q5 och ch053.xhtml#sol20-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

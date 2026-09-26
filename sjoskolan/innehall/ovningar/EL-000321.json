@@ -1,0 +1,92 @@
+{
+  "id": "EL-000321",
+  "titel": "Vila: efter STOPP",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Kretsen är i vila: S0 sluten, S1 öppen, K1 släppt. Matningen är 24 V. Vilken spänning visar mätaren mellan a (efter S0) och 0 V?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[0] (id vila)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "S0 är sluten, så a har samma potential som +U. Returen håller 0 V-sidan på 0 V.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "a är förbunden med +24 V genom den slutna S0. U = 24 − 0 = 24 V, trots att ingen ström går.",
+    "svar": [
+      {
+        "storhet": "U(a–0 V)",
+        "varde": 24,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 24
+    },
+    "initial": {
+      "steg": [
+        {
+          "red": "a",
+          "black": "N"
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(a–0 V)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0,
+          "text": "Ingen ström betyder inte ingen spänning. Punkten a är förbunden med matningen."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · bild 8 och 22",
+    "alias": "vila"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "id": "EL-000332",
+  "titel": "Första jordfelet",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "L1 får ett fullständigt jordfel mot skrovet. Driften fortsätter. Vilken spänning har L2 mot skrovet nu?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[3] (id forsta)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Skrovet har nu samma potential som L1. Vilken spänning finns mellan L1 och L2?",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Skrovet ligger på L1:s potential. U(L2–skrov) = U(L2–L1) = 440 V. Friska faser får huvudspänning mot skrovet. Instrument och sladdar måste klara det.",
+    "svar": [
+      {
+        "storhet": "U(L2–skrov)",
+        "varde": 439.999,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V",
+        "berakning": "it.frisk_fas_vid_jordfel"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 440,
+      "enhet": "V"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 439.999
+    },
+    "initial": {
+      "R": [
+        0,
+        10000000,
+        10000000
+      ],
+      "C": 1e-06
+    },
+    "fraga": {
+      "storhet": "Uhull",
+      "etikett": "U(L2–skrov)",
+      "enhet": "V",
+      "fas": 1
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 254,
+          "text": "Det var värdet före felet. Nu ligger skrovet på L1:s potential."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_01 · film IT-nätet ombord",
+    "alias": "forsta"
+  }
+}

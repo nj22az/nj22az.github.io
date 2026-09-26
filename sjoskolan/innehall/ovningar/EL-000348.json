@@ -1,0 +1,61 @@
+{
+  "id": "EL-000348",
+  "titel": "Resistans",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Mät en frikopplad resistors resistans."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[3] (id resistance)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Välj Ω och V Ω-uttaget. Anslut spetsarna till A och B på den frikopplade resistorn R1.",
+        "ledtrad": "En ohmmeter skickar en liten testström. Komponenten ska vara spänningslös och utan andra parallella strömvägar.",
+        "varfor": "1,000 kΩ = 1 000 Ω. Mätaren använder sin egen testström; någon extern matning behövs inte.",
+        "kod": {
+          "test": "multimetersimulator.resistance.1"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "resistor",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 24–26",
+    "alias": "resistance",
+    "initial": {
+      "parallel": false
+    }
+  }
+}

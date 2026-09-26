@@ -1,0 +1,131 @@
+{
+  "id": "EL-000353",
+  "titel": "Station A: DC-delare",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma station som på den fysiska träffen (v41_03 bild 7): kontrollera instrumentet, mät R1 och R2 spänningslöst, mät spänningar och ström och jämför med dina beräkningar i labbprotokollet under simulatorn."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[8] (id stationA)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Instrumentkontroll: välj V ⎓ och V Ω. Mät på referensen: röd till Ref+ och svart till Ref−. Referensen är 5,000 V.",
+        "ledtrad": "Referensen är en känd källa, skild från riggen. Visar mätaren fel här kan du inte lita på resten av mätningarna. Samma princip som prova–mät–prova.",
+        "varfor": "Mätaren visar 5,000 V inom sin noggrannhet ±(0,5 % + 2 siffror). Skriv det i protokollet. Gör samma kontroll efter sista mätningen.",
+        "kod": {
+          "test": "multimetersimulator.stationA.1"
+        }
+      },
+      {
+        "id": "s2",
+        "text": "Förbered resistansmätningen: bryt matningen och öppna länken P–A. Kontrollera sedan i V ⎓ att det är 0 V över R1 (röd A, svart B).",
+        "ledtrad": "En frånslagen nätdel är fortfarande ansluten till kretsen. Med öppen länk är källan frånkopplad från R1 och R2. Kontrollera spänningslösheten innan du väljer Ω.",
+        "varfor": "0 V över R1 och källan frånkopplad. Nu kan resistansen mätas utan att källan påverkar värdet.",
+        "kod": {
+          "test": "multimetersimulator.stationA.2"
+        }
+      },
+      {
+        "id": "s3",
+        "text": "Mät R1: välj Ω och anslut spetsarna till A och B.",
+        "ledtrad": "Länken P–A ska vara öppen. Prova gärna i fri övning med sluten länk: då ser mätaren även den frånslagna källan och visar för lågt.",
+        "varfor": "Det här är riggens verkliga R1. Jämför med 1 kΩ ±5 % och tänk på mätarens egen osäkerhet ±(0,8 % + 2 siffror).",
+        "kod": {
+          "test": "multimetersimulator.stationA.3"
+        }
+      },
+      {
+        "id": "s4",
+        "text": "Mät R2 mellan B och N på samma sätt.",
+        "ledtrad": "Toleransen ±5 % ger gränserna 1,900–2,100 kΩ. Ligger värdet nära en gräns kan mätarens osäkerhet avgöra.",
+        "varfor": "Det här är riggens verkliga R2. Bedöm den i protokollet: inom, utanför eller kan inte avgöras.",
+        "kod": {
+          "test": "multimetersimulator.stationA.4"
+        }
+      },
+      {
+        "id": "s5",
+        "text": "Slut länken P–A, välj V ⎓ och slå på matningen. Mät källspänningen: röd på P och svart på N.",
+        "ledtrad": "Källan är märkt med ett nominellt värde. Den verkliga spänningen kan avvika lite.",
+        "varfor": "Källans verkliga spänning. Använd den i stället för det märkta värdet när du räknar förväntade spänningsfall.",
+        "kod": {
+          "test": "multimetersimulator.stationA.5"
+        }
+      },
+      {
+        "id": "s6",
+        "text": "Mät spänningen över R1: röd på A och svart på B.",
+        "ledtrad": "Voltmetern kopplas parallellt över R1. Räkna först: U1 = Ukälla · R1/(R1 + R2).",
+        "varfor": "Jämför med ditt förväntade värde. Räknar du med de uppmätta värdena blir avvikelsen liten.",
+        "kod": {
+          "test": "multimetersimulator.stationA.6"
+        }
+      },
+      {
+        "id": "s7",
+        "text": "Mät spänningen över R2: röd på B och svart på N.",
+        "ledtrad": "Kontrollera sedan slinglagen: Ukälla − U1 − U2 ska bli nära noll.",
+        "varfor": "Summan U1 + U2 ska vara lika med källspänningen, inom avläsningens upplösning.",
+        "kod": {
+          "test": "multimetersimulator.stationA.7"
+        }
+      },
+      {
+        "id": "s8",
+        "text": "Mät strömmen. Bryt matningen. Öppna länken P–A, välj A ⎓ och flytta röd sladd till mA. Röd till P och svart till A. Slå på.",
+        "ledtrad": "Ampermetern ersätter länken så att strömmen går genom mätaren. Koppla om bara med bruten matning.",
+        "varfor": "Strömmen genom seriekretsen. Jämför med Ukälla/(R1 + R2). mA-uttagets inre resistans påverkar nästan inte här.",
+        "kod": {
+          "test": "multimetersimulator.stationA.8"
+        }
+      },
+      {
+        "id": "s9",
+        "text": "Avsluta: bryt matningen, flytta röd sladd till V Ω och slut länken P–A. Kontrollera sedan instrumentet mot referensen igen.",
+        "ledtrad": "Samma avslut som på den fysiska stationen. Nästa grupp ska inte få en rigg med öppen länk eller sladd i strömuttaget.",
+        "varfor": "Riggen är återställd och instrumentet visar fortfarande rätt. Fyll i analysen i labbprotokollet under simulatorn.",
+        "kod": {
+          "test": "multimetersimulator.stationA.9"
+        }
+      }
+    ],
+    "station": "Station A"
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "station",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 54",
+    "alias": "stationA"
+  }
+}

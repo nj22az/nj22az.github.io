@@ -1,0 +1,80 @@
+{
+  "id": "EL-000041",
+  "titel": "Nod med en okänd ström",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-05",
+      "T-kurs-v39-02",
+      "T-bildspel-v39-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "8,0 A går in i en nod. 3,0 A och I_{x} går ut. Bestäm I_{x} med Kirchhoffs strömlag.",
+    "samband": [
+      "ΣI_{in} = ΣI_{ut}; I_{x} = I_{in} − Ikänd ut"
+    ],
+    "givet": "Ingen laddning samlas i noden. 8,0 A går in, 3,0 A och I_{x} går ut.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Σ betyder ”summan av”. Pilarna visar vilka strömmar som går in och vilka som går ut.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv först in = ut, lös sedan ut den okända strömmen och kontrollera att det går jämnt ut.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{x} = 8,0 − 3,0 = 5,0 A ut ur noden. Kontroll: 8,0 = 3,0 + 5,0.",
+    "svar": [
+      {
+        "storhet": "I_{x}",
+        "varde": 5.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch010.xhtml#ch5-q1 och ch038.xhtml#sol5-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_02-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx bild 15 och 16",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

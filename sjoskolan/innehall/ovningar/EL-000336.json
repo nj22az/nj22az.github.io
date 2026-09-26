@@ -1,0 +1,101 @@
+{
+  "id": "EL-000336",
+  "titel": "Isolationsprovning: skadad kabel",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kabel med skadad mantel har 50 kΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[7] (id kabel)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I = Uprov/R. 50 kΩ = 50 000 Ω.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
+    "svar": [
+      {
+        "storhet": "Iläck",
+        "varde": 10,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "mA",
+        "berakning": "isolation.provstrom_ma"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 500,
+      "enhet": "V"
+    },
+    "R": {
+      "varde": 50000,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 10
+    },
+    "initial": {
+      "del": "prov",
+      "obj": "kabel-skadad",
+      "par": "L2-PE",
+      "Uprov": 500
+    },
+    "fraga": {
+      "storhet": "prov",
+      "etikett": "Iläck",
+      "enhet": "mA"
+    },
+    "dolj": [
+      "prov"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0.01,
+          "text": "Svaret ska vara i mA. 0,01 A = 10 mA."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_03 · övning 3",
+    "alias": "kabel"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "id": "EL-000341",
+  "titel": "Beräkna impedansens belopp",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Beräkna kretsens impedans när R = 40 Ω och XL ≈ 30 Ω."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[4] (id grund-z)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "|Z| = √(R² + XL²). Rita R och XL vinkelrätt och beräkna diagonalen.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "R": {
+      "varde": 40,
+      "enhet": "Ω"
+    },
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    },
+    "L": {
+      "varde": 0.0955,
+      "enhet": "H"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Impedansens belopp |Z|",
+        "varde": 50.0013,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω",
+        "berakning": "ac.z_rl"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RL",
+      "U": 12,
+      "f": 50,
+      "R": 40,
+      "L": 95.5,
+      "C": 150
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "Z",
+          "Impedansens belopp |Z|",
+          "Ω"
+        ]
+      ]
+    },
+    "teoriavsnitt": "z",
+    "visualisering": "triangle",
+    "forklaring": {
+      "fraga": "Varför använder vi inte 40 + 30 för impedansens belopp?",
+      "ledtrad": "Beskriv hur resistiv och reaktiv del ligger i diagrammet."
+    },
+    "kalla": "RL: R = 40 Ω och XL ≈ 30 Ω vid 50 Hz",
+    "alias": "grund-z"
+  }
+}

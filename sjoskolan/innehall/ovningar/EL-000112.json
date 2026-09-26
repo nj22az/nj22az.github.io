@@ -1,0 +1,92 @@
+{
+  "id": "EL-000112",
+  "titel": "Plan för DC-mätning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kontrollerad 12 V-rigg har 1 kΩ och 2 kΩ i serie. Beräkna strömmen och rita hur en voltmeter ska anslutas för att mäta U_{2}.",
+    "samband": [
+      "R_{total} = R_{1} + R_{2}; I = U/R_{total}",
+      "U_{2} = I · R_{2}"
+    ],
+    "givet": "Kontrollerad 12 V DC-rigg med R_{1} = 1 kΩ och R_{2} = 2 kΩ i serie. Räkna med exakta värden.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "1 mA = 0,001 A. En voltmeter mäter mellan två punkter.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut totalresistansen, strömmen och U_{2}, och rita voltmetern parallellt över R_{2}.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 12 V / 3 kΩ = 4,0 mA. U_{2} = 4,0 mA · 2 kΩ = 8,0 V. Voltmetern kopplas parallellt över R_{2}.",
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 4.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "mA"
+      },
+      {
+        "storhet": "U_{2}",
+        "varde": 8.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q2 och ch045.xhtml#sol12-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

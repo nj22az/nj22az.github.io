@@ -1,0 +1,84 @@
+{
+  "id": "EL-000405",
+  "titel": "Station B: AC, fysisk station",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-03",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Mät effektivvärde, toppvärde och periodtid på en isolerad AC-källa och jämför två multimetrar för olika kurvformer."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 8; Simulerade_stationer.html",
+        "revision": "8cabde3",
+        "roll": "fysisk station vid träffen 9 oktober"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "fysisk",
+    "station": "Station B, AC",
+    "utrustning": "Avsedd isolerad AC-källa (funktionsgenerator med effektförstärkare, märkt 12 V 50 Hz) och lämpligt RMS-instrument. Kalibrator 10,00 V för instrumentkontroll.",
+    "sakerhet": [
+      {
+        "id": "rigg",
+        "text": "Instruktören kontrollerar rigg, strömgräns och instrument."
+      },
+      {
+        "id": "selv",
+        "text": "Elevpraktik sker på avsedd SELV-utrustning eller spänningslöst."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling sker frånskilt. Avbryt vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "trefas",
+        "text": "Trefasmätning kräver en avsedd, dokumenterad rigg."
+      }
+    ],
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Förberedelse: övning 4 i v41_03."
+      },
+      {
+        "id": "s2",
+        "text": "Mät endast vid riggens dokumenterade mätpunkter."
+      },
+      {
+        "id": "s3",
+        "text": "Fyll i elevprotokollet och förklara minst en avvikelse med egna ord."
+      }
+    ],
+    "simulerad_variant": "EL-000404",
+    "protokoll": {
+      "mall": "EL-000401",
+      "titel": "Elevprotokoll och riskmall"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Bedöms vid stationen enligt bedömningsraderna i elevprotokollet"
+  }
+}

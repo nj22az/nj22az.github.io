@@ -1,0 +1,70 @@
+{
+  "id": "EL-000099",
+  "titel": "Mätvärden i protokollet",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-10",
+      "T-kurs-v41-01",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "U_{12} = 400 V, U_{23} = 402 V och U_{31} = 398 V. Beräkna medelvärdet och den största avvikelsen i procent av medelvärdet.",
+    "samband": [
+      "Umedel = (U_{12} + U_{23} + U_{31})/3",
+      "Avvikelse i % = 100 · max|Ui − Umedel|/Umedel"
+    ],
+    "givet": "Mätvärdena 400, 402 och 398 V. Uppgiften använder ett enkelt mått på spridning.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "max betyder den största avvikelsen, oavsett tecken. Ui är ett av de tre mätvärdena.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut medelvärdet, jämför varje mätvärde med det och använd den största skillnaden.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Medel = 400 V. Största avvikelse 2 V = 0,5 %.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch016.xhtml#ch10-q9 och ch043.xhtml#sol10-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_01-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

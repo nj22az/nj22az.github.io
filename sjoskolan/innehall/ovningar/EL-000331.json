@@ -1,0 +1,104 @@
+{
+  "id": "EL-000331",
+  "titel": "Fas mot skrov i friskt nät",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Nätet är 440 V och friskt: alla faser har samma isolation och kapacitans mot skrovet. Vilken spänning har L1 mot skrovet?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[2] (id symmetri)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "När alla faser läcker lika mycket hamnar skrovet i nätets stjärnpunkt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Skrovet ligger i stjärnpunkten. U = 440/√3 ≈ 254 V.",
+    "svar": [
+      {
+        "storhet": "U(L1–skrov)",
+        "varde": 254.034,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V",
+        "berakning": "trefas.fasspanning"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 440,
+      "enhet": "V"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 254.034
+    },
+    "initial": {
+      "R": [
+        10000000,
+        10000000,
+        10000000
+      ],
+      "C": 1e-06
+    },
+    "fraga": {
+      "storhet": "Uhull",
+      "etikett": "U(L1–skrov)",
+      "enhet": "V",
+      "fas": 0
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 440,
+          "text": "440 V är huvudspänningen. Så högt blir det först vid ett jordfel på en annan fas."
+        },
+        {
+          "varde": 0,
+          "text": "Ett IT-nät är isolerat, men faserna har ändå spänning mot skrovet via kapacitans och isolation."
+        }
+      ]
+    },
+    "kallhanvisning": "v44_01 · bild om IT-nät",
+    "alias": "symmetri"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "EL-000137",
+  "titel": "Regelval ombord",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Du får ett fall om en elektrisk installation på ett fartyg. Vilka uppgifter behöver du innan du kan hänvisa till rätt TSFS?",
+    "samband": [
+      "Regelval bygger på fartygsdata"
+    ],
+    "givet": "Inga fartygsdata är givna. Svara därför med vilken information som behövs – gissa inte en paragraf.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Fartygstyp, storlek, trafik, byggnadsdata och vilket system det gäller påverkar vilka föreskrifter som gäller.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Lista uppgifterna och förklara hur du använder dem för att kontrollera tillämpningsområdet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Fartygstyp, storlek, fartområde och trafik, byggår eller byggnadsdata och vilket system som berörs. Med dem går det att kontrollera vilken föreskrift som gäller.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q7 och ch047.xhtml#sol14-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

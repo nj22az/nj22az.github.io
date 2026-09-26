@@ -1,0 +1,68 @@
+{
+  "id": "EL-000151",
+  "titel": "Kontaktor",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken huvuduppgift har en kontaktor i en motorstartare?",
+    "samband": [
+      "Vad händer när spolen får matning?"
+    ],
+    "givet": "En vanlig kontaktor i en motorstartare. Skydden behandlas för sig.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Spolen tillhör manöverkretsen. Huvudkontakterna ligger i kraftvägen till motorn.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Följ vad som händer när spolen får rätt matning och koppla det till kontaktorns huvuduppgift.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Att med en liten manöverström i spolen koppla till och från lastens kraftväg.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q1 och ch049.xhtml#sol16-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

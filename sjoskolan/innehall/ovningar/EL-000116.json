@@ -1,0 +1,70 @@
+{
+  "id": "EL-000116",
+  "titel": "Hållkretsens vila",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I hållkretsen är S0 sluten, S1 öppen och K1 opåverkad. Finns en sluten strömväg till K1-spolen?",
+    "samband": [
+      "Matad spole kräver sluten väg från + till 0 V"
+    ],
+    "givet": "Hållkretsen i figuren: S0 sluten, S1 öppen, K1 i vila. Returen är hel.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "NC är normalt sluten och NO normalt öppen. K1:s NO-hållkontakt är öppen när spolen inte är påverkad.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Följ båda de parallella vägarna efter S0 och avgör om någon av dem är obruten ända fram till spolen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. START och K1:s hållkontakt är båda öppna, så ingen väg når spolen.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q6 och ch045.xhtml#sol12-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

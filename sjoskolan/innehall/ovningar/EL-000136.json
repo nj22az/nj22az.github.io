@@ -1,0 +1,70 @@
+{
+  "id": "EL-000136",
+  "titel": "Rollfördelning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ingen i en arbetsgrupp är utsedd att leda elsäkerheten. Kan ett muntligt ”alla håller koll” ersätta det?",
+    "samband": [
+      "Uppdrag och befogenheter måste vara utpekade"
+    ],
+    "givet": "Ingen är utsedd att leda elsäkerheten i det här arbetet. ”Alla håller koll” är den enda fördelningen av ansvar.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Elsäkerhetsledaren leder säkerheten i arbetet, och driftorganisationen samordnar drift och kopplingar.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Förklara vilket beslut eller vilken samordning som annars riskerar att ingen tar hand om.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Nej. Utan utsedd elsäkerhetsledare är det ingen som har beslutet om start och samordningen med driften. Det faller mellan personer.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q6 och ch047.xhtml#sol14-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "EL-000047",
+  "titel": "Strömdelare",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-05",
+      "T-kurs-v39-02",
+      "T-bildspel-v39-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "6 A kommer till två parallellgrenar på 3 Ω och 6 Ω. Bestäm strömmen i varje gren.",
+    "samband": [
+      "I_{1} = I_{total} · R_{2}/(R_{1} + R_{2})",
+      "I_{2} = I_{total} − I_{1}"
+    ],
+    "givet": "Två parallella grenar med resistorer. I_{total} = 6 A, R_{1} = 3 Ω och R_{2} = 6 Ω.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I_{1} går genom R_{1}, men det är den andra resistorn, R_{2}, som står i täljaren. Lägre resistans ger större ström.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut den ena grenströmmen och sedan den andra. Kontrollera att I_{1}R_{1} = I_{2}R_{2}.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{1} (3 Ω) = 6 · 6/9 = 4,0 A, I_{2} (6 Ω) = 2,0 A. Kontroll: 4 · 3 = 2 · 6 = 12 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch010.xhtml#ch5-q7 och ch038.xhtml#sol5-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_02-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx bild 37 och 38",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

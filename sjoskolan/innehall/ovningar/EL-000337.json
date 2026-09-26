@@ -1,0 +1,102 @@
+{
+  "id": "EL-000337",
+  "titel": "Kontrollera båda mätarna",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket värde ska varje mätare visa när den ideala kalibratorn ger 10,00 V sinus?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[0] (id kalibrator)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "För ren sinus visar båda mätarna effektivvärdet. Här är det kalibratorns 10,00 V.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "True RMS-mätare",
+        "varde": 10,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "Sinuskalibrerad mätare",
+        "varde": 10,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 10,
+      "f": 50,
+      "t": 5,
+      "showB": false,
+      "dt": 3,
+      "window": "auto"
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "trms",
+          "True RMS-mätare",
+          "V"
+        ],
+        [
+          "avg",
+          "Sinuskalibrerad mätare",
+          "V"
+        ]
+      ]
+    },
+    "teoriavsnitt": "matarna",
+    "visualisering": "calibration",
+    "forklaring": {
+      "fraga": "Varför visar båda mätarna samma värde i denna kontroll?",
+      "ledtrad": "Ange kurvformen och vilket värde mätarna är avsedda att visa för den."
+    },
+    "kalla": "Kalibrator: 10,00 V RMS sinus, 50 Hz",
+    "alias": "kalibrator"
+  }
+}

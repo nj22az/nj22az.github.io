@@ -1,0 +1,80 @@
+{
+  "id": "EL-000164",
+  "titel": "Sex poler",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket synkront varvtal ger sex poler och 50 Hz?",
+    "samband": [
+      "n_{s} = 120f/p"
+    ],
+    "givet": "p = 6 poler och f = 50 Hz.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Fler poler ger lägre varvtal vid samma frekvens.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Sätt in p = 6. Svaret blir i r/min, eftersom formeln redan räknar om till minuter.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "n_{s} = 120 · 50/6 = 1 000 r/min.",
+    "svar": [
+      {
+        "storhet": "n_{s}",
+        "varde": 1000.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "r/min"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q4 och ch050.xhtml#sol17-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

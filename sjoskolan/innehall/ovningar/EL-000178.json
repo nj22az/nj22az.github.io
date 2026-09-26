@@ -1,0 +1,82 @@
+{
+  "id": "EL-000178",
+  "titel": "Spänning över STOPP",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-5",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-18",
+      "T-kurs-v43-03",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "START hålls sluten medan STOPP öppnas. Matningen är 12 V och returen är hel. Vilken spänning ligger över den öppna STOPP-kontakten (idealt)?",
+    "samband": [
+      "Uöppen kontakt = Vföre − Vefter"
+    ],
+    "givet": "12 V, START sluten, STOPP öppen och hel retur genom spolen. Ledningar och kontakter är ideala.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Öppen serieväg ger I = 0. Vad betyder det för spänningsfallet i spolen?",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange potential på STOPP-kontaktens båda sidor. Beräkna deras skillnad.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "12 V. Före STOPP är potentialen 12 V, efter STOPP 0 V via spolen till returen.",
+    "svar": [
+      {
+        "storhet": "STOPP",
+        "varde": 12.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch025.xhtml#ch18-q8 och ch051.xhtml#sol18-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_03-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

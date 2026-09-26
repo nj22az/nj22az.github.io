@@ -1,0 +1,111 @@
+{
+  "id": "EL-000306",
+  "titel": "Linjeström i Y",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre lika resistorer på 30 Ω kopplas i Y till 690 V linjespänning. Beräkna linjeströmmen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[5] (id ystrom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Ugren = U_{L}/√3. I Y är linjeströmmen lika med grenströmmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ugren = 690/√3 ≈ 398 V. I_{L} = Igren = 398/30 ≈ 13,3 A.",
+    "svar": [
+      {
+        "storhet": "I_{L}",
+        "varde": 13.2791,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "A",
+        "berakning": "trefas.linjestrom_y"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 690,
+      "enhet": "V"
+    },
+    "Z": {
+      "varde": 30,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 13.2791,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "ydelta",
+    "initial": {
+      "UL": 690,
+      "Z": 30,
+      "pf": 1,
+      "conn": "Y",
+      "plate": "ingen"
+    },
+    "fraga": {
+      "storhet": "IL",
+      "etikett": "I_{L}",
+      "enhet": "A"
+    },
+    "dolj": [
+      "IL",
+      "Igren",
+      "Ugren",
+      "S",
+      "P",
+      "Q",
+      "PkW"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 23,
+          "text": "Du har lagt hela linjespänningen över en gren. I Y får grenen U_{L}/√3."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_02 · övning 1–2",
+    "alias": "ystrom"
+  }
+}

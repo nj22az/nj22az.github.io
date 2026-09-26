@@ -1,0 +1,92 @@
+{
+  "id": "EL-000225",
+  "titel": "Resistansfördelning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Använd värdena i uppgift 4. Beräkna resistansen i framledaren och i returledaren.",
+    "samband": [
+      "R_{fram} = ΔU_{fram}/I; R_{retur} = ΔU_{retur}/I"
+    ],
+    "givet": "Källa 24 V, last 20 V, I = 2 A. ΔU_{retur} = 1 V och ΔU_{fram} = 24 − 20 − 1 V.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I en enkel seriekrets går samma ström i fram- och returledaren.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut fallet i framledaren och dela varje spänningsfall med strömmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Rfram = 3/2 = 1,5 Ω. Rretur = 1/2 = 0,5 Ω.",
+    "svar": [
+      {
+        "storhet": "R_{fram}",
+        "varde": 1.5,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      },
+      {
+        "storhet": "R_{retur}",
+        "varde": 0.5,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q5 och ch056.xhtml#sol23-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

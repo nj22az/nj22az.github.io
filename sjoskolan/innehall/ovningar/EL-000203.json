@@ -1,0 +1,83 @@
+{
+  "id": "EL-000203",
+  "titel": "Isolationsdata",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett isolationsprov med 500 V ger en stabil läckström på 0,25 mA. Beräkna isolationsresistansen.",
+    "samband": [
+      "R = Uprov/Iläck"
+    ],
+    "givet": "Isolationen räknas som en ren resistans: 500 V och 0,25 mA. Uppgiften är bara en beräkning.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "1 mA = 0,001 A och 1 MΩ = 1 000 000 Ω.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Gör om läckströmmen till A, dela spänningen med strömmen och gör om svaret till MΩ.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "R = 500/0,00025 = 2 000 000 Ω = 2,0 MΩ.",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 2.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "MΩ"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q3 och ch054.xhtml#sol21-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 14 och 15",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

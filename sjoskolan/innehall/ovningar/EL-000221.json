@@ -1,0 +1,71 @@
+{
+  "id": "EL-000221",
+  "titel": "Mätningens räckvidd",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vid en källa utan last mäts 24,0 V. Vilken slutsats kan du dra direkt, och vilken kräver mer data?",
+    "samband": [
+      "Slutsatsen begränsas av mätvillkoret"
+    ],
+    "givet": "24,0 V vid källans anslutningar, mätt utan last.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Spänningen utan last visar källans tomgångsspänning. Om källan klarar lasten kan du bara avgöra med ström och spänning under last.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv en slutsats du kan dra direkt och en fråga som kräver mer data.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Stöds: källan ger 24,0 V utan last. Kräver mer data: om spänningen håller under last. Mät då ström och spänning under last.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q1 och ch056.xhtml#sol23-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

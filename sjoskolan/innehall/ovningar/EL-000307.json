@@ -1,0 +1,114 @@
+{
+  "id": "EL-000307",
+  "titel": "Linjeström i Δ",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre lika resistorer på 46 Ω kopplas i Δ till 690 V. Beräkna linjeströmmen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[6] (id dstrom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I Δ ligger hela U_{L} över grenen. Linjeströmmen är √3 gånger grenströmmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ugren = U_{L} = 690 V. Igren = 690/46 = 15 A. I_{L} = √3 · 15 ≈ 26,0 A.",
+    "svar": [
+      {
+        "storhet": "I_{L}",
+        "varde": 25.9808,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "A",
+        "berakning": "trefas.linjestrom_d"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 690,
+      "enhet": "V"
+    },
+    "Z": {
+      "varde": 46,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 25.9808,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "ydelta",
+    "initial": {
+      "UL": 690,
+      "Z": 46,
+      "pf": 1,
+      "conn": "Δ",
+      "plate": "ingen"
+    },
+    "fraga": {
+      "storhet": "IL",
+      "etikett": "I_{L}",
+      "enhet": "A"
+    },
+    "dolj": [
+      "IL",
+      "Igren",
+      "S",
+      "P",
+      "Q",
+      "PkW"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 15,
+          "text": "Det är grenströmmen. Linjeströmmen i Δ är √3 gånger större."
+        },
+        {
+          "varde": 45,
+          "text": "Faktorn är √3, inte 3."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_02 · bild 7 och övning 3",
+    "alias": "dstrom"
+  }
+}

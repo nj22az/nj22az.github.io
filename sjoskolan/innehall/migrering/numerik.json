@@ -1,0 +1,1406 @@
+{
+  "EL-000031": {
+    "ovning": "v39_01-q1",
+    "bok": "P = 72 W",
+    "kurs": "P = 24 V · 3,0 A = 72 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000032": {
+    "ovning": "v39_01-q2",
+    "bok": "E = 1,0 kWh",
+    "kurs": "t = 40/60 h ≈ 0,667 h. E = 1,5 kW · 0,667 h = 1,0 kWh.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000033": {
+    "ovning": "v39_01-q3",
+    "bok": "E = 0,56 kWh",
+    "kurs": "40 W · 5 h = 200 Wh. 2 · 60 W · 3 h = 360 Wh. Totalt 560 Wh = 0,56 kWh.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000034": {
+    "ovning": "v39_01-q4",
+    "bok": "P_{in} = 800 W, förlust = 200 W",
+    "kurs": "P_{in} = 600 W / 0,75 = 800 W. Förlust = 800 − 600 = 200 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000035": {
+    "ovning": "v39_01-q5",
+    "bok": "I = 2,0 A och P = 48 W",
+    "kurs": "I = 24 V / 12 Ω = 2,0 A. P = 24 V · 2,0 A = 48 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000036": {
+    "ovning": "v39_01-q6",
+    "bok": "R = 0,140 Ω",
+    "kurs": "R = 0,0175 · 20 m / 2,5 mm² = 0,14 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000037": {
+    "ovning": "v39_01-q7",
+    "bok": "U_{last} = 23,30 V, fall ≈ 2,92 %",
+    "kurs": "ΔU = 5,0 A · 0,140 Ω = 0,70 V. Ulast = 24 − 0,70 = 23,3 V. Fall = 100 · 0,70/24 ≈ 2,9 %.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000038": {
+    "ovning": "v39_01-q8",
+    "bok": "Förlusten blir fyra gånger större",
+    "kurs": "Vid 5 A: 25 · 0,20 = 5 W. Vid 10 A: 100 · 0,20 = 20 W. Dubbel ström ger fyra gånger förlusten.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000039": {
+    "ovning": "v39_01-q9",
+    "bok": "Amin = 4,2 mm²",
+    "kurs": "Rmax = 0,8 V / 8 A = 0,10 Ω. Amin = 0,0175 · 24 m / 0,10 Ω = 4,2 mm². Välj närmast större standardarea och kontrollera även strömtålighet.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000040": {
+    "ovning": "v39_01-q10",
+    "bok": "E = 300 Wh, Q = 12,5 Ah",
+    "kurs": "P_{in} = 120/0,80 = 150 W. E = 150 W · 2 h = 300 Wh. I = 150/24 = 6,25 A. Q = 6,25 A · 2 h = 12,5 Ah.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000041": {
+    "ovning": "v39_02-q1",
+    "bok": "I_{x} = 5,0 A ut",
+    "kurs": "I_{x} = 8,0 − 3,0 = 5,0 A ut ur noden. Kontroll: 8,0 = 3,0 + 5,0.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000042": {
+    "ovning": "v39_02-q2",
+    "bok": "Verklig ström: 1,5 A in i noden",
+    "kurs": "I_{x} = 2,0 − 3,5 = −1,5 A. Strömmen är 1,5 A och går in i noden, alltså mot den ritade pilen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000043": {
+    "ovning": "v39_02-q3",
+    "bok": "U_{x} = 8 V",
+    "kurs": "U_{x} = 24 − 6 − 10 = 8 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000044": {
+    "ovning": "v39_02-q4",
+    "bok": "I = 2 A, U_{1} = 4 V, U_{2} = 8 V",
+    "kurs": "I = 12 V / 6 Ω = 2,0 A. U_{1} = 4 V, U_{2} = 8 V. Kontroll: 4 + 8 = 12 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000045": {
+    "ovning": "v39_02-q5",
+    "bok": "I_{1} = 2 A, I_{2} = 3 A, I = 5 A",
+    "kurs": "I_{1} = 12/6 = 2,0 A, I_{2} = 12/4 = 3,0 A, I = 5,0 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000046": {
+    "ovning": "v39_02-q6",
+    "bok": "U_{ut} = 6 V",
+    "kurs": "Rp = 2 · 2/(2 + 2) = 1 kΩ. Uut = 12 · 1/(1 + 1) = 6,0 V. Utan last hade det varit 8,0 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000047": {
+    "ovning": "v39_02-q7",
+    "bok": "3 Ω: 4 A. 6 Ω: 2 A",
+    "kurs": "I_{1} (3 Ω) = 6 · 6/9 = 4,0 A, I_{2} (6 Ω) = 2,0 A. Kontroll: 4 · 3 = 2 · 6 = 12 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000048": {
+    "ovning": "v39_02-q8",
+    "bok": "V_{a} = 6 V, grenströmmar 2 A och 1 A",
+    "kurs": "2(12 − V_{a}) + 2(9 − V_{a}) = 3V_{a} ger 42 = 7V_{a} och V_{a} = 6,0 V.",
+    "status": "avviker",
+    "saknas_i_kurs": [
+      1.0
+    ]
+  },
+  "EL-000049": {
+    "ovning": "v39_02-q9",
+    "bok": "U_{th} = 8 V och R_{th} ≈ 667 Ω",
+    "kurs": "Uth = 12 · 2/3 = 8,0 V. Rth = 1 · 2/3 = 2/3 kΩ ≈ 0,667 kΩ.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000050": {
+    "ovning": "v39_02-q10",
+    "bok": "I_{last} = 3 mA, U_{last} = 6 V",
+    "kurs": "Ilast = 8 V / (2/3 + 2) kΩ = 3,0 mA. Ulast = 3,0 mA · 2 kΩ = 6,0 V, samma som i övning 6.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000061": {
+    "ovning": "v40_01-q1",
+    "bok": "T = 0,020 s = 20 ms",
+    "kurs": "T = 1/50 = 0,020 s = 20 ms.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000062": {
+    "ovning": "v40_01-q2",
+    "bok": "f = 250 Hz",
+    "kurs": "f = 1/0,0040 s = 250 Hz.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000063": {
+    "ovning": "v40_01-q3",
+    "bok": "û ≈ 17,0 V",
+    "kurs": "û = 1,414 · 12,0 ≈ 17,0 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000064": {
+    "ovning": "v40_01-q4",
+    "bok": "U ≈ 24,0 V",
+    "kurs": "U = 34,0/1,414 ≈ 24,0 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000065": {
+    "ovning": "v40_01-q5",
+    "bok": "û = 10,0 V, U ≈ 7,07 V",
+    "kurs": "û = 10,0 V. U = 10,0/1,414 ≈ 7,07 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000066": {
+    "ovning": "v40_01-q6",
+    "bok": "u(5 ms) = 17,0 V",
+    "kurs": "2π · 50 · 0,005 = π/2 rad. u = 17,0 · sin(π/2) = 17,0 V, den positiva toppen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000067": {
+    "ovning": "v40_01-q7",
+    "bok": "u(15 ms) = −17,0 V",
+    "kurs": "2π · 50 · 0,015 = 3π/2 rad. u = 17,0 · (−1) = −17,0 V, den negativa toppen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000068": {
+    "ovning": "v40_01-q8",
+    "bok": "|φ| = 36°",
+    "kurs": "T = 20 ms. |φ| = 360° · 2,0/20 = 36°.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000069": {
+    "ovning": "v40_01-q9",
+    "bok": "P = 6,0 W",
+    "kurs": "P = 12,0²/24 = 6,0 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000070": {
+    "ovning": "v40_01-q10",
+    "bok": "A: 8,49 V RMS. B: 12 V RMS. Medel: 0 V",
+    "kurs": "Sinus: 12/1,414 ≈ 8,49 V RMS. Fyrkant: 12 V RMS. Medelvärdet är 0 V för båda eftersom positiv och negativ yta är lika stora.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000071": {
+    "ovning": "v40_02-q1",
+    "bok": "XL ≈ 31,4 Ω",
+    "kurs": "X_{L} = 2π · 50 · 0,10 ≈ 31,4 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000072": {
+    "ovning": "v40_02-q2",
+    "bok": "XC ≈ 31,8 Ω",
+    "kurs": "X_{C} = 1/(2π · 50 · 100 · 10⁻⁶) ≈ 31,8 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000073": {
+    "ovning": "v40_02-q3",
+    "bok": "|Z| = 50 Ω",
+    "kurs": "|Z| = √(900 + 1 600) = 50 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000074": {
+    "ovning": "v40_02-q4",
+    "bok": "I = 2,0 A RMS",
+    "kurs": "|Z| = 50 Ω. I = 100/50 = 2,0 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000075": {
+    "ovning": "v40_02-q5",
+    "bok": "U_{R} = 60 V, U_{L} = 80 V, U = 100 V",
+    "kurs": "U_{R} = 60 V, U_{L} = 80 V, U = √(60² + 80²) = 100 V. Spänningarna adderas som visare, inte som tal.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000076": {
+    "ovning": "v40_02-q6",
+    "bok": "Strömmen släpar med 53,1°",
+    "kurs": "φ = arctan(40/30) ≈ 53,1°. Strömmen släpar spänningen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000077": {
+    "ovning": "v40_02-q7",
+    "bok": "|Z| = 100 Ω, I = 2 A, φ ≈ −53,1°",
+    "kurs": "|Z| = 100 Ω, I = 2,0 A, φ = arctan(−80/60) ≈ −53,1°. Strömmen leder spänningen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000078": {
+    "ovning": "v40_02-q8",
+    "bok": "XL fördubblas, XC halveras",
+    "kurs": "X_{L} fördubblas. X_{C} halveras.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000079": {
+    "ovning": "v40_02-q9",
+    "bok": "X = 40 Ω, |Z| = 50 Ω, I = 2 A",
+    "kurs": "X = 50 − 10 = 40 Ω. |Z| = 50 Ω. I = 2,0 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000080": {
+    "ovning": "v40_02-q10",
+    "bok": "I = 5,0 A, φ = 0°",
+    "kurs": "X = 0. I = 100/20 = 5,0 A och φ = 0°. Spänningen över spolen och kondensatorn är ändå 5,0 · 40 = 200 V var.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000081": {
+    "ovning": "v40_03-q1",
+    "bok": "S = 920 VA",
+    "kurs": "S = 230 · 4,0 = 920 VA.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000082": {
+    "ovning": "v40_03-q2",
+    "bok": "P = 690 W",
+    "kurs": "P = 920 · 0,75 = 690 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000083": {
+    "ovning": "v40_03-q3",
+    "bok": "S = 1,00 kVA, PF = 0,60",
+    "kurs": "S = √(600² + 800²) = 1 000 VA. PF = 600/1 000 = 0,60.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000084": {
+    "ovning": "v40_03-q4",
+    "bok": "P = 1,60 kW, Q = +1,20 kvar",
+    "kurs": "P = 1,6 kW. sin φ = 0,60. Q = 1,2 kvar.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000085": {
+    "ovning": "v40_03-q5",
+    "bok": "E = 4,80 kWh",
+    "kurs": "E = 1,60 kW · 3 h = 4,8 kWh.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000086": {
+    "ovning": "v40_03-q6",
+    "bok": "I = 10,0 A",
+    "kurs": "I = 1 840/(230 · 0,80) = 10,0 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000087": {
+    "ovning": "v40_03-q7",
+    "bok": "Qkondensator = −4 kvar",
+    "kurs": "Qkondensator = −4 kvar, alltså 4 kvar kapacitiv reaktiv effekt.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000088": {
+    "ovning": "v40_03-q8",
+    "bok": "I_{1} ≈ 13,0 A, I_{2} ≈ 8,70 A",
+    "kurs": "Före: 1 800/(230 · 0,60) ≈ 13,0 A. Efter: 1 800/(230 · 0,90) ≈ 8,70 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000089": {
+    "ovning": "v40_03-q9",
+    "bok": "44,4 % återstår, minskningen är 55,6 %",
+    "kurs": "(8/12)² ≈ 0,44. Cirka 44 % av förlusten återstår, en minskning med cirka 56 %.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000090": {
+    "ovning": "v40_03-q10",
+    "bok": "PF = 0,80, vilket skiljer sig från cos φ",
+    "kurs": "PF = 800/1 000 = 0,80. Den är lägre än cos φ = 0,95 eftersom övertonerna ökar strömmen och S utan att bidra till P.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000091": {
+    "ovning": "v41_01-q1",
+    "bok": "120°",
+    "kurs": "360°/3 = 120°.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000092": {
+    "ovning": "v41_01-q2",
+    "bok": "Δt ≈ 6,67 ms",
+    "kurs": "T = 20 ms. Δt = 20 · 120/360 ≈ 6,67 ms.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000093": {
+    "ovning": "v41_01-q3",
+    "bok": "U_{fas} ≈ 231 V",
+    "kurs": "U_{F} = 400/1,732 ≈ 231 V mellan fas och neutral.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000094": {
+    "ovning": "v41_01-q4",
+    "bok": "U_{L} ≈ 208 V",
+    "kurs": "U_{L} = 1,732 · 120 ≈ 208 V, inte 240 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000095": {
+    "ovning": "v41_01-q5",
+    "bok": "U_{gren} ≈ 6,93 V",
+    "kurs": "Ugren = 12,0/1,732 ≈ 6,93 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000096": {
+    "ovning": "v41_01-q6",
+    "bok": "I_{N} = 0 A",
+    "kurs": "IN = 0 A. Tre lika visare med 120° emellan har summan noll.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000097": {
+    "ovning": "v41_01-q7",
+    "bok": "I_{N} = 5,0 A",
+    "kurs": "IN = 5,0 A. All ström från den enda lasten återvänder i neutralledaren.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000098": {
+    "ovning": "v41_01-q8",
+    "bok": "I_{N} = 10 A",
+    "kurs": "IN = √(100 + 100 − 100) = 10 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000099": {
+    "ovning": "v41_01-q9",
+    "bok": "Medel 400 V, största avvikelse 0,50 %",
+    "kurs": "Medel = 400 V. Största avvikelse 2 V = 0,5 %.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000100": {
+    "ovning": "v41_01-q10",
+    "bok": "400 V mellan faser garanterar inte rätt lastspänning",
+    "kurs": "Ett bra svar tar upp: utan neutral ligger de två lasterna i serie mellan två faser. Huvudspänningen delas i förhållande till impedanserna. Lasten med störst impedans (minst effekt) får den högsta spänningen, som kan bli mycket högre än fasspänningen.",
+    "status": "avviker",
+    "saknas_i_kurs": [
+      400.0
+    ]
+  },
+  "EL-000101": {
+    "ovning": "v41_02-q1",
+    "bok": "U_{gren} ≈ 231 V",
+    "kurs": "Ugren = 400/1,732 ≈ 231 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000102": {
+    "ovning": "v41_02-q2",
+    "bok": "I_{gren} = I_{L} ≈ 5,77 A",
+    "kurs": "Igren = 231/40 ≈ 5,77 A. I_{L} = 5,77 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000103": {
+    "ovning": "v41_02-q3",
+    "bok": "I_{gren} = 10 A, I_{L} ≈ 17,3 A",
+    "kurs": "Igren = 400/40 = 10 A. I_{L} = 1,732 · 10 ≈ 17,3 A, tre gånger linjeströmmen i Y.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000104": {
+    "ovning": "v41_02-q4",
+    "bok": "P ≈ 5,54 kW",
+    "kurs": "P = 1,732 · 400 · 10 · 0,80 ≈ 5 540 W ≈ 5,54 kW.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000105": {
+    "ovning": "v41_02-q5",
+    "bok": "S ≈ 6,93 kVA, Q ≈ 4,16 kvar",
+    "kurs": "S ≈ 6,93 kVA. sin φ = 0,60. Q ≈ 4,16 kvar.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000106": {
+    "ovning": "v41_02-q6",
+    "bok": "Y-koppling enligt märkningen",
+    "kurs": "Y. Då får varje lindning 400/1,732 ≈ 231 V, vilket stämmer med 230 V.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000107": {
+    "ovning": "v41_02-q7",
+    "bok": "Δ-koppling för angiven märkdrift",
+    "kurs": "Δ. Då får varje lindning 400 V, vilket stämmer med Δ-märkningen 400 V.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000108": {
+    "ovning": "v41_02-q8",
+    "bok": "P_{in} = 6,25 kW, I_{L} ≈ 11,3 A",
+    "kurs": "P_{in} = 5,5/0,88 = 6,25 kW. I_{L} = 6 250/(1,732 · 400 · 0,80) ≈ 11,3 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000109": {
+    "ovning": "v41_02-q9",
+    "bok": "I_{2} ≈ 144 A",
+    "kurs": "I_{2} = 100 000/(1,732 · 400) ≈ 144 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000110": {
+    "ovning": "v41_02-q10",
+    "bok": "Ptotal = 3,6 kW",
+    "kurs": "Ptotal = 3,6 kW. Formeln med √3 förutsätter lika ström och lika effektfaktor i alla faser. Här skiljer sig faserna.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000111": {
+    "ovning": "v41_03-q1",
+    "bok": "Nej, dokumenterat skydd behövs",
+    "kurs": "Nej. 12 V säger inget om skyddande separation. Instruktören behöver dokumentation om matande transformator eller källa, separation och märkning innan riggen används.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000112": {
+    "ovning": "v41_03-q2",
+    "bok": "I = 4,0 mA, U_{2} = 8,0 V",
+    "kurs": "I = 12 V / 3 kΩ = 4,0 mA. U_{2} = 4,0 mA · 2 kΩ = 8,0 V. Voltmetern kopplas parallellt över R_{2}.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000113": {
+    "ovning": "v41_03-q3",
+    "bok": "Värdena uppfyller slinglagen",
+    "kurs": "3,98 + 7,96 = 11,94 V. Resten är 0,00 V, så slinglagen stämmer inom avläsningens upplösning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000114": {
+    "ovning": "v41_03-q4",
+    "bok": "û ≈ 17,1 V",
+    "kurs": "û = 1,414 · 12,1 ≈ 17,1 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000115": {
+    "ovning": "v41_03-q5",
+    "bok": "Förväntat 6,93 V, avvikelse ≈ −0,028 V",
+    "kurs": "Uförv ≈ 6,93 V. ΔU = 6,90 − 6,93 ≈ −0,03 V. Uppmätt är något lägre än beräknat.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000116": {
+    "ovning": "v41_03-q6",
+    "bok": "Nej, spolen är inte matad",
+    "kurs": "Nej. START och K1:s hållkontakt är båda öppna, så ingen väg når spolen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000117": {
+    "ovning": "v41_03-q7",
+    "bok": "Hjälpkontakten skapar hållvägen",
+    "kurs": "Den sluter när K1 drar och tar över strömvägen parallellt med START. K1 hålls då kvar när START släpps.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000118": {
+    "ovning": "v41_03-q8",
+    "bok": "Hållvägen är en rimlig första hypotes",
+    "kurs": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter eller att en ledare till den är av. Kontroll: mät över hållkontakten med K1 draget. Ungefär 0 V stöder att den sluter. Full spänning stöder hypotesen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000119": {
+    "ovning": "v41_03-q9",
+    "bok": "Ja, enligt uppgiftens antagande",
+    "kurs": "Gränser 950–1 050 Ω. 1,03 kΩ = 1 030 Ω ligger inom toleransen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000120": {
+    "ovning": "v41_03-q10",
+    "bok": "Data stödjer förväntad spänningsfördelning",
+    "kurs": "Exempel: Summan av spänningsfallen, 3,98 + 7,96 = 11,94 V, är lika med källspänningen. Mätningen stöder slinglagen i detta driftfall. Den visar inget om andra laster eller om mätarens osäkerhet.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000121": {
+    "ovning": "v42_01-q1",
+    "bok": "Fukt och ledande omgivning förvärrar situationen",
+    "kurs": "Ett bra svar tar upp två av: vatten minskar övergångsresistansen, metalldäcket ger en ledande väg till kroppen, lampan är skadad så isolationen kan vara bruten, och skyddsfunktionen är inte verifierad.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000122": {
+    "ovning": "v42_01-q2",
+    "bok": "En ljusbågsskada kräver inte kroppskontakt",
+    "kurs": "Strömgenomgång: strömmen går genom kroppen och kan påverka hjärta, muskler och vävnad. Ljusbåge: värme, tryck, ljus och smält metall skadar utifrån, även om personen inte ingår i strömvägen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000123": {
+    "ovning": "v42_01-q3",
+    "bok": "Beröringsspänningen i fallet är 60 V",
+    "kurs": "60 V, potentialskillnaden mellan de två punkter personen kan beröra samtidigt.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000124": {
+    "ovning": "v42_01-q4",
+    "bok": "I = 12 mA i modellen",
+    "kurs": "I = 24/2 000 = 0,012 A = 12 mA. Kroppens resistans varierar kraftigt med fukt, kontaktyta och spänning. Därför ger ett antaget R ingen säker gräns.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000125": {
+    "ovning": "v42_01-q5",
+    "bok": "Släckt panel bevisar inte säker frånskiljning",
+    "kurs": "STOPP bryter styrningen. Kraftmatning, reservmatning eller lagrad energi kan finnas kvar. Spänningslöshet måste kontrolleras med provare enligt arbetsplanen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000126": {
+    "ovning": "v42_01-q6",
+    "bok": "Batteriet kan leverera stor felenergi",
+    "kurs": "Mycket stor kortslutningsström kan ge kraftig värme, ljusbåge, brand eller brännskador, till exempel om ett verktyg eller en ring kortsluter polerna.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000127": {
+    "ovning": "v42_01-q7",
+    "bok": "Säker plats innan direkt hjälp ges",
+    "kurs": "Hjälparen får inte själv bli exponerad. Bryt strömmen eller se till att platsen är säkrad innan du rör personen. Larma 112.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000128": {
+    "ovning": "v42_01-q8",
+    "bok": "Sjukvårdskontakt även om skadan verkar liten",
+    "kurs": "Avbryt arbetet och gå till säker plats. Kontakta sjukvården, eftersom skador kan visa sig senare. Rapportera händelsen enligt arbetsplatsens rutin.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000129": {
+    "ovning": "v42_01-q9",
+    "bok": "Det är ett tillbud som behöver utredas",
+    "kurs": "Ett tillbud visar en brist som nästa gång kan ge personskada. Rapporten gör det möjligt att hitta orsaken och förebygga upprepning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000130": {
+    "ovning": "v42_01-q10",
+    "bok": "Stoppa användningen och åtgärda kontrollbristen",
+    "kurs": "Direkt: ta sladden ur bruk och märk den. Förebyggande: se över förkontrollen, förvaringen och hur skadan uppstod.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000131": {
+    "ovning": "v42_02-q1",
+    "bok": "Båda behöver kopplas till det aktuella arbetet",
+    "kurs": "Föreskriften är bindande inom sitt område. Standarden beskriver en teknisk metod eller nivå som kan användas för att uppfylla kraven. Tillämpningsområdet avgör vilka dokument som gäller.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000132": {
+    "ovning": "v42_02-q2",
+    "bok": "Utgåva 4:2024",
+    "kurs": "SS-EN 50110-1 utgåva 4:2024. Utgåva 3:2013 är inaktuell efter 29 maj 2026. Kontrollera också lokala anvisningar.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000133": {
+    "ovning": "v42_02-q3",
+    "bok": "Fyra metoder med olika förutsättningar",
+    "kurs": "Arbete utan spänning, arbete med spänning, arbete inom närområde och arbete utanför närområde.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000134": {
+    "ovning": "v42_02-q4",
+    "bok": "Flera samverkande åtgärder behövs",
+    "kurs": "Efter frånskiljning kan någon tillkoppla igen, spänningslösheten är inte kontrollerad och närliggande delar kan vara spänningssatta. Skydd mot tillkoppling, spänningslöshetskontroll, jordning och kortslutning där det krävs, samt skydd mot närliggande delar behövs.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000135": {
+    "ovning": "v42_02-q5",
+    "bok": "Ett entydigt, verifierat besked saknas",
+    "kurs": "Två av: vilket objekt och vilken arbetsgräns som avses, vem som ansvarar, att ”nog” betyder att ingen kontroll är gjord, och vilka kontroller som faktiskt har utförts.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000136": {
+    "ovning": "v42_02-q6",
+    "bok": "Nej, roller och uppdrag måste klargöras",
+    "kurs": "Nej. Utan utsedd elsäkerhetsledare är det ingen som har beslutet om start och samordningen med driften. Det faller mellan personer.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000137": {
+    "ovning": "v42_02-q7",
+    "bok": "Fartygets egenskaper styr tillämplig föreskrift",
+    "kurs": "Fartygstyp, storlek, fartområde och trafik, byggår eller byggnadsdata och vilket system som berörs. Med dem går det att kontrollera vilken föreskrift som gäller.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000138": {
+    "ovning": "v42_02-q8",
+    "bok": "Den gamla hänvisningen behöver uppdateras",
+    "kurs": "TSFS 2014:1 är upphävd genom TSFS 2019:4. Kontrollera att ersättningsföreskriften gäller för just detta fartyg och arbete.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000139": {
+    "ovning": "v42_02-q9",
+    "bok": "Kartläggningen av energikällor är ofullständig",
+    "kurs": "Generatorn saknas i planen och kan spänningssätta fördelningen. Planen behöver kompletteras med alla matningsvägar och hur var och en frånskiljs och låses.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000140": {
+    "ovning": "v42_02-q10",
+    "bok": "Hänvisningen ska vara kontrollerad och motiverad",
+    "kurs": "Exempel: ”Dokument: [namn], utgåva [nr]. Avsnitt: [kontrolleras]. Gäller eftersom: [fartygsdata och arbete]. Öppen fråga: [det som saknas].”",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000141": {
+    "ovning": "v42_03-q1",
+    "bok": "En entydig arbetsgräns saknas",
+    "kurs": "Objektets beteckning, vilka ledare och plintar som ingår, alla matningsvägar och närliggande spänningssatta delar.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000142": {
+    "ovning": "v42_03-q2",
+    "bok": "Möjlig konsekvens: strömgenomgång",
+    "kurs": "Exempel: Fara: skadad isolation i våt miljö. Händelse: någon berör den skadade delen. Konsekvens: strömgenomgång.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000143": {
+    "ovning": "v42_03-q3",
+    "bok": "Åtgärden är för vag för ett startbeslut",
+    "kurs": "Den säger inte hur faran eller exponeringen minskas, vilken arbetsmetod som gäller eller vem som ansvarar. Handskarna har ingen angiven elektrisk klass.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000144": {
+    "ovning": "v42_03-q4",
+    "bok": "Nej, den planerade skyddsfunktionen måste verifieras",
+    "kurs": "Nej. En skylt informerar men hindrar inte tillkoppling. Planen kräver ett fungerande skydd, till exempel lås.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000145": {
+    "ovning": "v42_03-q5",
+    "bok": "Kontrollen väntar på fungerande utrustning",
+    "kurs": "Provaren tas ur bruk och märks. Kontrollen görs inte förrän en hel och kontrollerad provare finns.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000146": {
+    "ovning": "v42_03-q6",
+    "bok": "Åtgärden behöver konkret och ansvarssatt plan",
+    "kurs": "Två av: vilket objekt och vilka punkter som ska jordas, vilken utrustning och dimensionering som gäller, och vem som ansvarar och verifierar.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000147": {
+    "ovning": "v42_03-q7",
+    "bok": "Arbetsförutsättningarna behöver omprövas",
+    "kurs": "Arbetet i berört område avbryts. UPS:en kartläggs och tas med i beredningen. Nytt startbesked ges först efter omprövad riskbedömning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000148": {
+    "ovning": "v42_03-q8",
+    "bok": "12 före och 4 efter i övningsmatrisen",
+    "kurs": "Före 3 · 4 = 12. Efter 1 · 4 = 4. Konsekvensen är oförändrad, och en lägre poäng visar inte att krav och kontroller är uppfyllda.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000149": {
+    "ovning": "v42_03-q9",
+    "bok": "Åtgärden ska gå att följa upp",
+    "kurs": "Exempel: ”[Namn] kontrollerar kabel [ID] enligt [instruktion] före start. Resultatet förs in i protokollet med datum.”",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000150": {
+    "ovning": "v42_03-q10",
+    "bok": "Nej, osäker matning måste klarläggas",
+    "kurs": "Nej. Den andra matningen är inte verifierad, så spänningslösheten är inte säker. Skyddsutrustning ersätter inte det. Den andra matningen måste frånskiljas och verifieras först.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000151": {
+    "ovning": "v43_01-q1",
+    "bok": "Upprepad elektrisk manöver av lasten",
+    "kurs": "Att med en liten manöverström i spolen koppla till och från lastens kraftväg.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000152": {
+    "ovning": "v43_01-q2",
+    "bok": "Överlast och kortslutning",
+    "kurs": "Överlast (för stor ström under längre tid i en hel krets) och kortslutning (mycket stor ström genom en oavsiktlig väg).",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000153": {
+    "ovning": "v43_01-q3",
+    "bok": "Normal last och möjlig felström är olika krav",
+    "kurs": "16 A är den ström brytaren tål i normal drift. 6 kA är den största kortslutningsström den säkert kan bryta.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000154": {
+    "ovning": "v43_01-q4",
+    "bok": "IΔ = 30 mA",
+    "kurs": "IΔ = 5,000 − 4,970 = 0,030 A = 30 mA.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000155": {
+    "ovning": "v43_01-q5",
+    "bok": "Överlasten kräver avsett överströmsskydd",
+    "kurs": "Jordfelsbrytaren mäter bara skillnaden mellan ut- och returström. Vid överlast återkommer all ström och skillnaden är noll, så den löser inte.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000156": {
+    "ovning": "v43_01-q6",
+    "bok": "Öppen i vila, sluten när K1 påverkar den",
+    "kurs": "Öppen i vila. Den sluter när K1 drar.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000157": {
+    "ovning": "v43_01-q7",
+    "bok": "24 V DC enligt spolens data",
+    "kurs": "Spolens märkning, 24 V DC, styr manöverkretsens matning. 400 V gäller huvudkontakterna.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000158": {
+    "ovning": "v43_01-q8",
+    "bok": "Skyddens selektivitet behöver utredas",
+    "kurs": "Selektiviteten mellan gruppskydd och huvudskydd. Det krävs tillverkarens ström–tidskurvor och den möjliga felströmmen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000159": {
+    "ovning": "v43_01-q9",
+    "bok": "Nej, valet uppfyller inte angivet brytförmågekrav",
+    "kurs": "Nej. 6 kA är mindre än 8 kA, och ingen backupkombination är dokumenterad.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000160": {
+    "ovning": "v43_01-q10",
+    "bok": "Funktionerna ska väljas och samordnas tillsammans",
+    "kurs": "Kontaktor för manöver, överlastskydd (motorskydd) och kortslutningsskydd (säkring eller brytare). Verkligt val kräver motor- och samordningsdata.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000161": {
+    "ovning": "v43_02-q1",
+    "bok": "U_{2} = 23 V",
+    "kurs": "U_{2} = 230 · 100/1 000 = 23 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000162": {
+    "ovning": "v43_02-q2",
+    "bok": "I_{1} = 0,30 A",
+    "kurs": "I_{1} = 24 · 3/240 = 0,30 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000163": {
+    "ovning": "v43_02-q3",
+    "bok": "n_{s} = 1 500 r/min",
+    "kurs": "n_{s} = 120 · 50/4 = 1 500 r/min.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000164": {
+    "ovning": "v43_02-q4",
+    "bok": "n_{s} = 1 000 r/min",
+    "kurs": "n_{s} = 120 · 50/6 = 1 000 r/min.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000165": {
+    "ovning": "v43_02-q5",
+    "bok": "s = 4,0 %",
+    "kurs": "n_{s} = 1 500 r/min. s = 100 · 60/1 500 = 4,0 %.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000166": {
+    "ovning": "v43_02-q6",
+    "bok": "n_{s} = 1 200 r/min",
+    "kurs": "n_{s} = 120 · 40/4 = 1 200 r/min.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000167": {
+    "ovning": "v43_02-q7",
+    "bok": "Motor B",
+    "kurs": "Motor B, Δ/Y 400/690 V. Motor A ska kopplas i Y på 400 V.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000168": {
+    "ovning": "v43_02-q8",
+    "bok": "Likriktare, DC-mellanled, växelriktare",
+    "kurs": "Likriktare, DC-mellanled, växelriktare.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000169": {
+    "ovning": "v43_02-q9",
+    "bok": "η = 85 %, förlust = 0,60 kW",
+    "kurs": "η = 3,4/4,0 = 0,85 = 85 %. Förlust 0,6 kW.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000170": {
+    "ovning": "v43_02-q10",
+    "bok": "Utred orsak före återkommande återställning",
+    "kurs": "Exempel: 1) mekanisk överlast eller tröghet i pumpen, 2) obalans eller fasbortfall i matningen. Fasströmmar, spänning per fas och belastningsförlopp skiljer dem. Kontrollera också skyddets inställning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000171": {
+    "ovning": "v43_03-q1",
+    "bok": "NO öppen, NC sluten i normalläget",
+    "kurs": "NO: normalt öppen, ingen strömväg i vila. NC: normalt sluten, strömväg i vila.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000172": {
+    "ovning": "v43_03-q2",
+    "bok": "K1 knyter samman spole och kontakt",
+    "kurs": "Att spolen och kontakten hör till samma apparat. Korsreferensen visar var den andra delen finns.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000173": {
+    "ovning": "v43_03-q3",
+    "bok": "Kontakten ger kvarstående spolmatning",
+    "kurs": "När K1 drar sluter NO-kontakten och tar över strömvägen. K1 hålls kvar när START släpps.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000174": {
+    "ovning": "v43_03-q4",
+    "bok": "STOPP bryter båda vägarna till spolen",
+    "kurs": "Båda vägarna passerar S0. När STOPP öppnar bryts både START-vägen och hållvägen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000175": {
+    "ovning": "v43_03-q5",
+    "bok": "Förbindningsschema och plintlista",
+    "kurs": "Förbindningsschemat eller plintlistan. Kretsschemat visar hur funktionen hänger ihop.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000176": {
+    "ovning": "v43_03-q6",
+    "bok": "UK1 = 0 V",
+    "kurs": "0 V. Ingen ström går, så det blir inget spänningsfall över spolen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000177": {
+    "ovning": "v43_03-q7",
+    "bok": "UK1 = 12 V",
+    "kurs": "12 V. Hela källspänningen ligger över spolen när vägen är sluten.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000178": {
+    "ovning": "v43_03-q8",
+    "bok": "U över STOPP = 12 V",
+    "kurs": "12 V. Före STOPP är potentialen 12 V, efter STOPP 0 V via spolen till returen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000179": {
+    "ovning": "v43_03-q9",
+    "bok": "Ritningens giltighet måste klarläggas",
+    "kurs": "Ritningen kan inte anses gälla. Avvikelsen rapporteras till ansvarig, som klarlägger giltig version och uppdaterar ritningen före vidare arbete.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000180": {
+    "ovning": "v43_03-q10",
+    "bok": "Fyra tillstånd förklarar hela grundfunktionen",
+    "kurs": "Vila: START och hållkontakt öppna, K1 släppt. Start: START sluter, K1 drar, hållkontakten sluter. Hållning: START släpps, strömmen går genom hållkontakten. Stopp: S0 öppnar, K1 släpper och hållkontakten öppnar.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000181": {
+    "ovning": "v44_01-q1",
+    "bok": "Separata neutral- och skyddsledare",
+    "kurs": "N leder returström i normal drift. PE leder ingen ström i normal drift och leder felström vid fel. I TN-S är de separata ledare.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000182": {
+    "ovning": "v44_01-q2",
+    "bok": "Differensström kan upptäckas trots begränsad felström",
+    "kurs": "Felströmmen går genom två jordtag och blir ofta för liten för att ett överströmsskydd ska lösa snabbt. Jordfelsbrytaren reagerar på den lilla differensströmmen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000183": {
+    "ovning": "v44_01-q3",
+    "bok": "Isolationen mellan aktiva delar och jord",
+    "kurs": "Isolationsresistansen mellan de aktiva ledarna och jord. En försämring varnar innan ett andra fel uppstår.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000184": {
+    "ovning": "v44_01-q4",
+    "bok": "Driftkontinuitet kräver aktiv felhantering",
+    "kurs": "Det första felet ger liten ström och driften fortsätter. Ett andra fel på en annan fas blir en kortslutning via skrov eller jord. Därför ska felet lokaliseras och åtgärdas snabbt.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000185": {
+    "ovning": "v44_01-q5",
+    "bok": "Nej, delnäten behöver identifieras i dokumentationen",
+    "kurs": "Nej. Varje delnät kan ha eget jordningssystem. Enlinjeschemat och uppgifter om transformatorer, jordning och skydd behövs för varje del.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000186": {
+    "ovning": "v44_01-q6",
+    "bok": "ΔU = 0,90 V, U_{last} = 23,10 V",
+    "kurs": "ΔU = 6 · 0,15 = 0,9 V. Ulast = 23,1 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000187": {
+    "ovning": "v44_01-q7",
+    "bok": "I_{k} ≈ 500 A",
+    "kurs": "I_{k} = 230/0,46 = 500 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000188": {
+    "ovning": "v44_01-q8",
+    "bok": "Felströmmen halveras till 250 A",
+    "kurs": "I_{k} halveras till 250 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000189": {
+    "ovning": "v44_01-q9",
+    "bok": "Bortkopplingsvillkor i reservdrift behöver verifieras",
+    "kurs": "Att skyddet löser inom avsedd tid även vid 200 A i reservdrift, inte bara vid 1 000 A. Det kräver skyddets ström–tidskurva.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000190": {
+    "ovning": "v44_01-q10",
+    "bok": "Kartlägg nödlast, matningsoberoende och tillämpliga krav",
+    "kurs": "Vilka nödlaster som måste fungera, hur de matas vid bortfall och om fördelningen är en gemensam felpunkt för både ordinarie och nödmatning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000191": {
+    "ovning": "v44_02-q1",
+    "bok": "6,6 kV AC är högspänning",
+    "kurs": "Bara 6,6 kV AC. 690 V AC är högst 1 000 V och 1 200 V DC är högst 1 500 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000192": {
+    "ovning": "v44_02-q2",
+    "bok": "I_{L} ≈ 97,2 A",
+    "kurs": "I_{L} = 1 000 000/(1,732 · 6 600 · 0,90) ≈ 97 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000193": {
+    "ovning": "v44_02-q3",
+    "bok": "I_{L} ≈ 1 604 A, 16,5 gånger större",
+    "kurs": "I_{L} ≈ 1 600 A. Det är 6 600/400 = 16,5 gånger strömmen vid 6,6 kV.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000194": {
+    "ovning": "v44_02-q4",
+    "bok": "I_{2} = 3,0 A",
+    "kurs": "kI = 200/5 = 40. I_{2} = 120/40 = 3,0 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000195": {
+    "ovning": "v44_02-q5",
+    "bok": "Mättransformator, skyddsrelä, brytare",
+    "kurs": "Mättransformator → skyddsrelä → brytare.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000196": {
+    "ovning": "v44_02-q6",
+    "bok": "Kontrollera avsedd bryt- och kopplingsförmåga",
+    "kurs": "En frånskiljare är byggd för att ge en synlig brytpunkt, inte för att bryta ström. Märkdata eller dokumentation måste visa vilken ström den får bryta.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000197": {
+    "ovning": "v44_02-q7",
+    "bok": "Förreglingen ska inte kringgås för att få igenom manövern",
+    "kurs": "Stoppa manövern, utred varför förreglingen stoppar och kontrollera driftläget enligt instruktion. Förregling kopplas aldrig förbi.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000198": {
+    "ovning": "v44_02-q8",
+    "bok": "Nej, fastställd arbetsgräns behövs",
+    "kurs": "Nej. Spänningsnivå, arbetsmetod, verktyg och möjliga rörelser saknas. Avståndet måste bestämmas enligt gällande krav.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000199": {
+    "ovning": "v44_02-q9",
+    "bok": "Underlaget räcker inte för att godta arbetsberedningen",
+    "kurs": "Det går inte att avgöra vilka vägar som är spänningssatta, och det går inte att utesluta återmatning från reservkällan. Arbetsområdet kan därför inte avgränsas säkert.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000200": {
+    "ovning": "v44_02-q10",
+    "bok": "Utred skyddens samordning med händelsedata",
+    "kurs": "Reläinställningar, mätdata och händelselogg samt brytarnas tidsordning. De skiljer fel inställning, fel signal och fel brytförlopp.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000201": {
+    "ovning": "v44_03-q1",
+    "bok": "Nära 0 A",
+    "kurs": "0 A. Strömmarna fram och tillbaka tar ut varandras magnetfält. Tången ska omsluta en ledare.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000202": {
+    "ovning": "v44_03-q2",
+    "bok": "I = 25,0 A",
+    "kurs": "I = 250/10 = 25 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000203": {
+    "ovning": "v44_03-q3",
+    "bok": "R = 2,0 MΩ",
+    "kurs": "R = 500/0,00025 = 2 000 000 Ω = 2,0 MΩ.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000204": {
+    "ovning": "v44_03-q4",
+    "bok": "R = 10 MΩ",
+    "kurs": "Rp = 20 · 20/40 = 10 MΩ.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000205": {
+    "ovning": "v44_03-q5",
+    "bok": "R = 20 Ω",
+    "kurs": "R = 0,40/0,020 = 20 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000206": {
+    "ovning": "v44_03-q6",
+    "bok": "T = 20 ms, f = 50 Hz",
+    "kurs": "T = 4 · 5 = 20 ms. f = 1/0,020 = 50 Hz.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000207": {
+    "ovning": "v44_03-q7",
+    "bok": "û = 20 V",
+    "kurs": "û = 10 · 2,0 = 20 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000208": {
+    "ovning": "v44_03-q8",
+    "bok": "99,3-100,7 V",
+    "kurs": "δ = 0,5 V + 0,2 V = 0,7 V. Intervall 99,3–100,7 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000209": {
+    "ovning": "v44_03-q9",
+    "bok": "Medel = 10,0 V, bredd = 0,4 V",
+    "kurs": "Medel = 10,0 V. Variationsbredd = 0,4 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000210": {
+    "ovning": "v44_03-q10",
+    "bok": "Mätvillkoren måste jämföras innan diagnos",
+    "kurs": "Provspänning, mättid, temperatur, fukt och inkopplad utrustning kan skilja mellan mätningarna. Jämför villkoren innan du drar slutsatsen att isolationen är skadad.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000211": {
+    "ovning": "v45_01-q1",
+    "bok": "Observation: utebliven start. Hypotes: kontaktorfel",
+    "kurs": "Observation: ”motorn startar inte”. Hypotes: ”kontaktorn är trasig”.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000212": {
+    "ovning": "v45_01-q2",
+    "bok": "Matning, styrning, skydd och last",
+    "kurs": "Källa, kraftväg, styrning, skydd och last. Exempel: finns rätt spänning före och efter pumpens skydd?",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000213": {
+    "ovning": "v45_01-q3",
+    "bok": "Prioritera sträckan B till lasten",
+    "kurs": "Sträckan mellan B och lastens pluspunkt. Före B finns rätt spänning.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000214": {
+    "ovning": "v45_01-q4",
+    "bok": "I = 0 A, kontaktspänning = 24 V",
+    "kurs": "I = 0. Resistorn får inget fall, så hela 24 V ligger över den öppna kontakten.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000215": {
+    "ovning": "v45_01-q5",
+    "bok": "240 A i modellen",
+    "kurs": "I = 24/0,10 = 240 A. I verkligheten begränsar källans inre impedans och skyddet strömmen.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000216": {
+    "ovning": "v45_01-q6",
+    "bok": "ΔU = 2,0 V, P = 20 W",
+    "kurs": "ΔU = 10 · 0,20 = 2,0 V. P = 100 · 0,20 = 20 W.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000217": {
+    "ovning": "v45_01-q7",
+    "bok": "R = 2,0 Ω i matnings-/returvägen",
+    "kurs": "ΔU = 6 V. Rextra = 6/3 = 2,0 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000218": {
+    "ovning": "v45_01-q8",
+    "bok": "Kontroll av hållvägen prioriteras",
+    "kurs": "Mät matningen och spolspänningen under START. Är de rätt är matningen godkänd. Kontrollera sedan hållkontakten: sluter den när K1 drar, och är ledarna till den hela?",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000219": {
+    "ovning": "v45_01-q9",
+    "bok": "Loggning av relevanta värden under felvillkoret",
+    "kurs": "Spänning och ström samtidigt under hög belastning, spänningsfall över anslutningar, temperatur och tid. Vid tomgång syns inte ett fel som beror på ström.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000220": {
+    "ovning": "v45_01-q10",
+    "bok": "Verifierad funktion och dokumenterad återgång",
+    "kurs": "Funktion i rätt driftfall, föreskrivna säkerhetskontroller (till exempel anslutning och skyddsledare) och dokumenterad återlämning. Det som inte provats skrivs som oprövat.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000221": {
+    "ovning": "v45_02-q1",
+    "bok": "Tomgångsvärdet är känt, lastfunktionen är öppen",
+    "kurs": "Stöds: källan ger 24,0 V utan last. Kräver mer data: om spänningen håller under last. Mät då ström och spänning under last.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000222": {
+    "ovning": "v45_02-q2",
+    "bok": "Nej, full överensstämmelse är inte visad",
+    "kurs": "Krav: 11,40–12,60 V. Mätning: 11,35–11,55 V. Nej, den nedre mätgränsen 11,35 V ligger under 11,40 V.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000223": {
+    "ovning": "v45_02-q3",
+    "bok": "Nej, intervallen överlappar",
+    "kurs": "A: 9,90–10,10 V. B: 10,02–10,22 V. Intervallen överlappar mellan 10,02 och 10,10 V, så skillnaden bevisar inte att något instrument är fel.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000224": {
+    "ovning": "v45_02-q4",
+    "bok": "Framledningen tappar 3 V",
+    "kurs": "Slingfall 4 V. Framledningen 3 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000225": {
+    "ovning": "v45_02-q5",
+    "bok": "R_{fram} = 1,5 Ω, R_{retur} = 0,5 Ω",
+    "kurs": "Rfram = 3/2 = 1,5 Ω. Rretur = 1/2 = 0,5 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000226": {
+    "ovning": "v45_02-q6",
+    "bok": "Förhöjd resistans i kabelvägen stöds mest",
+    "kurs": "Förhöjd resistans i kabelvägen. Källan håller 24 V och 6 V förloras i kabeln. Nästa steg är att lokalisera var fallet uppstår.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000227": {
+    "ovning": "v45_02-q7",
+    "bok": "Orsaken till utlösningen behöver utredas",
+    "kurs": "Skyddet reagerar troligen korrekt på ett kvarstående fel. Samla uppgifter om ström, belastning, felström, inställning och skyddsval innan något byts.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000228": {
+    "ovning": "v45_02-q8",
+    "bok": "Objekt, åtgärd och verifiering måste framgå",
+    "kurs": "Objekt-ID för kabeln, orsak och vad som gjordes, samt efterkontrollens mätvärden med datum och namn.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000229": {
+    "ovning": "v45_02-q9",
+    "bok": "Normaldrift verifierad, reservdrift ej kontrollerad",
+    "kurs": "Exempel: ”Funktionen är verifierad i normaldrift. Reservdrift är inte kontrollerad och måste provas separat.”",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000230": {
+    "ovning": "v45_02-q10",
+    "bok": "Data stödjer att matningsfelet har åtgärdats",
+    "kurs": "Rföre = 2,0 Ω, Refter = 0,10 Ω. Åtgärden har minskat resistansen kraftigt. Kvar att göra: föreskriven kontroll av anslutning och skydd.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000231": {
+    "ovning": "v45_03-q1",
+    "bok": "P_{in} = 500 W, E = 1,50 kWh",
+    "kurs": "P_{in} = 400/0,80 = 500 W. E = 0,5 kW · 3 h = 1,5 kWh.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000232": {
+    "ovning": "v45_03-q2",
+    "bok": "I_{x} = 3,5 A ut",
+    "kurs": "I_{x} = 4,0 + 1,5 − 2,0 = 3,5 A.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000233": {
+    "ovning": "v45_03-q3",
+    "bok": "U_{ut} = 12 V",
+    "kurs": "Rp = 4 · 4/8 = 2 kΩ. Uut = 24 · 2/(2 + 2) = 12 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000234": {
+    "ovning": "v45_03-q4",
+    "bok": "û ≈ 33,9 V, T ≈ 16,7 ms",
+    "kurs": "û ≈ 33,9 V. T ≈ 16,7 ms.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000235": {
+    "ovning": "v45_03-q5",
+    "bok": "I = 2,0 A, cos φ = 0,60",
+    "kurs": "|Z| = 50 Ω. I = 2,0 A. cos φ = 0,60.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000236": {
+    "ovning": "v45_03-q6",
+    "bok": "P ≈ 4,43 kW",
+    "kurs": "P = 1,732 · 400 · 8 · 0,80 ≈ 4 430 W ≈ 4,43 kW.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000237": {
+    "ovning": "v45_03-q7",
+    "bok": "24,00 V ±0,26 V",
+    "kurs": "δ = 0,24 + 0,02 = 0,26 V. 24,00 ± 0,26 V, alltså 23,74–24,26 V.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  },
+  "EL-000238": {
+    "ovning": "v45_03-q8",
+    "bok": "Alla matningsvägar måste klarläggas",
+    "kurs": "Brist: batterireserven saknas i planen. Konsekvens: delar kan vara spänningssatta under arbetet. Beslut: arbetet startar inte förrän reserven är frånskild, låst och kontrollerad.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000239": {
+    "ovning": "v45_03-q9",
+    "bok": "Hållfunktionen bör prövas",
+    "kurs": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter. Kontroll: mät över hållkontakten med K1 draget. 0 V betyder att den sluter, full spänning att den är öppen.",
+    "status": "inga-tal",
+    "saknas_i_kurs": []
+  },
+  "EL-000240": {
+    "ovning": "v45_03-q10",
+    "bok": "Före 1,0 Ω, efter 0,10 Ω",
+    "kurs": "Före: (24 − 20)/4 = 1,0 Ω. Efter: (24 − 23,6)/4 = 0,10 Ω.",
+    "status": "overens",
+    "saknas_i_kurs": []
+  }
+}

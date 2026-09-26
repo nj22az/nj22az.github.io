@@ -1,0 +1,71 @@
+{
+  "id": "EL-000230",
+  "titel": "Samlad slutsats",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Före åtgärden föll 6 V i kabeln vid 3 A. Efter åtgärden faller 0,3 V vid samma ström, och lasten fungerar. Skriv en teknisk slutsats och en kontroll som återstår.",
+    "samband": [
+      "Rföre = ΔUföre/I; Refter = ΔUefter/I"
+    ],
+    "givet": "Före: 6 V vid 3 A. Efter: 0,3 V vid 3 A. Lasten fungerar efter åtgärden.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Resistanserna kan jämföras direkt eftersom ström och mätpunkter är desamma.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut båda och beskriv vad de visar. Ange också vilken föreskriven kontroll av anslutning eller säkerhet som återstår.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Rföre = 2,0 Ω, Refter = 0,10 Ω. Åtgärden har minskat resistansen kraftigt. Kvar att göra: föreskriven kontroll av anslutning och skydd.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q10 och ch056.xhtml#sol23-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "EL-000049",
+  "titel": "Thévenin vid tomgång",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-05",
+      "T-kurs-v39-02",
+      "T-bildspel-v39-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "12 V matar R_{1} = 1 kΩ i serie med R_{2} = 2 kΩ. Lasten ska anslutas över R_{2}. Bestäm U_{th} och R_{th} när ingen last är ansluten.",
+    "samband": [
+      "U_{th} = U_{in} · R_{2}/(R_{1} + R_{2})",
+      "R_{th} = R_{1} · R_{2}/(R_{1} + R_{2})"
+    ],
+    "givet": "Likströmskrets med en ideal 12 V-källa. R_{1} = 1 kΩ, R_{2} = 2 kΩ. Ingen last är ansluten.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U_{th} är spänningen mellan lastens anslutningspunkter när ingen last är ansluten. R_{th} är resistansen mellan samma punkter med källan nollställd.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först tomgångsspänningen. Ersätt sedan källan med en ledning – bara i beräkningen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Uth = 12 · 2/3 = 8,0 V. Rth = 1 · 2/3 = 2/3 kΩ ≈ 0,667 kΩ.",
+    "svar": [
+      {
+        "storhet": "U_{th}",
+        "varde": 8.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "R_{th}",
+        "varde": 667.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch010.xhtml#ch5-q9 och ch038.xhtml#sol5-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_02-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx bild 41 och 42",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

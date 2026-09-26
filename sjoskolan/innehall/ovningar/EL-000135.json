@@ -1,0 +1,70 @@
+{
+  "id": "EL-000135",
+  "titel": "Otydligt besked",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "”Den är nog avstängd, ni kan börja” sägs via telefon. Ange två brister i beskedet.",
+    "samband": [
+      "Ett startbesked behöver entydiga uppgifter"
+    ],
+    "givet": "Beskedet är: ”Den är nog avstängd, ni kan börja.” Inga kontroller nämns.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Objekt, arbetsgräns, utförda kontroller, vem som ger beskedet och vem som tar emot det behöver vara klart.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange två uppgifter som saknas och varför var och en gör att arbetet inte kan börja säkert.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Två av: vilket objekt och vilken arbetsgräns som avses, vem som ansvarar, att ”nog” betyder att ingen kontroll är gjord, och vilka kontroller som faktiskt har utförts.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q5 och ch047.xhtml#sol14-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,1158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nj22az.github.io/sjoskolan/innehall/schema/ovning.schema.json",
+  "title": "Sjöskolan · övningspost",
+  "description": "En övning, uppgift, fråga eller laboration. Identiteten (id) är permanent och oberoende av vecka, kapitel, titel och nummer. Placeringar ligger i placeringar/*.json.",
+  "type": "object",
+  "required": [
+    "id",
+    "titel",
+    "sprak",
+    "typ",
+    "revision",
+    "granskning",
+    "larande",
+    "uppgift",
+    "referenser"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^EL-[0-9]{6}$",
+      "description": "Permanent id, till exempel EL-000123. Återanvänds aldrig."
+    },
+    "titel": {
+      "type": "string",
+      "minLength": 2
+    },
+    "sprak": {
+      "const": "sv"
+    },
+    "typ": {
+      "enum": [
+        "berakning",
+        "resonemang",
+        "reflektion",
+        "flerval",
+        "matning",
+        "simulator",
+        "laboration",
+        "felsokning",
+        "mall",
+        "fall"
+      ],
+      "description": "berakning: räknas fram. resonemang: skriftlig motivering. reflektion: förberedelse- eller diskussionsfråga utan facit. flerval: val bland alternativ. matning: mätning med instrument (fysisk eller simulerad). simulator: räkna-först-uppgift i en simulator. laboration: stationsprotokoll med flera mätningar. felsokning: felsökning med hypotes och kontroll. mall: ifyllnadsmall utan eget facit. fall: gemensamt underlag (scenario) som flera uppgifter bygger på."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Innehållsrevision. Höjs vid varje ändring av uppgift, värden, ledtrådar eller lösning."
+    },
+    "granskning": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "migrerad",
+            "utkast",
+            "att-granska",
+            "granskad"
+          ],
+          "description": "migrerad: flyttad oförändrad från publicerat kursmaterial. utkast: nyskriven och inte granskad. att-granska: konflikt eller tekniskt oklart. granskad: bekräftad av ansvarig lärare."
+        },
+        "kommentar": {
+          "type": "string"
+        },
+        "numeriskt_kontrollerad": {
+          "type": "boolean",
+          "description": "Svaret är oberoende omräknat (se migrering/numerik.json)."
+        }
+      }
+    },
+    "larande": {
+      "type": "object",
+      "required": [
+        "mal",
+        "niva",
+        "teori"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mal": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "forkunskaper": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "niva": {
+          "enum": [
+            "forberedelse",
+            "grund",
+            "tillampning",
+            "analys",
+            "fordjupning"
+          ]
+        },
+        "tid_min": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "teori": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^T-[a-z0-9_-]+$"
+          },
+          "description": "Id i teori.json: den teori eller det genomräknade exempel som behövs."
+        }
+      }
+    },
+    "parametrar": {
+      "type": "object",
+      "description": "Strukturerade värden som uppgift, lösning och simulator använder. Nyckeln är parameterns namn.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "varde"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "varde": {
+            "type": [
+              "number",
+              "string",
+              "boolean",
+              "array"
+            ]
+          },
+          "enhet": {
+            "type": "string"
+          },
+          "beskrivning": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "uppgift": {
+      "type": "object",
+      "required": [
+        "fraga"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scenario": {
+          "type": "string",
+          "description": "Bakgrund eller fall som flera frågor utgår från."
+        },
+        "fraga": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Själva uppgiften."
+        },
+        "delfragor": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delfraga"
+          }
+        },
+        "samband": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Samband som visas med uppgiften (formelstöd), ett per rad."
+        },
+        "givet": {
+          "type": "string",
+          "description": "Förutsättningar och givna villkor."
+        },
+        "instruktion": {
+          "type": "string",
+          "description": "Hur svaret redovisas."
+        },
+        "svarsformat": {
+          "type": "string"
+        },
+        "alternativ": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Svarsalternativ vid flerval."
+        },
+        "figurer": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Id i referenser.tillgangar."
+        },
+        "stycken": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Uppgiftstexten i stycken när den har flera stycken (fraga är då hela texten)."
+        },
+        "fall": {
+          "type": "string",
+          "pattern": "^EL-[0-9]{6}$",
+          "description": "Id för det gemensamma fallet (typ fall) som uppgiften bygger på."
+        },
+        "kortfraga": {
+          "type": "string",
+          "description": "Kort form av frågan för presentationsbilden."
+        }
+      }
+    },
+    "ledtradar": {
+      "type": "array",
+      "description": "Ordnade ledtrådar: först begrepp, sedan metod, sist ett tydligt nästa steg.",
+      "items": {
+        "type": "object",
+        "required": [
+          "niva",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "niva": {
+            "enum": [
+              "begrepp",
+              "metod",
+              "nasta-steg"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 3
+          },
+          "status": {
+            "enum": [
+              "migrerad",
+              "utkast"
+            ]
+          },
+          "i_bok": {
+            "type": "boolean",
+            "description": "Om ledtråden ingår i bokens Metod-rad (standard: sant för kapitelövningar). Boken visar ledtrådarna ihopskrivna."
+          }
+        }
+      }
+    },
+    "losning": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Genomräknad lösning eller de punkter ett bra svar tar upp."
+        },
+        "steg": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "svar": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/svar"
+          }
+        },
+        "status": {
+          "enum": [
+            "migrerad",
+            "utkast",
+            "saknas"
+          ]
+        },
+        "kalla": {
+          "type": "string"
+        },
+        "kontroll": {
+          "type": "string",
+          "description": "Rimlighetskontroll efter svaret."
+        },
+        "svarstext": {
+          "type": "string",
+          "description": "Svaret i ord med enhet, som i bokens Svar-rad."
+        },
+        "kommentar": {
+          "type": "string",
+          "description": "Kort förklaring efter svaret (kursens facit)."
+        }
+      }
+    },
+    "bedomning": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kriterier": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kursniva": {
+          "type": "string",
+          "description": "Befintlig kursnivå eller betygsgräns, om materialet anger en."
+        }
+      }
+    },
+    "labb": {
+      "$ref": "#/$defs/labb"
+    },
+    "simulator": {
+      "$ref": "#/$defs/simulator"
+    },
+    "referenser": {
+      "type": "object",
+      "required": [
+        "ursprung",
+        "publik"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ursprung": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ursprung"
+          }
+        },
+        "tillgangar": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tillgang"
+          }
+        },
+        "rattigheter": {
+          "type": "string"
+        },
+        "publik": {
+          "enum": [
+            "elev",
+            "larare",
+            "bok"
+          ],
+          "description": "elev: publiceras öppet. larare: hela posten finns bara i skyddat/larare.enc. bok: hela posten finns bara i skyddat/bok.enc (bokens egna övningar)."
+        },
+        "losning_publik": {
+          "type": "boolean",
+          "description": "Om lösningen får visas för elever (självstudier). Standard: sant för övningar med facit i kursen."
+        },
+        "resurser": {
+          "type": "array",
+          "description": "Material som eleven hänvisas till, relativt sjoskolan/.",
+          "items": {
+            "type": "object",
+            "required": [
+              "url",
+              "titel"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "titel": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "larare": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Lärarfält. Lagras bara i skyddat/larare.enc och visas bara i lösenordsskyddat lärarmaterial.",
+      "properties": {
+        "anteckning": {
+          "type": "string"
+        },
+        "forklara": {
+          "type": "string",
+          "description": "Hur uppgiften förklaras för klassen."
+        },
+        "vanliga_fel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "facit": {
+          "type": "string",
+          "description": "Lärarens facit när elevens facit inte visas."
+        },
+        "facit_funktion": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$",
+          "description": "Registrerad funktion som räknar lärarfacit för elevens egna värden (D)."
+        },
+        "bedomning": {
+          "type": "string"
+        },
+        "facit_rader": {
+          "type": "array",
+          "description": "Lärarfacit rad för rad. En rad med funktion räknas för elevens D av en registrerad funktion i lärarguiden.",
+          "items": {
+            "type": "object",
+            "required": [
+              "etikett"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "etikett": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "funktion": {
+                "type": "string",
+                "pattern": "^[a-z0-9_.-]+$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "talarmanus": {
+      "type": "string",
+      "description": "Talarmanus till presentationsbilden (anteckningar i PowerPoint). Publikt, eftersom elevernas presentationer innehåller det."
+    },
+    "bok": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Bokens egna delar av övningen (figurer och lösningsfigurer). Lagras bara i skyddat/bok.enc.",
+      "properties": {
+        "figurer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fil",
+              "alt"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "fil": {
+                "type": "string"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 3
+              },
+              "bildtext": {
+                "type": "string"
+              },
+              "nr": {
+                "type": "string"
+              },
+              "klass": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "losningsfigurer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fil",
+              "alt"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "fil": {
+                "type": "string"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 3
+              },
+              "bildtext": {
+                "type": "string"
+              },
+              "nr": {
+                "type": "string"
+              },
+              "klass": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "html": {
+          "type": "object",
+          "description": "Bokens ursprungliga XHTML för fält som inte kan återskapas ur texten (färgmarkering av storheter).",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "berakning"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "losning"
+        ],
+        "properties": {
+          "losning": {
+            "required": [
+              "text"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "resonemang"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "losning"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "flerval"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "uppgift": {
+            "required": [
+              "alternativ"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "simulator"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "simulator"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "laboration"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "labb"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "typ": {
+            "const": "matning"
+          }
+        }
+      },
+      "then": {
+        "anyRequired": [
+          "labb",
+          "simulator"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "delfraga": {
+      "type": "object",
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+$",
+          "description": "Stabil identitet inom övningen (a, b, c …)."
+        },
+        "text": {
+          "type": "string"
+        },
+        "typ": {
+          "enum": [
+            "berakning",
+            "resonemang",
+            "flerval",
+            "matning"
+          ]
+        },
+        "alternativ": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ratt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "svar": {
+          "type": "number"
+        },
+        "enhet": {
+          "type": "string"
+        },
+        "tolerans": {
+          "$ref": "#/$defs/tolerans"
+        },
+        "ledtrad": {
+          "type": "string"
+        },
+        "forklaring": {
+          "type": "string"
+        }
+      }
+    },
+    "svar": {
+      "type": "object",
+      "required": [
+        "storhet"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fraga": {
+          "type": "string",
+          "description": "Delfrågans id om svaret gäller en delfråga."
+        },
+        "storhet": {
+          "type": "string"
+        },
+        "varde": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "enhet": {
+          "type": "string"
+        },
+        "avrundning": {
+          "type": "string"
+        },
+        "tolerans": {
+          "$ref": "#/$defs/tolerans"
+        },
+        "berakning": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.]+$",
+          "description": "Id för registrerad beräkningsfunktion i lib/berakningar.py."
+        }
+      }
+    },
+    "tolerans": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rel": {
+          "type": "number",
+          "minimum": 0
+        },
+        "abs": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "ursprung": {
+      "type": "object",
+      "required": [
+        "kalla"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kalla": {
+          "type": "string",
+          "description": "Fil och plats där innehållet fanns före migreringen."
+        },
+        "revision": {
+          "type": "string"
+        },
+        "roll": {
+          "type": "string"
+        }
+      }
+    },
+    "tillgang": {
+      "type": "object",
+      "required": [
+        "id",
+        "fil",
+        "alt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "fil": {
+          "type": "string"
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 3
+        },
+        "bildtext": {
+          "type": "string"
+        },
+        "kredit": {
+          "type": "string"
+        }
+      }
+    },
+    "labb": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "variant": {
+          "enum": [
+            "fysisk",
+            "simulerad"
+          ]
+        },
+        "fysisk_variant": {
+          "type": "string",
+          "pattern": "^EL-[0-9]{6}$"
+        },
+        "simulerad_variant": {
+          "type": "string",
+          "pattern": "^EL-[0-9]{6}$"
+        },
+        "station": {
+          "type": "string"
+        },
+        "utrustning": {
+          "type": "string"
+        },
+        "installningar": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "koppling": {
+          "type": "string"
+        },
+        "sakerhet": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "steg": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "ledtrad": {
+                "type": "string"
+              },
+              "varfor": {
+                "type": "string"
+              },
+              "typ": {
+                "type": "string"
+              },
+              "svar": {
+                "type": [
+                  "number",
+                  "integer"
+                ]
+              },
+              "enhet": {
+                "type": "string"
+              },
+              "tolerans": {
+                "$ref": "#/$defs/tolerans"
+              },
+              "alternativ": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ratt": {
+                "type": "integer"
+              },
+              "etikett": {
+                "type": "string"
+              },
+              "kod": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "matningar": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "titel",
+              "storhet"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "titel": {
+                "type": "string"
+              },
+              "storhet": {
+                "type": "string"
+              },
+              "punkter": {
+                "type": "string"
+              },
+              "forvantat": {
+                "type": "string"
+              },
+              "tolerans": {
+                "type": "string"
+              },
+              "valfri": {
+                "type": "boolean"
+              },
+              "kod": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "fragor": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "kort": {
+                "type": "string"
+              },
+              "min_ord": {
+                "type": "integer"
+              },
+              "valfri": {
+                "type": "boolean"
+              },
+              "ledtrad": {
+                "type": "string"
+              },
+              "krav_text": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "protokoll": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Protokollets ramar. Mätningar, kontroller och frågor ligger i labb.matningar, labb.sakerhet och labb.fragor.",
+          "properties": {
+            "nyckel": {
+              "type": "string",
+              "description": "Lagringsnyckel för elevens sparade protokoll. Ändras inte."
+            },
+            "titel": {
+              "type": "string"
+            },
+            "inledning": {
+              "type": "string"
+            },
+            "matningsinledning": {
+              "type": "string"
+            },
+            "felsokning": {
+              "type": "object"
+            },
+            "exempel": {
+              "type": "object",
+              "description": "Ifyllt exempel för en annan rigg än elevens."
+            },
+            "mall": {
+              "type": "string",
+              "pattern": "^EL-[0-9]{6}$",
+              "description": "Protokollmall som används vid den fysiska stationen."
+            },
+            "lagen": {
+              "type": "object",
+              "description": "Fasta lägen som eleven ställer in med knappar."
+            },
+            "rigg": {
+              "type": "object",
+              "description": "Riggens värden (structured parameters for the station)."
+            }
+          }
+        },
+        "lankar": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Id för poster som förbereder eller hör till laborationen."
+        }
+      }
+    },
+    "simulator": {
+      "type": "object",
+      "required": [
+        "labb",
+        "validering"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "labb": {
+          "enum": [
+            "multimetersimulator",
+            "vaxelstromslabbet",
+            "trefaslabbet",
+            "hallkretslabbet",
+            "isolationslabbet",
+            "vaxelstromslabbet-guidad"
+          ]
+        },
+        "scenario": {
+          "type": "string",
+          "description": "Scenariotyp, till exempel flik eller krets."
+        },
+        "initial": {
+          "description": "Simulatorns startläge för uppgiften (registrerade fält)."
+        },
+        "handlingar": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fraga": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "storhet": {
+              "type": "string"
+            },
+            "etikett": {
+              "type": "string"
+            },
+            "enhet": {
+              "type": "string"
+            },
+            "fas": {
+              "type": "integer"
+            },
+            "skala": {
+              "type": "number"
+            },
+            "belopp": {
+              "type": "boolean",
+              "description": "Svaret jämförs som belopp."
+            },
+            "falt": {
+              "type": "array",
+              "description": "Flera avläsningar i samma uppgift: [nyckel, etikett, enhet].",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "dolj": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validering": {
+          "type": "object",
+          "required": [
+            "typ"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "typ": {
+              "enum": [
+                "numerisk",
+                "flerval",
+                "steg",
+                "protokoll"
+              ]
+            },
+            "funktion": {
+              "type": "string",
+              "pattern": "^[a-z0-9_.]+$"
+            },
+            "tolerans": {
+              "$ref": "#/$defs/tolerans"
+            },
+            "facit": {
+              "type": "number"
+            }
+          }
+        },
+        "aterkoppling": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "vanliga_fel": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "varde",
+                  "text"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "varde": {
+                    "type": "number"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "ratt": {
+              "type": "string"
+            }
+          }
+        },
+        "kallhanvisning": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "teoriavsnitt": {
+          "type": "string",
+          "description": "Avsnitt i labbets teoripanel eller genomgång."
+        },
+        "dolj_fel": {
+          "type": "boolean",
+          "description": "Visa inte vilket fel som är inlagt."
+        },
+        "lagringsversion": {
+          "type": "integer",
+          "description": "Höjs när sparade elevsvar för uppgiften inte längre gäller."
+        },
+        "visualisering": {
+          "type": "string"
+        },
+        "forklaring": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fraga": {
+              "type": "string"
+            },
+            "ledtrad": {
+              "type": "string"
+            }
+          },
+          "description": "Förklaringsfråga efter avläsningen (guidad labb)."
+        },
+        "kalla": {
+          "type": "string",
+          "description": "Källa eller rigg som eleven ser, till exempel Grundkälla: 12,00 V RMS sinus."
+        }
+      }
+    }
+  }
+}

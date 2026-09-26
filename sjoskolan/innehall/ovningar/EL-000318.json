@@ -1,0 +1,108 @@
+{
+  "id": "EL-000318",
+  "titel": "Reaktiv effekt",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma pump: P = 1 200 W och PF = 0,75. Beräkna den reaktiva effekten Q."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[9] (id reaktiv)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Q = √(S² − P²) eller Q = P · tan φ.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Q",
+        "varde": 1058.3,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "var",
+        "berakning": "ac.reaktiv"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "P": {
+      "varde": 1200,
+      "enhet": "W"
+    },
+    "PF": {
+      "varde": 0.75
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 1058.3,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 60,
+      "P": 1200,
+      "pf": 0.75,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0.2
+    },
+    "fraga": {
+      "storhet": "Q",
+      "etikett": "Q",
+      "enhet": "var"
+    },
+    "dolj": [
+      "Q",
+      "Q2",
+      "QcFull",
+      "triangleValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 400,
+          "text": "Du har räknat S − P. Effekterna adderas som visare: Q = √(S² − P²)."
+        }
+      ]
+    },
+    "kallhanvisning": "Exempel: reaktiv effekt från PF",
+    "teoriavsnitt": "exempel",
+    "alias": "reaktiv"
+  }
+}

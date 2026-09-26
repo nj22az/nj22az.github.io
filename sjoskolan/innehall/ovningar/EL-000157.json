@@ -1,0 +1,69 @@
+{
+  "id": "EL-000157",
+  "titel": "Spolspänning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En kontaktor har huvudkontakter för 440 V men en spole märkt 24 V DC. Vilken uppgift styr spolens matning?",
+    "samband": [
+      "Vilken del av apparaten gäller varje märkvärde?"
+    ],
+    "givet": "Huvudkontakter för 440 V, spole märkt 24 V DC.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Huvudkontakternas spänning och spolens spänning gäller olika delar av apparaten.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ta spolens spänning och strömart (AC eller DC) från dess märkning, inte huvudkontakternas värde.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Spolens märkning, 24 V DC, styr manöverkretsens matning. 400 V gäller huvudkontakterna.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q7 och ch049.xhtml#sol16-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "EL-000106",
+  "titel": "Motor 230/400 V",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Motorn är märkt Δ/Y 230/400 V. Matningen är 400 V mellan faserna. Vilken koppling ger rätt märkspänning över lindningarna?",
+    "samband": [
+      "Y: U_{gren} = U_{L}/√3; Δ: U_{gren} = U_{L}"
+    ],
+    "givet": "Motorn är märkt Δ/Y 230/400 V. Matningen är 400 V mellan faserna.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Märkningen Δ/Y 230/400 V anger vilken nätspänning som gäller för varje koppling.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut spänningen över en lindning i Y och i Δ och jämför med märkningen. Motivera valet med ett värde.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Y. Då får varje lindning 400/1,732 ≈ 231 V, vilket stämmer med 230 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q6 och ch044.xhtml#sol11-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

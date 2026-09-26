@@ -1,0 +1,70 @@
+{
+  "id": "EL-000140",
+  "titel": "Rätt hänvisning i riskbedömning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Skriv ett exempel på en hänvisning till en regel som går att kontrollera i efterhand, utan att du gissar en paragraf.",
+    "samband": [
+      "Spårbar hänvisning = dokument, version och tillämpning"
+    ],
+    "givet": "Det räcker att visa hur hänvisningen ska byggas upp. Fartygsdata eller avsnitt som saknas skrivs som öppna frågor.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "En hänvisning ska visa vilket avsnitt som är kontrollerat och varför det gäller just det här arbetet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv en mall med dokument och motivering. Skriv aldrig en påhittad paragraf som om den vore fakta.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Exempel: ”Dokument: [namn], utgåva [nr]. Avsnitt: [kontrolleras]. Gäller eftersom: [fartygsdata och arbete]. Öppen fråga: [det som saknas].”",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q10 och ch047.xhtml#sol14-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "id": "EL-000339",
+  "titel": "Jämför toppvärde och RMS",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Multimetern visar 12,00 V RMS. Vilket toppvärde förväntar du dig i kurvan?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[2] (id grund-topp)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "För sinus: û = √2 · U. Exempel: 10,00 V RMS ger cirka 14,14 V i topp.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "U": {
+      "varde": 12,
+      "enhet": "V"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Toppvärde û",
+        "varde": 16.9706,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V",
+        "berakning": "ac.topp"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 12,
+      "f": 50,
+      "t": 5,
+      "showB": false,
+      "dt": 3,
+      "window": "auto"
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "peak",
+          "Toppvärde û",
+          "V"
+        ]
+      ]
+    },
+    "teoriavsnitt": "rms",
+    "visualisering": "peak",
+    "forklaring": {
+      "fraga": "Varför kan multimetern visa 12,00 V samtidigt som kurvan når ett högre värde?",
+      "ledtrad": "Använd begreppen effektivvärde och toppvärde. Vilket värde beskriver motsvarande värmeeffekt?"
+    },
+    "kalla": "Grundkälla: 12,00 V RMS sinus, 50 Hz",
+    "alias": "grund-topp"
+  }
+}

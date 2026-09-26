@@ -1,0 +1,97 @@
+{
+  "id": "EL-000327",
+  "titel": "Hållning: över hjälpkontakten",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "K1 har dragit och START är släppt. Vad visar mätaren över K1:s hjälpkontakt (a–b)?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[6] (id hallning)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Är hjälpkontakten öppen eller sluten när K1 håller? Vad är spänningen över en sluten, ideal kontakt?",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "K1 håller, så hjälpkontakten är sluten. a och b har samma potential: 0 V över kontakten.",
+    "svar": [
+      {
+        "storhet": "U(a–b)",
+        "varde": 0,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 0
+    },
+    "initial": {
+      "steg": [
+        {},
+        {
+          "s1": true
+        },
+        {
+          "s1": false,
+          "red": "a",
+          "black": "b"
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(a–b)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 24,
+          "text": "24 V skulle det bli över en öppen kontakt. Här är hjälpkontakten sluten."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · övning 3",
+    "alias": "hallning"
+  }
+}

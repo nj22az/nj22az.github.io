@@ -1,0 +1,92 @@
+{
+  "id": "EL-000075",
+  "titel": "Spänningar i serie",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "RL-kretsen har I = 2,0 A, R = 30 Ω och XL = 40 Ω. Beräkna U_{R}, U_{L} och källspänningen.",
+    "samband": [
+      "U_{R} = I_{R}; U_{L} = IXL",
+      "U = √(U_{R}² + U_{L}²)"
+    ],
+    "givet": "RL i serie med I = 2,0 A, R = 30 Ω och XL = 40 Ω."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U_{R} och U_{L} ligger 90° isär. Samma ström går genom båda komponenterna.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut spänningen över varje komponent och använd sedan Pythagoras sats för källspänningen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "U_{R} = 60 V, U_{L} = 80 V, U = √(60² + 80²) = 100 V. Spänningarna adderas som visare, inte som tal.",
+    "svar": [
+      {
+        "storhet": "U_{R}",
+        "varde": 60.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "U_{L}",
+        "varde": 80.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "U",
+        "varde": 100.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q5 och ch041.xhtml#sol8-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

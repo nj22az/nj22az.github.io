@@ -1,0 +1,39 @@
+{
+  "id": "EL-000508",
+  "titel": "Eget försök med andra värden: effekt och effektfaktor",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-03",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En enfaslast tar P = 2 300 W vid U = 230 V och PF = 0,50. Beräkna I och S. Förklara om P skulle ändras bara för att PF förbättras i vår modell.",
+    "instruktion": "Räkna innan facit visas."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS effekt bild eget",
+        "revision": "8cabde3",
+        "roll": "kontrollfråga i genomgången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "I = 20,00 A. S = 4 600 VA. P hålls oförändrad i modellen.",
+    "status": "migrerad"
+  }
+}

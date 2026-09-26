@@ -1,0 +1,112 @@
+{
+  "id": "EL-000317",
+  "titel": "Skenbar effekt",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En pump tar P = 1 200 W vid PF = 0,75. Beräkna den skenbara effekten S."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[8] (id skenbar)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "S = P/PF.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "S",
+        "varde": 1600,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "VA",
+        "berakning": "ac.skenbar"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "P": {
+      "varde": 1200,
+      "enhet": "W"
+    },
+    "PF": {
+      "varde": 0.75
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 1600,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 60,
+      "P": 1200,
+      "pf": 0.75,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0.2
+    },
+    "fraga": {
+      "storhet": "S",
+      "etikett": "S",
+      "enhet": "VA"
+    },
+    "dolj": [
+      "S",
+      "I",
+      "Q",
+      "S2",
+      "I2",
+      "Q2",
+      "QcFull",
+      "triangleValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 900,
+          "text": "Du har multiplicerat med PF. S är större än P: S = P/PF."
+        }
+      ]
+    },
+    "kallhanvisning": "Skenbar effekt",
+    "teoriavsnitt": "s",
+    "alias": "skenbar"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "EL-000134",
+  "titel": "Säkerhetsåtgärder",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-14",
+      "T-kurs-v42-02",
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Varför räcker det inte att frånskilja när du förbereder ett arbete utan spänning?",
+    "samband": [
+      "Frånskiljning är en del av flera åtgärder"
+    ],
+    "givet": "Jordning och kortslutning görs när anläggningen, arbetsmetoden och gällande krav kräver det.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Skydd mot återinkoppling, spänningslöshetskontroll och skydd mot närliggande delar ingår i planeringen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Förklara vilken risk som kvarstår efter enbart frånskiljning. Knyt varje risk till ytterligare åtgärd.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Efter frånskiljning kan någon tillkoppla igen, spänningslösheten är inte kontrollerad och närliggande delar kan vara spänningssatta. Skydd mot tillkoppling, spänningslöshetskontroll, jordning och kortslutning där det krävs, samt skydd mot närliggande delar behövs.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch021.xhtml#ch14-q4 och ch047.xhtml#sol14-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

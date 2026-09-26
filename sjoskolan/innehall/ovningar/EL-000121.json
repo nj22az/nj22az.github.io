@@ -1,0 +1,68 @@
+{
+  "id": "EL-000121",
+  "titel": "Fuktig miljö",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En person ska undersöka en skadad arbetslampa på ett vått metalldäck. Ange två faktorer som ökar risken.",
+    "samband": [
+      "Fara + exponering kan leda till skada"
+    ],
+    "givet": "En skadad arbetslampa på ett vått metalldäck. Spänning och skydd är inte kontrollerade.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Fukt och kontakt med ledande ytor gör det lättare för ström att gå genom kroppen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Välj två omständigheter i fallet och förklara hur var och en ökar risken.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Ett bra svar tar upp två av: vatten minskar övergångsresistansen, metalldäcket ger en ledande väg till kroppen, lampan är skadad så isolationen kan vara bruten, och skyddsfunktionen är inte verifierad.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q1 och ch046.xhtml#sol13-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

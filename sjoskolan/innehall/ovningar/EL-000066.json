@@ -1,0 +1,73 @@
+{
+  "id": "EL-000066",
+  "titel": "Momentanvärde",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "u(t) = 17,0 sin(2π · 50t) V. Beräkna spänningen vid t = 5,0 ms.",
+    "samband": [
+      "u(t) = û · sin(2πft)"
+    ],
+    "givet": "û = 17,0 V, f = 50 Hz, t = 5,0 ms. Gör om t till sekunder. π ≈ 3,14159."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "u(t) är spänningen vid en viss tidpunkt. Vinkeln 2πft är i radianer, så räknaren ska stå i RAD.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först vinkeln, sedan sinus, och multiplicera sist med toppvärdet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "2π · 50 · 0,005 = π/2 rad. u = 17,0 · sin(π/2) = 17,0 V, den positiva toppen.",
+    "svar": [
+      {
+        "storhet": "u(5 ms)",
+        "varde": 17.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q6 och ch040.xhtml#sol7-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

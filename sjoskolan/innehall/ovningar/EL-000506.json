@@ -1,0 +1,38 @@
+{
+  "id": "EL-000506",
+  "titel": "Strömmen med spolen inkopplad",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-02",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Varför räcker inte 12/40 när spolen är med?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS impedans bild strom",
+        "revision": "8cabde3",
+        "roll": "kontrollfråga i genomgången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Spolens reaktans ingår också i impedansen.",
+    "status": "migrerad"
+  }
+}

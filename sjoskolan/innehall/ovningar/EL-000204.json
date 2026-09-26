@@ -1,0 +1,83 @@
+{
+  "id": "EL-000204",
+  "titel": "Parallell isolation",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två isolationsvägar på 20 MΩ vardera går parallellt från samma ledare till jord. Beräkna den sammanlagda resistansen.",
+    "samband": [
+      "R_{p} = R_{1} · R_{2}/(R_{1} + R_{2})"
+    ],
+    "givet": "R_{1} = R_{2} = 20 MΩ. Båda vägarna går mellan samma ledare och jord.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Två parallella vägar släpper tillsammans igenom mer läckström än en ensam.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Använd parallellformeln och räkna i MΩ hela vägen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Rp = 20 · 20/40 = 10 MΩ.",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 10.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "MΩ"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q4 och ch054.xhtml#sol21-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

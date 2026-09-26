@@ -1,0 +1,62 @@
+{
+  "id": "EL-000073",
+  "titel": "RL-kretsens impedans",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En seriekrets har R = 30 Ω och XL = 40 Ω. Beräkna |Z|.",
+    "samband": [
+      "|Z| = √(R² + X²)"
+    ],
+    "givet": "RL-krets i serie med R = 30 Ω och X = XL = +40 Ω."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "|Z| är impedansen i Ω. R och X ligger vinkelrätt mot varandra i visardiagrammet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Kvadrera R och X, lägg ihop och dra roten ur. Lägg inte ihop R och X rakt av.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "|Z| = √(900 + 1 600) = 50 Ω.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q3 och ch041.xhtml#sol8-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "EL-000098",
+  "titel": "Två lika faslaster",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-10",
+      "T-kurs-v41-01",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två fasströmmar på 10 A ligger 120° isär. Den tredje fasen är obelastad. Bestäm strömmen i neutralledaren.",
+    "samband": [
+      "I_{N} = √(I_{1}² + I_{2}² + 2 · I_{1} · I_{2} cos120°)"
+    ],
+    "givet": "I_{1} = I_{2} = 10 A, 120° isär, och I_{3} = 0. Neutralledaren är hel.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Formeln ger storleken på summan av två visare. cos120° = −0,5 – glöm inte minustecknet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut uttrycket under roten och dra sedan roten ur.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "IN = √(100 + 100 − 100) = 10 A.",
+    "svar": [
+      {
+        "storhet": "I_{N}",
+        "varde": 10.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch016.xhtml#ch10-q8 och ch043.xhtml#sol10-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_01-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

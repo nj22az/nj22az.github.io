@@ -1,0 +1,68 @@
+{
+  "id": "EL-000130",
+  "titel": "Förebyggande åtgärder",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-13",
+      "T-kurs-v42-01",
+      "T-bildspel-v42-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En skadad sladd upptäcks före användning. Föreslå en åtgärd direkt och en som minskar risken att det händer igen.",
+    "samband": [
+      "Direkt skydd och förebyggande åtgärd"
+    ],
+    "givet": "Sladden har en synlig skada och har inte använts. Den är inte reparerad eller godkänd för användning.",
+    "instruktion": "Motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Den direkta åtgärden hindrar att någon utsätts för risken nu. Den förebyggande minskar risken att det händer igen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange vad som görs med sladden nu och hur kontrollen före användning kan bli bättre.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Direkt: ta sladden ur bruk och märk den. Förebyggande: se över förkontrollen, förvaringen och hur skadan uppstod.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch020.xhtml#ch13-q10 och ch046.xhtml#sol13-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "EL-000061",
+  "titel": "Period vid 50 Hz",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Beräkna periodtiden i sekunder och millisekunder för en signal på 50 Hz.",
+    "samband": [
+      "T = 1/f; T[ms] = 1 000 · T[s]"
+    ],
+    "givet": "En periodisk signal med f = 50 Hz. 1 ms = 0,001 s."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "T är periodtiden i s och f frekvensen i Hz, alltså perioder per sekund.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Dela 1 med frekvensen och gör sedan om sekunder till millisekunder.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "T = 1/50 = 0,020 s = 20 ms.",
+    "svar": [
+      {
+        "storhet": "T",
+        "varde": 0.02,
+        "avrundning": "3 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "s"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q1 och ch040.xhtml#sol7-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

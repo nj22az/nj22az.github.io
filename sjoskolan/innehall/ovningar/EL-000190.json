@@ -1,0 +1,69 @@
+{
+  "id": "EL-000190",
+  "titel": "Nödmatning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-19",
+      "T-kurs-v44-01",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En enda fördelning matar både ordinarie utrustning och nödutrustning. Vilken fråga måste dokumentationen svara på innan systemet kan bedömas?",
+    "samband": [
+      "Nödlastens behov styr frågor om matningsoberoende"
+    ],
+    "givet": "Ordinarie utrustning och nödutrustning matas från samma fördelning. Fartygsdata och gällande krav är inte kända.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Du måste veta vilka funktioner som ska fungera även när något går sönder.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ta reda på vilka nödlaster som finns, hur de reservmatas och vilka fel som kan slå ut både ordinarie utrustning och nödutrustning samtidigt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Vilka nödlaster som måste fungera, hur de matas vid bortfall och om fördelningen är en gemensam felpunkt för både ordinarie och nödmatning.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch027.xhtml#ch19-q10 och ch052.xhtml#sol19-s10",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_01-q10",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx bild 33 och 34",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

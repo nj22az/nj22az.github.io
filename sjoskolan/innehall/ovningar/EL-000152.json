@@ -1,0 +1,68 @@
+{
+  "id": "EL-000152",
+  "titel": "Säkringens uppgift",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-16",
+      "T-kurs-v43-01",
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Nämn två typer av överström som ett överströmsskydd ska klara.",
+    "samband": [
+      "Vilka slags överström kan uppstå?"
+    ],
+    "givet": "Frågan gäller vilka slags fel ett överströmsskydd ska kunna hantera.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Tänk på en för stor last i en hel krets och på en oavsiktlig väg med låg impedans.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Beskriv båda typerna och skillnaden i förlopp. Hänvisa till ström–tidsegenskapen för utlösning.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Överlast (för stor ström under längre tid i en hel krets) och kortslutning (mycket stor ström genom en oavsiktlig väg).",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch023.xhtml#ch16-q2 och ch049.xhtml#sol16-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

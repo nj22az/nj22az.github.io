@@ -1,0 +1,81 @@
+{
+  "id": "EL-000232",
+  "titel": "Strömlagen",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-24",
+      "T-kurs-v45-03",
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "4,0 A och 1,5 A går in i en nod. 2,0 A och I_{x} går ut. Bestäm I_{x}.",
+    "samband": [
+      "ΣI_{in} = ΣI_{ut}"
+    ],
+    "givet": "4,0 A och 1,5 A in, 2,0 A och I_{x} ut. Alla riktningar är givna.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Strömmen in i noden är lika med strömmen ut.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Skriv upp ekvationen, lägg ihop strömmarna in och dra bort den kända strömmen ut.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{x} = 4,0 + 1,5 − 2,0 = 3,5 A.",
+    "svar": [
+      {
+        "storhet": "I_{x}",
+        "varde": 3.5,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch032.xhtml#ch24-q2 och ch057.xhtml#sol24-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_03-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 12 och 13",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

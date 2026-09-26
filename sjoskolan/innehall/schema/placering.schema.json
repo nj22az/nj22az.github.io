@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nj22az.github.io/sjoskolan/innehall/schema/placering.schema.json",
+  "title": "Sjöskolan · placeringar på en yta",
+  "description": "Var och i vilken ordning övningar visas på en yta (kurssida, presentation, simulator, bok, lärarmaterial). Numrering och ankare hör till placeringen, inte till övningen.",
+  "type": "object",
+  "required": [
+    "yta",
+    "titel",
+    "publik",
+    "placeringar"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "yta": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "titel": {
+      "type": "string"
+    },
+    "beskrivning": {
+      "type": "string"
+    },
+    "publik": {
+      "enum": [
+        "elev",
+        "larare",
+        "bok"
+      ],
+      "description": "Ytans publik. En yta får bara visa övningar vars publik den når."
+    },
+    "exportor": {
+      "type": "string",
+      "description": "Exportören som skriver ytan (export/<namn>.py)."
+    },
+    "placeringar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ovning",
+          "plats",
+          "ordning"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "ovning": {
+            "type": "string",
+            "pattern": "^EL-[0-9]{6}$"
+          },
+          "plats": {
+            "type": "string",
+            "description": "Fil eller dokument (relativt sjoskolan/ eller bok:)."
+          },
+          "del": {
+            "type": "string",
+            "description": "Avsnitt på ytan, till exempel kapitel v41_02 eller bokkapitel 10."
+          },
+          "ordning": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "nummer": {
+            "type": "string",
+            "description": "Visningsnummer, till exempel Övning 3 eller 10.3."
+          },
+          "ankare": {
+            "type": "string"
+          },
+          "bild": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Bildnummer i presentationen."
+          },
+          "stodbild": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "roll": {
+            "type": "string",
+            "description": "Till exempel ovning, stod, kontroll, variant."
+          },
+          "alias": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2
+            },
+            "description": "Äldre länkar, id och sparade referenser som ska fortsätta leda hit."
+          },
+          "former": {
+            "type": "object",
+            "description": "Presentationer: vilket fält som står i vilken textform (form-id, eller form-id/stycke). Nyckeln stod/… gäller stödbilden.",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9]+(/[0-9]+)?$"
+            }
+          },
+          "kontroll": {
+            "type": "boolean",
+            "description": "Texten är en del av en figur och skrivs inte om. Exportören kontrollerar i stället att bilden stämmer med posten."
+          }
+        }
+      }
+    }
+  }
+}

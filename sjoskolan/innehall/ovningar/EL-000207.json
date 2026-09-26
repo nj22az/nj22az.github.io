@@ -1,0 +1,72 @@
+{
+  "id": "EL-000207",
+  "titel": "Probens dämpning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-3",
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-21",
+      "T-kurs-v44-03",
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En prob med dämpningen 10:1 används. Skärmen visar toppvärdet 2,0 V, och oscilloskopet räknar inte om automatiskt. Bestäm signalens verkliga toppvärde.",
+    "samband": [
+      "ûverklig = probfaktor · ûvisad"
+    ],
+    "givet": "Probfaktor 10, visat toppvärde 2,0 V. Den automatiska omräkningen är avstängd.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "En 10:1-prob dämpar spänningen till en tiondel innan den når oscilloskopet.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera en gång med 10. Om oscilloskopet redan räknar om automatiskt får du inte multiplicera igen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "û = 10 · 2,0 = 20 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch029.xhtml#ch21-q7 och ch054.xhtml#sol21-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

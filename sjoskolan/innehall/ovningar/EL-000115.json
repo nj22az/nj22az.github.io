@@ -1,0 +1,83 @@
+{
+  "id": "EL-000115",
+  "titel": "Trefasdata",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-12",
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En symmetrisk trefasrigg har uppmätt linjespänning 12,0 V. Beräkna förväntad Y-grenspänning och jämför med uppmätt 6,90 V.",
+    "samband": [
+      "Uförv = U_{L}/√3",
+      "ΔU = Uuppmätt − Uförv"
+    ],
+    "givet": "Symmetrisk Y, U_{L} = 12,0 V och Uuppmätt = 6,90 V. Avrunda inte mellanresultatet.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "ΔU är avvikelsen med tecken. Ett negativt värde betyder att den uppmätta spänningen är lägre än den beräknade.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut den förväntade grenspänningen, dra den från mätvärdet och tolka tecknet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Uförv ≈ 6,93 V. ΔU = 6,90 − 6,93 ≈ −0,03 V. Uppmätt är något lägre än beräknat.",
+    "svar": [
+      {
+        "storhet": "avvikelse",
+        "varde": -0.028,
+        "avrundning": "3 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch018.xhtml#ch12-q5 och ch045.xhtml#sol12-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

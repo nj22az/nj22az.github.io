@@ -1,0 +1,90 @@
+{
+  "id": "EL-000037",
+  "titel": "Spänning vid lasten",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Källan ger 24 V. Kabelslingan har R = 0,140 Ω och lasten tar 5,0 A. Beräkna spänningen vid lasten och spänningsfallet i procent.",
+    "samband": [
+      "ΔU = I · R; U_{last} = U_{källa} − ΔU",
+      "Fall i % = 100 · ΔU/U_{källa}"
+    ],
+    "givet": "R = 0,140 Ω gäller hela slingan. Strömmen är 5,0 A.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "ΔU är kabelslingans spänningsfall.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna kabelns spänningsfall, dra det från källans 24 V och räkna ut hur stor andel av 24 V fallet är.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "ΔU = 5,0 A · 0,140 Ω = 0,70 V. Ulast = 24 − 0,70 = 23,3 V. Fall = 100 · 0,70/24 ≈ 2,9 %.",
+    "svar": [
+      {
+        "storhet": "U_{last}",
+        "varde": 23.3,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "fall",
+        "varde": 2.92,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "%"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q7 och ch037.xhtml#sol4-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

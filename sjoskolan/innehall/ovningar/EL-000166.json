@@ -1,0 +1,80 @@
+{
+  "id": "EL-000166",
+  "titel": "Ändrad frekvens",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fyrpolig motor matas med 40 Hz. Beräkna fältets synkrona varvtal.",
+    "samband": [
+      "n_{s} = 120f/p"
+    ],
+    "givet": "Fyra poler och frekvensen 40 Hz. Uppgiften gäller bara fältets varvtal.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Formeln ger fältets varvtal. För rotorns varvtal skulle du också behöva eftersläpningen.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Sätt in 40 Hz och fyra poler.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "n_{s} = 120 · 40/4 = 1 200 r/min.",
+    "svar": [
+      {
+        "storhet": "n_{s}",
+        "varde": 1200.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "r/min"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q6 och ch050.xhtml#sol17-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

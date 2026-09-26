@@ -1,0 +1,90 @@
+{
+  "id": "EL-000186",
+  "titel": "DC-fördelning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-19",
+      "T-kurs-v44-01",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 24 V-last tar 6 A. Slingresistansen i matningen är 0,15 Ω. Beräkna spänningsfallet och lastspänningen.",
+    "samband": [
+      "ΔU = I · R_{slinga}; U_{last} = U_{källa} − ΔU"
+    ],
+    "givet": "Likspänning: U_{källa} = 24 V, I = 6 A, R_{slinga} = 0,15 Ω.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "R_{slinga} gäller både fram- och returledaren.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut spänningsfallet och dra det från källans spänning.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "ΔU = 6 · 0,15 = 0,9 V. Ulast = 23,1 V.",
+    "svar": [
+      {
+        "storhet": "ΔU",
+        "varde": 0.9,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "U_{last}",
+        "varde": 23.1,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch027.xhtml#ch19-q6 och ch052.xhtml#sol19-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_01-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

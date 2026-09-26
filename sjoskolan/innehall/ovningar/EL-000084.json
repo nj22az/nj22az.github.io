@@ -1,0 +1,74 @@
+{
+  "id": "EL-000084",
+  "titel": "Reaktiv effekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-09",
+      "T-kurs-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "S = 2,0 kVA och cos φ = 0,80. Lasten är induktiv och sinusformad. Bestäm P och Q.",
+    "samband": [
+      "P = S cos φ; sin φ = √(1 − cos²φ)",
+      "Q = S sin φ"
+    ],
+    "givet": "S = 2,0 kVA, cos φ = 0,80. Ren sinusform."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "För en induktiv last är sin φ och Q positiva.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Med S i kVA får du P i kW och Q i kvar. Räkna först P, sedan sin φ, och multiplicera till sist S med sin φ för att få Q.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P = 1,6 kW. sin φ = 0,60. Q = 1,2 kvar.",
+    "svar": [
+      {
+        "storhet": "P",
+        "varde": 1.6,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kW"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch015.xhtml#ch9-q4 och ch042.xhtml#sol9-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_03-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

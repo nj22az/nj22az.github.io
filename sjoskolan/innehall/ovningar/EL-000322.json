@@ -1,0 +1,96 @@
+{
+  "id": "EL-000322",
+  "titel": "Start: över spolen",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "S1 START hålls intryckt. S0 och returen är hela. Vilken spänning ligger över K1-spolen (b–c)?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[1] (id start)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Vilka punkter är förbundna med +U, och vilka med 0 V? Spolen är kretsens enda resistans.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "b har +24 V via S0 och S1, c har 0 V via returen. Uspole = 24 − 0 = 24 V.",
+    "svar": [
+      {
+        "storhet": "U(spole)",
+        "varde": 24,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 24
+    },
+    "initial": {
+      "steg": [
+        {},
+        {
+          "s1": true
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(spole)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 12,
+          "text": "12 V gäller presentationens krets. Här är matningen 24 V."
+        },
+        {
+          "varde": 0,
+          "text": "Nu finns en sluten väg, så spolen får spänning."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · övning 7",
+    "alias": "start"
+  }
+}

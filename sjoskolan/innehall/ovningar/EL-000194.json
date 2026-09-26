@@ -1,0 +1,81 @@
+{
+  "id": "EL-000194",
+  "titel": "Strömtransformator",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En ideal strömtransformator har omsättningen 200/5 A. Primärströmmen är 120 A. Beräkna sekundärströmmen.",
+    "samband": [
+      "kI = I_{1},märk/I_{2},märk; I_{2} = I_{1}/kI"
+    ],
+    "givet": "Ideal strömtransformator 200/5 A. Primärströmmen I_{1} = 120 A. Uppgiften gäller bara beräkningen.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "kI är omsättningen och saknar enhet; 1 är primärsidan och 2 sekundärsidan.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut omsättningen och dela sedan primärströmmen med den.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "kI = 200/5 = 40. I_{2} = 120/40 = 3,0 A.",
+    "svar": [
+      {
+        "storhet": "I_{2}",
+        "varde": 3.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q4 och ch053.xhtml#sol20-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

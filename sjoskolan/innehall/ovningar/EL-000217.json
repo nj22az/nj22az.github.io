@@ -1,0 +1,83 @@
+{
+  "id": "EL-000217",
+  "titel": "Utan last och med last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-6",
+      "LM-7",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-22",
+      "T-kurs-v45-01",
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Matningen mäts till 24 V utan last men bara 18 V vid lasten när strömmen är 3 A. Vid källans anslutningar är det fortfarande 24 V. Beräkna den extra resistansen i serie.",
+    "samband": [
+      "ΔU = U_{källa} − U_{last}; R_{extra} = ΔU/I"
+    ],
+    "givet": "Källan håller 24 V under last. U_{last} = 18 V och I = 3 A. Andra spänningsfall försummas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Resistansen du får fram är all resistans mellan mätpunkterna tillsammans.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Använd värdena som mättes samtidigt under last. Räkna ut spänningsfallet och dela med strömmen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "ΔU = 6 V. Rextra = 6/3 = 2,0 Ω.",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 2.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch030.xhtml#ch22-q7 och ch055.xhtml#sol22-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 27 och 28",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

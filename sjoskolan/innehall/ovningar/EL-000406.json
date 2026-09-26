@@ -1,0 +1,408 @@
+{
+  "id": "EL-000406",
+  "titel": "Labbprotokoll, Station B, trefas",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Använd fliken ”Neutralledaren” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/stationB-protokoll.mjs STATION_B_3F_PROTOKOLL",
+        "revision": "8cabde3",
+        "roll": "labbprotokoll under simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "station": "Station B · trefas · simulerad",
+    "utrustning": "Rigg: SELV-trefasrigg, huvudspänning (linjespänning) UL uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.",
+    "sakerhet": [
+      {
+        "id": "rigg",
+        "text": "Trefasriggen är avsedd och dokumenterad: SELV, huvudspänning, strömgräns och mätpunkter L1, L2, L3, N och S."
+      },
+      {
+        "id": "instr",
+        "text": "Instrumentet är avsett för AC och kontrollerat mot en känd källa. Rätt uttag och område är valda, och mA-säkringen är hel."
+      },
+      {
+        "id": "punkter",
+        "text": "Jag mäter bara vid riggens dokumenterade mätpunkter och strömmätlänkar."
+      },
+      {
+        "id": "nlank",
+        "text": "Neutralledaren bryts och lasterna kopplas från bara med riggens avsedda länkar och med frånskild matning."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling, också till strömmätning, sker med frånskild matning. Jag avbryter vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning. På den fysiska stationen ger instruktören det. I simulatorn ger du det själv när punkterna ovan är gjorda."
+      }
+    ],
+    "matningar": [
+      {
+        "id": "m1",
+        "titel": "Fasspänning över last 1, N hel",
+        "storhet": "U1 (L1–N)",
+        "punkter": "L1 / N",
+        "forvantat": "UL/√3",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U1",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": true
+          }
+        }
+      },
+      {
+        "id": "m2",
+        "titel": "Fasström L1",
+        "storhet": "I1",
+        "punkter": "strömmätlänk L1",
+        "forvantat": "U1/R1",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "I1",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": true
+          }
+        }
+      },
+      {
+        "id": "m3",
+        "titel": "Fasström L2",
+        "storhet": "I2",
+        "punkter": "strömmätlänk L2",
+        "forvantat": "U2/R2",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "I2",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": true
+          }
+        }
+      },
+      {
+        "id": "m4",
+        "titel": "Fasström L3",
+        "storhet": "I3",
+        "punkter": "strömmätlänk L3",
+        "forvantat": "U3/R3",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "I3",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": true
+          }
+        }
+      },
+      {
+        "id": "m5",
+        "titel": "Neutralström",
+        "storhet": "IN",
+        "punkter": "strömmätlänk N",
+        "forvantat": "nästan symmetriskt?",
+        "tolerans": "liten mot fasströmmarna",
+        "kod": {
+          "q": "IN",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": true
+          }
+        }
+      },
+      {
+        "id": "m6",
+        "titel": "Grenspänning över last 1, N bruten",
+        "storhet": "U1 (L1–S)",
+        "punkter": "L1 / S",
+        "forvantat": "nästan lika laster",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U1",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": true,
+            "on3": true,
+            "neutral": false
+          }
+        }
+      },
+      {
+        "id": "m7",
+        "titel": "Grenspänning över last 1, N bruten och last 2 frånkopplad",
+        "storhet": "U1 (L1–S)",
+        "punkter": "L1 / S",
+        "forvantat": "två laster i serie över U13",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U1",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": false,
+            "on3": true,
+            "neutral": false
+          }
+        }
+      },
+      {
+        "id": "m8",
+        "titel": "Grenspänning över last 3, N bruten och last 2 frånkopplad",
+        "storhet": "U3 (L3–S)",
+        "punkter": "L3 / S",
+        "forvantat": "två laster i serie över U13",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "U3",
+          "need": {
+            "UL": 12.2,
+            "R1": 98,
+            "R2": 103,
+            "R3": 101,
+            "on1": true,
+            "on2": false,
+            "on3": true,
+            "neutral": false
+          }
+        }
+      }
+    ],
+    "fragor": [
+      {
+        "id": "neutral",
+        "text": "Varför blir neutralströmmen inte noll trots att alla laster är märkta 100 Ω? Använd dina mätvärden.",
+        "kort": "neutralström",
+        "min_ord": 12
+      },
+      {
+        "id": "bruten",
+        "text": "Vad hände med grenspänningarna när N bröts och last 2 var frånkopplad? Vad kan det betyda för 230 V-enfaslaster i ett 400/230 V-nät med neutralledare, i land eller ombord där N finns? Varför kan felet inte uppstå på samma sätt i ett 440 V IT-nät med tre ledare?",
+        "kort": "bruten neutral",
+        "min_ord": 15
+      },
+      {
+        "id": "itjordfel",
+        "text": "Ombord: 440 V IT-nät utan N. Isolationsövervakningen larmar för jordfel på L1. Vilken spänning har L2 och L3 mot skrovet nu? Vad betyder det för ditt instrument, och vad händer om ett andra jordfel uppstår på en annan fas?",
+        "valfri": true
+      },
+      {
+        "id": "avvikelse",
+        "text": "Förklara en avvikelse",
+        "kort": "förklaring av en avvikelse",
+        "min_ord": 12,
+        "ledtrad": "Välj en mätning där uppmätt skiljer sig från förväntat och förklara orsaken med dina siffror."
+      },
+      {
+        "id": "slutsats",
+        "text": "Slutsats: vad visar dina mätningar, och vad visar de inte?",
+        "kort": "slutsats",
+        "min_ord": 12
+      }
+    ],
+    "protokoll": {
+      "nyckel": "stationB-3f",
+      "titel": "Labbprotokoll: Station B, trefas",
+      "exempel": {
+        "note": "Ifyllt exempel för en annan trefasrigg än din: UL = 13,0 V och lasterna 95, 104 och 100 Ω. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
+        "head": {
+          "namn": "Exempel Elevsson",
+          "datum": "2026-10-09",
+          "rigg": "Exempelrigg 13,0 V, simulator"
+        },
+        "checks": {
+          "rigg": true,
+          "instr": true,
+          "punkter": true,
+          "nlank": true,
+          "omk": true,
+          "klar": true
+        },
+        "rows": [
+          {
+            "storhet": "U1 (L1–N)",
+            "punkter": "L1 / N",
+            "drift": "N hel, tre laster",
+            "forv": "7,51 V",
+            "uppm": "7,51 V",
+            "avv": "0,00 V",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": "13,00/√3 = 7,51 V. Med hel N får varje last fasspänningen."
+          },
+          {
+            "storhet": "I1",
+            "punkter": "strömmätlänk L1",
+            "drift": "N hel, mA-läge, omkopplat frånskilt",
+            "forv": "79,0 mA",
+            "uppm": "79,0 mA",
+            "avv": "0,0 mA",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": "Uppmätt R1 = 95 Ω använt i beräkningen."
+          },
+          {
+            "storhet": "I2",
+            "punkter": "strömmätlänk L2",
+            "drift": "N hel",
+            "forv": "72,2 mA",
+            "uppm": "72,2 mA",
+            "avv": "0,0 mA",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": ""
+          },
+          {
+            "storhet": "I3",
+            "punkter": "strömmätlänk L3",
+            "drift": "N hel",
+            "forv": "75,1 mA",
+            "uppm": "75,1 mA",
+            "avv": "0,0 mA",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": ""
+          },
+          {
+            "storhet": "IN",
+            "punkter": "strömmätlänk N",
+            "drift": "N hel",
+            "forv": "0 mA (om symmetriskt)",
+            "uppm": "5,9 mA",
+            "avv": "5,9 mA",
+            "tol": "liten mot fasströmmarna",
+            "bed": "Inom tolerans",
+            "komm": "Lasterna är inte exakt lika, så en liten rest blir kvar i N."
+          },
+          {
+            "storhet": "U1 (L1–S)",
+            "punkter": "L1 / S",
+            "drift": "N bruten, tre laster",
+            "forv": "7,51 V",
+            "uppm": "7,33 V",
+            "avv": "−0,18 V",
+            "tol": "±2 %",
+            "bed": "Utanför tolerans",
+            "komm": "Stjärnpunkten flyttar 0,20 V eftersom lasterna inte är lika. Avvikelsen −2,38 % beror på den brutna neutralledaren, inte på mätningen."
+          },
+          {
+            "storhet": "U1 (L1–S)",
+            "punkter": "L1 / S",
+            "drift": "N bruten, last 2 frånkopplad",
+            "forv": "6,33 V",
+            "uppm": "6,33 V",
+            "avv": "0,00 V",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": "Last 1 och 3 i serie över U13: 13,00 · 95/195. Mot fasspänningen 7,51 V är det −15,62 %."
+          },
+          {
+            "storhet": "U3 (L3–S)",
+            "punkter": "L3 / S",
+            "drift": "N bruten, last 2 frånkopplad",
+            "forv": "6,67 V",
+            "uppm": "6,67 V",
+            "avv": "0,00 V",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": "Lasterna delar U13 i förhållande till sina resistanser."
+          }
+        ],
+        "answers": {
+          "neutral": "Så kan svaret byggas: 1) dina tre lastresistanser och fasströmmar, 2) varför visarsumman då inte blir noll, 3) din uppmätta neutralström jämförd med fasströmmarna.",
+          "bruten": "Så kan svaret byggas: 1) dina grenspänningar med och utan N, 2) hur två laster i serie delar huvudspänningen, 3) vad som händer med en last med liten effekt, 4) vilka nät ombord som har N och vilka som inte har det.",
+          "itjordfel": "Så kan svaret byggas: 1) spänningen mellan de friska faserna och skrovet, 2) vad det kräver av instrument och sladdar, 3) vad ett andra jordfel på en annan fas blir.",
+          "avvikelse": "Grenspänningen över last 1 blev 6,33 V i stället för 7,51 V när N bröts och last 2 kopplades från. Avvikelsen är inget mätfel. Utan neutralledare bestäms stjärnpunktens potential av lasterna, så spänningen delas som i en seriekrets.",
+          "slutsats": "Med hel neutralledare fick varje last fasspänningen oberoende av de andra. Utan neutralledare berodde grenspänningarna på lasternas storlek. Mätningarna visar inte vad som händer med induktiva laster, övertoner eller vid kortslutning."
+        }
+      },
+      "rigg": {
+        "RIG_3F": {
+          "UL": 12.2,
+          "R1": 98,
+          "R2": 103,
+          "R3": 101,
+          "on1": true,
+          "on2": true,
+          "on3": true,
+          "neutral": true
+        }
+      }
+    },
+    "fysisk_variant": "EL-000407"
+  },
+  "losning": {
+    "text": "Protokollet har ett ifyllt exempel för en annan rigg. Förväntade värden räknas av eleven före mätningen.",
+    "status": "migrerad"
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "protokoll"
+    },
+    "alias": "stationB-3f"
+  }
+}

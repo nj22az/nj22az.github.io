@@ -1,0 +1,73 @@
+{
+  "id": "EL-000224",
+  "titel": "Mätning under last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Källan har 24 V, lasten 20 V och strömmen är 2 A. Spänningsfallet i returledaren är uppmätt till 1 V. Hur stort är fallet i framledaren?",
+    "samband": [
+      "ΔU_{total} = U_{källa} − U_{last}",
+      "ΔU_{fram} = ΔU_{total} − ΔU_{retur}"
+    ],
+    "givet": "Källa 24 V, last 20 V, ström 2 A och 1 V i returledaren. Värdena är mätta samtidigt.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Hela spänningsfallet är summan av fallet i framledaren och i returledaren.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut hela fallet och dra sedan bort returledarens del.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Slingfall 4 V. Framledningen 3 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q4 och ch056.xhtml#sol23-s4",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q4",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 16 och 17",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

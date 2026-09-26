@@ -1,0 +1,38 @@
+{
+  "id": "EL-000501",
+  "titel": "Periodtid och frekvens",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-01",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vid 100 Hz: blir perioden längre eller kortare?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS sinus bild period",
+        "revision": "8cabde3",
+        "roll": "kontrollfråga i genomgången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Kortare. T = 1 000/100 = 10 ms.",
+    "status": "migrerad"
+  }
+}

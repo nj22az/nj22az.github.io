@@ -1,0 +1,97 @@
+{
+  "id": "EL-000324",
+  "titel": "Över den öppna STOPP",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "S1 hålls intryckt och S0 STOPP trycks. Vilken spänning visar mätaren över S0 (från +U till a)?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/lessons.mjs CHALLENGES[3] (id stopp)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Utan ström blir det inget spänningsfall i spolen. Punkten a når 0 V genom S1 och spolen.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 0. a har samma potential som returen, 0 V. U(S0) = 24 − 0 = 24 V: hela spänningen över avbrottet.",
+    "svar": [
+      {
+        "storhet": "U(S0)",
+        "varde": 24,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "hallkretslabbet.forvantat",
+      "facit": 24
+    },
+    "initial": {
+      "steg": [
+        {},
+        {
+          "s1": true
+        },
+        {
+          "s0": true,
+          "red": "P",
+          "black": "a"
+        }
+      ]
+    },
+    "fraga": {
+      "storhet": "U",
+      "etikett": "U(S0)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "meter",
+      "nodes"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0,
+          "text": "En öppen kontakt i en strömlös seriekrets tar hela spänningen."
+        }
+      ]
+    },
+    "kallhanvisning": "v43_03 · övning 8",
+    "alias": "stopp"
+  }
+}

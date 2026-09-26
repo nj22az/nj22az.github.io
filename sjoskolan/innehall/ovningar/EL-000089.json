@@ -1,0 +1,63 @@
+{
+  "id": "EL-000089",
+  "titel": "Ledningsförlust",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-09",
+      "T-kurs-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Strömmen i en kabel minskar från 12 A till 8 A. Hur stor del av den tidigare förlusten I² · R är kvar?",
+    "samband": [
+      "P_{2}/P_{1} = (I_{2}/I_{1})²",
+      "Minskning i % = 100 · (1 − P_{2}/P_{1})"
+    ],
+    "givet": "Samma kabel, alltså samma R. Strömmen går från 12 A till 8 A."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Kvoten ger den andel som återstår. Multiplicera med 100 för procent.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Kvadrera strömkvoten. Skilj på procent som återstår och procentuell minskning.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "(8/12)² ≈ 0,44. Cirka 44 % av förlusten återstår, en minskning med cirka 56 %.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch015.xhtml#ch9-q9 och ch042.xhtml#sol9-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_03-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

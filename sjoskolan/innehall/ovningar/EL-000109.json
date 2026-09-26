@@ -1,0 +1,80 @@
+{
+  "id": "EL-000109",
+  "titel": "Transformatorns märkström",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-11",
+      "T-kurs-v41-02",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En ideal trefastransformator är märkt 100 kVA och 10 kV/400 V (linjespänningar). Bestäm linjeströmmen på sekundärsidan vid full last.",
+    "samband": [
+      "I_{2} = S/(√3 · U_{2})"
+    ],
+    "givet": "Ideal symmetrisk trefastransformator, 100 kVA och 10 kV/400 V.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "S är transformatorns märkeffekt i VA. U_{2} och I_{2} är linjespänning och linjeström på sekundärsidan.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Använd 100 000 VA och sekundärsidans 400 V – primärspänningen ska inte vara med här.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{2} = 100 000/(1,732 · 400) ≈ 144 A.",
+    "svar": [
+      {
+        "storhet": "I_{2}",
+        "varde": 144.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch017.xhtml#ch11-q9 och ch044.xhtml#sol11-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

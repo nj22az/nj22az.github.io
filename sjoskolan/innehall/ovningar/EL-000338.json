@@ -1,0 +1,97 @@
+{
+  "id": "EL-000338",
+  "titel": "Läs av periodtiden",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-vaxelstromslabbet",
+      "T-bildspel-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur lång tid tar en hel period vid 50 Hz? Svara i millisekunder."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/guided-lessons.mjs GUIDE_TASKS[1] (id grund-period)",
+        "revision": "8cabde3",
+        "roll": "uppgift i den guidade labben"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "T = 1/f i sekunder. T = 1 000/f i millisekunder. Exempel: 100 Hz ger 1 000/100 = 10 ms.",
+      "status": "migrerad"
+    }
+  ],
+  "parametrar": {
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "Periodtid T",
+        "varde": 20,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "ms",
+        "berakning": "ac.period_ms"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell"
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet-guidad",
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 12,
+      "f": 50,
+      "t": 5,
+      "showB": false,
+      "dt": 3,
+      "window": "auto"
+    },
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.guidevarden"
+    },
+    "fraga": {
+      "falt": [
+        [
+          "T",
+          "Periodtid T",
+          "ms"
+        ]
+      ]
+    },
+    "teoriavsnitt": "period",
+    "visualisering": "period",
+    "forklaring": {
+      "fraga": "Vilka två punkter i kurvan avgränsar en hel period?",
+      "ledtrad": "Beskriv två motsvarande punkter, till exempel två nollpassager i samma riktning."
+    },
+    "kalla": "Grundkälla: 12,00 V RMS sinus, 50 Hz",
+    "alias": "grund-period"
+  }
+}

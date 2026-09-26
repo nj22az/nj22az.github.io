@@ -1,0 +1,81 @@
+{
+  "id": "EL-000165",
+  "titel": "Eftersläpning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-17",
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fyrpolig 50 Hz-motor går med 1 440 r/min. Beräkna eftersläpningen i procent.",
+    "samband": [
+      "n_{s} = 120f/p",
+      "s% = 100 · (n_{s} − n)/n_{s}"
+    ],
+    "givet": "f = 50 Hz, p = 4 och n = 1 440 r/min. Motorn går som motor, alltså inte som generator.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "n är rotorns verkliga varvtal.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut n_{s}, sedan skillnaden n_{s} − n som andel av n_{s}, och gör om till procent.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "n_{s} = 1 500 r/min. s = 100 · 60/1 500 = 4,0 %.",
+    "svar": [
+      {
+        "storhet": "s",
+        "varde": 4.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "%"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch024.xhtml#ch17-q5 och ch050.xhtml#sol17-s5",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02-q5",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 18 och 19",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

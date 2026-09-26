@@ -1,0 +1,62 @@
+{
+  "id": "EL-000063",
+  "titel": "Toppvärde",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinusspänning har effektivvärdet 12,0 V. Beräkna toppvärdet.",
+    "samband": [
+      "û = √2 · U"
+    ],
+    "givet": "Ren sinus utan likspänningsdel. U = 12,0 V RMS."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "û är toppvärdet och U effektivvärdet (RMS). √2 ≈ 1,414.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera effektivvärdet med √2. Toppvärdet ska bli större än effektivvärdet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "û = 1,414 · 12,0 ≈ 17,0 V.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q3 och ch040.xhtml#sol7-s3",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q3",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

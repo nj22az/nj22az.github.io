@@ -1,0 +1,62 @@
+{
+  "id": "EL-000068",
+  "titel": "Fas från tidsavstånd",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två sinussignaler på 50 Hz är förskjutna 2,0 ms mot varandra. Beräkna fasvinkeln.",
+    "samband": [
+      "|φ| = 360° · Δt/T; T = 1/f"
+    ],
+    "givet": "f = 50 Hz och Δt = 2,0 ms. T och Δt ska ha samma tidsenhet."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "|φ| är fasvinkelns storlek. Δt är tiden mellan motsvarande punkter på de två kurvorna.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna ut T och sätt in Δt/T. För att veta vilken signal som ligger före måste du se kurvorna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "T = 20 ms. |φ| = 360° · 2,0/20 = 36°.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q8 och ch040.xhtml#sol7-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

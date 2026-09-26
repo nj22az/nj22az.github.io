@@ -1,0 +1,73 @@
+{
+  "id": "EL-000067",
+  "titel": "Negativ halvvåg",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-07",
+      "T-kurs-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma signal som i uppgift 6. Beräkna u vid t = 15,0 ms.",
+    "samband": [
+      "u(t) = 17,0 · sin(2π · 50t) V"
+    ],
+    "givet": "t = 15,0 ms = 0,0150 s. Räknaren står i RAD."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Tecknet på sinus avgör polariteten. Vid negativ halvvåg är momentanvärdet negativt.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Beräkna 2πft och sinus med tecken. RMS-värdet används inte som amplitud.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "2π · 50 · 0,015 = 3π/2 rad. u = 17,0 · (−1) = −17,0 V, den negativa toppen.",
+    "svar": [
+      {
+        "storhet": "u(15 ms)",
+        "varde": -17.0,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch013.xhtml#ch7-q7 och ch040.xhtml#sol7-s7",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01-q7",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

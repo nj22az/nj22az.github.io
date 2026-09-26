@@ -1,0 +1,106 @@
+{
+  "id": "EL-000301",
+  "titel": "Fasspänning vid 690 V",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett 690 V-nät ombord är symmetriskt. Beräkna fasspänningen U_{F}, det vill säga spänningen över en generatorlindning i Y."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[0] (id uf)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "U_{F} = U_{L}/√3.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "U_{F} = U_{L}/√3 = 690/1,732 ≈ 398 V.",
+    "svar": [
+      {
+        "storhet": "U_{F}",
+        "varde": 398.372,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "V",
+        "berakning": "trefas.fasspanning"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 690,
+      "enhet": "V"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 398.372,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "visare",
+    "initial": {
+      "UL": 690,
+      "f": 60,
+      "I1": 12,
+      "I2": 9,
+      "I3": 6,
+      "phi": 0
+    },
+    "fraga": {
+      "storhet": "UF",
+      "etikett": "U_{F}",
+      "enhet": "V"
+    },
+    "dolj": [
+      "UF"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 1195.12,
+          "text": "Du har multiplicerat med √3. Fasspänningen är mindre än linjespänningen."
+        },
+        {
+          "varde": 345,
+          "text": "Du har delat med 2. Faktorn är √3, inte 2."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_01 · bild 7 och övning 3",
+    "alias": "uf"
+  }
+}

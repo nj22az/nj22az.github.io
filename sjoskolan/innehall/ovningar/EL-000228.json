@@ -1,0 +1,71 @@
+{
+  "id": "EL-000228",
+  "titel": "Dokumentation",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-7",
+      "LM-8",
+      "LM-9"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-23",
+      "T-kurs-v45-02",
+      "T-bildspel-v45-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Rapporten säger ”bytte kabel, fungerar”. Ange tre saker som bör läggas till så att någon annan kan följa vad som gjorts.",
+    "samband": [
+      "Spårbar rapport binder objekt till åtgärd och prov"
+    ],
+    "givet": "Rapporten innehåller bara ”bytte kabel, fungerar”.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Någon annan ska kunna se vad som ändrades, varför och vad kontrollen efteråt visade.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Föreslå tre konkreta tillägg, till exempel exakt vilken kabel, vad som gjordes och ett mätprotokoll.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Objekt-ID för kabeln, orsak och vad som gjordes, samt efterkontrollens mätvärden med datum och namn.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch031.xhtml#ch23-q8 och ch056.xhtml#sol23-s8",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02-q8",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx bild 29 och 30",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}
