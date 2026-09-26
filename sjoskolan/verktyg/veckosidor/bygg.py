@@ -89,7 +89,7 @@ VECKOR = {
                 lank(LABB['multimeter'], 'Multimeterlabbet', 'labb', 'övning 01–08'),
             ]},
         ],
-        'redovisa': ['Multimeterlabbet: övning 01–08 klara och mätprotokollet sparat som PDF.', 'Övningarna 1–10 i effekt och energi och 1–10 i Kirchhoffs lagar, med metod och enhet.'],
+        'redovisa': ['Multimeterlabbet: övning 01–08 klara och mätprotokollet sparat som PDF.'],
         'fordjupning': [
             ppt('v39_04_Kirchhoff_seminarium_elev.pptx', 'Kirchhoff – kompletterande seminarium', 42),
             lank('../../multimeterfilm/', 'Multimeter Aboard (engelska)', 'film', '12 kapitel med engelsk berättarröst'),
@@ -119,7 +119,7 @@ VECKOR = {
                 lank('../../filmer/#hallkretsen', 'Film: Hållkretsen', 'film', 'inför Station C'),
             ]},
         ],
-        'redovisa': ['Protokoll för Station A och Station C med en felmodul (under träffen fredag 9 oktober).', 'Protokoll för Station B och en andra felmodul i Station C.', 'Övningarna 1–10 i varje del, med metod och enhet.'],
+        'redovisa': ['Protokoll för Station A och Station C med en felmodul (under träffen fredag 9 oktober).', 'Protokoll för Station B och en andra felmodul i Station C.'],
         'notis': 'Laborationen fredag 9 oktober använder den avsedda riggen och lärarens anvisningar. Förbered protokoll och riskbedömning före träffen.',
         'fordjupning': [lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter')],
     },
@@ -142,7 +142,7 @@ VECKOR = {
                 lank(LABB['multimeter'] + '?ovning=category', 'Multimeterlabbet: Välj CAT-klass', 'labb', 'motivera valet skriftligt'),
             ]},
         ],
-        'redovisa': ['Multimeterlabbet, Välj CAT-klass: ditt val av instrument och mätsladdar med skriftlig motivering.', 'En riskbedömning i mallen för ett av fallen i del 3.', 'Övningarna 1–10 i varje del.'],
+        'redovisa': ['Multimeterlabbet, Välj CAT-klass: ditt val av instrument och mätsladdar med skriftlig motivering.', 'En riskbedömning i mallen för ett av fallen i del 3.'],
         'fordjupning': [],
     },
     43: {
@@ -164,7 +164,7 @@ VECKOR = {
                 lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter'),
             ]},
         ],
-        'redovisa': ['Hållkretslabbet: de 8 räkna-först-uppgifterna och en felsökning med observation, hypotes, kontroll och slutsats.', 'Övningarna 1–10 i varje del.'],
+        'redovisa': ['Hållkretslabbet: de 8 räkna-först-uppgifterna och en felsökning med observation, hypotes, kontroll och slutsats.'],
         'fordjupning': [],
     },
     44: {
@@ -188,7 +188,7 @@ VECKOR = {
                 lank(LABB['multimeter'] + '?ovning=loading', 'Multimeterlabbet: Mätaren påverkar', 'labb', 'belastning i en spänningsdelare'),
             ]},
         ],
-        'redovisa': ['Isolationslabbet: alla räkna-först-uppgifter och labbprotokollet sparat som PDF.', 'Multimeterlabbet: Mätaren påverkar, V ~ på likspänning, Ström i serie och Välj CAT-klass. Förklara för varje oväntat värde om instrumentet, kretsen eller referenspunkten orsakar det.', 'Övningarna 1–10 i varje del.'],
+        'redovisa': ['Isolationslabbet: alla räkna-först-uppgifter och labbprotokollet sparat som PDF.', 'Multimeterlabbet: Mätaren påverkar, V ~ på likspänning, Ström i serie och Välj CAT-klass. Förklara för varje oväntat värde om instrumentet, kretsen eller referenspunkten orsakar det.'],
         'fordjupning': [],
     },
     45: {
@@ -257,7 +257,7 @@ def page(nr, w):
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main id="main-content" class="course-main">
 <header class="course-heading week-heading"><p class="course-kicker">Vecka {nr} · {datum(start)}–{datum(end, True)}</p><h1>{escape(w["titel"])}</h1><p class="course-lead">{escape(w["mal"])}</p><p>Arbeta med delarna i ordning. Varje del börjar med en presentation, fortsätter med övningar och slutar i en labb eller film när det finns en.</p><p class="course-actions"><a class="sj-btn primary large" href="#del-1">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p></header>
 {notis}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">Arbeta i den här ordningen</h2><ol class="lesson-list">{delar}</ol></section>
-<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><ul>{redovisa}</ul><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain"><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
+<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><ul>{redovisa}</ul><p>Övningarna i Formelstöd och övningar är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain"><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Presentationerna finns som PowerPoint och PDF. PDF öppnas direkt i telefonen. Nedladdade filer får datum och klockslag i filnamnet.</p>
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
 '''
