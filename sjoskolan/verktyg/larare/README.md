@@ -7,6 +7,7 @@ Skyddade sidor:
 - `vecka-40/aktuell/Lararstod.html`
 - `vecka-41/aktuell/Simulerade_stationer_larare.html`
 - `gemensamt/Riggar.html`
+- `gemensamt/Lararguide.html` (mål, upplägg och facit till inlämningsuppgifterna, räknat för elevens D)
 
 Kryptering: AES-GCM 256 bit med nyckel från PBKDF2-SHA-256, 600 000 varv och slumpat salt per sida.
 
@@ -23,12 +24,12 @@ node sjoskolan/verktyg/larare/las.mjs lock ~/larare/Riggar.html sjoskolan/gemens
 
 ## Ny lärarsida
 
-Skriv sidan som vanlig HTML utanför repositoryt och lås den med `lock` till sin plats i repositoryt. Lägg till den i listan ovan.
+Alla lärarsidor har samma lösenord. Det står aldrig på någon sida och läggs aldrig i repositoryt. Skriv sidan som vanlig HTML utanför repositoryt och lås den med `lock` till sin plats i repositoryt. Lägg till den i listan ovan.
 
 ## Byt lösenord
 
 ```sh
-LARARLOSEN_GAMMALT='gammalt' LARARLOSEN='nytt' node sjoskolan/verktyg/larare/las.mjs rekey sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html
+LARARLOSEN_GAMMALT='gammalt' LARARLOSEN='nytt' node sjoskolan/verktyg/larare/las.mjs rekey sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html sjoskolan/gemensamt/Lararguide.html
 ```
 
 ## Byt utseende på lösenordssidan
@@ -36,7 +37,7 @@ LARARLOSEN_GAMMALT='gammalt' LARARLOSEN='nytt' node sjoskolan/verktyg/larare/las
 Ändra `wrapper()` i `las.mjs` och kör `omslag`. Det krypterade innehållet behålls och inget lösenord behövs.
 
 ```sh
-node sjoskolan/verktyg/larare/las.mjs omslag sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html
+node sjoskolan/verktyg/larare/las.mjs omslag sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html sjoskolan/gemensamt/Lararguide.html
 ```
 
 ## Begränsningar
