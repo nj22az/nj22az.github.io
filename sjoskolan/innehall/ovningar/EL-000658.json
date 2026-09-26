@@ -19,9 +19,10 @@
   },
   "uppgift": {
     "scenario": "Två ideala källor, 18 V och 6 V, motverkar varandra. R_{1} = R_{2} = 3 Ω.",
-    "fraga": "A. Bestäm I och båda spänningsfallen. B. Vad blir I om 6 V-källan vänds?",
+    "fraga": "A. Bestäm I och båda spänningsfallen. / B. Vad blir I om 6 V-källan vänds?",
     "samband": [
-      "Motverkande: I = (E_{1} − E_{2})/(R_{1} + R_{2}) Medverkande: I = (E_{1} + E_{2})/(R_{1} + R_{2})"
+      "Motverkande: I = (E_{1} − E_{2})/(R_{1} + R_{2})",
+      "Medverkande: I = (E_{1} + E_{2})/(R_{1} + R_{2})"
     ],
     "givet": "E_{1} = 18 V, E_{2} = 6 V, R_{1} = R_{2} = 3 Ω. Samma valda strömpil i båda delarna."
   },

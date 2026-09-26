@@ -27,7 +27,13 @@ def former(kid):
 
 
 def txt(f, bild, sid):
-    return N(' '.join(p for _, p in [(s, ' '.join(x)) for s, x in f[bild] if s == sid]))
+    """Formens text; flera stycken skiljs med ' / ' (samma form som kallor.pptx_text)."""
+    return N(' / '.join(' / '.join(x) for s, x in f[bild] if s == sid))
+
+
+def txt_sp(f, bild, sid):
+    """Som txt men styckena skrivs ihop med mellanslag (löpande text på en bild)."""
+    return N(' '.join(' '.join(x) for s, x in f[bild] if s == sid))
 
 
 # ============================================================================ vecka 37: arbetsblad och förberedelsefrågor
@@ -156,13 +162,13 @@ def multimeter_deck(nr):
         id_ = nr()
         p = bas(id_, titel, typ, ['LM-4', 'LM-6'], 'grund', ['T-bildspel-v39-03', 'T-labb-multimetersimulator'],
                 f'{kallor.ALLA_DECK["v39_03"]} bild {b}' + (f' och facit bild {fb}' if fb else ''), 'övning i presentationen Multimeter och mätfel')
-        p['uppgift'] = {'fraga': ' '.join(txt(f, b, s) for s in fr)}
+        p['uppgift'] = {'fraga': ' '.join(txt_sp(f, b, s) for s in fr)}
         if typ == 'flerval':
             p['uppgift']['alternativ'] = ['Instrument A: CAT II 1 000 V', 'Instrument B: CAT III 600 V']
         if typ == 'matning':  # genomförs som övning i Multimeterlabbet
             p['simulator'] = {'labb': 'multimetersimulator', 'validering': {'typ': 'steg'}, 'alias': 'voltage' if n == 1 else 'current'}
         if fb:
-            p['losning'] = {'text': ' '.join(txt(f, fb, s) for s in ff), 'status': 'migrerad', 'kalla': f'Facitbild {fb}'}
+            p['losning'] = {'text': ' '.join(txt_sp(f, fb, s) for s in ff), 'status': 'migrerad', 'kalla': f'Facitbild {fb}'}
             if n in MM_SVAR:
                 p['losning']['svar'] = MM_SVAR[n]
                 p['parametrar'] = {k: {'varde': v} for k, v in MM_PARAM[n].items()}

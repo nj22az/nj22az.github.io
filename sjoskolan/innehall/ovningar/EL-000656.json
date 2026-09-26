@@ -21,7 +21,8 @@
     "scenario": "R_{1} = 6 Ω och R_{2} = 4 Ω ligger parallellt över 12 V.",
     "fraga": "Bestäm I_{1}, I_{2} och källströmmen I. Visa både sling- och nodekvationer.",
     "samband": [
-      "E − R_{1}I_{1} = 0 E − R_{2}I_{2} = 0 I = I_{1} + I_{2}"
+      "E − R_{1}I_{1} = 0 E − R_{2}I_{2} = 0",
+      "I = I_{1} + I_{2}"
     ],
     "givet": "E = 12 V, R_{1} = 6 Ω, R_{2} = 4 Ω. Ideala ledningar."
   },

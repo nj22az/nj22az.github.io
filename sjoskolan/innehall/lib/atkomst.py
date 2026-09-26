@@ -76,6 +76,7 @@ class Atkomst:
         ut = []
         for r in rader:
             pl = dict(r)
+            pl.update(json.loads(pl.pop('extra') or '{}'))
             pl['alias'] = [x['alias'] for x in self.con.execute('SELECT alias FROM alias WHERE yta = ? AND ovning_id = ?', (yta, r['ovning_id']))]
             ut.append((pl, self.ovning(r['ovning_id'])))
         return ut
@@ -92,7 +93,11 @@ class Atkomst:
 
     def placering_for(self, id_, yta):
         r = self.con.execute('SELECT * FROM placering WHERE ovning_id = ? AND yta = ? ORDER BY ordning', (id_, yta)).fetchone()
-        return dict(r) if r else None
+        if r is None:
+            return None
+        pl = dict(r)
+        pl.update(json.loads(pl.pop('extra') or '{}'))
+        return pl
 
     def alias(self, yta):
         return {r['alias']: r['ovning_id'] for r in self.con.execute('SELECT alias, ovning_id FROM alias WHERE yta = ?', (yta,))}

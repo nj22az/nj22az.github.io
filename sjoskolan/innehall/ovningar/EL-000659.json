@@ -21,7 +21,8 @@
     "scenario": "Källorna ger 12 V och 9 V. R_{1} = R_{2} = 3 Ω och R_{3} = 2 Ω. Pilarna visar antagna riktningar.",
     "fraga": "Bestäm I_{1}, I_{2}, I_{3} och nodspänningen V_{a} relativt B.",
     "samband": [
-      "I_{3} = I_{1} + I_{2} E_{1} − R_{1}I_{1} − R_{3}I_{3} = 0, E_{2} − R_{2}I_{2} − R_{3}I_{3} = 0"
+      "I_{3} = I_{1} + I_{2}",
+      "E_{1} − R_{1}I_{1} − R_{3}I_{3} = 0, E_{2} − R_{2}I_{2} − R_{3}I_{3} = 0"
     ],
     "givet": "E_{1} = 12 V, E_{2} = 9 V, R_{1} = R_{2} = 3 Ω, R_{3} = 2 Ω. Pilar och polariteter följer schemat."
   },

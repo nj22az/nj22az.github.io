@@ -21,7 +21,8 @@
     "scenario": "R_{s} = 2 Ω ligger i serie med två parallella motstånd, R_{1} = 6 Ω och R_{2} = 3 Ω. Källan ger 24 V.",
     "fraga": "Bestäm I, I_{1}, I_{2} och parallellspänningen U_{p}.",
     "samband": [
-      "I = I_{1} + I_{2} E − RsI − R_{1}I_{1} = 0, E − RsI − R_{2}I_{2} = 0"
+      "I = I_{1} + I_{2}",
+      "E − RsI − R_{1}I_{1} = 0, E − RsI − R_{2}I_{2} = 0"
     ],
     "givet": "E = 24 V, Rs = 2 Ω, R_{1} = 6 Ω och R_{2} = 3 Ω."
   },

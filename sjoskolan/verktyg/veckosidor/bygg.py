@@ -11,9 +11,13 @@ from pathlib import Path
 import importlib.util
 
 ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
-_spec = importlib.util.spec_from_file_location('inlamning', ROOT / 'verktyg' / 'inlamning' / 'bygg.py')
-_inl = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_inl)
-INLAMNING = _inl.UPPGIFTER
+# Inlämningsuppgifternas rubriker kommer ur innehållsdatabasens publika id-register (genererat av innehall.py bygg).
+import json as _json
+INLAMNING = {}
+for _p in _json.loads((ROOT / 'innehall' / 'ut' / 'id-register.json').read_text(encoding='utf-8'))['poster']:
+    for _pl in _p.get('placeringar', []):
+        if _pl['yta'] == 'inlamning':
+            INLAMNING.setdefault(int(_pl['plats'].split('-')[1].split('/')[0]), []).append((_pl['ankare'], _pl['nummer'], _p['titel']))
 V = '20260928'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
@@ -305,7 +309,7 @@ def page(nr, w):
         delar += (f'<li id="labb" class="lab-step"><span class="lesson-number" aria-hidden="true">{n + 1}</span><div><h3>Sist: labben</h3>'
                   f'<p>Gör labben när du har gått igenom del 1–{n} och övningarna. Labben bygger på det du har lärt dig och är veckans avslutning.</p>'
                   f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in labbar)}</ul></div></li>')
-    redovisa = ''.join(f'<li><a href="Inlamning.html#uppgift-{i}">Uppgift {i}. {escape(x["titel"])}</a></li>' for i, x in enumerate(INLAMNING[nr]['uppgifter'], 1))
+    redovisa = ''.join(f'<li><a href="Inlamning.html#{a}">{escape(n)}. {escape(t)}</a></li>' for a, n, t in INLAMNING[nr])
     fordj = ''
     if w['fordjupning']:
         fordj = ('<h3>Fördjupning, frivillig</h3><ul class="lesson-items">'

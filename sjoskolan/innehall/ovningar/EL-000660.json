@@ -21,7 +21,8 @@
     "scenario": "Nu ger källorna 18 V och 3 V. R_{1} = R_{2} = 3 Ω och R_{3} = 2 Ω. Pilarna är samma som i uppgift 9.",
     "fraga": "Bestäm alla strömmar och V_{a}. Vilken källa tar emot elektrisk energi?",
     "samband": [
-      "I_{3} = I_{1} + I_{2} 18 − 3I_{1} − 2I_{3} = 0, 3 − 3I_{2} − 2I_{3} = 0"
+      "I_{3} = I_{1} + I_{2}",
+      "18 − 3I_{1} − 2I_{3} = 0, 3 − 3I_{2} − 2I_{3} = 0"
     ],
     "givet": "E_{1} = 18 V, E_{2} = 3 V, R_{1} = R_{2} = 3 Ω, R_{3} = 2 Ω. Samma pilar som tidigare."
   },
