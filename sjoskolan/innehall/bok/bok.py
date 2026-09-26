@@ -8,8 +8,7 @@ strukturerad, regenererbar form och används som arbetskopia. Klartexten ligger 
     BOKLOSEN=… python3 sjoskolan/innehall/bok/bok.py granska       jämför bokens övningar med databasen, skriv ANDRINGAR.md
     BOKLOSEN=… python3 sjoskolan/innehall/bok/bok.py packa         packa EPUB ur bok/.bok/epub/ och kryptera tillbaka
 
-PDF:en (7×10-tums sättning) kan inte byggas om härifrån: sättningsverktyget finns inte i repot. Efter ändringar i EPUB:en
-måste PDF:en sättas om utanför repot. Se README.md.
+PDF:en (7×10 tum) sätts ur EPUB:en med sattning/satt.mjs. Se README.md.
 """
 import json
 import os
@@ -66,7 +65,7 @@ def packa():
     m = json.loads((FILER / 'manifest.json').read_text(encoding='utf-8'))
     m['epub_bytes'] = len(data)
     (FILER / 'manifest.json').write_text(json.dumps(m, indent=2) + '\n', encoding='utf-8')
-    print('bok.epub.enc ' + ('uppdaterad' if skrev else 'oförändrad') + f', {len(data)} byte. PDF:en måste sättas om separat.')
+    print('bok.epub.enc ' + ('uppdaterad' if skrev else 'oförändrad') + f', {len(data)} byte. Sätt om PDF:en med sattning/satt.mjs.')
 
 
 def innehall(epub):

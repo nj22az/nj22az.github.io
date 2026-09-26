@@ -17,6 +17,10 @@ python3 sjoskolan/innehall/bok/bok.py packa         # packar EPUB, krypterar til
 - EPUB-struktur: `EPUB/text/ch006–ch032` kapitel 1–24 (övningar som `section.uppgift#chK-qN`),
   `ch034–ch057` lösningar (`section.losning#solK-sN`), `EPUB/media/` figurer, `ch003` lärandemålen.
 - `packa` skriver bara om filen när innehållet ändrats, så ett ombyggt arkiv ger ingen ny diff i onödan.
-- **PDF**: sättningen (7×10 tum) gjordes utanför repot och kan inte byggas om här. Efter en EPUB-ändring måste
-  PDF:en sättas om separat och krypteras med samma format (`lib/krypto.mjs kryptera`). Tills dess är PDF och EPUB olika.
+- **PDF**: sätts ur EPUB-arbetskopian med `sattning/` (paged.js i Chromium, 7×10 tum, Source Serif 4 och Source Sans 3):
+  `cd sattning && npm ci && node satt.mjs` skriver `.bok/bok.ny.pdf`. Innehåll, sidhänvisningar och sakregister får
+  sidnummer i två pass. Kapitlen börjar på ny sida, delsidorna till höger. Kryptera sedan till `elteknik/files/bok.pdf.enc`
+  (`lib/krypto.py`), bygg provkapitlet (början t.o.m. kapitel 1 och slutbladet) och uppdatera `manifest.json`.
+- **Figurer**: bilderna i `EPUB/media` är PNG (1000 px). Etiketter i bilderna omfattas inte av notationskontrollen;
+  kontrollera dem när notationen ändras (fil74 och fil158 ritades om i september 2026: U_F, I_gren).
 - Rättigheter: © Nils Johansson. Kredit- och rättighetsraderna i boken ändras inte av verktygen.

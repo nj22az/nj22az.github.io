@@ -8,7 +8,36 @@
 @page :left { margin: 0.82in 0.78in 0.8in 0.62in; }
 @page omslag { margin: 0; }
 
-html { font-size: var(--print-size); font-family: var(--body-font); line-height: 1.55; }
+/* ------------------------------------------------------------ EPUB-anpassningar som inte gäller på papper
+   stylesheet1.css slutar med regler för läsplattor: generiska typsnitt, inga flytande figurer, genomskinliga block
+   med ramar (för mörkt läsläge). Papperet får tillbaka temats typsnitt, färgade block och figurer i marginalen. */
+:root { --serif: "Source Serif 4", Georgia, serif; --sans: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; }
+body { padding: 0; }
+.formel, .nyckel, section.exempel { background: var(--teori-bg); }
+section.exempel { background: var(--exempel-bg); }
+.sakerhet { background: var(--sakerhet-bg); }
+.observera { background: var(--observera-bg); }
+.falt { background: var(--falt-bg); }
+section.uppgift { background: var(--paper); }
+section.exempel .formel { background: var(--paper); }
+.rad-svar { background: var(--surface); border: 0; }
+.tag { border: 0; }
+.tag-grund { color: var(--grund); background: var(--grund-bg); }
+.tag-tillampning { color: var(--tillampning); background: var(--tillampning-bg); }
+.tag-analys { color: var(--analys); background: var(--analys-bg); }
+section.uppgift > h3 .num { background: var(--badge-bg); color: var(--badge-fg); border: 0; }
+section.uppgift > h3 .tag { float: right; }
+section.del, section.titelsida { background: var(--del-bg); color: var(--del-fg); border: 0; }
+section.del > h1, section.titelsida h1 { color: var(--del-fg); }
+figure.fig-right { float: right; width: 48%; margin: 0.2em 0 0.6em 1.1em; }
+figure.fig-left { float: left; width: 42%; margin: 0.2em 1.1em 0.6em 0; }
+section.uppgift figure.fig-uppg { float: right; width: 36%; max-width: none; margin: 0.1em 0 0.4em 0.9em; }
+figure { margin: 0.8em auto 1em; }
+figure:not(.fig-right):not(.fig-left):not(.fig-uppg) img { max-width: 78%; }
+figure img { background: none; padding: 0; border-radius: 0; }
+.kort-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6em 1.2em; }
+
+html { font-size: var(--print-size); font-family: var(--body-font); line-height: 1.5; }
 body { margin: 0; }
 img { max-width: 100%; }
 a { color: inherit; }
@@ -17,11 +46,12 @@ a { color: inherit; }
 .omslag { page: omslag; break-after: page; width: 7in; height: 10in; overflow: hidden; }
 .omslag img { width: 7in; height: 10in; object-fit: cover; display: block; }
 
-section.titelsida { break-before: page; break-after: page; padding-top: 2.2in; }
+section.titelsida { break-before: page; break-after: page; padding: 1.8in 0.6in 0.6in; min-height: 8.3in; box-sizing: border-box; }
 section.titelsida h1 { font-size: 2.3em; line-height: 1.15; margin: 0 0 0.5em; letter-spacing: -0.01em; }
-section.titelsida .undertitel p { font-size: 1.2em; color: var(--muted); margin: 0 0 3.2in; }
+section.titelsida .undertitel p { font-size: 1.2em; color: var(--del-muted); margin: 0 0 3.2in; }
 section.titelsida .forfattare p { font-size: 1.25em; font-weight: 600; margin: 0 0 0.2em; }
-section.titelsida .upplaga p { color: var(--muted); }
+section.titelsida .upplaga p { color: var(--del-muted); }
+section.titelsida .forfattare { margin-top: 0; }
 
 section.kolofon { break-before: page; break-after: page; display: flex; flex-direction: column; justify-content: flex-end; height: 8.3in; font-size: 0.8em; color: var(--muted); }
 section.kolofon h1 { display: none; }
@@ -40,17 +70,18 @@ nav.innehall li.utan-nr { padding-left: 0; }
 
 /* ------------------------------------------------------------ sidbrytningar */
 section#intro, section#symbols { break-before: page; }
-section.del { break-before: right; break-after: page; min-height: 8.2in; }
-section.kapitel { break-before: right; }
-section.formelkort { break-before: right; }
-.losningar-alla { break-before: right; }
+/* Boken läses som PDF på skärm: kapitlen börjar på ny sida utan tomma sidor emellan. Delsidorna står till höger. */
+section.del { break-before: right; break-after: page; min-height: 8.3in; padding: 1.4in 0.6in 0.8in; box-sizing: border-box; }
+section.kapitel { break-before: page; }
+section.formelkort { break-before: page; }
+.losningar-alla { break-before: page; }
 section.kallor, section.register { break-before: page; }
 h2, h3 { break-after: avoid; }
 section.formelkort > h1, section.kallor > h1, section.register > h1, .losningar-alla > h1, section#intro > h1, section#symbols > h1 { font-size: 2em; margin: 0 0 0.5em; }
 
 /* ------------------------------------------------------------ lösningar i två spalter */
 .losningar-alla > .spalter { column-count: 2; column-gap: 0.3in; }
-.losningar-alla section.losningar > h1 { break-after: avoid; }
+.losningar-alla section.losningar > h1 { break-after: avoid; break-inside: avoid; }
 section.losning { break-inside: avoid; }
 
 /* ------------------------------------------------------------ sidhänvisningar mellan uppgift och lösning (skrivs in av satt.mjs) */

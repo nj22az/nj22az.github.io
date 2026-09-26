@@ -15,7 +15,7 @@ import { createRequire } from 'node:module';
 const HAR = dirname(fileURLToPath(import.meta.url));
 const EPUB = resolve(HAR, '../.bok/epub/EPUB');
 const args = process.argv.slice(2);
-const UT = resolve(args.includes('--ut') ? args[args.indexOf('--ut') + 1] : join(HAR, '../.bok/bok.pdf'));
+const UT = resolve(args.includes('--ut') ? args[args.indexOf('--ut') + 1] : join(HAR, '../.bok/bok.ny.pdf'));
 const BYGG = resolve(HAR, '../.bok/sattning.html');
 if (!existsSync(EPUB)) throw new Error('EPUB-arbetskopian saknas: kör BOKLOSEN=… python3 sjoskolan/innehall/bok/bok.py packa-upp');
 const require = createRequire(import.meta.url);
@@ -62,7 +62,11 @@ function dokument(nummer) {
     const [id, klass] = sek ? [sek[1], sek[2]] : ['', ''];
     const h1 = b.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
     const rubrik = h1 ? text(h1[1]) : '';
-    if (/\blosningar\b/.test(klass)) { losningar.push(b); continue; }
+    if (/\blosningar\b/.test(klass)) {
+      const k = b.match(/<span class="kapnr">([\s\S]*?)<\/span>/);
+      losningar.push(b.replace(`<section id="${id}" class="${klass}"`, `<section id="${id}" class="${klass}" data-kapnr-los="${k ? text(k[1]) : ''}"`));
+      continue;
+    }
     if (losningar.length) delar.push(losningsdel(losningar)), losningar = [];
     if (/\bkapitel\b/.test(klass)) {
       const nr = text(b.match(/<span class="nr">([\s\S]*?)<\/span>/)[1]), titel = text(b.match(/<span class="titel">([\s\S]*?)<\/span>/)[1]);
@@ -88,6 +92,7 @@ function dokument(nummer) {
   html = html.replace(/(<section id="kolofon"[\s\S]*?<\/section>)/, `$1\n${innehall}`);
   // Sidhänvisningar mellan uppgift och lösning. Platshållaren 000 har samma bredd som ett tresiffrigt sidnummer.
   html = html.replace(/<a href="#([^"]+)" class="(tosol|toq)">([\s\S]*?)<\/a>/g, (_, id, k, t) => `<a href="#${id}" class="${k}">${t}</a><span class="sref"> · s. ${sida(id)}</span>`);
+  html = html.replace('Kapitelnumren pekar på kapitlens', 'Sidnumren pekar på kapitlens');
   // Sakregistret: kapitelhänvisningar blir sidor.
   html = html.replace(/<div class="register-lista">([\s\S]*?)<\/div>/, (_, lista) => `<div class="register-lista">${lista.replace(/([^<>]+?)\s*<span class="kapref">([\s\S]*?)<\/span>/g, (m, term, kap) => {
     const t = term.replace(/^\s*(<br \/>)?\s*/, '').trim();
@@ -96,11 +101,15 @@ function dokument(nummer) {
     return `${m.slice(0, m.indexOf(term) + term.length)} <span class="sidor" data-term="${esc(t)}" data-kap="${kaps.join(',')}">${s ? s.join(', ') : kaps.map(() => '000').join(', ')}</span>`;
   })}</div>`);
   const omslag = `<div class="omslag"><img src="${url(join(EPUB, 'media/file159.jpg'))}" alt=""></div>`;
-  const font = (p) => url(join(HAR, 'node_modules/@fontsource', p));
+  // Typsnitten skrivs in med absoluta adresser: paged.js lägger stilmallarna i <style>, där fontsource-filernas
+  // relativa ./files/-adresser annars pekar fel och Chromium faller tillbaka på ett annat typsnitt.
+  const typsnitt = ['source-sans-3/400', 'source-sans-3/400-italic', 'source-sans-3/600', 'source-sans-3/700', 'source-sans-3/700-italic',
+    'source-serif-4/400', 'source-serif-4/400-italic', 'source-serif-4/600', 'source-serif-4/700', 'source-serif-4/700-italic'].map((p) => {
+    const f = join(HAR, 'node_modules/@fontsource', p + '.css');
+    return readFileSync(f, 'utf-8').replace(/url\(\.\/files\//g, `url(${url(join(dirname(f), 'files'))}/`);
+  }).join('\n');
   return `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>${BOKTITEL}</title>
-<link rel="stylesheet" href="${font('source-sans-3/400.css')}"><link rel="stylesheet" href="${font('source-sans-3/600.css')}"><link rel="stylesheet" href="${font('source-sans-3/700.css')}">
-<link rel="stylesheet" href="${font('source-sans-3/400-italic.css')}"><link rel="stylesheet" href="${font('source-serif-4/400.css')}"><link rel="stylesheet" href="${font('source-serif-4/400-italic.css')}">
-<link rel="stylesheet" href="${font('source-serif-4/700-italic.css')}"><link rel="stylesheet" href="${font('source-serif-4/700.css')}">
+<style>${typsnitt}</style>
 <link rel="stylesheet" href="${url(join(EPUB, 'styles/stylesheet1.css'))}">
 <link rel="stylesheet" href="${url(join(HAR, 'print.css'))}">
 <script>window.PagedConfig = { auto: true, after: () => { window.__klar = true; } };</script>
@@ -154,7 +163,7 @@ function sidhuvuden(boktitel) {
     const front = c.querySelector('[data-rubrik]');
     const tom = s.classList.contains('pagedjs_blank_page') || !c.textContent.trim();
     if (sek) { if (!kap || kap.nr !== sek.dataset.kapnr) avsnitt = ''; kap = { nr: sek.dataset.kapnr, titel: sek.dataset.titel }; rubrik = ''; }
-    else if (lsek) { const k = lsek.querySelector('.kapnr'); kap = { nr: k ? k.textContent : '', titel: 'Lösningar' }; avsnitt = 'Lösningar'; rubrik = ''; }
+    else if (lsek) { kap = { nr: lsek.dataset.kapnrLos || '', titel: 'Lösningar' }; avsnitt = 'Lösningar'; rubrik = ''; }
     else if (front) { kap = null; rubrik = front.dataset.rubrik; }
     const borjar = c.querySelector('h1.kapitel');
     const h2 = [...c.querySelectorAll('section.kapitel h2')];
