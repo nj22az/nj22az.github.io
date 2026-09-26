@@ -6,8 +6,9 @@
 // Klartexten och resultatet ligger i bok/.bok/ (i .gitignore) och checkas aldrig in.
 //
 //   cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs [--ut ../.bok/bok.pdf]
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, createReadStream, statSync } from 'node:fs';
+import { dirname, join, resolve, relative, extname } from 'node:path';
+import { createServer } from 'node:http';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 
@@ -21,6 +22,19 @@ const require = createRequire(import.meta.url);
 let playwright;
 try { playwright = require('playwright'); } catch { playwright = require('/opt/node22/lib/node_modules/playwright'); }
 
+// paged.js läser stilmallarna med XHR, vilket inte går från file://. Filerna serveras därför lokalt (bara 127.0.0.1).
+const ROT = resolve(HAR, '..');
+const TYPER = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const server = createServer((req, res) => {
+  const f = resolve(ROT, '.' + decodeURIComponent(new URL(req.url, 'http://x').pathname));
+  if (!f.startsWith(ROT) || !existsSync(f) || !statSync(f).isFile()) { res.writeHead(404); res.end(); return; }
+  res.writeHead(200, { 'content-type': TYPER[extname(f)] || 'application/octet-stream' });
+  createReadStream(f).pipe(res);
+});
+await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
+const BAS = `http://127.0.0.1:${server.address().port}`;
+const url = (f) => `${BAS}/${relative(ROT, f).split('\\').join('/')}`;
+
 const BOKTITEL = 'Elteknik och ellära för sjöfart och industri';
 const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const text = (h) => h.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -33,7 +47,7 @@ const spine = [...opf.matchAll(/<itemref idref="([^"]+)"/g)].map((m) => manifest
 function kropp(fil) {
   const x = readFileSync(join(EPUB, fil), 'utf-8');
   let b = x.slice(x.indexOf('>', x.indexOf('<body')) + 1, x.lastIndexOf('</body>'));
-  b = b.replace(/href="ch\d+\.xhtml#/g, 'href="#').replace(/(src|xlink:href)="\.\.\/media\//g, `$1="${pathToFileURL(join(EPUB, 'media')).href}/`);
+  b = b.replace(/href="ch\d+\.xhtml#/g, 'href="#').replace(/(src|xlink:href)="\.\.\/media\//g, `$1="${url(join(EPUB, 'media'))}/`);
   return b;
 }
 
@@ -81,16 +95,16 @@ function dokument(nummer) {
     const s = nummer.register?.[t];
     return `${m.slice(0, m.indexOf(term) + term.length)} <span class="sidor" data-term="${esc(t)}" data-kap="${kaps.join(',')}">${s ? s.join(', ') : kaps.map(() => '000').join(', ')}</span>`;
   })}</div>`);
-  const omslag = `<div class="omslag"><img src="${pathToFileURL(join(EPUB, 'media/file159.jpg')).href}" alt=""></div>`;
-  const font = (p) => pathToFileURL(join(HAR, 'node_modules/@fontsource', p)).href;
+  const omslag = `<div class="omslag"><img src="${url(join(EPUB, 'media/file159.jpg'))}" alt=""></div>`;
+  const font = (p) => url(join(HAR, 'node_modules/@fontsource', p));
   return `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>${BOKTITEL}</title>
 <link rel="stylesheet" href="${font('source-sans-3/400.css')}"><link rel="stylesheet" href="${font('source-sans-3/600.css')}"><link rel="stylesheet" href="${font('source-sans-3/700.css')}">
 <link rel="stylesheet" href="${font('source-sans-3/400-italic.css')}"><link rel="stylesheet" href="${font('source-serif-4/400.css')}"><link rel="stylesheet" href="${font('source-serif-4/400-italic.css')}">
 <link rel="stylesheet" href="${font('source-serif-4/700-italic.css')}"><link rel="stylesheet" href="${font('source-serif-4/700.css')}">
-<link rel="stylesheet" href="${pathToFileURL(join(EPUB, 'styles/stylesheet1.css')).href}">
-<link rel="stylesheet" href="${pathToFileURL(join(HAR, 'print.css')).href}">
+<link rel="stylesheet" href="${url(join(EPUB, 'styles/stylesheet1.css'))}">
+<link rel="stylesheet" href="${url(join(HAR, 'print.css'))}">
 <script>window.PagedConfig = { auto: true, after: () => { window.__klar = true; } };</script>
-<script src="${pathToFileURL(join(HAR, 'node_modules/pagedjs/dist/paged.polyfill.js')).href}"></script>
+<script src="${url(join(HAR, 'node_modules/pagedjs/dist/paged.polyfill.js'))}"></script>
 </head><body>${omslag}\n${html}</body></html>`;
 }
 
@@ -168,8 +182,8 @@ async function pass(nummer) {
   const sida = await webblasare.newPage();
   const fel = [];
   sida.on('pageerror', (e) => fel.push(e.message));
-  await sida.goto(pathToFileURL(BYGG).href, { waitUntil: 'load', timeout: 0 });
-  await sida.waitForFunction(() => window.__klar === true, null, { timeout: 0, polling: 500 });
+  await sida.goto(url(BYGG), { waitUntil: 'load', timeout: 0 });
+  await sida.waitForFunction(() => window.__klar === true, null, { timeout: 30 * 60000, polling: 1000 });
   if (fel.length) console.log('fel i sidan:', fel.slice(0, 3).join(' | '));
   const antal = await sida.evaluate(() => document.querySelectorAll('.pagedjs_page').length);
   return { sida, antal, matt: await sida.evaluate(matSidor) };
@@ -187,4 +201,5 @@ for (let varv = 1; varv <= 4; varv++) {
 await resultat.sida.evaluate(sidhuvuden, BOKTITEL);
 await resultat.sida.pdf({ path: UT, preferCSSPageSize: true, printBackground: true });
 await webblasare.close();
+server.close();
 console.log(`skrev ${UT}`);
