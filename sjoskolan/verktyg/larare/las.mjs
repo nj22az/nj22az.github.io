@@ -31,19 +31,20 @@ export function wrapper(data, pageTitle) {
 <html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>${pageTitle}</title><link rel="icon" href="/assets/images/apple-touch-icon.png">
 <style>
-:root{--bg:#f4f4eb;--ink:#163145;--muted:#5d7282;--line:#b8c8cd;--accent:#064f91;--warn:#9a4a12}
-@media (prefers-color-scheme:dark){:root{--bg:#10202c;--ink:#e6eef3;--muted:#9fb3c1;--line:#35505f;--accent:#7cb8ef;--warn:#f0a868}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,-apple-system,sans-serif}
-main{max-width:520px;margin:12vh auto;padding:0 20px}.kicker{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
-h1{font-size:2rem;margin:6px 0 12px}label{display:block;font-weight:600;margin:18px 0 6px}
-input{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit}
-button{font:inherit;font-weight:700;margin-top:12px;padding:10px 20px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
-button:disabled{opacity:.6}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}#msg{min-height:1.6em;color:var(--warn)}a{color:inherit}
-</style></head><body><main>
+:root{--ink:#163248;--muted:#4d6579;--line:#cad8e2;--soft:#edf4f9;--field:#5d7282;--accent:#064f91;--accent-dark:#053f74;--warn:#9a4a12;--focus:#ffd43d}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.65 Arial,Helvetica,sans-serif}
+.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:14px max(24px,calc((100% - 1160px)/2));font-size:16px}
+.school-nav a{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}.school-nav strong{letter-spacing:.08em;font-size:18px}
+main{max-width:560px;margin:10vh auto;padding:24px}.kicker{font-size:15px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0}
+h1{font-size:34px;line-height:1.15;margin:8px 0 16px}label{display:block;font-weight:700;margin:24px 0 8px}
+input{font:inherit;width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--field);border-radius:8px;background:#fff;color:inherit}
+button{font:inherit;font-weight:700;min-height:48px;margin-top:16px;padding:10px 22px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+button:hover{background:var(--accent-dark)}button:disabled{opacity:.6}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}
+</style></head><body><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main>
 <p class="kicker">Sjöskolan · lärarstöd</p><h1>${pageTitle.replace(/ · Sjöskolan$/, '')}</h1>
 <p>Sidan är till för lärare och är skyddad med lösenord.</p>
 <form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
-<p><a href="/sjoskolan/">Till Sjöskolan</a></p>
 </main>
 <script id="lock-data" type="application/json">${JSON.stringify(data)}</script>
 <script>
@@ -78,5 +79,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   else if (cmd === 'unlock') { writeFileSync(b, await decrypt(readData(a), need('LARARLOSEN'))); console.log(`klartext: ${b}  (lägg den inte i repositoryt)`); }
   else if (cmd === 'rekey') {
     for (const f of [a, b, ...rest].filter(Boolean)) { const html = await decrypt(readData(f), need('LARARLOSEN_GAMMALT')); writeFileSync(f, wrapper(await encrypt(html, need('LARARLOSEN')), title(html))); console.log(`nytt lösenord: ${f}`); }
-  } else { console.error('Användning: las.mjs lock|unlock|rekey …'); process.exit(1); }
+  } else if (cmd === 'omslag') {
+    // Byter bara den olåsta omslagssidan (utseende, text) och behåller det krypterade innehållet. Kräver inget lösenord.
+    for (const f of [a, b, ...rest].filter(Boolean)) { const t = readFileSync(f, 'utf8').match(/<title>([^<]*)<\/title>/)[1]; writeFileSync(f, wrapper(readData(f), t)); console.log(`nytt omslag: ${f}`); }
+  } else { console.error('Användning: las.mjs lock|unlock|rekey|omslag …'); process.exit(1); }
 }

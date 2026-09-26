@@ -1,7 +1,102 @@
-body.course{background:var(--color-bg,#f4f4eb);color:var(--color-text,#163145)}.course-main{max-width:1140px;margin:auto;padding:48px 28px 80px;font:18px/1.65 system-ui,-apple-system,sans-serif}.course-main h1{font-size:clamp(2.15rem,4.5vw,3.8rem);line-height:1.12;letter-spacing:-.045em;margin:14px 0 24px}.course-main h2{font-size:1.65rem;line-height:1.25;margin:38px 0 20px;letter-spacing:-.02em}.course-main h3{font-size:1.15rem;line-height:1.35}.course-main p{margin:14px 0}.course-main a{color:inherit;text-underline-offset:4px}.course-main a:focus-visible{outline:3px solid #2383bd;outline-offset:5px}.course-kicker{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}.course-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:42px;align-items:center;padding:24px 0 55px;border-bottom:1px solid #bbc9cc}.course-hero img{display:block;width:100%;height:auto;border-radius:8px}.course-hero figure{margin:0}.course-hero figcaption,.course-meta{font-size:14px;opacity:.75}.course-lead{font-size:21px}.course-button{display:inline-block!important;background:#164f66;color:#fff!important;padding:12px 20px;margin-top:18px;text-decoration:none;border-radius:5px;font-size:16px}.course-week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.course-week{display:block;text-decoration:none;border:1px solid #b8c8cd;padding:24px;border-radius:7px;transition:background .15s}.course-week:hover{background:#7cb1bc22}.course-week>span{font-weight:700}.course-week small{display:block;font-weight:400;font-size:13px;opacity:.7}.course-week p{font-size:14px;margin-top:22px}.course-resources{border-top:1px solid #b8c8cd;margin-top:45px}.course-resources>div{display:flex;flex-wrap:wrap;gap:15px 30px}.course-breadcrumb{font-size:15px;margin-bottom:28px}.course-heading{max-width:850px}.course-heading h1{font-size:clamp(2.1rem,4vw,3.15rem)}.course-downloads,.course-links{padding:0;list-style:none}.course-downloads li{padding:20px 0;border-bottom:1px solid #b8c8cd}.course-downloads a{font-size:20px;font-weight:600}.course-downloads span{display:block;opacity:.7;font-size:14px;margin-top:5px}.course-links li{padding:8px 0}.course-next{margin-top:40px;padding-top:5px;border-top:1px solid #b8c8cd}.course-reading{max-width:1000px}.course-reading h1{font-size:clamp(2rem,3.5vw,2.9rem)}.course-reading img{max-width:100%;height:auto}.course-reading figure{margin:24px 0}.course-reading table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;font-size:16px}.course-reading td,.course-reading th{border-bottom:1px solid #b8c8cd;padding:12px;vertical-align:top;text-align:left}.course-reading ul,.course-reading ol{padding-left:26px}.course-reading .chapter{margin-top:45px;border-top:2px solid #92aeb7;padding-top:18px}.course-reading .exercise{padding:18px 0;border-bottom:1px solid #b8c8cd}.course-reading .example{padding:10px 20px;border-left:3px solid #457d8d}.course-reading .formula{font-size:22px;font-weight:650;white-space:pre-line}.course-reading .muted,.course-reading .meta{opacity:.75;font-size:15px}.course-reading .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.course-reading button{padding:8px 14px}.course-reading .panel{border:1px solid #b8c8cd;padding:18px}@media(max-width:760px){.course-main{padding:24px 18px 55px}.course-hero{grid-template-columns:1fr;gap:22px}.course-hero figure{max-width:540px}.course-week-grid{grid-template-columns:1fr 1fr}.course-week{padding:18px}.course-reading .grid{grid-template-columns:1fr}}@media(max-width:440px){.course-week-grid{grid-template-columns:1fr}}@media print{#site-nav,#site-footer,.course-breadcrumb,.no-print{display:none}.course-main{padding:0;font-size:11pt}.course-reading .exercise{break-inside:avoid}.course-reading img{max-height:140mm}.course-main a{color:inherit}}
-.course-download-note { padding: .85rem 1rem; border-left: 3px solid var(--accent, #51c4d3); background: var(--surface, rgba(90, 160, 200, .08)); max-width: 75ch; font-size: .95rem; }
-.course-reading dd { margin-left: 0; margin-bottom: 1.5rem; }
+/* Sjöskolan · kurssidor (veckosidor, läsmaterial, övningar). Grundvärden i gemensamt/sjoskolan.css, regler i DESIGN.md. */
+body.course{margin:0;background:var(--sj-paper,#fff);color:var(--sj-ink,#163248);font:17px/1.65 Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
+body.course *,body.course *::before,body.course *::after{box-sizing:border-box}
+body.course img,body.course video,body.course canvas,body.course svg{max-width:100%}
+body.course [hidden]{display:none!important}
+body.course :focus-visible{outline:3px solid var(--sj-ink,#163248);outline-offset:2px;box-shadow:0 0 0 6px var(--sj-focus,#ffd43d)}
+body.course button,body.course input,body.course select,body.course textarea{font:inherit;color:inherit}
+body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background:var(--sj-soft,#edf4f9);padding:1px 5px;border-radius:4px}
 
-.course-main { padding-top: 104px; }
-@media (max-width:760px) { .course-main { padding-top: 88px; } }
-@media print { .course-main { padding-top: 0; } }
+.course-main{max-width:1208px;margin:0 auto;padding:32px 24px 64px}
+.course-main h1{font-size:clamp(34px,4.2vw,44px);line-height:1.15;letter-spacing:-.02em;margin:8px 0 16px}
+.course-main h2{font-size:26px;line-height:1.25;margin:40px 0 16px}
+.course-main h3{font-size:20px;line-height:1.3;margin:24px 0 8px}
+.course-main h4{font-size:17px;margin:16px 0 8px}
+.course-main p{margin:8px 0 16px}
+.course-main a{color:var(--sj-blue,#064f91);text-underline-offset:3px}
+.course-main a:hover{text-decoration-thickness:2px}
+.course-main li{margin:4px 0}
+.course-main{overflow-wrap:break-word}
+.course-main a{overflow-wrap:anywhere}
+.course-main table{max-width:100%}
+.course-main td{overflow-wrap:anywhere}
+
+.course-kicker{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sj-muted,#4d6579);margin:0}
+.course-lead{font-size:20px;line-height:1.5;color:var(--sj-muted,#4d6579);max-width:60ch}
+.course-meta,.course-hero figcaption{font-size:15px;color:var(--sj-muted,#4d6579)}
+.course-breadcrumb{font-size:15px;margin:0 0 16px}
+.course-breadcrumb a{display:inline-flex;align-items:center;min-height:44px}
+.course-heading{max-width:820px;padding-bottom:24px;border-bottom:1px solid var(--sj-line,#cad8e2);margin-bottom:8px}
+.course-heading p{font-size:18px}
+
+.course-button{display:inline-flex!important;align-items:center;min-height:48px;padding:10px 22px;margin-top:16px;border-radius:8px;background:var(--sj-blue,#064f91);color:#fff!important;font-weight:700;text-decoration:none}
+.course-button:hover{background:var(--sj-blue-dark,#053f74)}
+
+.course-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:16px 0 40px;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.course-hero img{display:block;width:100%;height:auto;border-radius:12px}
+.course-hero figure{margin:0}
+
+.course-week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.course-week{display:block;text-decoration:none;border:1px solid var(--sj-line,#cad8e2);padding:24px;border-radius:12px;color:var(--sj-ink,#163248)!important}
+.course-week:hover{border-color:var(--sj-blue,#064f91);background:var(--sj-soft,#edf4f9)}
+.course-week>span{font-weight:700;color:var(--sj-blue,#064f91)}
+.course-week small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.course-week p{font-size:15px;margin-top:16px}
+.course-resources{border-top:1px solid var(--sj-line,#cad8e2);margin-top:40px}
+.course-resources>div{display:flex;flex-wrap:wrap;gap:16px 32px}
+
+/* Nedladdningar och länklistor */
+.course-download-note{max-width:72ch;padding:12px 16px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-soft,#edf4f9);font-size:15px;line-height:1.5}
+.course-downloads,.course-links{list-style:none;padding:0;margin:0}
+.course-downloads li{padding:16px 0;border-bottom:1px solid var(--sj-line,#cad8e2);margin:0}
+.course-downloads li:first-child{border-top:1px solid var(--sj-line,#cad8e2)}
+.course-downloads a{font-size:19px;font-weight:700}
+.course-downloads span{display:block;color:var(--sj-muted,#4d6579);font-size:15px;margin-top:4px}
+.course-links li{padding:6px 0;margin:0}
+.course-links a{display:inline-flex;align-items:center;min-height:44px}
+.course-next{margin-top:40px;padding:8px 24px 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:var(--sj-soft,#edf4f9)}
+.course-next h2{margin-top:16px}
+
+/* Läsmaterial, övningar och protokoll */
+.course-reading{max-width:1000px}
+.course-reading>p,.course-reading>ul,.course-reading>ol,.course-reading .chapter>p{max-width:72ch}
+.course-reading h1{font-size:clamp(32px,3.6vw,40px)}
+.course-reading img{max-width:100%;height:auto}
+.course-reading figure{margin:24px 0}
+.course-reading figcaption{font-size:15px;color:var(--sj-muted,#4d6579);margin-top:8px}
+.course-reading table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;font-size:16px}
+.course-reading th{background:var(--sj-soft,#edf4f9);font-weight:700}
+.course-reading td,.course-reading th{border-bottom:1px solid var(--sj-line,#cad8e2);padding:10px 12px;vertical-align:top;text-align:left}
+.course-reading ul,.course-reading ol{padding-left:26px}
+.course-reading dd{margin-left:0;margin-bottom:24px}
+.course-reading .chapter{margin-top:40px;border-top:2px solid var(--sj-line,#cad8e2);padding-top:16px}
+.course-reading .exercise{padding:16px 0;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.course-reading .example{margin:16px 0;padding:12px 20px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-paper,#fff)}
+.course-reading .formula{font-size:22px;font-weight:700;color:var(--sj-blue,#064f91);white-space:pre-line}
+.course-reading .muted,.course-reading .meta{color:var(--sj-muted,#4d6579);font-size:15px}
+.course-reading .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.course-reading .panel{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:16px 20px;background:var(--sj-soft,#edf4f9)}
+.course-reading button{min-height:44px;padding:8px 18px;border:1px solid var(--sj-blue,#064f91);border-radius:8px;background:var(--sj-paper,#fff);color:var(--sj-blue,#064f91);font-weight:700;cursor:pointer}
+.course-reading button:hover{background:var(--sj-soft,#edf4f9)}
+.course-reading input:not([type=checkbox]):not([type=radio]):not([type=range]),.course-reading select,.course-reading textarea{min-height:44px;padding:8px 10px;border:1px solid var(--sj-field,#5d7282);border-radius:8px;background:#fff}
+.course-reading details{margin:12px 0}
+.course-reading summary{cursor:pointer;font-weight:700;min-height:44px;display:list-item;padding-top:8px}
+
+@media(max-width:767px){
+  .course-main{padding:24px 16px 48px}
+  .course-main h2{font-size:23px;margin-top:32px}
+  .course-hero{grid-template-columns:1fr;gap:24px}
+  .course-hero figure{max-width:540px}
+  .course-week-grid{grid-template-columns:1fr 1fr}
+  .course-week{padding:18px}
+  .course-reading .grid{grid-template-columns:1fr}
+  .course-next{padding:4px 16px 12px}
+}
+@media(max-width:440px){.course-week-grid{grid-template-columns:1fr}}
+@media print{
+  .school-nav,.course-breadcrumb,.no-print{display:none!important}
+  .course-main{padding:0;font-size:11pt}
+  .course-reading .exercise{break-inside:avoid}
+  .course-reading img{max-height:140mm}
+  .course-main a{color:inherit}
+}

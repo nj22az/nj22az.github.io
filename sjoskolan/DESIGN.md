@@ -146,6 +146,18 @@ Fördjupning märks ”Fördjupning” och kommer efter grunddelen. Beteckningar
 
 Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i genomgång, simulator och protokoll. Räkneexempel och labbinstruktioner har egna, igenkännbara bildtyper. Fördjupning märks i rubriken.
 
+## Filer
+
+| Fil | Används av |
+|---|---|
+| `gemensamt/sjoskolan.css` | grundvärden, meny och komponenter; länkas på alla sidor utom labbarna |
+| `course.css` | veckosidor, läsmaterial, övningar, formelblad och filmlistor (`body.course`) |
+| `vecka-40/aktuell/ac-course.css` | genomgångar och veckosida för vecka 40 samt Växelströmslabbet |
+| `gemensamt/skolnav.css` | meny och startruta i labbarna |
+| `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
+
+Alla sidor använder Sjöskolans meny (`nav.school-nav`) och sidfot (`footer.school-nav`). Webbplatsens `styles.css`, `config.js` och `shared.js` och dess färgteman används inte i kursen.
+
 ## Innehållsregler
 
 - Ett begrepp, ett ord. Samma beteckning i presentation, simulator och protokoll (till exempel U, û, UL, UF, Xᴸ).

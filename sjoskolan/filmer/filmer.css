@@ -1,10 +1,10 @@
 /* Filmsidor för Sjöskolan */
-.film-main { max-width: 1100px; }
+.film-main { max-width: 1208px; }
 .film-sub { color: var(--text-secondary, #5f7688); margin-top: -.4rem; }
 .film-stage { background: #0b3b5c; border-radius: 14px; overflow: hidden; line-height: 0; }
 .film-stage canvas, .film-card video { width: 100%; height: auto; display: block; }
 .film-controls { display: flex; gap: .8rem; align-items: center; margin: .8rem 0; }
-.film-controls button { font: inherit; font-weight: 700; padding: .5rem 1.1rem; border-radius: 999px; border: 0; background: #064f91; color: #fff; cursor: pointer; min-width: 7rem; }
+.film-controls button { font: inherit; font-weight: 700; padding: .5rem 1.1rem; border-radius: 8px; min-height: 44px; border: 0; background: #064f91; color: #fff; cursor: pointer; min-width: 7rem; }
 .film-controls input[type=range] { flex: 1; min-width: 0; }
 .film-time { font-variant-numeric: tabular-nums; color: var(--text-secondary, #5f7688); white-space: nowrap; }
 .film-line { min-height: 3em; }

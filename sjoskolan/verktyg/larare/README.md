@@ -31,6 +31,14 @@ Skriv sidan som vanlig HTML utanför repositoryt och lås den med `lock` till si
 LARARLOSEN_GAMMALT='gammalt' LARARLOSEN='nytt' node sjoskolan/verktyg/larare/las.mjs rekey sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html
 ```
 
+## Byt utseende på lösenordssidan
+
+Ändra `wrapper()` i `las.mjs` och kör `omslag`. Det krypterade innehållet behålls och inget lösenord behövs.
+
+```sh
+node sjoskolan/verktyg/larare/las.mjs omslag sjoskolan/vecka-40/aktuell/Lararstod.html sjoskolan/vecka-41/aktuell/Simulerade_stationer_larare.html sjoskolan/gemensamt/Riggar.html
+```
+
 ## Begränsningar
 
 Skyddet håller innehållet borta från elever som inte har lösenordet. Äldre, okrypterade versioner av sidorna finns kvar i repositoryts historik fram till 25 september 2026. Simulatorerna räknar fortfarande ut sina svar i webbläsaren, så en elev som läser deras JavaScript kan hitta svaren där.
