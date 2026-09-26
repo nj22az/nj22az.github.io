@@ -20,7 +20,7 @@
   "uppgift": {
     "fraga": "Utgå från att användningen har stoppats, men att ingen elektrisk kontroll har redovisats. Formulera ett meddelande om fall A: objekt, plats, observation, aktuell status och nästa behov. Låt en kamrat återge det viktiga. Skriv ingen teknisk åtgärd som genomförd om underlaget inte säger det.",
     "fall": "EL-000608",
-    "instruktion": "Mitt svar.",
+    "instruktion": "Mitt svar:",
     "kortfraga": "Beskriv objekt, plats och observation. Ange den aktuella begränsningen. Be mottagaren återge vad som gäller."
   },
   "referenser": {

@@ -20,7 +20,7 @@
   "uppgift": {
     "fraga": "Lampan tas ur bruk och gångvägen blir mörk. Fyll i en riskrad: vem kan beröras, vad kan hända, vilken åtgärd föreslår du och hur följs den upp?",
     "fall": "EL-000608",
-    "instruktion": "Mitt svar.",
+    "instruktion": "Mitt svar:",
     "kortfraga": "Lampan tas ur bruk. Gångvägen blir mörk. Beskriv vem som berörs och vad som kan hända. Föreslå åtgärd och kontroll."
   },
   "referenser": {

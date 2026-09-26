@@ -20,7 +20,7 @@
   "uppgift": {
     "fraga": "Skriv en riskbedömning av fall B med de sex fälten nedan. Hantera skadan, gångvägen och pumpens driftbehov. Skilj genomfört från planerat och ange kvarstående osäkerheter.",
     "fall": "EL-000609",
-    "instruktion": "Mitt svar.",
+    "instruktion": "Mitt svar:",
     "kortfraga": "Skriv en sammanhängande riskbedömning av fall B. Hantera lampan, gångvägen och pumpens driftbehov. Skilj genomförda åtgärder från planerade kontroller.",
     "svarsformat": "Fält: Objekt och plats; Observation; Riskförlopp: vem, händelse och följd; Åtgärd: genomförd eller planerad; Ansvarig funktion och tid; Kontroll och kvarstående osäkerhet"
   },

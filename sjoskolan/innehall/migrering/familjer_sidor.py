@@ -41,7 +41,7 @@ def arbetsblad(nr):
         id_ = nr()
         p = bas(id_, titel, 'berakning' if n in (3, 4, 7) else 'resonemang', ['LM-4'], 'grund', ['T-bildspel-v37-02'],
                 f'vecka-37/aktuell/01A_Elens_grunder/Arbetsblad.html E{n}; v37_02 bild {bild[n][0]}', 'arbetsblad 1A och presentationsbild')
-        p['uppgift'] = {'fraga': N(kallor.inline(fraga)), 'instruktion': 'Mitt svar och min motivering.'}
+        p['uppgift'] = {'fraga': N(kallor.inline(fraga)), 'instruktion': 'Mitt svar och min motivering:'}
         p['referenser']['tillgangar'] = [{'id': 'bild', 'fil': bildlank.replace('../../../', ''), 'alt': N(kallor.inline(bildtext))}]
         p['losning'] = {'status': 'saknas', 'kalla': 'Gås igenom på lektionen; lärarfacit i lärarguiden vecka 37'}
         if bild[n][0]:
@@ -68,7 +68,7 @@ def arbetsblad(nr):
         id_ = nr()
         p = bas(id_, titel, 'resonemang', ['LM-2', 'LM-9'], 'grund', ['T-bildspel-v37-04'],
                 f'vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html E{n}; v37_04 bild {bild[n]}', 'arbetsblad 1B och presentationsbild')
-        p['uppgift'] = {'fraga': N(kallor.inline(fraga)), 'fall': fall['B' if n >= 5 else 'A'], 'instruktion': 'Mitt svar.',
+        p['uppgift'] = {'fraga': N(kallor.inline(fraga)), 'fall': fall['B' if n >= 5 else 'A'], 'instruktion': 'Mitt svar:',
                         'kortfraga': txt(fb, bild[n], 6)}
         if tab:
             p['uppgift']['svarsformat'] = 'Fält: ' + '; '.join(N(kallor.inline(x)) for x in re.findall(r'<tr><td>(.*?)</td>', tab))

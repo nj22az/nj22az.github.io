@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "Två lampor är parallellkopplade över en ideal 12 V-källa. A: En ledare i den övre lampgrenen bryts. Vilken lampa kan fortsätta lysa? B: Den gemensamma återledaren till källan bryts i stället. Vad händer då? Motivera genom att följa förbindelserna.",
-    "instruktion": "Mitt svar och min motivering.",
+    "instruktion": "Mitt svar och min motivering:",
     "kortfraga": "Vilken lampa kan fortfarande lysa? Varför?"
   },
   "referenser": {

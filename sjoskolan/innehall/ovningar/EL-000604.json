@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "A: 12 V över 4 kΩ. B: 24 V över 4 kΩ. Beräkna strömmen i båda fallen. Skriv givna värden, metod och enhet. Förklara varför svaren skiljer sig.",
-    "instruktion": "Mitt svar och min motivering.",
+    "instruktion": "Mitt svar och min motivering:",
     "kortfraga": "Beräkna strömmen. Förklara skillnaden mellan A och B."
   },
   "referenser": {
