@@ -8,8 +8,12 @@ vad som redovisas och när, fördjupning för sig. PDF-länk visas när PDF-file
 """
 from html import escape
 from pathlib import Path
+import importlib.util
 
 ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
+_spec = importlib.util.spec_from_file_location('inlamning', ROOT / 'verktyg' / 'inlamning' / 'bygg.py')
+_inl = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_inl)
+INLAMNING = _inl.UPPGIFTER
 V = '20260927'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
@@ -248,7 +252,7 @@ def page(nr, w):
         f'<li id="del-{i}"><span class="lesson-number" aria-hidden="true">{i}</span><div><h3>Del {i}. {escape(d["titel"])}</h3>'
         f'<p>{escape(d["mal"])}</p><ul class="lesson-items">{"".join(post(p, week_dir) for p in d["poster"])}</ul></div></li>'
         for i, d in enumerate(w['delar'], 1))
-    redovisa = ''.join(f'<li>{escape(r)}</li>' for r in w['redovisa'])
+    redovisa = ''.join(f'<li><a href="Inlamning.html#uppgift-{i}">Uppgift {i}. {escape(x["titel"])}</a></li>' for i, x in enumerate(INLAMNING[nr]['uppgifter'], 1))
     fordj = ''
     if w['fordjupning']:
         fordj = ('<h3>Fördjupning, frivillig</h3><ul class="lesson-items">'
@@ -257,7 +261,7 @@ def page(nr, w):
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main id="main-content" class="course-main">
 <header class="course-heading week-heading"><p class="course-kicker">Vecka {nr} · {datum(start)}–{datum(end, True)}</p><h1>{escape(w["titel"])}</h1><p class="course-lead">{escape(w["mal"])}</p><p>Arbeta med delarna i ordning. Varje del börjar med en presentation, fortsätter med övningar och slutar i en labb eller film när det finns en.</p><p class="course-actions"><a class="sj-btn primary large" href="#del-1">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p></header>
 {notis}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">Arbeta i den här ordningen</h2><ol class="lesson-list">{delar}</ol></section>
-<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><ul>{redovisa}</ul><p>Övningarna i Formelstöd och övningar är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain"><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
+<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul><p>Övningarna i Formelstöd och övningar är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain"><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Presentationerna finns som PowerPoint och PDF. PDF öppnas direkt i telefonen. Nedladdade filer får datum och klockslag i filnamnet.</p>
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
 '''
