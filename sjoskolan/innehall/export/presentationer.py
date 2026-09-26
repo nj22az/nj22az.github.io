@@ -200,5 +200,5 @@ def bygg(a, kat):
     pdf_och_bildspel(omskrivna)
     for x in avvik:
         print('  obs', x)
-    return {'sammanfattning': f'{len(decks)} presentationer, {len(omskrivna)} omskrivna (PDF och bildspel byggda om), {len(avvik)} avvikelser i kontrollformer',
-            'omskrivna': [str(f.relative_to(R.SJO)) for f in omskrivna], 'avvikelser': avvik, 'revisioner': rev}
+    print(f'  {len(omskrivna)} presentationer omskrivna (PDF och bildspel byggda om)')
+    return {'sammanfattning': f'{len(decks)} presentationer ur databasen, {len(avvik)} avvikelser i kontrollformer', 'avvikelser': avvik, 'revisioner': rev}

@@ -110,18 +110,21 @@ VECKOR = {
         'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
         'delar': [
             {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'poster': [
+                lank('Lektion_1.html', 'Lektion 1: sinus och mätvärden', 'läs', 'artikel: mål, förklaring med figurer, instrumentet, exempel, prova själv och labbkoppling'),
                 lank('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
                 ppt('v40_01_Sinusformad_vaxelspanning_elev.pptx', 'Sinus och mätvärden', 17),
                 lank('Kortfilmer.html?del=sinus', 'Stegfilm: Vad visar kurvan och multimetern?', 'film', 'svensk text, engelsk berättarröst'),
                 lank('Formelstod_och_ovningar.html#v40_01', 'Övningar: sinusformad växelspänning', 'övning', '10 övningar med facit'),
             ]},
             {'titel': 'Spole, motstånd och ström', 'mal': 'Reaktans, impedans och strömmen i en RL-krets.', 'poster': [
+                lank('Lektion_2.html', 'Lektion 2: spole, motstånd och ström', 'läs', 'artikel: mål, förklaring med figurer, instrumentet, exempel, prova själv och labbkoppling'),
                 lank('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
                 ppt('v40_02_Reaktans_och_impedans_elev.pptx', 'Spole, motstånd och ström', 16),
                 lank('Kortfilmer.html?del=impedans', 'Stegfilm: Vad händer när vi lägger till en spole?', 'film', 'svensk text, engelsk berättarröst'),
                 lank('Formelstod_och_ovningar.html#v40_02', 'Övningar: reaktans och impedans', 'övning', '10 övningar med facit'),
             ]},
             {'titel': 'Effekt och effektfaktor', 'mal': 'P, Q och S och hur effektfaktorn påverkar matningsströmmen.', 'poster': [
+                lank('Lektion_3.html', 'Lektion 3: effekt och effektfaktor', 'läs', 'artikel: mål, förklaring med figurer, instrumentet, exempel, prova själv och labbkoppling'),
                 lank('Genomgang.html?del=effekt', 'Genomgång: effekt och effektfaktor', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
                 ppt('v40_03_Effekt_i_vaxelstromskretsar_elev.pptx', 'Effekt och effektfaktor', 15),
                 lank('Kortfilmer.html?del=effekt', 'Stegfilm: Samma aktiva effekt, olika ström', 'film', 'svensk text, engelsk berättarröst'),

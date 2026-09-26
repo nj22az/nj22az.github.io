@@ -133,5 +133,6 @@ def bygg(a, kat):
     bokverktyg = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bokverktyg)
     bokverktyg.packa()
-    return {'sammanfattning': f'{stat["oforandrade"]} avsnitt oförändrade, {len(stat["omskrivna"])} omskrivna ur databasen, {andrade} EPUB-filer ändrade. PDF måste sättas om separat.',
+    print(f'  {andrade} EPUB-filer ändrade')
+    return {'sammanfattning': f'{stat["oforandrade"]} avsnitt oförändrade, {len(stat["omskrivna"])} omskrivna ur databasen. PDF måste sättas om separat.',
             'omskrivna': stat['omskrivna'], 'revisioner': stat['rev']}
