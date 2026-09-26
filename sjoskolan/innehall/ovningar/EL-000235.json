@@ -3,7 +3,7 @@
   "titel": "RL och effektfaktor",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -21,18 +21,18 @@
     ]
   },
   "uppgift": {
-    "fraga": "R = 30 Ω och XL = 40 Ω i serie över 100 V RMS. Bestäm I och cos φ.",
+    "fraga": "R = 30 Ω och X_{L} = 40 Ω i serie över 100 V RMS. Bestäm I och cos φ.",
     "samband": [
       "|Z| = √(R² + XL²)",
       "I = U/|Z|; cos φ = R/|Z|"
     ],
-    "givet": "RL i serie: R = 30 Ω, XL = 40 Ω och U = 100 V RMS.",
+    "givet": "RL i serie: R = 30 Ω, X_{L} = 40 Ω och U = 100 V RMS.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "R är den resistiva och XL den induktiva delen av impedansen. U och I är effektivvärden.",
+      "text": "R är den resistiva och X_{L} den induktiva delen av impedansen. U och I är effektivvärden.",
       "status": "migrerad"
     },
     {

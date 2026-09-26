@@ -110,6 +110,7 @@ VECKOR = {
         'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
         'delar': [
             {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'poster': [
+                lank('Beteckningar.html', 'Förkortningar och beteckningar', 'läs', 'alla förkortningar och tecken i veckan förklarade, till exempel RMS, X_L och PF'),
                 lank('Lektion_1.html', 'Lektion 1: sinus och mätvärden', 'läs', 'artikel: mål, förklaring med figurer, instrumentet, exempel, prova själv och labbkoppling'),
                 lank('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
                 ppt('v40_01_Sinusformad_vaxelspanning_elev.pptx', 'Sinus och mätvärden', 17),

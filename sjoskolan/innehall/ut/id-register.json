@@ -803,7 +803,7 @@
   },
   {
    "id": "EL-000071",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolens reaktans",
@@ -819,7 +819,7 @@
   },
   {
    "id": "EL-000072",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kondensatorns reaktans",
@@ -835,7 +835,7 @@
   },
   {
    "id": "EL-000073",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL-kretsens impedans",
@@ -851,7 +851,7 @@
   },
   {
    "id": "EL-000074",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Strömmen i RL-kretsen",
@@ -867,7 +867,7 @@
   },
   {
    "id": "EL-000075",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningar i serie",
@@ -883,7 +883,7 @@
   },
   {
    "id": "EL-000076",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fasvinkel i RL",
@@ -899,7 +899,7 @@
   },
   {
    "id": "EL-000077",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RC-krets",
@@ -915,7 +915,7 @@
   },
   {
    "id": "EL-000078",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Dubbel frekvens",
@@ -931,7 +931,7 @@
   },
   {
    "id": "EL-000079",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RLC-krets",
@@ -947,7 +947,7 @@
   },
   {
    "id": "EL-000080",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Serieresonans",
@@ -4291,7 +4291,7 @@
   },
   {
    "id": "EL-000235",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL och effektfaktor",
@@ -4615,7 +4615,7 @@
   },
   {
    "id": "EL-000313",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolens reaktans",
@@ -4663,7 +4663,7 @@
   },
   {
    "id": "EL-000316",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Resonansfrekvens",
@@ -5047,7 +5047,7 @@
   },
   {
    "id": "EL-000340",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna spolens reaktans",
@@ -5063,7 +5063,7 @@
   },
   {
    "id": "EL-000341",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna impedansens belopp",
@@ -5527,7 +5527,7 @@
   },
   {
    "id": "EL-000507",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eget försök med andra värden: spole, motstånd och ström",

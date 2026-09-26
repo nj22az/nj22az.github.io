@@ -176,6 +176,44 @@ def skriv_deck(a, plats, placeringar):
     return andrat, avvik
 
 
+GENOMGANG_V40 = {'sinus': 'vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_elev.pptx', 'impedans': 'vecka-40/aktuell/v40_02_Reaktans_och_impedans_elev.pptx',
+                 'effekt': 'vecka-40/aktuell/v40_03_Effekt_i_vaxelstromskretsar_elev.pptx'}
+
+
+def genomgang_v40():
+    """Vecka 40:s presentationer följer genomgångens text (vecka-40/aktuell/lektioner.mjs): bild n + 1 = genomgångens bild n.
+    Formerna heter title, body och formula (verktyg/ac/build-decks.mjs). Etiketter i figurerna får nedsänkta index."""
+    import json
+    from pptx import Presentation
+    js = "import('%s').then(m=>console.log(JSON.stringify(m.LESSONS)))" % (R.SJO / 'vecka-40' / 'aktuell' / 'lektioner.mjs').as_uri()
+    lek = json.loads(subprocess.run(['node', '--input-type=module', '-e', js], capture_output=True, text=True, check=True).stdout)
+    omskrivna = []
+    for l in lek:
+        fil = R.SJO / GENOMGANG_V40[l['id']]
+        prs = Presentation(fil)
+        slides = list(prs.slides)
+        andrat = 0
+        for i, s in enumerate(l['slides']):
+            former = {sh.name: sh for sh in _former(slides[i + 1]).values()}
+            mal = {'title': [s['title']], 'body': [y for b in s['body'] for y in (b, '')][:-1], 'formula': [s['formula']] if s.get('formula') else None}
+            for namn, stycken in mal.items():
+                sh = former.get(namn)
+                if sh is None or stycken is None:
+                    continue
+                nu = [stycke_text(p) for p in sh.text_frame.paragraphs]
+                if nu != [re.sub(r'\s+', ' ', x).strip() for x in stycken]:  # stycke_text slår ihop blanktecken
+                    satt_form(sh, stycken)
+                    andrat += 1
+            for sh in former.values():
+                if sh.name.endswith('-label') and re.search(r'(?<![\w{])X[LC](?![\w}])', ' '.join(stycke_text(p) for p in sh.text_frame.paragraphs)):
+                    satt_form(sh, [re.sub(r'(?<![\w{])X([LC])(?![\w}])', r'X_{\1}', stycke_text(p)) for p in sh.text_frame.paragraphs])
+                    andrat += 1
+        if andrat:
+            prs.save(fil)
+            omskrivna.append(fil)
+    return omskrivna
+
+
 def pdf_och_bildspel(filer):
     if not filer:
         return
@@ -197,6 +235,7 @@ def bygg(a, kat):
             omskrivna.append(R.SJO / plats)
         for pl, p in pls:
             rev[p['id']] = p['revision']
+    omskrivna += genomgang_v40()
     pdf_och_bildspel(omskrivna)
     for x in avvik:
         print('  obs', x)

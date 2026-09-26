@@ -3,7 +3,7 @@
   "titel": "Beräkna impedansens belopp",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Beräkna kretsens impedans när R = 40 Ω och XL ≈ 30 Ω."
+    "fraga": "Beräkna kretsens impedans när R = 40 Ω och X_{L} ≈ 30 Ω."
   },
   "referenser": {
     "ursprung": [
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "|Z| = √(R² + XL²). Rita R och XL vinkelrätt och beräkna diagonalen.",
+      "text": "|Z| = √(R² + XL²). Rita R och X_{L} vinkelrätt och beräkna diagonalen.",
       "status": "migrerad"
     }
   ],

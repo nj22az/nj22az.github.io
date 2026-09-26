@@ -3,7 +3,7 @@
   "titel": "Resonansfrekvens",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -34,7 +34,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "f_{0} = 1/(2π√(LC)). Omvandla mH till H och µF till F först.",
+      "text": "f_{0} = 1/(2π√(L · C)). Omvandla mH till H och µF till F först.",
       "status": "migrerad"
     }
   ],

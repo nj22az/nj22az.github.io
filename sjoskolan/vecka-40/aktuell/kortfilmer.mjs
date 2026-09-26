@@ -1,5 +1,6 @@
-import {lessonById} from './lektioner.mjs?v=20260925-ac2';
-import {visual} from './visuals.mjs?v=20260925-ac2';
+import {lessonById} from './lektioner.mjs?v=20260928';
+import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
+import {visual} from './visuals.mjs?v=20260928';
 const $=id=>document.getElementById(id),audio=$('film-audio');
 let lesson=lessonById(new URLSearchParams(location.search).get('del')),scenes=[],timeline={},time=0,duration=120,raf=0,current=-1;
 const fmt=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
@@ -8,7 +9,7 @@ function configure(){
  pause();scenes=lesson.film.map(id=>lesson.slides.find(s=>s.id===id));duration=timeline[lesson.id]?.duration||120;time=0;current=-1;
  audio.src=`film-audio/${lesson.id}.mp3?v=20260925-ac2`;audio.playbackRate=Number($('speed').value);audio.muted=!$('voice').checked;
  $('seek').max=duration;$('film-choice').value=lesson.id;$('film-title').textContent=lesson.filmTitle;
- $('transcript').innerHTML=scenes.map((s,i)=>`<section><h2>${i+1}. ${s.title}</h2>${s.body.map(t=>`<p>${t}</p>`).join('')}${s.formula?`<p>${s.formula}</p>`:''}<details><summary>Engelsk berättarröst</summary><p lang="en-GB">${esc(timeline[lesson.id]?.scenes[i]?.say||'')}</p></details></section>`).join('');
+ $('transcript').innerHTML=scenes.map((s,i)=>`<section><h2>${i+1}. ${m(s.title)}</h2>${s.body.map(t=>`<p>${m(t)}</p>`).join('')}${s.formula?`<p>${m(s.formula)}</p>`:''}<details><summary>Engelsk berättarröst</summary><p lang="en-GB">${esc(timeline[lesson.id]?.scenes[i]?.say||'')}</p></details></section>`).join('');
  $('film-lab').href=`../../vaxelstromslabbet/?lage=guidad&del=${lesson.id}`;$('film-theory').href=`Genomgang.html?del=${lesson.id}`;
  $('film-status').textContent='Tryck Spela eller gå ett steg i taget. Pausa när du behöver räkna.';
  history.replaceState(null,'',`?del=${lesson.id}`);draw();
@@ -17,7 +18,7 @@ function at(i){return timeline[lesson.id]?.scenes[i]?.start??i*20;}
 function draw(){
  if(!scenes.length)return;
  const i=Math.max(0,scenes.findLastIndex((_,j)=>time>=at(j))),s=scenes[i];
- if(i!==current){current=i;$('film-stage').innerHTML=`<p class="ac-kicker">STEG ${i+1} AV ${scenes.length}</p><h2>${s.title}</h2>${s.visual?'<div class="lesson-visual"></div>':''}<div class="film-caption">${s.body.map(t=>`<p>${t}</p>`).join('')}${s.formula?`<p><strong>${s.formula}</strong></p>`:''}</div>`;}
+ if(i!==current){current=i;$('film-stage').innerHTML=`<p class="ac-kicker">STEG ${i+1} AV ${scenes.length}</p><h2>${m(s.title)}</h2>${s.visual?'<div class="lesson-visual"></div>':''}<div class="film-caption">${s.body.map(t=>`<p>${m(t)}</p>`).join('')}${s.formula?`<p><strong>${m(s.formula)}</strong></p>`:''}</div>`;}
  const el=$('film-stage').querySelector('.lesson-visual');
  if(el)el.innerHTML=visual(s.visual,el.clientWidth,matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.min(1,(time-at(i))/(timeline[lesson.id]?.scenes[i]?.duration||20)));
  $('time').textContent=`${fmt(time)} / ${fmt(duration)}`;$('seek').value=time;$('back').disabled=i===0;$('forward').disabled=i===scenes.length-1;

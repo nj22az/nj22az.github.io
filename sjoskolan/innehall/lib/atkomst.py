@@ -111,6 +111,10 @@ class Atkomst:
         r = self.con.execute('SELECT * FROM mal WHERE id = ?', (id_,)).fetchone()
         return dict(r) if r else None
 
+    def beteckningar(self):
+        """Förkortningar, storheter och enheter i ordlistans ordning."""
+        return [json.loads(r['data']) for r in self.con.execute('SELECT data FROM beteckning ORDER BY ordning')]
+
     @property
     def utgava(self):
         """Utgåvans fingeravtryck för den här publiken (skyddade ändringar syns inte i elevutgåvan)."""

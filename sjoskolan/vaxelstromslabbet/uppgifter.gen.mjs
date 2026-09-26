@@ -307,7 +307,7 @@ export const UPPGIFTER = [
    "f0",
    "freqTicks"
   ],
-  "hint": "f_{0} = 1/(2π√(LC)). Omvandla mH till H och µF till F först.",
+  "hint": "f_{0} = 1/(2π√(L · C)). Omvandla mH till H och µF till F först.",
   "mistakes": [
    {
     "v": 365.148,
@@ -588,16 +588,16 @@ export const GUIDADE = [
   "fields": [
    [
     "XL",
-    "Reaktans XL",
+    "Reaktans X_{L}",
     "Ω"
    ]
   ],
   "prompt": "Hur stor reaktans ger spolen vid 50 Hz? Börja med att omvandla mH till H.",
-  "method": "L = 95,5/1 000 = 0,0955 H. XL = 2πfL.",
+  "method": "L = 95,5/1 000 = 0,0955 H. X_{L} = 2πfL.",
   "theory": "xl",
   "visual": "rl",
   "explain": "Hur ändras spolens reaktans om frekvensen fördubblas?",
-  "hint": "L hålls konstant. Läs hur f ingår i XL = 2πfL."
+  "hint": "L hålls konstant. Läs hur f ingår i X_{L} = 2πfL."
  },
  {
   "id": "grund-z",
@@ -620,8 +620,8 @@ export const GUIDADE = [
     "Ω"
    ]
   ],
-  "prompt": "Beräkna kretsens impedans när R = 40 Ω och XL ≈ 30 Ω.",
-  "method": "|Z| = √(R² + XL²). Rita R och XL vinkelrätt och beräkna diagonalen.",
+  "prompt": "Beräkna kretsens impedans när R = 40 Ω och X_{L} ≈ 30 Ω.",
+  "method": "|Z| = √(R² + XL²). Rita R och X_{L} vinkelrätt och beräkna diagonalen.",
   "theory": "z",
   "visual": "triangle",
   "explain": "Varför använder vi inte 40 + 30 för impedansens belopp?",

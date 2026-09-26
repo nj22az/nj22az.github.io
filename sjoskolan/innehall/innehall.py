@@ -19,6 +19,7 @@ import argparse
 import importlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -32,7 +33,7 @@ SJO = ROT.parent
 BUILD = ROT / 'build'
 UTGAVA = ROT / 'utgava.json'
 # Exportörer i körordning. Lätta körs alltid; tunga bara på begäran (de kräver LibreOffice, python-pptx, boken …).
-LATTA = ['kurssidor', 'simulatorer', 'lektioner', 'arbetsblad', 'inlamning', 'tentamen', 'idregister']
+LATTA = ['beteckningar', 'kurssidor', 'simulatorer', 'lektioner', 'arbetsblad', 'inlamning', 'tentamen', 'idregister']
 TUNGA = ['presentationer', 'larare', 'bok']
 
 
@@ -125,6 +126,34 @@ def cmd_bygg(a):
     return 0
 
 
+# Sidor där varje förkortning ska vara förklarad (beteckningar.json). Vecka för vecka, när ordlistan täcker veckan.
+BETECKNINGSSIDOR = ['vecka-40/aktuell/Lektion_1.html', 'vecka-40/aktuell/Lektion_2.html', 'vecka-40/aktuell/Lektion_3.html',
+                    'vecka-40/aktuell/Formelstod_och_ovningar.html', 'vecka-40/aktuell/Inlamning.html', 'vecka-40/aktuell/lektioner.mjs',
+                    'vaxelstromslabbet/uppgifter.gen.mjs', 'vecka-40/aktuell/kontrollfragor.gen.mjs']
+KANDA_ORD = {'EL', 'SJÖSKOLAN', 'PDF', 'GENERERAD', 'FIL', 'UPPGIFTER', 'GUIDADE', 'KONTROLLFRAGOR', 'LEKTIONER', 'LESSONS', 'REVISION', 'BASE', 'STEG', 'AV', 'DEL', 'OK'}
+
+
+def oforklarade(kat):
+    """Förkortningar (två eller fler versaler, index som X_{L}) på elevsidorna som inte finns i beteckningar.json."""
+    import html as _h
+    former = {f for b in kat.beteckningar['beteckningar'] for f in b['former'] + b.get('efter_tal', [])}
+    fel = []
+    for rel in BETECKNINGSSIDOR:
+        f = SJO / rel
+        if not f.exists():
+            continue
+        s = f.read_text(encoding='utf-8')
+        s = re.sub(r'<script.*?</script>|<style.*?</style>|<[^>]+>', ' ', s, flags=re.S) if rel.endswith('.html') else s
+        s = _h.unescape(re.sub(r'<sub>(.*?)</sub>', r'_{\1}', s))
+        for m in re.finditer(r"(?<![\wÅÄÖåäö{])([A-ZÅÄÖ]{2,}[a-z]?|[A-Za-z]_\{[^}]+\}|[A-Z][ᴸᶜᴿꜰɴ₀-₉]+)(?![\wÅÄÖåäö}])", s):
+            t = m.group(1)
+            ren = re.sub(r'_\{([^}]*)\}', r'\1', t)
+            if t in KANDA_ORD or t in former or ren in former or re.fullmatch(r'[A-Z]_\{\d+\}|[PIUSQRXEZ]_\{[a-zåäö0-9,]+\}', t):
+                continue
+            fel.append(f'{rel}: ”{t}” saknas i beteckningar.json')
+    return sorted(set(fel))
+
+
 def cmd_kontrollera(a):
     """Bygger allt i minnet och jämför med filerna. Avslutar med fel om något är inaktuellt (CI-grind)."""
     kat = katalog_eller_avbryt()
@@ -140,6 +169,7 @@ def cmd_kontrollera(a):
     for f in inaktuella:
         print('INAKTUELL', f)
     brister = rapport(kat, con, tyst=True)
+    brister['fel'] += oforklarade(kat)
     for b in brister['fel']:
         print('FEL', b)
     if inaktuella or brister['fel']:

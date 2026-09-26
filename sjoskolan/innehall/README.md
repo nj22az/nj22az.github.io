@@ -13,6 +13,7 @@ lärarguide, boken) genereras härifrån och får aldrig redigeras direkt.
 | `skyddat/bok.enc` | Bokens lösningar, figurer, ursprungliga avsnitt och bokens egna övningar. Krypterad med bokens lösenord (`BOKLOSEN`) |
 | `placeringar/*.json` | Var övningarna visas: yta, fil, del, ordning, visningsnummer, ankare, presentationsbild och textformer, alias |
 | `teori.json` | Lärandemål (LM-1…9) och teoriavsnitt (T-…) som posterna hänvisar till |
+| `beteckningar.json` | Förkortningar, storheter och enheter med förklaring (RMS, X_{L}, PF …). Ger ordlistan, Beteckningar-rutorna på sidorna, i genomgången och i labbet |
 
 `id-register.json` (alla id, revision, hash) och `utgava.json` (utgåvans fingeravtryck och tunga utdata) genereras av kommandona nedan.
 
@@ -64,6 +65,14 @@ Beroenden: Python 3.11 (standardbiblioteket), Node 22 (kryptering, labbfunktione
 4. Checka in poster, id-register, utgåva och de genererade filerna tillsammans. CI kör `kontrollera`.
 
 Ny övning: nästa lediga id (se `id-register.json`), en post, en placering på den yta där den ska visas, `revidera`, `bygg`.
+
+## Förkortningar och beteckningar
+
+Varje förkortning eller beteckning som eleverna möter ska finnas i `beteckningar.json` och förklaras första gången i löptexten.
+`innehall.py kontrollera` stoppar (även i CI) om en elevsida för vecka 40 innehåller en förkortning som inte finns i ordlistan
+(`BETECKNINGSSIDOR` i `innehall.py`; lägg till en vecka där när ordlistan täcker den). Ny beteckning: lägg till en rad med
+`former` (hur den står i text), `namn` och `forklaring`; `formel: true` för ensamma bokstäver, `efter_tal` för enheter som
+också är vanliga ord (var, rad). Index skrivs alltid med markering: X_{L}, inte XL.
 
 ## Genererade platser
 

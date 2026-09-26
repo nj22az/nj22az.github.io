@@ -67,12 +67,13 @@ def rakna_forst(pl, p, lab):
 
 
 def guidad(pl, p):
+    """Texten behåller markeringen X_{L}; guided.mjs renderar den med markHtml."""
     sim, u = p['simulator'], p['uppgift']
     led = [l for l in p.get('ledtradar', []) if l['niva'] == 'metod']
-    return {'id': sim['alias'], 'ovning': p['id'], 'lesson': sim['scenario'], 'title': T.ren_text(p['titel']), 'source': T.ren_text(sim.get('kalla', '')),
-            'setup': sim['initial'], 'fields': [[k, T.ren_text(e), enh] for k, e, enh in sim['fraga']['falt']], 'prompt': T.ren_text(u['fraga']),
-            'method': T.ren_text(led[0]['text']) if led else '', 'theory': sim.get('teoriavsnitt'), 'visual': sim.get('visualisering'),
-            'explain': T.ren_text(sim['forklaring']['fraga']), 'hint': T.ren_text(sim['forklaring']['ledtrad'])}
+    return {'id': sim['alias'], 'ovning': p['id'], 'lesson': sim['scenario'], 'title': p['titel'], 'source': sim.get('kalla', ''),
+            'setup': sim['initial'], 'fields': [[k, e, enh] for k, e, enh in sim['fraga']['falt']], 'prompt': u['fraga'],
+            'method': led[0]['text'] if led else '', 'theory': sim.get('teoriavsnitt'), 'visual': sim.get('visualisering'),
+            'explain': sim['forklaring']['fraga'], 'hint': sim['forklaring']['ledtrad']}
 
 
 def multimeter(pl, p):

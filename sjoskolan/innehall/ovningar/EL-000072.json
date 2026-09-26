@@ -3,7 +3,7 @@
   "titel": "Kondensatorns reaktans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -19,16 +19,16 @@
     ]
   },
   "uppgift": {
-    "fraga": "C = 100 µF och f = 50 Hz. Beräkna XC.",
+    "fraga": "C = 100 µF och f = 50 Hz. Beräkna X_{C}.",
     "samband": [
-      "XC = 1/(2πfC)"
+      "X_{C} = 1/(2πfC)"
     ],
     "givet": "Ideal kondensator, C = 100 µF, f = 50 Hz."
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "XC är den kapacitiva reaktansen i Ω och C kapacitansen i F. 1 µF = 10^{−6} F.",
+      "text": "X_{C} är den kapacitiva reaktansen i Ω och C kapacitansen i F. 1 µF = 10^{−6} F.",
       "status": "migrerad"
     },
     {
@@ -41,7 +41,7 @@
     "text": "X_{C} = 1/(2π · 50 · 100 · 10⁻⁶) ≈ 31,8 Ω.",
     "svar": [
       {
-        "storhet": "XC",
+        "storhet": "X_{C}",
         "varde": 31.8,
         "avrundning": "1 decimaler",
         "tolerans": {

@@ -92,6 +92,8 @@ class Katalog:
         for s in oppna:
             self.skyddat[s] = self.las_skyddat(s)
         self.teori = json.loads((self.rot / 'teori.json').read_text(encoding='utf-8'))
+        self.bschema = Validerare.fran_fil(self.rot / 'schema' / 'beteckningar.schema.json')
+        self.beteckningar = json.loads((self.rot / 'beteckningar.json').read_text(encoding='utf-8'))
         self.ytor = {}
         for f in sorted((self.rot / 'placeringar').glob('*.json')):
             self.ytor[f.stem] = json.loads(f.read_text(encoding='utf-8'))
@@ -182,6 +184,16 @@ class Katalog:
             self.varningar.append(f'skyddade filer inte öppnade ({", ".join(saknas)}): de fälten kontrolleras inte')
         for f in self.tschema.fel(self.teori):
             self.fel.append(f'teori.json: {f}')
+        for f in self.bschema.fel(self.beteckningar):
+            self.fel.append(f'beteckningar.json: {f}')
+        sedda = {}
+        for b in self.beteckningar.get('beteckningar', []):
+            if b['id'] in sedda:
+                self.fel.append(f'beteckningar.json: dubbelt id {b["id"]}')
+            sedda[b['id']] = 1
+            for vag, t in _texter({k: b[k] for k in ('visa', 'namn', 'forklaring', 'obs', 'exempel') if k in b}):
+                for f in T.kontrollera(t):
+                    self.fel.append(f'beteckningar.json {b["id"]}: {vag}: {f}')
         alias = {}
         for namn, y in self.ytor.items():
             for f in self.pschema.fel(y):
@@ -246,7 +258,7 @@ class Katalog:
 
     # ------------------------------------------------------------------ hjälp
     def fingeravtryck(self, bara_publikt=False):
-        data = {'schema': SCHEMA_VERSION, 'poster': self.publika if bara_publikt else self.poster, 'ytor': self.ytor, 'teori': self.teori}
+        data = {'schema': SCHEMA_VERSION, 'poster': self.publika if bara_publikt else self.poster, 'ytor': self.ytor, 'teori': self.teori, 'beteckningar': self.beteckningar}
         return hash_av(data)
 
     def anvands(self, id_):

@@ -46,13 +46,13 @@ def figur(visual):
 
 
 def avsnitt(s, prova):
-    h = [f'<section class="art-del" id="{s["id"]}"><h3>{e(s["title"])}</h3><div class="art-rad">{figur(s.get("visual"))}<div class="art-text"><ul>']
-    h += [f'<li>{e(t)}</li>' for t in s['body']]
+    h = [f'<section class="art-del" id="{s["id"]}"><h3>{R.h(s["title"])}</h3><div class="art-rad">{figur(s.get("visual"))}<div class="art-text"><ul>']
+    h += [f'<li>{R.h(t)}</li>' for t in s['body']]
     h.append('</ul>')
     if s.get('formula'):
-        h.append(f'<p class="formula">{e(s["formula"])}</p>')
+        h.append(f'<p class="formula">{R.h(s["formula"])}</p>')
     if s.get('check') and prova:
-        h.append(f'<div class="art-prova"><p><strong>Prova själv:</strong> {e(s["check"])}</p>' + (f'<details><summary>Visa svar</summary><p>{e(s["answer"])}</p></details>' if s.get('answer') else '') + '</div>')
+        h.append(f'<div class="art-prova"><p><strong>Prova själv:</strong> {R.h(s["check"])}</p>' + (f'<details><summary>Visa svar</summary><p>{R.h(s["answer"])}</p></details>' if s.get('answer') else '') + '</div>')
     h.append('</div></div></section>')
     return ''.join(h)
 
@@ -84,21 +84,26 @@ def artikel(a, l, alla):
     uppgifter = [(pl, p) for pl, p in a.placeringar('simulator', 'vaxelstromslabbet/uppgifter.gen.mjs', 'rakna-forst') if p['simulator'].get('scenario') == tab]
     guidade = [(pl, p) for pl, p in a.placeringar('simulator', 'vaxelstromslabbet/uppgifter.gen.mjs', 'guidad') if p['simulator'].get('scenario') == tab]
     nasta = next((x for x in alla if x['number'] == nr + 1), None)
-    toc = [('mal', 'Det här ska du kunna'), ('teori', 'Så fungerar det'), ('instrument', 'Se vad instrumentet visar'), ('exempel', 'Följ ett genomräknat exempel'),
+    toc = [('mal', 'Det här ska du kunna'), ('beteckningar', 'Förkortningar och beteckningar'), ('teori', 'Så fungerar det'), ('instrument', 'Se vad instrumentet visar'), ('exempel', 'Följ ett genomräknat exempel'),
            ('prova', 'Prova själv'), ('labb', 'Det här använder du i labben')] + ([('fordjupning', 'Fördjupning')] if fordjup else []) + [('nasta', 'Nästa steg')]
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v={V}"><link rel="stylesheet" href="lektion.css?v={V}"></head>
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v={V}"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
 <main id="main-content" class="course-main art-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 40</a></div>
 <div class="art-layout"><aside class="art-toc"><details open><summary>På denna sida</summary><ol>{''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)}</ol></details></aside>
 <article class="course-reading art-artikel">
-<p class="course-kicker">Vecka 40 · Del {nr}</p><h1>{e(l["title"])}</h1><p class="course-lead">{e(l["goal"])}</p>
+<p class="course-kicker">Vecka 40 · Del {nr}</p><h1>{e(l["title"])}</h1><p class="course-lead">{R.h(l["goal"])}</p>
 <p class="art-meta">{e(l["minutes"])} · <a href="Genomgang.html?del={tab}">Genomgång bild för bild</a> · <a href="Kortfilmer.html?del={tab}">Kort stegfilm</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Bildspel</a></p>''']
     # 1 Det här ska du kunna
     mal = slides.get('mal')
-    h.append(f'<h2 id="mal">Det här ska du kunna</h2><p>Efter den här delen kan du: {e(l["goal"][0].lower() + l["goal"][1:])}</p>')
+    h.append(f'<h2 id="mal">Det här ska du kunna</h2><p>Efter den här delen kan du: {R.h(l["goal"][0].lower() + l["goal"][1:])}</p>')
     if mal:
-        h.append('<ul>' + ''.join(f'<li>{e(t)}</li>' for t in mal['body']) + '</ul>')
+        h.append('<ul>' + ''.join(f'<li>{R.h(t)}</li>' for t in mal['body']) + '</ul>')
     h.append('<p><strong>Du behöver från tidigare:</strong> ' + ' · '.join(f'<a href="{u}">{e(t)}</a>' for u, t in FORKUNSKAPER[tab]) + '.</p>')
+    # Alla förkortningar och beteckningar i delen, i den ordning de kommer. Förklaras också i löptexten första gången.
+    texter = [l['goal']] + [t for s in l['slides'] for t in [s['title'], *s['body'], s.get('check'), s.get('answer')]] + [p['uppgift']['fraga'] for _, p in uppgifter + guidade]
+    formler = [s.get('formula') for s in l['slides']] + [x for _, p in uppgifter + guidade for x in p['uppgift'].get('samband', [])]
+    h.append('<h3 id="beteckningar">Förkortningar och beteckningar i den här delen</h3><p>Öppna rutan när du möter en förkortning du inte känner igen. <a href="Beteckningar.html">Alla beteckningar för veckan</a>.</p>')
+    h.append(R.beteckningar_html(R.beteckningar_i(texter, a.beteckningar(), formler), 'Visa förkortningar och beteckningar'))
     # 2 Så fungerar det
     h.append('<h2 id="teori">Så fungerar det</h2>')
     h += [avsnitt(s, prova=True) for s in teori]
@@ -114,7 +119,7 @@ def artikel(a, l, alla):
     h.append('<h2 id="prova">Prova själv</h2><p>Räkna först på papper. Öppna ledtråden om du fastnar och facit när du är klar.</p>')
     if 'eget' in slides:
         s = slides['eget']
-        h.append(f'<section class="art-uppgift" id="eget"><h3>{e(s["title"])}</h3>' + ''.join(f'<p>{e(t)}</p>' for t in s['body']) + (f'<details class="facit"><summary>Visa facit</summary><p>{e(s["answer"])}</p></details>' if s.get('answer') else '') + '</section>')
+        h.append(f'<section class="art-uppgift" id="eget"><h3>{R.h(s["title"])}</h3>' + ''.join(f'<p>{R.h(t)}</p>' for t in s['body']) + (f'<details class="facit"><summary>Visa facit</summary><p>{R.h(s["answer"])}</p></details>' if s.get('answer') else '') + '</section>')
     h += [ovning(pl, p, tab) for pl, p in uppgifter]
     # 6 Labben
     h.append('<h2 id="labb">Det här använder du i labben</h2><p>I den guidade labben förutsäger du varje värde, läser av det och förklarar skillnaden. Uppgifterna i den här delen:</p><ol>')
@@ -122,7 +127,7 @@ def artikel(a, l, alla):
     h.append(f'</ol><p class="art-lank"><a class="ac-link-button" href="../../vaxelstromslabbet/?lage=guidad&amp;del={tab}">Öppna den guidade labben, del {nr}</a></p>')
     if 'klart' in slides:
         s = slides['klart']
-        h.append(f'<div class="sj-panel soft"><h3>{e(s["title"])}</h3><ul>' + ''.join(f'<li>{e(t)}</li>' for t in s['body']) + '</ul></div>')
+        h.append(f'<div class="sj-panel soft"><h3>{R.h(s["title"])}</h3><ul>' + ''.join(f'<li>{R.h(t)}</li>' for t in s['body']) + '</ul></div>')
     # 7 Fördjupning
     if fordjup:
         h.append('<h2 id="fordjupning">Fördjupning</h2><p class="muted">Utöver grundkraven. Läs när grunddelen sitter.</p>')
@@ -138,7 +143,7 @@ def artikel(a, l, alla):
     h.append(f'<nav class="art-nav" aria-label="Lektioner"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>')
     h.append(f'''<p class="source-note">Ideala undervisningsmodeller. Praktisk instrumentanslutning följer den verkliga stationens anvisningar. Övningarna kommer ur kursens innehållsdatabas.</p>
 </article></div></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
-<script type="module">import {{visual}} from './visuals.mjs?v=20260925-ac2';const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});draw();addEventListener('resize',draw);if(innerWidth<900)document.querySelector('.art-toc details').open=false;</script>
+<script type="module">import {{visual}} from './visuals.mjs?v=20260928';const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});draw();addEventListener('resize',draw);if(innerWidth<900)document.querySelector('.art-toc details').open=false;</script>
 </body></html>
 ''')
     return ''.join(h)

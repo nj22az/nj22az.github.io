@@ -3,7 +3,7 @@
   "titel": "RLC-krets",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -19,22 +19,22 @@
     ]
   },
   "uppgift": {
-    "fraga": "R = 30 Ω, XL = 50 Ω och XC = 10 Ω i serie. U = 100 V RMS. Bestäm nettoreaktans, |Z| och I.",
+    "fraga": "R = 30 Ω, X_{L} = 50 Ω och X_{C} = 10 Ω i serie. U = 100 V RMS. Bestäm nettoreaktans, |Z| och I.",
     "samband": [
-      "X = XL − XC",
+      "X = X_{L} − X_{C}",
       "|Z| = √(R² + X²); I = U/|Z|"
     ],
-    "givet": "RLC i serie: R = 30 Ω, XL = 50 Ω, XC = 10 Ω och U = 100 V RMS."
+    "givet": "RLC i serie: R = 30 Ω, X_{L} = 50 Ω, X_{C} = 10 Ω och U = 100 V RMS."
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "X är den reaktans som blir kvar, med tecken. XL och XC anges som positiva tal.",
+      "text": "X är den reaktans som blir kvar, med tecken. X_{L} och X_{C} anges som positiva tal.",
       "status": "migrerad"
     },
     {
       "niva": "metod",
-      "text": "Räkna ut X först och använd den – inte XL ensam – i impedansformeln.",
+      "text": "Räkna ut X först och använd den – inte X_{L} ensam – i impedansformeln.",
       "status": "migrerad"
     }
   ],

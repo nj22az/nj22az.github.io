@@ -9,7 +9,7 @@ from pathlib import Path
 import katalog as K
 
 MIGRERINGAR = K.ROT / 'migreringar'
-DATATABELLER = ['variant', 'svar', 'parameter', 'ovning_mal', 'ovning_teori', 'mal', 'teori', 'alias', 'placering', 'yta', 'skyddat_falt', 'ovning', 'meta']
+DATATABELLER = ['beteckning', 'variant', 'svar', 'parameter', 'ovning_mal', 'ovning_teori', 'mal', 'teori', 'alias', 'placering', 'yta', 'skyddat_falt', 'ovning', 'meta']
 
 
 def migreringar():
@@ -41,6 +41,8 @@ def bygg(kat, fil):
         con.executemany('INSERT INTO meta VALUES (?, ?)', [(k, str(v)) for k, v in meta.items()])
         for m, d in kat.teori['mal'].items():
             con.execute('INSERT INTO mal VALUES (?, ?, ?)', (m, d['text'], d.get('prov')))
+        for n, b in enumerate(kat.beteckningar['beteckningar'], 1):
+            con.execute('INSERT INTO beteckning VALUES (?, ?, ?)', (b['id'], n, K.kanonisk(b)))
         for t, d in kat.teori['teori'].items():
             con.execute('INSERT INTO teori VALUES (?, ?, ?, ?, ?, ?, ?)', (t, d['titel'], d['kalla'], d.get('url'), d.get('kapitel'), d.get('ankare'), d.get('bild')))
         for i, p in kat.poster.items():

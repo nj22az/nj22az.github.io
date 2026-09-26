@@ -1,5 +1,5 @@
 {
-  "fingeravtryck_publikt": "ff5908c85f63ca2f",
+  "fingeravtryck_publikt": "814b39056ed500d4",
   "schema_version": 1,
   "utdata": {
     "bok": {
@@ -10,6 +10,20 @@
         "5.6 uppgift",
         "5.8 uppgift",
         "7.7 uppgift",
+        "8.1 uppgift",
+        "8.1 losning",
+        "8.2 uppgift",
+        "8.2 losning",
+        "8.3 uppgift",
+        "8.4 uppgift",
+        "8.5 uppgift",
+        "8.5 losning",
+        "8.6 uppgift",
+        "8.7 uppgift",
+        "8.8 uppgift",
+        "8.8 losning",
+        "8.9 uppgift",
+        "8.10 uppgift",
         "9.5 uppgift",
         "9.9 uppgift",
         "10.1 uppgift",
@@ -54,6 +68,7 @@
         "22.6 uppgift",
         "22.8 uppgift",
         "24.4 uppgift",
+        "24.5 uppgift",
         "24.9 uppgift"
       ],
       "revisioner": {
@@ -127,16 +142,16 @@
         "EL-000068": 1,
         "EL-000069": 1,
         "EL-000070": 1,
-        "EL-000071": 1,
-        "EL-000072": 1,
-        "EL-000073": 1,
-        "EL-000074": 1,
-        "EL-000075": 1,
-        "EL-000076": 1,
-        "EL-000077": 1,
-        "EL-000078": 1,
-        "EL-000079": 1,
-        "EL-000080": 1,
+        "EL-000071": 2,
+        "EL-000072": 2,
+        "EL-000073": 2,
+        "EL-000074": 2,
+        "EL-000075": 2,
+        "EL-000076": 2,
+        "EL-000077": 2,
+        "EL-000078": 2,
+        "EL-000079": 2,
+        "EL-000080": 2,
         "EL-000081": 1,
         "EL-000082": 1,
         "EL-000083": 1,
@@ -291,14 +306,14 @@
         "EL-000232": 1,
         "EL-000233": 1,
         "EL-000234": 1,
-        "EL-000235": 1,
+        "EL-000235": 2,
         "EL-000236": 1,
         "EL-000237": 1,
         "EL-000238": 1,
         "EL-000239": 1,
         "EL-000240": 1
       },
-      "sammanfattning": "429 avsnitt oförändrade, 51 omskrivna ur databasen, 8 EPUB-filer ändrade. PDF måste sättas om separat."
+      "sammanfattning": "414 avsnitt oförändrade, 66 omskrivna ur databasen. PDF måste sättas om separat."
     },
     "larare": {
       "klartext_hash": "4026b6711f574e4b",
@@ -336,7 +351,6 @@
     },
     "presentationer": {
       "avvikelser": [],
-      "omskrivna": [],
       "revisioner": {
         "EL-000031": 1,
         "EL-000032": 1,
@@ -502,7 +516,7 @@
         "EL-000232": 1,
         "EL-000233": 1,
         "EL-000234": 1,
-        "EL-000235": 1,
+        "EL-000235": 2,
         "EL-000236": 1,
         "EL-000237": 1,
         "EL-000238": 1,
@@ -596,7 +610,7 @@
         "EL-000733": 1,
         "EL-000734": 1
       },
-      "sammanfattning": "24 presentationer, 0 omskrivna (PDF och bildspel byggda om), 0 avvikelser i kontrollformer"
+      "sammanfattning": "24 presentationer ur databasen, 0 avvikelser i kontrollformer"
     }
   }
 }

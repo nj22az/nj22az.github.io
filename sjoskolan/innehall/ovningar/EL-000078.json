@@ -3,7 +3,7 @@
   "titel": "Dubbel frekvens",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,16 +18,16 @@
     ]
   },
   "uppgift": {
-    "fraga": "Frekvensen ökas från 50 till 100 Hz. Hur ändras XL och XC när komponenterna är desamma?",
+    "fraga": "Frekvensen ökas från 50 till 100 Hz. Hur ändras X_{L} och X_{C} när komponenterna är desamma?",
     "samband": [
-      "XL = 2πfL; XC = 1/(2πfC)"
+      "X_{L} = 2πfL; X_{C} = 1/(2πfC)"
     ],
     "givet": "Bara frekvensen ändras, från 50 till 100 Hz. L och C är desamma."
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "XL ökar med f. XC minskar när f ökar, eftersom f står i nämnaren.",
+      "text": "X_{L} ökar med f. X_{C} minskar när f ökar, eftersom f står i nämnaren.",
       "status": "migrerad"
     },
     {

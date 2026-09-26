@@ -42,7 +42,10 @@ def x(t):
 
 
 def strip(h):
-    s = re.sub(r'<[^>]+>', '', h or '')
+    """Avsnittets text för jämförelse. Index räknas med (X<sub>L</sub> och XL är olika), färgmarkering inte."""
+    s = re.sub(r'<sub>(.*?)</sub>', r'_{\1}', h or '')
+    s = re.sub(r'<sup>(.*?)</sup>', r'^{\1}', s)
+    s = re.sub(r'<[^>]+>', '', s)
     return re.sub(r'\s+', ' ', html.unescape(s)).strip()
 
 

@@ -3,7 +3,7 @@
   "titel": "Spänningar i serie",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -19,12 +19,12 @@
     ]
   },
   "uppgift": {
-    "fraga": "RL-kretsen har I = 2,0 A, R = 30 Ω och XL = 40 Ω. Beräkna U_{R}, U_{L} och källspänningen.",
+    "fraga": "RL-kretsen har I = 2,0 A, R = 30 Ω och X_{L} = 40 Ω. Beräkna U_{R}, U_{L} och källspänningen.",
     "samband": [
-      "U_{R} = I_{R}; U_{L} = IXL",
+      "U_{R} = I_{R}; U_{L} = I · X_{L}",
       "U = √(U_{R}² + U_{L}²)"
     ],
-    "givet": "RL i serie med I = 2,0 A, R = 30 Ω och XL = 40 Ω."
+    "givet": "RL i serie med I = 2,0 A, R = 30 Ω och X_{L} = 40 Ω."
   },
   "ledtradar": [
     {

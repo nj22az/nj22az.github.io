@@ -3,7 +3,7 @@
   "titel": "Eget försök med andra värden: spole, motstånd och ström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "R = 30 Ω, XL = 40 Ω och U = 100 V RMS. Beräkna |Z| och I. Ange om strömmen leder eller släpar.",
+    "fraga": "R = 30 Ω, X_{L} = 40 Ω och U = 100 V RMS. Beräkna |Z| och I. Ange om strömmen leder eller släpar.",
     "instruktion": "Räkna innan facit visas."
   },
   "referenser": {

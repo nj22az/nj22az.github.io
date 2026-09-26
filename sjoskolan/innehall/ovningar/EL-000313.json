@@ -3,7 +3,7 @@
   "titel": "Spolens reaktans",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

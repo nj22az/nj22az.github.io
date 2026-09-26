@@ -3,7 +3,7 @@
   "titel": "Beräkna spolens reaktans",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "L = 95,5/1 000 = 0,0955 H. XL = 2πfL.",
+      "text": "L = 95,5/1 000 = 0,0955 H. X_{L} = 2πfL.",
       "status": "migrerad"
     }
   ],
@@ -52,7 +52,7 @@
   "losning": {
     "svar": [
       {
-        "storhet": "Reaktans XL",
+        "storhet": "Reaktans X_{L}",
         "varde": 30.0022,
         "tolerans": {
           "rel": 0.02
@@ -83,7 +83,7 @@
       "falt": [
         [
           "XL",
-          "Reaktans XL",
+          "Reaktans X_{L}",
           "Ω"
         ]
       ]
@@ -92,7 +92,7 @@
     "visualisering": "rl",
     "forklaring": {
       "fraga": "Hur ändras spolens reaktans om frekvensen fördubblas?",
-      "ledtrad": "L hålls konstant. Läs hur f ingår i XL = 2πfL."
+      "ledtrad": "L hålls konstant. Läs hur f ingår i X_{L} = 2πfL."
     },
     "kalla": "RL: 12,00 V RMS, 50 Hz, R = 40 Ω, L = 95,5 mH",
     "alias": "grund-xl"

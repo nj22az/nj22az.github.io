@@ -5,7 +5,7 @@
 <title>Växelströmslabbet · Sjöskolan</title>
 <meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/vaxelstromslabbet/">
-<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927"><link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260928"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="workspace.css?v=20260926"><link rel="stylesheet" href="equipment.css?v=20260925-3d1"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
+<link rel="stylesheet" href="../gemensamt/beteckningar.css?v=20260928"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927"><link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260928"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="workspace.css?v=20260926"><link rel="stylesheet" href="equipment.css?v=20260925-3d1"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 </head>
 <body class="ac-page">
 <nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
@@ -69,10 +69,12 @@
 
   </div>
   <section id="station-workspace" hidden><div class="station-intro"><h2>Utökat stationsförsök</h2><p>Detta protokoll hör till Station B. Läs först fördjupningen om likriktat medelvärde och sinuskalibrerade mätare. Grundkälla 12,00 V och stationens källa 12,35 V är två olika undervisningsexempel.</p><p><a href="../vecka-40/aktuell/Genomgang.html?del=sinus&amp;avsnitt=likriktat">Genomgång före stationsförsöket</a></p><details><summary>Mätning och verklig rigg</summary><p>Här läser du simulerade instrument. Fysisk inkoppling görs först med lärarens godkända kopplingsschema och dokumenterade mätpunkter. Fråga läraren om underlaget innan du kopplar.</p></details></div><section id="labbprotokoll"></section></section>
+  <section id="lab-beteckningar" class="lab-beteckningar" aria-label="Förkortningar och beteckningar"></section>
   <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Mät aldrig nätspänning med oscilloskopets jordade probe. Använd differentialprob och instrument med rätt CAT-klass.</li><li>I ett IT-nät ombord ger en jordad mätklämma på en fas ett jordfel.</li><li>En kondensator, även i en frekvensomriktare, kan hålla farlig spänning efter frånkoppling. Kontrollera urladdningen med mätning.</li><li>Simulatorn visar ideala komponenter och ren sinus. Verkliga mätvärden avviker.</li></ul></details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module" src="boot.mjs?v=20260925-3d2"></script>
+<script type="module">import {hitta,ordlista} from "../gemensamt/beteckningar.mjs?v=20260928";import {UPPGIFTER,GUIDADE} from "./uppgifter.gen.mjs";const t=[...UPPGIFTER.flatMap(u=>[u.title,u.task,u.hint,u.ask.label]),...GUIDADE.flatMap(g=>[g.title,g.prompt,g.method,g.source,...g.fields.map(f=>f[1])]),"Effektivvärde U RMS PF = cos φ AC Qᶜ Δt f L C R P"];document.getElementById("lab-beteckningar").innerHTML=ordlista(hitta(t,t),"Förkortningar och beteckningar i labbet")+'<p class="muted"><a href="../vecka-40/aktuell/Beteckningar.html">Alla beteckningar för vecka 40</a></p>';</script>
 </body></html>
 
