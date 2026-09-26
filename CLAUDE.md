@@ -115,3 +115,10 @@ assets/
 ## Sjöskolan
 
 Kursen under `sjoskolan/` har ett eget designsystem: `sjoskolan/DESIGN.md` (grundvärden i `sjoskolan/gemensamt/sjoskolan.css`). Kurssidor och labbar använder Sjöskolans meny och fasta färger, inte webbplatsens `shared.js`-teman.
+
+### Övningsinnehåll
+
+Alla övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit i Sjöskolan och boken lever i `sjoskolan/innehall/`
+(`ovningar/*.json`, `placeringar/*.json`, `skyddat/*.enc`). Redigera aldrig övningstext i kurssidor, `*.gen.mjs`,
+presentationer, bildspel, lärarguiden eller boken: ändra posten, kör `innehall.py revidera` och `innehall.py bygg`
+(se `sjoskolan/innehall/README.md`). CI avvisar inaktuella genererade filer. Lärar- och boklösenord skrivs aldrig i repot.

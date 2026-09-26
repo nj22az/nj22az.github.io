@@ -33,7 +33,7 @@ BUILD = ROT / 'build'
 UTGAVA = ROT / 'utgava.json'
 # Exportörer i körordning. Lätta körs alltid; tunga bara på begäran (de kräver LibreOffice, python-pptx, boken …).
 LATTA = ['kurssidor', 'simulatorer', 'arbetsblad', 'inlamning', 'tentamen', 'idregister']
-TUNGA = ['presentationer', 'larare']
+TUNGA = ['presentationer', 'larare', 'bok']
 
 
 def katalog_eller_avbryt(kontrollera=True):

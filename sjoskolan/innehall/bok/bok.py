@@ -83,6 +83,7 @@ def granska():
     kat = K.Katalog()
     bok = kallor.bok_ovningar()
     N = T.normalisera
+    bokform = lambda t: (t or '').replace('U_{F}', 'U_{fas}')  # noqa: E731  bokens notationsprofil
     rader = []
     for b in bok.values():
         i = f'EL-{(b["kapitel"] - 1) * 10 + b["nr"]:06d}'
@@ -90,15 +91,15 @@ def granska():
         if p is None:
             continue
         u = p['uppgift']
-        jf = [('titel', N(b['titel']), p['titel']), ('uppgift', N(b['fraga']), u['fraga']),
-              ('samband', ' '.join(N(x) for x in (b['samband_rader'] or [])), ' '.join(u.get('samband', []))),
-              ('förutsättningar', N(b['givet']), u.get('givet')),
-              ('metod', N(b['metod']), ' '.join(l['text'] for l in p.get('ledtradar', []) if l.get('i_bok', True)))]
+        jf = [('titel', N(b['titel']), bokform(p['titel'])), ('uppgift', N(b['fraga']), bokform(u['fraga'])),
+              ('samband', ' '.join(N(x) for x in (b['samband_rader'] or [])), bokform(' '.join(u.get('samband', [])))),
+              ('förutsättningar', N(b['givet']), bokform(u.get('givet'))),
+              ('metod', N(b['metod']), bokform(' '.join(l['text'] for l in p.get('ledtradar', []) if l.get('i_bok', True))))]
         for falt, gammal, ny in jf:
             if (gammal or '') != (ny or ''):
                 rader.append((i, f'{b["kapitel"]}.{b["nr"]}', falt, gammal, ny))
         if p['granskning']['status'] == 'att-granska':
-            rader.append((i, f'{b["kapitel"]}.{b["nr"]}', 'svar (granskning)', N(b['svar']), p['granskning'].get('kommentar')))
+            rader.append((i, f'{b["kapitel"]}.{b["nr"]}', 'att granska (ingen bokändring)', N(b['svar']), p['granskning'].get('kommentar')))
     md = ['# Ändringar som boken behöver', '', f'Genererat av `bok.py granska` mot databasen ({len(kat.poster)} poster). '
           'Databasen är källan; raderna nedan är vad EPUB:en fortfarande har i äldre form. Bokexportören (`innehall.py bygg bok`) skriver in dem i EPUB:en.', '',
           f'{len(rader)} fält i {len({r[0] for r in rader})} övningar.', '']

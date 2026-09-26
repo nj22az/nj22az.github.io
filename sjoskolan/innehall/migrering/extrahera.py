@@ -247,8 +247,9 @@ def kapitelovningar(kapmal):
             elif tb:
                 post['granskning']['numeriskt_kontrollerad'] = True
         # --- bokens figurer
+        # Bokens ursprungliga XHTML sparas (skyddat) så att oförändrat innehåll återges byte för byte, med färgmarkering.
+        post['bok'] = {'html': {'uppgift': b['html']['uppgift'].strip(), **({'losning': b['html']['losning'].strip()} if b['html']['losning'] else {})}}
         if b['figurer'] or b['losningsfigurer']:
-            post['bok'] = {}
             if b['figurer']:
                 post['bok']['figurer'] = [_fig(f) for f in b['figurer']]
             if b['losningsfigurer']:

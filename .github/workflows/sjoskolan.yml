@@ -18,6 +18,13 @@ jobs:
         with:
           node-version: '22.16.0'
           package-manager-cache: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Innehållsdatabasen är giltig och de genererade filerna aktuella
+        run: |
+          python3 sjoskolan/innehall/innehall.py validera
+          python3 sjoskolan/innehall/innehall.py kontrollera
       - name: Labbens modelltester
         run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
       - name: Multimeterlabbets gränssnittstest
