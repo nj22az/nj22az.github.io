@@ -1,0 +1,75 @@
+/* Bokens sättning, 7 × 10 tum. Bygger på EPUB:ens stylesheet1.css (tema, block, färger) och lägger till det som bara
+   finns på papper: sidformat, marginaler, sidbrytningar, innehållsförteckning, sidhänvisningar och två spalter. */
+
+@page {
+  size: 7in 10in;
+  margin: 0.82in 0.62in 0.8in 0.78in;
+}
+@page :left { margin: 0.82in 0.78in 0.8in 0.62in; }
+@page omslag { margin: 0; }
+
+html { font-size: var(--print-size); font-family: var(--body-font); line-height: 1.55; }
+body { margin: 0; }
+img { max-width: 100%; }
+a { color: inherit; }
+
+/* ------------------------------------------------------------ omslag, titelsida, kolofon */
+.omslag { page: omslag; break-after: page; width: 7in; height: 10in; overflow: hidden; }
+.omslag img { width: 7in; height: 10in; object-fit: cover; display: block; }
+
+section.titelsida { break-before: page; break-after: page; padding-top: 2.2in; }
+section.titelsida h1 { font-size: 2.3em; line-height: 1.15; margin: 0 0 0.5em; letter-spacing: -0.01em; }
+section.titelsida .undertitel p { font-size: 1.2em; color: var(--muted); margin: 0 0 3.2in; }
+section.titelsida .forfattare p { font-size: 1.25em; font-weight: 600; margin: 0 0 0.2em; }
+section.titelsida .upplaga p { color: var(--muted); }
+
+section.kolofon { break-before: page; break-after: page; display: flex; flex-direction: column; justify-content: flex-end; height: 8.3in; font-size: 0.8em; color: var(--muted); }
+section.kolofon h1 { display: none; }
+section.kolofon p { margin: 0 0 0.9em; }
+
+/* ------------------------------------------------------------ innehåll */
+nav.innehall { break-before: page; break-after: page; font-family: var(--sans); font-size: 0.86em; }
+nav.innehall h1 { font-size: 2em; margin: 0 0 0.8em; }
+nav.innehall ol { list-style: none; margin: 0; padding: 0; }
+nav.innehall li { display: flex; align-items: baseline; gap: 0.5em; padding: 0.22em 0; border-bottom: 1px solid var(--rule-light); }
+nav.innehall li .nr { width: 1.6em; color: var(--accent-text); font-weight: 700; }
+nav.innehall li a { flex: 1; }
+nav.innehall li a::after { content: attr(data-sida); float: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+nav.innehall li.del { margin-top: 0.7em; border-bottom: 1.5px solid var(--ink); font-weight: 700; }
+nav.innehall li.utan-nr { padding-left: 0; }
+
+/* ------------------------------------------------------------ sidbrytningar */
+section#intro, section#symbols { break-before: page; }
+section.del { break-before: right; break-after: page; min-height: 8.2in; }
+section.kapitel { break-before: right; }
+section.formelkort { break-before: right; }
+.losningar-alla { break-before: right; }
+section.kallor, section.register { break-before: page; }
+h2, h3 { break-after: avoid; }
+section.formelkort > h1, section.kallor > h1, section.register > h1, .losningar-alla > h1, section#intro > h1, section#symbols > h1 { font-size: 2em; margin: 0 0 0.5em; }
+
+/* ------------------------------------------------------------ lösningar i två spalter */
+.losningar-alla > .spalter { column-count: 2; column-gap: 0.3in; }
+.losningar-alla section.losningar > h1 { break-after: avoid; }
+section.losning { break-inside: avoid; }
+
+/* ------------------------------------------------------------ sidhänvisningar mellan uppgift och lösning (skrivs in av satt.mjs) */
+.sref { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------ sakregister i två spalter */
+.register-lista { column-count: 2; column-gap: 0.3in; }
+.register-lista .sidor { color: var(--muted); margin-left: 0.4em; }
+
+/* ------------------------------------------------------------ källor */
+section.kallor a.uri { word-break: break-all; }
+
+/* ------------------------------------------------------------ sidhuvud och sidfot (läggs in efter sidbrytningen) */
+.huvud, .fot { position: absolute; left: 0; right: 0; font-family: var(--sans); font-size: 7.5pt; color: var(--ink); display: flex; align-items: center; gap: 0.6em; }
+.huvud { top: -0.52in; height: 0.22in; border-bottom: 0.5px solid var(--rule); padding-bottom: 0.08in; font-weight: 600; }
+.fot { bottom: -0.5in; color: var(--muted); }
+.pagedjs_right_page .huvud, .pagedjs_right_page .fot { justify-content: flex-end; }
+.pagedjs_right_page .huvud { flex-direction: row; }
+.huvud .kapnr { display: inline-flex; align-items: center; justify-content: center; min-width: 0.22in; height: 0.22in; background: var(--accent-text); color: #fff; font-weight: 700; }
+.fot .sidnr { display: inline-flex; align-items: center; justify-content: center; width: 0.26in; height: 0.26in; border-radius: 50%; background: var(--accent-bg); color: var(--accent-text); font-weight: 700; }
+.pagedjs_left_page .fot .titel { margin-left: auto; }
+.pagedjs_right_page .fot .titel { margin-right: auto; }
