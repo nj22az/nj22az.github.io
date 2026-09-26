@@ -36,13 +36,23 @@ def shapes_flat(shapes):
             yield sh
 
 
+def run_text(runs):
+    """Styckets text med innehållsmarkering: nedsänkta körningar blir _{…}, upphöjda ^{…}."""
+    out = []
+    for r in runs:
+        rpr = r._r.find('{http://schemas.openxmlformats.org/drawingml/2006/main}rPr')
+        base = int(rpr.get('baseline', '0')) if rpr is not None else 0
+        out.append(f'_{{{r.text}}}' if base < 0 and r.text.strip() else f'^{{{r.text}}}' if base > 0 and r.text.strip() else r.text)
+    return ''.join(out)
+
+
 def slide_text(slide):
     title, items = '', []
     for sh in sorted(shapes_flat(slide.shapes), key=lambda s: ((s.top or 0) // 200000, s.left or 0)):
         if sh.is_placeholder and sh.placeholder_format.type in SKIP_PH:
             continue
         if sh.has_text_frame:
-            paras = [''.join(r.text for r in p.runs).strip() for p in sh.text_frame.paragraphs]
+            paras = [run_text(p.runs).strip() for p in sh.text_frame.paragraphs]
             paras = [p for p in paras if p and not re.fullmatch(r'\d{1,3}', p)]
             is_title = sh.is_placeholder and sh.placeholder_format.type in (PP_PLACEHOLDER.TITLE, PP_PLACEHOLDER.CENTER_TITLE)
             if is_title and paras and not title:
@@ -51,7 +61,7 @@ def slide_text(slide):
                 items += paras
         elif getattr(sh, 'has_table', False) and sh.has_table:
             for row in sh.table.rows:
-                cells = [c.text.strip() for c in row.cells if c.text.strip()]
+                cells = [t for t in (' '.join(run_text(p.runs) for p in c.text_frame.paragraphs).strip() for c in row.cells) if t]
                 if cells:
                     items.append(' · '.join(cells))
     if not title and items:

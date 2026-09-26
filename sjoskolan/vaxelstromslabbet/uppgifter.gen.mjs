@@ -604,7 +604,7 @@ export const GUIDADE = [
   "ovning": "EL-000341",
   "lesson": "impedans",
   "title": "Beräkna impedansens belopp",
-  "source": "RL: R = 40 Ω och XL ≈ 30 Ω vid 50 Hz",
+  "source": "RL: R = 40 Ω och X_{L} ≈ 30 Ω vid 50 Hz",
   "setup": {
    "C": 150,
    "L": 95.5,

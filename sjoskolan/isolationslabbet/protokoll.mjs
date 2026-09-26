@@ -21,10 +21,10 @@ export const ISO_PROTOKOLL = {
   rowsIntro: 'Mätning 1–5 gäller nätet (del 1), 6–8 motor M3 (del 2). Använd knapparna för rätt läge.',
   rows: [
     { title: 'Isolationsvärde, friskt nät', storhet: 'Riso (IMD)', punkter: 'IMD: nät / skrov', forv: 'tre vägar parallellt', tol: '±2 %', q: 'Riso', need: { lage: 'friskt' } },
-    { title: 'L1 mot skrov, friskt nät', storhet: 'U(L1–skrov)', punkter: 'L1 / skrov', forv: 'UL/√3', tol: '±2 %', q: 'U1', need: { lage: 'friskt' } },
+    { title: 'L1 mot skrov, friskt nät', storhet: 'U(L1–skrov)', punkter: 'L1 / skrov', forv: 'U_{L}/√3', tol: '±2 %', q: 'U1', need: { lage: 'friskt' } },
     { title: 'Isolationsvärde, L1 nedsatt', storhet: 'Riso (IMD)', punkter: 'IMD: nät / skrov', forv: 'tre vägar parallellt', tol: '±2 %', q: 'Riso', need: { lage: 'nedsatt' } },
     { title: 'L2 mot skrov, jordfel på L1', storhet: 'U(L2–skrov)', punkter: 'L2 / skrov', forv: 'vilken potential har skrovet?', tol: '±2 %', q: 'U2', need: { lage: 'jordfel' } },
-    { title: 'Ström i jordfelet', storhet: 'Ifel', punkter: 'tång runt felstället', forv: '3ωC·UF', tol: '±5 %', q: 'Ifel', need: { lage: 'jordfel' } },
+    { title: 'Ström i jordfelet', storhet: 'Ifel', punkter: 'tång runt felstället', forv: '3ωC·U_{F}', tol: '±5 %', q: 'Ifel', need: { lage: 'jordfel' } },
     { title: 'M3 L1 mot PE', storhet: 'R(L1–PE)', punkter: 'L1 / PE', forv: 'minst 1 MΩ', tol: 'minst 1 MΩ', q: 'prov', need: { lage: 'm3', par: 'L1-PE' } },
     { title: 'M3 L2 mot PE', storhet: 'R(L2–PE)', punkter: 'L2 / PE', forv: 'minst 1 MΩ', tol: 'minst 1 MΩ', q: 'prov', need: { lage: 'm3', par: 'L2-PE' } },
     { title: 'M3 L3 mot PE', storhet: 'R(L3–PE)', punkter: 'L3 / PE', forv: 'minst 1 MΩ', tol: 'minst 1 MΩ', q: 'prov', need: { lage: 'm3', par: 'L3-PE' } },

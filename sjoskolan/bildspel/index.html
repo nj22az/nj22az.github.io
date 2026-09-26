@@ -37,6 +37,8 @@
 <script type="module">
 const app = document.getElementById('app');
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const plain = (t) => String(t).replace(/[_^]\{([^{}]*)\}/g, '$1');
+const mark = (t) => esc(t).replace(/([_^])\{([^{}]*)\}/g, (_, k, x) => (k === '_' ? `<sub>${x}</sub>` : `<sup>${x}</sup>`));
 const params = new URLSearchParams(location.search);
 const id = params.get('d');
 const STORE = 'sjoskolan-bildspel-';
@@ -75,19 +77,19 @@ async function viewer() {
   function show(i, push = true) {
     cur = Math.min(n, Math.max(1, i));
     const s = d.slides[cur - 1];
-    $('img').src = src(cur); $('img').alt = `Bild ${cur}: ${s.title}`;
+    $('img').src = src(cur); $('img').alt = `Bild ${cur}: ${plain(s.title)}`;
     $('count').textContent = `${cur} / ${n}`;
     $('prog').style.width = `${cur / n * 100}%`;
     $('prev').disabled = cur === 1; $('next').disabled = cur === n;
-    $('st-title').textContent = s.title;
-    $('st-body').innerHTML = s.text.length ? `<ul>${s.text.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+    $('st-title').innerHTML = mark(s.title);
+    $('st-body').innerHTML = s.text.length ? `<ul>${s.text.map((t) => `<li>${mark(t)}</li>`).join('')}</ul>` : '';
     $('ex').innerHTML = s.ex ? `<a class="sj-btn primary" href="${esc(s.ex)}">Gör övningen med facit ›</a>` : '';
     document.querySelectorAll('#grid button').forEach((b, k) => b.setAttribute('aria-current', String(k + 1 === cur)));
     if (push) history.replaceState(null, '', `?d=${encodeURIComponent(d.id)}#${cur}`);
     try { localStorage.setItem(STORE + d.id, String(cur)); } catch {}
     if (cur < n) { const pre = new Image(); pre.src = src(cur + 1); }
   }
-  $('grid').innerHTML = d.slides.map((s, k) => `<button type="button" data-i="${k + 1}"><img loading="lazy" src="${src(k + 1)}" alt=""><span>${k + 1}. ${esc(s.title)}</span></button>`).join('');
+  $('grid').innerHTML = d.slides.map((s, k) => `<button type="button" data-i="${k + 1}"><img loading="lazy" src="${src(k + 1)}" alt=""><span>${k + 1}. ${mark(s.title)}</span></button>`).join('');
   $('grid').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; toggleGrid(false); show(Number(b.dataset.i)); $('stage').scrollIntoView({ block: 'start' }); });
   function toggleGrid(open = $('gridwrap').hidden) { $('gridwrap').hidden = !open; $('gridbtn').setAttribute('aria-expanded', String(open)); }
   $('gridbtn').onclick = () => toggleGrid();

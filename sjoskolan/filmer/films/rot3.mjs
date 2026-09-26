@@ -46,7 +46,7 @@ export default compile({
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Visare: en pil per fas');
         star(ctx, t - 0.8);
-        text(ctx, 'Uꜰ = 254 V', O[0] + 20, O[1] - 120, { size: 32, weight: 700, color: COL.blue, alpha: prog(t, 5, 6) });
+        text(ctx, 'U_{F} = 254 V', O[0] + 20, O[1] - 120, { size: 32, weight: 700, color: COL.blue, alpha: prog(t, 5, 6) });
         text(ctx, 'Varje pil är en fasspänning,', B.x + 540, B.y + 170, { size: 28, weight: 400, alpha: prog(t, 2, 3) });
         text(ctx, 'från N ut till fasen.', B.x + 540, B.y + 210, { size: 28, weight: 400, alpha: prog(t, 2, 3) });
         text(ctx, 'Alla är lika långa', B.x + 540, B.y + 280, { size: 28, weight: 400, alpha: prog(t, 6.5, 7.5) });
@@ -63,7 +63,7 @@ export default compile({
         const A = tip(0), Bp = tip(1); const M = [(A[0] + Bp[0]) / 2, (A[1] + Bp[1]) / 2];
         const g = prog(t, 0.8, 2);
         line(ctx, A[0], A[1], A[0] + (Bp[0] - A[0]) * g, A[1] + (Bp[1] - A[1]) * g, COL.red, 6);
-        text(ctx, 'Uᴸ = ?', M[0] + 26, M[1] - 28, { size: 32, weight: 700, color: COL.red, alpha: prog(t, 1.5, 2.3) });
+        text(ctx, 'U_{L} = ?', M[0] + 26, M[1] - 28, { size: 32, weight: 700, color: COL.red, alpha: prog(t, 1.5, 2.3) });
         text(ctx, 'linjespänning = huvudspänning', B.x + 520, B.y + 110, { size: 26, weight: 400, color: COL.muted, alpha: prog(t, 3, 4) });
         // 120° vid N, mellan L1 (uppåt) och L2 (330°)
         const a120 = prog(t, 8, 9);
@@ -82,25 +82,25 @@ export default compile({
           arc(ctx, A, 64, toB, Math.PI / 2, ar);
           text(ctx, '30°', A[0] + 92 * Math.cos((toB + Math.PI / 2) / 2), A[1] + 92 * Math.sin((toB + Math.PI / 2) / 2), { size: 26, weight: 700, align: 'center', alpha: ar });
         }
-        text(ctx, 'halva Uᴸ = Uꜰ · cos 30°', B.x + 520, B.y + 380, { size: 30, weight: 700, alpha: prog(t, 21.5, 22.3) });
-        text(ctx, '= Uꜰ · √3/2', B.x + 632, B.y + 425, { size: 30, weight: 700, alpha: prog(t, 23.5, 24.3) });
+        text(ctx, 'halva U_{L} = U_{F} · cos 30°', B.x + 520, B.y + 380, { size: 30, weight: 700, alpha: prog(t, 21.5, 22.3) });
+        text(ctx, '= U_{F} · √3/2', B.x + 632, B.y + 425, { size: 30, weight: 700, alpha: prog(t, 23.5, 24.3) });
       },
       say: [[0.8, 7.8, 'Sigge', 'Linjespänningen, även kallad huvudspänning, är avståndet mellan två pilspetsar.'],
         [8.0, 13.3, 'Sigge', 'Vinkeln mellan pilarna vid N är 120°.'],
-        [13.5, 21.3, 'Sigge', 'Dra en linje från N till mitten av Uᴸ. Den bildar en rät vinkel, och vid spetsen blir det 30°.'],
-        [21.5, 26.8, 'Sigge', 'Halva Uᴸ är då Uꜰ · cos 30°, alltså Uꜰ · √3/2.']],
+        [13.5, 21.3, 'Sigge', 'Dra en linje från N till mitten av U_{L}. Den bildar en rät vinkel, och vid spetsen blir det 30°.'],
+        [21.5, 26.8, 'Sigge', 'Halva U_{L} är då U_{F} · cos 30°, alltså U_{F} · √3/2.']],
     },
     {
       dur: 17,
       draw(ctx, t) {
         stage(ctx, t); heading(ctx, 'Två halvor');
         const x = B.x + 70;
-        [[0.8, 'Uᴸ = 2 · Uꜰ · √3/2', COL.ink], [5.5, 'Uᴸ = √3 · Uꜰ', COL.blue], [10.5, '254 V · 1,732 ≈ 440 V', COL.ink]]
+        [[0.8, 'U_{L} = 2 · U_{F} · √3/2', COL.ink], [5.5, 'U_{L} = √3 · U_{F}', COL.blue], [10.5, '254 V · 1,732 ≈ 440 V', COL.ink]]
           .forEach(([at, s, c], i) => text(ctx, s, x, B.y + 150 + i * 105, { size: 54, weight: 700, color: c, alpha: prog(t, at, at + 0.8) }));
-        text(ctx, 'Omvänt: Uꜰ = Uᴸ/√3', x, B.y + 450, { size: 32, weight: 400, color: COL.muted, alpha: prog(t, 13.5, 14.3) });
+        text(ctx, 'Omvänt: U_{F} = U_{L}/√3', x, B.y + 450, { size: 32, weight: 400, color: COL.muted, alpha: prog(t, 13.5, 14.3) });
       },
       say: [[0.8, 5.3, 'Måns', 'Två halvor … då blir det 2 · √3/2!'],
-        [5.5, 10.3, 'Sigge', 'Tvåorna tar ut varandra: Uᴸ = √3 · Uꜰ.'],
+        [5.5, 10.3, 'Sigge', 'Tvåorna tar ut varandra: U_{L} = √3 · U_{F}.'],
         [10.5, 16.8, 'Sigge', '254 V · 1,732 ≈ 440 V. Åt andra hållet delar man med √3.']],
     },
     {

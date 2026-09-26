@@ -3,7 +3,7 @@
   "titel": "Bara en belastad fas",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,7 +40,7 @@
     }
   ],
   "losning": {
-    "text": "IN = 5,0 A. All ström från den enda lasten återvänder i neutralledaren.",
+    "text": "I_{N} = 5,0 A. All ström från den enda lasten återvänder i neutralledaren.",
     "svar": [
       {
         "storhet": "I_{N}",

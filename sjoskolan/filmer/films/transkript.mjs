@@ -18,9 +18,9 @@ export const BILD = {
   'varfor-rot-3': [
     'Titelbild.',
     'Tre sinuskurvor för L1, L2 och L3, förskjutna 120° i tiden.',
-    'Visardiagram: tre lika långa pilar från neutralpunkten N till L1, L2 och L3, 120° isär. Varje pil är en fasspänning, Uꜰ = 254 V.',
-    'Mellan spetsarna på L1 och L2 dras linjespänningen Uᴸ = ?. Vinkeln vid N är 120°. En linje från N till mitten av Uᴸ ger en rät vinkel och 30° vid spetsen. Text: halva Uᴸ = Uꜰ · cos 30° = Uꜰ · √3/2.',
-    'Tre rader visas: Uᴸ = 2 · Uꜰ · √3/2, sedan Uᴸ = √3 · Uꜰ, och 254 V · 1,732 ≈ 440 V. Omvänt: Uꜰ = Uᴸ/√3.',
+    'Visardiagram: tre lika långa pilar från neutralpunkten N till L1, L2 och L3, 120° isär. Varje pil är en fasspänning, U_{F} = 254 V.',
+    'Mellan spetsarna på L1 och L2 dras linjespänningen U_{L} = ?. Vinkeln vid N är 120°. En linje från N till mitten av U_{L} ger en rät vinkel och 30° vid spetsen. Text: halva U_{L} = U_{F} · cos 30° = U_{F} · √3/2.',
+    'Tre rader visas: U_{L} = 2 · U_{F} · √3/2, sedan U_{L} = √3 · U_{F}, och 254 V · 1,732 ≈ 440 V. Omvänt: U_{F} = U_{L}/√3.',
     'Ombord. Kom ihåg: 1. 440 V mellan faserna, 254 V i varje lindning. 2. IT-nät: oftast ingen neutralledare. 3. Första jordfelet: normalt larm, inte utlösning. 4. Jordfel på en fas: de andra får 440 V mot skrovet. 5. Ett andra jordfel blir kortslutning: leta upp felet.',
   ],
   hallkretsen: [

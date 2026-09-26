@@ -3,7 +3,7 @@
   "titel": "Beräkna impedansens belopp",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -98,7 +98,7 @@
       "fraga": "Varför använder vi inte 40 + 30 för impedansens belopp?",
       "ledtrad": "Beskriv hur resistiv och reaktiv del ligger i diagrammet."
     },
-    "kalla": "RL: R = 40 Ω och XL ≈ 30 Ω vid 50 Hz",
+    "kalla": "RL: R = 40 Ω och X_{L} ≈ 30 Ω vid 50 Hz",
     "alias": "grund-z"
   }
 }

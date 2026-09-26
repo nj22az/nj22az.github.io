@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, Station B, trefas",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -34,7 +34,7 @@
   "labb": {
     "variant": "simulerad",
     "station": "Station B · trefas · simulerad",
-    "utrustning": "Rigg: SELV-trefasrigg, huvudspänning (linjespänning) UL uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.",
+    "utrustning": "Rigg: SELV-trefasrigg, huvudspänning (linjespänning) U_{L} uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.",
     "sakerhet": [
       {
         "id": "rigg",
@@ -67,7 +67,7 @@
         "titel": "Fasspänning över last 1, N hel",
         "storhet": "U1 (L1–N)",
         "punkter": "L1 / N",
-        "forvantat": "UL/√3",
+        "forvantat": "U_{L}/√3",
         "tolerans": "±2 %",
         "kod": {
           "q": "U1",
@@ -149,7 +149,7 @@
       {
         "id": "m5",
         "titel": "Neutralström",
-        "storhet": "IN",
+        "storhet": "I_{N}",
         "punkter": "strömmätlänk N",
         "forvantat": "nästan symmetriskt?",
         "tolerans": "liten mot fasströmmarna",
@@ -267,7 +267,7 @@
       "nyckel": "stationB-3f",
       "titel": "Labbprotokoll: Station B, trefas",
       "exempel": {
-        "note": "Ifyllt exempel för en annan trefasrigg än din: UL = 13,0 V och lasterna 95, 104 och 100 Ω. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
+        "note": "Ifyllt exempel för en annan trefasrigg än din: U_{L} = 13,0 V och lasterna 95, 104 och 100 Ω. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
         "head": {
           "namn": "Exempel Elevsson",
           "datum": "2026-10-09",
@@ -327,7 +327,7 @@
             "komm": ""
           },
           {
-            "storhet": "IN",
+            "storhet": "I_{N}",
             "punkter": "strömmätlänk N",
             "drift": "N hel",
             "forv": "0 mA (om symmetriskt)",

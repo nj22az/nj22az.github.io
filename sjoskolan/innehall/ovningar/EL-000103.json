@@ -3,7 +3,7 @@
   "titel": "Samma resistorer i Δ",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,7 +41,7 @@
     }
   ],
   "losning": {
-    "text": "Igren = 400/40 = 10 A. I_{L} = 1,732 · 10 ≈ 17,3 A, tre gånger linjeströmmen i Y.",
+    "text": "I_{gren} = 400/40 = 10 A. I_{L} = 1,732 · 10 ≈ 17,3 A, tre gånger linjeströmmen i Y.",
     "svar": [
       {
         "storhet": "I_{gren}",

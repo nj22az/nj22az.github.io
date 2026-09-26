@@ -119,8 +119,9 @@ def multimeter(pl, p):
 
 
 def kontrollfraga(pl, p):
-    return {'del': pl['del'], 'bild': pl['ankare'].split(':')[1], 'ovning': p['id'], 'title': T.ren_text(p['titel']),
-            'check': T.ren_text(p['uppgift'].get('instruktion') or p['uppgift']['fraga']), 'answer': T.ren_text(p['losning']['text'])}
+    # Genomgången och lektionsartiklarna visar markeringen som index (markHtml, rendera.h), så texten behåller den.
+    return {'del': pl['del'], 'bild': pl['ankare'].split(':')[1], 'ovning': p['id'], 'title': p['titel'],
+            'check': p['uppgift'].get('instruktion') or p['uppgift']['fraga'], 'answer': p['losning']['text']}
 
 
 def modul(namn, rader, kommentar=''):

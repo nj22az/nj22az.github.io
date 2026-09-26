@@ -2,8 +2,8 @@
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
-import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260926';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260929-not';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', slate: '#4a6378' };
@@ -12,7 +12,7 @@ const STORE = 'sjoskolan-trefas-v1';
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const SUBS = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F', 'ɴ': 'N' };
 const SUBRE = /[ᴸᶜᴿꜰɴ]/g;
-const plain = (t) => String(t).replace(SUBRE, (ch) => SUBS[ch]);
+const plain = (t) => String(t).replace(SUBRE, (ch) => SUBS[ch]).replace(/_\{([^{}]*)\}/g, '$1');
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const subHtml = (t) => markHtml(String(t).replace(SUBRE, (ch) => `_{${SUBS[ch]}}`));
 
@@ -23,7 +23,7 @@ function saveSolved() { try { localStorage.setItem(STORE, JSON.stringify([...sta
 const VOLT = [['12.2', '12,2 V (Station B-rigg)'], ['230', '230 V'], ['400', '400 V'], ['440', '440 V (vanligt ombord)'], ['690', '690 V (större fartyg)']];
 const CONTROLS = {
   visare: [
-    { key: 'UL', label: 'Linjespänning Uᴸ', type: 'select', num: true, options: VOLT },
+    { key: 'UL', label: 'Linjespänning U_{L}', type: 'select', num: true, options: VOLT },
     { key: 'f', label: 'Frekvens', type: 'select', num: true, options: [['60', '60 Hz'], ['50', '50 Hz']] },
     { key: 'I1', label: 'Ström i L1', unit: 'A', min: 0, max: 30, step: 0.5 },
     { key: 'I2', label: 'Ström i L2', unit: 'A', min: 0, max: 30, step: 0.5 },
@@ -31,7 +31,7 @@ const CONTROLS = {
     { key: 'phi', label: 'Fasförskjutning φ (släpande)', unit: '°', min: 0, max: 80, step: 1 },
   ],
   neutral: [
-    { key: 'UL', label: 'Linjespänning Uᴸ', type: 'select', num: true, options: VOLT },
+    { key: 'UL', label: 'Linjespänning U_{L}', type: 'select', num: true, options: VOLT },
     { key: 'neutral', label: 'Neutralledaren är hel', type: 'check' },
     { key: 'on1', label: 'Last på L1 inkopplad', type: 'check' },
     { key: 'R1', label: 'Last på L1', unit: 'Ω', min: 5, max: 300, step: 1 },
@@ -41,7 +41,7 @@ const CONTROLS = {
     { key: 'R3', label: 'Last på L3', unit: 'Ω', min: 5, max: 300, step: 1 },
   ],
   ydelta: [
-    { key: 'UL', label: 'Linjespänning Uᴸ', type: 'select', num: true, options: VOLT },
+    { key: 'UL', label: 'Linjespänning U_{L}', type: 'select', num: true, options: VOLT },
     { key: 'conn', label: 'Koppling', type: 'select', options: [['Y', 'Y (stjärna)'], ['Δ', 'Δ (triangel)']] },
     { key: 'Z', label: 'Grenimpedans |Z|', unit: 'Ω', min: 2, max: 200, step: 0.5 },
     { key: 'pf', label: 'Effektfaktor cos φ', unit: '', min: 0.1, max: 1, step: 0.01 },
@@ -85,7 +85,7 @@ function onControl(c, el) {
 // ---------- SVG ----------
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 function txt(x, y, t, { color = K.ink, size = 14, anchor = 'start', weight = 400 } = {}) {
-  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="middle" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t).replace(SUBRE, (ch) => `<tspan baseline-shift="sub" font-size="75%">${SUBS[ch]}</tspan>`)}</text>`;
+  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="middle" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t).replace(SUBRE, (ch) => `_{${SUBS[ch]}}`).replace(/_\{([^{}]*)\}/g, (_, x) => `<tspan baseline-shift="sub" font-size="75%">${x}</tspan>`)}</text>`;
 }
 function line(x1, y1, x2, y2, color, w = 2, dash = '') {
   return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
@@ -111,8 +111,8 @@ function renderVisare(s, r) {
   const tips = PHASE.map((a) => scr(Cx.polar(r.UF, a), ox, oy, sc));
   tips.forEach((t, k) => { vb += arrow(ox, oy, t[0], t[1], PH[k], 3); vb += txt(t[0] + (t[0] - ox) * 0.12, t[1] + (t[1] - oy) * 0.12, `L${k + 1}`, { color: PH[k], size: 14, anchor: 'middle', weight: 700 }); });
   vb += line(tips[0][0], tips[0][1], tips[1][0], tips[1][1], K.red, 2, '6 5');
-  vb += txt((tips[0][0] + tips[1][0]) / 2 + 12, (tips[0][1] + tips[1][1]) / 2 - 6, `Uᴸ = ${fmt(s.UL)} V`, { color: K.red, size: 13 });
-  vb += txt(ox - 8, oy - 60, masked('UF') ? 'Uꜰ = ?' : `Uꜰ = ${fmt(r.UF)} V`, { color: K.blue, size: 13, anchor: 'end' });
+  vb += txt((tips[0][0] + tips[1][0]) / 2 + 12, (tips[0][1] + tips[1][1]) / 2 - 6, `U_{L} = ${fmt(s.UL)} V`, { color: K.red, size: 13 });
+  vb += txt(ox - 8, oy - 60, masked('UF') ? 'U_{F} = ?' : `U_{F} = ${fmt(r.UF)} V`, { color: K.blue, size: 13, anchor: 'end' });
   vb += `<circle cx="${ox}" cy="${oy}" r="4" fill="${K.ink}"/>` + txt(ox + 8, oy + 12, 'N', { color: K.muted, size: 12 });
   const vfig = figure('Spänningsvisare', svg(W, H, vb, `Tre fasspänningar, linjespänning ${s.UL} volt`));
 
@@ -126,7 +126,7 @@ function renderVisare(s, r) {
   r.phasors.forEach((ph, k) => { const q = Cx.add(p, ph); const a = scr(p, ox3, oy3, sc2), b = scr(q, ox3, oy3, sc2); cb += arrow(a[0], a[1], b[0], b[1], PH[k], 2.6); p = q; });
   const end = scr(p, ox3, oy3, sc2);
   if (r.IN > 0.05 && !masked('sumValues')) cb += arrow(end[0], end[1], start[0], start[1], K.ink, 2.6).replace(/stroke-linecap/g, 'stroke-dasharray="6 4" stroke-linecap');
-  cb += txt(ox3, 318, masked('sumValues') ? 'Iɴ = ? (sluter kedjan)' : `Iɴ sluter kedjan: ${fmt(r.IN)} A`, { color: K.ink, size: 12, anchor: 'middle' });
+  cb += txt(ox3, 318, masked('sumValues') ? 'I_{N} = ? (sluter kedjan)' : `I_{N} sluter kedjan: ${fmt(r.IN)} A`, { color: K.ink, size: 12, anchor: 'middle' });
   const cfig = figure('Strömvisare och deras summa', svg(440, 330, cb, 'Fasströmmar som visare och deras summa'));
 
   // tidsdiagram
@@ -140,13 +140,13 @@ function renderVisare(s, r) {
   let dN = ''; for (let j = 0; j <= 300; j++) { const t = (2 * T * j) / 300; dN += `${j ? 'L' : 'M'}${X(t).toFixed(1)},${Y(fn(0, t) + fn(1, t) + fn(2, t)).toFixed(1)}`; }
   if (!masked('sumValues')) tb += `<path d="${dN}" fill="none" stroke="${K.ink}" stroke-width="2.4" stroke-dasharray="7 5"/>`;
   tb += txt(w - m.r, h - 6, `t, två perioder (${fmt(2 * T)} ms)`, { color: K.muted, size: 12, anchor: 'end' });
-  const tfig = figure('Strömmar över tiden', svg(w, h, tb, 'Tre fasströmmar och neutralströmmen över tiden') + legend([[PH[0], 'i₁'], [PH[1], 'i₂'], [PH[2], 'i₃'], ...(masked('sumValues') ? [] : [[K.ink, 'iɴ = i₁ + i₂ + i₃ (går tillbaka i N)', true]])]), 'wide');
+  const tfig = figure('Strömmar över tiden', svg(w, h, tb, 'Tre fasströmmar och neutralströmmen över tiden') + legend([[PH[0], 'i₁'], [PH[1], 'i₂'], [PH[2], 'i₃'], ...(masked('sumValues') ? [] : [[K.ink, 'i_{N} = i₁ + i₂ + i₃ (går tillbaka i N)', true]])]), 'wide');
   $('figures').innerHTML = vfig + cfig + tfig;
   list([
-    ['Uᴸ', `${fmt(s.UL)} V`, 'linjespänning (huvudspänning)'], ['Uꜰ', show('UF', r.UF, 'V'), 'fasspänning, Uᴸ/√3'],
-    ['120°', `${fmt(r.dt)} ms`, `tidsavstånd vid ${s.f} Hz`], ['Iɴ', show('IN', r.IN, 'A'), 'neutralström (visarsumma)'],
+    ['U_{L}', `${fmt(s.UL)} V`, 'linjespänning (huvudspänning)'], ['U_{F}', show('UF', r.UF, 'V'), 'fasspänning, U_{L}/√3'],
+    ['120°', `${fmt(r.dt)} ms`, `tidsavstånd vid ${s.f} Hz`], ['I_{N}', show('IN', r.IN, 'A'), 'neutralström (visarsumma)'],
   ]);
-  $('principle').innerHTML = subHtml((s.UL >= 440 ? 'Ombord har 440 V- och 690 V-näten normalt ingen neutralledare. Iɴ visar då vad som skulle gå i en neutralledare, till exempel i ett 400/230 V-nät i land eller i ett hotellnät med neutralledare. ' : '') + 'Neutralströmmen är visarsumman av fasströmmarna. Lika stora strömmar med 120° emellan tar ut varandra. Olinjära laster, till exempel frekvensomriktare, kan ändå ge neutralström genom övertoner, som modellen inte visar.');
+  $('principle').innerHTML = subHtml((s.UL >= 440 ? 'Ombord har 440 V- och 690 V-näten normalt ingen neutralledare. I_{N} visar då vad som skulle gå i en neutralledare, till exempel i ett 400/230 V-nät i land eller i ett hotellnät med neutralledare. ' : '') + 'Neutralströmmen är visarsumman av fasströmmarna. Lika stora strömmar med 120° emellan tar ut varandra. Olinjära laster, till exempel frekvensomriktare, kan ändå ge neutralström genom övertoner, som modellen inte visar.');
 }
 
 function renderNeutral(s, r) {
@@ -175,7 +175,7 @@ function renderNeutral(s, r) {
   const cfig = figure('Koppling', svg(320, 225, cb, s.neutral ? 'Tre laster med hel neutralledare' : 'Tre laster med bruten neutralledare'));
   // staplar
   let bb = ''; const Umax = Math.max(raw.UF, ...[r.U1, r.U2, r.U3].filter((u, k) => on[k] && Number.isFinite(u))) * 1.2; const bw = 560, bh = 200;
-  bb += line(40, 170 - (raw.UF / Umax) * 140, bw - 10, 170 - (raw.UF / Umax) * 140, K.muted, 1.5, '6 5') + txt(bw - 10, 160 - (raw.UF / Umax) * 140, `Uꜰ = ${fmt(raw.UF)} V`, { size: 12, color: K.muted, anchor: 'end' });
+  bb += line(40, 170 - (raw.UF / Umax) * 140, bw - 10, 170 - (raw.UF / Umax) * 140, K.muted, 1.5, '6 5') + txt(bw - 10, 160 - (raw.UF / Umax) * 140, `U_{F} = ${fmt(raw.UF)} V`, { size: 12, color: K.muted, anchor: 'end' });
   [r.U1, r.U2, r.U3].forEach((u, k) => {
     if (!on[k] || !Number.isFinite(u)) { const x = 80 + k * 150; bb += txt(x + 35, 185, `L${k + 1}: öppen klämma`, { size: 12, anchor: 'middle', color: K.muted }); return; }
     const x = 80 + k * 150; const over = u > raw.UF * 1.1;
@@ -185,14 +185,14 @@ function renderNeutral(s, r) {
     bb += txt(x + 35, 185, `last L${k + 1}`, { size: 12, anchor: 'middle', color: K.muted });
     bb += txt(x + 35, 160 - hh, masked(`U${k + 1}`) ? '?' : `${fmt(u)} V${over ? ' ⚠' : ''}`, { size: 13, anchor: 'middle', color: over ? K.red : K.ink, weight: over ? 700 : 400 });
   });
-  const bfig = figure('Lastspänning jämfört med Uꜰ', svg(bw, bh, bb, 'Spänning över varje last'), 'wide');
+  const bfig = figure('Lastspänning jämfört med U_{F}', svg(bw, bh, bb, 'Spänning över varje last'), 'wide');
   $('figures').innerHTML = pfig + cfig + bfig;
   const uv = (k) => (!on[k - 1] || !Number.isFinite(r[`U${k}`]) ? '–' : show(`U${k}`, r[`U${k}`], 'V'));
   list([
     ['U last L1', uv(1), `I = ${masked('I1') ? '?' : fmt(r.I1) + ' A'}`],
     ['U last L2', uv(2), `I = ${masked('I2') ? '?' : fmt(r.I2) + ' A'}`],
     ['U last L3', uv(3), `I = ${masked('I3') ? '?' : fmt(r.I3) + ' A'}`],
-    ['Iɴ', s.neutral ? show('IN', r.IN, 'A') : '–', s.neutral ? 'neutralström' : 'ingen neutralledare'],
+    ['I_{N}', s.neutral ? show('IN', r.IN, 'A') : '–', s.neutral ? 'neutralström' : 'ingen neutralledare'],
     ['Förskjutning', show('shift', r.shift, 'V'), 'lastens stjärnpunkt mot N'],
   ]);
   $('principle').innerHTML = subHtml(s.neutral
@@ -208,13 +208,13 @@ function renderYdelta(s, r) {
   if (Y) V.forEach((v, k) => { b += res([cx, cy], v, PH[k]); }); else [[0, 1], [1, 2], [2, 0]].forEach(([i, j], k) => { b += res(V[i], V[j], PH[k]); });
   V.forEach((v, k) => { b += `<circle cx="${v[0]}" cy="${v[1]}" r="5" fill="${K.ink}"/>` + txt(v[0] + (v[0] - cx) * 0.2, v[1] + (v[1] - cy) * 0.2, `L${k + 1}`, { size: 14, weight: 700, anchor: 'middle' }); });
   if (Y) b += `<circle cx="${cx}" cy="${cy}" r="4" fill="${K.ink}"/>`;
-  b += arrow(V[0][0], V[0][1] - 55, V[0][0], V[0][1] - 10, masked('IL') ? K.red : K.ink, 2.4) + txt(V[0][0] + 16, V[0][1] - 40, masked('IL') ? 'Iᴸ = ?' : `Iᴸ = ${fmt(r.IL)} A`, { color: masked('IL') ? K.red : K.ink, size: 13 });
-  b += txt(20, 310, masked('Ugren') ? 'Ugren = ?' : `Ugren = ${fmt(r.Ugren)} V`, { size: 13 }) + txt(220, 310, masked('Igren') ? 'Igren = ?' : `Igren = ${fmt(r.Igren)} A`, { size: 13 });
+  b += arrow(V[0][0], V[0][1] - 55, V[0][0], V[0][1] - 10, masked('IL') ? K.red : K.ink, 2.4) + txt(V[0][0] + 16, V[0][1] - 40, masked('IL') ? 'I_{L} = ?' : `I_{L} = ${fmt(r.IL)} A`, { color: masked('IL') ? K.red : K.ink, size: 13 });
+  b += txt(20, 310, masked('Ugren') ? 'U_{gren} = ?' : `U_{gren} = ${fmt(r.Ugren)} V`, { size: 13 }) + txt(220, 310, masked('Igren') ? 'I_{gren} = ?' : `I_{gren} = ${fmt(r.Igren)} A`, { size: 13 });
   const lfig = figure(`${Y ? 'Y-koppling' : 'Δ-koppling'}, |Z| = ${fmt(s.Z)} Ω per gren`, svg(400, 330, b, `${s.conn}-koppling`));
   // märkning och plint
   if (!PLATES[s.plate]) { $('figures').innerHTML = lfig; list([
-    ['Ugren', show('Ugren', r.Ugren, 'V'), Y ? 'Uᴸ/√3 i Y' : 'Uᴸ i Δ'], ['Igren', show('Igren', r.Igren, 'A'), 'Ugren/|Z|'],
-    ['Iᴸ', show('IL', r.IL, 'A'), Y ? 'lika med Igren i Y' : '√3 · Igren i Δ'], ['S', show('S', r.S / 1000, 'kVA'), '√3 · Uᴸ · Iᴸ'],
+    ['U_{gren}', show('Ugren', r.Ugren, 'V'), Y ? 'U_{L}/√3 i Y' : 'U_{L} i Δ'], ['I_{gren}', show('Igren', r.Igren, 'A'), 'U_{gren}/|Z|'],
+    ['I_{L}', show('IL', r.IL, 'A'), Y ? 'lika med I_{gren} i Y' : '√3 · I_{gren} i Δ'], ['S', show('S', r.S / 1000, 'kVA'), '√3 · U_{L} · I_{L}'],
     ['P', show('PkW', r.PkW, 'kW'), 'S · cos φ'], ['Q', show('Q', r.Q / 1000, 'kvar'), 'S · sin φ (kvar = kilovar)']]);
     $('principle').innerHTML = subHtml('Samma grenimpedans drar tre gånger så stor linjeström i Δ som i Y vid samma nät.'); return; }
   const [Ulow, Uhigh] = PLATES[s.plate]; const ok = r.right === s.conn; const ratio = r.ratio;
@@ -232,8 +232,8 @@ function renderYdelta(s, r) {
   const mfig = figure('Motorns märkning och kopplingsplint', svg(470, 210, mb, 'Motorns märkning och kopplingsplint') + `<p class="fig-note" style="color:${verdict[1]}">${subHtml(verdict[0])}</p><p class="fig-note">Kontrollera även frekvensen (50/60 Hz) på märkskylten.</p>`);
   $('figures').innerHTML = lfig + mfig;
   list([
-    ['Ugren', show('Ugren', r.Ugren, 'V'), Y ? 'Uᴸ/√3 i Y' : 'Uᴸ i Δ'], ['Igren', show('Igren', r.Igren, 'A'), 'Ugren/|Z|'],
-    ['Iᴸ', show('IL', r.IL, 'A'), Y ? 'lika med Igren i Y' : '√3 · Igren i Δ'], ['S', show('S', r.S / 1000, 'kVA'), '√3 · Uᴸ · Iᴸ'],
+    ['U_{gren}', show('Ugren', r.Ugren, 'V'), Y ? 'U_{L}/√3 i Y' : 'U_{L} i Δ'], ['I_{gren}', show('Igren', r.Igren, 'A'), 'U_{gren}/|Z|'],
+    ['I_{L}', show('IL', r.IL, 'A'), Y ? 'lika med I_{gren} i Y' : '√3 · I_{gren} i Δ'], ['S', show('S', r.S / 1000, 'kVA'), '√3 · U_{L} · I_{L}'],
     ['P', show('PkW', r.PkW, 'kW'), 'S · cos φ'], ['Q', show('Q', r.Q / 1000, 'kvar'), 'S · sin φ (kvar = kilovar)'],
   ]);
   $('principle').innerHTML = subHtml('Samma grenimpedans drar tre gånger så stor linjeström i Δ som i Y vid samma nät. Därför måste motorns koppling följa märkningen: den lägre spänningen gäller Δ, den högre Y. Fel koppling ger √3 gånger för hög eller för låg lindningsspänning. En motor som går i Δ på nätet kan startas Y/Δ: startström och startmoment blir då ungefär en tredjedel.');
@@ -324,7 +324,7 @@ mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_3F_PROTOK
       return { error: `Mätning ${STATION_B_3F_PROTOKOLL.rows.indexOf(plan) + 1} gäller stationsriggen med N ${n.neutral ? 'hel' : 'bruten'}${n.on2 ? '' : ' och last 2 frånkopplad'}. Ställ in den med knapparna överst i protokollet.` };
     }
     const on = [1, 2, 3].filter((k) => s[`on${k}`] !== false).map((k) => `L${k}`).join(', ');
-    const drift = `Uᴸ ${fmt(s.UL)} V, N ${s.neutral ? 'hel' : 'bruten'}, laster: ${on.replace(/L/g, '') || 'inga'} (R1 ${s.R1}, R2 ${s.R2}, R3 ${s.R3} Ω)`;
+    const drift = `linjespänning ${fmt(s.UL)} V, N ${s.neutral ? 'hel' : 'bruten'}, laster: ${on.replace(/L/g, '') || 'inga'} (R1 ${s.R1}, R2 ${s.R2}, R3 ${s.R3} Ω)`;
     const val = q.startsWith('U') ? `${r[q].toFixed(2).replace('.', ',')} V` : `${(r[q] * 1000).toFixed(1).replace('.', ',')} mA`;
     return { punkter: plan?.punkter, drift, varde: val };
   } });

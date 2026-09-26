@@ -3,7 +3,7 @@
   "titel": "Ström i jordfelet",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,7 +36,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · UF, med ω = 2πf och UF = 440/√3.",
+      "text": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · U_{F}, med ω = 2πf och U_{F} = 440/√3.",
       "status": "migrerad"
     }
   ],

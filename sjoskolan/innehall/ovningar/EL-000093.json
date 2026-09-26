@@ -3,7 +3,7 @@
   "titel": "Fasspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "U_{L} = 400 V i ett symmetriskt system. Beräkna U_{fas}.",
+    "fraga": "U_{L} = 400 V i ett symmetriskt system. Beräkna U_{F}.",
     "samband": [
       "U_{F} = U_{L}/√3"
     ],
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "U_{L} är linjespänningen (huvudspänningen) mellan två faser. U_{fas} är spänningen mellan en fas och neutralpunkten.",
+      "text": "U_{L} är linjespänningen (huvudspänningen) mellan två faser. U_{F} är spänningen mellan en fas och neutralpunkten.",
       "status": "migrerad"
     },
     {
@@ -43,7 +43,7 @@
     "text": "U_{F} = 400/1,732 ≈ 231 V mellan fas och neutral.",
     "svar": [
       {
-        "storhet": "U_{fas}",
+        "storhet": "U_{F}",
         "varde": 231.0,
         "avrundning": "heltal",
         "tolerans": {

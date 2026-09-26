@@ -143,7 +143,12 @@ def oforklarade(kat):
         if not f.exists():
             continue
         s = f.read_text(encoding='utf-8')
-        s = re.sub(r'<script.*?</script>|<style.*?</style>|<[^>]+>', ' ', s, flags=re.S) if rel.endswith('.html') else s
+        if rel.endswith('.html'):
+            s = re.sub(r'<script.*?</script>|<style.*?</style>|<[^>]+>', ' ', s, flags=re.S)
+        else:
+            # JavaScript: bara strängarna, och inte strängar som bara är en nyckel ('XL' i storhet: 'XL')
+            import notation as N
+            s = ' \n '.join(m.group(0)[1:-1] for m in N.STRANG.finditer(s) if not N.ar_nyckel(m.group(0)))
         s = _h.unescape(re.sub(r'<sub>(.*?)</sub>', r'_{\1}', s))
         for m in re.finditer(r"(?<![\wÅÄÖåäö{])([A-ZÅÄÖ]{2,}[a-z]?|[A-Za-z]_\{[^}]+\}|[A-Z][ᴸᶜᴿꜰɴ₀-₉]+)(?![\wÅÄÖåäö}])", s):
             t = m.group(1)
@@ -170,6 +175,8 @@ def cmd_kontrollera(a):
         print('INAKTUELL', f)
     brister = rapport(kat, con, tyst=True)
     brister['fel'] += oforklarade(kat)
+    import notation
+    brister['fel'] += [f'{plats}: notation {besk} (beteckningar.json, avradda; rätta med notation.py skriv-om)' for plats, besk in notation.kontrollera(kat.poster)]
     for b in brister['fel']:
         print('FEL', b)
     if inaktuella or brister['fel']:
@@ -261,7 +268,9 @@ def cmd_revidera(a):
     reg = kat.register
     ids = a.id
     if a.alla:
-        ids = [i for i, p in kat.poster.items() if i not in reg['poster'] or reg['poster'][i].get('hash') != K.hash_av(p)
+        # Utan skyddade filer saknar posterna sina skyddade fält, så hela postens hash kan inte jämföras: bara den publika.
+        ids = [i for i, p in kat.poster.items() if i not in reg['poster']
+               or (kat.fullstandig and reg['poster'][i].get('hash') != K.hash_av(p))
                or (i in kat.publika and reg['poster'][i].get('hash_publik') != K.hash_av(kat.publika[i]))]
     if not kat.fullstandig:
         print('obs: skyddade filer är inte öppnade. Bara publika ändringar kan registreras.')

@@ -3,7 +3,7 @@
   "titel": "AC-riggens toppvärde",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
   "uppgift": {
     "fraga": "En sinusformad övningskälla mäts till 12,1 V RMS. Beräkna förväntat toppvärde.",
     "samband": [
-      "û = √2 · U_{rms}"
+      "û = √2 · U_{RMS}"
     ],
     "givet": "Ren sinus utan likspänningsdel. Mätvärdet 12,1 V är effektivvärdet.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -32,7 +32,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "û är toppvärdet och U_{rms} effektivvärdet.",
+      "text": "û är toppvärdet och U_{RMS} effektivvärdet.",
       "status": "migrerad"
     },
     {

@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, isolation och jordfel i IT-nät",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -78,7 +78,7 @@
         "titel": "L1 mot skrov, friskt nät",
         "storhet": "U(L1–skrov)",
         "punkter": "L1 / skrov",
-        "forvantat": "UL/√3",
+        "forvantat": "U_{L}/√3",
         "tolerans": "±2 %",
         "kod": {
           "q": "U1",
@@ -120,7 +120,7 @@
         "titel": "Ström i jordfelet",
         "storhet": "Ifel",
         "punkter": "tång runt felstället",
-        "forvantat": "3ωC·UF",
+        "forvantat": "3ωC·U_{F}",
         "tolerans": "±5 %",
         "kod": {
           "q": "Ifel",

@@ -46,7 +46,7 @@ export const KONTROLLFRAGOR = [
   "bild": "topp",
   "ovning": "EL-000502",
   "title": "Toppvärde och topp till topp",
-  "check": "Om Upp = 20 V, hur stort är û?",
+  "check": "Om U_{pp} = 20 V, hur stort är û?",
   "answer": "û = 20/2 = 10 V."
  },
  {

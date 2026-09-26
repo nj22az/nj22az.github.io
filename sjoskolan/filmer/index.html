@@ -25,12 +25,13 @@
     import { FILMS } from './films/index.mjs';
     import { duration } from './engine.mjs';
     import { BILD } from './films/transkript.mjs';
+    import { markHtml } from '../gemensamt/markering.mjs';
     const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
     const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
     const heads = (f) => f.scenes.map((sc) => (String(sc.draw).match(/heading\(ctx, '([^']*)'/) || [])[1] || f.title);
     const transcript = (f) => { const h = heads(f); return f.scenes.map((sc, i) => `
-          <h3>${esc(h[i])}</h3><p class="film-bild"><em>Bilden:</em> ${esc((BILD[f.id] || [])[i] || '')}</p>
-          ${(sc.say || []).map(([, , who, t]) => `<p><strong>${esc(who)}:</strong> ${esc(t)}</p>`).join('')}`).join(''); };
+          <h3>${markHtml(h[i])}</h3><p class="film-bild"><em>Bilden:</em> ${markHtml((BILD[f.id] || [])[i] || '')}</p>
+          ${(sc.say || []).map(([, , who, t]) => `<p><strong>${esc(who)}:</strong> ${markHtml(t)}</p>`).join('')}`).join(''); };
     document.getElementById('films').innerHTML = FILMS.map((f) => `
       <article class="film-card" id="${f.id}">
         <video controls preload="none" poster="video/${f.id}.png" width="1280" height="720">

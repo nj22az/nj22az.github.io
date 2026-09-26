@@ -2,8 +2,8 @@
 import { itNet, insulationTest, fmt, fmtR, fmtI, parseAnswer, isClose, OBJECTS, PAIRS, PHASES, SOLID_LIMIT } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, expected } from './lessons.mjs';
-import { ISO_PROTOKOLL, LAGEN } from './protokoll.mjs?v=20260927';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260926';
+import { ISO_PROTOKOLL, LAGEN } from './protokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#176844', red: '#b8323c', ink: '#163248', muted: '#4d6579', line: '#cad8e2' };

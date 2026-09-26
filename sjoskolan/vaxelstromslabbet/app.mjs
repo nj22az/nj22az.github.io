@@ -3,7 +3,7 @@ import {publishEquipment,setEquipmentControl} from './equipment-state.mjs';
 import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClose, SHAPES } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260925-ac2';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260925-ac2';
 
 const $ = (id) => document.getElementById(id);
@@ -12,7 +12,7 @@ const STORE = 'sjoskolan-vaxelstrom-v1';
 const clone = (o) => JSON.parse(JSON.stringify(o));
 // Index skrivs nedsänkt (X_L, X_C, U_R, Q_C) i stället för med upphöjda bokstäver
 const SUBS = { 'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F' };
-const plain = (t) => String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => SUBS[ch]);
+const plain = (t) => String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => SUBS[ch]).replace(/_\{([^{}]*)\}/g, '$1');
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const subHtml = (t) => markHtml(String(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `_{${SUBS[ch]}}`));
 
@@ -51,7 +51,7 @@ const CONTROLS = {
     { key: 'P', label: 'Aktiv effekt P', unit: 'W', min: 100, max: 20000, step: 10 },
     { key: 'pf', label: 'Effektfaktor PF = cos φ', unit: '', min: 0.1, max: 1, step: 0.01 },
     { key: 'character', label: 'Lastens karaktär', type: 'select', options: [['induktiv', 'Induktiv (motor, pump, fläkt)'], ['kapacitiv', 'Kapacitiv (t.ex. filter, lätt belastad kabel)']] },
-    { key: 'Qc', label: 'Kompensering Qᶜ (kondensator)', unit: 'var', min: 0, max: (s) => Math.max(100, Math.ceil(readouts('effekt', s).QcFull * 1.5 / 10) * 10), step: 10, show: (s) => s.character === 'induktiv' },
+    { key: 'Qc', label: 'Kompensering Q_{C} (kondensator)', unit: 'var', min: 0, max: (s) => Math.max(100, Math.ceil(readouts('effekt', s).QcFull * 1.5 / 10) * 10), step: 10, show: (s) => s.character === 'induktiv' },
     { key: 'Rcable', label: 'Kabelns slingresistans', unit: 'Ω', min: 0, max: 2, step: 0.01 },
   ],
 };
@@ -132,7 +132,7 @@ function refreshLimits() {
 // ---------- SVG-hjälp ----------
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 function txt(x, y, t, { color = C.ink, size = 14, anchor = 'start', weight = 400, baseline = 'middle' } = {}) {
-  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="${baseline}" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<tspan baseline-shift="sub" font-size="75%">${SUBS[ch]}</tspan>`)}</text>`;
+  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${color}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" dominant-baseline="${baseline}" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">${esc(t).replace(/[ᴸᶜᴿꜰ]/g, (ch) => `_{${SUBS[ch]}}`).replace(/_\{([^{}]*)\}/g, (_, x) => `<tspan baseline-shift="sub" font-size="75%">${x}</tspan>`)}</text>`;
 }
 function line(x1, y1, x2, y2, color, w = 2, dash = '') {
   return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
@@ -204,7 +204,7 @@ function renderSinus(s, r) {
   const hideScale = masked('scale');
   const extra = ({ X, Y, m, w }) => {
     let b = line(m.l, Y(s.urms), w - m.r, Y(s.urms), C.green, 2, '7 6');
-    b += txt(w - m.r - 4, Y(s.urms) - 11, hideScale ? 'U (RMS)' : `U = ${fmt(s.urms)} V (RMS)`, { color: C.green, size: 13, anchor: 'end' });
+    b += txt(w - m.r - 4, Y(s.urms) - 11, hideScale ? 'U (RMS)' : `U = ${fmt(s.urms)} V RMS`, { color: C.green, size: 13, anchor: 'end' });
     // period
     const T = 1000 / s.f;
     const tp = s.shape === 'sinus' || s.shape === 'triangel' ? T / 4 : T / 8;
@@ -235,9 +235,9 @@ function renderSinus(s, r) {
 
   const items = [
     ['û', show('peak', r.peak, 'V'), 'toppvärde'],
-    ['Upp', show('pp', r.pp, 'V'), 'topp till topp'],
+    ['U_{pp}', show('pp', r.pp, 'V'), 'topp till topp'],
     ['U', `${fmt(r.rms)} V`, 'effektivvärde (RMS)'],
-    ['Umedel', '0 V', 'medelvärde över en period'],
+    ['U_{medel}', '0 V', 'medelvärde över en period'],
     ['Multimeter, true RMS', masked('rms') ? '?' : `${v2(r.trms)} V`, 'idealmodell; verkliga instrument har gränser'],
     ['Multimeter, medelvärdesvisande', masked('rms') ? '?' : `${v2(r.avg)} V`, 'kalibrerad för sinus: 1,111 · likriktat medelvärde'],
     ['T', show('T', r.T, 'ms'), 'periodtid'],
@@ -255,8 +255,8 @@ function renderImpedans(s, r) {
   const hideVals = masked('phasorValues');
   // kretsschema
   const parts = [['R', 'R', `${fmt(s.R)} Ω`]];
-  if (hasL) parts.push(['L', 'Xᴸ', masked('XL') ? '?' : `${fmt(r.XL)} Ω`]);
-  if (hasC) parts.push(['C', 'Xᶜ', masked('XC') ? '?' : `${fmt(r.XC)} Ω`]);
+  if (hasL) parts.push(['L', 'X_{L}', masked('XL') ? '?' : `${fmt(r.XL)} Ω`]);
+  if (hasC) parts.push(['C', 'X_{C}', masked('XC') ? '?' : `${fmt(r.XC)} Ω`]);
   let cb = line(70, 60, 390, 60, C.ink, 2.5) + line(390, 60, 390, 190, C.ink, 2.5) + line(390, 190, 70, 190, C.ink, 2.5) + line(70, 190, 70, 60, C.ink, 2.5);
   cb += `<circle cx="70" cy="125" r="24" fill="#fff" stroke="${C.ink}" stroke-width="2.5"/><path d="M56,125 q7,-14 14,0 t14,0" fill="none" stroke="${C.ink}" stroke-width="2"/>`;
   cb += txt(38, 125, `${fmt(s.U)} V`, { anchor: 'end', size: 14 }) + txt(38, 143, `${fmt(s.f)} Hz`, { anchor: 'end', size: 12, color: C.muted });
@@ -276,12 +276,12 @@ function renderImpedans(s, r) {
   let pb = line(ox - 10, oy, 400, oy, C.grid, 1) + line(ox, 20, ox, 320, C.grid, 1);
   const x1 = ox + r.UR * sc; const y2 = oy - (r.UL - r.UC) * sc;
   pb += arrow(ox, oy, x1, oy, C.slate);
-  pb += txt((ox + x1) / 2, oy + 18, hideVals || masked('UR') ? 'Uᴿ' : `Uᴿ = ${fmt(r.UR)} V`, { color: C.slate, size: 13, anchor: 'middle' });
-  if (hasL) { pb += arrow(x1, oy, x1, oy - r.UL * sc, C.green); pb += txt(x1 + (hasC ? 30 : 8), oy - r.UL * sc * 0.78, hideVals || masked('UL') ? 'Uᴸ' : `Uᴸ = ${fmt(r.UL)} V`, { color: C.green, size: 13 }); }
+  pb += txt((ox + x1) / 2, oy + 18, hideVals || masked('UR') ? 'U_{R}' : `U_{R} = ${fmt(r.UR)} V`, { color: C.slate, size: 13, anchor: 'middle' });
+  if (hasL) { pb += arrow(x1, oy, x1, oy - r.UL * sc, C.green); pb += txt(x1 + (hasC ? 30 : 8), oy - r.UL * sc * 0.78, hideVals || masked('UL') ? 'U_{L}' : `U_{L} = ${fmt(r.UL)} V`, { color: C.green, size: 13 }); }
   if (hasC) {
     const xs = hasL ? x1 + 16 : x1; const ys = hasL ? oy - r.UL * sc : oy;
     pb += arrow(xs, ys, xs, ys + r.UC * sc, C.purple);
-    pb += txt(xs + 8, ys + r.UC * sc * 0.78, hideVals ? 'Uᶜ' : `Uᶜ = ${fmt(r.UC)} V`, { color: C.purple, size: 13 });
+    pb += txt(xs + 8, ys + r.UC * sc * 0.78, hideVals ? 'U_{C}' : `U_{C} = ${fmt(r.UC)} V`, { color: C.purple, size: 13 });
   }
   pb += arrow(ox, oy, x1, y2, C.blue, 3.4);
   pb += txt(ox + (x1 - ox) * 0.45 - 8, oy + (y2 - oy) * 0.45 - 8, `U = ${fmt(s.U)} V`, { color: C.blue, size: 13, anchor: 'end', weight: 700 });
@@ -319,7 +319,7 @@ function renderImpedans(s, r) {
     fb += line(m.l, h - m.b, w - m.r, h - m.b, '#9fb2c1', 1.5) + line(m.l, m.t, m.l, h - m.b, '#9fb2c1', 1.5);
     let d = ''; for (let j = 1; j <= 240; j++) { const f = (fmax * j) / 240; d += `${j > 1 ? 'L' : 'M'}${X(f).toFixed(1)},${Y(Iat(f)).toFixed(1)}`; }
     fb += `<path d="${d}" fill="none" stroke="${C.orange}" stroke-width="2.6"/>`;
-    if (r.f0 && !masked('f0')) fb += line(X(r.f0), m.t, X(r.f0), h - m.b, C.red, 1.4, '5 4') + txt(X(r.f0) + 6, m.t + 8, `f₀ = ${fmt(r.f0)} Hz`, { color: C.red, size: 12 });
+    if (r.f0 && !masked('f0')) fb += line(X(r.f0), m.t, X(r.f0), h - m.b, C.red, 1.4, '5 4') + txt(X(r.f0) + 6, m.t + 8, `f_{0} = ${fmt(r.f0)} Hz`, { color: C.red, size: 12 });
     fb += `<circle cx="${X(s.f)}" cy="${Y(r.I)}" r="6" fill="${C.blue}"/>` + txt(w - m.r, h - 6, 'f (Hz)', { size: 12, color: C.muted, anchor: 'end' }) + txt(8, m.t + 2, 'I', { size: 12, color: C.muted });
     freqFig = figure('Strömmen när frekvensen ändras', svg(w, h, fb, 'Ström som funktion av frekvens') + '<p class="fig-note">Punkten visar nuvarande frekvens.</p>');
   }
@@ -327,18 +327,18 @@ function renderImpedans(s, r) {
 
   const phiTxt = masked('phi') ? '?' : `${fmt(r.phi)}°`;
   const items = [];
-  if (hasL) items.push(['Xᴸ', show('XL', r.XL, 'Ω'), 'induktiv reaktans, 2πfL']);
-  if (hasC) items.push(['Xᶜ', show('XC', r.XC, 'Ω'), 'kapacitiv reaktans, 1/(2πfC)']);
-  if (hasL || hasC) items.push(['X', show('X', r.X, 'Ω'), 'nettoreaktans Xᴸ − Xᶜ']);
+  if (hasL) items.push(['X_{L}', show('XL', r.XL, 'Ω'), 'induktiv reaktans, 2πfL']);
+  if (hasC) items.push(['X_{C}', show('XC', r.XC, 'Ω'), 'kapacitiv reaktans, 1/(2πfC)']);
+  if (hasL || hasC) items.push(['X', show('X', r.X, 'Ω'), 'nettoreaktans X_{L} − X_{C}']);
   items.push(['|Z|', show('Z', r.Z, 'Ω'), 'impedansens belopp'], ['I', show('I', r.I, 'A'), 'ström (RMS)'], ['φ', phiTxt, masked('character') ? 'fasvinkel' : r.character === 'resistiv' ? 'i fas' : r.phi > 0 ? 'strömmen släpar' : 'strömmen leder']);
-  items.push(['Uᴿ', show('UR', r.UR, 'V'), 'över resistorn']);
-  if (hasL) items.push(['Uᴸ', show('UL', r.UL, 'V'), 'över spolen']);
-  if (hasC) items.push(['Uᶜ', show('UC', r.UC, 'V'), 'över kondensatorn']);
-  if (r.f0) items.push(['f₀', show('f0', r.f0, 'Hz'), 'resonansfrekvens']);
+  items.push(['U_{R}', show('UR', r.UR, 'V'), 'över resistorn']);
+  if (hasL) items.push(['U_{L}', show('UL', r.UL, 'V'), 'över spolen']);
+  if (hasC) items.push(['U_{C}', show('UC', r.UC, 'V'), 'över kondensatorn']);
+  if (r.f0) items.push(['f_{0}', show('f0', r.f0, 'Hz'), 'resonansfrekvens']);
   readoutList(items);
   const over = Math.max(r.UL, r.UC) > s.U * 1.001;
   $('principle').innerHTML = (over && !masked('phasorValues') ? '<strong>Obs:</strong> Spänningen över spolen eller kondensatorn är större än källspänningen. Nära resonans kan komponentspänningar bli farligt höga. Samma fenomen gör kondensatorbatterier tillsammans med övertoner från frekvensomriktare till en risk ombord. ' : '') + (hasL && hasC
-    ? 'Delspänningarna är visare. Uᴸ och Uᶜ pekar åt motsatta håll och tar delvis ut varandra, därför kan de var för sig bli större än källspänningen. Vid resonans är Xᴸ = Xᶜ och bara R begränsar strömmen.'
+    ? 'Delspänningarna är visare. U_{L} och U_{C} pekar åt motsatta håll och tar delvis ut varandra, därför kan de var för sig bli större än källspänningen. Vid resonans är X_{L} = X_{C} och bara R begränsar strömmen.'
     : 'Resistorns spänning ligger i fas med strömmen och den reaktiva spänningen 90° från den. Därför adderas beloppen med Pythagoras, inte direkt: |Z| = √(R² + X²).');
 }
 
@@ -359,7 +359,7 @@ function renderEffekt(s, r) {
   if (s.Qc > 0 && s.character === 'induktiv') {
     if (Q2 < 0) tb += line(ox - 10, oy, ox + Pk * sc + 20, oy, C.grid, 1);
     tb += arrow(ox + Pk * sc + 135, up(Qk), ox + Pk * sc + 135, up(Q2), C.orange, 3);
-    tb += txt(ox + Pk * sc + 145, (up(Qk) + up(Q2)) / 2, `Qᶜ = ${fmt(s.Qc)} var`, { color: C.orange, size: 13 });
+    tb += txt(ox + Pk * sc + 145, (up(Qk) + up(Q2)) / 2, `Q_{C} = ${fmt(s.Qc)} var`, { color: C.orange, size: 13 });
     tb += `<line x1="${ox}" y1="${oy}" x2="${(ox + Pk * sc).toFixed(1)}" y2="${up(Q2).toFixed(1)}" stroke="${C.ink}" stroke-width="2.4" stroke-dasharray="7 6"/>`;
     tb += txt(ox + Pk * sc * 0.6, up(Q2 * 0.6) + (Q2 >= 0 ? 16 : 18), hideTri ? 'S efter' : `S efter = ${fmt(r.S2)} VA`, { color: C.ink, size: 12 });
   }
@@ -397,9 +397,9 @@ function renderEffekt(s, r) {
     ['Q', show('Q', r.Q, 'var'), 'reaktiv effekt'],
     ['φ', `${fmt(r.phi)}°`, 'fasvinkel, cos φ = PF'],
     ['I', show('I', r.I, 'A'), 'matningsström'],
-    ['Qᶜ för PF 1', s.character === 'kapacitiv' ? '–' : show('QcFull', r.QcFull, 'var'), s.character === 'kapacitiv' ? 'kondensator hjälper inte vid kapacitiv last' : 'kondensator som krävs'],
-    ['PF efter', `${fmt(r.PF2, 3)}${r.character2 === 'resistiv' ? '' : r.character2 === 'kapacitiv' ? ' kap.' : ' ind.'}`, r.character2 === 'kapacitiv' && s.character === 'induktiv' ? 'överkompenserat: matningen blir kapacitiv' : 'med vald Qᶜ'],
-    ['I efter', show('I2', r.I2, 'A'), 'med vald Qᶜ'],
+    ['Q_{C} för PF 1', s.character === 'kapacitiv' ? '–' : show('QcFull', r.QcFull, 'var'), s.character === 'kapacitiv' ? 'kondensator hjälper inte vid kapacitiv last' : 'kondensator som krävs'],
+    ['PF efter', `${fmt(r.PF2, 3)}${r.character2 === 'resistiv' ? '' : r.character2 === 'kapacitiv' ? ' kap.' : ' ind.'}`, r.character2 === 'kapacitiv' && s.character === 'induktiv' ? 'överkompenserat: matningen blir kapacitiv' : 'med vald Q_{C}'],
+    ['I efter', show('I2', r.I2, 'A'), 'med vald Q_{C}'],
     ['Förlust', masked('loss') || masked('loss2') ? '?' : `${fmt(r.loss)} → ${fmt(r.loss2)} W`, 'i kabeln, I²R'],
   ]);
   const overcomp = s.character === 'induktiv' && r.character2 === 'kapacitiv';
@@ -415,7 +415,7 @@ function render() {
   publishEquipment({tab:state.tab,values:s,locked:Boolean(state.challenge),editable:true});
   const r = readouts(state.tab, s);
   ({ sinus: renderSinus, impedans: renderImpedans, effekt: renderEffekt })[state.tab](s, r);
-  const pr = $('principle'); pr.innerHTML = pr.innerHTML.replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`);
+  const pr = $('principle'); pr.innerHTML = pr.innerHTML.replace(/[ᴸᶜᴿꜰ]/g, (ch) => `<sub>${SUBS[ch]}</sub>`).replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>');
 }
 
 export function refreshEquipment(){publishEquipment({tab:state.tab,values:state.values[state.tab],locked:Boolean(state.challenge),editable:true});}

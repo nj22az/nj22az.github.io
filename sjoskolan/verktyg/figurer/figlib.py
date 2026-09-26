@@ -8,11 +8,17 @@ for f in font_manager.findSystemFonts():
 plt.rcParams.update({"font.family":"Carlito","font.size":15,"axes.linewidth":1.2,
     "mathtext.fontset":"custom","mathtext.rm":"Carlito","mathtext.it":"Carlito:italic"})
 # Index skrivs som riktiga nedsänkta tecken (X_L, U_R, Q_C, U_F) i stället för upphöjda bokstäver.
+# Etiketterna skrivs med kursens notation (innehall/beteckningar.json): Igren blir I_{gren}, och _{…} ritas nedsänkt.
+import os as _os, re as _re, sys as _sys
+_sys.path.insert(0,_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),"..","..","innehall"))
+import notation as _N
+_REGLER=_N.regler()
 _SUB={"ᵢₙ":"in","ᵤₜ":"ut","ᴸ":"L","ᶜ":"C","ᴿ":"R","ꜰ":"F"}
 def sub(t):
     if not isinstance(t,str): return t
-    for k,v in _SUB.items(): t=t.replace(k,r"$_\mathregular{"+v+"}$")
-    return t
+    for k in ("ᵢₙ","ᵤₜ"): t=t.replace(k,"_{"+_SUB[k]+"}")
+    t=_N.kanonisera(t,_REGLER)
+    return _re.sub(r"_\{([^{}]*)\}",lambda m:r"$_\mathregular{"+m.group(1)+"}$",t)
 import matplotlib.axes, matplotlib.figure
 _at=matplotlib.axes.Axes.text; _ft=matplotlib.figure.Figure.text
 matplotlib.axes.Axes.text=lambda self,x,y,s,*a,**k:_at(self,x,y,sub(s),*a,**k)

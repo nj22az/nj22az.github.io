@@ -122,3 +122,9 @@ Alla övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit i Sjöskol
 (`ovningar/*.json`, `placeringar/*.json`, `skyddat/*.enc`). Redigera aldrig övningstext i kurssidor, `*.gen.mjs`,
 presentationer, bildspel, lärarguiden eller boken: ändra posten, kör `innehall.py revidera` och `innehall.py bygg`
 (se `sjoskolan/innehall/README.md`). CI avvisar inaktuella genererade filer. Lärar- och boklösenord skrivs aldrig i repot.
+
+### Notation
+
+En storhet har ett enda skrivsätt i allt elevmaterial: den kanoniska formen i `sjoskolan/innehall/beteckningar.json`
+(U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L} …). Index skrivs `X_{L}` och renderas nedsänkt, aldrig XL, Upp eller Xᴸ.
+Nya varianter läggs i `avradda`; `innehall.py kontrollera` (CI) stoppar dem, `notation.py skriv-om` rättar dem.

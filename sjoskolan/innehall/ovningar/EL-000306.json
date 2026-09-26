@@ -3,7 +3,7 @@
   "titel": "Linjeström i Y",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,12 +35,12 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "Ugren = U_{L}/√3. I Y är linjeströmmen lika med grenströmmen.",
+      "text": "U_{gren} = U_{L}/√3. I Y är linjeströmmen lika med grenströmmen.",
       "status": "migrerad"
     }
   ],
   "losning": {
-    "text": "Ugren = 690/√3 ≈ 398 V. I_{L} = Igren = 398/30 ≈ 13,3 A.",
+    "text": "U_{gren} = 690/√3 ≈ 398 V. I_{L} = I_{gren} = 398/30 ≈ 13,3 A.",
     "svar": [
       {
         "storhet": "I_{L}",

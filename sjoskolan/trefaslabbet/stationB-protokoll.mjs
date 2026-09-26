@@ -20,7 +20,7 @@ export const STATION_B_3F_PROTOKOLL = {
   key: 'stationB-3f', station: 'Station B · trefas · simulerad',
   title: 'Labbprotokoll: Station B, trefas',
   intro: 'Använd fliken ”Neutralledaren” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts.',
-  instrument: 'Rigg: SELV-trefasrigg, huvudspänning (linjespänning) UL uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.',
+  instrument: 'Rigg: SELV-trefasrigg, huvudspänning (linjespänning) U_{L} uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.',
   checks: [
     { k: 'rigg', text: 'Trefasriggen är avsedd och dokumenterad: SELV, huvudspänning, strömgräns och mätpunkter L1, L2, L3, N och S.' },
     { k: 'instr', text: 'Instrumentet är avsett för AC och kontrollerat mot en känd källa. Rätt uttag och område är valda, och mA-säkringen är hel.' },
@@ -30,7 +30,7 @@ export const STATION_B_3F_PROTOKOLL = {
     { k: 'klar', text: 'Klartecken före energisättning. På den fysiska stationen ger instruktören det. I simulatorn ger du det själv när punkterna ovan är gjorda.' },
   ],
   rows: [
-    { title: 'Fasspänning över last 1, N hel', storhet: 'U1 (L1–N)', punkter: 'L1 / N', forv: 'UL/√3', tol: '±2 %', q: 'U1', need: need({}) },
+    { title: 'Fasspänning över last 1, N hel', storhet: 'U1 (L1–N)', punkter: 'L1 / N', forv: 'U_{L}/√3', tol: '±2 %', q: 'U1', need: need({}) },
     { title: 'Fasström L1', storhet: 'I1', punkter: 'strömmätlänk L1', forv: 'U1/R1', tol: '±2 %', q: 'I1', need: need({}) },
     { title: 'Fasström L2', storhet: 'I2', punkter: 'strömmätlänk L2', forv: 'U2/R2', tol: '±2 %', q: 'I2', need: need({}) },
     { title: 'Fasström L3', storhet: 'I3', punkter: 'strömmätlänk L3', forv: 'U3/R3', tol: '±2 %', q: 'I3', need: need({}) },
@@ -47,7 +47,7 @@ export const STATION_B_3F_PROTOKOLL = {
     { k: 'slutsats', label: 'Slutsats: vad visar dina mätningar, och vad visar de inte?', short: 'slutsats', minWords: 12 },
   ],
   example: {
-    note: 'Ifyllt exempel för en annan trefasrigg än din: UL = 13,0 V och lasterna 95, 104 och 100 Ω. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.',
+    note: 'Ifyllt exempel för en annan trefasrigg än din: U_{L} = 13,0 V och lasterna 95, 104 och 100 Ω. Dina värden blir andra. Frågor utan siffror visar bara hur ett svar kan byggas upp.',
     head: { namn: 'Exempel Elevsson', datum: '2026-10-09', rigg: 'Exempelrigg 13,0 V, simulator' },
     checks: { rigg: true, instr: true, punkter: true, nlank: true, omk: true, klar: true },
     rows: [

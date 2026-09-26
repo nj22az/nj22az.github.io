@@ -226,8 +226,8 @@ export const UPPGIFTER = [
    "Q",
    "PkW"
   ],
-  "hint": "Ugren = U_{L}/√3. I Y är linjeströmmen lika med grenströmmen.",
-  "solution": "Ugren = 690/√3 ≈ 398 V. I_{L} = Igren = 398/30 ≈ 13,3 A.",
+  "hint": "U_{gren} = U_{L}/√3. I Y är linjeströmmen lika med grenströmmen.",
+  "solution": "U_{gren} = 690/√3 ≈ 398 V. I_{L} = I_{gren} = 398/30 ≈ 13,3 A.",
   "mistakes": [
    {
     "v": 23,
@@ -264,7 +264,7 @@ export const UPPGIFTER = [
    "PkW"
   ],
   "hint": "I Δ ligger hela U_{L} över grenen. Linjeströmmen är √3 gånger grenströmmen.",
-  "solution": "Ugren = U_{L} = 690 V. Igren = 690/46 = 15 A. I_{L} = √3 · 15 ≈ 26,0 A.",
+  "solution": "U_{gren} = U_{L} = 690 V. I_{gren} = 690/46 = 15 A. I_{L} = √3 · 15 ≈ 26,0 A.",
   "mistakes": [
    {
     "v": 15,

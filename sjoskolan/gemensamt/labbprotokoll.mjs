@@ -2,6 +2,9 @@
 // Samma protokoll för alla simulerade stationer: kontroller före start, mätningar med förväntat och uppmätt värde,
 // felsökning (observation → hypotes → kontroll), analys, utskrift, CSV och ett ifyllt exempel.
 // Beräkningsdelarna saknar DOM-beroenden och testas i labbprotokoll.test.mjs.
+// Texter kan ha innehållsmarkering (U_{L}) och visas med riktiga index. Ett index kan inte visas i ett inmatningsfält,
+// så en förifylld storhet med index visas som text och en formel med index som ledtråd under fältet.
+import { markHtml } from './markering.mjs';
 
 /** Läser ett tal ur text med decimalkomma och eventuell enhet: "11,94 V" → 11.94. */
 export function parseNum(text) {
@@ -114,28 +117,31 @@ const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 
 function formHTML(def, data, ro, idp) {
   // Exemplet visas som vanlig text, så att det går att läsa med skärmläsare och har full kontrast.
-  const val = (v) => `<span class="lp-val">${esc(v) || '–'}</span>`;
+  const val = (v) => `<span class="lp-val">${markHtml(v) || '–'}</span>`;
   const inp = (path, v, label, attrs = '') => (ro ? val(v) : `<input data-p="${path}" value="${esc(v)}" aria-label="${esc(label)}"${attrs}>`);
   const ta = (path, v, label, attrs = '') => (ro ? val(v) : `<textarea data-p="${path}" aria-label="${esc(label)}"${attrs}>${esc(v)}</textarea>`);
   let h = `<div class="lp-head">${HEAD.map(([k, l]) => `<label>${l}${inp(`head.${k}`, data.head?.[k], l)}</label>`).join('')}</div>`;
   if (def.checks?.length) {
     h += `<h3>1. Före start</h3><p class="lp-help">${esc(def.checksIntro || 'Bocka av först när du har gjort kontrollen. I en fysisk station ger instruktören klartecken efter dessa kontroller.')}</p><ul class="lp-checks">`;
-    h += def.checks.map((c) => (ro ? `<li><span class="lp-val">${data.checks?.[c.k] ? 'Klar' : 'Inte gjord'}</span> <span>${esc(c.text)}</span></li>` : `<li><label><input type="checkbox" data-p="checks.${c.k}"${data.checks?.[c.k] ? ' checked' : ''}> <span>${esc(c.text)}</span></label></li>`)).join('') + '</ul>';
+    h += def.checks.map((c) => (ro ? `<li><span class="lp-val">${data.checks?.[c.k] ? 'Klar' : 'Inte gjord'}</span> <span>${markHtml(c.text)}</span></li>` : `<li><label><input type="checkbox" data-p="checks.${c.k}"${data.checks?.[c.k] ? ' checked' : ''}> <span>${markHtml(c.text)}</span></label></li>`)).join('') + '</ul>';
   }
   if (def.rows?.length) {
     h += `<h3>2. Mätningar</h3><p class="lp-help">${esc(def.rowsIntro || 'Skriv förväntat värde innan du mäter. Mät sedan i simulatorn och tryck ”Hämta avläsning”. Avvikelse = uppmätt − förväntat.')}</p><ol class="lp-rows">`;
     def.rows.forEach((plan, i) => {
       const r = data.rows?.[i] || {};
-      h += `<li class="lp-row" data-row="${i}"><div class="lp-row-head"><strong>Mätning ${i + 1}${plan.title ? ` · ${esc(plan.title)}` : ''}</strong>${plan.optional ? '<span class="lp-opt">frivillig</span>' : ''}`;
+      h += `<li class="lp-row" data-row="${i}"><div class="lp-row-head"><strong>Mätning ${i + 1}${plan.title ? ` · ${markHtml(plan.title)}` : ''}</strong>${plan.optional ? '<span class="lp-opt">frivillig</span>' : ''}`;
       if (!ro && def.snapshot !== false) h += `<button type="button" class="lp-fetch" data-row="${i}">Hämta avläsning</button>`;
       h += `</div><div class="lp-grid">`;
       for (const [k, defaultLabel] of ROW_FIELDS) {
         const l = plan.labels?.[k] || defaultLabel;
-        const ph = plan[k] && !SEEDED.includes(k) ? ` placeholder="${esc(plan[k])}"` : '';
+        const index = plan[k] && /_\{/.test(plan[k]);
+        const ph = plan[k] && !SEEDED.includes(k) && !index ? ` placeholder="${esc(plan[k])}"` : '';
+        const tips = index && !SEEDED.includes(k) && !ro ? `<small class="lp-src">Räkna fram: ${markHtml(plan[k])}</small>` : '';
         if (k === 'bed' && ro) h += `<label>${l}${val(r.bed)}</label>`;
         else if (k === 'bed') h += `<label>${l}<select data-p="rows.${i}.bed">${(plan.bedOptions || BED).map((b) => `<option${(r.bed || '') === b ? ' selected' : ''} value="${b}">${b || 'Välj'}</option>`).join('')}</select></label>`;
         else if (k === 'komm') h += `<label class="lp-wide">${l}${ta(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}</label>`;
-        else h += `<label>${l}${inp(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}${k === 'uppm' ? `<small class="lp-src" id="${idp}src${i}">${r.tid ? `Hämtat från simulatorn ${esc(r.tid)}` : ''}</small>` : ''}${k === 'avv' ? `<small class="lp-calc" id="${idp}calc${i}"></small>` : ''}</label>`;
+        else if (index && SEEDED.includes(k) && !ro && (r[k] ?? plan[k]) === plan[k]) h += `<label>${l}${val(plan[k])}</label>`;
+        else h += `<label>${l}${inp(`rows.${i}.${k}`, r[k], `${l}, mätning ${i + 1}`, ph)}${tips}${k === 'uppm' ? `<small class="lp-src" id="${idp}src${i}">${r.tid ? `Hämtat från simulatorn ${esc(r.tid)}` : ''}</small>` : ''}${k === 'avv' ? `<small class="lp-calc" id="${idp}calc${i}"></small>` : ''}</label>`;
       }
       h += '</div></li>';
     });
@@ -152,7 +158,7 @@ function formHTML(def, data, ro, idp) {
   }
   if (def.questions?.length) {
     h += `<h3>${def.faults ? 4 : 3}. Analys och slutsats</h3>`;
-    h += def.questions.map((q) => `<label class="lp-q">${q.optional ? '<span class="lp-opt">Fördjupning, frivillig</span>' : ''}${esc(q.label)}${q.hint ? `<small>${esc(q.hint)}</small>` : ''}${ta(`answers.${q.k}`, data.answers?.[q.k], q.label)}</label>`).join('');
+    h += def.questions.map((q) => `<label class="lp-q">${q.optional ? '<span class="lp-opt">Fördjupning, frivillig</span>' : ''}${markHtml(q.label)}${q.hint ? `<small>${markHtml(q.hint)}</small>` : ''}${ta(`answers.${q.k}`, data.answers?.[q.k], q.label)}</label>`).join('');
   }
   return h;
 }
@@ -180,14 +186,14 @@ export function mountProtocol(root, def) {
   root.classList.add('lp');
   root.innerHTML = `
     <div class="lp-top"><div><p class="lp-kicker">${esc(def.station || 'Simulerad station')}</p><h2 id="${def.key}-title">${esc(def.title)}</h2>
-    <p>${esc(def.intro || '')}</p></div>
+    <p>${markHtml(def.intro || '')}</p></div>
     <div class="lp-actions"><button type="button" class="lp-print">Skriv ut / spara som PDF</button><button type="button" class="lp-csv">Ladda ner CSV</button><button type="button" class="lp-clear">Töm protokollet</button></div></div>
     ${def.presets?.length ? `<div class="lp-presets">${def.presets.map((p, i) => `<button type="button" data-preset="${i}">${esc(p.label)}</button>`).join('')}</div>` : ''}
-    ${def.instrument ? `<p class="lp-instrument"><strong>Instrument och rigg:</strong> ${esc(def.instrument)}</p>` : ''}
+    ${def.instrument ? `<p class="lp-instrument"><strong>Instrument och rigg:</strong> ${markHtml(def.instrument)}</p>` : ''}
     <p class="lp-msg" role="status" aria-live="polite"></p>
     <form class="lp-form" autocomplete="off">${formHTML(def, data, false, def.key)}</form>
     <p class="lp-status"></p>
-    ${def.example ? `<details class="lp-example"><summary>Visa ifyllt exempel</summary><p class="lp-help">${esc(def.example.note || 'Exemplet visar hur ett fullständigt protokoll kan se ut. Dina egna värden och formuleringar ska komma från din egen mätning.')}</p><div class="lp-form lp-ro">${formHTML(def, def.example, true, def.key + 'ex')}</div></details>` : ''}
+    ${def.example ? `<details class="lp-example"><summary>Visa ifyllt exempel</summary><p class="lp-help">${markHtml(def.example.note || 'Exemplet visar hur ett fullständigt protokoll kan se ut. Dina egna värden och formuleringar ska komma från din egen mätning.')}</p><div class="lp-form lp-ro">${formHTML(def, def.example, true, def.key + 'ex')}</div></details>` : ''}
     <p class="lp-foot">${storageOK ? 'Det du skriver sparas bara i den här webbläsaren. Skriv ut eller spara som PDF för att lämna in.' : 'Webbläsaren tillåter inte lagring här. Skriv ut innan du stänger sidan.'} Ett simulerat protokoll är övning och underlag. Praktisk bedömning sker på en verklig rigg enligt lärarens plan.</p>`;
   root.setAttribute('aria-labelledby', `${def.key}-title`);
   const $ = (s) => root.querySelector(s);

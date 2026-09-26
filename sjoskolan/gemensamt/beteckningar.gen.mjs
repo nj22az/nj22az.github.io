@@ -90,26 +90,25 @@ export const BETECKNINGAR = [
  },
  {
   "id": "topp",
-  "visa": "û",
+  "visa": "û, î",
   "former": [
-   "û"
+   "û",
+   "î"
   ],
   "namn": "toppvärde",
   "utlasning": "u med hatt",
-  "forklaring": "Spänningens högsta värde räknat från noll. För sinus är û = √2 · U.",
+  "forklaring": "Spänningens högsta värde räknat från noll. För sinus är û = √2 · U. Toppvärdet för ström skrivs î.",
   "enhet": "V"
  },
  {
   "id": "upp",
   "visa": "U_{pp}",
   "former": [
-   "Upp",
-   "U_{pp}",
-   "Upp-"
+   "U_{pp}"
   ],
   "namn": "topp till topp-värde",
   "utlasning": "pp, engelska: peak to peak",
-  "forklaring": "Från den negativa toppen till den positiva: U_{pp} = 2 · û. Det du läser direkt på ett oscilloskop.",
+  "forklaring": "Från den negativa toppen till den positiva: U_{pp} = 2 · û. Det du läser direkt på ett oscilloskop, där det ofta står Vpp.",
   "enhet": "V"
  },
  {
@@ -118,13 +117,11 @@ export const BETECKNINGAR = [
   "former": [
    "RMS",
    "U_{RMS}",
-   "URMS",
-   "U_{rms}",
-   "Urms"
+   "I_{RMS}"
   ],
   "namn": "effektivvärde",
   "utlasning": "engelska: root mean square, som betyder kvadratiskt medelvärde",
-  "forklaring": "Det värde som ger samma värme i en resistor som en lika stor likspänning. När en spänning anges utan annat, till exempel 230 V eller 12,00 V RMS, är det effektivvärdet. Multimetern visar effektivvärdet.",
+  "forklaring": "Det värde som ger samma värme i en resistor som en lika stor likspänning. När en spänning anges utan annat, till exempel 230 V eller 12,00 V RMS, är det effektivvärdet. Multimetern visar effektivvärdet. Behöver du skilja effektivvärdet från andra värden skrivs det U_{RMS} (eller I_{RMS} för ström).",
   "enhet": "V eller A"
  },
  {
@@ -142,7 +139,6 @@ export const BETECKNINGAR = [
   "id": "medel",
   "visa": "U_{medel}",
   "former": [
-   "Umedel",
    "U_{medel}"
   ],
   "namn": "medelvärde",
@@ -278,9 +274,7 @@ export const BETECKNINGAR = [
   "id": "xl",
   "visa": "X_{L}",
   "former": [
-   "X_{L}",
-   "XL",
-   "Xᴸ"
+   "X_{L}"
   ],
   "namn": "induktiv reaktans (spolens reaktans)",
   "forklaring": "Spolens motstånd mot växelström. Växer med frekvensen: X_{L} = 2πfL. L står för spole (induktans).",
@@ -290,9 +284,7 @@ export const BETECKNINGAR = [
   "id": "xc",
   "visa": "X_{C}",
   "former": [
-   "X_{C}",
-   "XC",
-   "Xᶜ"
+   "X_{C}"
   ],
   "namn": "kapacitiv reaktans (kondensatorns reaktans)",
   "forklaring": "Kondensatorns motstånd mot växelström. Minskar när frekvensen ökar: X_{C} = 1/(2πfC). C står för kondensator (kapacitans).",
@@ -346,9 +338,7 @@ export const BETECKNINGAR = [
   "id": "ur",
   "visa": "U_{R}",
   "former": [
-   "U_{R}",
-   "UR",
-   "Uᴿ"
+   "U_{R}"
   ],
   "namn": "spänningen över resistorn",
   "forklaring": "U_{R} = I · R. Ligger i fas med strömmen.",
@@ -358,9 +348,7 @@ export const BETECKNINGAR = [
   "id": "ul-spole",
   "visa": "U_{L}",
   "former": [
-   "U_{L}",
-   "UL",
-   "Uᴸ"
+   "U_{L}"
   ],
   "namn": "spänningen över spolen (vecka 40)",
   "forklaring": "U_{L} = I · X_{L}. Ligger 90° före strömmen. U_{R} och U_{L} adderas vinkelrätt, inte direkt.",
@@ -371,9 +359,7 @@ export const BETECKNINGAR = [
   "id": "uc",
   "visa": "U_{C}",
   "former": [
-   "U_{C}",
-   "UC",
-   "Uᶜ"
+   "U_{C}"
   ],
   "namn": "spänningen över kondensatorn",
   "forklaring": "U_{C} = I · X_{C}. Ligger 90° efter strömmen.",
@@ -383,9 +369,7 @@ export const BETECKNINGAR = [
   "id": "f0",
   "visa": "f_{0}",
   "former": [
-   "f_{0}",
-   "f₀",
-   "f0"
+   "f_{0}"
   ],
   "namn": "resonansfrekvens",
   "forklaring": "Frekvensen där X_{L} = X_{C}. Då är |Z| = R och strömmen störst: f_{0} = 1/(2π√(L · C)).",
@@ -482,10 +466,7 @@ export const BETECKNINGAR = [
   "id": "qc",
   "visa": "Q_{C}",
   "former": [
-   "Q_{C}",
-   "Qᶜ",
-   "Qc",
-   "QC"
+   "Q_{C}"
   ],
   "namn": "kompenseringens reaktiva effekt",
   "forklaring": "Den reaktiva effekt som en kondensator lämnar och som tar ut en del av lastens induktiva Q.",
@@ -526,5 +507,66 @@ export const BETECKNINGAR = [
   "namn": "isolerat nät",
   "utlasning": "franska: isolé–terre",
   "forklaring": "Nät utan direkt förbindelse mellan systemet och jord eller skrov. Vanligt ombord. Behandlas i vecka 44."
+ },
+ {
+  "id": "ul-linje",
+  "visa": "U_{L}",
+  "former": [
+   "U_{L}"
+  ],
+  "namn": "linjespänning, huvudspänning (trefas, från vecka 41)",
+  "forklaring": "Spänningen mellan två faser, till exempel 400 V i ett 400/230 V-nät eller 440 V ombord. U_{L} = √3 · U_{F}.",
+  "enhet": "V",
+  "obs": "I vecka 40 betyder U_{L} spänningen över spolen."
+ },
+ {
+  "id": "uf",
+  "visa": "U_{F}",
+  "former": [
+   "U_{F}"
+  ],
+  "namn": "fasspänning (trefas)",
+  "forklaring": "Spänningen mellan en fas och neutralledaren eller stjärnpunkten: U_{F} = U_{L}/√3, till exempel 230 V i ett 400 V-nät.",
+  "enhet": "V"
+ },
+ {
+  "id": "il",
+  "visa": "I_{L}",
+  "former": [
+   "I_{L}"
+  ],
+  "namn": "linjeström (trefas)",
+  "forklaring": "Strömmen i en fasledare, alltså i ledningen fram till lasten.",
+  "enhet": "A"
+ },
+ {
+  "id": "igren",
+  "visa": "I_{gren}",
+  "former": [
+   "I_{gren}"
+  ],
+  "namn": "grenström (trefas)",
+  "forklaring": "Strömmen genom en av lastens tre grenar. I Y är I_{gren} = I_{L}; i Δ är I_{L} = √3 · I_{gren}.",
+  "enhet": "A"
+ },
+ {
+  "id": "ugren",
+  "visa": "U_{gren}",
+  "former": [
+   "U_{gren}"
+  ],
+  "namn": "grenspänning (trefas)",
+  "forklaring": "Spänningen över en av lastens tre grenar. I Y är U_{gren} = U_{F}; i Δ är U_{gren} = U_{L}.",
+  "enhet": "V"
+ },
+ {
+  "id": "in",
+  "visa": "I_{N}",
+  "former": [
+   "I_{N}"
+  ],
+  "namn": "neutralström",
+  "forklaring": "Strömmen i neutralledaren N. Noll när de tre faserna är lika belastade.",
+  "enhet": "A"
  }
 ];

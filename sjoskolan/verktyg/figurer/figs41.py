@@ -52,7 +52,7 @@ a1=phasor(ax,90,1.0,PHC[0],"U$_\\mathregular{1N}$",lr=1.15); a2=phasor(ax,330,1.
 ax.add_patch(FancyArrowPatch(a2,a1,arrowstyle="-|>",mutation_scale=18,color=INK,lw=2.6))
 ax.text(-1.55,0.55,"U₁₂ = U$_\\mathregular{1N}$ − U$_\\mathregular{2N}$",color=INK,fontsize=14,ha="left")
 ax.add_patch(Arc((0,0),0.5,0.5,theta1=-30,theta2=90,color=INK,lw=1.3))
-ax.text(1.55,-0.95,"120° mellan fasvisarna",ha="right",fontsize=13,color=GRAY); ax.text(1.55,-1.15,"|U₁₂| = √3 · Uꜰ",ha="right",fontsize=15)
+ax.text(1.55,-0.95,"120° mellan fasvisarna",ha="right",fontsize=13,color=GRAY); ax.text(1.55,-1.15,"|U₁₂| = √3 · U_{F}",ha="right",fontsize=15)
 save(F,"v41_01_s08_rot3")
 # s11 Ö1: vinkeln mellan faserna
 F=fig(4.3,3.0); ax=pax(F,lim=1.45)
@@ -76,12 +76,12 @@ def supply(name,lab12,lab1n):
     vmark(ax,(1.6,2.6),(1.6,1.8),lab12,off=(0.12,0))
     vmark(ax,(3.0,2.6),(3.0,0.2),lab1n,off=(0.12,0))
     save(F,name)
-supply("v41_01_s15_ovn3","Uᴸ = 400 V","Uꜰ = ?")
-supply("v41_01_s17_ovn4","Uᴸ = ?","Uꜰ = 120 V")
+supply("v41_01_s15_ovn3","U_{L} = 400 V","U_{F} = ?")
+supply("v41_01_s17_ovn4","U_{L} = ?","U_{F} = 120 V")
 # s19 Ö5: Y-last på trefasriggen
 F=fig(4.3,3.0); ax=cax(F,(-1.6,2.6),(-1.4,1.75)); V=yload(ax,0,0,1.15)
-vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 12,0 V",off=(0,-0.25),ha="center")
-ax.text(1.0,0.75,"Ugren = ?",color=RED,fontsize=15)
+vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12,0 V",off=(0,-0.25),ha="center")
+ax.text(1.0,0.75,"U_{gren} = ?",color=RED,fontsize=15)
 save(F,"v41_01_s19_ovn5")
 # s21 teori: symmetriska strömmar summerar till noll
 F=fig(4.3,3.6); ax=pax(F,xl=(-0.6,2.0),yl=(-1.1,1.4))
@@ -131,7 +131,7 @@ for sp in ("top","right"): ax.spines[sp].set_visible(False)
 vals=(400,402,398); ax.bar([0,1,2],[v-394 for v in vals],bottom=394,color=[BLUE,"#4f7fb0","#8fb0d3"],width=0.55)
 for k,v in enumerate(vals): ax.text(k,v+0.3,f"{v} V",ha="center",fontsize=14)
 ax.set_xticks([0,1,2]); ax.set_xticklabels(["U₁₂","U₂₃","U₃₁"],fontsize=14); ax.set_ylim(394,405); ax.set_yticks([395,400,405]); ax.tick_params(labelsize=11,colors=GRAY)
-ax.text(2.45,404.3,"Umedel = ?   avvikelse = ? %",ha="right",color=RED,fontsize=14); F.text(0.98,0.01,"Obs: axeln börjar vid 394 V",ha="right",fontsize=10,color=GRAY)
+ax.text(2.45,404.3,"U_{medel} = ?   avvikelse = ? %",ha="right",color=RED,fontsize=14); F.text(0.98,0.01,"Obs: axeln börjar vid 394 V",ha="right",fontsize=10,color=GRAY)
 save(F,"v41_01_s32_ovn9")
 # s34 Ö10: bruten neutralledare
 F=fig(4.3,3.0); ax=cax(F,(-0.7,4.4),(-0.5,3.1)); ys=(2.6,1.9,1.2,0.3); lines(ax,0.2,1.4,ys)
@@ -145,21 +145,21 @@ save(F,"v41_01_s34_ovn10")
 # ================= v41_02 Y, Δ och trefaseffekt =================
 # s7 teori: linje- och grenström i Δ
 F=fig(4.3,3.6); ax=cax(F,(-2.1,2.3),(-1.4,2.3)); V=dload(ax,0,0,1.25,tlabels=("","L2","L3"))
-lead(ax,V[0],"Iᴸ")
+lead(ax,V[0],"I_{L}")
 u=np.array(V[1])-np.array(V[0]); u=u/np.linalg.norm(u); nrm=np.array([-u[1],u[0]]); a0=np.array(V[0])+u*0.35-nrm*0.3; a1=a0+u*0.7
 ax.add_patch(FancyArrowPatch(tuple(a0),tuple(a1),arrowstyle="-|>",mutation_scale=16,color=BLUE,lw=2)); ax.text(*(a0+u*0.35-nrm*0.3),"Igren",color=BLUE,fontsize=15,ha="right")
-ax.text(2.25,-1.3,"Iᴸ = √3 · Igren",ha="right",fontsize=15)
+ax.text(2.25,-1.3,"I_{L} = √3 · I_{gren}",ha="right",fontsize=15)
 save(F,"v41_02_s07_delta_strom")
 # s11 Ö1 / s13 Ö2: Y-last
 def ytask(name,labels,extra,tl=("L1","L2","L3")):
     F=fig(4.3,3.0); ax=cax(F,(-1.7,2.7),(-1.4,2.0)); V=yload(ax,0,0,1.15,labels=labels,tlabels=tl)
-    vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 400 V",off=(0,-0.25),ha="center"); extra(ax,V); save(F,name)
-ytask("v41_02_s11_ovn1",("40 Ω","40 Ω","40 Ω"),lambda ax,V:ax.text(1.0,0.8,"Ugren = ?",color=RED,fontsize=15))
-ytask("v41_02_s13_ovn2",("40 Ω","40 Ω","40 Ω"),lambda ax,V:(lead(ax,V[0],"Iᴸ = ?"),ax.text(0.95,1.0,"Igren = ?",color=RED,fontsize=15)),tl=("","L2","L3"))
+    vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 400 V",off=(0,-0.25),ha="center"); extra(ax,V); save(F,name)
+ytask("v41_02_s11_ovn1",("40 Ω","40 Ω","40 Ω"),lambda ax,V:ax.text(1.0,0.8,"U_{gren} = ?",color=RED,fontsize=15))
+ytask("v41_02_s13_ovn2",("40 Ω","40 Ω","40 Ω"),lambda ax,V:(lead(ax,V[0],"I_{L} = ?"),ax.text(0.95,1.0,"I_{gren} = ?",color=RED,fontsize=15)),tl=("","L2","L3"))
 # s15 Ö3: Δ-last
 F=fig(4.3,3.0); ax=cax(F,(-2.1,2.8),(-1.15,2.0)); V=dload(ax,0,0,1.15,labels=("40 Ω","40 Ω","40 Ω"),tlabels=("","L2","L3"))
-vmark(ax,(V[1][0],V[1][1]-0.35),(V[2][0],V[2][1]-0.35),"Uᴸ = 400 V",off=(0,-0.25),ha="center")
-lead(ax,V[0],"Iᴸ = ?"); ax.text(1.1,0.75,"Igren = ?",color=RED,fontsize=15)
+vmark(ax,(V[1][0],V[1][1]-0.35),(V[2][0],V[2][1]-0.35),"U_{L} = 400 V",off=(0,-0.25),ha="center")
+lead(ax,V[0],"I_{L} = ?"); ax.text(1.1,0.75,"I_{gren} = ?",color=RED,fontsize=15)
 save(F,"v41_02_s15_ovn3")
 # s17 Ö4: trefaslast
 def motor(ax,x,y,txt="M\n3~",r=0.5):
@@ -173,8 +173,8 @@ def feed(ax,xm=3.35,ym=0.85,r=0.5,x0=0.2):
         ax.text(x0-0.1,y,("L1","L2","L3")[k],ha="right",va="center",fontsize=13)
     motor(ax,xm,ym,r=r)
 F=fig(4.3,3.0); ax=cax(F,(-0.6,4.4),(-0.3,2.9)); feed(ax)
-arrow(ax,(0.6,2.2),(1.3,2.2),label="Iᴸ = 10 A",lp=(0.95,2.45),va="bottom")
-ax.text(0.2,1.2,"Uᴸ = 400 V\ncos φ = 0,80",fontsize=14,va="top"); ax.text(4.35,2.6,"P = ?",ha="right",color=RED,fontsize=16)
+arrow(ax,(0.6,2.2),(1.3,2.2),label="I_{L} = 10 A",lp=(0.95,2.45),va="bottom")
+ax.text(0.2,1.2,"U_{L} = 400 V\ncos φ = 0,80",fontsize=14,va="top"); ax.text(4.35,2.6,"P = ?",ha="right",color=RED,fontsize=16)
 save(F,"v41_02_s17_ovn4")
 # s19 Ö5: triangel utan P-värde
 F=fig(4.3,3.0); triangle(F,0.8,0.6,("P","Q = ?","S = ?"),rect=(0.06,0.04,0.9,0.92),angle_label="φ",note="cos φ = 0,80, induktiv"); save(F,"v41_02_s19_ovn5")
@@ -211,8 +211,8 @@ plate_task("v41_02_s26_ovn6","Δ/Y 230/400 V"); plate_task("v41_02_s28_ovn7","Δ
 # s30 Ö8: motor med axeleffekt
 F=fig(4.3,3.0); ax=cax(F,(-0.6,4.4),(-0.6,2.9)); feed(ax,xm=2.6)
 ax.plot([3.1,3.9],[0.85,0.85],color=INK,lw=5); ax.text(3.5,0.55,"Paxel\n5,5 kW",fontsize=13,va="top",ha="center")
-ax.text(0.2,1.2,"Uᴸ = 400 V\nη = 0,88\nPF = 0,80",fontsize=13,va="top")
-ax.text(4.35,2.6,"Pᵢₙ = ?   Iᴸ = ?",color=RED,fontsize=15,ha="right")
+ax.text(0.2,1.2,"U_{L} = 400 V\nη = 0,88\nPF = 0,80",fontsize=13,va="top")
+ax.text(4.35,2.6,"Pᵢₙ = ?   I_{L} = ?",color=RED,fontsize=15,ha="right")
 save(F,"v41_02_s30_ovn8")
 # s32 Ö9: transformator
 F=fig(4.3,3.0); ax=cax(F,(-0.3,4.5),(-0.2,2.8))
@@ -253,17 +253,17 @@ def divider_meas(name):
 divider_meas("v41_03_s15_ovn3"); divider_meas("v41_03_s34_ovn10")
 # s8 teori: trefasrigg i Y
 F=fig(4.3,3.4); ax=cax(F,(-1.7,2.7),(-1.4,1.8)); V=yload(ax,0,0,1.15)
-vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 12 V",off=(0,-0.25),ha="center"); ax.text(0.95,0.75,"Ugren = Uᴸ/√3",fontsize=14)
+vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12 V",off=(0,-0.25),ha="center"); ax.text(0.95,0.75,"U_{gren} = U_{L}/√3",fontsize=14)
 save(F,"v41_03_s08_stationB")
 # s17 Ö4: riggens toppvärde
 F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,20,400); ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
 ax.set_xlim(0,21); ax.set_ylim(-1.35,1.5); ax.set_xticks([]); ax.set_yticks([])
-ax.axhline(0.707,color=GREEN,lw=1.8,ls="--"); ax.text(20.6,0.76,"U = 12,1 V (RMS)",ha="right",va="bottom",color=GREEN,fontsize=14)
+ax.axhline(0.707,color=GREEN,lw=1.8,ls="--"); ax.text(20.6,0.76,"U = 12,1 V RMS",ha="right",va="bottom",color=GREEN,fontsize=14)
 ax.plot([5],[1],"o",color=RED,ms=5); ax.text(5.6,1.05,"û = ?",color=RED,fontsize=15,va="bottom")
 save(F,"v41_03_s17_ovn4")
 # s19 Ö5: uppmätt grenspänning
 F=fig(4.3,3.0); ax=cax(F,(-1.7,2.9),(-1.4,1.75)); V=yload(ax,0,0,1.15)
-vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"Uᴸ = 12,0 V",off=(0,-0.25),ha="center")
+vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12,0 V",off=(0,-0.25),ha="center")
 ax.text(0.95,0.85,"uppmätt 6,90 V",fontsize=14,color=BLUE); ax.text(0.95,0.45,"förväntat = ?",fontsize=15,color=RED)
 save(F,"v41_03_s19_ovn5")
 # hållkrets

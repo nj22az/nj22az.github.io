@@ -162,7 +162,7 @@ export const UPPGIFTER = [
   "mask": [
    "net"
   ],
-  "hint": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · UF, med ω = 2πf och UF = 440/√3.",
+  "hint": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · U_{F}, med ω = 2πf och U_{F} = 440/√3.",
   "solution": "I = 3 · 2π · 50 · 1,0 · 10⁻⁶ · 254 ≈ 0,239 A ≈ 239 mA. Strömmen är för liten för att säkringar ska lösa men tillräckligt stor för att ge stöt och gnistor.",
   "mistakes": [
    {

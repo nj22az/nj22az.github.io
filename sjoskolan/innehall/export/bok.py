@@ -7,7 +7,7 @@ ursprungliga XHTML (sparad i posten, bok.html) behålls originalet byte för byt
 storheter. Annars skrivs avsnittet om ur posten; färgmarkeringen (vU, vI, vR) läggs då på med samma regel som
 boken använder: symbolerna U, I och R med eventuellt index.
 
-Notationsprofil: databasens U_{F} skrivs U_{fas} i boken.
+Boken använder samma notation som kursen (beteckningar.json): U_{F}, inte U_{fas}.
 
 PDF:en kan inte byggas om här (sättningen gjordes utanför repot); efter en ändring måste den sättas om separat.
 """
@@ -26,10 +26,6 @@ ARB = Path(__file__).resolve().parents[1] / 'bok' / '.bok' / 'epub' / 'EPUB' / '
 NIVA = {'grund': 'Grund', 'tillampning': 'Tillämpning', 'analys': 'Analys', 'forberedelse': 'Grund', 'fordjupning': 'Analys'}
 
 
-def notation(t):
-    return (t or '').replace('U_{F}', 'U_{fas}')
-
-
 def farg(h):
     """Färgmarkering av storheterna U, I och R (med index) i redan renderad XHTML."""
     def w(m):
@@ -38,7 +34,7 @@ def farg(h):
 
 
 def x(t):
-    return farg(T.html_text(notation(t)))
+    return farg(T.html_text(t or ''))
 
 
 def strip(h):

@@ -3,7 +3,7 @@
   "titel": "Ström i Y",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,7 +40,7 @@
     }
   ],
   "losning": {
-    "text": "Igren = 231/40 ≈ 5,77 A. I_{L} = 5,77 A.",
+    "text": "I_{gren} = 231/40 ≈ 5,77 A. I_{L} = 5,77 A.",
     "svar": [
       {
         "storhet": "I_{L}",

@@ -3,7 +3,7 @@
   "titel": "Sinus och period",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -23,9 +23,9 @@
   "uppgift": {
     "fraga": "En sinusspänning har effektivvärdet 24 V och frekvensen 60 Hz. Beräkna toppvärde och periodtid.",
     "samband": [
-      "û = √2 · U_{rms}; T = 1/f"
+      "û = √2 · U_{RMS}; T = 1/f"
     ],
-    "givet": "Ren sinus utan likspänningsdel, U_{rms} = 24 V och f = 60 Hz.",
+    "givet": "Ren sinus utan likspänningsdel, U_{RMS} = 24 V och f = 60 Hz.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

@@ -86,6 +86,14 @@
               "minLength": 1
             },
             "description": "Former som bara räknas direkt efter ett tal, eftersom de också är vanliga ord (var, rad) eller ensamma bokstäver (H, F)."
+          },
+          "avradda": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Andra skrivsätt för samma storhet som inte får förekomma i elevtext. Skriv alltid den kanoniska formen (visa)."
           }
         }
       }

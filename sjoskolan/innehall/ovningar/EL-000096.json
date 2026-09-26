@@ -3,7 +3,7 @@
   "titel": "Neutralström vid symmetri",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,7 +40,7 @@
     }
   ],
   "losning": {
-    "text": "IN = 0 A. Tre lika visare med 120° emellan har summan noll.",
+    "text": "I_{N} = 0 A. Tre lika visare med 120° emellan har summan noll.",
     "svar": [
       {
         "storhet": "I_{N}",

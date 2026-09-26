@@ -74,6 +74,27 @@ Varje förkortning eller beteckning som eleverna möter ska finnas i `beteckning
 `former` (hur den står i text), `namn` och `forklaring`; `formel: true` för ensamma bokstäver, `efter_tal` för enheter som
 också är vanliga ord (var, rad). Index skrivs alltid med markering: X_{L}, inte XL.
 
+### En storhet, ett skrivsätt
+
+Varje storhet skrivs på samma sätt överallt: kurssidor, labbar, filmer, presentationer, figurer, boken och posterna.
+Den kanoniska formen är beteckningens `visa` (eller `kanon`); fältet `avradda` listar varianter som inte får förekomma,
+eventuellt med egen ersättning (`"Urms→U_{RMS}"`). Exempel: U_{pp} (inte Upp), û (inte U_{topp}), U_{RMS} (inte Urms),
+U_{F} (inte U_{fas}, UF eller Uꜰ), U_{gren}, I_{gren}, I_{L}, I_{N}, X_{L}, X_{C}, Q_{C}, f_{0}.
+Index skrivs alltid `X_{L}` och ritas nedsänkt: HTML `<sub>`, SVG `<tspan>`, PowerPoint-körningar, filmernas canvas och
+figurernas mathtext (`verktyg/figurer/figlib.py` skriver om etiketterna med samma regler). Låtsasindex (Xᴸ, Iɴ) är inte tillåtna.
+
+```sh
+python3 sjoskolan/innehall/notation.py kontrollera                   # lista avvikelser (ingår i innehall.py kontrollera, CI)
+python3 sjoskolan/innehall/notation.py skriv-om                      # sidtext, labbarnas, filmernas och figurernas strängar
+python3 sjoskolan/innehall/notation.py skriv-om --poster             # även poster och uppackade skyddade filer (.skyddat/)
+python3 sjoskolan/innehall/notation.py skriv-om --presentationer     # även presentationerna (pptx), formateringen behålls
+```
+
+Efter `--poster`: `revidera --alla` och `bygg`. Efter `--presentationer`: PDF och bildspel (`verktyg/bildspel/bygg.py`).
+Presentationerna kontrolleras via bildspelens `data.json`, som behåller index som markering.
+Kodnycklar (`storhet: 'XL'`, `q: 'IN'`) är inte text och lämnas; ett inmatningsfält kan inte visa index, så labbprotokollet
+visar en förifylld storhet med index som text och en formel med index som ledtråd under fältet.
+
 ## Genererade platser
 
 Genererade regioner i befintliga sidor är märkta `<!-- innehall:start … -->` … `<!-- innehall:slut … -->`.

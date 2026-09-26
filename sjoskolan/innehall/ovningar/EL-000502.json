@@ -3,7 +3,7 @@
   "titel": "Toppvärde och topp till topp",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Om Upp = 20 V, hur stort är û?"
+    "fraga": "Om U_{pp} = 20 V, hur stort är û?"
   },
   "referenser": {
     "ursprung": [
