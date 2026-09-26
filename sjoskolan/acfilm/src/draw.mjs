@@ -39,7 +39,7 @@ function sine(c,s,t){
  if(['values','mains'].includes(s.wave)){
   dashed(c,[[p.x,p.mid-p.amp],[p.x+p.w,p.mid-p.amp]],C.red);dashed(c,[[p.x,p.mid+p.amp],[p.x+p.w,p.mid+p.amp]],C.red);
   label(c,s.wave==='mains'?'+325 V':'+û',180,324,26,C.red,700);label(c,s.wave==='mains'?'−325 V':'−û',1450,708,24,C.red,700);
-  arrow(c,1490,p.mid-p.amp,1490,p.mid+p.amp,C.teal,4);label(c,'Upp',1500,p.mid+8,24,C.teal,700);
+  arrow(c,1490,p.mid-p.amp,1490,p.mid+p.amp,C.teal,4);label(c,'U_{pp}',1500,p.mid+8,24,C.teal,700);
   if(s.wave==='mains'){dashed(c,[[p.x,p.mid-p.amp/Math.sqrt(2)],[p.x+p.w,p.mid-p.amp/Math.sqrt(2)]],C.teal);label(c,'230 V RMS',760,396,26,C.teal,700);}
  }else if(s.wave==='mean'){
   for(let q=0;q<1;q+=.01){c.globalAlpha=.23;line(c,[[p.x+p.w*q,p.mid],[p.x+p.w*q,p.mid-p.amp*Math.sin(TAU*q)]],q<.5?C.blue:C.red,12);}c.globalAlpha=1;
@@ -114,14 +114,14 @@ function frequency(c,s,t){
  [20,40,60,80,100].forEach(f=>{line(c,[[fx(f),y],[fx(f),y-h]],'#e0e5e3',2);txt(c,String(f),fx(f),y+32,23,C.grey,400,'center')});[0,50,100,150].forEach(v=>{line(c,[[x,fy(v)],[x+w,fy(v)]],'#e0e5e3',2);txt(c,String(v),x-17,fy(v)+8,23,C.grey,400,'right')});
  const plots=[[],[]];for(let i=0;i<=200;i++){let f=fmin+(fmax-fmin)*i/200;plots[0].push([fx(f),fy(TAU*f*L)]);plots[1].push([fx(f),fy(1/(TAU*f*cap))]);}line(c,plots[0],C.blue,6);line(c,plots[1],C.red,6);
  const f=20+80*(.5-.5*Math.cos(t*.22)),xl=TAU*f*L,xc=1/(TAU*f*cap);dashed(c,[[fx(f),y],[fx(f),y-h]],C.teal);dot(c,fx(f),fy(xl),10,C.blue);dot(c,fx(f),fy(xc),10,C.red);
- label(c,'XL',1320,398,32,C.blue,700);label(c,'XC',1320,451,32,C.red,700);label(c,'L = 0.10 H',1295,580,26,C.grey);label(c,'C = 100 μF',1295,623,26,C.grey);
- formula(c,`f = ${f.toFixed(0)} Hz     XL = ${xl.toFixed(1)} Ω     XC = ${xc.toFixed(1)} Ω`,805);sailor(c,1740,809,.6,t,true);
+ label(c,'X_{L}',1320,398,32,C.blue,700);label(c,'X_{C}',1320,451,32,C.red,700);label(c,'L = 0.10 H',1295,580,26,C.grey);label(c,'C = 100 μF',1295,623,26,C.grey);
+ formula(c,`f = ${f.toFixed(0)} Hz     X_{L} = ${xl.toFixed(1)} Ω     X_{C} = ${xc.toFixed(1)} Ω`,805);sailor(c,1740,809,.6,t,true);
 }
 function resonance(c,s,t){
  panel(c,126,275,1470,550);const x=420,y=685;
  arrow(c,x,y,x+170,y,C.blue,8);arrow(c,x+170,y,x+170,y-340,C.red,8);arrow(c,x+235,y-340,x+235,y,C.teal,8);
- label(c,'UR = U = 100 V',x-110,y+54,33,C.blue,700);label(c,'UL = +j200 V',x+80,315,30,C.red,700);label(c,'UC = −j200 V',x+310,443,30,C.teal,700);
- label(c,'R = 20 Ω',1150,566,30,C.ink,700);label(c,'XL = XC = 40 Ω',1150,621,30,C.ink,700);label(c,'I = 5 A RMS',1150,680,33,C.teal,700);
+ label(c,'U_{R} = U = 100 V',x-110,y+54,33,C.blue,700);label(c,'U_{L} = +j200 V',x+80,315,30,C.red,700);label(c,'U_{C} = −j200 V',x+310,443,30,C.teal,700);
+ label(c,'R = 20 Ω',1150,566,30,C.ink,700);label(c,'X_{L} = X_{C} = 40 Ω',1150,621,30,C.ink,700);label(c,'I = 5 A RMS',1150,680,33,C.teal,700);
  label(c,'Opposing reactive voltages',997,756,27,C.grey);formula(c,s.formula,807);gull(c,1740,800,.8,t);
 }
 function power(c,s,t){
@@ -149,7 +149,7 @@ function correction(c,s,t){
  panel(c,129,280,1470,545);const k=ease((t-(s.revealTime||6))/6),P=3,Q=4*(1-k),S=Math.hypot(P,Q),x=348,y=672,unit=88;
  arrow(c,x,y,x+P*unit,y,C.blue,7);if(Q>.03)arrow(c,x+P*unit,y,x+P*unit,y-Q*unit,C.red,7);arrow(c,x,y,x+P*unit,y-Q*unit,C.teal,8);
  label(c,'P = 3 kW (unchanged)',235,735,33,C.blue,700);label(c,`Supply S = ${S.toFixed(2)} kVA`,875,358,34,C.teal,700);label(c,`Supply Q = +${Q.toFixed(2)} kvar`,875,426,32,C.red,700);
- capacitor(c,1080,551);label(c,`Capacitor Qc = −${(4*k).toFixed(2)} kvar`,883,661,30,C.ink,700);
+ capacitor(c,1080,551);label(c,`Capacitor Q_{C} = −${(4*k).toFixed(2)} kvar`,883,661,30,C.ink,700);
  formula(c,s.formula,805);sailor(c,1740,810,.63,t,true);
 }
 function loss(c,s,t){

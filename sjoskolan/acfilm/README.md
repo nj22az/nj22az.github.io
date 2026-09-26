@@ -15,6 +15,12 @@ The film explains the core theory and worked examples. It is a companion to the 
 - English captions are timed to the generated phrases. Animation reveals use those caption cues. Video includes burnt-in captions; SRT and VTT are also provided.
 - Equations assume the waveform and circuit conditions stated in each scene. The distorted-current sketch illustrates harmonics and is not a numerical fit to its separate meter example.
 
+## Notation
+
+On-screen text follows the course notation (`../innehall/beteckningar.json`): U_{pp}, U_{RMS}, X_{L}, X_{C}, U_{R}, U_{L}, U_{C}, Q_{C}.
+Indices are written `U_{pp}` in `src/content.mjs` and `src/draw.mjs` and drawn as true subscripts by `txt()` in `src/art.mjs`.
+`innehall.py kontrollera` (CI) checks the film sources.
+
 ## Rebuild
 
 Requirements: Node 22+, Java 17+, Python with `kokoro-onnx==0.4.9` and numpy, and FFmpeg.
@@ -26,6 +32,14 @@ npm run build
 npm run score
 npm run check
 npm run render
+```
+
+When only on-screen text changes, the spoken narration is unchanged and the voice model is not needed. Reuse the existing narration instead of `npm run narrate`:
+
+```sh
+mkdir -p build && ffmpeg -y -i assets/narration-en.mp3 -ar 48000 -ac 2 build/narration.wav
+npm run build && npm run score && npm run check && npm run render
+cp build/Alternating_Current_Aboard_EN.mp4 assets/
 ```
 
 The download uses H.264 at 1080p, CRF 27, with 96 kbit/s AAC stereo, keeping the complete lesson small enough for publication. The browser player retains its separate 128 kbit/s narration and music tracks.

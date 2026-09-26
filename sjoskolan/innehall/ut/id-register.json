@@ -4291,7 +4291,7 @@
   },
   {
    "id": "EL-000235",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL och effektfaktor",
@@ -5063,7 +5063,7 @@
   },
   {
    "id": "EL-000341",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna impedansens belopp",

@@ -81,7 +81,7 @@
       "id": "values",
       "chapter": 0,
       "title": "Three different voltage values",
-      "key": "For a centred sine wave: Upp = 2û.",
+      "key": "For a centred sine wave: U_{pp} = 2û.",
       "visual": "wave",
       "slides": [
         4,
@@ -93,7 +93,7 @@
       ],
       "say": "We need three different descriptions of voltage. The instantaneous value tells us the voltage at one particular moment. The peak value is the largest magnitude reached by the wave. Peak to peak is the distance from the negative peak to the positive peak. For a sine wave centred on zero, peak to peak is twice the peak. Read the symbol and the description carefully before choosing a formula.",
       "wave": "values",
-      "formula": "Instantaneous u(t) · Peak û · Peak-to-peak Upp",
+      "formula": "Instantaneous u(t) · Peak û · Peak-to-peak U_{pp}",
       "start": 84,
       "duration": 24.5,
       "voiceStart": 84.5,
@@ -143,7 +143,7 @@
       ],
       "say": "For a pure sine wave with no D C offset, divide the peak by the square root of two to find R M S. Going the other way, multiply R M S by the square root of two. A two hundred and thirty volt R M S sine wave therefore has a peak of about three hundred and twenty five volts. Its peak to peak value is about six hundred and fifty one volts.",
       "wave": "mains",
-      "formula": "230 V RMS · û ≈ 325 V · Upp ≈ 651 V",
+      "formula": "230 V RMS · û ≈ 325 V · U_{pp} ≈ 651 V",
       "start": 136,
       "duration": 22.5,
       "voiceStart": 136.5,
@@ -163,10 +163,10 @@
         9
       ],
       "say": "Here is the presentation example. A sine wave has thirty volts peak to peak and a period of ten milliseconds. First, halve thirty to obtain a peak of fifteen volts. Next, divide fifteen by the square root of two. The R M S value is about ten point six one volts. Finally, convert ten milliseconds to zero point zero one seconds. One divided by that period gives one hundred hertz. Notice that peak to peak is the largest of these voltage values.",
-      "given": "Upp = 30 V     T = 10 ms",
+      "given": "U_{pp} = 30 V     T = 10 ms",
       "steps": [
         "û = 30/2 = 15 V",
-        "Urms = 15/√2 ≈ 10.61 V",
+        "U_{RMS} = 15/√2 ≈ 10.61 V",
         "f = 1/0.010 = 100 Hz"
       ],
       "stepCues": [
@@ -332,10 +332,10 @@
         35
       ],
       "say": "A centred sine wave measures twenty volts peak to peak. One cycle lasts four milliseconds. What are its peak voltage, R M S voltage and frequency? Pause the film and write the units beside each result. The peak is ten volts. The R M S value is ten divided by the square root of two, about seven point zero seven volts. The period is zero point zero zero four seconds, so the frequency is two hundred and fifty hertz.",
-      "given": "Upp = 20 V     T = 4 ms",
+      "given": "U_{pp} = 20 V     T = 4 ms",
       "steps": [
         "û = 20/2 = 10 V",
-        "Urms = 10/√2 ≈ 7.07 V",
+        "U_{RMS} = 10/√2 ≈ 7.07 V",
         "f = 1/0.004 = 250 Hz"
       ],
       "stepCues": [
@@ -412,7 +412,7 @@
       "say": "An ideal inductor opposes changes in current. The voltage across it is greatest when current is changing most rapidly. Current therefore lags voltage by ninety degrees in a sinusoidal steady state. Watch the voltage reach its positive peak before the current. A real coil also has resistance, so a practical coil does not generally produce a full ninety degree phase difference. The ideal model helps us understand its reactive part.",
       "component": "L",
       "phase": 1.5707963267948966,
-      "formula": "XL = 2πfL",
+      "formula": "X_{L} = 2πfL",
       "start": 422.5,
       "duration": 28.5,
       "voiceStart": 423,
@@ -425,7 +425,7 @@
       "id": "inductor-calc",
       "chapter": 1,
       "title": "Inductive reactance increases with frequency",
-      "key": "L in henries · f in hertz · XL in ohms",
+      "key": "L in henries · f in hertz · X_{L} in ohms",
       "visual": "calculation",
       "slides": [
         6,
@@ -435,8 +435,8 @@
       "say": "Calculate the reactance of an ideal zero point one henry inductor at fifty hertz. Multiply two, pi, fifty and zero point one. The result is approximately thirty one point four ohms. If the frequency doubles while inductance stays the same, inductive reactance doubles as well. This does not mean the coil has acquired more ordinary resistance. We are describing the relationship between sinusoidal voltage and current caused by its inductance.",
       "given": "L = 0.10 H     f = 50 Hz",
       "steps": [
-        "XL = 2π × 50 × 0.10 ≈ 31.4 Ω",
-        "At 100 Hz: XL ≈ 62.8 Ω"
+        "X_{L} = 2π × 50 × 0.10 ≈ 31.4 Ω",
+        "At 100 Hz: X_{L} ≈ 62.8 Ω"
       ],
       "stepCues": [
         "Multiply two",
@@ -465,7 +465,7 @@
       "say": "A capacitor behaves differently. Current flows as its stored charge changes, and its voltage builds as charge accumulates. In sinusoidal steady state, current leads voltage by ninety degrees for an ideal capacitor. The current peak arrives first. Compare this directly with the inductor, where current lagged. These statements describe timing. They do not mean that a capacitor creates energy or anticipates a future change.",
       "component": "C",
       "phase": -1.5707963267948966,
-      "formula": "XC = 1/(2πfC)",
+      "formula": "X_{C} = 1/(2πfC)",
       "start": 479.5,
       "duration": 29,
       "voiceStart": 480,
@@ -490,9 +490,9 @@
       "say": "For a one hundred microfarad capacitor at fifty hertz, first convert the capacitance to one hundred times ten to the minus six farads. Calculate the complete denominator: two times pi times frequency times capacitance. Then divide one by that result. Capacitive reactance is approximately thirty one point eight ohms. At one hundred hertz it falls to about fifteen point nine ohms. Increasing frequency has the opposite effect on capacitive and inductive reactance.",
       "given": "C = 100 μF = 0.000100 F     f = 50 Hz",
       "steps": [
-        "XC = 1/(2π × 50 × 0.000100)",
-        "XC ≈ 31.8 Ω",
-        "At 100 Hz: XC ≈ 15.9 Ω"
+        "X_{C} = 1/(2π × 50 × 0.000100)",
+        "X_{C} ≈ 31.8 Ω",
+        "At 100 Hz: X_{C} ≈ 15.9 Ω"
       ],
       "stepCues": [
         "Calculate the complete",
@@ -530,7 +530,7 @@
       "b": 40,
       "labels": [
         "R = 30 Ω",
-        "XL = 40 Ω",
+        "X_{L} = 40 Ω",
         "|Z| = 50 Ω"
       ],
       "formula": "|Z| = √(R² + X²)     I = U/|Z| = 2 A",
@@ -553,11 +553,11 @@
         9
       ],
       "say": "Now use the smaller example from the presentation. Resistance is twelve ohms, inductive reactance is sixteen ohms, and the supply is sixty volts R M S. The impedance is twenty ohms, giving a current of three amperes. Multiplying current by resistance gives thirty six volts across the resistor. Multiplying current by inductive reactance gives forty eight volts across the inductor. We must account for their different phases when combining these voltages.",
-      "given": "R = 12 Ω     XL = 16 Ω     U = 60 V RMS",
+      "given": "R = 12 Ω     X_{L} = 16 Ω     U = 60 V RMS",
       "steps": [
         "|Z| = √(12² + 16²) = 20 Ω",
         "I = 60/20 = 3 A",
-        "UR = 36 V     UL = 48 V"
+        "U_{R} = 36 V     U_{L} = 48 V"
       ],
       "stepCues": [
         "The impedance is",
@@ -593,11 +593,11 @@
       "a": 36,
       "b": 48,
       "labels": [
-        "UR = 36 V",
-        "UL = 48 V",
+        "U_{R} = 36 V",
+        "U_{L} = 48 V",
         "U = 60 V"
       ],
-      "formula": "U = √(UR² + UL²) = 60 V RMS",
+      "formula": "U = √(U_{R}² + U_{L}²) = 60 V RMS",
       "start": 601,
       "duration": 29,
       "voiceStart": 601.5,
@@ -668,7 +668,7 @@
       "id": "frequency",
       "chapter": 1,
       "title": "Change frequency, change the balance",
-      "key": "Fixed components: XL ∝ f and XC ∝ 1/f.",
+      "key": "Fixed components: X_{L} ∝ f and X_{C} ∝ 1/f.",
       "visual": "frequency",
       "slides": [
         23,
@@ -676,7 +676,7 @@
         30
       ],
       "say": "The frequency sweep shows the two trends together. Keep the inductance and capacitance fixed. As frequency rises, inductive reactance increases and capacitive reactance decreases. Their crossing marks equal reactance magnitudes. In a series circuit, use their difference as the net reactance. Below that crossing, the circuit is capacitive. Above it, the circuit is inductive. The curves are calculated from the same equations we have just used.",
-      "formula": "X = XL − XC",
+      "formula": "X = X_{L} − X_{C}",
       "start": 688.5,
       "duration": 28.5,
       "voiceStart": 689,
@@ -720,7 +720,7 @@
         35
       ],
       "say": "Here is a series circuit with thirty ohms of resistance, fifty ohms of inductive reactance and ten ohms of capacitive reactance. The supply is one hundred volts R M S. Find the net reactance, impedance magnitude and current. Decide whether current leads or lags. Pause here. The net reactance is positive forty ohms. The impedance is fifty ohms, so current is two amperes. The circuit is inductive, and current lags voltage.",
-      "given": "R = 30 Ω     XL = 50 Ω     XC = 10 Ω     U = 100 V",
+      "given": "R = 30 Ω     X_{L} = 50 Ω     X_{C} = 10 Ω     U = 100 V",
       "steps": [
         "X = 50 − 10 = +40 Ω",
         "|Z| = √(30² + 40²) = 50 Ω",
@@ -941,9 +941,9 @@
       "say": "To calculate a compensation requirement for sinusoidal conditions, multiply active power by the difference between the tangents of the original and target phase angles. For three kilowatts, improving cosine phi from zero point six to one gives a compensation magnitude of four kilovars. Write the capacitor contribution as negative four kilovars in the signed reactive-power balance. This distinction explains why a compensation requirement may be written as a positive number in a specification.",
       "given": "P = 3 kW     cos φ₁ = 0.60     cos φ₂ = 1.00",
       "steps": [
-        "|Qc| = P(tan φ₁ − tan φ₂)",
-        "|Qc| = 3 × (4/3 − 0) = 4 kvar",
-        "Signed capacitor contribution: Qc = −4 kvar"
+        "|Q_{C}| = P(tan φ₁ − tan φ₂)",
+        "|Q_{C}| = 3 × (4/3 − 0) = 4 kvar",
+        "Signed capacitor contribution: Q_{C} = −4 kvar"
       ],
       "stepCues": [
         "To calculate",

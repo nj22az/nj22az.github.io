@@ -621,7 +621,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Beräkna kretsens impedans när R = 40 Ω och X_{L} ≈ 30 Ω.",
-  "method": "|Z| = √(R² + XL²). Rita R och X_{L} vinkelrätt och beräkna diagonalen.",
+  "method": "|Z| = √(R² + X_{L}²). Rita R och X_{L} vinkelrätt och beräkna diagonalen.",
   "theory": "z",
   "visual": "triangle",
   "explain": "Varför använder vi inte 40 + 30 för impedansens belopp?",

@@ -8,8 +8,16 @@ export const C={paper:'#f7f1e5',ink:'#102a43',blue:'#1554a2',light:'#e6edf1',tea
 export const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 export const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
 const TAU=Math.PI*2;
+// Index are written with course markup, U_{pp}, and drawn as true subscripts (smaller, lowered).
 export function txt(c,t,x,y,size=36,color=C.ink,weight=400,align='left'){
- c.fillStyle=color;c.font=`${weight} ${size}px "Film Sans", "DejaVu Sans", sans-serif`;c.textAlign=align;c.textBaseline='alphabetic';c.fillText(t,x,y);
+ const font=(z)=>`${weight} ${z}px "Film Sans", "DejaVu Sans", sans-serif`;
+ c.fillStyle=color;c.font=font(size);c.textBaseline='alphabetic';
+ if(!String(t).includes('_{')){c.textAlign=align;c.fillText(t,x,y);return;}
+ const sub=Math.round(size*.68),parts=String(t).split(/(_\{[^{}]*\})/).filter(Boolean).map(p=>p.startsWith('_{')?{t:p.slice(2,-1),z:sub,dy:size*.24}:{t:p,z:size,dy:0});
+ let width=0;for(const p of parts){c.font=font(p.z);p.w=c.measureText(p.t).width;width+=p.w;}
+ let cx=align==='center'?x-width/2:align==='right'?x-width:x;c.textAlign='left';
+ for(const p of parts){c.font=font(p.z);c.fillText(p.t,cx,y+p.dy);cx+=p.w;}
+ c.font=font(size);
 }
 export function wrap(c,t,x,y,max=1000,size=34,color=C.ink,weight=400,line=1.36){
  c.font=`${weight} ${size}px "Film Sans", "DejaVu Sans", sans-serif`;

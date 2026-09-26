@@ -12,7 +12,7 @@ function draw(time){
  paint(film,timeline,ctx,Math.round(time*30),env,captions);
  const s=timeline.scenes.find(s=>time>=s.start&&time<s.start+s.duration)||timeline.scenes.at(-1);
  $('#position').textContent=`${fmt(time)} / ${fmt(timeline.duration)}`;$('#seek').value=time;
- if(lastScene!==s.id){lastScene=s.id;$('#scene-title').textContent=s.title;$('#slide-reference').textContent=`Lesson ${s.chapter+1} · Extended revision`;canvas.setAttribute('aria-label',`${s.title}. ${s.key}`);document.querySelectorAll('#chapters button').forEach(b=>{if(Number(b.dataset.chapter)===s.chapter)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current')});history.replaceState(null,'',`#${s.id}`);}
+ if(lastScene!==s.id){lastScene=s.id;$('#scene-title').textContent=s.title;$('#slide-reference').textContent=`Lesson ${s.chapter+1} · Extended revision`;canvas.setAttribute('aria-label',`${s.title}. ${s.key.replace(/_\{([^{}]*)\}/g,' $1')}`);document.querySelectorAll('#chapters button').forEach(b=>{if(Number(b.dataset.chapter)===s.chapter)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current')});history.replaceState(null,'',`#${s.id}`);}
  const cue=timeline.captions.find(q=>time>=q.start&&time<q.end);
  if((cue?.text||'')!==lastCaption){lastCaption=cue?.text||'';$('#spoken-text').textContent=lastCaption;}
 }
