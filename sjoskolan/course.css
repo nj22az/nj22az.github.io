@@ -19,7 +19,7 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 .course-main{overflow-wrap:break-word}
 .course-main a{overflow-wrap:anywhere}
 .course-main table{max-width:100%}
-.course-main td{overflow-wrap:anywhere}
+.course-main td{overflow-wrap:break-word}
 
 .course-kicker{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sj-muted,#4d6579);margin:0}
 .course-lead{font-size:20px;line-height:1.5;color:var(--sj-muted,#4d6579);max-width:60ch}
