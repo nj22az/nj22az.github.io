@@ -8,7 +8,7 @@
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260926"><link rel="stylesheet" href="guided.css?v=20260925-ac2"><link rel="stylesheet" href="workspace.css?v=20260926"><link rel="stylesheet" href="equipment.css?v=20260925-3d1"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 </head>
 <body class="ac-page">
-<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-40/aktuell/">Vecka 40</a><a href="../vecka-40/aktuell/Lararstod.html">Lärarstöd</a></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-40/aktuell/">Vecka 40</a></nav>
 <main id="main-content" class="ac-app">
   <header class="ac-heading">
     <div>
@@ -68,13 +68,8 @@
   </div>
 
   </div>
-  <section id="station-workspace" hidden><div class="station-intro"><h2>Utökat stationsförsök</h2><p>Detta protokoll hör till Station B. Läs först fördjupningen om likriktat medelvärde och sinuskalibrerade mätare. Grundkälla 12,00 V och stationens källa 12,35 V är två olika undervisningsexempel.</p><p><a href="../vecka-40/aktuell/Genomgang.html?del=sinus&amp;avsnitt=likriktat">Genomgång före stationsförsöket</a></p><details><summary>Mätning och verklig rigg</summary><p>Här läser du simulerade instrument. Fysisk inkoppling görs först med lärarens godkända kopplingsschema och dokumenterade mätpunkter. Se lärarstödet för underlaget som behövs.</p></details></div><section id="labbprotokoll"></section></section>
-  <details class="teacher-notes"><summary>För lärare · modell, arbetssätt och begränsningar</summary>
-    <p>Grundläget har åtta guidade uppgifter. Följ genomgången och låt eleven förklara sina resultat. De tolv räkna-först-uppgifterna är fortsatt träning. Se veckans lärarstöd för ordning, facit och stoppunkter.</p>
-    <p>Modellen: ideal spänningskälla, stationär sinus, ideala och linjära komponenter. Spolen saknar resistans och kondensatorn saknar läckström. Effektfliken antar sinusformad spänning och ström, så PF = cos φ. Övertoner, mättning, uppvärmning, inkopplingsförlopp och verkliga komponenttoleranser simuleras inte. Kabelförlusten är I²R med en fast slingresistans. Källan är styv: kabelns spänningsfall påverkar inte lasten, och generatorns spänningsreglering och lastdelning ingår inte. En kondensator kompenserar bara induktiv last i modellen.</p>
-    <p><strong>Säkerhet att ta upp muntligt:</strong> Mät aldrig nätspänning med oscilloskopets jordade probe. Använd differentialprob och instrument med rätt CAT-klass. Ombord är nätet ofta ett IT-system, och en jordad mätklämma på en fas ger jordfel. En kondensator, även i en frekvensomriktares DC-mellanled, kan hålla farlig spänning efter frånkoppling. Kontrollera urladdningen med mätning innan arbete.</p>
-    <p>Framsteg sparas bara i denna webbläsare. Inga elevdata skickas någonstans. Direktlänkar: <code>?flik=sinus</code>, <code>impedans</code> eller <code>effekt</code>, och <code>&amp;uppgift=</code> följt av uppgiftens id, till exempel <code>?flik=impedans&amp;uppgift=resonans</code>.</p>
-  </details>
+  <section id="station-workspace" hidden><div class="station-intro"><h2>Utökat stationsförsök</h2><p>Detta protokoll hör till Station B. Läs först fördjupningen om likriktat medelvärde och sinuskalibrerade mätare. Grundkälla 12,00 V och stationens källa 12,35 V är två olika undervisningsexempel.</p><p><a href="../vecka-40/aktuell/Genomgang.html?del=sinus&amp;avsnitt=likriktat">Genomgång före stationsförsöket</a></p><details><summary>Mätning och verklig rigg</summary><p>Här läser du simulerade instrument. Fysisk inkoppling görs först med lärarens godkända kopplingsschema och dokumenterade mätpunkter. Fråga läraren om underlaget innan du kopplar.</p></details></div><section id="labbprotokoll"></section></section>
+  <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Mät aldrig nätspänning med oscilloskopets jordade probe. Använd differentialprob och instrument med rätt CAT-klass.</li><li>I ett IT-nät ombord ger en jordad mätklämma på en fas ett jordfel.</li><li>En kondensator, även i en frekvensomriktare, kan hålla farlig spänning efter frånkoppling. Kontrollera urladdningen med mätning.</li><li>Simulatorn visar ideala komponenter och ren sinus. Verkliga mätvärden avviker.</li></ul></details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
