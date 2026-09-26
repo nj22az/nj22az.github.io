@@ -155,6 +155,9 @@ Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i
 | `vecka-40/aktuell/ac-course.css` | genomgångar och veckosida för vecka 40 samt Växelströmslabbet |
 | `gemensamt/skolnav.css` | meny och startruta i labbarna |
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
+| `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
+| `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
+| `verktyg/facit/facit.py` | facit under övningarna i Formelstöd och övningar |
 
 Alla sidor använder Sjöskolans meny (`nav.school-nav`) och sidfot (`footer.school-nav`). Webbplatsens `styles.css`, `config.js` och `shared.js` och dess färgteman används inte i kursen.
 
