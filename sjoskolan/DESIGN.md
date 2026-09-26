@@ -144,7 +144,7 @@ Fördjupning märks ”Fördjupning” och kommer efter grunddelen. Beteckningar
 
 ### Presentationer
 
-Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i genomgång, simulator och protokoll. Räkneexempel och labbinstruktioner har egna, igenkännbara bildtyper. Fördjupning märks i rubriken.
+Eleverna möter presentationerna som bildspel på webben (`bildspel/?d=<id>`): bilden, bildens text under för läsning och skärmläsare, pilar, svep, översikt och helskärm. Bilder med ”övning N” i rubriken länkar till övningen med facit. PowerPoint och PDF finns kvar som nedladdning. Bygg om med `verktyg/bildspel/bygg.py` när en presentation ändras. Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i genomgång, simulator och protokoll. Räkneexempel och labbinstruktioner har egna, igenkännbara bildtyper. Fördjupning märks i rubriken.
 
 ## Filer
 
@@ -158,6 +158,7 @@ Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
 | `verktyg/facit/facit.py` | facit under övningarna i Formelstöd och övningar |
+| `verktyg/bildspel/bygg.py` | webbildspel av presentationerna: `bildspel/<id>/` med bilder och text, visaren `bildspel/index.html` |
 
 Alla sidor använder Sjöskolans meny (`nav.school-nav`) och sidfot (`footer.school-nav`). Webbplatsens `styles.css`, `config.js` och `shared.js` och dess färgteman används inte i kursen.
 

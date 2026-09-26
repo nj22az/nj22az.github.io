@@ -1,0 +1,120 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bildspel · Sjöskolan</title><meta name="description" content="Kursens presentationer som bildspel på webben, med text, övningar och labbar."><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260927"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260927">
+<style>
+.deck-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;margin-bottom:16px}
+.course-main .deck-head h1{font-size:clamp(28px,3.4vw,38px);margin:4px 0 0}
+.deck-links{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:15px}
+.stage{position:relative;background:#0f2a40;border-radius:12px;overflow:hidden;user-select:none;touch-action:pan-y}
+.stage img{display:block;width:100%;height:auto;aspect-ratio:var(--ar,4/3);object-fit:contain;background:#fff}
+.stage:fullscreen{display:flex;align-items:center;justify-content:center;border-radius:0}
+.stage:fullscreen img{width:auto;max-width:100vw;max-height:100vh}
+.nav-btn{position:absolute;top:0;bottom:0;width:18%;border:0;background:transparent;cursor:pointer;color:transparent}
+.nav-btn.prev{left:0}.nav-btn.next{right:0}
+.nav-btn:focus-visible{outline:3px solid var(--sj-ink);box-shadow:inset 0 0 0 6px var(--sj-focus)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:12px 0}
+.bar .count{font-weight:700;font-variant-numeric:tabular-nums;min-width:6.5em;text-align:center}
+.bar .sp{flex:1}
+.progress{height:6px;background:var(--sj-line);border-radius:3px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--sj-blue);transition:width .2s}
+.slide-text{margin-top:16px}
+.course-main .slide-text h2{font-size:23px;margin:0 0 8px}
+.slide-text ul{padding-left:22px;max-width:72ch}.slide-text li{margin:4px 0}
+.ex-link{margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+.grid button{padding:0;border:2px solid var(--sj-line);border-radius:8px;background:#fff;cursor:pointer;text-align:left;font:inherit;font-size:14px;overflow:hidden}
+.grid button[aria-current="true"]{border-color:var(--sj-blue);box-shadow:0 0 0 2px var(--sj-blue)}
+.grid img{display:block;width:100%;aspect-ratio:var(--ar,4/3);object-fit:cover;background:var(--sj-soft)}
+.grid span{display:block;padding:6px 8px;color:var(--sj-ink)}
+.keys{font-size:15px;color:var(--sj-muted)}
+.list-week h2{margin-top:32px}
+.list-week ul{list-style:none;padding:0}.list-week li{padding:8px 0;border-bottom:1px solid var(--sj-line)}
+.list-week a{font-weight:700;font-size:19px}.list-week small{display:block;color:var(--sj-muted);font-size:15px}
+@media(max-width:767px){.bar .sj-btn{min-height:44px;padding:8px 14px}.nav-btn{width:25%}}
+@media print{.bar,.progress,.nav-btn,.grid-wrap,.school-nav{display:none!important}}
+</style></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Alla bildspel</a><span id="nav-week"></span></nav>
+<main id="main-content" class="course-main"><div id="app"><p>Laddar bildspelet …</p></div><noscript><p>Bildspelet behöver JavaScript. Presentationerna finns också som PDF på veckosidorna.</p></noscript></main>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module">
+const app = document.getElementById('app');
+const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const params = new URLSearchParams(location.search);
+const id = params.get('d');
+const STORE = 'sjoskolan-bildspel-';
+
+async function list() {
+  const decks = await (await fetch('lista.json')).json();
+  const weeks = [...new Set(decks.map((d) => d.week))];
+  document.title = 'Bildspel · Sjöskolan';
+  app.innerHTML = `<div class="course-heading"><p class="course-kicker">Kursens presentationer</p><h1>Bildspel</h1><p class="course-lead">Alla presentationer som bildspel på webben. Bläddra med pilarna, läs texten under bilden och gå direkt till övningarna.</p></div>` +
+    weeks.map((w) => `<section class="list-week"><h2>Vecka ${w}</h2><ul>${decks.filter((d) => d.week === w).map((d) => {
+      let pos = null; try { pos = localStorage.getItem(STORE + d.id); } catch {}
+      return `<li><a href="?d=${esc(d.id)}">${esc(d.title)}</a><small>${d.n} ${d.n === 1 ? 'bild' : 'bilder'}${pos && Number(pos) > 1 ? ` · du var på bild ${pos}` : ''}</small></li>`;
+    }).join('')}</ul></section>`).join('');
+}
+
+async function viewer() {
+  let d;
+  try { d = await (await fetch(`${encodeURIComponent(id)}/data.json`)).json(); }
+  catch { app.innerHTML = '<p>Bildspelet hittades inte. <a href="./">Visa alla bildspel</a>.</p>'; return; }
+  const n = d.slides.length, src = (i) => `${d.id}/${String(i).padStart(2, '0')}.webp`;
+  document.title = `${d.title} · vecka ${d.week} · Sjöskolan`;
+  document.documentElement.style.setProperty('--ar', `${d.w}/${d.h}`);
+  document.getElementById('nav-week').outerHTML = `<a href="${esc(d.weekUrl)}">Vecka ${d.week}</a>`;
+  app.innerHTML = `
+    <div class="deck-head"><div><p class="course-kicker">Vecka ${d.week} · bildspel</p><h1>${esc(d.title)}</h1></div>
+      <div class="deck-links">${d.exercises ? `<a href="${esc(d.exercises)}">Övningar med facit</a>` : ''}<a href="${esc(d.weekUrl)}">Veckans sida</a><a href="${esc(d.pdf)}">PDF</a><a href="${esc(d.pptx)}">PowerPoint</a></div></div>
+    <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+    <div class="stage" id="stage"><img id="img" alt="" width="${d.w}" height="${d.h}"><button class="nav-btn prev" id="zprev" aria-label="Föregående bild"></button><button class="nav-btn next" id="znext" aria-label="Nästa bild"></button></div>
+    <div class="bar"><button class="sj-btn" id="prev" type="button">‹ Föregående</button><span class="count" id="count" aria-live="polite"></span><button class="sj-btn primary" id="next" type="button">Nästa ›</button><span class="sp"></span><button class="sj-btn" id="gridbtn" type="button" aria-expanded="false" aria-controls="grid">Alla bilder</button><button class="sj-btn" id="fs" type="button">Helskärm</button></div>
+    <div class="grid-wrap" id="gridwrap" hidden><div class="grid" id="grid"></div></div>
+    <section class="slide-text" aria-labelledby="st-title"><h2 id="st-title"></h2><div id="st-body"></div><p class="ex-link" id="ex"></p></section>
+    <p class="keys">Tangenter: ← → bläddrar, Home och End går till första och sista bilden, F ger helskärm, G visar alla bilder. På mobil: svep åt sidan.</p>`;
+  const $ = (x) => document.getElementById(x);
+  let cur = 1;
+  const fromHash = () => { const m = location.hash.match(/^#(\d+)$/); return m ? Math.min(n, Math.max(1, Number(m[1]))) : null; };
+  function show(i, push = true) {
+    cur = Math.min(n, Math.max(1, i));
+    const s = d.slides[cur - 1];
+    $('img').src = src(cur); $('img').alt = `Bild ${cur}: ${s.title}`;
+    $('count').textContent = `${cur} / ${n}`;
+    $('prog').style.width = `${cur / n * 100}%`;
+    $('prev').disabled = cur === 1; $('next').disabled = cur === n;
+    $('st-title').textContent = s.title;
+    $('st-body').innerHTML = s.text.length ? `<ul>${s.text.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+    $('ex').innerHTML = s.ex ? `<a class="sj-btn primary" href="${esc(s.ex)}">Gör övningen med facit ›</a>` : '';
+    document.querySelectorAll('#grid button').forEach((b, k) => b.setAttribute('aria-current', String(k + 1 === cur)));
+    if (push) history.replaceState(null, '', `?d=${encodeURIComponent(d.id)}#${cur}`);
+    try { localStorage.setItem(STORE + d.id, String(cur)); } catch {}
+    if (cur < n) { const pre = new Image(); pre.src = src(cur + 1); }
+  }
+  $('grid').innerHTML = d.slides.map((s, k) => `<button type="button" data-i="${k + 1}"><img loading="lazy" src="${src(k + 1)}" alt=""><span>${k + 1}. ${esc(s.title)}</span></button>`).join('');
+  $('grid').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; toggleGrid(false); show(Number(b.dataset.i)); $('stage').scrollIntoView({ block: 'start' }); });
+  function toggleGrid(open = $('gridwrap').hidden) { $('gridwrap').hidden = !open; $('gridbtn').setAttribute('aria-expanded', String(open)); }
+  $('gridbtn').onclick = () => toggleGrid();
+  $('prev').onclick = $('zprev').onclick = () => show(cur - 1);
+  $('next').onclick = $('znext').onclick = () => show(cur + 1);
+  $('fs').onclick = () => { const st = $('stage'); if (document.fullscreenElement) document.exitFullscreen(); else st.requestFullscreen?.(); };
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('input,textarea,select') || e.altKey || e.ctrlKey || e.metaKey) return;
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && document.fullscreenElement)) { e.preventDefault(); show(cur + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); show(cur - 1); }
+    else if (k === 'Home') { e.preventDefault(); show(1); }
+    else if (k === 'End') { e.preventDefault(); show(n); }
+    else if (k === 'f' || k === 'F') $('fs').click();
+    else if (k === 'g' || k === 'G') toggleGrid();
+  });
+  let x0 = null, y0 = null;
+  $('stage').addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  $('stage').addEventListener('touchend', (e) => {
+    if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(cur + (dx < 0 ? 1 : -1));
+  });
+  window.addEventListener('hashchange', () => { const h = fromHash(); if (h && h !== cur) show(h, false); });
+  let saved = null; try { saved = Number(localStorage.getItem(STORE + d.id)); } catch {}
+  show(fromHash() || saved || 1);
+}
+
+(id ? viewer() : list()).catch(() => { app.innerHTML = '<p>Bildspelet kunde inte laddas. Ladda om sidan.</p>'; });
+</script>
+</body></html>
