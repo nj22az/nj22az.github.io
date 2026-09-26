@@ -5,18 +5,18 @@
 <title>Multimetersimulator · Sjöskolan</title>
 <meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
-<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260926">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
 <link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="simulator.css?v=20260925-loading">
 <link rel="stylesheet" href="meter.css?v=20260925-loading">
 </head>
 <body class="multimeter-page">
-<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-39/aktuell/">Vecka 39</a></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-39/aktuell/">Vecka 39</a></nav>
 <main id="main-content" class="sim-app">
   <header class="sim-heading">
-    <div><a class="back-link" href="../vecka-39/aktuell/">← Sjöskolan · vecka 39</a><h1>Multimeterlabbet</h1><p>Välj funktion. Koppla mätspetsarna. Förklara resultatet.</p></div>
+    <div><p class="lab-kicker">Vecka 39 · labb</p><h1>Multimeterlabbet</h1><p>Välj funktion. Koppla mätspetsarna. Förklara resultatet.</p></div>
     <a class="presentation-link" href="../multimeterfilm/">Se den animerade genomgången (engelska) ↗</a>
     <a class="presentation-link" href="../bildspel/?d=v39_03_Multimeter_och_matfel">Bildspelet</a>
-  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><ol><li>Välj en övning i listan. Börja med 01 och följ ordningen.</li><li><strong>Förutsäg.</strong> Läs uppgiften i rutan ”Övning” och skriv ned vilket värde du väntar dig innan du kopplar.</li><li><strong>Läs av och jämför.</strong> Vrid ratten till rätt funktion, välj uttag för röd sladd och tryck på Svart eller Röd och sedan på en mätpunkt. Slå på matningen om uppgiften säger det. Jämför visningen med din förutsägelse.</li><li><strong>Förklara.</strong> Tryck ”Kontrollera mätningen” och förklara skillnaden med egna ord. Fungerar det inte, öppna ledtråden.</li></ol><button type="button" onclick="document.querySelector('#lesson-select').value='0';document.querySelector('#lesson-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#task-heading').scrollIntoView({behavior:'smooth',block:'center'})">Starta övning 01</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="/sjoskolan/vecka-39/aktuell/">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li>Välj en övning i listan. Börja med 01 och följ ordningen.</li><li><strong>Förutsäg.</strong> Läs uppgiften i rutan ”Övning” och skriv ned vilket värde du väntar dig innan du kopplar.</li><li><strong>Läs av och jämför.</strong> Vrid ratten till rätt funktion, välj uttag för röd sladd och tryck på Svart eller Röd och sedan på en mätpunkt. Slå på matningen om uppgiften säger det. Jämför visningen med din förutsägelse.</li><li><strong>Förklara.</strong> Tryck ”Kontrollera mätningen” och förklara skillnaden med egna ord. Fungerar det inte, öppna ledtråden.</li></ol><button type="button" onclick="document.querySelector('#lesson-select').value='0';document.querySelector('#lesson-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#task-heading').scrollIntoView({behavior:'smooth',block:'center'})">Starta övning 01</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
   <div class="lesson-bar"><label for="lesson-select">Övning</label><select id="lesson-select"></select><button id="free-mode" aria-pressed="false">Fri övning</button><span id="progress">0 av 8 klara</span></div>
   <div class="sim-layout">
     <section class="work-area" aria-label="Mätplats">

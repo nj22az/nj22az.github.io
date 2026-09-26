@@ -1,6 +1,6 @@
 /* Sjöskolans egen meny och startruta i labbarna. Samma värden som gemensamt/sjoskolan.css (DESIGN.md), oberoende av webbplatsens teman. */
 body:has(> .school-nav){margin:0}
-.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid #cad8e2;padding:14px max(32px,calc((100% - 1396px)/2));background:#fff;color:#163248;font:16px/1.4 Arial,Helvetica,sans-serif}
+.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid #cad8e2;padding:14px max(24px,calc((100% - 1160px)/2));background:#fff;color:#163248;font:16px/1.4 Arial,Helvetica,sans-serif}
 .school-nav a{color:#064f91;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .school-nav strong{letter-spacing:.08em;font-size:18px}
 .school-nav :focus-visible,.lab-start :focus-visible{outline:3px solid #163248;outline-offset:2px;box-shadow:0 0 0 6px #ffd43d}
@@ -12,4 +12,13 @@ footer.school-nav{justify-content:center;border-top:1px solid #cad8e2;border-bot
 .lab-start button,.ac-app .lab-start button,.sim-app .lab-start button{font:inherit;font-weight:700;min-height:44px;padding:8px 18px;border:0;border-radius:8px;background:#064f91;color:#fff;cursor:pointer}
 .lab-start button:hover,.ac-app .lab-start button:hover,.sim-app .lab-start button:hover{background:#053f74;color:#fff}
 .lab-start .muted{color:#4d6579;font-size:14px;margin:10px 0 0}
-@media (max-width:700px){.school-nav{padding:12px 16px}.school-nav ~ main.ac-app,.school-nav ~ main.sim-app{padding-top:18px}}
+@media (max-width:767px){.school-nav{padding:10px 16px}.school-nav ~ main.ac-app,.school-nav ~ main.sim-app{padding-top:18px}}
+
+/* Samma sidform som kurssidorna (DESIGN.md): vit bakgrund, samma bredd och rubriker */
+body.ac-page,body.multimeter-page{background:#fff}
+body .ac-app,body .sim-app{max-width:1208px;padding-left:24px;padding-right:24px}
+.lab-kicker{font:700 15px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#4d6579;margin:0}
+body .ac-heading h1,body .sim-heading h1{font:700 clamp(34px,4.2vw,44px)/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.02em;margin:8px 0 8px}
+body .ac-heading p:not(.lab-kicker),body .sim-heading p:not(.lab-kicker){font-size:18px;line-height:1.5}
+.lab-start .before{margin:0 0 10px;padding:10px 14px;border-radius:8px;background:#edf4f9}
+@media (max-width:767px){body .ac-app,body .sim-app{padding-left:16px;padding-right:16px}}

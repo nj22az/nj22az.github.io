@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
 _spec = importlib.util.spec_from_file_location('inlamning', ROOT / 'verktyg' / 'inlamning' / 'bygg.py')
 _inl = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_inl)
 INLAMNING = _inl.UPPGIFTER
-V = '20260927'
+V = '20260928'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
 
@@ -27,6 +27,7 @@ def lank(href, titel, typ, text=''):
 
 
 LABB = {
+    'ac': '../../vaxelstromslabbet/',
     'multimeter': '../../multimetersimulator/',
     'trefas': '../../trefaslabbet/',
     'hallkrets': '../../hallkretslabbet/',
@@ -98,6 +99,37 @@ VECKOR = {
             ppt('v39_04_Kirchhoff_seminarium_elev.pptx', 'Kirchhoff – kompletterande seminarium', 42),
             lank('../../multimeterfilm/', 'Multimeter Aboard (engelska)', 'film', '12 kapitel med engelsk berättarröst'),
             lank('SELV_rigg_hyttbelysning.png', 'Bild: SELV-rigg för hyttbelysning', 'läs'),
+        ],
+    },
+    40: {
+        'titel': 'Växelström', 'datum': ('2026-09-28', '2026-10-02'), 'sista': '2026-10-04',
+        'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
+        'delar': [
+            {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'poster': [
+                lank('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
+                ppt('v40_01_Sinusformad_vaxelspanning_elev.pptx', 'Sinus och mätvärden', 17),
+                lank('Kortfilmer.html?del=sinus', 'Stegfilm: Vad visar kurvan och multimetern?', 'film', 'svensk text, engelsk berättarröst'),
+                lank('Formelstod_och_ovningar.html#v40_01', 'Övningar: sinusformad växelspänning', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Spole, motstånd och ström', 'mal': 'Reaktans, impedans och strömmen i en RL-krets.', 'poster': [
+                lank('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
+                ppt('v40_02_Reaktans_och_impedans_elev.pptx', 'Spole, motstånd och ström', 16),
+                lank('Kortfilmer.html?del=impedans', 'Stegfilm: Vad händer när vi lägger till en spole?', 'film', 'svensk text, engelsk berättarröst'),
+                lank('Formelstod_och_ovningar.html#v40_02', 'Övningar: reaktans och impedans', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Effekt och effektfaktor', 'mal': 'P, Q och S och hur effektfaktorn påverkar matningsströmmen.', 'poster': [
+                lank('Genomgang.html?del=effekt', 'Genomgång: effekt och effektfaktor', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
+                ppt('v40_03_Effekt_i_vaxelstromskretsar_elev.pptx', 'Effekt och effektfaktor', 15),
+                lank('Kortfilmer.html?del=effekt', 'Stegfilm: Samma aktiva effekt, olika ström', 'film', 'svensk text, engelsk berättarröst'),
+                lank('Formelstod_och_ovningar.html#v40_03', 'Övningar: effekt i växelströmskretsar', 'övning', '10 övningar med facit'),
+                lank(LABB['ac'] + '?lage=guidad', 'Växelströmslabbet: guidad labb', 'labb', 'åtta uppgifter i tre delar, grundprotokoll'),
+            ]},
+        ],
+        'redovisa': [],
+        'fordjupning': [
+            lank(LABB['ac'] + '?lage=fri', 'Växelströmslabbet: utforska och räkna vidare', 'labb', 'tolv räkna-först-uppgifter'),
+            lank(LABB['ac'] + '?lage=station', 'Station B: utökat protokoll', 'labb', 'efter genomgången av mätarprinciper'),
+            lank('../../acfilm/', 'Alternating Current Aboard (engelska)', 'film', 'längre repetitionsfilm'),
         ],
     },
     41: {
@@ -221,7 +253,7 @@ VECKOR = {
     },
 }
 
-KIND = {'ppt': 'Presentation', 'läs': 'Läs', 'övning': 'Övningar', 'labb': 'Labb', 'film': 'Film', 'mall': 'Mall'}
+KIND = {'ppt': 'Presentation', 'genomgång': 'Genomgång', 'läs': 'Läs', 'övning': 'Övningar', 'labb': 'Labb', 'film': 'Film', 'mall': 'Mall'}
 
 
 def datum(iso, år=False):
@@ -254,18 +286,33 @@ def first_href(del_):
 def page(nr, w):
     week_dir = ROOT / f'vecka-{nr}' / 'aktuell'
     start, end = w['datum']
+    labbar, sedda, delar_ = [], set(), []
+    for d in w['delar']:
+        items = []
+        for p in d['poster']:
+            if p['typ'] == 'labb':
+                if p['href'] not in sedda:
+                    sedda.add(p['href']); labbar.append(p)
+            else:
+                items.append(p)
+        delar_.append((d, items))
+    n = len(delar_)
     delar = ''.join(
         f'<li id="del-{i}"><span class="lesson-number" aria-hidden="true">{i}</span><div><h3>Del {i}. {escape(d["titel"])}</h3>'
-        f'<p>{escape(d["mal"])}</p><ul class="lesson-items">{"".join(post(p, week_dir) for p in d["poster"])}</ul></div></li>'
-        for i, d in enumerate(w['delar'], 1))
+        f'<p>{escape(d["mal"])}</p><ul class="lesson-items">{"".join(post(p, week_dir) for p in items)}</ul></div></li>'
+        for i, (d, items) in enumerate(delar_, 1))
+    if labbar:
+        delar += (f'<li id="labb" class="lab-step"><span class="lesson-number" aria-hidden="true">{n + 1}</span><div><h3>Sist: labben</h3>'
+                  f'<p>Gör labben när du har gått igenom del 1–{n} och övningarna. Labben bygger på det du har lärt dig och är veckans avslutning.</p>'
+                  f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in labbar)}</ul></div></li>')
     redovisa = ''.join(f'<li><a href="Inlamning.html#uppgift-{i}">Uppgift {i}. {escape(x["titel"])}</a></li>' for i, x in enumerate(INLAMNING[nr]['uppgifter'], 1))
     fordj = ''
     if w['fordjupning']:
         fordj = ('<h3>Fördjupning, frivillig</h3><ul class="lesson-items">'
                  + ''.join(post(p, week_dir) for p in w['fordjupning']) + '</ul>')
     notis = f'<p class="sj-panel warn week-note">{escape(w["notis"])}</p>' if w.get('notis') else ''
-    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main id="main-content" class="course-main">
-<header class="course-heading week-heading"><p class="course-kicker">Vecka {nr} · {datum(start)}–{datum(end, True)}</p><h1>{escape(w["titel"])}</h1><p class="course-lead">{escape(w["mal"])}</p><p>Arbeta med delarna i ordning. Varje del börjar med ett bildspel, fortsätter med övningar och slutar i en labb eller film när det finns en.</p><p class="course-actions"><a class="sj-btn primary large" href="#del-1">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p></header>
+    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
+<header class="course-heading week-heading"><p class="course-kicker">Vecka {nr} · {datum(start)}–{datum(end, True)}</p><h1>{escape(w["titel"])}</h1><p class="course-lead">{escape(w["mal"])}</p><p>Gå igenom delarna i ordning: bildspel och genomgång, film och övningar med facit. Labben kommer sist, när du har materialet klart för dig.</p><p class="course-actions"><a class="sj-btn primary large" href="#del-1">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p></header>
 {notis}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">Arbeta i den här ordningen</h2><ol class="lesson-list">{delar}</ol></section>
 <aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul><p>Övningarna i Formelstöd och övningar är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain"><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>

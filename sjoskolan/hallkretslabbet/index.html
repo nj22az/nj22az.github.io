@@ -5,21 +5,21 @@
 <title>Hållkretslabbet · Sjöskolan</title>
 <meta name="description" content="Tryck START och STOPP, lägg in fel och mät mellan punkter i en hållkrets.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/hallkretslabbet/">
-<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260926">
+<link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
 <link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
 <style>.btn-row{display:flex;gap:8px;flex-wrap:wrap}.toggle{font:inherit;font-weight:700;padding:10px 12px;border-radius:10px;border:2px solid #064f91;background:#fff;color:#064f91;cursor:pointer;flex:1 1 8rem;min-width:0}.toggle[aria-pressed="true"]{background:#064f91;color:#fff}.toggle:disabled{opacity:.55;cursor:not-allowed}</style>
 </head>
 <body class="ac-page">
-<nav class="school-nav" aria-label="Sjöskolan"><a href="../"><strong>SJÖSKOLAN</strong></a><a href="../vecka-43/aktuell/">Vecka 43</a></nav>
+<nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-43/aktuell/">Vecka 43</a></nav>
 <main id="main-content" class="ac-app">
   <header class="ac-heading">
     <div>
-      <a class="back-link" href="../vecka-43/aktuell/">← Sjöskolan · vecka 43</a>
+      <p class="lab-kicker">Vecka 43 · labb</p>
       <h1>Hållkretslabbet</h1>
       <p>Tryck START och STOPP, lägg in ett fel och mät mellan två punkter. Räkna först, mät sedan. Felmoduler med okänt fel och labbprotokollet för Station C finns under labbet.</p>
     </div>
     <ul class="deck-links" aria-label="Presentationer"><li><a href="../bildspel/?d=v43_03_Elscheman_och_dokumentation">v43_03 Elscheman</a></li><li><a href="../bildspel/?d=v41_03_Fysisk_traff_och_matning">v41_03 Mätning</a></li><li><a href="../filmer/#hallkretsen">Film: Hållkretsen</a></li></ul>
-  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><ol><li>Titta på schemat. Tryck S1 START och S0 STOPP och se när K1 drar.</li><li><strong>Förutsäg.</strong> Välj en uppgift under ”Räkna först”. Knapparna låses och mätvärdena döljs. Räkna ut svaret och skriv det.</li><li><strong>Läs av och jämför.</strong> Tryck ”Kontrollera”. Mätvärdena visas och du kan jämföra.</li><li><strong>Förklara.</strong> Välj ”Ny felmodul”, skriv vad du väntar dig innan varje mätning och förklara var felet sitter.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="/sjoskolan/vecka-43/aktuell/">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li>Titta på schemat. Tryck S1 START och S0 STOPP och se när K1 drar.</li><li><strong>Förutsäg.</strong> Välj en uppgift under ”Räkna först”. Knapparna låses och mätvärdena döljs. Räkna ut svaret och skriv det.</li><li><strong>Läs av och jämför.</strong> Tryck ”Kontrollera”. Mätvärdena visas och du kan jämföra.</li><li><strong>Förklara.</strong> Välj ”Ny felmodul”, skriv vad du väntar dig innan varje mätning och förklara var felet sitter.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
   <div id="lab" class="lab">
     <section class="stage" aria-label="Schema och mätvärden">
       <div id="figures" class="figures"></div>

@@ -24,7 +24,7 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 .course-kicker{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sj-muted,#4d6579);margin:0}
 .course-lead{font-size:20px;line-height:1.5;color:var(--sj-muted,#4d6579);max-width:60ch}
 .course-meta,.course-hero figcaption{font-size:15px;color:var(--sj-muted,#4d6579)}
-.course-breadcrumb{font-size:15px;margin:0 0 16px}
+.course-breadcrumb{display:none}
 .course-breadcrumb a{display:inline-flex;align-items:center;min-height:44px}
 .course-heading{max-width:820px;padding-bottom:24px;border-bottom:1px solid var(--sj-line,#cad8e2);margin-bottom:8px}
 .course-heading p{font-size:18px}

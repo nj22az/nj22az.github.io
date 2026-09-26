@@ -10,7 +10,7 @@ from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-V = '20260927'
+V = '20260928'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
 
@@ -111,20 +111,26 @@ UPPGIFTER = {
            'Ställ in lasten och kompenseringen i labbet och jämför.',
            'Hur mycket minskar förlusten i matningskabeln? Använd strömkvoten.'],
           'Beräkningar, avlästa värden och slutsats om ström och förlust.'),
+        u('Grundprotokollet från den guidade labben', [('../../vaxelstromslabbet/?lage=guidad', 'Växelströmslabbet, guidad labb')],
+          'Gör den guidade labben när du har gått igenom de tre delarna och uppgift 1–3.',
+          ['Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara.',
+           'Spara grundprotokollet som PDF.',
+           'Välj en uppgift där din förutsägelse inte stämde och förklara vad du hade missat.'],
+          'Grundprotokollet som PDF och förklaringen.'),
     ]},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11', 'uppgifter': [
-        u('Neutralström med egna laster', [('../../bildspel/?d=v41_01_Trefassystemets_grunder', 'Bildspel: Trefassystemets grunder'), L['tre']],
-          'I Trefaslabbet, flik 1: 400 V, ström i L1 och L2 10 A, ström i L3 (5 + D/5) A avrundat till en decimal. Alla laster har samma cos φ.',
-          ['Förutsäg neutralströmmen innan du tittar. Tips: tre lika strömmar ger summan noll.',
-           'Läs av neutralströmmen i labbet och jämför.',
-           'Rita visardiagrammet för dina tre strömmar.'],
-          'Förutsägelse, avläst värde och visardiagram.'),
         u('Samma värmare i Y och Δ', [('../../bildspel/?d=v41_02_Y_och_trefaseffekt', 'Bildspel: Y, Δ och trefaseffekt'), (L['tre'][0] + '?flik=ydelta', 'Trefaslabbet, flik 3')],
           'Tre värmeelement på (20 + D) Ω ansluts till 400 V.',
           ['Beräkna grenspänning, grenström, linjeström och total effekt i Y.',
            'Samma beräkning i Δ.',
            'Kontrollera med labbets flik 3 och förklara varför effekten blir tre gånger så stor i Δ.'],
           'Beräkningar i tabellform och avlästa värden.'),
+        u('Neutralström med egna laster', [('../../bildspel/?d=v41_01_Trefassystemets_grunder', 'Bildspel: Trefassystemets grunder'), L['tre']],
+          'I Trefaslabbet, flik 1: 400 V, ström i L1 och L2 10 A, ström i L3 (5 + D/5) A avrundat till en decimal. Alla laster har samma cos φ.',
+          ['Förutsäg neutralströmmen innan du tittar. Tips: tre lika strömmar ger summan noll.',
+           'Läs av neutralströmmen i labbet och jämför.',
+           'Rita visardiagrammet för dina tre strömmar.'],
+          'Förutsägelse, avläst värde och visardiagram.'),
         u('Stationerna A, B och C', [('Simulerade_stationer.html', 'Simulerade stationer A, B och C'), ('Elevprotokoll.html', 'Elevprotokoll')],
           'Genomför stationerna enligt stationssidan.',
           ['Protokoll för Station A och Station C med en felmodul.',
@@ -140,11 +146,6 @@ UPPGIFTER = {
            'Skriv vem som gör vad och hur varje åtgärd verifieras.',
            'Vilken energikälla är lätt att missa?'],
           'Ifylld mall med spårbara åtgärder.'),
-        u('Rätt mätutrustning', [(L['mm'][0] + '?ovning=category', 'Multimeterlabbet: Välj CAT-klass'), ('../../bildspel/?d=v42_01_Elektriska_risker', 'Bildspel: Elektriska risker')],
-          'Gör övningen ”Välj CAT-klass” i Multimeterlabbet.',
-          ['Välj kategori och spänning för hela mätutrustningen på tre mätplatser: huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt.',
-           'Motivera varje val. Varför räcker det inte att bara instrumentet har rätt kategori?'],
-          'Val och motivering för varje mätplats.'),
         u('Beröringsspänning i en modell', [('../../bildspel/?d=v42_01_Elektriska_risker', 'Bildspel: Elektriska risker'), L['formel']],
           'Skyddsledaren till en maskin är av och ett isolationsfel har gjort höljet spänningssatt: 230 V mot det jordade däcket.',
           ['Vilken beröringsspänning får en person som tar i höljet och står på däcket?',
@@ -152,6 +153,11 @@ UPPGIFTER = {
            'Varför kan modellen inte användas som säkerhetsgräns?',
            'Vilket skydd borde ha löst, och varför gjorde det kanske inte det när skyddsledaren är av?'],
           'Beräkning och resonemang.'),
+        u('Rätt mätutrustning', [(L['mm'][0] + '?ovning=category', 'Multimeterlabbet: Välj CAT-klass'), ('../../bildspel/?d=v42_01_Elektriska_risker', 'Bildspel: Elektriska risker')],
+          'Gör övningen ”Välj CAT-klass” i Multimeterlabbet.',
+          ['Välj kategori och spänning för hela mätutrustningen på tre mätplatser: huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt.',
+           'Motivera varje val. Varför räcker det inte att bara instrumentet har rätt kategori?'],
+          'Val och motivering för varje mätplats.'),
     ]},
     43: {'titel': 'Komponenter, motorer och scheman', 'sista': '2026-10-25', 'uppgifter': [
         u('Motorns märkskylt', [('../../bildspel/?d=v43_02_Transformatorer_och_motorer', 'Bildspel: Transformatorer och motorer'), L['formel']],
@@ -175,12 +181,6 @@ UPPGIFTER = {
           'Ritning, beskrivning och felsökningsrad ur protokollet.'),
     ]},
     44: {'titel': 'Elsystem och fördjupad mätteknik', 'sista': '2026-11-01', 'uppgifter': [
-        u('Isolationslabbet', [L['iso'], ('../../bildspel/?d=v44_01_Lagspanningssystem', 'Bildspel: Lågspänningssystem')],
-          'Gör de 8 räkna-först-uppgifterna och labbprotokollet i Isolationslabbet.',
-          ['Spara labbprotokollet som PDF.',
-           'Ställ in 440 V, f = 60 Hz och kapacitansen 2 µF per fas. Ge L1 ett fullständigt jordfel. Förutsäg felströmmen och kontrollera i labbet.',
-           'Förklara varför ett stort fartyg med långa kablar får större ström vid första jordfelet än ett litet.'],
-          'Protokollet som PDF, förutsägelse, avläst värde och förklaring.'),
         u('Jämför jordningssystemen', [('../../bildspel/?d=v44_01_Lagspanningssystem', 'Bildspel: Lågspänningssystem'), ('../../filmer/#it-nat', 'Film: IT-nätet ombord')],
           'Jämför TN-S, TT och IT i en tabell.',
           ['Hur går felströmmen vid ett fel mellan fas och utsatt del?',
@@ -194,14 +194,14 @@ UPPGIFTER = {
            'Vilken ström skulle samma effekt kräva vid 440 V? Varför används högspänning för stora laster?',
            'Strömtransformatorn har omsättningen 200/1 A. Beräkna sekundärströmmen.'],
           'Beräkningar och förklaring.'),
+        u('Isolationslabbet', [L['iso'], ('../../bildspel/?d=v44_01_Lagspanningssystem', 'Bildspel: Lågspänningssystem')],
+          'Gör de 8 räkna-först-uppgifterna och labbprotokollet i Isolationslabbet.',
+          ['Spara labbprotokollet som PDF.',
+           'Ställ in 440 V, f = 60 Hz och kapacitansen 2 µF per fas. Ge L1 ett fullständigt jordfel. Förutsäg felströmmen och kontrollera i labbet.',
+           'Förklara varför ett stort fartyg med långa kablar får större ström vid första jordfelet än ett litet.'],
+          'Protokollet som PDF, förutsägelse, avläst värde och förklaring.'),
     ]},
     45: {'titel': 'Felsökning och repetition', 'sista': '2026-11-08', 'uppgifter': [
-        u('Felsökningsrapport', [L['hall'], ('../../bildspel/?d=v45_01_Systematisk_felsokning', 'Bildspel: Systematisk felsökning')],
-          'Sätt i två felmoduler i Hållkretslabbet och felsök en i taget.',
-          ['Skriv observationen innan du mäter.',
-           'Skriv två möjliga orsaker och välj en mätning som skiljer dem åt. Motivera mätningen och skriv förväntat resultat innan du ser resultatet.',
-           'Skriv resultat och slutsats. Visa felet först när raden är ifylld.'],
-          'Två ifyllda felsökningsrader ur protokollet.'),
         u('Analys av mätdata', [('../../bildspel/?d=v45_02_Analys_av_matresultat', 'Bildspel: Analys av mätresultat'), L['formel']],
           'En 24 V-pump tar 6,0 A. Före åtgärd: källan 24,1 V och pumpen (20,0 + D/100) V. Efter åtgärd: källan 24,1 V och pumpen 23,5 V. Instrumentet har ±(0,5 % + 2 siffror) och upplösningen 0,1 V.',
           ['Beräkna slingresistansen före och efter.',
@@ -213,6 +213,12 @@ UPPGIFTER = {
           ['Ange vilka uppgifter du klarade och vilka du inte klarade.',
            'Välj de tre områden du är mest osäker på och skriv vad du ska repetera och med vilket material.'],
           'Din rättade övningstenta och din repetitionsplan.'),
+        u('Felsökningsrapport', [L['hall'], ('../../bildspel/?d=v45_01_Systematisk_felsokning', 'Bildspel: Systematisk felsökning')],
+          'Sätt i två felmoduler i Hållkretslabbet och felsök en i taget.',
+          ['Skriv observationen innan du mäter.',
+           'Skriv två möjliga orsaker och välj en mätning som skiljer dem åt. Motivera mätningen och skriv förväntat resultat innan du ser resultatet.',
+           'Skriv resultat och slutsats. Visa felet först när raden är ifylld.'],
+          'Två ifyllda felsökningsrader ur protokollet.'),
     ]},
 }
 
@@ -232,7 +238,7 @@ def page(nr, w):
                   f'<p class="hand-in"><strong>Redovisa:</strong> {escape(x["redovisa"])}</p></section>')
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {nr} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">
 <style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style></head>
-<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/vecka-{nr}/aktuell/">Vecka {nr}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Vecka {nr}</a></div><article class="course-reading">
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-{nr}/aktuell/">Vecka {nr}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Vecka {nr}</a></div><article class="course-reading">
 <p class="course-kicker">Vecka {nr} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
 <p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} via den inlämningskanal läraren har anvisat.</p>
 <div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder ditt tal <strong>D</strong>: dagen i månaden du är född, 1–31. Är du född den 7 mars är D = 7. Skriv D överst i din inlämning. Då får du egna värden och läraren kan kontrollera dina svar.</p></div>
