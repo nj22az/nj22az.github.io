@@ -18,9 +18,10 @@ Underlag: `inventering.json` (förekomster), `konflikter.json` (558 loggade besl
 | Kurs | `vecka-41/aktuell/Elevprotokoll.html` | protokollmall för fysiska stationer | 1 |
 | Presentation | v41_03 bild 6–8, 21 | fysiska stationer A, B (AC, trefas), C | 4 |
 | Kurs | `vecka-40/aktuell/lektioner.mjs` | kontrollfråga med svar (genomgång och presentation) | 8 |
-| **Migrerat hittills** | | | **921 förekomster → 311 poster** |
+| Arbetsblad, förberedelsefrågor, v38, v39_03, v39_04, start/avslut, inlämning, tenta | se tabellen nedan | | 137 |
+| **Migrerat** | | | **1 058 förekomster → 448 poster** |
 
-Kvar att migrera (steg 3, inventerat men inte i poster ännu):
+Övriga familjer (alla migrerade i steg 3):
 
 | Källa | Plats | Antal |
 |---|---|---|
@@ -81,6 +82,10 @@ Dessutom har 44 simulatoruppgifter fått registrerade beräkningsfunktioner (`li
 
 ## 5. Kända öppna punkter
 
-- `validera`: 65 fel om okända labbfunktioner tills labbarnas `funktioner.mjs` finns (steg 4).
-- 7 ledtrådar där bokens och kursens formulering skiljer sig och valet gjordes åt kursen av tekniska skäl (se punkt 2.3).
+- Labbprotokollens innehåll (mätningar, kontroller, frågor, exempel) finns som poster (EL-000401…) men simulatorerna läser
+  fortfarande sina `*-protokoll.mjs`, eftersom exempelvärdena i dem räknas av modellen vid körning. Nästa steg: låta
+  protokollmodulerna läsa texterna ur en genererad `protokoll.gen.mjs` på samma sätt som uppgifterna.
+- 7 ledtrådar där bokens och kursens formulering skiljer sig och valet gjordes åt kursen av tekniska skäl (se punkt 2.3); boken
+  följer nu databasen där. Två poster står som att-granska (EL-000048, EL-000100), utan räknefel.
+- Bokens PDF är inte omsatt efter EPUB-ändringarna (sättningsverktyget finns inte i repot).
 - Skyddade filer (`skyddat/larare.enc`, `skyddat/bok.enc`) kräver lösenorden i miljön (`LARARLOSEN`, `BOKLOSEN`). Utan dem bygger och kontrollerar verktyget bara det publika.

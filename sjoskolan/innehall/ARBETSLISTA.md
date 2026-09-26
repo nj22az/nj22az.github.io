@@ -15,10 +15,10 @@ Status för migreringen till en enda innehållskälla. Uppdateras under arbetet 
 
 - [x] 1 Inventering av källor och förekomster (`migrering/inventering.json`, `INVENTERING.md`)
 - [x] 2 Schema, validering, SQLite, åtkomstlager, CLI (`innehall.py`)
-- [ ] 3 Migrering till poster och placeringar, konfliktlogg. Klart: kapitelövningar (240), simulatorer (53), protokoll (10), v40-kontrollfrågor (8). Kvar: `migrering/familjer_sidor.py` (arbetsblad, förberedelsefrågor, v38, v39_03, v39_04, start/avslutsfrågor, inlämning, tenta, lärarfacit)
-- [ ] 4 Kurssidor (klart: `export/kurssidor.py`), arbetsblad, tentamen, inlämning, simulatorer (`uppgifter.gen.mjs` + `funktioner.mjs`), protokoll
-- [ ] 4b Lektionsartiklar för vecka 40 del 1–3 ur databasen (mål, förklaring, instrument, exempel, prova själv, labbkoppling, nästa del)
-- [ ] 5 Presentationer (pptx, PDF, bildspel) och lärarmaterial (krypterat)
-- [ ] 6 Bok: placeringar, export, blockering dokumenterad
-- [ ] 7 CI, README, CLAUDE.md, genererade platser märkta
-- [ ] 8 Verifiering och slutrapport
+- [x] 3 Migrering till poster och placeringar, konfliktlogg (448 poster, 832 placeringar, 10 ytor)
+- [x] 4 Kurssidor, simulatorer (`uppgifter.gen.mjs` + `funktioner.mjs`), arbetsblad, inlämning, tenta, protokoll (protokollposterna finns; protokollmodulerna läses fortfarande ur `*-protokoll.mjs`, se INVENTERING.md 5)
+- [x] 4b Lektionsartiklar för vecka 40 del 1–3 (`export/lektioner.py`, `vecka-40/aktuell/Lektion_N.html`)
+- [x] 5 Presentationer (pptx, PDF, bildspel) och lärarguiden (krypterad, facit för D = 1–31)
+- [x] 6 Bok: EPUB byggs ur databasen och krypteras om; PDF kan inte byggas i repot (dokumenterat i `bok/README.md`)
+- [x] 7 CI (`validera` + `kontrollera`), README, CLAUDE.md, genererade platser märkta
+- [x] 8 Verifiering (delad ändring i kurssida, simulator, pptx, bildspel och bok; talkontroll; labbtester; rendering) och slutrapport (`SLUTRAPPORT.md`)
