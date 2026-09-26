@@ -1,0 +1,31 @@
+1
+00:00:00,200 --> 00:00:04,800
+The generator has three windings, 120° apart.
+
+2
+00:00:05,000 --> 00:00:09,900
+Each phase voltage, Vph, is 254 V.
+
+3
+00:00:10,200 --> 00:00:16,300
+Between two phases you measure the distance between the arrow tips.
+
+4
+00:00:16,500 --> 00:00:22,900
+Half of it is Vph · cos 30°, which is Vph · √3/2.
+
+5
+00:00:23,200 --> 00:00:26,100
+Two halves: the twos cancel out.
+
+6
+00:00:26,300 --> 00:00:29,400
+VL = √3 · Vph.
+
+7
+00:00:29,600 --> 00:00:34,900
+254 V times 1.732 is 440 V.
+
+8
+00:00:35,200 --> 00:00:40,900
+That is why 440 V, and why √3 is in every three-phase formula.

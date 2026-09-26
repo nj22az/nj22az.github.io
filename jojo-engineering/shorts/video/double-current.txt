@@ -1,0 +1,13 @@
+TITLE
+Double the current = four times the heat
+
+DESCRIPTION
+Cable loss is P = I² · R. That is why double the current means four times the heat, and why electricians hunt for hot terminals with a thermal camera.
+
+#electrical #powerloss #ohmslaw #thermalimaging #electrician #marine #shorts
+
+TAGS
+electrical, power loss, ohms law, thermal imaging, electrician, marine
+
+CAPTIONS
+Upload double-current.srt as English subtitles.

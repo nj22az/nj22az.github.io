@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>JoJo Engineering · Shorts</title>
+  <meta name="description" content="Pixel-art Shorts on marine and industrial electrics from JoJo Engineering.">
+  <meta name="robots" content="noindex">
+  <style>
+    :root { --ink: #163248; --muted: #5f7688; --line: #cad8e2; --blue: #064f91; --page: #f4f7fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font: 17px/1.5 Arial, Helvetica, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { margin: 0 0 4px; font-size: 26px; }
+    .sub { color: var(--muted); margin: 0 0 16px; }
+    .stage { max-width: 420px; margin: 0 auto; border-radius: 18px; overflow: hidden; line-height: 0; background: #0b3b5c; }
+    canvas { width: 100%; height: auto; display: block; }
+    .controls { display: flex; gap: 12px; align-items: center; max-width: 420px; margin: 12px auto; }
+    button, select { font: inherit; min-height: 44px; border-radius: 8px; }
+    button { font-weight: 700; padding: 0 18px; border: 0; background: var(--blue); color: #fff; cursor: pointer; min-width: 6.5rem; }
+    select { padding: 0 8px; border: 1px solid var(--line); background: #fff; max-width: 100%; }
+    input[type=range] { flex: 1; min-width: 0; }
+    .time { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+    .line { min-height: 3em; max-width: 420px; margin: 0 auto; }
+    body.render { background: #000; } body.render canvas { width: auto; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Short</h1>
+    <p class="sub"><label for="pick">Episode</label> <select id="pick"></select></p>
+    <div class="stage"><canvas id="c" width="1080" height="1920" role="img" aria-label="Animated short"></canvas></div>
+    <div class="controls">
+      <button id="play" type="button">Play</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Time in the video">
+      <span id="time" class="time">0:00</span>
+    </div>
+    <p class="line" id="line" aria-live="polite"></p>
+  </main>
+  <script type="module" src="play.mjs"></script>
+</body>
+</html>

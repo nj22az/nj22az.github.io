@@ -1,0 +1,13 @@
+TITLE
+50 or 60 Hz? Why the coil cares
+
+DESCRIPTION
+Inductive reactance X_L = 2π · f · L grows with frequency. The same coil has 20 % more X_L at 60 Hz than at 50 Hz. Check the rating plate.
+
+#inductivereactance #inductor #ACcircuits #60Hz #marineelectrical #electrician #shorts
+
+TAGS
+inductive reactance, inductor, AC circuits, 60 Hz, marine electrical, electrician
+
+CAPTIONS
+Upload fifty-sixty-hz.srt as English subtitles.

@@ -1,0 +1,39 @@
+1
+00:00:00,200 --> 00:00:04,100
+The voltage swings all the time.
+
+2
+00:00:04,200 --> 00:00:07,900
+The peak is actually 325 V.
+
+3
+00:00:08,200 --> 00:00:13,300
+A heater warms with u², and u² is never negative.
+
+4
+00:00:13,500 --> 00:00:18,900
+Its average is exactly half the peak squared.
+
+5
+00:00:19,200 --> 00:00:22,400
+DC with the same heat is the RMS value.
+
+6
+00:00:22,600 --> 00:00:25,400
+Square root of a half: divide by √2.
+
+7
+00:00:25,600 --> 00:00:30,900
+325 V divided by 1.414 is 230 V. The RMS value!
+
+8
+00:00:31,200 --> 00:00:37,400
+On board, 440 V peaks at 622 V.
+
+9
+00:00:37,600 --> 00:00:43,900
+Insulation is stressed by the peak and by transients.
+
+10
+00:00:44,200 --> 00:00:48,900
+So next time you see 230 V, think 325.

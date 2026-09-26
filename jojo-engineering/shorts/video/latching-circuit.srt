@@ -1,0 +1,27 @@
+1
+00:00:00,200 --> 00:00:04,400
+I press START. Current reaches the coil and K1 pulls in.
+
+2
+00:00:04,600 --> 00:00:08,900
+K1 also closes an auxiliary contact, across START.
+
+3
+00:00:09,200 --> 00:00:13,400
+Now I let go of START.
+
+4
+00:00:13,600 --> 00:00:18,900
+Current flows through the auxiliary contact. K1 holds itself in.
+
+5
+00:00:19,200 --> 00:00:24,000
+STOP breaks the circuit. K1 drops out and the contact opens.
+
+6
+00:00:24,200 --> 00:00:29,900
+The motor stays off until someone presses START again.
+
+7
+00:00:30,200 --> 00:00:36,900
+START closes, STOP breaks, K1 holds itself.

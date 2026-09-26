@@ -1,0 +1,19 @@
+1
+00:00:00,200 --> 00:00:07,900
+0 V can mean dead. Or a broken tester.
+
+2
+00:00:08,200 --> 00:00:15,900
+Step 1: test the tester on a known source. It shows voltage.
+
+3
+00:00:16,200 --> 00:00:24,900
+Step 2: measure at the work point, between all conductors and to earth.
+
+4
+00:00:25,200 --> 00:00:33,900
+Step 3: test again on the known source. The tester still works.
+
+5
+00:00:34,200 --> 00:00:40,900
+Only then do you know that 0 V means dead.

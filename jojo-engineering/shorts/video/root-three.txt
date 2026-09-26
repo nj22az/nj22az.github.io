@@ -1,0 +1,13 @@
+TITLE
+Why 440 V and not 254 V? The square root of 3
+
+DESCRIPTION
+Three phase voltages, 120° apart. Between two phases the voltage is √3 times larger: 254 V × 1.732 ≈ 440 V.
+
+#threephase #electrical #linevoltage #phasevoltage #marineelectrician #ship #shorts
+
+TAGS
+three phase, electrical, line voltage, phase voltage, marine electrician, ship
+
+CAPTIONS
+Upload root-three.srt as English subtitles.

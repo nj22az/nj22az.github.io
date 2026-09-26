@@ -1,0 +1,13 @@
+TITLE
+0 V on your tester doesn’t mean dead
+
+DESCRIPTION
+Test – measure – test. Prove your tester on a known source before and after, or you can’t tell whether 0 V means dead or a broken tester.
+
+#electricalsafety #livedeadlive #voltagetester #lockouttagout #electrician #marine #shorts
+
+TAGS
+electrical safety, live dead live, voltage tester, lockout tagout, electrician, marine
+
+CAPTIONS
+Upload test-before-touch.srt as English subtitles.

@@ -1,0 +1,27 @@
+1
+00:00:00,200 --> 00:00:04,400
+On most ships, the 440 V network is an IT system.
+
+2
+00:00:04,600 --> 00:00:08,900
+No phase is connected to the hull.
+
+3
+00:00:09,200 --> 00:00:14,800
+The fan gets an earth fault on L1. Nothing trips. Just an alarm.
+
+4
+00:00:15,000 --> 00:00:21,900
+But now L2 and L3 sit at 440 V to the hull.
+
+5
+00:00:22,200 --> 00:00:27,600
+A second earth fault, on another phase, is a short circuit.
+
+6
+00:00:27,800 --> 00:00:33,900
+A breaker trips. Maybe on the steering gear.
+
+7
+00:00:34,200 --> 00:00:39,900
+So no. The alarm means: find the fault. Now.

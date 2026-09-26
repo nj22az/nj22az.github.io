@@ -1,0 +1,13 @@
+TITLE
+The latching circuit: why the motor keeps running
+
+DESCRIPTION
+S1 START (NO), S0 STOP (NC) and contactor K1 with an auxiliary contact across START. K1 holds itself in until STOP breaks the circuit.
+
+#latchingcircuit #contactor #motorcontrol #wiringdiagram #electrician #marine #shorts
+
+TAGS
+latching circuit, contactor, motor control, wiring diagram, electrician, marine
+
+CAPTIONS
+Upload latching-circuit.srt as English subtitles.

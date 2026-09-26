@@ -1,0 +1,13 @@
+TITLE
+Kirchhoff’s laws in under a minute
+
+DESCRIPTION
+Current law: what flows into a node flows out. Voltage law: around any loop the sum is zero.
+
+#kirchhoff #circuitanalysis #electricalengineering #KCL #KVL #electrician #shorts
+
+TAGS
+kirchhoff, circuit analysis, electrical engineering, KCL, KVL, electrician
+
+CAPTIONS
+Upload kirchhoff.srt as English subtitles.

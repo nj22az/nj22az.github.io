@@ -1,0 +1,13 @@
+TITLE
+Never measure voltage with your lead in the A jack
+
+DESCRIPTION
+The A input has almost no resistance. Across a voltage source it becomes a short circuit through your meter. Check the jacks before every measurement.
+
+#multimeter #electricalsafety #electriciantips #arcflash #CATrating #marine #shorts
+
+TAGS
+multimeter, electrical safety, electrician tips, arc flash, CAT rating, marine
+
+CAPTIONS
+Upload amp-jack.srt as English subtitles.

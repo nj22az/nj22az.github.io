@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="robots" content="noindex"><title>JoJo Engineering · Channel art</title>
+<style>body{margin:0;background:#222;} canvas{display:block;margin:16px auto;max-width:95vw;height:auto;}</style></head>
+<body>
+  <canvas id="avatar" width="800" height="800"></canvas>
+  <canvas id="banner" width="2560" height="1440"></canvas>
+  <script type="module">
+    // Channel avatar (the teacher's portrait) and banner (the teacher on the bridge).
+    // The banner's safe area for all devices is the centre 1546×423 px.
+    import { bridge, text, BRAND } from './engine.mjs';
+    import { drawTeacher } from './teacher.mjs';
+    const a = document.getElementById('avatar').getContext('2d');
+    a.fillStyle = '#0e4c75'; a.fillRect(0, 0, 800, 800);
+    a.fillStyle = '#1f6fa6'; a.fillRect(0, 560, 800, 240);
+    drawTeacher(a, 36, 1190, { px: 28, meter: false });
+    const b = document.getElementById('banner').getContext('2d');
+    b.save(); b.scale(2560 / 1080, 2560 / 1080); b.translate(0, -120); bridge(b, 3); b.restore();
+    b.fillStyle = 'rgba(10,30,50,.9)'; b.beginPath(); b.roundRect(507, 509, 1546, 423, 30); b.fill();
+    drawTeacher(b, 560, 900, { px: 9, time: 1 });
+    text(b, BRAND, 820, 640, { size: 110, weight: 700, color: '#ffffff' });
+    text(b, 'Electrics explained from inside the engine room', 824, 745, { size: 48, weight: 600, color: '#f2b705' });
+    text(b, 'New Shorts Mon–Fri · Deep dives every other Thursday', 824, 830, { size: 40, weight: 400, color: '#dfe7ee' });
+    window.done = 1;
+  </script>
+</body>
+</html>

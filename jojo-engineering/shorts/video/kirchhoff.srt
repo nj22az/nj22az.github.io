@@ -1,0 +1,35 @@
+1
+00:00:00,200 --> 00:00:03,000
+A node can’t store current.
+
+2
+00:00:03,200 --> 00:00:05,800
+What goes in, comes out.
+
+3
+00:00:06,000 --> 00:00:11,900
+6.4 minus 2.6: 3.8 A in the other branch.
+
+4
+00:00:12,200 --> 00:00:15,300
+The source gives 48 V. R1 drops 20 V.
+
+5
+00:00:15,500 --> 00:00:18,800
+Around the loop, the sum is zero.
+
+6
+00:00:19,000 --> 00:00:24,900
+48 minus 20: 28 V across R2.
+
+7
+00:00:25,200 --> 00:00:30,800
+When fault-finding, your readings must add up the same way.
+
+8
+00:00:31,000 --> 00:00:35,900
+If they don’t, you’ve found where the fault is.
+
+9
+00:00:36,200 --> 00:00:40,900
+In equals out. Around the loop is zero.

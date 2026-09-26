@@ -1,0 +1,31 @@
+1
+00:00:00,200 --> 00:00:04,400
+A coil opposes AC with its reactance, XL.
+
+2
+00:00:04,600 --> 00:00:09,900
+XL grows with the frequency f.
+
+3
+00:00:10,200 --> 00:00:13,300
+At 50 Hz the coil has a certain XL.
+
+4
+00:00:13,500 --> 00:00:17,400
+At 60 Hz it is 20 % larger.
+
+5
+00:00:17,600 --> 00:00:21,900
+The same voltage then drives about 17 % less current.
+
+6
+00:00:22,200 --> 00:00:28,000
+Shore power is often 50 Hz. Ships often run 60 Hz.
+
+7
+00:00:28,200 --> 00:00:33,900
+Coils, motors and transformers are built for one frequency. Check the plate.
+
+8
+00:00:34,200 --> 00:00:38,900
+Frequency matters. Every time.

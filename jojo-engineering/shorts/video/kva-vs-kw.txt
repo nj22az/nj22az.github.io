@@ -1,0 +1,13 @@
+TITLE
+Why generators are rated in kVA, not kW
+
+DESCRIPTION
+Current heats the windings whether it does useful work or not. At a power factor of 0.8, 500 kW needs a full 625 kVA.
+
+#powerfactor #kVAvskW #generator #apparentpower #marineengineer #ETO #shorts
+
+TAGS
+power factor, kVA vs kW, generator, apparent power, marine engineer, ETO
+
+CAPTIONS
+Upload kva-vs-kw.srt as English subtitles.

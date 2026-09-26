@@ -1,0 +1,27 @@
+1
+00:00:00,200 --> 00:00:04,200
+For voltage: red lead in V, black in COM.
+
+2
+00:00:04,400 --> 00:00:08,900
+The V input has high resistance. Almost no current flows.
+
+3
+00:00:09,200 --> 00:00:14,000
+The A jack is a shunt with almost no resistance.
+
+4
+00:00:14,200 --> 00:00:22,900
+Across 230 V that is a short circuit through the meter. It can cause an arc flash.
+
+5
+00:00:23,200 --> 00:00:29,600
+Check function and jacks before every measurement.
+
+6
+00:00:29,800 --> 00:00:36,900
+Current only in series, connected with power off, with the right CAT rating.
+
+7
+00:00:37,200 --> 00:00:41,900
+A two-second check. Every time.

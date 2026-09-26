@@ -1,0 +1,31 @@
+1
+00:00:00,200 --> 00:00:03,200
+The load does 500 kW of useful work: P.
+
+2
+00:00:03,400 --> 00:00:07,000
+Motors also need reactive power, Q.
+
+3
+00:00:07,200 --> 00:00:11,900
+Together they make apparent power S: 625 kVA.
+
+4
+00:00:12,200 --> 00:00:17,800
+Generator current follows S, not P. The power factor is 0.8.
+
+5
+00:00:18,000 --> 00:00:23,900
+Current heats the windings. That is why generators are rated in kVA.
+
+6
+00:00:24,200 --> 00:00:30,200
+In the control room: watch kW and kVA. A low power factor means more current.
+
+7
+00:00:30,400 --> 00:00:34,900
+Then you may need the next generator sooner.
+
+8
+00:00:35,200 --> 00:00:39,900
+kW does the work. kVA heats the generator.

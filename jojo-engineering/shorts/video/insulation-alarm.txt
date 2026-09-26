@@ -1,0 +1,13 @@
+TITLE
+Insulation alarm on a ship: why you can’t wait
+
+DESCRIPTION
+Most ships run 440 V as an IT (isolated) system. The first earth fault only raises an alarm, but a second one on another phase is a short circuit.
+
+#ITsystem #earthfault #insulationmonitor #shipelectrical #ETO #marineengineer #shorts
+
+TAGS
+IT system, earth fault, insulation monitor, ship electrical, ETO, marine engineer
+
+CAPTIONS
+Upload insulation-alarm.srt as English subtitles.

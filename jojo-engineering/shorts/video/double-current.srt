@@ -1,0 +1,31 @@
+1
+00:00:00,200 --> 00:00:03,600
+Every cable has a little resistance. Here 0.1 Ω.
+
+2
+00:00:03,800 --> 00:00:08,900
+The loss is P = I² · R. 10 A gives 10 W of heat.
+
+3
+00:00:09,200 --> 00:00:13,800
+If we double the current, is it twice as hot?
+
+4
+00:00:14,000 --> 00:00:19,900
+No! 20 A gives 40 W. Four times as much.
+
+5
+00:00:20,200 --> 00:00:27,900
+Three times the current: nine times the heat. 90 W.
+
+6
+00:00:28,200 --> 00:00:34,000
+A loose terminal has more resistance. That is where it heats up.
+
+7
+00:00:34,200 --> 00:00:40,900
+So we scan panels with a thermal camera, under load, covers on.
+
+8
+00:00:41,200 --> 00:00:45,900
+Double the current? Four times the heat.
