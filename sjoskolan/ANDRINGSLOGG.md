@@ -127,4 +127,4 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Vecka 40, radianer och grader: ny bild 12 i v40_01 (genomgång, artikel, bildspel, elev- och
   lärarpresentation, 18 bilder) med hjulfigur, och filmen Radianer och grader (Måns och Sigge, 2 min). Filmen länkas
   från veckosidan del 1, RAD-kortet i räknarhjälpen och Raknehjalp.html. Måndagens pass 2 börjar med bild 12 före
-  övning 6–7; fördjupningen är nu bild 13–14.
+  övning 6–7; fördjupningen är nu bild 13–14. Lärarplanen (PDF) omgjord med de nya bildnumren.
