@@ -56,6 +56,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     växelströmsfilmen räknar på fartyget (440 V, 60 Hz, 2,0 ms). Kontrollera filmens tal mot svaren i databasen.
 21. **En film ska gå att ändra utan ny inspelning.** Filmerna ritas ur `filmer/films/*.mjs` med text i bubblor och
     undertexter. Talmanus för en senare röst görs med `filmer/tal.mjs`.
+22. **Genomgången får inte räkna labbens uppgifter.** Ledtrådarna pekar på genomgången, så den ska lära ut metoden
+    med andra tal. Genomgången för vecka 40 räknade exakt labbens värden (20 ms, 16,97 V, 30 Ω, 50 Ω, 0,24 A, 5 A,
+    10 A) och fördjupningsbilderna var ordagrant räkna-först-uppgifterna. Kontrollera nya exempel mot `simulator`-
+    posternas svar, även för presentationer, stegfilmer och figurer (`visuals.mjs`, diagram i PowerPoint).
 
 ### Boken
 
@@ -78,5 +82,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Den engelska filmen Alternating Current Aboard (`acfilm`) borttagen. Ny svensk repetitionsfilm
   Växelström ombord (`filmer/films/vaxelstrom.mjs`, 4 min): 440 V/60 Hz, momentanvärde, spole och kondensator,
   impedans 5/12/13 Ω, pumpmotor 1 380 W med PF 0,80, effekttriangel och kompensering. Pausa-och-räkna-moment.
-- **Väntar:** exemplen u(t) = 10 sin(2π · 25t) och 1 200 W vid 240 V (vecka 40) kan nu bytas (filmen som berättade
-  dem är borttagen). Stegfilmerna i `vecka-40/aktuell/Kortfilmer.html` har fortfarande engelsk berättarröst och 12 V.
+- **2026-09-27** Vecka 40: momentanvärde på 440 V/60 Hz vid 2,0 ms och kompensering för pumpmotor 1 380 W vid 230 V
+  (övningssida, bok med figur 7.3 och 9.3). Övningar med utländska nät bytta (U_{F} = 230 V, transformator 230 V).
+  Labbens pumpuppgifter 1 500 W. Genomgång, presentationer, bildspel, lektionsartiklar och stegfilmer räknar med
+  hemmets och fartygets värden i stället för labbens. Stegfilmerna har svensk text utan ljud; den engelska rösten är
+  borttagen. Ny bok-PDF (223 sidor).

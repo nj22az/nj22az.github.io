@@ -4,7 +4,7 @@ Vecka 40 börjar på https://nj22az.github.io/sjoskolan/vecka-40/aktuell/.
 
 ## Tre arbetslägen
 
-- **Guidad labb** (standard): åtta uppgifter. Förutsäg, läs av och jämför, förklara. Samma exempel och begrepp används i webbgenomgång, PowerPoint och kortfilm. Båda instrumenten kontrolleras vid 10 V; grundkällan är 12 V RMS/50 Hz. RL använder 40 Ω/95,5 mH och effektdelen 230 V/1 150 W vid PF 1 respektive 0,5.
+- **Guidad labb** (standard): åtta uppgifter. Förutsäg, läs av och jämför, förklara. Uppgifterna: båda instrumenten kontrolleras vid 10 V; grundkällan är 12 V RMS/50 Hz. RL använder 40 Ω/95,5 mH och effektdelen 230 V/1 150 W vid PF 1 respektive 0,5. Genomgång, PowerPoint och stegfilm lär ut samma metoder med andra exempel (fartygets 440 V/60 Hz, fläktmotor 50 Ω/382 mH, pumpmotor 1 380 W), så att de inte ger labbens svar.
 - **Fri simulator**: de befintliga reglagen, graferna och tolv räkna-först-uppgifterna. Varje uppgift länkar till förklaringen av metoden. Färdiga svar rensas när flik eller stationsförinställning ändras.
 - **Station B**: utökat protokoll efter undervisning om mätarprinciper. Nio rader, inklusive kontroll av båda instrumenten. Överensstämmelse med mätarmodellen skiljs från visningsfel mot RMS. Gamla åttaradiga svar flyttas till rätt rader; den nya kalibratorraden behöver fyllas i.
 

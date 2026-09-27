@@ -110,9 +110,6 @@ for deck in (d for d in decks if d['week'] == 40):
         elif not path.read_bytes().startswith(b'%PDF-'):
             errors.append(f'{path.name}: invalid PDF')
 
-for name in ('sinus', 'impedans', 'effekt'):
-    check(WEEK / 'Kortfilmer.html', f'film-audio/{name}.mp3')
-check(WEEK / 'Kortfilmer.html', 'film-audio/timeline.json')
 
 # Verify that each generated simulator task points to an actual lesson section.
 js = """

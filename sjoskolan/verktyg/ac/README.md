@@ -1,6 +1,6 @@
 # Byggkällor för AC, revision 25 september 2026
 
-Undervisningsinnehållet finns i `../../vecka-40/aktuell/lektioner.mjs`. De engelska replikerna ligger i `film-manus.mjs`. De tre kortfilmerna spelas från ljudets tidsposition; svensk text och figurer följer samma sex avsnitt. Varje film är 120 sekunder. Ljud kan stängas av och rörelse följer `prefers-reduced-motion`.
+Undervisningsinnehållet finns i `../../vecka-40/aktuell/lektioner.mjs`. De tre stegfilmerna (`Kortfilmer.html`) har svensk text och inget ljud: sex steg à 20 sekunder, med paus, stegning och takt 0,75–1,25×. Rörelse följer `prefers-reduced-motion`. Exemplen kommer från hemmet och fartyget och får inte vara svaret på labbens uppgifter.
 
 ## Presentationer
 
@@ -12,14 +12,4 @@ node sjoskolan/verktyg/ac/build-decks.mjs /absolute/path/to/fresh-build-director
 
 Finaliseraren skriver aldrig över en tidigare slutfil eller verifieringsrapport. Använd en ny byggkatalog, granska de renderade bilderna och kopiera därefter de verifierade PowerPoint-filerna från `output-final` till veckans katalog.
 
-## Berättarröst
-
-Kokoro-82M, brittisk engelska, röst `bf_emma`, hastighet 0,96. Syntetisk röst, ingen musik. Modell och röstpaket från https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1. Byggskriptet kontrollerar SHA-256 mot de använda utgåvorna. Filerna distribueras inte med kursen. Modellens licens: Apache-2.0; se originalprojektets licenser för verktyg och röster.
-
-Kräver Python med `kokoro-onnx==0.4.9`, `onnxruntime`, `numpy`, systemets espeak-ng, Node och FFmpeg.
-
-```sh
-python sjoskolan/verktyg/ac/narrate-short.py --model /path/kokoro-v1.0.onnx --voices /path/voices-v1.0.bin --work /path/audio-build
-```
-
-Skriptet skriver MP3 och `film-audio/timeline.json` till veckans katalog. Tidsinformationen härleds från genererat ljud och följer pauserna mellan scenerna.
+Presentationerna kan också uppdateras direkt: stycken skrivs med `satt_stycke` i `innehall/export/presentationer.py` (behåller nedsänkta index), och PDF och bildspel byggs med `pdf_och_bildspel`.
