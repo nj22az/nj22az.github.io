@@ -43,7 +43,7 @@ def dbox(nr):
             '<p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att visa D.</noscript></p>'
             '<details><summary>Har du redan ett D på en annan dator eller telefon?</summary><p><label for="annatD">Skriv D därifrån (1–31)</label><br><input id="annatD" inputmode="numeric" autocomplete="off" style="width:6em"> <button type="button" id="annatD-ok" class="sj-btn">Använd</button></p><p id="annatD-not" role="status"></p></details>'
             '<p>Skriv dina svar i rutorna under uppgift 1–3. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
-            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}"></script>\n')
+            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-qr1"></script>\n')
 
 
 def page(nr, w, items):

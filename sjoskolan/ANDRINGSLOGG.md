@@ -86,6 +86,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Facit för resultatkoden finns bara i den krypterade lärarsidan, aldrig i elevens moduler. Vecka 37–39 räknar
     fortfarande D ur namnet (`RESULTATKOD` i `verktyg/inlamning/bygg.py` och `verktyg/veckosidor/bygg.py`).
 
+30. **Resultatkoder ska tåla båda transportformaten och kortning.** Ett befintligt komprimerings-API kan sakna
+    `deflate-raw`; använd då JSON-reservformatet. Kortning får inte dela Unicode-surrogatpar eller lämna text när
+    gränsen är noll. Trasiga koder ska ge ett läsbart fel även när webbläsarens strömfel saknar meddelande.
+    *Kontroll: `node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs` (lärarsidans integration kräver `LARARLOSEN`).*
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -94,6 +99,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
 
 ## Ändringar
+
+- **2026-09-27** Fokuserade regressionstester för vecka 40:s resultatkoder: z/j-rundtur, svenska tal, Unicode,
+  kortningsgränser, trasiga koder, version/vecka, partiella labbdata, separat labb-D och lärarsidans verkliga
+  hashimport. Rättat komprimeringsreservväg, Unicode-/nollkortning och tomma felmeddelanden. Kortningsbeskedet
+  jämför nu med originaltexten och samma datasnapshot används genom QR-kortningen. Cacheversioner uppdaterade;
+  lärarsidan behåller krypteringen. Separat CI-steg, utan presentatörs- eller sorteringstester.
 
 - **2026-09-25** Innehållsdatabasen (`innehall/`), kursrevision, arbetsmapp för boken.
 - **2026-09-26** Vecka 40: alla förkortningar förklarade. En storhet, ett skrivsätt i allt material (notation.py och

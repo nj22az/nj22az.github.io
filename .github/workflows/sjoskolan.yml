@@ -29,6 +29,10 @@ jobs:
         run: python3 sjoskolan/verktyg/qa/week40.py
       - name: Labbens modelltester
         run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
+      - name: Vecka 40 – resultatkod och lärarlänk
+        env:
+          LARARLOSEN: ${{ secrets.LARARLOSEN }}
+        run: node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
