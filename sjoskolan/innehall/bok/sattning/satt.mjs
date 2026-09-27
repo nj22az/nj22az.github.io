@@ -1,11 +1,11 @@
-// Sätter bokens PDF (7 × 10 tum) ur EPUB-arbetskopian: bok/.bok/epub -> bok/.bok/bok.pdf.
+// Sätter bokens PDF (7 × 10 tum) ur EPUB-arbetskopian: bok/.bok/epub -> bok/.bok/bok.ny.pdf.
 //
 // Sidorna bryts av paged.js i Chromium. Sidnummer i innehållsförteckningen, hänvisningarna mellan uppgift och lösning
 // (”→ Lösning 5.3 · s. 41”) och sakregistrets sidor räknas fram i ett första pass med platshållare av samma bredd och
 // skrivs in i ett andra pass; passen upprepas tills sidorna står still. Sidhuvud och sidfot läggs in efter brytningen.
 // Klartexten och resultatet ligger i bok/.bok/ (i .gitignore) och checkas aldrig in.
 //
-//   cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs [--ut ../.bok/bok.pdf]
+//   cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs [--ut ../.bok/bok.ny.pdf]
 import { readFileSync, writeFileSync, existsSync, createReadStream, statSync } from 'node:fs';
 import { dirname, join, resolve, relative, extname } from 'node:path';
 import { createServer } from 'node:http';
