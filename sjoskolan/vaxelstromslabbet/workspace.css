@@ -1,5 +1,8 @@
 /* DESIGN.md · labb: instrument till vänster, uppgiften till höger på bred skärm. Uppgiften först på smalare skärm. */
 .ac-workspace{display:flex;flex-direction:column}
+.ac-heading>div{min-width:0}.ac-heading h1{overflow-wrap:anywhere}
+.challenge-select select{min-width:0;max-width:100%;width:100%}
+.readouts>div{min-width:0;overflow-wrap:anywhere}
 .ac-workspace>#guided-workspace{order:1}.ac-workspace>#equipment-bench{order:2}
 @media(min-width:1100px){
   .ac-workspace:not(:has(#guided-workspace[hidden])){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(380px,1fr);gap:24px;align-items:start}
@@ -14,3 +17,8 @@
 .ac-app :focus-visible{outline:3px solid #163248;outline-offset:2px;box-shadow:0 0 0 6px #ffd43d}
 .ac-app button,.guide select,.guide input,.guide textarea{border-radius:8px}
 .guide input,.guide select{min-height:48px;border-color:#5d7282}
+/* Utskriften ska innehålla hela protokollet, även från en bred arbetsyta. */
+@media print{
+  .ac-workspace:not(:has(#guided-workspace[hidden])){display:block}
+  .ac-workspace>#guided-workspace{position:static;max-height:none;overflow:visible;max-width:none}
+}

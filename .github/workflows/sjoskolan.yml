@@ -25,6 +25,8 @@ jobs:
         run: |
           python3 sjoskolan/innehall/innehall.py validera
           python3 sjoskolan/innehall/innehall.py kontrollera
+      - name: Vecka 40 – länkar och publicerade artefakter
+        run: python3 sjoskolan/verktyg/qa/week40.py
       - name: Labbens modelltester
         run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
       - name: Multimeterlabbets gränssnittstest
@@ -35,4 +37,3 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
       - name: Filmernas repliker och textversioner
         run: node sjoskolan/filmer/check.mjs
-

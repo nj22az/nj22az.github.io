@@ -17,5 +17,8 @@ for(const task of GUIDE_TASKS){
  document.getElementById('guide-explain').click();const explain=document.getElementById('guide-explanation');explain.elements.explanation.value='Min egen förklaring med tal och enheter.';explain.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));assert.match(document.getElementById('guide-saved').textContent,/sparad/);
 }
 const saved=JSON.parse(localStorage.getItem('sjoskolan-ac-grund-v2'));assert.equal(Object.keys(saved.rows).length,8);assert.ok(saved.rows.kalibrator.predicted.avg===10);assert.ok(saved.rows.kalibrator.predicted.trms===10);
+mountGuide(document.getElementById('guided-workspace'));
+assert.ok(document.getElementById('guide-explanation'),'reload resumes the saved explanation phase');
+assert.equal(document.getElementById('guide-explanation').elements.explanation.value,'Min egen förklaring med tal och enheter.');
 console.log('PASS: all 8 guided tasks, both calibration readings, explanations and persistence.');
 await window.happyDOM.close();

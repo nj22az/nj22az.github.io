@@ -7339,7 +7339,7 @@
   },
   {
    "id": "EL-000810",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen sinusspänning",
@@ -7355,7 +7355,7 @@
   },
   {
    "id": "EL-000811",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen RL-last",
@@ -7371,7 +7371,7 @@
   },
   {
    "id": "EL-000812",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekt och kompensering",

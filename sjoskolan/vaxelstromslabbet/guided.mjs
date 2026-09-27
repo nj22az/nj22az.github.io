@@ -19,6 +19,8 @@ export function mountGuide(root){
  // Förutsägelsen stämmer inom 2 % (samma tolerans som kursens facit), eller inom 0,01 nära noll.
  const stammer=(v,p)=>Math.abs(v-p)<=Math.max(0.02*Math.abs(v),0.01);
  const ready=()=>task.fields.every(([k])=>Number.isFinite(row().predicted?.[k]));
+ // Återuppta den sparade uppgiften utan att skriva över en tidigare förklaring.
+ phase=row().measured&&ready()?2:0;
  function setTask(id){task=GUIDE_TASKS.find(t=>t.id===id)||GUIDE_TASKS[0];phase=row().measured&&ready()?2:0;render();}
  function render(){
   publishEquipment({tab:task.lesson,values:task.setup,locked:phase===0,editable:false,taskId:task.id});
