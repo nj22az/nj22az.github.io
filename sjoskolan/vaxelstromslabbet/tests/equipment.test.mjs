@@ -20,3 +20,11 @@ test('halverad effektfaktor ger dubbel ström vid konstant P och U',()=>{
 test('sen instrumentladdning får aktuell uppgift och inställningar tillåts bara fritt',()=>{
  let changed=0;setEquipmentControl(()=>changed++);publishEquipment({tab:'sinus',values:DEFAULTS.sinus,locked:true});let state;const dispose=subscribeEquipment(s=>state=s);assert.equal(state.locked,true);adjustEquipment('f',100);assert.equal(changed,0);publishEquipment({tab:'sinus',values:DEFAULTS.sinus,editable:true});adjustEquipment('f',100);assert.equal(changed,1);dispose();
 });
+test('källan och oscilloskopet: kanonisk notation, bildtext skild från avläsningar',()=>{
+ for(const [tab,values]of [['sinus',DEFAULTS.sinus],['impedans',DEFAULTS.impedans],['effekt',DEFAULTS.effekt]]){
+  const s=equipmentState({tab,values});const source=s.instruments.find(i=>i.id==='source'),scope=s.instruments.find(i=>i.id==='scope');
+  assert.match(source.rows[0][1],/U_\{RMS\}/);assert.equal(scope.rows.length,4);assert.equal(scope.rows[3][0],'—');assert.ok(scope.caption.length>0);
+  for(const i of s.instruments)for(const [,label]of i.rows)assert.ok(!['RMS','Sinus'].includes(label),i.id+' '+label);
+ }
+ assert.match(equipmentState({tab:'impedans',values:DEFAULTS.impedans}).instruments.find(i=>i.id==='scope').caption,/streckad/);
+});
