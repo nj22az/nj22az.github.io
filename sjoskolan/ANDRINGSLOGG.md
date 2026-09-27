@@ -100,6 +100,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-28** Trefaslabbets stationsprotokoll (EL-000406) pekade på en flik ”Neutralledaren” som inte finns; nu ”2 Bruten neutralledare”.
 - **2026-09-28** Trefas-, Hållkrets- och Isolationslabbet enklare på iPad och mobil: uppgiften står först och reglagen
   bredvid diagrammet från 768 px (inte klistrade), flikarna blir en lista på mobil, S1 och S0 skriver läget (släppt /
   ✓ intryckt). Ingen knapp ser vald ut efter ett tryck (:hover), 44 px tryckytor, större reglageknopp, 17 px text och

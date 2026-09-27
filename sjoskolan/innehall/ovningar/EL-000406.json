@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, Station B, trefas",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Använd fliken ”Neutralledaren” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts."
+    "fraga": "Använd fliken ”2 Bruten neutralledare” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts."
   },
   "referenser": {
     "ursprung": [

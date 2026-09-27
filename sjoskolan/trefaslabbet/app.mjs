@@ -3,7 +3,7 @@ import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
-import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260929-not';
+import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260928-flik';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', slate: '#4a6378' };
