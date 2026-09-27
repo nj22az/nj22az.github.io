@@ -9,8 +9,8 @@ const KINDS=[['mal','Det här ska du kunna'],['teori','Så fungerar det'],['exem
 function kind(s){if(s.advanced)return'fordjupning';if(s.id==='mal')return'mal';if(s.id==='exempel')return'exempel';if(s.id==='eget'||s.id==='klart')return'prova';if(['labb','matarna','protokoll'].includes(s.id))return'labb';return'teori';}
 function route(cur){return `<ol class="sj-steps lesson-route" aria-label="Genomgångens delar">${KINDS.filter(([k])=>lesson.slides.some(x=>kind(x)===k)).map(([k,t],i)=>{const first=lesson.slides.findIndex(x=>kind(x)===k);return `<li${k===cur?' aria-current="step"':''}><a href="?del=${lesson.id}&amp;avsnitt=${lesson.slides[first].id}" data-go="${first}"><b>${k==='fordjupning'?'+':i+1}</b>${t}</a></li>`;}).join('')}</ol>`;}
 function body(s){return `<ul>${s.body.map(t=>`<li>${m(t)}</li>`).join('')}</ul>${s.formula?`<p class="formula">${m(s.formula)}</p>`:''}`;}
-// Beteckningar på bilden: förklaras direkt under texten, så att ingen förkortning står oförklarad.
-function bet(s){return ordlista(hitta([s.title,...s.body,s.check,s.answer],[s.formula]),'Beteckningar på den här bilden');}
+// Beteckningar i avsnittet: förklaras direkt under texten, så att ingen förkortning står oförklarad.
+function bet(s){return ordlista(hitta([s.title,...s.body,s.check,s.answer],[s.formula]),'Beteckningar i det här avsnittet');}
 function render(){const s=lesson.slides[index];$('lesson').value=lesson.id;$('section').innerHTML=lesson.slides.map((s,i)=>`<option value="${i}">${i+1}. ${s.title.replace(/[_^]\{([^{}]*)\}/g,'$1')}</option>`).join('');$('section').value=index;
  const k=kind(s),kt=KINDS.find(x=>x[0]===k)[1];
  $('route').innerHTML=route(k);
