@@ -100,6 +100,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-28** Trefas-, Hållkrets- och Isolationslabbet enklare på iPad och mobil: uppgiften står först och reglagen
+  bredvid diagrammet från 768 px (inte klistrade), flikarna blir en lista på mobil, S1 och S0 skriver läget (släppt /
+  ✓ intryckt). Ingen knapp ser vald ut efter ett tryck (:hover), 44 px tryckytor, större reglageknopp, 17 px text och
+  fält i protokollet (ingen inzoomning i iOS). Beskedet efter ”Hämta avläsning” står i mätningens ruta. Ny
+  `gemensamt/labbpekskarm.css`; Växelströmslabbet och multimetern oförändrade. Sparade protokoll och länkar oförändrade.
 - **2026-09-28** Växelströmslabbet enklare på iPad och mobil: steget skrivs ut (Steg 1 av 3) och stegraden är
   status, inte knappar. Förutsägelsen står bredvid rutan där värdet visas efter sparandet. Bänken visar uppgiftens
   instrument i närbild med en rad Visa: och en rad Bild: (3D-bild/Siffror); vridning borttagen så att sidan alltid
