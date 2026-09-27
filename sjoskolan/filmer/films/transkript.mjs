@@ -49,4 +49,17 @@ export const BILD = {
     'Ett andra jordfel uppstår i pumpen på L2. En orange väg visar kortslutningen från L1 via skrovet till L2. Pumpens skydd löser och pumpen kopplas bort.',
     'Kom ihåg: 1. Första felet: larm, om nätet är byggt för det. 2. De friska faserna får 440 V mot skrovet. 3. Andra felet: kortslutning via skrovet. 4. Spåra felet direkt: läckströmstång, sedan sektionering. 5. Styrmaskin och viktiga förbrukare: bara enligt plan.',
   ],
+  vaxelstrom: [
+    'Titelbild.',
+    'En sinuskurva u över tiden t, två perioder av 440 V vid 60 Hz. En pil under kurvan markerar en period: T = 1/f = 1/60 s ≈ 16,7 ms. En streckad linje markerar toppvärdet û = √2 · U ≈ 622 V.',
+    'En period av kurvan. Bredvid står u(t) = û · sin(2π · f · t). En röd punkt markerar kurvan vid 2,0 ms. Raderna visas: u = 622 · sin(2π · 60 · 0,002), u = 622 · sin(0,754) ≈ 426 V och Räknaren i radianer!',
+    'Två diagram med spänningen u (blå) och strömmen i (orange). Till vänster ett motstånd R: kurvorna når toppen samtidigt. Till höger en spole L: strömmen når toppen en kvarts period senare. Text: strömmen släpar 90°.',
+    'Drossel i en lysrörsarmatur, L = 200 mH. I land, 50 Hz: X_{L} = 2π · 50 · 0,2 ≈ 62,8 Ω. Ombord, 60 Hz: en gul ruta säger Pausa och räkna och räknar ner. Sedan visas X_{L} = 2π · 60 · 0,2 ≈ 75,4 Ω. Text: Högre frekvens ger större X_{L}.',
+    'Ett diagram med frekvensen f på den vågräta axeln. X_{L} (blå) är en rät linje som stiger. X_{C} (orange) faller när frekvensen ökar. Bredvid: X_{C} = 1/(2π · f · C) och strömmen leder 90°.',
+    'Motorlindning: R = 5 Ω och X_{L} = 12 Ω. En blå pil åt höger (R) och en orange pil uppåt (X_{L}) bildar en rätvinklig triangel. En röd pil från början till spetsen är Z. Raderna visas: Z = √(R² + X_{L}²), Z = √(25 + 144) = √169, Z = 13 Ω och inte 5 + 12 = 17 Ω.',
+    'Två rutor, båda 1 380 W vid 230 V. Värmeelement med PF = 1: I = 1 380 / 230 = 6,0 A. Pumpmotor med PF = 0,80: I = P / (U · PF) = 1 380 / (230 · 0,80) = 7,5 A.',
+    'Effekttriangel: P = 1 380 W åt höger (blå), Q uppåt (orange) och S snett (röd), vinkeln φ mellan P och S. Raderna: P: nyttig effekt, W. Q: pendlar, var. S = U · I = 230 · 7,5 = 1 725 VA. Q = √(S² − P²) ≈ 1 035 var.',
+    'Två rutor: Utan kompensering 7,5 A (röd), med kondensator och PF = 1 6,0 A (grön). Raderna: Förlusten i kabeln följer I². (7,5 / 6,0)² ≈ 1,56. Utan kompensering: 56 % mer värme.',
+    'Kom ihåg: 1. T = 1/f och û = √2 · U. 2. Spole: X_{L} = 2π · f · L, strömmen släpar. 3. Kondensator: X_{C} = 1/(2π · f · C), strömmen leder. 4. Z = √(R² + X²), aldrig R + X. 5. I = P / (U · PF): låg PF ger större ström.',
+  ],
 };

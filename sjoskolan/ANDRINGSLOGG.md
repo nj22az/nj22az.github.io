@@ -32,7 +32,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 8. **En storhet har ett skrivsätt, index är alltid nedsänkta.** U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L}.
    Aldrig Upp, Urms, U_{fas}, XL, låtsasindex (Xᴸ) eller understreck utan klammer (U_fas, X_L).
    *Kontroll: `notation.py` i `innehall.py kontrollera`. Tänk på text i figurer (PNG) och i filmer: de kontrolleras
-   bara via källfilerna (`verktyg/figurer/figs*.py`, `acfilm/src`).*
+   bara via källfilerna (`verktyg/figurer/figs*.py`, `filmer/films`).*
 9. **En upphöjd siffra avslutar ordet** (UL², XL²). Kontrollen missade dem tills gränsen rättades.
 10. **Genererad text ska behålla markeringen.** Exportörer som plattar ut X_{L} till XL (ren_text) ger ihopskrivna
     former. Använd markeringen och rendera nedsänkt (markHtml, rendera.h), även i generatorer för veckosidor.
@@ -42,7 +42,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 11. **Redigera källan, inte den genererade filen.** Poster → `innehall.py revidera` och `bygg`. Veckosidor →
     `verktyg/veckosidor/bygg.py`. CI avvisar inaktuella filer.
 12. **Samma exempel finns på flera ställen.** Ett genomräknat exempel kan finnas på övningssidan, i boken (text och
-    figur), i presentationen och bildspelet och i den engelska filmens berättarröst. Sök överallt (även `acfilm`,
+    figur), i presentationen och bildspelet och i filmerna. Sök överallt (även `filmer/films`,
     bokens `.bok/epub`, `bildspel/*/data.json`) och ändra allt i samma ändring, eller låt bli.
 13. **Byt cacheversion när en modul ändras** (`?v=` i import och `<script>`), annars ser eleverna gammal kod.
 14. **CSS som gäller alla `span` i ett block bryter översättningsskyddet.** `oversattning.js` lägger `span` runt tal
@@ -51,6 +51,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 16. **Main kan ha nya commits från andra sessioner.** Hämta och slå ihop, skriv aldrig över. Lös konflikter i källor
     för hand och bygg om genererade filer med verktygen.
 17. **Lösenord skrivs aldrig i repot.** Lärar- och bokklartext ligger utanför git (`.skyddat/`, `bok/.bok/`).
+
+20. **Filmens exempel får inte vara en övnings svar.** Vägguttaget 230 V, 50 Hz vid 2,5 ms är övning EL-000854, så
+    växelströmsfilmen räknar på fartyget (440 V, 60 Hz, 2,0 ms). Kontrollera filmens tal mot svaren i databasen.
+21. **En film ska gå att ändra utan ny inspelning.** Filmerna ritas ur `filmer/films/*.mjs` med text i bubblor och
+    undertexter. Talmanus för en senare röst görs med `filmer/tal.mjs`.
 
 ### Boken
 
@@ -70,5 +75,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   med exempel från hem och fartyg, läshänvisning till rätt bild i genomgången. Genomräknade exempel från fartyget:
   fas och linje 254/440 V, Y och Δ på 440 V, styrtransformator 230/24 V (övningssidor, bok, presentationer).
   Automatisk kontroll att ledtrådar inte ger svaret; kontroll av understreck utan klammer.
-- **Väntar:** exemplen u(t) = 10 sin(2π · 25t) och 1 200 W vid 240 V (vecka 40) byts när filmens berättarröst kan
-  göras om. Rösten kräver att `huggingface.co` tillåts i miljöns nätverksinställning.
+- **2026-09-27** Den engelska filmen Alternating Current Aboard (`acfilm`) borttagen. Ny svensk repetitionsfilm
+  Växelström ombord (`filmer/films/vaxelstrom.mjs`, 4 min): 440 V/60 Hz, momentanvärde, spole och kondensator,
+  impedans 5/12/13 Ω, pumpmotor 1 380 W med PF 0,80, effekttriangel och kompensering. Pausa-och-räkna-moment.
+- **Väntar:** exemplen u(t) = 10 sin(2π · 25t) och 1 200 W vid 240 V (vecka 40) kan nu bytas (filmen som berättade
+  dem är borttagen). Stegfilmerna i `vecka-40/aktuell/Kortfilmer.html` har fortfarande engelsk berättarröst och 12 V.

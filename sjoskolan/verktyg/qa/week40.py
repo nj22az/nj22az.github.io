@@ -36,6 +36,9 @@ class Page(HTMLParser):
                 self.links.append(attrs[key])
 
 
+FILM_IDS = {m for f in (ROOT / 'sjoskolan/filmer/films').glob('*.mjs') for m in re.findall(r"\bid: '([^']+)'", f.read_text(encoding='utf-8'))}
+
+
 @lru_cache(None)
 def page(path):
     return Page(path.read_text(encoding='utf-8'))
@@ -51,7 +54,11 @@ def check(source, link):
     if not dest.is_file() or not dest.stat().st_size:
         errors.append(f'{source.relative_to(ROOT)}: missing {link}')
         return
-    if url.fragment and dest.suffix == '.html' and not (dest.parent.name == 'bildspel' and url.fragment.isdigit()):
+    # Filmsidan ritar ett kort per film (id = filmens id) med JavaScript.
+    if url.fragment and dest.parent.name == 'filmer' and dest.name == 'index.html':
+        if url.fragment not in FILM_IDS:
+            errors.append(f'{source.relative_to(ROOT)}: missing film {link}')
+    elif url.fragment and dest.suffix == '.html' and not (dest.parent.name == 'bildspel' and url.fragment.isdigit()):
         if unquote(url.fragment) not in page(dest).ids:
             errors.append(f'{source.relative_to(ROOT)}: missing anchor {link}')
     deck = parse_qs(url.query).get('d', [None])[0]

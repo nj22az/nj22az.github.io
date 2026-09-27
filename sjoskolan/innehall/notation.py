@@ -36,7 +36,6 @@ JS = ['trefaslabbet/app.mjs', 'trefaslabbet/lessons.mjs', 'trefaslabbet/model.mj
       'multimetersimulator/app.mjs', 'multimetersimulator/stationA-protokoll.mjs', 'gemensamt/labbprotokoll.mjs',
       '*/uppgifter.gen.mjs', 'vecka-40/aktuell/kontrollfragor.gen.mjs', 'gemensamt/*.gen.mjs',
       'verktyg/figurer/figs*.py',  # figurernas etiketter: Pythonsträngar läses som JS-strängar
-      'acfilm/src/content.mjs', 'acfilm/src/draw.mjs', 'acfilm/src/timeline.json',  # engelska växelströmsfilmen
       'filmer/films/*.mjs', 'vecka-40/aktuell/lektioner.mjs', 'vecka-40/aktuell/visuals.mjs', 'vecka-40/aktuell/lararstod.mjs']
 BILDSPEL = ['bildspel/*/data.json']
 PPTX = ['vecka-*/aktuell/*.pptx']

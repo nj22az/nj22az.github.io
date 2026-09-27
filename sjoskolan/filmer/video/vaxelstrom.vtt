@@ -1,0 +1,161 @@
+WEBVTT
+
+1
+00:00:00.800 --> 00:00:07.800
+<v Måns>Ombord står det 440 V och 60 Hz. Vad betyder talen egentligen?
+
+2
+00:00:08.600 --> 00:00:14.400
+<v Sigge>Spänningen byter riktning hela tiden. Den svänger 60 gånger i sekunden.
+
+3
+00:00:14.600 --> 00:00:21.200
+<v Sigge>En hel period tar 1/60 sekund. Det är ungefär 16,7 ms.
+
+4
+00:00:21.400 --> 00:00:27.800
+<v Måns>440 V är effektivvärdet. Toppen är √2 gånger så hög, 622 V!
+
+5
+00:00:28.600 --> 00:00:34.800
+<v Sigge>Formeln u(t) ger spänningen i varje ögonblick längs kurvan.
+
+6
+00:00:35.000 --> 00:00:40.800
+<v Måns>Hur stor är spänningen 2,0 ms efter nollgenomgången?
+
+7
+00:00:41.000 --> 00:00:45.300
+<v Sigge>Sätt in t = 0,002 s. Du får ungefär 426 V.
+
+8
+00:00:45.500 --> 00:00:49.800
+<v Sigge>Ställ räknaren på radianer, annars blir det fel.
+
+9
+00:00:50.600 --> 00:00:57.800
+<v Sigge>I ett motstånd följer strömmen spänningen. De når toppen samtidigt.
+
+10
+00:00:58.000 --> 00:01:04.300
+<v Sigge>I en spole når strömmen toppen en kvarts period senare.
+
+11
+00:01:04.500 --> 00:01:09.800
+<v Måns>Strömmen släpar efter spänningen med 90°!
+
+12
+00:01:10.600 --> 00:01:15.300
+<v Sigge>Spolen bromsar växelström. Det kallas reaktans.
+
+13
+00:01:15.500 --> 00:01:20.800
+<v Sigge>En drossel på 200 mH har 62,8 Ω vid 50 Hz.
+
+14
+00:01:21.000 --> 00:01:26.800
+<v Måns>Hur stor blir den ombord, vid 60 Hz?
+
+15
+00:01:27.000 --> 00:01:30.800
+<v Sigge>Pausa och räkna själv först.
+
+16
+00:01:31.000 --> 00:01:34.800
+<v Sigge>Svaret är ungefär 75,4 Ω.
+
+17
+00:01:35.000 --> 00:01:39.800
+<v Måns>Högre frekvens, större reaktans i spolen!
+
+18
+00:01:40.600 --> 00:01:46.800
+<v Sigge>Spolens reaktans växer när frekvensen ökar.
+
+19
+00:01:47.000 --> 00:01:51.300
+<v Sigge>Kondensatorns reaktans minskar i stället.
+
+20
+00:01:51.500 --> 00:01:59.800
+<v Sigge>I en kondensator kommer strömmen före spänningen. Strömmen leder 90°.
+
+21
+00:02:00.600 --> 00:02:07.800
+<v Måns>Lindningen har 5 Ω resistans och 12 Ω reaktans. Blir det 17 Ω?
+
+22
+00:02:08.000 --> 00:02:13.800
+<v Sigge>Nej. R och XL står vinkelrätt. De är sidor i en triangel.
+
+23
+00:02:14.000 --> 00:02:20.300
+<v Sigge>Pythagoras sats ger impedansen Z = 13 Ω.
+
+24
+00:02:20.500 --> 00:02:25.800
+<v Måns>Aldrig lägga ihop dem rakt av. Jag lovar!
+
+25
+00:02:26.600 --> 00:02:32.800
+<v Sigge>Ett värmeelement på 1 380 W vid 230 V drar 6,0 A.
+
+26
+00:02:33.000 --> 00:02:38.800
+<v Sigge>En pumpmotor med samma effekt har effektfaktorn 0,80.
+
+27
+00:02:39.000 --> 00:02:45.300
+<v Måns>Den drar 7,5 A! Samma effekt men mer ström?
+
+28
+00:02:45.500 --> 00:02:51.800
+<v Sigge>Ja. En del av strömmen pendlar bara fram och tillbaka.
+
+29
+00:02:52.600 --> 00:02:58.300
+<v Sigge>P är den aktiva effekten. Den blir värme och arbete.
+
+30
+00:02:58.500 --> 00:03:04.300
+<v Sigge>Q är reaktiv effekt. Den pendlar mellan nätet och motorn.
+
+31
+00:03:04.500 --> 00:03:10.800
+<v Sigge>S är skenbar effekt: spänning gånger ström, 1 725 VA.
+
+32
+00:03:11.000 --> 00:03:15.800
+<v Måns>Och PF = P/S = 0,80. Det går ihop!
+
+33
+00:03:16.600 --> 00:03:22.800
+<v Sigge>En kondensator nära motorn levererar den reaktiva effekten.
+
+34
+00:03:23.000 --> 00:03:28.800
+<v Sigge>Då behöver kabeln bara bära 6,0 A. Motorn får samma effekt.
+
+35
+00:03:29.000 --> 00:03:34.300
+<v Måns>Mindre ström ger mindre värme i kabeln!
+
+36
+00:03:34.500 --> 00:03:39.800
+<v Sigge>Förlusten följer I². 7,5 A ger 56 % mer värme.
+
+37
+00:03:40.600 --> 00:03:48.300
+<v Sigge>Här är det viktigaste. Pausa gärna och skriv av listan.
+
+38
+00:03:48.500 --> 00:03:56.300
+<v Måns>Ombord gäller samma formler, bara med 60 Hz.
+
+39
+00:03:56.500 --> 00:04:01.300
+<v Sigge>Testa nu själv i växelströmslabbet.
+
+40
+00:04:01.500 --> 00:04:05.800
+<v Sigge>Vi ses i nästa film!

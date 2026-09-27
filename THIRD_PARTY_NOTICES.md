@@ -12,17 +12,17 @@ licences, source comments, package notices and asset records remain applicable.
 
 ## Sjöskolan film companions
 
-These components support `sjoskolan/multimeterfilm/` and `sjoskolan/acfilm/`.
+These components support `sjoskolan/multimeterfilm/`.
 The lesson scripts, instructional diagrams and project media are distinct from
 the software used to make and play them.
 
 | Project and creator | Documented use | Licence and retained notices |
 | --- | --- | --- |
-| [Anidoodle — Alex Greenshpun](https://github.com/alexgreensh/anidoodle) | `vendor/anidoodle-film.mjs` adapts the deterministic `film.ts` core to JavaScript. Types were removed; the rendering algorithm was preserved. | Apache-2.0. [Licence](sjoskolan/multimeterfilm/vendor/ANIDOODLE-LICENSE.txt), [upstream NOTICE](sjoskolan/multimeterfilm/vendor/ANIDOODLE-NOTICE.txt); [AC licence](sjoskolan/acfilm/vendor/ANIDOODLE-LICENSE.txt) and [AC NOTICE](sjoskolan/acfilm/vendor/ANIDOODLE-NOTICE.txt). Modification notices remain in the source. |
-| [Helios — Gavin Bintz](https://github.com/BintzGavin/helios) | Helios 5.13.2 supplies the frame timeline for the film players and export workflow. | Elastic License 2.0 (ELv2), not an open-source licence. [Multimeter licence](sjoskolan/multimeterfilm/vendor/HELIOS-LICENSE.txt); [AC licence](sjoskolan/acfilm/vendor/HELIOS-LICENSE.txt). Its restrictions remain applicable. |
-| [kokoro-onnx — thewh1teagle and contributors](https://github.com/thewh1teagle/kokoro-onnx) | Version 0.4.9 generates British English narration locally. It is an authoring dependency. | MIT. [Licence](sjoskolan/multimeterfilm/vendor/KOKORO-ONNX-LICENSE.txt), [multimeter voice record](sjoskolan/multimeterfilm/vendor/VOICE-NOTICE.md) and [AC voice record](sjoskolan/acfilm/vendor/VOICE-NOTICE.md). |
+| [Anidoodle — Alex Greenshpun](https://github.com/alexgreensh/anidoodle) | `vendor/anidoodle-film.mjs` adapts the deterministic `film.ts` core to JavaScript. Types were removed; the rendering algorithm was preserved. | Apache-2.0. [Licence](sjoskolan/multimeterfilm/vendor/ANIDOODLE-LICENSE.txt), [upstream NOTICE](sjoskolan/multimeterfilm/vendor/ANIDOODLE-NOTICE.txt). Modification notices remain in the source. |
+| [Helios — Gavin Bintz](https://github.com/BintzGavin/helios) | Helios 5.13.2 supplies the frame timeline for the film players and export workflow. | Elastic License 2.0 (ELv2), not an open-source licence. [Multimeter licence](sjoskolan/multimeterfilm/vendor/HELIOS-LICENSE.txt). Its restrictions remain applicable. |
+| [kokoro-onnx — thewh1teagle and contributors](https://github.com/thewh1teagle/kokoro-onnx) | Version 0.4.9 generates British English narration locally. It is an authoring dependency. | MIT. [Licence](sjoskolan/multimeterfilm/vendor/KOKORO-ONNX-LICENSE.txt) and [multimeter voice record](sjoskolan/multimeterfilm/vendor/VOICE-NOTICE.md). |
 | [Kokoro-82M — hexgrad and contributors](https://huggingface.co/hexgrad/Kokoro-82M) | The `bf_emma` voice supplies synthetic narration. The model and voice archive are not distributed with the website. | Model documentation states Apache-2.0. Model versions, hashes and the distinction between generated audio and model files are recorded in the voice notices above. |
-| [DejaVu Fonts](https://dejavu-fonts.github.io/) / Bitstream and DejaVu contributors | Local fonts for Swedish letters and technical symbols in the films. | [Font licence](sjoskolan/multimeterfilm/vendor/DEJAVU-LICENSE.txt); [AC copy](sjoskolan/acfilm/vendor/DEJAVU-LICENSE.txt). |
+| [DejaVu Fonts](https://dejavu-fonts.github.io/) / Bitstream and DejaVu contributors | Local fonts for Swedish letters and technical symbols in the films. | [Font licence](sjoskolan/multimeterfilm/vendor/DEJAVU-LICENSE.txt). |
 
 Build and rendering tools include [esbuild](https://github.com/evanw/esbuild),
 [@napi-rs/canvas](https://github.com/Brooooooklyn/canvas) and

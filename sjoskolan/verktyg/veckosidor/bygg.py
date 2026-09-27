@@ -138,7 +138,7 @@ VECKOR = {
         'fordjupning': [
             lank(LABB['ac'] + '?lage=fri', 'Växelströmslabbet: utforska och räkna vidare', 'labb', 'tolv räkna-först-uppgifter'),
             lank(LABB['ac'] + '?lage=station', 'Station B: utökat protokoll', 'labb', 'efter genomgången av mätarprinciper'),
-            lank('../../acfilm/', 'Alternating Current Aboard (engelska)', 'film', 'längre repetitionsfilm'),
+            lank('../../filmer/#vaxelstrom', 'Växelström ombord', 'film', 'repetitionsfilm med Måns och Sigge, 4 min, svensk text'),
         ],
     },
     41: {
