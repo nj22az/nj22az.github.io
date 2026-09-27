@@ -14,6 +14,8 @@ export function mountGuide(root){
  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch{storageOK=false;}const el=root.querySelector('#guide-storage');if(el)el.textContent=storageOK?'Svaren sparas bara i den här webbläsaren. Exportera protokollet före inlämning.':'Lagring är blockerad. Spara som PDF eller CSV innan du lämnar sidan.';};
  const row=()=>data.rows[task.id]||{};
  const ready=()=>task.fields.every(([k])=>Number.isFinite(row().predicted?.[k]));
+ // Återuppta den sparade uppgiften utan att skriva över en tidigare förklaring.
+ phase=row().measured&&ready()?2:0;
  function setTask(id){task=GUIDE_TASKS.find(t=>t.id===id)||GUIDE_TASKS[0];phase=row().measured&&ready()?2:0;render();}
  function render(){
   publishEquipment({tab:task.lesson,values:task.setup,locked:phase===0,editable:false,taskId:task.id});

@@ -47,7 +47,7 @@ def filer(a):
                                                      *[l['text'] for l in p.get('ledtradar', [])], (p.get('losning') or {}).get('text')]]
                 formler = [x for _, p in pls for x in p['uppgift'].get('samband', [])]
                 lista = R.beteckningar_i(texter, a.beteckningar(), formler)
-                rad.insert(0, R.beteckningar_html(lista, 'Förkortningar och beteckningar i övningarna') + '<p class="muted"><a href="Beteckningar.html">Alla beteckningar för veckan</a></p>')
+                rad.insert(0, R.beteckningar_html(lista, 'Förkortningar och beteckningar i övningarna', prefix=del_ + '-') + '<p class="muted"><a href="Beteckningar.html">Alla beteckningar för veckan</a></p>')
             forsta = r'<article class="exercise" id="%s-q\d+">.*?</article>(?=\s*</section>)' % re.escape(del_)
             text = ersatt(text, f'ovningar-{del_}', '\n' + '\n'.join(rad) + '\n', forsta)
         ut[plats] = text

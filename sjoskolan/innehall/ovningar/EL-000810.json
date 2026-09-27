@@ -3,7 +3,7 @@
   "titel": "Egen sinusspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -45,12 +45,12 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "Genomgang.html?del=sinus",
+        "url": "vecka-40/aktuell/Genomgang.html?del=sinus",
         "titel": "Genomgång del 1: sinus och mätvärden"
       },
       {
-        "url": "vaxelstromslabbet/",
-        "titel": "Växelströmslabbet"
+        "url": "vaxelstromslabbet/?lage=fri&flik=sinus",
+        "titel": "Växelströmslabbet: ställ in egna värden"
       }
     ],
     "losning_publik": false
