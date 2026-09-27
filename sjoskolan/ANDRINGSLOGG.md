@@ -106,6 +106,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-28** Lärarsidorna följer den nya planen: lärarportalens veckolista, utbildningsguiden vecka 38 (kursvecka 1, mapp vecka-37), frånskiljningen som måndag pass 1 i vecka 40, vecka 40:s plan med lektionstider och hemmablock, Lärarstöd vecka 40 och talaranteckningarna på bild 2 i lärarens PowerPoint v40_01–03. Upplåst utanför repot och låst igen.
 - **2026-09-28** Vecka 40: verkliga lektionstider i dagplanen och lärarens anteckningar (måndag 09.00–11.00, tisdag 15.00–17.00, fredag 09.00–11.00); hemmablocken börjar när lektionen slutar.
 - **2026-09-27** Kursen började vecka 38, inte vecka 37. Startsidan visar vecka 38–45 (Elens grunder vecka 38,
   14–18 september) och väljer vecka 40 från måndag 28 september. Frånskiljning och mätteknik (mappen `vecka-38`, inte
