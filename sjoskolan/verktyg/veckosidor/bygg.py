@@ -298,28 +298,28 @@ def steg(kind, titel, href, minuter, text='', ovningar=None):
     return {'kind': kind, 'titel': titel, 'href': href, 'min': minuter, 'text': text, 'ovningar': ovningar}
 
 
-# Vecka 40 dag för dag. Lektion måndag, tisdag och fredag (2 × 45 min). Onsdag, torsdag och helgen hemma.
+# Vecka 40 dag för dag. Lektion måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Onsdag, torsdag och helgen hemma.
 # Ordningen i varje del är genomgång → film → övningar, och labben är veckans sista steg (ANDRINGSLOGG regel 26).
 # Samma upplägg står i lärarens anteckningar i vecka-40/aktuell/lektioner.mjs (bilden ”Det här ska du kunna”).
 G, K, O = 'Genomgang.html?del=', 'Kortfilmer.html?del=', 'Formelstod_och_ovningar.html?del='
 BILDSPEL38 = '../../bildspel/?d=v38_01_Franskiljning_och_matteknik'
 DAGAR40 = [
-    {'id': 'mandag', 'dag': 'Måndag 28/9', 'typ': 'Lektion', 'start': '2026-09-28T00:00', 'rubrik': 'Frånskiljning, sedan del 1: sinus', 'pass': [
+    {'id': 'mandag', 'dag': 'Måndag 28/9', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-09-28T00:00', 'rubrik': 'Frånskiljning, sedan del 1: sinus', 'pass': [
         ('Pass 1', 'Frånskiljning och mätteknik: de fem stegen, alla matningsvägar, instrumentval och felgräns. Film: Fem steg. Elevuppgift V2-1 och V2-2 i par.'),
         ('Pass 2', 'Del 1 Sinus och mätvärden: genomgången och filmen tillsammans, sedan övning 1–3.'),
         ('Sist', 'Skicka resultat med QR-koden.'),
      ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Elevuppgifter'), (G + 'sinus', 'Genomgång del 1'), (K + 'sinus', 'Film del 1')]},
-    {'id': 'mandag-hemma', 'dag': 'Måndag kväll', 'typ': 'Hemma', 'start': '2026-09-28T16:00', 'steg': [
+    {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
         steg('Del 1 · Genomgång', 'Läs resten av genomgången', G + 'sinus&avsnitt=medel', 25, 'från ”Medelvärde och RMS är olika” till ”Fördjupning: momentanvärde”'),
         steg('Del 1 · Övningar', 'Övning 4–10', O + 'v40_01#v40_01-q4', 50, 'kontrollera mot facit och bocka av varje övning', 'v40_01:4-10'),
         steg('Frånskiljning · Övningar', 'Elevuppgift V2-3 och V2-4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
      ], 'fore': ('Före tisdagens lektion', 'Alla tio övningar i del 1 är avbockade. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
-    {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'start': '2026-09-29T00:00', 'rubrik': 'Del 2: spole, motstånd och ström', 'pass': [
+    {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 2: spole, motstånd och ström', 'pass': [
         ('Pass 1', 'Dina frågor från del 1. Del 2: genomgången och filmen tillsammans.'),
         ('Pass 2', 'Övning 1–4. Påbörja inlämningen Växelström, uppgift 1.'),
         ('Sist', 'Skicka resultat med QR-koden.'),
      ], 'material': [(G + 'impedans', 'Genomgång del 2'), (K + 'impedans', 'Film del 2'), (O + 'v40_02', 'Övningar del 2'), ('Inlamning.html#uppgift-1', 'Inlämning uppgift 1')]},
-    {'id': 'onsdag', 'dag': 'Onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T16:00', 'steg': [
+    {'id': 'onsdag', 'dag': 'Tisdag kväll och onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T17:00', 'steg': [
         steg('Del 2 · Genomgång', 'Läs resten av genomgången', G + 'impedans&avsnitt=fas', 10, 'från ”Fasvinkel med tecken” till ”Eget försök”'),
         steg('Del 2 · Övningar', 'Övning 5–10', O + 'v40_02#v40_02-q5', 45, 'kontrollera mot facit och bocka av varje övning', 'v40_02:5-10'),
         steg('Frånskiljning · Inlämning', 'Uppgift 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
@@ -330,12 +330,12 @@ DAGAR40 = [
         steg('Del 3 · Övningar', 'Övning 1–6', O + 'v40_03', 40, 'kontrollera mot facit och bocka av varje övning', 'v40_03:1-6'),
         steg('Växelström · Inlämning', 'Uppgift 1 och 2', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
      ], 'fore': ('Före fredagens lektion', 'Du har läst del 3 och gjort övning 1–6. Ta med dina frågor. Labben på fredag bygger på del 1–3.')},
-    {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'start': '2026-10-02T00:00', 'rubrik': 'Del 3 och labben', 'pass': [
+    {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 3 och labben', 'pass': [
         ('Pass 1', 'Dina frågor från del 3. Övning 7–10 tillsammans.'),
         ('Pass 2', 'Labb: växelströmslabbet, guidad. Alla åtta uppgifter. Veckans sista steg.'),
         ('Sist', 'Skicka resultat med QR-koden, nu med labbprotokollet.'),
      ], 'material': [(O + 'v40_03#v40_03-q7', 'Övning 7–10'), (LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad'), ('Resultat.html', 'Skicka resultat')]},
-    {'id': 'helgen', 'dag': 'Helgen', 'typ': 'Hemma', 'start': '2026-10-02T16:00', 'steg': [
+    {'id': 'helgen', 'dag': 'Fredag eftermiddag och helgen', 'typ': 'Hemma', 'start': '2026-10-02T11:00', 'steg': [
         steg('Labb', 'Gör klart labbet', LABB['ac'] + '?lage=guidad', 30, 'de uppgifter du inte hann på fredagen'),
         steg('Växelström · Inlämning', 'Uppgift 3 och 4', 'Inlamning.html#uppgift-3', 45, 'uppgift 4 är protokollet från labbet'),
         steg('Inlämning', 'Lämna in båda inlämningarna', '#inlamning', 10, 'Växelström och Frånskiljning, via den inlämningskanal läraren har anvisat'),
@@ -359,7 +359,7 @@ def dagplan(nr):
         if d['typ'] == 'Lektion':
             pass_ = ''.join(f'<li><strong>{escape(t)}.</strong> {escape(x)}</li>' for t, x in d['pass'])
             mat = ' · '.join(f'<a href="{h}">{escape(t)}</a>' for h, t in d['material'])
-            kort.append(f'<section class="dag lektion" id="{d["id"]}" data-start="{d["start"]}" aria-labelledby="{hid}"><h3 id="{hid}"><span class="dag-namn">{escape(d["dag"])}</span> <span class="dag-typ">Lektion, 2 × 45 min</span></h3>'
+            kort.append(f'<section class="dag lektion" id="{d["id"]}" data-start="{d["start"]}" aria-labelledby="{hid}"><h3 id="{hid}"><span class="dag-namn">{escape(d["dag"])}</span> <span class="dag-typ">Lektion {d["tid"]}</span></h3>'
                         f'<p class="dag-rubrik">{escape(d["rubrik"])}</p><ul class="dag-pass">{pass_}</ul><p class="dag-material"><strong>Öppna på lektionen:</strong> {mat}</p></section>')
             continue
         rader = []
