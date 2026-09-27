@@ -76,7 +76,7 @@ def _titles():
     spec = importlib.util.spec_from_file_location('veckor', ROOT / 'verktyg' / 'veckosidor' / 'bygg.py')
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     for w in mod.VECKOR.values():
-        for p in [x for d in w['delar'] for x in d['poster']] + w.get('fordjupning', []):
+        for p in [x for d in w['delar'] for x in d.get('poster', []) + d.get('steg', []) + d.get('mer', [])] + w.get('fordjupning', []):
             if p.get('typ') == 'ppt':
                 t[p['fil']] = p['titel']
     lek = ROOT / 'vecka-40' / 'aktuell' / 'lektioner.mjs'
