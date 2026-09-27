@@ -3,7 +3,7 @@
   "titel": "Samma aktiva effekt, lägre effektfaktor",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 4,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: en motor som tar 2 300 W vid 230 V och PF 0,80 drar I = 2 300/(230 · 0,80) = 12,5 A.",
+      "text": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: en motor som tar 6 440 W vid 230 V och PF 0,80 drar I = 6 440/(230 · 0,80) = 35 A.",
       "status": "migrerad"
     }
   ],

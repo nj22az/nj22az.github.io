@@ -3,7 +3,7 @@
   "titel": "Jämför toppvärde och RMS",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

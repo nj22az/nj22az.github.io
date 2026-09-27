@@ -48,6 +48,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 14. **CSS som gäller alla `span` i ett block bryter översättningsskyddet.** `oversattning.js` lägger `span` runt tal
     med enhet. Använd barnselektorer (`dd > span`), inte `dd span {display:block}`.
 15. **`innehall.py revidera --alla` utan skyddade filer** får bara jämföra den publika hashen (rättat 2026-09-26).
+    Revidera helst med de skyddade filerna öppna; annars måste posten revideras igen nästa gång de är öppna.
 16. **Main kan ha nya commits från andra sessioner.** Hämta och slå ihop, skriv aldrig över. Lös konflikter i källor
     för hand och bygg om genererade filer med verktygen.
 17. **Lösenord skrivs aldrig i repot.** Lärar- och bokklartext ligger utanför git (`.skyddat/`, `bok/.bok/`).
@@ -62,6 +63,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     posternas svar, även för presentationer, stegfilmer och figurer (`visuals.mjs`, diagram i PowerPoint).
 23. **Ett exempel får inte ge svaret på en annan uppgift i samma labb.** *Kontroll: `svar_i_ledtradar` jämför nu också med
     de andra uppgifterna i samma labb (tal med enhet).*
+
+24. **Eleven identifieras med namn, inte med ett tal.** Personliga värden räknas fram ur namnet med samma funktion
+    överallt (`gemensamt/elevtal.mjs`, lärarguiden och `berakningar.elevtal`). Nya personliga uppgifter ska ha facit i
+    lärarguiden och ett test som visar att facit och labbet ger samma tal.
+25. **Protokoll ska visa hur eleven kom fram till svaret.** En ändrad förutsägelse får aldrig skriva över den första;
+    protokollet visar första förutsägelse, antal försök och tider.
 
 ### Boken
 
@@ -92,3 +99,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Granskning av vecka 40 ur lärarens perspektiv. Rättat: ledtrådar där exemplet gav svaret på nästa
   labbuppgift (fläktmotor 5,0 A, vattenkokare 10 A), inaktuellt labbfacit i lärarportalen (S och Q för pumpen),
   tavelexempel i utbildningsguiden som var labbens värden, nedsänkta index på lärarsidorna.
+- **2026-09-27** Eleven skriver sitt namn i stället för D (inlämning alla veckor, guidade växelströmslabben, lärarguiden,
+  Lärarstöd vecka 40). Guidade labben ger egna värden ur namnet; protokollet visar första förutsägelse, antal försök och
+  tider. Inlämning vecka 40 uppgift 4 omformulerad. Ledtrådsexempel flyttade utanför elevernas svarsintervall.

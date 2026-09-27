@@ -3,7 +3,7 @@
   "titel": "Grundprotokollet från den guidade labben",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     "delfragor": [
       {
         "id": "a",
-        "text": "Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara."
+        "text": "Skriv ditt namn i labbet, samma som på inlämningen. Då får du egna värden. Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara."
       },
       {
         "id": "b",
@@ -30,7 +30,7 @@
       },
       {
         "id": "c",
-        "text": "Välj en uppgift där din förutsägelse inte stämde och förklara vad du hade missat."
+        "text": "Välj en uppgift där din första förutsägelse inte stämde och förklara vad du hade missat. Stämde alla, välj den uppgift du tyckte var svårast och förklara vad som lätt blir fel."
       }
     ],
     "svarsformat": "Grundprotokollet som PDF och förklaringen."

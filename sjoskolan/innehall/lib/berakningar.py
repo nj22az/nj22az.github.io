@@ -134,7 +134,21 @@ registrera('ac.strom_rl')(lambda p: p['U'] / math.hypot(p['R'], 2 * math.pi * p[
 
 # ---------------------------------------------------------------- lärarfacit för inlämningsuppgifterna (elevens tal D)
 # Registrerade med id larare.facit_rader[].funktion = 'inlamning.<id>'. Returnerar facittext för ett givet D (1–31).
+# Texten använder kursens markering (X_{L}); lärarguiden renderar indexen nedsänkta.
+# D räknas fram ur elevens namn med elevtal() nedan, samma funktion som gemensamt/elevtal.mjs.
 LARARFACIT = {}
+
+
+def elevtal(namn):
+    """Elevens tal D (1–31) ur namnet: FNV-1a över UTF-8, samma som gemensamt/elevtal.mjs."""
+    import unicodedata
+    s = ' '.join(unicodedata.normalize('NFC', str(namn or '')).split()).lower()
+    if not s:
+        return None
+    h = 0x811c9dc5
+    for b in s.encode('utf-8'):
+        h = ((h ^ b) * 0x01000193) & 0xffffffff
+    return 1 + h % 31
 
 
 def lararfacit(namn):
@@ -152,8 +166,8 @@ def n(v, d=2):
 UF = 400 / R3
 lararfacit('37-1i')(lambda D: f'I = 24/(40 + {D}) = {n(24 / (40 + D), 3)} A')
 lararfacit('37-1p')(lambda D: f'P = 24²/{40 + D} = {n(576 / (40 + D), 1)} W')
-lararfacit('37-2i')(lambda D: f'IA = 0,400 A, IB = {n(24 / (100 + D), 3)} A, Itot = {n(0.4 + 24 / (100 + D), 3)} A')
-lararfacit('37-2p')(lambda D: f'PA = 9,6 W, PB = {n(576 / (100 + D), 2)} W. A lyser starkast (lägre R ger större ström vid samma U).')
+lararfacit('37-2i')(lambda D: f'I_{{A}} = 0,400 A, I_{{B}} = {n(24 / (100 + D), 3)} A, I_{{tot}} = {n(0.4 + 24 / (100 + D), 3)} A')
+lararfacit('37-2p')(lambda D: f'P_{{A}} = 9,6 W, P_{{B}} = {n(576 / (100 + D), 2)} W. A lyser starkast (lägre R ger större ström vid samma U).')
 lararfacit('38-3v')(lambda D: f'{n(23.5 + D / 100, 2)} V')
 
 
@@ -178,21 +192,21 @@ lararfacit('39-1ah')(lambda D: f'{n((3228 + 24 * (5 + D / 10) * 1.5) / 24, 1)} A
 @lararfacit('40-1')
 def _f401(D):
     U, f = 10 + D, 60 if D % 2 == 0 else 50
-    return f'U = {U} V, f = {f} Hz: û = {n(U * math.sqrt(2), 1)} V, Upp = {n(2 * U * math.sqrt(2), 1)} V, T = {n(1000 / f, 2)} ms'
+    return f'U = {U} V, f = {f} Hz: û = {n(U * math.sqrt(2), 1)} V, U_{{pp}} = {n(2 * U * math.sqrt(2), 1)} V, T = {n(1000 / f, 2)} ms'
 
 
 @lararfacit('40-2')
 def _f402(D):
     R, X = 20 + D, 2 * math.pi * 50 * 0.1
     Z = math.hypot(R, X)
-    return f'R = {R} Ω, X_L = 31,4 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A, φ = {n(math.degrees(math.atan(X / R)), 1)}°, strömmen släpar'
+    return f'R = {R} Ω, X_{{L}} = 31,4 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A, φ = {n(math.degrees(math.atan(X / R)), 1)}°, strömmen släpar'
 
 
 @lararfacit('40-2b')
 def _f402b(D):
     R, X = 20 + D, 2 * math.pi * 100 * 0.1
     Z = math.hypot(R, X)
-    return f'X_L = 62,8 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A (minskar)'
+    return f'X_{{L}} = 62,8 Ω, |Z| = {n(Z, 1)} Ω, I = {n(230 / Z, 2)} A (minskar)'
 
 
 @lararfacit('40-3')
@@ -209,38 +223,49 @@ def _f403b(D):
     Q = P / 0.7 * math.sqrt(0.51)
     Q2 = P * math.tan(math.acos(0.95))
     I1, I2 = P * 1000 / (230 * 0.7), P * 1000 / (230 * 0.95)
-    return f'Qc = {n(Q - Q2, 2)} kvar, ny I = {n(I2, 1)} A, förlusten blir {n((I2 / I1) ** 2 * 100, 0)} % av den tidigare'
+    return f'Q_{{C}} = {n(Q - Q2, 2)} kvar, ny I = {n(I2, 1)} A, förlusten blir {n((I2 / I1) ** 2 * 100, 0)} % av den tidigare'
 
 
 @lararfacit('41-1')
 def _f411(D):
     I3 = round((5 + D / 5) * 10) / 10
-    return f'I3 = {n(I3, 1)} A, IN = |10 − {n(I3, 1)}| = {n(abs(10 - I3), 1)} A'
+    return f'I_{{3}} = {n(I3, 1)} A, I_{{N}} = |10 − {n(I3, 1)}| = {n(abs(10 - I3), 1)} A'
 
 
-lararfacit('41-2y')(lambda D: f'R = {20 + D} Ω: Ugren = 231 V, Igren = I_L = {n(UF / (20 + D), 2)} A, P = {n(3 * UF * UF / (20 + D) / 1000, 2)} kW')
-lararfacit('41-2d')(lambda D: f'Ugren = 400 V, Igren = {n(400 / (20 + D), 2)} A, I_L = {n(R3 * 400 / (20 + D), 2)} A, P = {n(3 * 160000 / (20 + D) / 1000, 2)} kW')
+@lararfacit('40-4')
+def _f404(D):
+    """Guidade labben med elevens egna värden: samma formler som personligt() i vaxelstromslabbet/guided-lessons.mjs."""
+    urms, R, L, P = 13 + D % 11, 30 + D, (60 + 2 * D) / 1000, 1650 + 30 * D
+    XL = 2 * math.pi * 50 * L
+    Z = math.hypot(R, XL)
+    return (f'10,00 V på båda mätarna; T = 20,00 ms; U = {urms} V RMS ger û = {n(urms * math.sqrt(2), 2)} V; '
+            f'R = {R} Ω, L = {round(L * 1000)} mH: X_{{L}} = {n(XL, 2)} Ω, |Z| = {n(Z, 2)} Ω, I = {n(12 / Z, 2)} A; '
+            f'P = {n(P, 0)} W: {n(P / 230, 2)} A vid PF 1, {n(2 * P / 230, 2)} A vid PF 0,5.')
+
+
+lararfacit('41-2y')(lambda D: f'R = {20 + D} Ω: U_{{gren}} = 231 V, I_{{gren}} = I_{{L}} = {n(UF / (20 + D), 2)} A, P = {n(3 * UF * UF / (20 + D) / 1000, 2)} kW')
+lararfacit('41-2d')(lambda D: f'U_{{gren}} = 400 V, I_{{gren}} = {n(400 / (20 + D), 2)} A, I_{{L}} = {n(R3 * 400 / (20 + D), 2)} A, P = {n(3 * 160000 / (20 + D) / 1000, 2)} kW')
 lararfacit('42-3')(lambda D: f'I = 230/({1000 + 10 * D}) = {n(230000 / (1000 + 10 * D), 0)} mA')
-lararfacit('43-1c')(lambda D: f'f = {30 + D} Hz: nₛ = 120 · {30 + D}/4 = {30 * (30 + D)} r/min')
+lararfacit('43-1c')(lambda D: f'f = {30 + D} Hz: n_{{s}} = 120 · {30 + D}/4 = {30 * (30 + D)} r/min')
 
 
 @lararfacit('43-2a')
 def _f432a(D):
     k = 3 + D / 5
-    return f'Ik = {n(k, 1)} kA: ' + ('räcker (≤ 6 kA)' if k <= 6 else 'räcker inte (> 6 kA) utan dokumenterad backup')
+    return f'I_{{k}} = {n(k, 1)} kA: ' + ('räcker (≤ 6 kA)' if k <= 6 else 'räcker inte (> 6 kA) utan dokumenterad backup')
 
 
 @lararfacit('43-2b')
 def _f432b(D):
     m = 10 + D
-    return f'IΔ = {m} mA: ' + ('löser (≥ 30 mA)' if m >= 30 else 'kan lösa; ska lösa senast vid 30 mA' if m >= 15 else 'löser inte (under 15 mA)')
+    return f'I_{{Δn}} = {m} mA: ' + ('löser (≥ 30 mA)' if m >= 30 else 'kan lösa; ska lösa senast vid 30 mA' if m >= 15 else 'löser inte (under 15 mA)')
 
 
 @lararfacit('44-3')
 def _f443(D):
     P = (1.5 + D / 10) * 1e6
     I = P / (R3 * 6600 * 0.88)
-    return f'P = {n(P / 1e6, 1)} MW: I_L = {n(I, 0)} A vid 6,6 kV, {n(I * 15, 0)} A vid 440 V, CT sekundärt {n(I / 200, 2)} A'
+    return f'P = {n(P / 1e6, 1)} MW: I_{{L}} = {n(I, 0)} A vid 6,6 kV, {n(I * 15, 0)} A vid 440 V, CT sekundärt {n(I / 200, 2)} A'
 
 
 @lararfacit('45-2')

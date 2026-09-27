@@ -3,7 +3,7 @@
   "titel": "Jämför strömmen med och utan spole",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

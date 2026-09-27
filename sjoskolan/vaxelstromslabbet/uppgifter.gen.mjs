@@ -678,7 +678,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Hur stor ström krävs när effektfaktorn är 1,00?",
-  "method": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en vattenkokare på 1 840 W vid 230 V (resistiv last, PF = 1,00) drar I = 1 840/230 = 8,0 A.",
+  "method": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en spis på 5 750 W vid 230 V (resistiv last, PF = 1,00) drar I = 5 750/230 = 25 A.",
   "theory": "resistiv",
   "visual": "power",
   "explain": "Vad betyder effektfaktorn 1,00 i vår resistiva sinusmodell?",
@@ -707,7 +707,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "U och P är oförändrade. Hur stor ström krävs vid PF = 0,50?",
-  "method": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: en motor som tar 2 300 W vid 230 V och PF 0,80 drar I = 2 300/(230 · 0,80) = 12,5 A.",
+  "method": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: en motor som tar 6 440 W vid 230 V och PF 0,80 drar I = 6 440/(230 · 0,80) = 35 A.",
   "theory": "strom",
   "visual": "power",
   "explain": "Jämför med PF = 1,00. Vad ändrades och vad var oförändrat?",
