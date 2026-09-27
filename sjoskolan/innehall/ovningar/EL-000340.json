@@ -3,7 +3,7 @@
   "titel": "Beräkna spolens reaktans",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "Omvandla först induktansen till henry: 1 mH = 0,001 H. Räkna sedan X_{L} = 2πfL. Exempel: 200 mH = 0,200 H vid 60 Hz ger X_{L} = 2π · 60 · 0,200 ≈ 75,4 Ω.",
+      "text": "Omvandla först induktansen till henry: 1 mH = 0,001 H. Räkna sedan X_{L} = 2πfL. Exempel: en drossel på 200 mH i fartygets 60 Hz-nät ger X_{L} = 2π · 60 · 0,200 ≈ 75,4 Ω.",
       "status": "migrerad"
     }
   ],

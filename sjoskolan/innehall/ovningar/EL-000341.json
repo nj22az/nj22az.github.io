@@ -3,7 +3,7 @@
   "titel": "Beräkna impedansens belopp",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 6,
+  "revision": 7,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "R och X_{L} ritas vinkelräta, och impedansens belopp är diagonalen: |Z| = √(R² + X_{L}²). Exempel: R = 5 Ω och X_{L} = 12 Ω ger |Z| = √(25 + 144) = 13 Ω.",
+      "text": "R och X_{L} ritas vinkelräta, och impedansens belopp är diagonalen: |Z| = √(R² + X_{L}²). Exempel: en motorlindning med R = 5 Ω och X_{L} = 12 Ω har |Z| = √(25 + 144) = 13 Ω.",
       "status": "migrerad"
     }
   ],
