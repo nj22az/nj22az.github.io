@@ -9,7 +9,8 @@ boken använder: symbolerna U, I och R med eventuellt index.
 
 Boken använder samma notation som kursen (beteckningar.json): U_{F}, inte U_{fas}.
 
-PDF:en kan inte byggas om här (sättningen gjordes utanför repot); efter en ändring måste den sättas om separat.
+Efter EPUB-exporten sätts PDF:en separat med bok/sattning/satt.mjs i repot. Kryptering, provkapitel,
+förhandsbilder och manifest hanteras därefter enligt bok/README.md; de ingår inte i denna exportör.
 """
 import html
 import re

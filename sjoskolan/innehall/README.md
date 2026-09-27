@@ -43,6 +43,7 @@ python3 sjoskolan/innehall/innehall.py bygg                  # SQLite + kurssido
 python3 sjoskolan/innehall/innehall.py bygg presentationer   # pptx, PDF (LibreOffice) och bildspel
 LARARLOSEN=… LARARGUIDE_KLARTEXT=… python3 sjoskolan/innehall/innehall.py bygg larare   # lärarguiden (krypterad)
 BOKLOSEN=… python3 sjoskolan/innehall/innehall.py bygg bok   # bokens EPUB (kräver bok/bok.py packa-upp)
+(cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs) # separat PDF-sättning ur uppdaterad EPUB-arbetskopia
 python3 sjoskolan/innehall/innehall.py kontrollera           # CI: är de genererade filerna aktuella?
 python3 sjoskolan/innehall/innehall.py rapport               # ofullständiga poster, trasiga referenser, versionskrockar
 python3 sjoskolan/innehall/innehall.py anvands EL-000123     # var visas övningen?
@@ -54,14 +55,16 @@ python3 sjoskolan/innehall/innehall.py skyddat packa         # kryptera tillbaka
 ```
 
 Beroenden: Python 3.11 (standardbiblioteket), Node 22 (kryptering, labbfunktioner). Tunga exportörer: `python-pptx`,
-`pymupdf`, `Pillow`, LibreOffice.
+`pymupdf`, `Pillow`, LibreOffice. PDF-sättningen använder dessutom paket från `bok/sattning/package-lock.json`
+(paged.js och typsnitt), Playwright och installerad Chromium; se [bokens byggflöde](bok/README.md).
 
 ## Så ändrar du en övning
 
 1. Redigera `ovningar/EL-xxxxxx.json` (eller `skyddat packa-upp`, redigera `.skyddat/*.json`, `skyddat packa`).
 2. `innehall.py revidera EL-xxxxxx` (höjer revisionen och uppdaterar id-registret).
 3. `innehall.py validera` och `innehall.py bygg`. Ändrar du en övning som finns i en presentation eller i boken:
-   `bygg presentationer` respektive `bygg bok` (och sätt om PDF:en utanför repot).
+   `bygg presentationer` respektive `bygg bok`. För boken följer PDF-sättning med `bok/sattning/satt.mjs`,
+   kryptering, ombyggnad av provkapitel/förhandsbilder och uppdatering av manifest enligt [bok/README.md](bok/README.md).
 4. Checka in poster, id-register, utgåva och de genererade filerna tillsammans. CI kör `kontrollera`.
 
 Ny övning: nästa lediga id (se `id-register.json`), en post, en placering på den yta där den ska visas, `revidera`, `bygg`.
@@ -100,6 +103,10 @@ visar en förifylld storhet med index som text och en formel med index som ledtr
 Genererade regioner i befintliga sidor är märkta `<!-- innehall:start … -->` … `<!-- innehall:slut … -->`.
 Hela filer som genereras börjar med `// GENERERAD FIL` (`*/uppgifter.gen.mjs`, `vecka-40/aktuell/kontrollfragor.gen.mjs`).
 Presentationernas övningsbilder, bildspelen, `gemensamt/Lararguide.html` och `elteknik/files/bok.epub.enc` byggs av de tunga exportörerna.
+Bokens PDF sätts därefter ur EPUB-arbetskopian till `bok/.bok/bok.ny.pdf` och krypteras till `elteknik/files/bok.pdf.enc`.
+`bygg bok` och `bok.py packa` uppdaterar EPUB:en; de kör inte PDF-sättningen eller bygger provkapitel och förhandsbilder.
+Den rättade septemberutgåvan i `462f9d8cf88f9b8d5a37217c2325828b998c2696` har 223 PDF-sidor och ett 18-sidigt
+provkapitel enligt `elteknik/files/manifest.json`. Klartext i `bok/.bok/` och `.skyddat/` får aldrig checkas in.
 
 ## Migreringen
 
