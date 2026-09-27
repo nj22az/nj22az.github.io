@@ -159,6 +159,26 @@ def oforklarade(kat):
     return sorted(set(fel))
 
 
+def svar_i_ledtradar(kat):
+    """En ledtråd får inte innehålla övningens eget svar (om talet inte redan står i uppgiften). Se ANDRINGSLOGG.md."""
+    fel = []
+    for i, p in kat.poster.items():
+        svar = [s['varde'] for s in ((p.get('losning') or {}).get('svar') or []) if isinstance(s.get('varde'), (int, float))]
+        u = p.get('uppgift') or {}
+        fraga = ' '.join([u.get('fraga') or '', u.get('givet') or '', u.get('instruktion') or ''] + list(u.get('samband') or []))
+        for l in p.get('ledtradar', []):
+            for v in svar:
+                for d in (0, 1, 2):
+                    t = f'{v:.{d}f}'.replace('.', ',')
+                    if len(re.sub(r'\D', '', t)) < 2:
+                        continue
+                    rx = r'(?<![\d,])' + re.escape(t) + r'(?![\d])'
+                    if re.search(rx, l['text']) and not re.search(rx, fraga):
+                        fel.append(f'{i}: ledtråden ({l["niva"]}) innehåller svaret {t}')
+                        break
+    return sorted(set(fel))
+
+
 def cmd_kontrollera(a):
     """Bygger allt i minnet och jämför med filerna. Avslutar med fel om något är inaktuellt (CI-grind)."""
     kat = katalog_eller_avbryt()
@@ -175,6 +195,7 @@ def cmd_kontrollera(a):
         print('INAKTUELL', f)
     brister = rapport(kat, con, tyst=True)
     brister['fel'] += oforklarade(kat)
+    brister['fel'] += svar_i_ledtradar(kat)
     # Maskinöversättning: varje elevsida laddar gemensamt/oversattning.js (formler och enheter markeras translate="no").
     for f in sorted(SJO.rglob('*.html')):
         rel = f.relative_to(SJO).as_posix()

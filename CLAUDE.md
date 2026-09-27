@@ -114,6 +114,9 @@ assets/
 
 ## Sjöskolan
 
+**Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,
+notation, samma exempel på flera ställen). Lägg till en rad efter varje ändring och en regel när ett nytt fel hittas.
+
 Kursen under `sjoskolan/` har ett eget designsystem: `sjoskolan/DESIGN.md` (grundvärden i `sjoskolan/gemensamt/sjoskolan.css`). Kurssidor och labbar använder Sjöskolans meny och fasta färger, inte webbplatsens `shared.js`-teman.
 
 ### Övningsinnehåll

@@ -6,6 +6,7 @@ vad som redovisas och när, fördjupning för sig. PDF-länk visas när PDF-file
 
     python3 sjoskolan/verktyg/veckosidor/bygg.py
 """
+import re
 from html import escape
 from pathlib import Path
 import importlib.util
@@ -110,7 +111,7 @@ VECKOR = {
         'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
         'delar': [
             {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'poster': [
-                lank('Beteckningar.html', 'Förkortningar och beteckningar', 'läs', 'alla förkortningar och tecken i veckan förklarade, till exempel RMS, X_L och PF'),
+                lank('Beteckningar.html', 'Förkortningar och beteckningar', 'läs', 'alla förkortningar och tecken i veckan förklarade, till exempel RMS, X_{L} och PF'),
                 lank('Lektion_1.html', 'Lektion 1: sinus och mätvärden', 'läs', 'artikel: mål, förklaring med figurer, instrumentet, exempel, prova själv och labbkoppling'),
                 lank('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'genomgång', 'förklaring, genomräknat exempel och prova själv'),
                 ppt('v40_01_Sinusformad_vaxelspanning_elev.pptx', 'Sinus och mätvärden', 17),
@@ -282,7 +283,9 @@ def post(p, week_dir):
                     f'<small>{n}{extra} · <a href="{p["fil"]}">PowerPoint</a>{pdf_link}</small></li>')
         return (f'<li><span class="kind">Presentation</span><a href="{p["fil"]}">{escape(p["titel"])}</a>'
                 f'<small>PowerPoint · {n}{extra}{pdf_link}</small></li>')
-    small = f'<small>{escape(p["text"])}</small>' if p['text'] else ''
+    # Kursens markering X_{L} blir nedsänkt index (som i innehall/lib/text.py).
+    text = re.sub(r'_\{([^{}]*)\}', r'<sub>\1</sub>', escape(p['text']))
+    small = f'<small>{text}</small>' if p['text'] else ''
     return f'<li><span class="kind">{KIND[p["typ"]]}</span><a href="{p["href"]}">{escape(p["titel"])}</a>{small}</li>'
 
 

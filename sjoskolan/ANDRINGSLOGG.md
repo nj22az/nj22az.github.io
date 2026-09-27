@@ -1,0 +1,74 @@
+# Ändringslogg och lärdomar – Sjöskolan
+
+Läs reglerna innan du ändrar något i kursen, boken, labbarna eller filmerna. Varje regel kommer från ett fel som
+faktiskt har gjorts. När ett nytt fel upptäcks: rätta det, lägg till en regel här och gör den helst till en
+automatisk kontroll. Lägg till en rad under Ändringar efter varje större ändring.
+
+Målet för allt material: **det ska vara lätt att lära sig.**
+
+## Regler
+
+### Innehåll och pedagogik
+
+1. **En ledtråd får aldrig ge uppgiftens svar.** Metod och exempel räknas med andra tal än uppgiften. Kontrollera
+   också att exemplet inte råkar ge samma svar (600 W vid 120 V gav 5,0 A, samma som uppgiften).
+   *Kontroll: `innehall.py kontrollera` (svar_i_ledtradar).*
+2. **Ett genomräknat exempel får inte ge svaret på en övning i samma kapitel.** Y/Δ-exemplet (200 V, 20 Ω) gav
+   exakt övningarnas 5,77 A, 10 A och 17,32 A. Jämför nya exempelvärden mot alla svar i databasen innan de används.
+   *Manuell kontroll (skript i ändringen 2026-09-27).*
+3. **Exempel ska vara verkliga.** Hemma: vägguttag 230 V, 50 Hz, vattenkokare 2 300 W. Ombord: 440 V och 254 V,
+   60 Hz, 690 V, motorer, styrtransformator 230/24 V. Inte godtyckliga tal eller andra länders nät (120 V, 240 V).
+4. **Uppgifter på riggen stannar på skyddsklenspänning.** Labbarnas mätuppgifter och protokollexempel följer den
+   fysiska riggen (SELV, 9–24 V). Det är exemplen och ledtrådarna som hämtas från hem och fartyg.
+5. **Visa var eleven kan läsa.** En uppgift som kräver en metod pekar på exakt bild i genomgången
+   (”Läs genomgången del 1, bild 7: …”), räknat ur lektionerna så att det stämmer när bilder flyttas.
+6. **Ge eleven ett tydligt besked.** Visa elevens egen förutsägelse med den etiketten (”Din förutsägelse”), aldrig
+   ”Förväntat”, och säg om den stämmer (Rätt! / Skiljer sig) med kursens tolerans 2 %.
+7. **Förkortningar förklaras.** Varje förkortning finns i `innehall/beteckningar.json` och förklaras första gången.
+   *Kontroll: `innehall.py kontrollera` (vecka 40, BETECKNINGSSIDOR).*
+
+### Notation
+
+8. **En storhet har ett skrivsätt, index är alltid nedsänkta.** U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L}.
+   Aldrig Upp, Urms, U_{fas}, XL, låtsasindex (Xᴸ) eller understreck utan klammer (U_fas, X_L).
+   *Kontroll: `notation.py` i `innehall.py kontrollera`. Tänk på text i figurer (PNG) och i filmer: de kontrolleras
+   bara via källfilerna (`verktyg/figurer/figs*.py`, `acfilm/src`).*
+9. **En upphöjd siffra avslutar ordet** (UL², XL²). Kontrollen missade dem tills gränsen rättades.
+10. **Genererad text ska behålla markeringen.** Exportörer som plattar ut X_{L} till XL (ren_text) ger ihopskrivna
+    former. Använd markeringen och rendera nedsänkt (markHtml, rendera.h), även i generatorer för veckosidor.
+
+### Teknik
+
+11. **Redigera källan, inte den genererade filen.** Poster → `innehall.py revidera` och `bygg`. Veckosidor →
+    `verktyg/veckosidor/bygg.py`. CI avvisar inaktuella filer.
+12. **Samma exempel finns på flera ställen.** Ett genomräknat exempel kan finnas på övningssidan, i boken (text och
+    figur), i presentationen och bildspelet och i den engelska filmens berättarröst. Sök överallt (även `acfilm`,
+    bokens `.bok/epub`, `bildspel/*/data.json`) och ändra allt i samma ändring, eller låt bli.
+13. **Byt cacheversion när en modul ändras** (`?v=` i import och `<script>`), annars ser eleverna gammal kod.
+14. **CSS som gäller alla `span` i ett block bryter översättningsskyddet.** `oversattning.js` lägger `span` runt tal
+    med enhet. Använd barnselektorer (`dd > span`), inte `dd span {display:block}`.
+15. **`innehall.py revidera --alla` utan skyddade filer** får bara jämföra den publika hashen (rättat 2026-09-26).
+16. **Main kan ha nya commits från andra sessioner.** Hämta och slå ihop, skriv aldrig över. Lös konflikter i källor
+    för hand och bygg om genererade filer med verktygen.
+17. **Lösenord skrivs aldrig i repot.** Lärar- och bokklartext ligger utanför git (`.skyddat/`, `bok/.bok/`).
+
+### Boken
+
+18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
+    annars faller Chromium tillbaka på ett annat typsnitt). Efter ändring: kryptera `bok.pdf.enc`, bygg provkapitel
+    och förhandsbilder, uppdatera `manifest.json` och ladda upp den nya PDF:en i Shopify (görs av Nils).
+19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
+
+## Ändringar
+
+- **2026-09-25** Innehållsdatabasen (`innehall/`), kursrevision, arbetsmapp för boken.
+- **2026-09-26** Vecka 40: alla förkortningar förklarade. En storhet, ett skrivsätt i allt material (notation.py och
+  CI). Växelströmsfilmen renderad om med nedsänkta index. Lärarsidor och bok med kursens notation. Ny PDF av boken
+  (223 sidor, rättad september 2026). Översättningsskydd för formler och enheter (`gemensamt/oversattning.js`).
+  Talmanus för kortfilmerna (`filmer/tal.mjs`).
+- **2026-09-27** Växelströmslabbet: elevens förutsägelse och besked (Rätt!/Skiljer sig), ledtrådar utan svaret och
+  med exempel från hem och fartyg, läshänvisning till rätt bild i genomgången. Genomräknade exempel från fartyget:
+  fas och linje 254/440 V, Y och Δ på 440 V, styrtransformator 230/24 V (övningssidor, bok, presentationer).
+  Automatisk kontroll att ledtrådar inte ger svaret; kontroll av understreck utan klammer.
+- **Väntar:** exemplen u(t) = 10 sin(2π · 25t) och 1 200 W vid 240 V (vecka 40) byts när filmens berättarröst kan
+  göras om. Rösten kräver att `huggingface.co` tillåts i miljöns nätverksinställning.

@@ -76,6 +76,8 @@ def kanonisera(s, rg):
 def avvikelser(s, rg):
     s2 = pseudo_till_markering(s)
     ut = [f'låtsasindex {m.group(0)}' for m in re.finditer('[A-Za-zΔφ][ᴸᶜᴿꜰɴ]+', s)]
+    # Understreck utan klammer (U_fas, X_L): index ska skrivas U_{F} och renderas nedsänkt.
+    ut += [f'understreck utan klammer {m.group(0)}' for m in re.finditer(r'(?<![\w{$.])[A-Za-zΔφ]_[A-Za-z0-9]{1,6}(?![\w{(])', s2)]
     for rx, till, besk in rg:
         ut += [besk for _ in rx.finditer(s2)]
     return ut
