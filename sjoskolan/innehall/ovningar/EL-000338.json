@@ -3,7 +3,7 @@
   "titel": "Läs av periodtiden",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "T = 1/f i sekunder. T = 1 000/f i millisekunder. Exempel: 100 Hz ger 1 000/100 = 10 ms.",
+      "text": "Periodtiden är T = 1/f i sekunder, eller T = 1 000/f i millisekunder. Exempel: 100 Hz ger T = 1 000/100 = 10 ms.",
       "status": "migrerad"
     }
   ],

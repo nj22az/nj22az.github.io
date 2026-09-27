@@ -4999,7 +4999,7 @@
   },
   {
    "id": "EL-000337",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kontrollera båda mätarna",
@@ -5015,7 +5015,7 @@
   },
   {
    "id": "EL-000338",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Läs av periodtiden",
@@ -5031,7 +5031,7 @@
   },
   {
    "id": "EL-000339",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämför toppvärde och RMS",
@@ -5047,7 +5047,7 @@
   },
   {
    "id": "EL-000340",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna spolens reaktans",
@@ -5063,7 +5063,7 @@
   },
   {
    "id": "EL-000341",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna impedansens belopp",
@@ -5079,7 +5079,7 @@
   },
   {
    "id": "EL-000342",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämför strömmen med och utan spole",
@@ -5095,7 +5095,7 @@
   },
   {
    "id": "EL-000343",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström vid effektfaktorn 1,00",
@@ -5111,7 +5111,7 @@
   },
   {
    "id": "EL-000344",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma aktiva effekt, lägre effektfaktor",

@@ -3,7 +3,7 @@
   "titel": "Samma aktiva effekt, lägre effektfaktor",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = P/(U · PF). Skriv hela nämnaren inom parentes.",
+      "text": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: 600 W vid 120 V och PF 0,80 ger I = 600/(120 · 0,80) = 6,25 A.",
       "status": "migrerad"
     }
   ],

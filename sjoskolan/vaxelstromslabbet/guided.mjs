@@ -1,11 +1,14 @@
 import {publishEquipment} from './equipment-state.mjs';
 import {markHtml as m,markText} from '../gemensamt/markering.mjs?v=20260928';
-import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber} from './guided-lessons.mjs?v=20260925-ac2';
+import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber} from './guided-lessons.mjs?v=20260927-las';
 import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260928';
 import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260928';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const n=v=>v.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2});
 const KEY='sjoskolan-ac-grund-v2';
+// Läshänvisning: den bild i genomgången som förklarar metoden (del och bildnummer räknas ur lektionerna).
+function las(task){const l=LESSONS.find(x=>x.id===task.lesson),i=l?l.slides.findIndex(x=>x.id===task.theory):-1;const href=`../vecka-40/aktuell/Genomgang.html?del=${task.lesson}&amp;avsnitt=${task.theory}`;
+ return i<0?`<a href="${href}" target="_blank" rel="noopener">Läs motsvarande del av genomgången</a>`:`Kan du inte metoden? Läs genomgången <a href="${href}" target="_blank" rel="noopener">del ${l.number}, bild ${i+1}: ${m(l.slides[i].title)}</a> (öppnas i ny flik) och gör sedan uppgiften.`;}
 export function mountGuide(root){
  let data={version:GUIDE_VERSION,name:'',rows:{}},storageOK=true;
  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s?.version===GUIDE_VERSION&&s.rows&&typeof s.rows==='object')data={version:GUIDE_VERSION,name:String(s.name||''),rows:s.rows};}catch{storageOK=false;}
@@ -24,7 +27,7 @@ export function mountGuide(root){
   <p class="guide-label">GUIDAD LABB · ${items.indexOf(task)+1} AV ${items.length} I DENNA DEL</p><h2>${m(task.title)}</h2><p class="guide-source">${m(task.source)}</p>
   <ol class="guide-progress" aria-label="Arbetsgång">${['Förutsäg','Läs av och jämför','Förklara'].map((t,i)=>`<li${i===phase?' aria-current="step"':''}>${i+1}. ${t}</li>`).join('')}</ol>
   <div id="guide-step"></div>
-  <p class="guide-support"><a href="../vecka-40/aktuell/Genomgang.html?del=${task.lesson}&amp;avsnitt=${task.theory}" target="_blank" rel="noopener">Öppna motsvarande genomgång i ny flik</a></p>
+  <p class="guide-support">${las(task)}</p>
   <details id="guide-protocol"><summary>Mitt grundprotokoll · ${GUIDE_TASKS.filter(t=>data.rows[t.id]?.explanation).length} av ${GUIDE_TASKS.length} uppgifter antecknade</summary><label>Namn<input id="guide-name" value="${esc(data.name)}" autocomplete="name"></label><div class="guide-actions"><button id="guide-print" type="button">Skriv ut / spara som PDF</button><button id="guide-csv" type="button">Ladda ner CSV</button></div><p>Antecknade svar är underlag för lärarens bedömning. De är inte ett automatiskt godkännande.</p><div id="guide-records">${protocolHTML()}</div></details><p id="guide-storage" class="muted"></p>`;
   const step=root.querySelector('#guide-step');
   if(phase===0){step.innerHTML=`<p class="guide-prompt">${m(task.prompt)}</p><details><summary>Visa metod och exempel</summary><p>${m(task.method)}</p></details><form id="guide-predict"><div class="guide-inputs">${task.fields.map(([k,l,u])=>`<label>${m(l)} (${u})<input name="${k}" inputmode="decimal" autocomplete="off" value="${Number.isFinite(r.predicted?.[k])?esc(n(r.predicted[k])):''}" required aria-label="Min förutsägelse, ${l}, i ${u}"></label>`).join('')}</div><p id="guide-error" role="alert"></p><button class="primary" type="submit">Spara förutsägelsen och läs av</button></form>`;

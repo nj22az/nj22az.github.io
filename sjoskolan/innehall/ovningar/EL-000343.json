@@ -3,7 +3,7 @@
   "titel": "Ström vid effektfaktorn 1,00",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = P/(U · PF). Vid PF = 1 blir detta P/U.",
+      "text": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: 720 W vid 120 V och PF 1,00 ger I = 720/120 = 6,0 A.",
       "status": "migrerad"
     }
   ],

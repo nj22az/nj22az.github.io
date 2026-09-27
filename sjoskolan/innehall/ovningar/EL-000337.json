@@ -3,7 +3,7 @@
   "titel": "Kontrollera båda mätarna",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -34,7 +34,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "För ren sinus visar båda mätarna effektivvärdet. Här är det kalibratorns 10,00 V.",
+      "text": "En multimeter på växelspänning visar effektivvärdet (RMS). En true RMS-mätare räknar fram det för alla kurvformer. En sinuskalibrerad mätare är justerad för ren sinus och visar då också rätt effektivvärde. Exempel: en kalibrator som ger 5,00 V RMS sinus ska visa 5,00 V på båda mätarna, om de fungerar.",
       "status": "migrerad"
     }
   ],

@@ -507,7 +507,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Vilket värde ska varje mätare visa när den ideala kalibratorn ger 10,00 V sinus?",
-  "method": "För ren sinus visar båda mätarna effektivvärdet. Här är det kalibratorns 10,00 V.",
+  "method": "En multimeter på växelspänning visar effektivvärdet (RMS). En true RMS-mätare räknar fram det för alla kurvformer. En sinuskalibrerad mätare är justerad för ren sinus och visar då också rätt effektivvärde. Exempel: en kalibrator som ger 5,00 V RMS sinus ska visa 5,00 V på båda mätarna, om de fungerar.",
   "theory": "matarna",
   "visual": "calibration",
   "explain": "Varför visar båda mätarna samma värde i denna kontroll?",
@@ -536,7 +536,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Hur lång tid tar en hel period vid 50 Hz? Svara i millisekunder.",
-  "method": "T = 1/f i sekunder. T = 1 000/f i millisekunder. Exempel: 100 Hz ger 1 000/100 = 10 ms.",
+  "method": "Periodtiden är T = 1/f i sekunder, eller T = 1 000/f i millisekunder. Exempel: 100 Hz ger T = 1 000/100 = 10 ms.",
   "theory": "period",
   "visual": "period",
   "explain": "Vilka två punkter i kurvan avgränsar en hel period?",
@@ -565,7 +565,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Multimetern visar 12,00 V RMS. Vilket toppvärde förväntar du dig i kurvan?",
-  "method": "För sinus: û = √2 · U. Exempel: 10,00 V RMS ger cirka 14,14 V i topp.",
+  "method": "För sinus är toppvärdet û = √2 · U, där U är effektivvärdet (RMS). Exempel: 10,00 V RMS ger û = 1,414 · 10,00 ≈ 14,14 V.",
   "theory": "rms",
   "visual": "peak",
   "explain": "Varför kan multimetern visa 12,00 V samtidigt som kurvan når ett högre värde?",
@@ -593,7 +593,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Hur stor reaktans ger spolen vid 50 Hz? Börja med att omvandla mH till H.",
-  "method": "L = 95,5/1 000 = 0,0955 H. X_{L} = 2πfL.",
+  "method": "Omvandla först induktansen till henry: 1 mH = 0,001 H. Räkna sedan X_{L} = 2πfL. Exempel: 200 mH = 0,200 H vid 60 Hz ger X_{L} = 2π · 60 · 0,200 ≈ 75,4 Ω.",
   "theory": "xl",
   "visual": "rl",
   "explain": "Hur ändras spolens reaktans om frekvensen fördubblas?",
@@ -621,7 +621,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Beräkna kretsens impedans när R = 40 Ω och X_{L} ≈ 30 Ω.",
-  "method": "|Z| = √(R² + X_{L}²). Rita R och X_{L} vinkelrätt och beräkna diagonalen.",
+  "method": "R och X_{L} ritas vinkelräta, och impedansens belopp är diagonalen: |Z| = √(R² + X_{L}²). Exempel: R = 5 Ω och X_{L} = 12 Ω ger |Z| = √(25 + 144) = 13 Ω.",
   "theory": "z",
   "visual": "triangle",
   "explain": "Varför använder vi inte 40 + 30 för impedansens belopp?",
@@ -649,7 +649,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Beräkna strömmen i RL-kretsen. Med endast resistorn skulle strömmen vara 0,30 A.",
-  "method": "I = U/|Z|. Använd hela impedansen för RL-kretsen.",
+  "method": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: 24 V över |Z| = 60 Ω ger I = 24/60 = 0,40 A.",
   "theory": "strom",
   "visual": "rl",
   "explain": "Hur ändras strömmens storlek och fas när spolen läggs till?",
@@ -678,7 +678,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Hur stor ström krävs när effektfaktorn är 1,00?",
-  "method": "I = P/(U · PF). Vid PF = 1 blir detta P/U.",
+  "method": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: 720 W vid 120 V och PF 1,00 ger I = 720/120 = 6,0 A.",
   "theory": "resistiv",
   "visual": "power",
   "explain": "Vad betyder effektfaktorn 1,00 i vår resistiva sinusmodell?",
@@ -707,7 +707,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "U och P är oförändrade. Hur stor ström krävs vid PF = 0,50?",
-  "method": "I = P/(U · PF). Skriv hela nämnaren inom parentes.",
+  "method": "I = P/(U · PF). Skriv hela nämnaren inom parentes. Exempel: 600 W vid 120 V och PF 0,80 ger I = 600/(120 · 0,80) = 6,25 A.",
   "theory": "strom",
   "visual": "power",
   "explain": "Jämför med PF = 1,00. Vad ändrades och vad var oförändrat?",

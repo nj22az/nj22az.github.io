@@ -3,7 +3,7 @@
   "titel": "Jämför strömmen med och utan spole",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = U/|Z|. Använd hela impedansen för RL-kretsen.",
+      "text": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: 24 V över |Z| = 60 Ω ger I = 24/60 = 0,40 A.",
       "status": "migrerad"
     }
   ],
