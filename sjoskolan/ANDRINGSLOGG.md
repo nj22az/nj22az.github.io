@@ -90,6 +90,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     `deflate-raw`; använd då JSON-reservformatet. Kortning får inte dela Unicode-surrogatpar eller lämna text när
     gränsen är noll. Trasiga koder ska ge ett läsbart fel även när webbläsarens strömfel saknar meddelande.
     *Kontroll: `node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs` (lärarsidans integration kräver `LARARLOSEN`).*
+31. **Mappen är inte veckan.** Kursen började vecka 38, så `vecka-37/` visas som vecka 38 och `vecka-38/` ingår i vecka 40.
+    Byt aldrig namn på en mapp (länkar, nedladdningar, resultatkoder, sparade elevdata). Ändra veckan eleven ser:
+    `vecka` i `verktyg/veckosidor/bygg.py` och `verktyg/inlamning/bygg.py`, startsidans lista och `weeks`, och bygg om
+    veckosidor, inlämning (`innehall.py bygg`) och bildspel (`verktyg/bildspel/bygg.py`, fältet `vecka`).
+32. **Resurslänkar skrivs relativt `sjoskolan/`.** ”Använd:”-länkar på inlämningssidorna utan mapp (`Elevuppgifter.html`,
+    `Elevprotokoll.html`, `01A_…`) pekade på filer som inte finns. *Kontroll: `innehall.py kontrollera` (resurslänkar).*
 
 ### Boken
 
@@ -100,6 +106,14 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-27** Kursen började vecka 38, inte vecka 37. Startsidan visar vecka 38–45 (Elens grunder vecka 38,
+  14–18 september) och väljer vecka 40 från måndag 28 september. Frånskiljning och mätteknik (mappen `vecka-38`, inte
+  undervisad) ingår i vecka 40, måndag; den gamla sidan säger det och länkar dit, och dess inlämning lämnas senast
+  söndag 4 oktober. Presentationens sidfot och omslag (kursvecka 3, vecka 40) och bildspelet omgjorda. Vecka 40 har en
+  plan dag för dag (`dagplan.mjs`): lektion måndag, tisdag och fredag, hemma måndag kväll, onsdag, torsdag och helgen
+  med steg, tid, avbockning, framsteg från övningssidan och ”Före nästa lektion”; panelen ”I dag” visar nästa steg.
+  Lärarens anteckningar i `lektioner.mjs` följer planen. Mappar, länkar och resultatkoder oförändrade. Trasiga
+  ”Använd:”-länkar i inlämning vecka 37, 38 och 41 rättade (regel 32).
 - **2026-09-28** Räknarhjälpen förklarar med interaktiva bilder (`gemensamt/raknehjalp-bilder.mjs`): radianen som
   bågen mätt i radier, snurrande visare till sinuskurva (u(t) vid 440 V/60 Hz), samma knapptryck i RAD och DEG,
   impedanstriangeln med fasvinkeln och prefixtrappan där kommat flyttar tre platser per steg. Exempeltalen

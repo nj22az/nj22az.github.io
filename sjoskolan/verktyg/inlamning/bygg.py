@@ -9,11 +9,15 @@ from html import escape
 
 V = '20260930'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+# Mappnamnen ändras aldrig. 'vecka' är veckan eleven ser: kursen började vecka 38, så vecka-37/ undervisades vecka 38,
+# och vecka-38/ (Frånskiljning och mätteknik) ingår i vecka 40 och lämnas in med den (verktyg/veckosidor/bygg.py).
 VECKOR = {
-    37: {'titel': 'Elens grunder och elsäkerhet', 'sista': '2026-09-13'},
-    38: {'titel': 'Frånskiljning och mätteknik', 'sista': '2026-09-20'},
+    37: {'titel': 'Elens grunder och elsäkerhet', 'sista': '2026-09-20', 'vecka': 38},
+    38: {'titel': 'Frånskiljning och mätteknik', 'sista': '2026-10-04', 'vecka': 40, 'veckosida': '/sjoskolan/vecka-40/aktuell/',
+         'notis': 'Ingår i vecka 40. Lämnas in senast söndag 4 oktober, tillsammans med växelströmsuppgifterna. D på den här sidan räknas ur ditt namn och är ett annat tal än D i växelströmsuppgifterna.'},
     39: {'titel': 'Effekt, Kirchhoff och multimeter', 'sista': '2026-09-27'},
-    40: {'titel': 'Växelström', 'sista': '2026-10-04'},
+    40: {'titel': 'Växelström', 'sista': '2026-10-04',
+         'notis': 'Den här veckan lämnar du också in Frånskiljning och mätteknik, uppgift 1–3, på en egen sida.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
     42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
     43: {'titel': 'Komponenter, motorer och scheman', 'sista': '2026-10-25'},
@@ -48,12 +52,18 @@ def dbox(nr):
 
 def page(nr, w, items):
     """items: uppgifternas HTML (från innehall/export/inlamning.py)."""
-    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {nr} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">
+    vn = w.get('vecka', nr)
+    veckosida = w.get('veckosida', f'/sjoskolan/vecka-{nr}/aktuell/')
+    notis = ''
+    if w.get('notis'):
+        lank = f' <a href="{w["notis_lank"][0]}">{escape(w["notis_lank"][1])}</a>' if w.get('notis_lank') else ''
+        notis = f'<p class="sj-panel week-note"><strong>{escape(w["notis"])}</strong>{lank}</p>\n'
+    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {vn}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {vn} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">
 <style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.dbox input{{min-height:44px;font:inherit;padding:4px 10px;width:22em;max-width:100%;border:1px solid var(--sj-field);border-radius:8px}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
-<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-{nr}/aktuell/">Vecka {nr}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Vecka {nr}</a></div><article class="course-reading">
-<p class="course-kicker">Vecka {nr} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="{veckosida}">Vecka {vn}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="{veckosida}">← Vecka {vn}</a></div><article class="course-reading">
+<p class="course-kicker">Vecka {vn} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
 <p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} via den inlämningskanal läraren har anvisat.</p>
-{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
+{notis}{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
 {items}
 <h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li><li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>

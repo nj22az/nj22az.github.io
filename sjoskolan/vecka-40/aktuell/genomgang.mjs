@@ -1,4 +1,4 @@
-import {lessonById} from './lektioner.mjs?v=20260930';
+import {lessonById} from './lektioner.mjs?v=20260930b';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
 import {hitta,ordlista} from '../../gemensamt/beteckningar.mjs?v=20260928';

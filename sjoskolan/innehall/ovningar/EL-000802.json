@@ -3,7 +3,7 @@
   "titel": "Två lampor parallellt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -49,7 +49,7 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "01A_Elens_grunder/Elens_grunder.html",
+        "url": "vecka-37/aktuell/01A_Elens_grunder/Elens_grunder.html",
         "titel": "Elens grunder, avsnitt 8"
       },
       {

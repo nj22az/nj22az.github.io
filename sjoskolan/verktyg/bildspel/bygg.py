@@ -69,12 +69,27 @@ def slide_text(slide):
     return title, items
 
 
-def _titles():
-    """Titlar från veckosidornas data (verktyg/veckosidor/bygg.py) och vecka 40:s lektioner."""
+def _veckor():
     import importlib.util
-    t = {}
     spec = importlib.util.spec_from_file_location('veckor', ROOT / 'verktyg' / 'veckosidor' / 'bygg.py')
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return mod
+
+
+VECKOSIDOR = _veckor()
+
+
+def visning(week):
+    """Veckan eleven ser och veckosidan, när de skiljer sig från mappen (kursen började vecka 38, vecka-38/ ingår i vecka 40)."""
+    w = VECKOSIDOR.VECKOR.get(week, {})
+    href = w['flyttad']['href'].replace('../../', '../') if w.get('flyttad') else f'../vecka-{week}/aktuell/'
+    return w.get('vecka', week), href
+
+
+def _titles():
+    """Titlar från veckosidornas data (verktyg/veckosidor/bygg.py) och vecka 40:s lektioner."""
+    t = {}
+    mod = VECKOSIDOR
     for w in mod.VECKOR.values():
         for p in [x for d in w['delar'] for x in d.get('poster', []) + d.get('steg', []) + d.get('mer', [])] + w.get('fordjupning', []):
             if p.get('typ') == 'ppt':
@@ -134,10 +149,12 @@ def build(pptx, force=False):
         'id': did, 'week': week, 'title': deck_title(pptx, slides[0]['title']), 'stamp': stamp,
         'w': img.width, 'h': img.height,
         'pdf': f'../vecka-{week}/aktuell/{pdf.name}', 'pptx': f'../vecka-{week}/aktuell/{pptx.name}',
-        'weekUrl': f'../vecka-{week}/aktuell/',
+        'weekUrl': visning(week)[1],
         'exercises': f'../vecka-{week}/aktuell/Formelstod_och_ovningar.html#{chapter}' if any(e.startswith(chapter) for e in ex_ids) else None,
         'slides': slides,
     }
+    if visning(week)[0] != week:
+        data['vecka'] = visning(week)[0]
     data_file.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     return did, True
 
@@ -150,7 +167,15 @@ if __name__ == '__main__':
             print('saknar PDF, hoppar över:', pptx.name)
             continue
         did, built = build(pptx, force)
-        d = json.loads((OUT / did / 'data.json').read_text())
-        decks.append({'id': did, 'week': d['week'], 'title': d['title'], 'n': len(d['slides'])})
+        f = OUT / did / 'data.json'
+        d = json.loads(f.read_text())
+        # Visad vecka och veckosida kan ändras utan ny rendering.
+        vecka, href = visning(d['week'])
+        ny = {**{k: v for k, v in d.items() if k != 'vecka'}, 'weekUrl': href, **({'vecka': vecka} if vecka != d['week'] else {})}
+        if ny != d:
+            f.write_text(json.dumps(ny, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+            print('uppdaterad vecka', did)
+        decks.append({'id': did, 'week': d['week'], 'title': d['title'], 'n': len(d['slides']), **({'vecka': vecka} if vecka != d['week'] else {})})
         print(('byggd  ' if built else 'oförändrad ') + did, len(d['slides']))
+    decks.sort(key=lambda x: (x.get('vecka', x['week']), x['id']))
     (OUT / 'lista.json').write_text(json.dumps(decks, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')

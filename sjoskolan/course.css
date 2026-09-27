@@ -131,3 +131,41 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 .route-steps .kind{color:var(--sj-accent,#064f91)}
 .week-more{margin:8px 0 0}.week-more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--sj-muted,#4d6579);font-weight:700}
 .week-due{margin:12px 0;padding:10px 14px;border-left:6px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:8px}
+/* Vecka 40: plan dag för dag (verktyg/veckosidor/bygg.py, vecka-40/aktuell/dagplan.mjs) */
+.nu-panel{margin:24px 0 8px;padding:16px 20px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-paper,#fff);max-width:72ch}
+.course-main .nu-panel p{margin:0}
+.nu-etikett{font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}
+.course-main .nu-panel .nu-rubrik{font-size:20px;font-weight:700;line-height:1.3;margin:2px 0 4px}
+.course-main .nu-panel .nu-text{color:var(--sj-muted,#4d6579);margin:0 0 4px}
+.course-main .nu-panel .nu-knapp{margin-top:12px}
+.nu-knapp .sj-btn{max-width:100%;white-space:normal;text-align:left}
+.dagplan{margin:40px 0 8px}
+.dagplan>p{max-width:72ch}
+.dag{border-top:1px solid var(--sj-line,#cad8e2);padding:20px 0 16px;scroll-margin-top:16px}
+.course-main .dag h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:0 0 4px;font-size:22px}
+.dag-typ{font-size:16px;font-weight:700;color:var(--sj-muted,#4d6579)}
+.dag.hemma .dag-typ{color:var(--sj-ok,#176844)}
+.dag.nu{margin:0 -12px;padding:20px 12px 16px;background:var(--sj-soft,#edf4f9);border-radius:12px;border-top-color:transparent;box-shadow:inset 6px 0 0 var(--sj-blue,#064f91)}
+.dag-nu{font-size:16px;font-weight:700;color:var(--sj-blue,#064f91)}
+.course-main .dag-rubrik{font-weight:700;margin:0 0 8px}
+.dag-pass{margin:0 0 8px;padding-left:22px;max-width:72ch}.dag-pass li{margin:4px 0}
+.course-main .dag-material{margin:8px 0 0;font-size:16px}
+.dag-steg{list-style:none;margin:8px 0 0;padding:0;counter-reset:steg}
+.dag-steg li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.dag-steg .kind{display:block;font-size:14px;font-weight:700;color:var(--sj-blue,#064f91)}
+.dag-steg .kind::before{counter-increment:steg;content:counter(steg) ". "}
+.dag-steg a{font-weight:700}
+.dag-steg small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.steg-framsteg{display:block;font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}.steg-framsteg:empty{display:none}
+.klar-ruta{display:none;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.dagplan.js .klar-ruta{display:inline-flex}
+.klar-ruta input{width:22px;height:22px;margin:0;accent-color:var(--sj-ok,#176844)}
+.dag-steg li.klar .steg-text a{color:var(--sj-muted,#4d6579)}
+.dag-steg li.klar .klar-ruta{border-color:var(--sj-ok,#176844);color:var(--sj-ok,#176844)}
+.course-main .dag-status{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}.dag-status:empty{display:none}
+.course-main .dag-fore{margin:12px 0 0;padding:10px 14px;border-left:6px solid var(--sj-ok,#176844);background:#fff;border-radius:8px;max-width:72ch}
+.dag.nu .dag-fore{background:var(--sj-paper,#fff)}
+.lesson-list>li.forst .lesson-number{background:var(--sj-ink,#163248)}
+.flyttad{border-left-color:var(--sj-blue,#064f91)}
+@media(max-width:520px){.dag-steg li{gap:4px 10px}.klar-ruta{padding:0 10px}.dag.nu{margin:0 -8px;padding:16px 8px}}
+@media print{.nu-panel,.klar-ruta{display:none!important}.dag.nu{background:none;box-shadow:none}}

@@ -230,6 +230,13 @@ def cmd_kontrollera(a):
         s = f.read_text(encoding='utf-8')
         if 'lock-data' not in s and 'oversattning.js' not in s:
             brister['fel'].append(f'{rel}: saknar gemensamt/oversattning.js (översättningsskydd för formler och enheter)')
+    # Resurslänkar (”Använd:” på inlämningssidorna) skrivs relativt sjoskolan/, t.ex. vecka-38/aktuell/Elevuppgifter.html.
+    # En länk utan mapp (Elevuppgifter.html) pekade fel från inlämningssidan; se ANDRINGSLOGG.md.
+    for i, p in kat.poster.items():
+        for r in (p.get('referenser') or {}).get('resurser') or []:
+            u = re.split(r'[?#]', r.get('url') or '')[0]
+            if u and not u.startswith(('http://', 'https://')) and not (SJO / u).exists():
+                brister['fel'].append(f'{i}: resurslänken {r["url"]} finns inte (skriv sökvägen relativt sjoskolan/)')
     import notation
     brister['fel'] += [f'{plats}: notation {besk} (beteckningar.json, avradda; rätta med notation.py skriv-om)' for plats, besk in notation.kontrollera(kat.poster)]
     for b in brister['fel']:
