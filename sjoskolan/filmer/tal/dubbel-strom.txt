@@ -1,0 +1,16 @@
+Dubbel ström – Fyra gånger förlust: P = I² · R
+
+Sigge (5.2 s): Hej! Jag är matrosen Sigge, och det här är måsen Måns.
+Måns (5.6 s): Varför blir kablar och klämmor varma? Och så mycket varmare vid hög last?
+Sigge (6 s): All ledning har lite resistans, här noll komma ett ohm. Strömmen ger värme i ledningen.
+Sigge (6.8 s): Förlusten är P lika med I i kvadrat gånger R. Med tio ampere blir det tio gånger tio gånger noll komma ett lika med tio watt.
+Måns (3.4 s): Dubbla strömmen … Dubbelt så varmt?
+Sigge (4.2 s): Titta. Vi går från tio ampere till tjugo ampere.
+Sigge (8 s): Nej, fyra gånger så mycket värmeförlust! Tjugo gånger tjugo gånger noll komma ett lika med fyrtio watt. Strömmen ingår i kvadrat.
+Måns (5 s): Så tre gånger strömmen ger nio gånger förlusten?
+Sigge (4.8 s): Ja! Trettio ampere ger nittio watt i samma ledning.
+Sigge (4.8 s): Därför skyddas kabeln av en säkring eller brytare.
+Sigge (5.5 s): En lös klämma har större resistans. Då blir det varmt just där.
+Måns (5.5 s): Så därför letar elektrikern efter varma klämmor med värmekamera!
+Sigge (5.1 s): Ja, när tavlan går under last. Utan ström syns ingen värme.
+Sigge (3.3 s): Vi ses i nästa film!
