@@ -138,3 +138,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   övningar) och lärarsidan Resultatkoder (kamera, skärmbilder eller länk; rätt/fel mot elevens D, klasslista, CSV).
   Lärarsidornas lösenord kan sparas på lärarens enhet. Måndagens pass 2 omplanerat (bild 13 tillsammans, bild 14
   självstudier, inlämning påbörjas, QR-kod sist).
+- **2026-09-27** Lärarportalen, Inlämningar under lektionen (`larare/resultat.html?vy=presentera`): en rad per elev
+  med rätt/fel per svar i uppgift 1–3 och labbet, klassens summa, ordning efter namn, flest fel eller senaste kod,
+  initialer i stället för namn. Uppdateras direkt när en kod läses på datorn, också i en annan flik.
