@@ -203,6 +203,26 @@ export const BETECKNINGAR = [
   "forklaring": "Räknarens vinkelläge när vinkeln anges i grader, till exempel för fasvinkeln φ = arctan(X/R)."
  },
  {
+  "id": "shift",
+  "visa": "SHIFT",
+  "former": [
+   "SHIFT"
+  ],
+  "namn": "räknarens andraknapp",
+  "forklaring": "Knappen som ger den andra funktionen på nästa knapp, till exempel SHIFT och tan för tan⁻¹ (arctan)."
+ },
+ {
+  "id": "ti",
+  "visa": "TI",
+  "former": [
+   "TI",
+   "TI-30X"
+  ],
+  "namn": "Texas Instruments",
+  "utlasning": "räknartillverkare",
+  "forklaring": "Tillverkare av räknare, till exempel TI-30X. Casio är en annan vanlig tillverkare."
+ },
+ {
   "id": "r",
   "visa": "R",
   "former": [

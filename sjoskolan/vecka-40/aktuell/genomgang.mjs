@@ -2,6 +2,7 @@ import {lessonById} from './lektioner.mjs?v=20260929';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
 import {hitta,ordlista} from '../../gemensamt/beteckningar.mjs?v=20260928';
+import {hjalpHtml} from '../../gemensamt/raknehjalp.mjs?v=20260929b';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let lesson=lessonById(params.get('del')),index=Math.max(0,lesson.slides.findIndex(s=>s.id===params.get('avsnitt')));
 // Genomgångens fem delar enligt DESIGN.md, plus fördjupning
@@ -15,7 +16,7 @@ function render(){const s=lesson.slides[index];$('lesson').value=lesson.id;$('se
  const k=kind(s),kt=KINDS.find(x=>x[0]===k)[1];
  $('route').innerHTML=route(k);
  $('slide').className=`lesson-stage${s.visual?' has-visual':''}`;
- $('slide').innerHTML=`<div class="lesson-text"><p class="ac-kicker">DEL ${lesson.number} · ${kt.toUpperCase()}</p><h1>${m(s.title)}</h1>${body(s)}${s.check?`<p class="lesson-check"><strong>Prova själv:</strong> ${m(s.check)}</p><details class="answer-details"><summary>Visa förklaring</summary><p>${m(s.answer)}</p></details>`:''}${bet(s)}${k==='labb'?`<p class="lesson-check">Det här gör du i den guidade labben i slutet av veckan, när du har gått igenom del 1–3. <a href="../../vaxelstromslabbet/?lage=guidad&amp;del=${lesson.id}">Titta på labbuppgiften</a></p>`:''}</div>${s.visual?'<div class="lesson-visual"></div>':''}`;
+ $('slide').innerHTML=`<div class="lesson-text"><p class="ac-kicker">DEL ${lesson.number} · ${kt.toUpperCase()}</p><h1>${m(s.title)}</h1>${body(s)}${s.check?`<p class="lesson-check"><strong>Prova själv:</strong> ${m(s.check)}</p><details class="answer-details"><summary>Visa förklaring</summary><p>${m(s.answer)}</p></details>`:''}${bet(s)}${hjalpHtml([s.title,...s.body,s.formula||'',s.check||''].join(' '))}${k==='labb'?`<p class="lesson-check">Det här gör du i den guidade labben i slutet av veckan, när du har gått igenom del 1–3. <a href="../../vaxelstromslabbet/?lage=guidad&amp;del=${lesson.id}">Titta på labbuppgiften</a></p>`:''}</div>${s.visual?'<div class="lesson-visual"></div>':''}`;
  draw();$('previous').disabled=index===0;$('next').disabled=index===lesson.slides.length-1;$('count').textContent=`Avsnitt ${index+1} av ${lesson.slides.length}`;$('film-link').classList.toggle('primary',index===lesson.slides.length-1);$('film-link').textContent=index===lesson.slides.length-1?'Nästa steg: film':'Film';
  $('lab-link').href=`../../vaxelstromslabbet/?lage=guidad&del=${lesson.id}`;$('ovning-link').href=`Formelstod_och_ovningar.html?del=v40_0${lesson.number}`;$('film-link').href=`Kortfilmer.html?del=${lesson.id}`;$('artikel-link').href=`Lektion_${lesson.number}.html`;$('deck-link').href=`../../bildspel/?d=${lesson.deck.replace(/_elev\.pptx$/,'')}`;
  $('print-lesson').innerHTML=`<h1>${lesson.title}</h1>`+lesson.slides.map(s=>`<section><h2>${m(s.title)}</h2>${body(s)}${s.check?`<p>${m(s.check)}</p>`:''}</section>`).join('');history.replaceState(null,'',`?del=${lesson.id}&avsnitt=${s.id}`);document.title=`${s.title} · Sjöskolan`;

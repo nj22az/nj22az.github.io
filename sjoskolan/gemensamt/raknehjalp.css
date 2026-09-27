@@ -1,0 +1,9 @@
+/* Räknarhjälp (gemensamt/raknehjalp.mjs): hopfällbara kort om RAD/DEG och prefix */
+.raknehjalp{margin:12px 0}
+.rh-kort{margin:8px 0;border:1px solid var(--sj-line,#cad8e2);border-left:6px solid #a94d0a;border-radius:12px;padding:2px 14px;background:#fffaf5}
+.rh-kort[open]{padding-bottom:10px}
+.rh-kort summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700;color:#7a3a08}
+.rh-kort p{margin:6px 0}
+.rh-tabell{border-collapse:collapse;margin:6px 0}.rh-tabell th,.rh-tabell td{border:1px solid var(--sj-line,#cad8e2);padding:4px 8px;text-align:left}
+.rh-mer{font-size:15px}
+@media print{.raknehjalp{display:none}}

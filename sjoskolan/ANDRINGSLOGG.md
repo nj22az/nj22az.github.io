@@ -77,6 +77,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 27. **Elevens PowerPoint har inga talaranteckningar.** Anteckningarna innehöll lärarråd och facit. Lärarkopian med
     anteckningar krypteras i `larare/filer/` och laddas ner från utbildningsguiden. *Kontroll: `verktyg/qa/week40.py`.*
 
+28. **Räknaren och enheterna förklaras där de behövs.** `gemensamt/raknehjalp.mjs` visar korten RAD, DEG och prefix
+    automatiskt i genomgång, artikel, labb och övningar när texten innehåller u(t), sin(2π…), arctan/fasvinkel eller
+    mH, µF, ms. Allt samlat på `gemensamt/Raknehjalp.html` med omvandlare. Nya kurstexter får korten utan extra arbete.
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -118,3 +122,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   överallt.
 - **2026-09-27** Vecka 40: talaranteckningar borttagna ur elevernas PowerPoint; lärarkopior med uppdaterat dagsupplägg
   krypterade i `larare/filer/`, nedladdning i utbildningsguiden. (Vecka 39: v39_03 har fortfarande anteckningar.)
+- **2026-09-27** Räknarhjälp: RAD/DEG och prefix förklaras automatiskt där de behövs (genomgång, artikel, labb,
+  övningar) och på sidan Räknarhjälp med omvandlare, länkad under Att slå upp.

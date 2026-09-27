@@ -31,7 +31,9 @@ BILDTEXT = {'wave': 'Spänningen över tid: tidsaxel i millisekunder, spänning 
 
 
 def lektioner():
-    js = "import('%s').then(m=>console.log(JSON.stringify(m.LESSONS)))" % (KATALOG / 'lektioner.mjs').as_uri()
+    # Varje avsnitt får räknarhjälp (RAD/DEG, prefix) ur gemensamt/raknehjalp.mjs, samma kort som i genomgången.
+    js = ("Promise.all([import('%s'),import('%s')]).then(([m,r])=>console.log(JSON.stringify(m.LESSONS.map(l=>({...l,slides:l.slides.map(s=>({...s,"
+          "hjalp:r.hjalpHtml([s.title,...s.body,s.formula||'',s.check||''].join(' '))}))})))))") % ((KATALOG / 'lektioner.mjs').as_uri(), (R.SJO / 'gemensamt' / 'raknehjalp.mjs').as_uri())
     return json.loads(subprocess.run(['node', '--input-type=module', '-e', js], capture_output=True, text=True, check=True).stdout)
 
 
@@ -51,6 +53,7 @@ def avsnitt(s, prova):
     h.append('</ul>')
     if s.get('formula'):
         h.append(f'<p class="formula">{R.h(s["formula"])}</p>')
+    h.append(s.get('hjalp') or '')
     if s.get('check') and prova:
         h.append(f'<div class="art-prova"><p><strong>Prova själv:</strong> {R.h(s["check"])}</p>' + (f'<details><summary>Visa svar</summary><p>{R.h(s["answer"])}</p></details>' if s.get('answer') else '') + '</div>')
     h.append('</div></div></section>')
@@ -88,7 +91,7 @@ def artikel(a, l, alla):
     nasta = next((x for x in alla if x['number'] == nr + 1), None)
     toc = [('mal', 'Det här ska du kunna'), ('beteckningar', 'Förkortningar och beteckningar'), ('teori', 'Så fungerar det'), ('instrument', 'Se vad instrumentet visar'), ('exempel', 'Följ ett genomräknat exempel'),
            ('prova', 'Prova själv'), ('labb', 'Det här använder du i labben')] + ([('fordjupning', 'Fördjupning')] if fordjup else []) + [('nasta', 'Nästa steg')]
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
 <main id="main-content" class="course-main art-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 40</a></div>
 <div class="art-layout"><aside class="art-toc"><details open><summary>På denna sida</summary><ol>{''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)}</ol></details></aside>
