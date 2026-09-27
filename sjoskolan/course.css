@@ -51,7 +51,7 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 .course-downloads li{padding:16px 0;border-bottom:1px solid var(--sj-line,#cad8e2);margin:0}
 .course-downloads li:first-child{border-top:1px solid var(--sj-line,#cad8e2)}
 .course-downloads a{font-size:19px;font-weight:700}
-.course-downloads span{display:block;color:var(--sj-muted,#4d6579);font-size:15px;margin-top:4px}
+.course-downloads a>span,.course-downloads>span,.course-downloads li>span{display:block;color:var(--sj-muted,#4d6579);font-size:15px;margin-top:4px}
 .course-links li{padding:6px 0;margin:0}
 .course-links a{display:inline-flex;align-items:center;min-height:44px}
 .course-next{margin-top:40px;padding:8px 24px 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:var(--sj-soft,#edf4f9)}

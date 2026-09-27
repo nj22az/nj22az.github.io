@@ -4,8 +4,8 @@
 (() => {
   const FORMLER = '.formula:not(table), .formel:not(table), .rad-samband, .lesson-formula, code, kbd, samp, math';
   const SYMBOL = /[A-Za-zΔΦφωûî]{1,2}$/;
-  // Tal följt av enhet. ”var” (reaktiv effekt) och ”rad” är också vanliga ord och får bara stå direkt efter ett tal.
-  const ENHET = /\d(?:[\d\u00a0\u202f ]*\d)?(?:[,.]\d+)?[\u00a0\u202f ]?(?:[kMmµu]?(?:V|A|W|Ω|Hz|VA|var|Wh|H|F|s)|kvar|kVA|kWh|°C?|%)(?![\wÅÄÖåäö])/g;
+  // Tal (med eventuellt minustecken) följt av enhet. ”var” (reaktiv effekt) och ”rad” är också vanliga ord och får bara stå direkt efter ett tal.
+  const ENHET = /(?:−\s?)?\d(?:[\d\u00a0\u202f ]*\d)?(?:[,.]\d+)?[\u00a0\u202f ]?(?:[kMmµu]?(?:V|A|W|Ω|Hz|VA|var|Wh|H|F|s)|kvar|kVA|kWh|°C?|%)(?![\wÅÄÖåäö])/g;
   const las = (el) => el.setAttribute('translate', 'no');
   const skyddad = (n) => (n.nodeType === 1 ? n : n.parentElement)?.closest('[translate="no"], script, style, textarea, input, svg, canvas');
 
