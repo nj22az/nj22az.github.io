@@ -6,10 +6,14 @@
   // Keep old exercise URLs (including slide-deck deep links) usable.
   if (location.pathname.includes('/vecka-40/')) {
     const q = new URLSearchParams(location.search);
+    // Inlämningen links to named calculation methods on this page. Keep those
+    // explanations reachable without routing the student to an unrelated lesson.
+    const anchor = location.hash.slice(1);
+    if (anchor && !/^v40_0[123](?:-q\d+)?$/.test(anchor) && document.getElementById(anchor)) return;
     if (q.get('las') !== '1') {
       const target = new URL('Genomgang.html', location.href);
-      target.searchParams.set('del', q.get('del') || 'sinus');
-      if (location.hash) target.searchParams.set('uppgift', location.hash.slice(1));
+      target.searchParams.set('del', q.get('del') || (/^v40_0[123]$/.test(anchor) ? anchor : 'sinus'));
+      if (location.hash) target.searchParams.set('uppgift', anchor);
       location.replace(target.href);
     }
     return; // Never install manual completion buttons in the printable fallback.

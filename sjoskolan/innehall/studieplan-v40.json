@@ -111,13 +111,13 @@
       "EL-000064",
       "EL-000065",
       "medel",
-      "EL-000069",
       "radianer",
       "moment",
       "EL-000066",
       "EL-000067",
       "fas",
       "EL-000068",
+      "EL-000069",
       "kurvformer",
       "EL-000070",
       "matarna",
@@ -130,6 +130,8 @@
       "spole",
       "xl",
       "EL-000071",
+      "xc",
+      "EL-000072",
       "z",
       "EL-000073",
       "strom",
@@ -138,8 +140,6 @@
       "EL-000075",
       "fas",
       "EL-000076",
-      "xc",
-      "EL-000072",
       "rc",
       "EL-000077",
       "EL-000078",
@@ -184,7 +184,8 @@
       ],
       "resonemang": true,
       "tillampning": false,
-      "image": "assets/b7becb76d1db_04_tva_matningar.png"
+      "image": "assets/b7becb76d1db_04_tva_matningar.png",
+      "syfte": "upptäcka en möjlig reserv- eller återmatning i stället för att lita på en enda öppen brytare"
     },
     "EL-000631": {
       "del": "franskiljning",
@@ -196,7 +197,14 @@
       "cards": [
         "M1",
         "M2"
-      ]
+      ],
+      "syfte": "välja mätfunktion och anslutning utifrån det som faktiskt ska mätas",
+      "stopp": {
+        "text": "Här slutar måndagens första pass. På lektionen fortsätter du med del 1: sinus. Gör V2-3 och V2-4 hemma före tisdagens lektion.",
+        "href": "?del=sinus&fortsatt=1",
+        "label": "På lektionen: fortsätt till del 1",
+        "nasta": "Hemma: instrumentets felgräns"
+      }
     },
     "EL-000632": {
       "del": "franskiljning",
@@ -205,7 +213,8 @@
         "exempel"
       ],
       "resonemang": true,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "avgöra om en liten skillnad i mätvärde är större än instrumentets angivna felgräns"
     },
     "EL-000633": {
       "del": "franskiljning",
@@ -213,7 +222,8 @@
         "ansvar"
       ],
       "resonemang": true,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "känna igen när uppgifter och ansvar måste klarläggas innan ett arbete kan planeras"
     },
     "EL-000061": {
       "del": "sinus",
@@ -221,7 +231,8 @@
         "period"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "förutsäga hur lång en period ska vara innan du läser av en kurva"
     },
     "EL-000062": {
       "del": "sinus",
@@ -229,7 +240,8 @@
         "period"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "ta reda på en signals frekvens från tiden mellan två upprepningar"
     },
     "EL-000063": {
       "del": "sinus",
@@ -238,7 +250,12 @@
         "rms"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "jämföra multimeterns effektivvärde med kurvans högsta spänning",
+      "stopp": {
+        "text": "Här slutar måndagens gemensamma räkneövningar i del 1. Fortsätt hemma med övning 4–10 före tisdagens lektion. Ta med frågor om det som är oklart.",
+        "nasta": "Hemma: övning 4 · Effektivvärde"
+      }
     },
     "EL-000064": {
       "del": "sinus",
@@ -246,7 +263,8 @@
         "rms"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "översätta kurvans toppvärde till den spänning en AC-multimeter normalt visar för en sinus"
     },
     "EL-000065": {
       "del": "sinus",
@@ -255,7 +273,8 @@
         "rms"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "skilja oscilloskopets topp-till-topp-värde från toppvärde och effektivvärde"
     },
     "EL-000069": {
       "del": "sinus",
@@ -263,7 +282,8 @@
         "rms"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "använda effektivvärdet för att beräkna värmeeffekten i ett motstånd"
     },
     "EL-000066": {
       "del": "sinus",
@@ -272,7 +292,8 @@
         "moment"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "bestämma spänningen vid ett visst ögonblick i en period"
     },
     "EL-000067": {
       "del": "sinus",
@@ -281,7 +302,8 @@
         "moment"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "tolka ett negativt värde som omvänd polaritet under sinusens negativa halvperiod"
     },
     "EL-000068": {
       "del": "sinus",
@@ -290,7 +312,8 @@
         "fas"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "uttrycka avståndet mellan två kurvor som en fasvinkel"
     },
     "EL-000070": {
       "del": "sinus",
@@ -299,7 +322,8 @@
         "kurvformer"
       ],
       "resonemang": true,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "avgöra varför vågform och toppvärde båda behövs när du bedömer ett mätvärde"
     },
     "EL-000071": {
       "del": "impedans",
@@ -307,7 +331,8 @@
         "xl"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "förutsäga hur mycket en spole motverkar växelström vid en viss frekvens"
     },
     "EL-000073": {
       "del": "impedans",
@@ -315,7 +340,8 @@
         "z"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "kombinera resistans och reaktans till kretsens totala impedans"
     },
     "EL-000074": {
       "del": "impedans",
@@ -324,7 +350,14 @@
         "strom"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "förutsäga strömmen i en krets med både motstånd och spole före en avläsning",
+      "stopp": {
+        "text": "Här slutar tisdagens gemensamma övningar i del 2. Påbörja sedan växelströmsinlämningens uppgift 1 på lektionen. Fortsätt hemma med övning 5–10, och skriv frånskiljningens inlämning under onsdagen.",
+        "href": "Inlamning.html#uppgift-1",
+        "label": "På lektionen: inlämningens uppgift 1",
+        "nasta": "Hemma: följ exemplet inför övning 5"
+      }
     },
     "EL-000075": {
       "del": "impedans",
@@ -332,7 +365,8 @@
         "exempel"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "kontrollera källspänningen när delspänningarna är fasförskjutna"
     },
     "EL-000076": {
       "del": "impedans",
@@ -340,7 +374,8 @@
         "fas"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "ange hur mycket strömmen är förskjuten och om den kommer före eller efter spänningen"
     },
     "EL-000072": {
       "del": "impedans",
@@ -348,7 +383,8 @@
         "xc"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "beräkna hur en kondensator påverkar växelström vid en viss frekvens"
     },
     "EL-000077": {
       "del": "impedans",
@@ -356,7 +392,8 @@
         "rc"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "förutsäga ström och fas när kretsen innehåller en kondensator"
     },
     "EL-000078": {
       "del": "impedans",
@@ -365,7 +402,8 @@
         "xc"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "bedöma vad en ändrad frekvens gör med samma spole och kondensator"
     },
     "EL-000079": {
       "del": "impedans",
@@ -373,7 +411,8 @@
         "rlc"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "beräkna ström när en spole och en kondensator delvis motverkar varandra"
     },
     "EL-000080": {
       "del": "impedans",
@@ -381,7 +420,8 @@
         "resonans"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "känna igen resonansfallet där kretsens reaktiva delar tar ut varandra"
     },
     "EL-000081": {
       "del": "effekt",
@@ -389,7 +429,8 @@
         "s"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "beskriva matningens skenbara effekt utifrån spänning och ström"
     },
     "EL-000082": {
       "del": "effekt",
@@ -397,7 +438,8 @@
         "pf"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "skilja den aktiva effekten från den skenbara effekten"
     },
     "EL-000083": {
       "del": "effekt",
@@ -406,7 +448,8 @@
         "exempel"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "använda effekttriangeln för att beskriva en induktiv last"
     },
     "EL-000084": {
       "del": "effekt",
@@ -414,7 +457,8 @@
         "q"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "skilja den aktiva och reaktiva delen åt när skenbar effekt och effektfaktor är kända"
     },
     "EL-000085": {
       "del": "effekt",
@@ -422,7 +466,8 @@
         "energi"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "beräkna aktiv energianvändning med effekt och drifttid"
     },
     "EL-000086": {
       "del": "effekt",
@@ -430,7 +475,14 @@
         "strom"
       ],
       "resonemang": false,
-      "tillampning": false
+      "tillampning": false,
+      "syfte": "förutsäga matningsströmmen när effektfaktorn är lägre än ett",
+      "stopp": {
+        "text": "Här slutar torsdagens övningar hemma. Skriv också växelströmsinlämningens uppgift 1 och 2. Ta med frågor till fredag; då gör vi övning 7–10 och den guidade labben tillsammans.",
+        "href": "Inlamning.html#uppgift-1",
+        "label": "Hemma: inlämningens uppgift 1 och 2",
+        "nasta": "Fredag: läs om kompensering"
+      }
     },
     "EL-000087": {
       "del": "effekt",
@@ -438,7 +490,8 @@
         "kompensering"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "beskriva vilken kapacitiv reaktiv effekt som tar ut lastens induktiva del i modellen"
     },
     "EL-000088": {
       "del": "effekt",
@@ -447,7 +500,8 @@
         "kompensering"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "jämföra hur stor ström samma aktiva effekt kräver vid två effektfaktorer"
     },
     "EL-000089": {
       "del": "effekt",
@@ -455,7 +509,8 @@
         "forlust"
       ],
       "resonemang": false,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "bedöma hur en ändrad ström påverkar förlusten i samma kabel"
     },
     "EL-000090": {
       "del": "effekt",
@@ -463,7 +518,105 @@
         "overtoner"
       ],
       "resonemang": true,
-      "tillampning": true
+      "tillampning": true,
+      "syfte": "skilja verklig effektfaktor från grundtonens cos φ när övertoner finns"
+    }
+  },
+  "vagledning": {
+    "franskiljning": {
+      "titel": "Frånskiljning och mätteknik",
+      "nar": "Måndag: V2-1 och V2-2 på lektionen. V2-3 och V2-4 hemma före tisdagens lektion.",
+      "syfte": "Du ska kunna upptäcka när underlaget inte räcker för en säker mätning och välja ett instrument som passar uppgiften.",
+      "gor": [
+        "Följ matning A och B i figuren. Skriv vad som behöver kontrolleras innan arbetsområdet kan bedömas som spänningslöst.",
+        "Läs instrumentkorten. Välj mätfunktion och beskriv anslutningen för varje fall.",
+        "Följ räkneexemplet om felgräns och använd sedan metoden i V2-3. Avsluta med att beskriva vilket underlag som saknas i V2-4."
+      ],
+      "klar": "Du har sparat ett eget försök till V2-1–V2-4 och kan peka ut det du behöver hjälp med. Läraren bedömer dina motiveringar.",
+      "lasuppdrag": {
+        "matningar": "Följ A och B fram till lasten i figuren. Leta efter vad vi vet och vad som fortfarande måste verifieras.",
+        "instrument": "Jämför kort M1 och M2. Hitta vilka funktioner och begränsningar som avgör om ett instrument går att använda.",
+        "felgrans": "Ta reda på vad procentdelen respektive siffrorna betyder. Du ska snart räkna båda delarna i volt.",
+        "exempel": "Räkna med på papper. Försök få fram nästa rad innan du visar den. Du använder sedan metoden med andra värden i V2-3.",
+        "ansvar": "Leta efter de uppgifter och ansvariga roller som måste vara klarlagda innan ett arbete kan planeras."
+      }
+    },
+    "sinus": {
+      "titel": "Sinus och mätvärden",
+      "nar": "Måndag: övning 1–3 med läraren. Övning 4–10 hemma före tisdagens lektion.",
+      "syfte": "En kurva och en multimeter kan visa olika tal för samma spänning. Du ska kunna avgöra vilket värde du läser och förutsäga mätarens visning.",
+      "gor": [
+        "Läs hur du hittar en period och räknar tiden för den. Prova sedan själv i svarsfälten.",
+        "Följ exemplet om toppvärde och effektivvärde. Räkna övningarna med deras egna värden.",
+        "Avsluta med att jämföra vågformer och läsa hur en förväntad och en avläst mätning skrivs i protokollet."
+      ],
+      "klar": "Du har bearbetat alla tio övningar och kan förklara skillnaden mellan periodtid, toppvärde och effektivvärde. Skriv ned frågor till tisdagens lektion.",
+      "lasuppdrag": {
+        "kurvan": "Peka ut nollnivån, en positiv topp och en hel period i kurvan. Läs vilken storhet varje axel visar.",
+        "period": "Följ hur frekvensen blir en tid. Kontrollera särskilt om svaret står i sekunder eller millisekunder.",
+        "topp": "Peka ut sträckan från noll till toppen och sträckan från negativ till positiv topp. Förklara skillnaden.",
+        "rms": "Läs vad effektivvärdet betyder för ett värmeelement. Förklara varför det inte är samma tal som kurvans topp.",
+        "exempel": "Räkna med på papper. Försök välja samband och enhet innan du visar nästa steg.",
+        "medel": "Förklara hur en spänning kan ha medelvärdet noll och ändå värma en resistor.",
+        "radianer": "Kontrollera din räknare: hitta RAD och DEG. Läs vilket läge som hör till respektive formel.",
+        "moment": "Följ hur millisekunder blir sekunder och hur tiden sätts in i sinusuttrycket. Använd RAD.",
+        "fas": "Ta reda på hur en tidsskillnad kan uttryckas som en del av ett helt varv.",
+        "kurvformer": "Jämför sinus och fyrkantvåg. Undersök varför samma toppvärde inte måste ge samma effektivvärde.",
+        "matarna": "Läs hur de två mätarna kontrolleras mot en känd signal. Förklara vad du förväntar dig att de visar.",
+        "protokoll": "Följ en protokollrad: förväntat värde, avläst värde, skillnad och förklaring. Detta gör du själv i fredagens simulatorlabb.",
+        "klart": "Försök besvara frågorna med egna ord. Om någon är oklar, välj det avsnittet i översikten eller skriv ned en fråga till läraren."
+      }
+    },
+    "impedans": {
+      "titel": "Spole, motstånd och ström",
+      "nar": "Tisdag: övning 1–4 med läraren. Övning 5–10 hemma tisdag kväll och onsdag.",
+      "syfte": "En motorlindning påverkar växelström på fler sätt än ett vanligt motstånd. Du tränar på att beräkna strömmen innan du läser av den i simulatorn.",
+      "gor": [
+        "Läs först om resistorn och spolen. Räkna spolens reaktans och sedan hela kretsens impedans.",
+        "Använd impedansen för att räkna strömmen. Följ exemplet och prova med övningens egna värden.",
+        "Fortsätt med fasvinkel och hur kondensatorn ändrar kretsen. Skriv ned vad som händer med strömmen."
+      ],
+      "klar": "Du har bearbetat alla tio övningar och kan beskriva vägen från induktans och frekvens till reaktans, impedans och ström. Ta med kvarvarande frågor till fredag.",
+      "lasuppdrag": {
+        "resistor": "Jämför spännings- och strömkurvan. Leta efter om topparna kommer samtidigt.",
+        "spole": "Jämför med resistorn. Leta efter vilken kurva som når sin topp först när en spole ingår.",
+        "xl": "Följ omvandlingen från mH till H. Ta reda på varför frekvensen behövs för att beräkna reaktansen.",
+        "z": "Följ de två vinkelräta sidorna och diagonalen i triangeln. Förklara varför beloppen inte adderas direkt.",
+        "strom": "Använd den beräknade impedansen för att följa strömberäkningen. Jämför med kretsen som bara har en resistor.",
+        "exempel": "Räkna varje rad på papper före nästa steg: impedans, ström och sedan spänningen över varje komponent.",
+        "fas": "Läs vad vinkelns tecken betyder. Förklara om strömmen kommer före eller efter spänningen.",
+        "xc": "Följ omvandlingen från µF till F. Jämför hur frekvensen påverkar kondensatorn och spolen.",
+        "rc": "Följ beräkningen och lägg märke till minus i nettoreaktansen. Förklara vad det säger om strömmen.",
+        "rlc": "Börja med skillnaden mellan spolens och kondensatorns reaktans. Följ sedan beräkningen av impedansen.",
+        "resonans": "Ta reda på vad som händer när spolens och kondensatorns reaktanser är lika stora.",
+        "labb": "Läs vilka värden du ska beräkna före avläsningen i fredagens simulatorlabb. Följ ordningen reaktans, impedans, ström.",
+        "klart": "Förklara beräkningskedjan med egna ord. Repetera ett oklart steg eller skriv ned en fråga till läraren."
+      }
+    },
+    "effekt": {
+      "titel": "Effekt och effektfaktor",
+      "nar": "Torsdag hemma: övning 1–6. Fredag med läraren: övning 7–10, sedan simulatorlabben.",
+      "syfte": "Två laster med samma aktiva effekt kan kräva olika ström. Du ska kunna förklara skillnaden och vad den betyder för matningen och ledningsförlusterna.",
+      "gor": [
+        "Läs vad aktiv effekt och effektfaktor betyder. Följ hur strömmen beräknas.",
+        "Använd effekttriangeln och räkna övningarna. Skriv rätt enhet: W, VA eller var.",
+        "Jämför ström före och efter ändrad effektfaktor. Använd detta i fredagens labb och förklara vad som ändras."
+      ],
+      "klar": "Du har bearbetat alla tio övningar och kan förklara varför strömmen ändras när effektfaktorn ändras trots samma aktiva effekt. Därefter använder du metoden i den guidade simulatorlabben.",
+      "lasuppdrag": {
+        "resistiv": "Läs vad aktiv effekt används till och följ strömberäkningen för värmeelementet.",
+        "pf": "Ta reda på vilka två effekter som jämförs i effektfaktorn. Förklara varför den saknar enhet.",
+        "strom": "Räkna med i de två fallen. Kontrollera vilka storheter som är oförändrade och vilken som ändras.",
+        "s": "Följ båda sätten att räkna skenbar effekt. Kontrollera att båda ger samma värde i VA.",
+        "q": "Hitta P, Q och S i triangeln. Förklara varför Q inte är samma sak som förbrukad aktiv energi.",
+        "exempel": "Räkna med på papper i ordningen S, Q och I. Försök välja formel innan du visar nästa steg.",
+        "energi": "Skilj på hur stor effekten är och hur länge lasten går. Kontrollera enheterna kW, timmar och kWh.",
+        "kompensering": "Följ hur kondensatorns reaktiva effekt motverkar lastens. Var uppmärksam på tecknen.",
+        "forlust": "Jämför strömmen före och efter. Läs varför strömförhållandet ska kvadreras för att jämföra ledningsförluster.",
+        "overtoner": "Läs när PF och cos φ kan skilja sig åt. Avgör vilket samband som fortfarande gäller.",
+        "labb": "Läs hur två fall jämförs i simulatorn. Skriv vilka storheter som hålls konstanta och vilken du ska förutsäga.",
+        "klart": "Besvara frågorna med egna ord. Repetera det du behöver innan du öppnar simulatorlabben."
+      }
     }
   }
 }

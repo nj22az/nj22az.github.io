@@ -21,18 +21,25 @@ const fill=(values,text)=>{values.forEach((v,i)=>{$(`answer-${i}`).value=v;$(`an
 const submit=()=>$('answer-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
 
 test('workspace: attempts, staged solutions, draft persistence and navigation',()=>{
+  assert.match($('exercise-purpose').textContent,/förutsäga hur lång en period/);
+  assert.match($('current-action').textContent,/Skriv resultatet i varje fält/);
   assert.ok($('show-solution').disabled);submit();assert.match($('feedback').textContent,/Fyll i/);
   fill(['1','1']);submit();assert.ok($('show-solution').disabled);assert.match($('hints').textContent,/Ledtråd/);
   submit();assert.ok($('show-solution').disabled);assert.match($('feedback').textContent,/redan sparat/);
   fill(['2','2']);submit();assert.equal($('show-solution').disabled,false);
   $('show-solution').click();assert.equal($('solution').hidden,false);assert.match($('exercise-status').textContent,/Lösning genomgången/);
   jump('EL-000063');fill(['17']);submit();assert.equal($('exercise-status').textContent,'Rätt svar');
+  assert.match($('next-instruction').textContent,/beskriva hur du räknade/);
+  assert.match($('session-boundary').textContent,/hemma med övning 4–10/);
+  assert.match($('next').textContent,/Hemma: övning 4/);
   fill(['999']);assert.notEqual($('exercise-status').textContent,'Rätt svar');assert.equal($('feedback').textContent,'');assert.ok($('show-solution').disabled);
   jump('EL-000064');assert.equal($('solution').hidden,true);assert.ok($('show-solution').disabled);
   jump('EL-000063');assert.equal($('answer-0').value,'999');assert.notEqual($('exercise-status').textContent,'Rätt svar');
 });
 test('reading requires all content blocks; navigation alone does not tick a section',()=>{
   jump('period');const observer=observers.at(-1);
+  assert.match($('current-action').textContent,/sekunder eller millisekunder/);
+  assert.match($('next').textContent,/Prova själv/);
   assert.notEqual($('read-status').textContent,'✓ Genomgånget');
   observer.see(observer.targets.slice(-1));assert.notEqual($('read-status').textContent,'✓ Genomgånget');
   observer.see(observer.targets.slice(0,-1));assert.equal($('read-status').textContent,'✓ Genomgånget');
@@ -52,6 +59,15 @@ test('Monday cards and figure are embedded; open text is never marked correct',(
   jump('EL-000630');assert.match(document.querySelector('#slide img').src,/04_tva_matningar/);
   fill([],'Jag behöver ett aktuellt schema för båda matningsvägarna.');submit();assert.match($('exercise-status').textContent,/läraren bedömer/);
   jump('EL-000631');assert.match($('slide').textContent,/Instrumentkort M1/);assert.match($('slide').textContent,/Instrumentkort M2/);
+  assert.match($('session-boundary').textContent,/måndagens första pass/);
   $('need-help').click();assert.equal($('exercise-status').textContent,'Behöver hjälp');
+});
+test('the lesson introduction explains the task and finishing with gaps offers a way back',()=>{
+  jump('mal');assert.match($('slide').textContent,/När är jag färdig/);
+  assert.match($('lesson-goal').textContent,/säker mätning/);
+  jump('EL-000633');$('next').click();
+  assert.equal($('finish').hidden,false);assert.equal($('review-lesson').hidden,false);
+  assert.match($('review-lesson').href,/avsnitt=mal/);
+  assert.match($('finish-goal').textContent,/eget försök/);
 });
 test.after(async()=>{await w.happyDOM.close();});

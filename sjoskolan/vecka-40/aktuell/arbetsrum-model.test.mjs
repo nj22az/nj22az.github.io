@@ -15,11 +15,22 @@ test('all 34 exercises occur once, after their teaching prerequisites',()=>{
       if(id.startsWith('EL-')){
         const t=STUDY.tasks[id];assert.equal(t.del,l.id);
         for(const theory of t.teori)assert.ok(seen.has(theory),`${id} needs ${theory}`);
-        assert.ok(t.solution.text);assert.ok(t.hints.length);
-      }else assert.ok(l.slides.some(s=>s.id===id),`${l.id}:${id}`);
+        assert.ok(t.solution.text);assert.ok(t.hints.length);assert.ok(t.syfte,`${id}: purpose`);
+      }else {
+        assert.ok(l.slides.some(s=>s.id===id),`${l.id}:${id}`);
+        assert.ok(id==='mal'||STUDY.guidance[l.id].lasuppdrag[id],`${l.id}:${id}: reading task`);
+      }
       assert.ok(!seen.has(id),id);seen.add(id);
     }
   }
+});
+test('the exercise order follows the timetable and keeps the class/home boundaries',()=>{
+  for(const [lesson,sequence] of Object.entries(STUDY.sequence)){
+    const numbers=sequence.filter(id=>id.startsWith('EL-')).map(id=>Number(STUDY.tasks[id].anchor.split(lesson==='franskiljning'?'-':'-q').at(-1)));
+    assert.deepEqual(numbers,Array.from({length:numbers.length},(_,i)=>i+1),lesson);
+  }
+  for(const id of [631,63,74,86])assert.ok(task(id).stopp.text);
+  assert.match(task(631).stopp.href,/del=sinus/);
 });
 test('period requires both seconds and milliseconds; decimal comma and signed values work',()=>{
   assert.equal(check(task(61),['0,020','20']).correct,true);

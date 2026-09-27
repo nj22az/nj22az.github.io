@@ -1,5 +1,5 @@
 // The overview derives progress from recorded reading and attempts, never checkboxes.
-import {STUDY} from './arbetsrum.gen.mjs?v=20260927b';
+import {STUDY} from './arbetsrum.gen.mjs?v=20260927c';
 import {studyStore, exerciseState, isWorked, isCorrect} from './studieprogress.mjs?v=20260927b';
 const store=studyStore(), aliases={v40_01:'sinus',v40_02:'impedans',v40_03:'effekt'};
 function route(href){
@@ -19,12 +19,14 @@ function render(){
     const theory=seq.filter(x=>!x.startsWith('EL-')),tasks=seq.filter(x=>x.startsWith('EL-')).map(x=>STUDY.tasks[x]);
     const read=theory.filter(x=>s.read[`r1:${id}:${x}`]).length;
     const worked=tasks.filter(t=>isWorked(exerciseState(s,t))).length,correct=tasks.filter(t=>isCorrect(exerciseState(s,t))).length;
-    row.querySelector('.lesson-progress').textContent=`${read}/${theory.length} avsnitt genomgångna · ${worked}/${tasks.length} övningar bearbetade · ${correct} med rätt svar`;
+    row.querySelector('.lesson-progress').textContent=read||worked?`${read}/${theory.length} avsnitt genomgångna · ${worked}/${tasks.length} övningar bearbetade · ${correct} med rätt svar`:'Inte påbörjad';
   }
   const c=s.cursor;
   if(c&&STUDY.sequence[c.lesson]?.includes(c.step)){
     const a=document.getElementById('resume');a.href='Genomgang.html';a.textContent='Fortsätt där du slutade';
-    document.getElementById('resume-text').textContent='Dina försök och din senaste plats finns kvar.';
+    const task=STUDY.tasks[c.step],brief=STUDY.guidance[c.lesson];
+    const label=task?`${task.number}: ${task.title}`:c.step==='mal'?'Läs vad du ska göra i den här delen.':brief.lasuppdrag[c.step];
+    document.getElementById('resume-text').textContent=`Du är i ${brief.titel}. ${task?'Nästa gång arbetar du vidare med '+label+'.':label} Dina sparade svar finns kvar.`;
   }
   for(const li of document.querySelectorAll('[data-steg]')){
     const a=li.querySelector('.steg-text a');if(!a)continue;

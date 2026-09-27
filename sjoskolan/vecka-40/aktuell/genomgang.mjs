@@ -1,5 +1,5 @@
 import {LESSONS} from './lektioner.mjs?v=20260927b';
-import {STUDY} from './arbetsrum.gen.mjs?v=20260927b';
+import {STUDY} from './arbetsrum.gen.mjs?v=20260927c';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
 import {hjalpHtml} from '../../gemensamt/raknehjalp.mjs?v=20260929c';
@@ -21,6 +21,22 @@ const taskByAnchor = anchor => Object.values(STUDY.tasks).find(t => t.anchor ===
 function steps(l = lesson) { return STUDY.sequence[l.id]; }
 function entry(id = step) { return STUDY.tasks[id] || lesson.slides.find(s => s.id === id); }
 function readDone(l, id) { return !!state().read[readKey(l.id, id)]; }
+function nextTitle() {
+  if (STUDY.tasks[step]?.stopp) return STUDY.tasks[step].stopp.nasta;
+  const id = steps()[steps().indexOf(step)+1];
+  if (!id) return 'Se vad som återstår';
+  const t = entry(id);
+  return id.startsWith('EL-') ? `Prova själv: ${t.number} · ${t.title}` : `Nästa: ${t.title}`;
+}
+function refreshAction() {
+  const task = STUDY.tasks[step];
+  if (!task) {
+    $('next-instruction').textContent = step === 'mal' ? 'Öppna den första förklaringen med Nästa-knappen. Fortsätt ett steg i taget; övningen kommer när du har läst det du behöver.' : entry().example ? 'Visa alla beräkningssteg och räkna med på papper innan du fortsätter. Du behöver inte skicka in exemplet.' : 'Innan du fortsätter: försök göra det som står under ”Gör nu” med egna ord. Är det oklart, läs en gång till eller skriv ned en fråga till läraren.';
+    return;
+  }
+  const r = exerciseState(state(),task);
+  $('next-instruction').textContent = r.help ? 'Ta upp den här uppgiften med läraren. Du kan fortsätta till nästa steg medan du väntar på hjälp.' : r.correct ? 'Svaret är kontrollerat. Fortsätt till nästa steg när du kan beskriva hur du räknade.' : r.solutionSeen ? 'Jämför lösningens metod med ditt försök. Skriv ned var de skiljer sig innan du fortsätter.' : r.submitted && !(task.solution.svar || []).length ? 'Din motivering är sparad för lärarens bedömning. Du kan utveckla den med ledtråden eller fortsätta till nästa steg.' : r.submitted ? 'Bearbeta svaret med ledtråden och kontrollera igen. Efter två olika ifyllda försök kan du öppna lösningen. Be läraren om hjälp om du fortfarande fastnar.' : 'Gör ett eget försök och tryck på knappen i svarsrutan innan du går vidare. Fastnar du, öppna ledtråden eller markera att du behöver hjälp.';
+}
 function done(l, id) { return id.startsWith('EL-') ? isWorked(exerciseState(state(), STUDY.tasks[id])) : readDone(l, id); }
 function initial() {
   const current = state().cursor;
@@ -64,7 +80,7 @@ function refreshProgress() {
     const url = `?del=${lesson.id}&${exercise ? 'uppgift' : 'avsnitt'}=${id}`;
     return `<li><a href="${esc(url)}" data-step="${esc(id)}"${id===step?' aria-current="step"':''}>${m(label)}</a> <span class="study-note">${esc(progress)}</span></li>`;
   }).join('');
-  storageNote();
+  storageNote();refreshAction();
 }
 function markRead(id) {
   store.change(s => { s.read[readKey(lesson.id,id)] = true; });
@@ -75,10 +91,13 @@ function renderTheory(s) {
   const key = readKey(lesson.id,s.id);
   const example = !!s.example;
   const shown = example ? Math.min(s.body.length, Math.max(1, state().examples[key] || 1)) : s.body.length;
-  $('slide').innerHTML = `<p class="study-kicker">${example ? 'Följ beräkningen' : (s.advanced ? 'Tillämpning · förklaringen före övningen' : 'Läs och förstå')}</p>
-    <h2 id="step-title" tabindex="-1">${m(s.title)}</h2>
-    ${example ? `<p>Följ ett steg i taget. Exemplet visar metoden med andra värden än övningen.</p><ol class="study-example">${s.body.slice(0,shown).map((t,i)=>`<li data-read="example${i}">${m(t)}</li>`).join('')}</ol>${shown<s.body.length?'<button type="button" id="example-next" class="primary">Visa nästa steg i beräkningen</button>':''}` : explanation(s)}
-    ${!example ? hjalpHtml([s.title,...s.body,s.formula||''].join(' ')) : ''}
+  const brief = STUDY.guidance[lesson.id];
+  const opening = s.id === 'mal';
+  $('slide').innerHTML = `<p class="study-kicker">${opening ? 'Börja här' : example ? 'Följ beräkningen' : (s.advanced ? 'Tillämpning · förklaringen före övningen' : 'Läs och förstå')}</p>
+    <h2 id="step-title" tabindex="-1">${opening ? 'Ditt uppdrag i den här delen' : m(s.title)}</h2>
+    ${opening ? `<p data-read="prepare">Ha papper och räknare till hands. Du läser och gör egna försök här på sidan. Figurer och instrumentkort visas där de behövs.</p><ol>${brief.gor.map((t,i)=>`<li data-read="plan${i}">${m(t)}</li>`).join('')}</ol><h3>När är jag färdig?</h3><p data-read="complete">${m(brief.klar)}</p><p class="study-note" data-read="practice">Det här är träning inför labben och inlämningarna. Ett rätt tal är inte samma sak som en bedömd motivering. Frågorna gäller undervisningsmodeller; elektriska mätningar görs vid den handledda stationen.</p>` : `<aside class="study-task" id="current-action"><strong>Gör nu</strong><p data-read="mission">${m(brief.lasuppdrag[s.id] || 'Läs förklaringen och använd den för att besvara frågan med egna ord.')}</p></aside>`}
+    ${opening ? '' : example ? `<p>Exemplet visar metoden med andra värden än övningen.</p><ol class="study-example">${s.body.slice(0,shown).map((t,i)=>`<li data-read="example${i}">${m(t)}</li>`).join('')}</ol>${shown<s.body.length?'<button type="button" id="example-next" class="primary">Visa nästa steg i beräkningen</button>':''}` : explanation(s)}
+    ${!example && !opening ? hjalpHtml([s.title,...s.body,s.formula||''].join(' ')) : ''}
     <p id="read-status" class="study-status" data-read="end">${readDone(lesson,s.id)?'✓ Genomgånget':'Markeras automatiskt när du har gått igenom avsnittet.'}</p>
     <p class="study-note">Markeringen visar att innehållet har visats. Övningen efteråt hjälper dig att pröva förståelsen.</p>`;
   if (!readingBlocks.has(key)) readingBlocks.set(key, new Set());
@@ -118,12 +137,15 @@ function renderExercise(task) {
   const needsText = task.resonemang || !(task.solution.svar || []).length;
   const unread = theories.some(s => !readDone(lesson,s.id));
   $('slide').innerHTML = `<p class="study-kicker">${task.tillampning?'Tillämpningsövning · efter grunderna':'Prova själv'}</p><h2 id="step-title" tabindex="-1">${m(task.number)}: ${m(task.title)}</h2>
-    <details id="repeat-theory" ${unread?'open':''}><summary>${unread?'Läs förklaringen före ditt försök':'Repetera förklaringen här'}</summary>${theories.map(s=>`<section data-theory="${s.id}"><h3>${m(s.title)}</h3>${explanation(s)}</section>`).join('')}</details>
-    ${picture(task)}${cards(task.cards)}
+    <p id="exercise-purpose" class="study-purpose"><strong>Varför denna övning?</strong> Du tränar på att ${m(task.syfte)}.</p>
+    <h3>Din uppgift</h3>
     <p>${m(q.fraga)}</p>${q.scenario?`<p class="study-panel"><strong>Underlag:</strong> ${m(q.scenario)}</p>`:''}${q.givet?`<p><strong>Givet:</strong> ${m(q.givet)}</p>`:''}
+    ${picture(task)}${cards(task.cards)}
+    <aside class="study-task" id="current-action"><strong>Gör så här</strong><ol><li>${(task.solution.svar||[]).length?'Skriv givna värden och välj samband. Räkna på papper eller med räknare.':'Läs underlaget och skriv ett eget svar på frågorna. Motivera dina val.'}</li><li>${(task.solution.svar||[]).length?'Skriv resultatet i varje fält nedan, i den enhet som står vid fältet.':'Skriv ditt resonemang i textrutan nedan.'}${needsText&&(task.solution.svar||[]).length?' Skriv också hur du tänkte i motiveringsrutan.':''}</li><li>${(task.solution.svar||[]).length?'Tryck på ”Kontrollera mitt svar”. Läs återkopplingen och använd ledtråden om du behöver försöka igen.':'Tryck på ”Spara mitt försök”. Läraren bedömer din motivering.'}</li></ol></aside>
+    <details id="repeat-theory" ${unread?'open':''}><summary>${unread?'Förklaringen du behöver för uppgiften':'Repetera förklaringen här'}</summary>${theories.map(s=>`<section data-theory="${s.id}"><h3>${m(s.title)}</h3>${explanation(s)}</section>`).join('')}</details>
     ${q.samband?.length?`<p class="formula">${q.samband.map(m).join('<br>')}</p>`:''}
     ${hjalpHtml([q.fraga,...(q.samband||[]),q.givet||''].join(' '))}
-    <p class="study-note">Skriv givna värden, välj samband och räkna innan du kontrollerar. Ledtrådar finns om du fastnar.</p>
+    <h3>Ditt svar</h3><p class="study-note">Det här är en övning. Ditt försök sparas i den här webbläsaren. Inlämningarna finns på veckans startsida.</p>
     <form id="answer-form" novalidate><div class="study-fields">${fields(task,r)}</div>
     <p id="answer-help" class="study-note">${(task.solution.svar||[]).some(f=>typeof f.varde==='number')?'Skriv tal i den enhet som står vid fältet. Komma och punkt fungerar. ':''}${(task.solution.svar||[]).some(f=>typeof f.varde==='string')?'Skriv ett ord för förändringen eller om strömmen leder/släpar.':''}</p>
     ${needsText?`<label for="reasoning">Din metod och motivering</label><textarea id="reasoning" maxlength="4000">${esc(r.text||'')}</textarea><p class="study-note">Texten sparas. Läraren bedömer resonemanget; det rättas inte automatiskt.</p>`:''}
@@ -131,7 +153,8 @@ function renderExercise(task) {
     <p id="feedback" role="status"></p><p id="exercise-status" class="study-status">${esc(status(r,task))}</p><div id="hints"></div>
     <div class="study-actions"><button type="button" id="show-solution" ${solutionAvailable(r)?'':'disabled'}>Visa lösning steg för steg</button><button type="button" id="need-help">Jag behöver hjälp</button></div>
     <p id="solution-rule" class="study-note">${solutionAvailable(r)?'Du kan nu gå igenom lösningen.':'Lösningen blir tillgänglig efter två olika ifyllda försök, eller när ditt svar är rätt.'}</p>
-    <section id="solution" ${r.solutionSeen?'':'hidden'}>${r.solutionSeen?solution(task):''}</section>`;
+    <section id="solution" ${r.solutionSeen?'':'hidden'}>${r.solutionSeen?solution(task):''}</section>
+    ${task.stopp?`<aside class="study-panel" id="session-boundary"><h3>På lektionen eller hemma?</h3><p>${m(task.stopp.text)}</p>${task.stopp.href?`<a class="sj-btn" href="${esc(task.stopp.href)}">${esc(task.stopp.label)}</a>`:''}</aside>`:''}`;
   const readingLesson = lesson.id;
   const readers = [...$('repeat-theory').querySelectorAll('[data-theory]')].map(el => observeReading(el,()=>{
     if (lesson.id !== readingLesson || step !== task.id) return;
@@ -191,13 +214,14 @@ function resources() {
 function render(focus = true) {
   disposeReading();$('finish').hidden=true;
   const data=entry(); if(!data){step=steps()[0];return render(focus);}
-  $('lesson-title').textContent=lesson.title;$('lesson-goal').textContent=lesson.goal;
+  $('lesson-title').textContent=lesson.title;$('lesson-goal').textContent=`Varför? ${STUDY.guidance[lesson.id].syfte}`;
+  $('lesson-when').textContent=STUDY.guidance[lesson.id].nar;
   $('lesson').innerHTML=lessons.map(l=>`<option value="${l.id}">${l.number?`Del ${l.number}`:'Måndag först'}: ${esc(l.title)}</option>`).join('');$('lesson').value=lesson.id;
   store.change(s=>{s.cursor={lesson:lesson.id,step};});
   const isTask=step.startsWith('EL-');
   if(isTask)renderExercise(data);else renderTheory(data);
   const index=steps().indexOf(step);
-  $('previous').disabled=index<=0;$('next').textContent=index===steps().length-1?'Avsluta lektionen':'Nästa avsnitt';
+  $('previous').disabled=index<=0;$('next').textContent=nextTitle();
   $('count').textContent=index<0?'Repetition':`Steg ${index+1} av ${steps().length}`;
   $('next').className=isTask?'':'primary';
   resources();refreshProgress();document.title=`${data.title} · Sjöskolan`;
@@ -212,6 +236,9 @@ $('next').addEventListener('click',()=>{
     const left=steps().filter(id=>!done(lesson,id));
     $('finish').querySelector('h2').textContent=left.length?'Du har nått slutet av lektionen':'Lektionens steg är genomgångna';
     $('finish-status').textContent=left.length?`${left.length} steg återstår att gå igenom eller bearbeta. Översikten visar vilka.`:'Ta med eventuella frågor och svar som behöver lärarens bedömning.';
+    $('finish-goal').textContent=STUDY.guidance[lesson.id].klar;
+    $('review-lesson').hidden=!left.length;
+    if(left.length)$('review-lesson').href=`?del=${lesson.id}&${left[0].startsWith('EL-')?'uppgift':'avsnitt'}=${left[0]}`;
     const next=lessons[lessons.indexOf(lesson)+1];
     $('continue-lesson').href=next?`?del=${next.id}`:'../../vaxelstromslabbet/?lage=guidad';
     $('continue-lesson').textContent=next?`Nästa: ${next.title}`:'Fortsätt till den guidade labben';

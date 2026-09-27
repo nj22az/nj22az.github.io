@@ -117,6 +117,9 @@ De läser källorna ur git-revisionen `8cabde3` och körs inte igen efter migrer
 ## Sammanhängande arbetsrum vecka 40
 
 `studieplan-v40.json` anger ordning, förklaringar som varje övning behöver och de gemensamma instrumentkorten.
+Fältet `vagledning` anger varje dels syfte, arbetsuppdrag, läsuppdrag och slutmål. Veckostarten och arbetsrummet
+använder samma data. Övningarnas `syfte` förklarar vad eleven tränar, och `stopp` visar gränsen mellan lektion och
+hemarbete. Övningarna följer numreringen i veckoplanen; förklaringen ligger alltid före uppgiften.
 Exportören `arbetsrum` hämtar 30 växelströmsövningar och fyra måndagsuppgifter genom `Atkomst(..., 'elev')` och
 skriver `vecka-40/aktuell/arbetsrum.gen.mjs`. Uppgifter, stegvis offentlig studievägledning (`losning.text`),
 ledtrådar och kontrollerbara svar redigeras endast i övningsposterna. Bokens skyddade `losning.steg` och

@@ -23,17 +23,27 @@ const server=http.createServer((req,res)=>{
    const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`overflow at ${width}: ${page.url()}`);
    const answer=async(a,b)=>{await page.locator('#answer-0').fill(a);if(b!==undefined)await page.locator('#answer-1').fill(b);await page.locator('#answer-form button[type=submit]').click();};
    await go('');assert.equal(await page.locator('input[type=checkbox]').count(),0);await overflow();
+   assert.match(await page.locator('#week-purpose').innerText(),/beräkna ett förväntat värde/);
+   assert.match(await page.locator('#inlamning').innerText(),/träning inför dessa inlämningar/);
+   if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,`week40-start-${width}.png`),fullPage:true});}
+   await page.locator('#resume').click();await page.locator('#step-title').waitFor();
+   assert.match(await page.locator('#slide').innerText(),/När är jag färdig/);await overflow();
+   if(process.env.SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,`week40-intro-${width}.png`),fullPage:true});
    await go('Formelstod_och_ovningar.html?del=v40_01#v40_01-q1');await page.locator('#answer-form').waitFor();assert.match(page.url(),/uppgift=v40_01-q1/);
    assert.equal(await page.locator('#repeat-theory').getAttribute('open')!==null,true,'unread prerequisite visible');
+   assert.match(await page.locator('#exercise-purpose').innerText(),/förutsäga hur lång en period/);
+   assert.match(await page.locator('#current-action').innerText(),/Skriv resultatet i varje fält/);
    await answer('','');assert.equal(await page.locator('#show-solution').isDisabled(),true);
    await answer('1','1');await answer('1','1');assert.equal(await page.locator('#show-solution').isDisabled(),true);
    await answer('2','2');assert.equal(await page.locator('#show-solution').isDisabled(),false);
    await page.locator('#show-solution').click();assert.match(await page.locator('#solution').innerText(),/0,020/);await overflow();
    await page.locator('#next').click();assert.equal(await page.locator('#solution').isVisible(),false);
    await go('Genomgang.html?del=sinus&uppgift=v40_01-q3');await answer('17');assert.equal(await page.locator('#exercise-status').innerText(),'Rätt svar');
+   assert.match(await page.locator('#session-boundary').innerText(),/hemma med övning 4–10/);
    await page.reload();await page.locator('#answer-form').waitFor();assert.equal(await page.locator('#answer-0').inputValue(),'17');
    await page.locator('#answer-0').fill('999');await page.reload();await page.locator('#answer-form').waitFor();assert.notEqual(await page.locator('#exercise-status').innerText(),'Rätt svar');
    await go('Genomgang.html?del=sinus&avsnitt=exempel');
+   await page.locator('#current-action').scrollIntoViewIfNeeded();await page.waitForTimeout(80);
    for(let i=0;i<6;i++){
     const items=page.locator('.study-example li');assert.equal(await items.count(),i+1);
     await items.last().scrollIntoViewIfNeeded();
@@ -51,7 +61,12 @@ const server=http.createServer((req,res)=>{
    await page.locator('#reasoning').fill('Jag behöver kontrollera båda matningsvägarna och väljarens verkliga läge.');await page.locator('#answer-form button[type=submit]').click();
    assert.match(await page.locator('#exercise-status').innerText(),/läraren bedömer/);await overflow();
    for(const del of ['impedans','effekt']){await go(`Genomgang.html?del=${del}&avsnitt=exempel`);await overflow();}
+   await page.goto(base+'Formelstod_och_ovningar.html#kompensering-metod');
+   await page.locator('#kompensering-metod').waitFor();
+   assert.match(page.url(),/Formelstod_och_ovningar.html#kompensering-metod/);
+   assert.equal(await page.locator('input[type=checkbox]').count(),0);
    await go('');assert.equal(await page.locator('#resume').innerText(),'Fortsätt där du slutade');
+   assert.match(await page.locator('#resume-text').innerText(),/Effekt och effektfaktor/);
    if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,`week40-${width}.png`),fullPage:true});}
    assert.deepEqual(errors,[]);console.log(`PASS ${width}px: links, prerequisites, attempts, solutions, persistence, reading, cards and no overflow`);await context.close();
   }

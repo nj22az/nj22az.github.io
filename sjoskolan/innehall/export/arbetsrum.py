@@ -29,7 +29,7 @@ def filer(a):
         ids = [x for x in sequence if x.startswith('EL-')]
         assert len(ids) == len(set(ids)), f'Duplicated exercise in {lesson}'
         assert set(ids) == {x for x, p in tasks.items() if p['del'] == lesson}
-    data = {'version': plan['version'], 'cards': plan['kort'], 'isolation': plan['franskiljning'],
+    data = {'version': plan['version'], 'cards': plan['kort'], 'guidance': plan['vagledning'], 'isolation': plan['franskiljning'],
             'sequence': plan['ordning'], 'tasks': tasks}
     cards_page = R.SJO / 'gemensamt/Underlagskort.html'
     cards_html = ''.join(f'<h2>{R.h(c["titel"])}</h2><p>{R.h(c["text"])}</p>' for c in plan['kort'].values())

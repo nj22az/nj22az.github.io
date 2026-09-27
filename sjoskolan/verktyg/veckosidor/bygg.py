@@ -310,8 +310,7 @@ DAGAR40 = [
         ('Sist', 'Skicka resultat med QR-koden.'),
      ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Elevuppgifter'), (G + 'sinus', 'Genomgång del 1'), (K + 'sinus', 'Film del 1')]},
     {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
-        steg('Del 1 · Genomgång', 'Läs resten av genomgången', G + 'sinus&avsnitt=medel', 25, 'från ”Medelvärde och RMS är olika” till ”Fördjupning: momentanvärde”'),
-        steg('Del 1 · Övningar', 'Övning 4–10', O + 'v40_01#v40_01-q4', 50, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_01:4-10'),
+        steg('Del 1 · Läs och prova själv', 'Fortsätt med övning 4–10', G + 'sinus&uppgift=v40_01-q4', 75, 'följ arbetsrummet: läs förklaringen vid varje ny typ av uppgift, räkna och kontrollera ditt svar', 'v40_01:4-10'),
         steg('Frånskiljning · Övningar', 'Elevuppgift V2-3 och V2-4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
      ], 'fore': ('Före tisdagens lektion', 'Alla tio övningar i del 1 är bearbetade; ta med uppgifter som behöver hjälp. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
     {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 2: spole, motstånd och ström', 'pass': [
@@ -320,14 +319,12 @@ DAGAR40 = [
         ('Sist', 'Skicka resultat med QR-koden.'),
      ], 'material': [(G + 'impedans', 'Genomgång del 2'), (K + 'impedans', 'Film del 2'), (O + 'v40_02', 'Övningar del 2'), ('Inlamning.html#uppgift-1', 'Inlämning uppgift 1')]},
     {'id': 'onsdag', 'dag': 'Tisdag kväll och onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T17:00', 'steg': [
-        steg('Del 2 · Genomgång', 'Läs resten av genomgången', G + 'impedans&avsnitt=fas', 10, 'från ”Fasvinkel med tecken” till ”Eget försök”'),
-        steg('Del 2 · Övningar', 'Övning 5–10', O + 'v40_02#v40_02-q5', 45, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_02:5-10'),
+        steg('Del 2 · Läs och prova själv', 'Följ exemplet och gör övning 5–10', G + 'impedans&avsnitt=exempel', 55, 'fortsätt i arbetsrummet; förklaringar, exempel och egna försök kommer i ordning', 'v40_02:5-10'),
         steg('Frånskiljning · Inlämning', 'Uppgift 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
      ], 'fore': ('Före fredagens lektion', 'Del 2 är klar med alla tio övningar. Frånskiljningens inlämning är skriven.')},
     {'id': 'torsdag', 'dag': 'Torsdag 1/10', 'typ': 'Hemma', 'start': '2026-10-01T00:00', 'steg': [
-        steg('Del 3 · Genomgång', 'Effekt och effektfaktor', G + 'effekt', 30, 'hela grunddelen, på egen hand'),
+        steg('Del 3 · Läs och prova själv', 'Effekt och effektfaktor, till och med övning 6', G + 'effekt', 70, 'följ arbetsrummets förklaringar och egna försök; stanna efter övning 6', 'v40_03:1-6'),
         steg('Del 3 · Film', 'Samma aktiva effekt, olika ström', K + 'effekt', 5, '2 min, svensk text'),
-        steg('Del 3 · Övningar', 'Övning 1–6', O + 'v40_03', 40, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_03:1-6'),
         steg('Växelström · Inlämning', 'Uppgift 1 och 2', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
      ], 'fore': ('Före fredagens lektion', 'Du har läst del 3 och gjort övning 1–6. Ta med dina frågor. Labben på fredag bygger på del 1–3.')},
     {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 3 och labben', 'pass': [
