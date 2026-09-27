@@ -2,7 +2,7 @@
 // Svaren sparas i webbläsaren och följer med i QR-koden på sidan Skicka resultat. Inget facit finns här.
 import {mittD, sattMittD} from '../../gemensamt/elevtal.mjs?v=20260930';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
-import {SVAR, lasSvar, sparaSvar, tal} from './resultat.mjs?v=20260930';
+import {SVAR, lasSvar, sparaSvar, tal} from './resultat.mjs?v=20260930-qr1';
 
 const n = (v) => v.toLocaleString('sv-SE', {maximumFractionDigits: 4});
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');

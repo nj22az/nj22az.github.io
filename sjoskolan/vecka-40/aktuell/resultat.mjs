@@ -35,6 +35,12 @@ export function tal(s) {
   return Number(t);
 }
 const avrunda = (v) => Number(Number(v).toPrecision(5));
+// Gränsen räknas i UTF-16-enheter, men ett Unicode-tecken får inte delas mitt i ett surrogatpar.
+function korta(text, max) {
+  if (text.length <= max) return text;
+  if (max <= 0) return '';
+  return text.slice(0, max - 1).replace(/[\uD800-\uDBFF]$/, '') + '…';
+}
 
 /** Vad som finns sparat på enheten, för sammanfattningen på elevsidan. */
 export function lage() {
@@ -60,7 +66,7 @@ export function samla(namn, max = 400) {
     if (!r) return 0;
     const forsta = r.first || r.predicted || {};
     const text = String(r.explanation || '').trim().replace(/\s+/g, ' ');
-    return [r.attempts || 0, t.fields.map(([k]) => (Number.isFinite(forsta[k]) ? avrunda(forsta[k]) : null)), r.measured ? 1 : 0, text.length > max ? text.slice(0, Math.max(0, max - 1)) + '…' : text];
+    return [r.attempts || 0, t.fields.map(([k]) => (Number.isFinite(forsta[k]) ? avrunda(forsta[k]) : null)), r.measured ? 1 : 0, korta(text, max)];
   });
   const ut = { v: 1, w: VECKA, n: String(namn || '').trim().replace(/\s+/g, ' '), d: mittD(), t: Math.round(Date.now() / 60000), s, o, g };
   if (Number.isInteger(labb?.D) && labb.D !== ut.d) ut.gd = labb.D;
@@ -75,27 +81,35 @@ async function stream(u8, T) { return new Uint8Array(await new Response(new Blob
 /** Kodar objektet till text för länken: z + komprimerat, eller j + okomprimerat om webbläsaren saknar komprimering. */
 export async function koda(obj) {
   const u8 = new TextEncoder().encode(JSON.stringify(obj));
-  if (typeof CompressionStream === 'function') return 'z' + b64(await stream(u8, CompressionStream));
+  if (typeof CompressionStream === 'function') {
+    try { return 'z' + b64(await stream(u8, CompressionStream)); }
+    catch { /* API kan finnas utan stöd för deflate-raw. Behåll då JSON-formatet. */ }
+  }
   return 'j' + b64(u8);
 }
 export async function avkoda(text) {
   const t = String(text || '').trim();
-  const u8 = unb64(t.slice(1));
-  const raw = t[0] === 'z' ? await stream(u8, DecompressionStream) : t[0] === 'j' ? u8 : null;
-  if (!raw) throw new Error('okänt format');
-  const obj = JSON.parse(new TextDecoder().decode(raw));
+  if (t[0] !== 'z' && t[0] !== 'j') throw new Error('okänt format');
+  if (t[0] === 'z' && typeof DecompressionStream !== 'function') throw new Error('Webbläsaren saknar stöd för komprimerade resultatkoder.');
+  let obj;
+  try {
+    const u8 = unb64(t.slice(1));
+    const raw = t[0] === 'z' ? await stream(u8, DecompressionStream) : u8;
+    obj = JSON.parse(new TextDecoder().decode(raw));
+  } catch { throw new Error('Resultatkoden är skadad eller ofullständig.'); }
   if (obj?.v !== 1 || obj.w !== VECKA) throw new Error('fel version eller vecka');
   return obj;
 }
 
 /** Länken i QR-koden. Förklaringarna kortas tills länken ryms i en QR-kod som går att läsa från en skärm. */
 export async function lank(namn, bas = location.origin, grans = 1250) {
+  const full = samla(namn, Infinity);
   let obj, kod;
   for (const max of [400, 240, 160, 110, 70, 40, 0]) {
-    obj = samla(namn, max);
+    obj = {...full, g: full.g.map((row) => row && [...row.slice(0, 3), korta(row[3], max)])};
     kod = await koda(obj);
     if (kod.length + bas.length + LARARSIDA.length + 3 <= grans) break;
   }
-  const kortat = obj.g.some((x) => x && x[3].endsWith('…'));
+  const kortat = obj.g.some((x, i) => x && x[3] !== full.g[i][3]);
   return { url: `${bas}${LARARSIDA}#r=${kod}`, obj, kortat };
 }
