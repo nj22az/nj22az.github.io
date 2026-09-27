@@ -107,6 +107,14 @@ for deck in (d for d in decks if d['week'] == 40):
             with ZipFile(path) as archive:
                 if archive.testzip():
                     errors.append(f'{path.name}: corrupt archive')
+                # Elevens PowerPoint har inga talaranteckningar (lärarkopian ligger krypterad i larare/filer/).
+                for name in archive.namelist():
+                    if name.startswith('ppt/notesSlides/') and name.endswith('.xml'):
+                        body = archive.read(name).decode('utf-8')
+                        texts = re.findall(r'<a:t>([^<]*)</a:t>', body)
+                        if any(t.strip() and not t.strip().isdigit() for t in texts):
+                            errors.append(f'{path.name}: talaranteckningar i elevens fil ({name})')
+                            break
         elif not path.read_bytes().startswith(b'%PDF-'):
             errors.append(f'{path.name}: invalid PDF')
 

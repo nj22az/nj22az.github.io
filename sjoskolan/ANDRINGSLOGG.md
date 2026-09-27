@@ -74,6 +74,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Samma ord överallt: Genomgång (avsnitt), Bildspel (bilder, PowerPoint, PDF), Artikel, Film, Övningar, Labb,
     Inlämning. Inga interna koder (v40_01) i elevtext. Extramaterial ligger under ”Mer att läsa”.
 
+27. **Elevens PowerPoint har inga talaranteckningar.** Anteckningarna innehöll lärarråd och facit. Lärarkopian med
+    anteckningar krypteras i `larare/filer/` och laddas ner från utbildningsguiden. *Kontroll: `verktyg/qa/week40.py`.*
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -113,3 +116,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   inlämningen överst; övningssidan visar en del i taget med ”Markera som klar” och framsteg; genomgången börjar med
   ”Det här ska du kunna” och visar bara rullistan i telefonen; filmer och genomgång pekar på nästa steg; samma ord
   överallt.
+- **2026-09-27** Vecka 40: talaranteckningar borttagna ur elevernas PowerPoint; lärarkopior med uppdaterat dagsupplägg
+  krypterade i `larare/filer/`, nedladdning i utbildningsguiden. (Vecka 39: v39_03 har fortfarande anteckningar.)

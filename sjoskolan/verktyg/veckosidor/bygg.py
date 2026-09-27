@@ -291,7 +291,7 @@ def post(p, week_dir, steg=None):
     if p.get('deck'):
         stem = p['deck'][:-5]
         pdf = f' · <a href="{stem}.pdf">PDF</a>' if (week_dir / f'{stem}.pdf').exists() else ''
-        p = {**p, 'html': f'Samma genomgång som <a href="../../bildspel/?d={stem.removesuffix("_elev")}">bildspel</a> ({p["bilder"]} bilder) · <a href="{p["deck"]}">PowerPoint</a>{pdf}'}
+        p = {**p, 'html': f'Bäst att läsa på egen hand. Till lektionen eller utskrift: <a href="../../bildspel/?d={stem.removesuffix("_elev")}">bildspel</a> ({p["bilder"]} bilder) · <a href="{p["deck"]}">PowerPoint</a>{pdf}'}
     # Kursens markering X_{L} blir nedsänkt index (som i innehall/lib/text.py).
     text = p.get('html') or re.sub(r'_\{([^{}]*)\}', r'<sub>\1</sub>', escape(p['text']))
     small = f'<small>{text}</small>' if text else ''
