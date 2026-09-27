@@ -2,7 +2,7 @@ import {publishEquipment,setEquipmentControl} from './equipment-state.mjs';
 // Växelströmslabbet · interaktion och ritning
 import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClose, SHAPES } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
-import { hjalpHtml } from '../gemensamt/raknehjalp.mjs?v=20260929b';
+import { hjalpHtml } from '../gemensamt/raknehjalp.mjs?v=20260929c';
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260925-ac2';

@@ -62,4 +62,13 @@ export const BILD = {
     'Två rutor: Utan kompensering 7,5 A (röd), med kondensator och PF = 1 6,0 A (grön). Raderna: Förlusten i kabeln följer I². (7,5 / 6,0)² ≈ 1,56. Utan kompensering: 56 % mer värme.',
     'Kom ihåg: 1. T = 1/f och û = √2 · U. 2. Spole: X_{L} = 2π · f · L, strömmen släpar. 3. Kondensator: X_{C} = 1/(2π · f · C), strömmen leder. 4. Z = √(R² + X²), aldrig R + X. 5. I = P / (U · PF): låg PF ger större ström.',
   ],
+  radianer: [
+    'Titelbild.',
+    'Ett hjul med en vinkel som växer från 0° till 360°. Texten: Grader: ett varv = 360°. Radianer: ett varv = 2π, som meter och fot för en längd.',
+    'Ett hjul med radien 1 rullar längs en linje. Sträckan som kanten rullat markeras orange och räknas upp: 1, 2, 3 … till 6,28. Texten: Ett varv = 2π ≈ 6,28. 1 radian ≈ 57°.',
+    'En tabell: ett varv 360° = 2π ≈ 6,28, ett halvt varv 180° = π ≈ 3,14, ett kvarts varv 90° = π/2 ≈ 1,57.',
+    'En generator vrids medan en sinuskurva ritas. Texten u(t) = û · sin(2π · f · t) och vinkeln i radianer. Exempel: 60 Hz, t = 2,0 ms: 2π · 60 · 0,002 ≈ 0,754 rad.',
+    'Två räknare. I DEG ger sin(π/2) svaret 0,027 (fel läge). I RAD ger sin(π/2) svaret 1 (rätt). Texten: I DEG läses π/2 ≈ 1,57 som 1,57 grader. Snabbkoll: sin(90) = 1 betyder DEG.',
+    'Kom ihåg: 1. Ett varv = 360° = 2π rad, 1 rad ≈ 57°. 2. π eller 2π · f · t i vinkeln: RAD. 3. Fasvinkel i grader, arctan(X/R): DEG. 4. Snabbkoll: sin(90) = 1 betyder DEG.',
+  ],
 };

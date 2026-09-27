@@ -201,7 +201,8 @@ def genomgang_v40():
                 if sh is None or stycken is None:
                     continue
                 nu = [stycke_text(p) for p in sh.text_frame.paragraphs]
-                if nu != [re.sub(r'\s+', ' ', x).strip() for x in stycken]:  # stycke_text slår ihop blanktecken
+                # Tomma stycken (luft mellan punkterna) räknas inte: en bild får ha tät layout med styckeavstånd.
+                if [x for x in nu if x] != [re.sub(r'\s+', ' ', x).strip() for x in stycken if x]:  # stycke_text slår ihop blanktecken
                     satt_form(sh, stycken)
                     andrat += 1
             for sh in former.values():

@@ -5,9 +5,25 @@ const line=(x1,y1,x2,y2,color=C.line)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y
 const text=(x,y,s,anchor='start',color=C.ink,size=14)=>`<text x="${x}" y="${y}" fill="${color}" text-anchor="${anchor}" font-family="Arial,sans-serif" font-size="${size}">${esc(s).replace(/_\{([^{}]*)\}/g,'<tspan baseline-shift="sub" font-size="75%">$1</tspan>')}</text>`;
 export function visual(kind,width=760,progress=1){
  const w=Math.max(280,Math.min(1000,width)),h=kind==='meters'?220:270;
- const title={wave:'Fartygets huvudnät, 440 volt RMS och 60 hertz',period:'En period vid 60 hertz tar 16,7 millisekunder',peak:'440 volt RMS har toppen 622 volt',rms:'Multimetern visar effektivvärdet 440 volt, toppen är 622 volt',calibration:'För en ren sinus visar båda mätartyperna kalibratorns effektivvärde',resistor:'Ström och spänning är i fas',rl:'Strömmen släpar efter spänningen i RL-kretsen',triangle:'Impedanstriangel för en fläktmotor: resistansen R 50 ohm, spolens reaktans X L 120 ohm och impedansen Z 130 ohm',power:'Samma aktiva effekt kräver större ström vid lägre effektfaktor',powerTriangle:'Effekttriangel för sinusformad last',meters:'Sinuskalibrerad mätare jämförd med 10 volt true RMS'}[kind]||'Undervisningsdiagram';
+ const title={wave:'Fartygets huvudnät, 440 volt RMS och 60 hertz',period:'En period vid 60 hertz tar 16,7 millisekunder',peak:'440 volt RMS har toppen 622 volt',rms:'Multimetern visar effektivvärdet 440 volt, toppen är 622 volt',calibration:'För en ren sinus visar båda mätartyperna kalibratorns effektivvärde',resistor:'Ström och spänning är i fas',rl:'Strömmen släpar efter spänningen i RL-kretsen',triangle:'Impedanstriangel för en fläktmotor: resistansen R 50 ohm, spolens reaktans X L 120 ohm och impedansen Z 130 ohm',power:'Samma aktiva effekt kräver större ström vid lägre effektfaktor',powerTriangle:'Effekttriangel för sinusformad last',meters:'Sinuskalibrerad mätare jämförd med 10 volt true RMS',radianer:'Ett helt varv är 360 grader eller 2 pi radianer. En radian är ungefär 57 grader.'}[kind]||'Undervisningsdiagram';
  let b='';
- if(['calibration','meters','power','rms'].includes(kind)){
+ if(kind==='radianer'){
+  // Hjul med radien 1: kanten som rullats är vinkeln i radianer. Till höger samma varv som tallinje.
+  const r=Math.min(h*0.33,w*0.14),cx=16+r+74,cy=h/2+6,P=(v,rr=r)=>[cx+rr*Math.cos(v),cy-rr*Math.sin(v)];
+  b+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${C.ink}" stroke-width="2"/>`;
+  const a=Math.min(1,progress<1?progress*2*Math.PI:1),[x1,y1]=P(a);
+  b+=`<path d="M${cx+r},${cy} A${r},${r} 0 0 0 ${x1.toFixed(1)},${y1.toFixed(1)}" fill="none" stroke="${C.orange}" stroke-width="7" stroke-linecap="round"/>`;
+  b+=line(cx,cy,cx+r,cy,C.blue)+line(cx,cy,x1,y1,C.blue)+`<circle cx="${cx}" cy="${cy}" r="3" fill="${C.ink}"/>`;
+  b+=text(cx+r/2,cy+16,'r = 1','middle',C.blue,12);
+  if(progress>=1)b+=text(cx+r+8,cy-r*0.55,'1 rad ≈ 57°','start',C.orange,13);
+  [[Math.PI/2,'90° = π/2'],[Math.PI,'180° = π'],[3*Math.PI/2,'270° = 3π/2']].forEach(([v,t])=>{const [x,y]=P(v,r+14);b+=text(x,y+4,t,v===Math.PI?'end':'middle',C.ink,12);});
+  const x0=cx+r+104,x2=w-46,y=cy,X=v=>x0+v/(2*Math.PI)*(x2-x0);
+  if(x2-x0>120){
+   b+=line(x0,y,x2,y,C.ink)+text(x0,y-44,'Ett helt varv rullat ut','start',C.ink,13);
+   [[0,'0','0°'],[Math.PI/2,'π/2','90°'],[Math.PI,'π','180°'],[3*Math.PI/2,'3π/2','270°'],[2*Math.PI,'2π ≈ 6,28','360°']].forEach(([v,t,g])=>{b+=line(X(v),y-6,X(v),y+6,C.ink)+text(X(v),y-12,t,'middle',C.blue,12)+text(X(v),y+22,g,'middle',C.muted||'#4d6579',12);});
+   b+=`<path d="M${x0},${y} L${X(1).toFixed(1)},${y}" stroke="${C.orange}" stroke-width="7" stroke-linecap="round"/>`+text(X(0.5),y+40,'1 rad','middle',C.orange,12);
+  }
+ }else if(['calibration','meters','power','rms'].includes(kind)){
   const rows=kind==='calibration'?[['True RMS','= U'],['Sinuskalibrerad','= U']]:kind==='meters'?[['Sinus','10,00 V'],['Fyrkant','11,11 V'],['Triangel','9,62 V']]:kind==='rms'?[['Multimeter, true RMS','440 V'],['Kurvans topp','622 V']]:[['PF = 1,00','6,00 A'],['PF = 0,50','12,00 A']];
   const y0=kind==='meters'?46:72;
   b+=text(12,22,kind==='power'?'Pumpmotor: 230 V RMS, P = 1 380 W':kind==='meters'?'10,00 V RMS. Sinuskalibrerad visning:':kind==='calibration'?'Kalibrator: ren sinus med effektivvärdet U':'Fartygets huvudnät, 440 V','start',C.ink,w<420?12:15);

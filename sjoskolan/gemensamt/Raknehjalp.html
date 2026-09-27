@@ -6,13 +6,14 @@
 <p class="course-kicker">Att slå upp</p><h1>Räknarhjälp</h1>
 <p class="course-lead">Två saker som ofta ger fel svar trots rätt formel: räknaren står i fel vinkelläge, eller ett prefix (m, µ) följer inte med in i formeln.</p>
 <p class="regel">Står det π eller 2π · f · t i vinkeln: RAD. Står det ° eller söker du en fasvinkel: DEG.</p>
+<p>Varför ett varv är 2π: se filmen <a href="/sjoskolan/filmer/#radianer">Radianer och grader</a> (2 min) med Måns och Sigge.</p>
 <div id="rad"></div><div id="deg"></div><div id="prefix"></div>
 <h2 id="omvandla">Omvandla själv</h2>
 <form class="omv" onsubmit="return false"><label for="tal">Tal</label><div class="omv-rad"><input id="tal" inputmode="decimal" value="382" aria-label="Tal"><select id="pre" aria-label="Prefix och enhet"><option value="1e-3|H|mH">mH</option><option value="1e-6|F|µF">µF</option><option value="1e-9|F|nF">nF</option><option value="1e-3|s|ms">ms</option><option value="1e-6|s|µs">µs</option><option value="1e-3|A|mA">mA</option><option value="1e-3|V|mV">mV</option><option value="1e3|W|kW">kW</option><option value="1e3|Ω|kΩ">kΩ</option></select></div>
 <output id="ut" aria-live="polite"></output></form>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module">
-import {KORT} from '/sjoskolan/gemensamt/raknehjalp.mjs?v=20260929b';
+import {KORT} from '/sjoskolan/gemensamt/raknehjalp.mjs?v=20260929c';
 for(const id of ['rad','deg','prefix'])document.getElementById(id).innerHTML=`<details class="rh-kort rh-${id}" open><summary>${KORT[id].titel}</summary>${KORT[id].html}</details>`;
 const tal=document.getElementById('tal'),pre=document.getElementById('pre'),ut=document.getElementById('ut');
 const sv=v=>v.toLocaleString('sv-SE',{maximumSignificantDigits:6});

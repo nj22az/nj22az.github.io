@@ -116,11 +116,12 @@ VECKOR = {
         'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
         'delar': [
             {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'steg': [
-                genomgang('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'v40_01_Sinusformad_vaxelspanning_elev.pptx', 17),
+                genomgang('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'v40_01_Sinusformad_vaxelspanning_elev.pptx', 18),
                 lank('Kortfilmer.html?del=sinus', 'Film: Vad visar kurvan och multimetern?', 'film', '2 min, svensk text'),
                 lank('Formelstod_och_ovningar.html?del=v40_01', 'Övningar: sinusformad växelspänning', 'övning', '10 övningar med facit, bocka av när du är klar'),
             ], 'mer': [
                 lank('Lektion_1.html', 'Artikel: sinus och mätvärden', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
+                lank('../../filmer/#radianer', 'Film: Radianer och grader', 'film', 'Måns och Sigge, 2 min: RAD eller DEG på räknaren'),
             ]},
             {'titel': 'Spole, motstånd och ström', 'mal': 'Reaktans, impedans och strömmen i en RL-krets.', 'steg': [
                 genomgang('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'v40_02_Reaktans_och_impedans_elev.pptx', 16),

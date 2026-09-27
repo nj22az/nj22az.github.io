@@ -8,7 +8,8 @@ export const KORT = {
     html: `<p>I <b>u(t) = û · sin(2π · f · t)</b> är 2π · f · t en vinkel i <b>radianer</b>. Räknaren ska stå i <b>RAD</b>.</p>
 <p><b>Kontrollera:</b> räkna sin(π/2). Blir svaret <b>1</b> står räknaren rätt. Blir det 0,0274 står den i DEG.</p>
 <p><b>Ställ om:</b> Casio: tryck SHIFT och sedan Mode eller Menu (inställningar), välj vinkelenhet Rad. TI-30X: tryck Mode och välj Rad. Telefonen: vrid den på tvären och tryck Rad. I fönstret står då ett litet <b>R</b> eller Rad.</p>
-<p><b>Regel:</b> står det π eller 2π · f · t i vinkeln, använd RAD. Ställ tillbaka till DEG efteråt.</p>`,
+<p><b>Regel:</b> står det π eller 2π · f · t i vinkeln, använd RAD. Ställ tillbaka till DEG efteråt.</p>
+<p><b>Varför radianer?</b> Se filmen <a href="/sjoskolan/filmer/#radianer">Radianer och grader</a> (2 min).</p>`,
   },
   deg: {
     titel: 'Räknaren i DEG: när vinkeln är i grader',

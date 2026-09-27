@@ -2,7 +2,7 @@ import {lessonById} from './lektioner.mjs?v=20260929';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
 import {hitta,ordlista} from '../../gemensamt/beteckningar.mjs?v=20260928';
-import {hjalpHtml} from '../../gemensamt/raknehjalp.mjs?v=20260929b';
+import {hjalpHtml} from '../../gemensamt/raknehjalp.mjs?v=20260929c';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let lesson=lessonById(params.get('del')),index=Math.max(0,lesson.slides.findIndex(s=>s.id===params.get('avsnitt')));
 // Genomgångens fem delar enligt DESIGN.md, plus fördjupning

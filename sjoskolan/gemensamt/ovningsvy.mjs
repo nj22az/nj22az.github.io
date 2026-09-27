@@ -62,7 +62,7 @@
     nav.scrollIntoView({ block: 'start' });
   });
   // Räknarhjälp (RAD/DEG, prefix) före facit i de övningar som behöver den.
-  import('/sjoskolan/gemensamt/raknehjalp.mjs?v=20260929b').then(({ hjalpHtml }) => {
+  import('/sjoskolan/gemensamt/raknehjalp.mjs?v=20260929c').then(({ hjalpHtml }) => {
     for (const d of delar) for (const a of ovningar(d)) {
       const text = [...a.querySelectorAll('h3, p')].map((e) => e.textContent).join(' ');
       const html = hjalpHtml(text);

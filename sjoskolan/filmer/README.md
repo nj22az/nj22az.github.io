@@ -6,6 +6,7 @@ Korta animerade filmer till elteknikkursen med måsen Måns och matrosen Sigge i
 |------|----|----------|
 | Dubbel ström | `dubbel-strom` | v39_01 Effekt och energi |
 | Varför √2? | `varfor-rot-2` | v40_01 Sinusformad växelspänning |
+| Radianer och grader | `radianer` | v40_01 (RAD eller DEG på räknaren) |
 | Växelström ombord | `vaxelstrom` | v40_01–v40_03 (repetition) |
 | Varför √3? | `varfor-rot-3` | v41_01 Trefassystemets grunder |
 | Hållkretsen | `hallkretsen` | v41_03 och v43_03 |
