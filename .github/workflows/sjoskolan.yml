@@ -39,5 +39,7 @@ jobs:
       - name: AC-labbens guidade arbetsgång och gränssnitt
         working-directory: sjoskolan/vaxelstromslabbet
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
+      - name: Vecka 40 – arbetsrum, läsprogress och stegvis hjälp
+        run: node --test sjoskolan/vecka-40/aktuell/arbetsrum*.test.mjs
       - name: Filmernas repliker och textversioner
         run: node sjoskolan/filmer/check.mjs

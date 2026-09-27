@@ -26,14 +26,14 @@
 <p>Resultaten ligger bara i din webbläsare och i koden. De skickas inte till någon server.</p>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module">
-import {lage, lank} from './resultat.mjs?v=20260930-qr1';
+import {lage, lank} from './resultat.mjs?v=20260927b-qr1';
 import {fulltNamn, sparatNamn, sparaNamn} from '../../gemensamt/elevtal.mjs?v=20260930';
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 const L = lage();
 const ovn = L.ovningar.reduce((a, b) => a + b, 0), svar = L.svar.reduce((a, u) => a + u.ifyllda, 0), alla = L.svar.reduce((a, u) => a + u.falt.length, 0);
 document.getElementById('res-lage').innerHTML = `
 <section><h2>Ditt tal</h2><p class="stort">D = ${L.D}</p><p>Slumpat på den här enheten.</p></section>
-<section><h2>Övningar</h2><p class="stort">${ovn} av 30</p><p>Del 1: ${L.ovningar[0]}, del 2: ${L.ovningar[1]}, del 3: ${L.ovningar[2]} markerade som klara. <a href="Formelstod_och_ovningar.html">Övningarna</a></p></section>
+<section><h2>Övningar</h2><p class="stort">${ovn} av 30</p><p>Del 1: ${L.ovningar[0]}, del 2: ${L.ovningar[1]}, del 3: ${L.ovningar[2]} med kontrollerade rätta svar. <a href="Formelstod_och_ovningar.html">Övningarna</a></p></section>
 <section><h2>Inlämning, svar</h2><p class="stort">${svar} av ${alla}</p><p>${L.svar.map((u) => `Uppgift ${u.uppgift}: ${u.ifyllda} av ${u.falt.length}`).join(', ')}. <a href="Inlamning.html">Inlämningen</a></p></section>
 <section><h2>Guidad labb</h2><p class="stort">${L.labb.gjorda} av ${L.labb.antal}</p><p>${L.labb.forklarade} förklaringar skrivna. <a href="../../vaxelstromslabbet/?lage=guidad">Labben</a></p></section>`;
 const inp = document.getElementById('res-namn');

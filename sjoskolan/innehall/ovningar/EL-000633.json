@@ -3,7 +3,7 @@
   "titel": "Högspänningsfall på skärm",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -33,7 +33,20 @@
     "publik": "elev"
   },
   "losning": {
-    "status": "saknas",
-    "kalla": "Lärarguiden vecka 38"
-  }
+    "text": "Ett svar behöver efterfråga aktuellt schema, identifierade energikällor och lagrad energi, fastställt arbetsområde, riskbedömning och anläggningens beslutade kopplingsprogram. Ansvariga roller och nödvändig kompetens måste vara utsedda enligt verksamhetens organisation. Underlaget räcker inte för att ange en manöverordning eller säkerhetsavstånd. Läraren bedömer motiveringen.",
+    "status": "utkast",
+    "kalla": "Ny offentlig studievägledning för vecka 40, 2026-09-27"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Börja med vilket underlag som saknas innan en arbetsmetod kan bestämmas.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Ta upp arbetsgräns, energikällor, ansvar, kompetens och hur kontroller dokumenteras.",
+      "status": "utkast"
+    }
+  ]
 }

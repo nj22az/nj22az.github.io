@@ -3,7 +3,7 @@
   "titel": "Ledningsförlust",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,9 +39,19 @@
     }
   ],
   "losning": {
-    "text": "(8/12)² ≈ 0,44. Cirka 44 % av förlusten återstår, en minskning med cirka 56 %.",
+    "text": "Samma kabel betyder samma R. I kvoten mellan förlusterna försvinner R.\n\nKvadrera strömkvoten: (8/12)² ≈ 0,4444.\n\nMultiplicera med 100: cirka 44,4 % återstår. Minskningen är cirka 55,6 %, vilket är en annan fråga.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "Andel som återstår",
+        "varde": 44.44444444444444,
+        "tolerans": {
+          "abs": 1
+        },
+        "enhet": "%"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

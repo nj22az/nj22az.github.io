@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {GUIDE_TASKS} from '../../vaxelstromslabbet/guided-lessons.mjs';
 import {DNYCKEL} from '../../gemensamt/elevtal.mjs';
+import {STUDY} from './arbetsrum.gen.mjs';
+import {STUDY_KEY} from './studieprogress.mjs';
 import {
   koda, avkoda, lank, samla, tal, sparaSvar,
   SVARNYCKEL, LABBNYCKEL, OVNINGSNYCKEL, LARARSIDA,
@@ -136,9 +138,14 @@ test('ogiltiga decimalsvar blir inte noll eller ett delvis tolkat tal', () => {
     assert.ok(Number.isNaN(tal(input)), String(input));
   }
 });
-test('avbockade övningar behåller del och bitposition', async () => {
+test('manuella avbockningar räknas inte som kontrollerade övningar', async () => {
   put(OVNINGSNYCKEL, {'v40_01-q1': true, 'v40_01-q10': true, 'v40_02-q2': true,
     'v40_03-q1': false, 'v40_01-q11': true, unrelated: true});
+  assert.deepEqual(samla('Åsa Öberg').o, [0, 0, 0]);
+});
+test('kontrollerade övningar behåller del och bitposition', async () => {
+  const ids=['EL-000061','EL-000070','EL-000072'];
+  put(STUDY_KEY,{version:1,exercises:Object.fromEntries(ids.map(id=>[id,{revision:STUDY.tasks[id].revision,correct:true,independent:true}]))});
   assert.deepEqual((await avkoda(await koda(samla('Åsa Öberg')))).o, [513, 2, 0]);
 });
 test('saknad, trasig eller tom lagring ger ett ärligt tomt resultat', async () => {

@@ -3,7 +3,7 @@
   "titel": "Effekt i resistor",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "P = 12,0²/24 = 6,0 W.",
+    "text": "En resistor utvecklar medeleffekten P = U²/R när U är effektivvärdet.\n\nKvadrera först: 12,0² = 144. Dela sedan: P = 144/24 = 6,0 W.",
     "svar": [
       {
         "storhet": "P",

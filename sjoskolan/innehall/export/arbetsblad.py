@@ -1,6 +1,7 @@
 """Arbetsblad 1A och 1B (vecka 37) samt elevuppgifter och fördjupning (vecka 38): uppgiftsblocken ur ytan arbetsblad."""
 from region import ersatt
 import rendera as R
+import json
 
 PUBLIK = 'elev'
 YTA = 'arbetsblad'
@@ -15,6 +16,12 @@ def block(pl, p, plats):
                 f'<p><strong>Redovisning:</strong> {R.h(u.get("instruktion", ""))}</p>')
     h = [f'<h2 id="{pl["ankare"]}" data-ovning="{p["id"]}">{R.h(nr)}: {R.h(p["titel"])}</h2>']
     if 'vecka-38' in plats:
+        if p['id'] == 'EL-000630':
+            h.append('<figure><img style="max-width:100%;height:auto" src="../../assets/b7becb76d1db_04_tva_matningar.png" alt="Två matningsvägar A och B. Väljarens verkliga läge och spärrstatus är okända."><figcaption>Figur 04 · Undervisningsmodell</figcaption></figure>')
+        if p['id'] == 'EL-000631':
+            cards = json.loads((R.SJO / 'innehall/studieplan-v40.json').read_text())['kort']
+            for c in cards.values():
+                h.append(f'<aside class="sj-panel"><h3>{R.h(c["titel"])}</h3><p>{R.h(c["text"])}</p></aside>')
         if u.get('scenario'):
             h.append(f'<p><strong>Underlag:</strong> {R.h(u["scenario"])}</p>')
         h.append(f'<p><strong>Uppgift:</strong> {R.h(u["fraga"])}</p>')

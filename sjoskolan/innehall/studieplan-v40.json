@@ -1,0 +1,469 @@
+{
+  "version": 1,
+  "beskrivning": "Elevens sammanhängande arbetsgång. Övningsinnehåll hämtas via Atkomst; ordning och samband finns här. Befintliga nummer och länkar bevaras.",
+  "kort": {
+    "M1": {
+      "titel": "Instrumentkort M1",
+      "text": "DC-spänning 0–20 V. Upplösning 0,01 V. Felgräns ±(0,5 % av visat värde + 2 siffror). Spänningsingångens resistans är 10 MΩ. Ingen AC-, ström- eller resistansfunktion anges. Konstruerat utbildningsunderlag."
+    },
+    "M2": {
+      "titel": "Instrumentkort M2",
+      "text": "Separata DC- och true-RMS AC-spänningslägen. AC-frekvensområde 40–400 Hz. Ω-funktion för avgränsat spänningslöst objekt. Säkrad mA-ingång för likström, högst 200 mA. Konstruerat utbildningsunderlag; övriga instrumentvillkor måste också följas."
+    }
+  },
+  "franskiljning": {
+    "id": "franskiljning",
+    "number": 0,
+    "title": "Frånskiljning och mätteknik",
+    "goal": "Resonera om alla matningsvägar, välja mätfunktion och räkna instrumentets felgräns.",
+    "deck": "../../vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx",
+    "slides": [
+      {
+        "id": "mal",
+        "title": "Måndag: börja här",
+        "body": [
+          "Du arbetar med fyra skärmuppgifter. Figurer, instrumentkort och skrivfält finns vid uppgiften.",
+          "Läs förklaringen, följ exemplet och gör ett eget försök. Dina svar sparas i den här webbläsaren.",
+          "Gör inga elektriska mätningar hemma. Praktiska moment sker vid den handledda stationen."
+        ]
+      },
+      {
+        "id": "matningar",
+        "title": "Följ varje väg som kan mata arbetsområdet",
+        "body": [
+          "En öppen brytare visar bara att just den brytaren är öppen. En reservmatning, återmatning eller lagrad energi kan fortfarande finnas.",
+          "Börja med aktuellt schema och ett fastställt arbetsområde. Skilj dokumenterad information från antaganden.",
+          "I figuren är A ordinarie matning och B reserv. Väljarens verkliga ställning och spärrstatus är inte kända i uppgiften."
+        ],
+        "image": "assets/b7becb76d1db_04_tva_matningar.png",
+        "alt": "Två möjliga matningsvägar A och B mot en gemensam last. Väljarens verkliga läge måste verifieras."
+      },
+      {
+        "id": "instrument",
+        "title": "Välj funktion innan du väljer instrument",
+        "body": [
+          "Bestäm först storheten: spänning, ström eller resistans. Avgör sedan om signalen är likström eller växelström.",
+          "Spänning mäts mellan två punkter, parallellt. Strömmätning kräver en avsedd seriekoppling med rätt säkrad ingång.",
+          "Resistans mäts på ett avgränsat spänningslöst objekt. Läs instrumentkortens funktioner och begränsningar innan du väljer."
+        ],
+        "cards": [
+          "M1",
+          "M2"
+        ]
+      },
+      {
+        "id": "felgrans",
+        "title": "Två delar bildar instrumentets felgräns",
+        "body": [
+          "Specifikationen ±(procent av visat värde + siffror) innehåller två bidrag som ska räknas i samma enhet.",
+          "Procentdelen: dela procenttalet med 100 och multiplicera med det visade värdet.",
+          "Sifferdelen: multiplicera antalet siffror med upplösningen. Addera sedan de två bidragen.",
+          "Bilda ett intervall genom att dra ifrån och lägga till gränsen. Detta är den angivna förenklade felmodellen, inte en fullständig osäkerhetsbudget."
+        ]
+      },
+      {
+        "id": "exempel",
+        "title": "Följ ett exempel: instrumentets felgräns",
+        "example": true,
+        "body": [
+          "Givet: 8,00 V, ±(1 % av visat värde + 3 siffror), upplösning 0,01 V. Exemplet har andra värden än din uppgift.",
+          "Sökt: felgränsen i volt och intervallet kring mätvärdet.",
+          "Välj metod: procentdelen och sifferdelen räknas var för sig och adderas.",
+          "Omvandla procent: 1 % = 1/100 = 0,01. Procentdelen är 0,01 · 8,00 = 0,08 V.",
+          "Sifferdelen är 3 · 0,01 = 0,03 V. Gränsen blir ±(0,08 + 0,03) = ±0,11 V.",
+          "Kontroll: intervallet 7,89–8,11 V ligger symmetriskt kring 8,00 V. I din uppgift använder du uppgiftens egna värden."
+        ]
+      },
+      {
+        "id": "ansvar",
+        "title": "När underlaget inte räcker",
+        "body": [
+          "En beskrivning av ett ställverk är inte ett kopplingsprogram. Saknas fastställda gränser och underlag går det inte att bestämma en arbetsordning.",
+          "Ange vad som behöver klarläggas: energikällor, lagrad energi, arbetsområde, riskbedömning, ansvariga roller och rätt kompetens.",
+          "I uppgiften beskriver du vilka förutsättningar som saknas. Du ska inte föreslå manöverordning eller generella säkerhetsavstånd."
+        ]
+      }
+    ]
+  },
+  "ordning": {
+    "franskiljning": [
+      "mal",
+      "matningar",
+      "EL-000630",
+      "instrument",
+      "EL-000631",
+      "felgrans",
+      "exempel",
+      "EL-000632",
+      "ansvar",
+      "EL-000633"
+    ],
+    "sinus": [
+      "mal",
+      "kurvan",
+      "period",
+      "EL-000061",
+      "EL-000062",
+      "topp",
+      "rms",
+      "exempel",
+      "EL-000063",
+      "EL-000064",
+      "EL-000065",
+      "medel",
+      "EL-000069",
+      "radianer",
+      "moment",
+      "EL-000066",
+      "EL-000067",
+      "fas",
+      "EL-000068",
+      "kurvformer",
+      "EL-000070",
+      "matarna",
+      "protokoll",
+      "klart"
+    ],
+    "impedans": [
+      "mal",
+      "resistor",
+      "spole",
+      "xl",
+      "EL-000071",
+      "z",
+      "EL-000073",
+      "strom",
+      "EL-000074",
+      "exempel",
+      "EL-000075",
+      "fas",
+      "EL-000076",
+      "xc",
+      "EL-000072",
+      "rc",
+      "EL-000077",
+      "EL-000078",
+      "rlc",
+      "EL-000079",
+      "resonans",
+      "EL-000080",
+      "labb",
+      "klart"
+    ],
+    "effekt": [
+      "mal",
+      "resistiv",
+      "pf",
+      "strom",
+      "s",
+      "EL-000081",
+      "EL-000082",
+      "q",
+      "exempel",
+      "EL-000083",
+      "EL-000084",
+      "energi",
+      "EL-000085",
+      "EL-000086",
+      "kompensering",
+      "EL-000087",
+      "EL-000088",
+      "forlust",
+      "EL-000089",
+      "overtoner",
+      "EL-000090",
+      "labb",
+      "klart"
+    ]
+  },
+  "ovningar": {
+    "EL-000630": {
+      "del": "franskiljning",
+      "teori": [
+        "matningar"
+      ],
+      "resonemang": true,
+      "tillampning": false,
+      "image": "assets/b7becb76d1db_04_tva_matningar.png"
+    },
+    "EL-000631": {
+      "del": "franskiljning",
+      "teori": [
+        "instrument"
+      ],
+      "resonemang": true,
+      "tillampning": false,
+      "cards": [
+        "M1",
+        "M2"
+      ]
+    },
+    "EL-000632": {
+      "del": "franskiljning",
+      "teori": [
+        "felgrans",
+        "exempel"
+      ],
+      "resonemang": true,
+      "tillampning": false
+    },
+    "EL-000633": {
+      "del": "franskiljning",
+      "teori": [
+        "ansvar"
+      ],
+      "resonemang": true,
+      "tillampning": false
+    },
+    "EL-000061": {
+      "del": "sinus",
+      "teori": [
+        "period"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000062": {
+      "del": "sinus",
+      "teori": [
+        "period"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000063": {
+      "del": "sinus",
+      "teori": [
+        "topp",
+        "rms"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000064": {
+      "del": "sinus",
+      "teori": [
+        "rms"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000065": {
+      "del": "sinus",
+      "teori": [
+        "topp",
+        "rms"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000069": {
+      "del": "sinus",
+      "teori": [
+        "rms"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000066": {
+      "del": "sinus",
+      "teori": [
+        "radianer",
+        "moment"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000067": {
+      "del": "sinus",
+      "teori": [
+        "radianer",
+        "moment"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000068": {
+      "del": "sinus",
+      "teori": [
+        "period",
+        "fas"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000070": {
+      "del": "sinus",
+      "teori": [
+        "medel",
+        "kurvformer"
+      ],
+      "resonemang": true,
+      "tillampning": true
+    },
+    "EL-000071": {
+      "del": "impedans",
+      "teori": [
+        "xl"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000073": {
+      "del": "impedans",
+      "teori": [
+        "z"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000074": {
+      "del": "impedans",
+      "teori": [
+        "z",
+        "strom"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000075": {
+      "del": "impedans",
+      "teori": [
+        "exempel"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000076": {
+      "del": "impedans",
+      "teori": [
+        "fas"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000072": {
+      "del": "impedans",
+      "teori": [
+        "xc"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000077": {
+      "del": "impedans",
+      "teori": [
+        "rc"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000078": {
+      "del": "impedans",
+      "teori": [
+        "xl",
+        "xc"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000079": {
+      "del": "impedans",
+      "teori": [
+        "rlc"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000080": {
+      "del": "impedans",
+      "teori": [
+        "resonans"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000081": {
+      "del": "effekt",
+      "teori": [
+        "s"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000082": {
+      "del": "effekt",
+      "teori": [
+        "pf"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000083": {
+      "del": "effekt",
+      "teori": [
+        "q",
+        "exempel"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000084": {
+      "del": "effekt",
+      "teori": [
+        "q"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000085": {
+      "del": "effekt",
+      "teori": [
+        "energi"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000086": {
+      "del": "effekt",
+      "teori": [
+        "strom"
+      ],
+      "resonemang": false,
+      "tillampning": false
+    },
+    "EL-000087": {
+      "del": "effekt",
+      "teori": [
+        "kompensering"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000088": {
+      "del": "effekt",
+      "teori": [
+        "strom",
+        "kompensering"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000089": {
+      "del": "effekt",
+      "teori": [
+        "forlust"
+      ],
+      "resonemang": false,
+      "tillampning": true
+    },
+    "EL-000090": {
+      "del": "effekt",
+      "teori": [
+        "overtoner"
+      ],
+      "resonemang": true,
+      "tillampning": true
+    }
+  }
+}

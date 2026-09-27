@@ -2,6 +2,18 @@
 // Framstegen sparas i den här webbläsaren. Länkar med ?del=v40_02 eller #v40_02-q3 öppnar rätt del.
 // Används på vecka-XX/aktuell/Formelstod_och_ovningar.html. Utskrift visar alla delar.
 (() => {
+  // Week 40 has one workspace for teaching, references and checked attempts.
+  // Keep old exercise URLs (including slide-deck deep links) usable.
+  if (location.pathname.includes('/vecka-40/')) {
+    const q = new URLSearchParams(location.search);
+    if (q.get('las') !== '1') {
+      const target = new URL('Genomgang.html', location.href);
+      target.searchParams.set('del', q.get('del') || 'sinus');
+      if (location.hash) target.searchParams.set('uppgift', location.hash.slice(1));
+      location.replace(target.href);
+    }
+    return; // Never install manual completion buttons in the printable fallback.
+  }
   const delar = [...document.querySelectorAll('section.chapter[id]')];
   if (delar.length < 2) return;
   const NYCKEL = 'sj-ovningar:' + location.pathname;

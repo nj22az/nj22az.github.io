@@ -3,6 +3,8 @@
 // skickas aldrig till någon server. Här finns bara fälten och kodningen, inget facit: facit räknas i lärarsidan.
 import {GUIDE_TASKS} from '../../vaxelstromslabbet/guided-lessons.mjs?v=20260930';
 import {mittD} from '../../gemensamt/elevtal.mjs?v=20260930';
+import {STUDY} from './arbetsrum.gen.mjs?v=20260927b';
+import {STUDY_KEY, normalise, verifiedExercises} from './studieprogress.mjs?v=20260927b';
 
 export const VECKA = 40;
 export const SVARNYCKEL = 'sj-v40-svar';
@@ -25,6 +27,7 @@ export const SVAR = [
 ];
 
 const las = (k, def) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? def; } catch { return def; } };
+const kontrollerade = () => verifiedExercises(STUDY.tasks, normalise(las(STUDY_KEY, null)));
 export const lasSvar = () => las(SVARNYCKEL, {});
 export function sparaSvar(svar) { try { localStorage.setItem(SVARNYCKEL, JSON.stringify(svar)); } catch { /* privat läge */ } }
 
@@ -44,7 +47,7 @@ function korta(text, max) {
 
 /** Vad som finns sparat på enheten, för sammanfattningen på elevsidan. */
 export function lage() {
-  const svar = lasSvar(), klara = las(OVNINGSNYCKEL, {}), labb = las(LABBNYCKEL, null);
+  const svar = lasSvar(), klara = kontrollerade(), labb = las(LABBNYCKEL, null);
   const rader = labb?.rows && typeof labb.rows === 'object' ? labb.rows : {};
   return {
     D: mittD(),
@@ -56,7 +59,7 @@ export function lage() {
 
 /** Resultaten som ett kompakt objekt. Förklaringarna kortas till max tecken var. */
 export function samla(namn, max = 400) {
-  const svar = lasSvar(), klara = las(OVNINGSNYCKEL, {}), labb = las(LABBNYCKEL, null);
+  const svar = lasSvar(), klara = kontrollerade(), labb = las(LABBNYCKEL, null);
   const s = {};
   for (const u of SVAR) for (const [k] of u.falt) if (Number.isFinite(svar[k])) s[k] = avrunda(svar[k]);
   const o = DELAR.map((d) => Array.from({ length: OVNINGAR_PER_DEL }, (_, i) => (klara[`${d}-q${i + 1}`] ? 1 : 0) << i).reduce((a, b) => a | b, 0));

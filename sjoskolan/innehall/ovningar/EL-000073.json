@@ -3,7 +3,7 @@
   "titel": "RL-kretsens impedans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,9 +38,19 @@
     }
   ],
   "losning": {
-    "text": "|Z| = √(900 + 1 600) = 50 Ω.",
+    "text": "R och X_{L} ligger vinkelrätt i impedanstriangeln. Använd Pythagoras sats.\n\nKvadrera delarna: 30² = 900 och 40² = 1 600.\n\nAddera kvadraterna och dra roten ur: |Z| = √(900 + 1 600) = 50 Ω.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "|Z|",
+        "varde": 50,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

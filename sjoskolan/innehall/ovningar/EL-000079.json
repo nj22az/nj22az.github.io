@@ -3,7 +3,7 @@
   "titel": "RLC-krets",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,12 +39,19 @@
     }
   ],
   "losning": {
-    "text": "X = 50 − 10 = 40 Ω. |Z| = 50 Ω. I = 2,0 A.",
+    "text": "Beräkna nettoreaktansen först: X = 50 − 10 = 40 Ω.\n\n|Z| = √(30² + 40²) = 50 Ω.\n\nI = 100/50 = 2,0 A.",
     "svar": [
       {
         "storhet": "X",
-        "varde": 40.0,
-        "avrundning": "heltal",
+        "varde": 40,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      },
+      {
+        "storhet": "|Z|",
+        "varde": 50,
         "tolerans": {
           "rel": 0.02
         },
@@ -52,8 +59,7 @@
       },
       {
         "storhet": "I",
-        "varde": 2.0,
-        "avrundning": "heltal",
+        "varde": 2,
         "tolerans": {
           "rel": 0.02
         },

@@ -3,7 +3,7 @@
   "titel": "Energin på elmätaren",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "E = 1,60 kW · 3 h = 4,8 kWh.",
+    "text": "Välj aktiv effekt P för aktiv energi. Den skenbara effekten behövs inte.\n\nE = 1,60 kW · 3 h = 4,8 kWh.",
     "svar": [
       {
         "storhet": "E",

@@ -3,7 +3,7 @@
   "titel": "Matningsström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "I = 1 840/(230 · 0,80) = 10,0 A.",
+    "text": "Utgå från P = U · I · PF och dividera med U · PF för att få I.\n\nRäkna först nämnaren: 230 · 0,80 = 184.\n\nI = 1 840/184 = 10,0 A. Kontroll: 230 · 10,0 · 0,80 = 1 840 W.",
     "svar": [
       {
         "storhet": "I",

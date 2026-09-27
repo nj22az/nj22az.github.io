@@ -28,7 +28,9 @@ def artikel(pl, p):
     for n, l in enumerate(p.get('ledtradar', []), 1):
         h.append(f'<details class="ledtrad"><summary>Ledtråd {n}: {R.LEDTRAD[l["niva"]]}</summary><p>{R.h(l["text"])}</p></details>')
     los = p.get('losning') or {}
-    if los.get('text') and p['referenser'].get('losning_publik', True):
+    if pl['ankare'].startswith('v40_'):
+        h.append(f'<p><a href="Genomgang.html?del={pl["del"]}&amp;uppgift={pl["ankare"]}">Räkna med stegvis hjälp och kontrollera ditt svar</a></p>')
+    elif los.get('text') and p['referenser'].get('losning_publik', True):
         h.append(f'<details class="facit"><summary>Kontrollera ditt svar</summary><p>{R.h(los["text"])}</p></details>')
     h.append('</article>')
     return ''.join(h)

@@ -311,9 +311,9 @@ DAGAR40 = [
      ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Elevuppgifter'), (G + 'sinus', 'Genomgång del 1'), (K + 'sinus', 'Film del 1')]},
     {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
         steg('Del 1 · Genomgång', 'Läs resten av genomgången', G + 'sinus&avsnitt=medel', 25, 'från ”Medelvärde och RMS är olika” till ”Fördjupning: momentanvärde”'),
-        steg('Del 1 · Övningar', 'Övning 4–10', O + 'v40_01#v40_01-q4', 50, 'kontrollera mot facit och bocka av varje övning', 'v40_01:4-10'),
+        steg('Del 1 · Övningar', 'Övning 4–10', O + 'v40_01#v40_01-q4', 50, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_01:4-10'),
         steg('Frånskiljning · Övningar', 'Elevuppgift V2-3 och V2-4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
-     ], 'fore': ('Före tisdagens lektion', 'Alla tio övningar i del 1 är avbockade. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
+     ], 'fore': ('Före tisdagens lektion', 'Alla tio övningar i del 1 är bearbetade; ta med uppgifter som behöver hjälp. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
     {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 2: spole, motstånd och ström', 'pass': [
         ('Pass 1', 'Dina frågor från del 1. Del 2: genomgången och filmen tillsammans.'),
         ('Pass 2', 'Övning 1–4. Påbörja inlämningen Växelström, uppgift 1.'),
@@ -321,13 +321,13 @@ DAGAR40 = [
      ], 'material': [(G + 'impedans', 'Genomgång del 2'), (K + 'impedans', 'Film del 2'), (O + 'v40_02', 'Övningar del 2'), ('Inlamning.html#uppgift-1', 'Inlämning uppgift 1')]},
     {'id': 'onsdag', 'dag': 'Tisdag kväll och onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T17:00', 'steg': [
         steg('Del 2 · Genomgång', 'Läs resten av genomgången', G + 'impedans&avsnitt=fas', 10, 'från ”Fasvinkel med tecken” till ”Eget försök”'),
-        steg('Del 2 · Övningar', 'Övning 5–10', O + 'v40_02#v40_02-q5', 45, 'kontrollera mot facit och bocka av varje övning', 'v40_02:5-10'),
+        steg('Del 2 · Övningar', 'Övning 5–10', O + 'v40_02#v40_02-q5', 45, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_02:5-10'),
         steg('Frånskiljning · Inlämning', 'Uppgift 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
      ], 'fore': ('Före fredagens lektion', 'Del 2 är klar med alla tio övningar. Frånskiljningens inlämning är skriven.')},
     {'id': 'torsdag', 'dag': 'Torsdag 1/10', 'typ': 'Hemma', 'start': '2026-10-01T00:00', 'steg': [
         steg('Del 3 · Genomgång', 'Effekt och effektfaktor', G + 'effekt', 30, 'hela grunddelen, på egen hand'),
         steg('Del 3 · Film', 'Samma aktiva effekt, olika ström', K + 'effekt', 5, '2 min, svensk text'),
-        steg('Del 3 · Övningar', 'Övning 1–6', O + 'v40_03', 40, 'kontrollera mot facit och bocka av varje övning', 'v40_03:1-6'),
+        steg('Del 3 · Övningar', 'Övning 1–6', O + 'v40_03', 40, 'räkna i arbetsrummet; ledtråd efter första försöket, lösning efter två försök', 'v40_03:1-6'),
         steg('Växelström · Inlämning', 'Uppgift 1 och 2', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
      ], 'fore': ('Före fredagens lektion', 'Du har läst del 3 och gjort övning 1–6. Ta med dina frågor. Labben på fredag bygger på del 1–3.')},
     {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 3 och labben', 'pass': [
@@ -369,13 +369,13 @@ def dagplan(nr):
             text = f' · {escape(s["text"])}' if s['text'] else ''
             rader.append(f'<li data-steg="{sid}"{ov}><div class="steg-text"><span class="kind">{escape(s["kind"])}</span><a href="{s["href"]}">{escape(s["titel"])}</a>'
                          f'<small>{s["min"]} min{text}</small><span class="steg-framsteg" aria-live="polite"></span></div>'
-                         f'<label class="klar-ruta"><input type="checkbox" data-klar="{sid}"> Klar</label></li>')
+                         f'<span class="klar-ruta" data-status="{sid}"></span></li>')
         fore_t, fore = d['fore']
         total = tid(sum(s['min'] for s in d['steg']))
         kort.append(f'<section class="dag hemma" id="{d["id"]}" data-start="{d["start"]}" aria-labelledby="{hid}"><h3 id="{hid}"><span class="dag-namn">{escape(d["dag"])}</span> <span class="dag-typ">Hemma, {total}</span></h3>'
                     f'<p class="dag-status" aria-live="polite"></p><ol class="dag-steg">{"".join(rader)}</ol><p class="dag-fore"><strong>{escape(fore_t)}:</strong> {escape(fore)}</p></section>')
     return (f'<section class="dagplan" id="dagplan" aria-labelledby="dagplan-rubrik" data-slut="{SLUT40}"><h2 id="dagplan-rubrik">Veckan dag för dag</h2>'
-            '<p>Varje dag har en kort rubrik. Hemma gör du stegen i ordning och bockar av dem. Avbockningen sparas i den här webbläsaren.</p>'
+            '<p>Följ arbetsgången i arbetsrummet. Status hämtas från det du har läst och försökt besvara; den kan inte bockas av manuellt.</p>'
             + ''.join(kort) + '</section>')
 
 
@@ -418,6 +418,9 @@ def first_href(del_):
 
 
 def page(nr, w):
+    if nr == 40:
+        from arbetsvecka40 import page as workspace_page
+        return workspace_page(w, dagplan(nr))
     week_dir = ROOT / f'vecka-{nr}' / 'aktuell'
     start, end = w['datum']
     labbar, sedda, delar_ = list(w.get('labbar', [])), set(), []

@@ -3,7 +3,7 @@
   "titel": "Två matningar",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -33,7 +33,20 @@
     "publik": "elev"
   },
   "losning": {
-    "status": "saknas",
-    "kalla": "Lärarguiden vecka 38"
-  }
+    "text": "Ett resonemang behöver behandla båda matningarna, den okända väljarställningen och hur verklig frånskiljning och spärrning ska verifieras enligt arbetsberedningen. En öppen brytare vid A säger inte vad B kan mata. Ange vilket schema eller kopplingsunderlag du behöver och en konkret fråga om den verkliga anläggningen.",
+    "status": "utkast",
+    "kalla": "Ny offentlig studievägledning för vecka 40, 2026-09-27"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Följ alla tänkbara energivägar fram till arbetsområdet.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Skilj på vad figuren visar och vad som ännu måste verifieras.",
+      "status": "utkast"
+    }
+  ]
 }

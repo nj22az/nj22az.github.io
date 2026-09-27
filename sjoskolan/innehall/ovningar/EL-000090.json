@@ -3,7 +3,7 @@
   "titel": "Övertoner",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "PF = 800/1 000 = 0,80. Den är lägre än cos φ = 0,95 eftersom övertonerna ökar strömmen och S utan att bidra till P.",
+    "text": "Använd den totala aktiva och skenbara effekten: PF = P/S = 800/1 000 = 0,80.\n\ncos φ = 0,95 avser grundtonen. Övertoner gör att det värdet inte ensamt beskriver hela strömmen.",
     "svar": [
       {
         "storhet": "PF",
