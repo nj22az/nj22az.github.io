@@ -1670,10 +1670,10 @@
       "hash_publik": "52dda28554b3008b"
     },
     "EL-000339": {
-      "revision": 4,
+      "revision": 5,
       "skydd": "elev",
       "hash": "ef5a1b22055a00d4",
-      "hash_publik": "ef5a1b22055a00d4"
+      "hash_publik": "99ba0e992dba25a7"
     },
     "EL-000340": {
       "revision": 6,
@@ -1688,16 +1688,16 @@
       "hash_publik": "cc940acbeeb63317"
     },
     "EL-000342": {
-      "revision": 4,
-      "skydd": "elev",
-      "hash": "4defff78b90efb5f",
-      "hash_publik": "4defff78b90efb5f"
-    },
-    "EL-000343": {
       "revision": 5,
       "skydd": "elev",
+      "hash": "4defff78b90efb5f",
+      "hash_publik": "634c2799caa973ee"
+    },
+    "EL-000343": {
+      "revision": 6,
+      "skydd": "elev",
       "hash": "490e474869b2a4cc",
-      "hash_publik": "490e474869b2a4cc"
+      "hash_publik": "473ac3f51a3667bd"
     },
     "EL-000344": {
       "revision": 4,

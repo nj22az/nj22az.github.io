@@ -3,7 +3,7 @@
   "titel": "Ström vid effektfaktorn 1,00",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en vattenkokare på 2 300 W vid 230 V (resistiv last, PF = 1,00) drar I = 2 300/230 = 10 A.",
+      "text": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en vattenkokare på 1 840 W vid 230 V (resistiv last, PF = 1,00) drar I = 1 840/230 = 8,0 A.",
       "status": "migrerad"
     }
   ],

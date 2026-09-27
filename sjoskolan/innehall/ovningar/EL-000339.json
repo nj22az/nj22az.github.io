@@ -3,7 +3,7 @@
   "titel": "Jämför toppvärde och RMS",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "För sinus är toppvärdet û = √2 · U, där U är effektivvärdet (RMS). Exempel: vägguttagets 230 V har toppvärdet û = 1,414 · 230 ≈ 325 V.",
+      "text": "För sinus är toppvärdet û = √2 · U, där U är effektivvärdet (RMS). Exempel: fartygets 440 V-nät har toppvärdet û = 1,414 · 440 ≈ 622 V.",
       "status": "migrerad"
     }
   ],

@@ -3,7 +3,7 @@ export const GUIDE_VERSION=2;
 const sin={...DEFAULTS.sinus,shape:'sinus',urms:12,f:50,t:5,showB:false,window:'auto'};
 const rl={...DEFAULTS.impedans,kind:'RL',U:12,f:50,R:40,L:95.5,C:150};
 const power={...DEFAULTS.effekt,U:230,f:50,P:1150,pf:1,character:'induktiv',Qc:0,Rcable:0};
-import {GUIDADE} from './uppgifter.gen.mjs?v=20260927-las';
+import {GUIDADE} from './uppgifter.gen.mjs?v=20260929';
 export const GUIDE_TASKS=GUIDADE;
 export function guideValues(task){return readouts(task.lesson,task.setup);}
 export function parseGuideNumber(value){

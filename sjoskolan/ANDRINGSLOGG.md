@@ -60,6 +60,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     med andra tal. Genomgången för vecka 40 räknade exakt labbens värden (20 ms, 16,97 V, 30 Ω, 50 Ω, 0,24 A, 5 A,
     10 A) och fördjupningsbilderna var ordagrant räkna-först-uppgifterna. Kontrollera nya exempel mot `simulator`-
     posternas svar, även för presentationer, stegfilmer och figurer (`visuals.mjs`, diagram i PowerPoint).
+23. **Ett exempel får inte ge svaret på en annan uppgift i samma labb.** *Kontroll: `svar_i_ledtradar` jämför nu också med
+    de andra uppgifterna i samma labb (tal med enhet).*
 
 ### Boken
 
@@ -87,3 +89,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Labbens pumpuppgifter 1 500 W. Genomgång, presentationer, bildspel, lektionsartiklar och stegfilmer räknar med
   hemmets och fartygets värden i stället för labbens. Stegfilmerna har svensk text utan ljud; den engelska rösten är
   borttagen. Ny bok-PDF (223 sidor).
+- **2026-09-27** Granskning av vecka 40 ur lärarens perspektiv. Rättat: ledtrådar där exemplet gav svaret på nästa
+  labbuppgift (fläktmotor 5,0 A, vattenkokare 10 A), inaktuellt labbfacit i lärarportalen (S och Q för pumpen),
+  tavelexempel i utbildningsguiden som var labbens värden, nedsänkta index på lärarsidorna.

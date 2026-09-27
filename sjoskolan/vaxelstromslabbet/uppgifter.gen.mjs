@@ -565,7 +565,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Multimetern visar 12,00 V RMS. Vilket toppvärde förväntar du dig i kurvan?",
-  "method": "För sinus är toppvärdet û = √2 · U, där U är effektivvärdet (RMS). Exempel: vägguttagets 230 V har toppvärdet û = 1,414 · 230 ≈ 325 V.",
+  "method": "För sinus är toppvärdet û = √2 · U, där U är effektivvärdet (RMS). Exempel: fartygets 440 V-nät har toppvärdet û = 1,414 · 440 ≈ 622 V.",
   "theory": "rms",
   "visual": "peak",
   "explain": "Varför kan multimetern visa 12,00 V samtidigt som kurvan når ett högre värde?",
@@ -649,7 +649,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Beräkna strömmen i RL-kretsen. Med endast resistorn skulle strömmen vara 0,30 A.",
-  "method": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: en fläktmotor med |Z| = 46 Ω på 230 V drar I = 230/46 = 5,0 A.",
+  "method": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: en fläktmotor med |Z| = 130 Ω på 230 V drar I = 230/130 ≈ 1,77 A.",
   "theory": "strom",
   "visual": "rl",
   "explain": "Hur ändras strömmens storlek och fas när spolen läggs till?",
@@ -678,7 +678,7 @@ export const GUIDADE = [
    ]
   ],
   "prompt": "Hur stor ström krävs när effektfaktorn är 1,00?",
-  "method": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en vattenkokare på 2 300 W vid 230 V (resistiv last, PF = 1,00) drar I = 2 300/230 = 10 A.",
+  "method": "I = P/(U · PF). Vid PF = 1,00 blir det I = P/U. Exempel: en vattenkokare på 1 840 W vid 230 V (resistiv last, PF = 1,00) drar I = 1 840/230 = 8,0 A.",
   "theory": "resistiv",
   "visual": "power",
   "explain": "Vad betyder effektfaktorn 1,00 i vår resistiva sinusmodell?",

@@ -3,7 +3,7 @@
   "titel": "Jämför strömmen med och utan spole",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: en fläktmotor med |Z| = 46 Ω på 230 V drar I = 230/46 = 5,0 A.",
+      "text": "I = U/|Z|. Använd hela impedansen, inte bara R, eftersom spolen också begränsar strömmen. Exempel: en fläktmotor med |Z| = 130 Ω på 230 V drar I = 230/130 ≈ 1,77 A.",
       "status": "migrerad"
     }
   ],

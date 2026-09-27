@@ -1,6 +1,6 @@
 import {publishEquipment} from './equipment-state.mjs';
 import {markHtml as m,markText} from '../gemensamt/markering.mjs?v=20260928';
-import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber} from './guided-lessons.mjs?v=20260927-las';
+import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber} from './guided-lessons.mjs?v=20260929';
 import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260929';
 import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260929';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');

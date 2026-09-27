@@ -176,6 +176,32 @@ def svar_i_ledtradar(kat):
                     if re.search(rx, l['text']) and not re.search(rx, fraga):
                         fel.append(f'{i}: ledtråden ({l["niva"]}) innehåller svaret {t}')
                         break
+    # Samma labb: ett exempel får inte heller ge svaret (tal med enhet) på en annan uppgift i labben.
+    labb = {}
+    for i, p in kat.poster.items():
+        lb = (p.get('simulator') or {}).get('labb')
+        if lb:
+            labb.setdefault(lb, []).append(i)
+    for ids in labb.values():
+        for i in ids:
+            p = kat.poster[i]
+            u = p.get('uppgift') or {}
+            fraga = ' '.join([u.get('fraga') or '', u.get('givet') or ''])
+            for j in ids:
+                if j == i:
+                    continue
+                for s_ in (kat.poster[j].get('losning') or {}).get('svar') or []:
+                    v, enhet = s_.get('varde'), s_.get('enhet')
+                    if not isinstance(v, (int, float)) or not enhet:
+                        continue
+                    for d in (0, 1, 2):
+                        t = f'{v:.{d}f}'.replace('.', ',')
+                        if len(re.sub(r'\D', '', t)) < 2:
+                            continue
+                        rx = r'(?<![\d,])' + re.escape(t) + r'\s?' + re.escape(enhet) + r'(?![\wÅÄÖåäö])'
+                        for l in p.get('ledtradar', []):
+                            if re.search(rx, l['text']) and not re.search(rx, fraga):
+                                fel.append(f'{i}: ledtråden ({l["niva"]}) ger svaret på {j} ({t} {enhet})')
     return sorted(set(fel))
 
 
