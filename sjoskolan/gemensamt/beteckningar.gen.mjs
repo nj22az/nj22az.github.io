@@ -212,6 +212,15 @@ export const BETECKNINGAR = [
   "forklaring": "Knappen som ger den andra funktionen på nästa knapp, till exempel SHIFT och tan för tan⁻¹ (arctan)."
  },
  {
+  "id": "qr",
+  "visa": "QR",
+  "former": [
+   "QR"
+  ],
+  "namn": "QR-kod",
+  "forklaring": "En fyrkantig streckkod som mobilkameran kan läsa. Din QR-kod innehåller dina resultat och skickas till läraren."
+ },
+ {
   "id": "ti",
   "visa": "TI",
   "former": [

@@ -8,12 +8,10 @@ document.write(fs.readFileSync(root+'/sjoskolan/vaxelstromslabbet/index.html','u
 const {mountGuide}=await import(root+'/sjoskolan/vaxelstromslabbet/guided.mjs');
 const {GUIDE_TASKS,guideValues,personligUppgift,elevtal}=await import(root+'/sjoskolan/vaxelstromslabbet/guided-lessons.mjs');
 mountGuide(document.getElementById('guided-workspace'));
-// Utan namn visas bara namnrutan; ett ensamt förnamn räcker inte.
-assert.ok(document.getElementById('guide-namnform'),'name gate');assert.ok(!document.getElementById('guide-predict'));
-const namnform=()=>document.getElementById('guide-namnform');
-namnform().elements.namn.value='Anna';namnform().dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));assert.match(document.getElementById('guide-error').textContent,/efternamn/);
-namnform().elements.namn.value='  Anna   Svensson ';namnform().dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));
-const D=elevtal('Anna Svensson');assert.ok(D>=1&&D<=31);
+// Inget namn behövs: D slumpas en gång på enheten och labben börjar direkt.
+assert.ok(document.getElementById('guide-predict'),'starts without name');
+const D=Number(localStorage.getItem('sj-elev-d'));assert.ok(Number.isInteger(D)&&D>=1&&D<=31);
+assert.match(document.getElementById('guide-protocol').textContent,new RegExp('D = '+D));
 const TASKS=GUIDE_TASKS.map(t=>personligUppgift(t,D));
 // Första förutsägelsen sparas även när eleven ändrar sin beräkning.
 {const task=TASKS[2];const lesson=document.getElementById('guide-lesson');lesson.value=task.lesson;lesson.dispatchEvent(new window.Event('change'));const sel=document.getElementById('guide-task');sel.value=task.id;sel.dispatchEvent(new window.Event('change'));
@@ -29,10 +27,11 @@ for(const task of TASKS){
  form.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));assert.ok(document.getElementById('guide-explain'),task.id+' measure');
  document.getElementById('guide-explain').click();}else assert.equal(task.id,TASKS[2].id,task.id+' predict');const explain=document.getElementById('guide-explanation');explain.elements.explanation.value='Min egen förklaring med tal och enheter.';explain.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));assert.match(document.getElementById('guide-saved').textContent,/sparad/);
 }
-const saved=JSON.parse(localStorage.getItem('sjoskolan-ac-grund-v3'));assert.equal(saved.name,'Anna Svensson');assert.equal(saved.D,D);assert.equal(Object.keys(saved.rows).length,8);assert.ok(saved.rows.kalibrator.predicted.avg===10);assert.ok(saved.rows.kalibrator.predicted.trms===10);
+const saved=JSON.parse(localStorage.getItem('sjoskolan-ac-grund-v3'));assert.equal(saved.D,D);assert.equal(Object.keys(saved.rows).length,8);assert.ok(saved.rows.kalibrator.predicted.avg===10);assert.ok(saved.rows.kalibrator.predicted.trms===10);
 mountGuide(document.getElementById('guided-workspace'));
 assert.ok(document.getElementById('guide-explanation'),'reload resumes the saved explanation phase');
 assert.equal(document.getElementById('guide-explanation').elements.explanation.value,'Min egen förklaring med tal och enheter.');
-assert.match(document.getElementById('guide-records').textContent,/Anna Svensson/);
-console.log('PASS: name gate, personal values, first prediction kept, all 8 guided tasks, both calibration readings, explanations and persistence.');
+assert.equal(Number(localStorage.getItem('sj-elev-d')),D,'D stays the same after reload');
+localStorage.setItem('sj-elevnamn','Anna Svensson');mountGuide(document.getElementById('guided-workspace'));assert.match(document.getElementById('guide-records').textContent,/Anna Svensson/);
+console.log('PASS: random D without name, personal values, first prediction kept, all 8 guided tasks, both calibration readings, explanations and persistence.');
 await window.happyDOM.close();

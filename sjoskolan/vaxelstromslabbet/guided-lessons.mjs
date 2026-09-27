@@ -4,11 +4,11 @@ const sin={...DEFAULTS.sinus,shape:'sinus',urms:12,f:50,t:5,showB:false,window:'
 const rl={...DEFAULTS.impedans,kind:'RL',U:12,f:50,R:40,L:95.5,C:150};
 const power={...DEFAULTS.effekt,U:230,f:50,P:1150,pf:1,character:'induktiv',Qc:0,Rcable:0};
 import {GUIDADE} from './uppgifter.gen.mjs?v=20260929';
-export {elevtal} from '../gemensamt/elevtal.mjs?v=20260929';
+export {elevtal} from '../gemensamt/elevtal.mjs?v=20260930';
 export const GUIDE_TASKS=GUIDADE;
 export function guideValues(task){return readouts(task.lesson,task.setup);}
 
-// Personliga värden. Varje elev får egna värden ur sitt tal D (1–31), som räknas fram ur namnet (gemensamt/elevtal.mjs).
+// Personliga värden. Varje elev får egna värden ur sitt tal D (1–31), som slumpas på elevens enhet (gemensamt/elevtal.mjs).
 // Posterna EL-000337–344 har referensvärdena (12 V, 40 Ω, 95,5 mH, 1 150 W); här byts talen i deras text mot elevens.
 // Intervallen är valda så att inget svar ligger inom 2 % av ett exempel i genomgången eller ledtrådarna
 // (se tests/personlig.test.mjs). Samma formler finns i innehall/lib/berakningar.py (lärarguidens facit, '40-4').

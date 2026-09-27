@@ -40,32 +40,33 @@ h1{font-size:34px;line-height:1.15;margin:8px 0 16px}label{display:block;font-we
 input{font:inherit;width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--field);border-radius:8px;background:#fff;color:inherit}
 button{font:inherit;font-weight:700;min-height:48px;margin-top:16px;padding:10px 22px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
 button:hover{background:var(--accent-dark)}button:disabled{opacity:.6}
-:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}label.minns{display:flex;gap:10px;align-items:center;font-weight:400;margin:14px 0 0}label.minns input{width:22px;min-height:22px;margin:0}
 </style></head><body><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main>
 <p class="kicker">Sjöskolan · lärarstöd</p><h1>${pageTitle.replace(/ · Sjöskolan$/, '')}</h1>
 <p>Sidan är till för lärare och är skyddad med lösenord.</p>
-<form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
+<form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><label class="minns"><input id="minns" type="checkbox"> Kom ihåg lösenordet på den här enheten (bara din egen telefon eller dator)</label><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
 </main>
 <script id="lock-data" type="application/json">${JSON.stringify(data)}</script>
 <script>
 (() => {
   const d = JSON.parse(document.getElementById('lock-data').textContent), K = 'sjoskolan-lararlosen';
   const bytes = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-  async function open(pw) {
+  async function open(pw, minns) {
     const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
     const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: bytes(d.salt), iterations: d.it }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
     const html = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(d.iv) }, k, bytes(d.ct)));
-    try { sessionStorage.setItem(K, pw); } catch {}
+    try { sessionStorage.setItem(K, pw); if (minns) localStorage.setItem(K, pw); } catch {}
     document.open(); document.write(html); document.close();
   }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), go = document.getElementById('go');
   if (!window.crypto || !crypto.subtle) { msg.textContent = 'Webbläsaren saknar stöd för dekryptering. Öppna sidan via https i en aktuell webbläsare.'; go.disabled = true; return; }
   f.addEventListener('submit', async (e) => {
     e.preventDefault(); go.disabled = true; msg.textContent = 'Öppnar …';
-    try { await open(document.getElementById('pw').value); } catch { msg.textContent = 'Fel lösenord.'; go.disabled = false; }
+    try { await open(document.getElementById('pw').value, document.getElementById('minns').checked); } catch { msg.textContent = 'Fel lösenord.'; go.disabled = false; }
   });
-  let saved = null; try { saved = sessionStorage.getItem(K); } catch {}
-  if (saved) open(saved).catch(() => { try { sessionStorage.removeItem(K); } catch {} });
+  // Sparat i fliken, eller på enheten om läraren har valt det (t.ex. för att läsa resultatkoder med telefonens kamera).
+  let saved = null; try { saved = sessionStorage.getItem(K) || localStorage.getItem(K); } catch {}
+  if (saved) open(saved).catch(() => { try { sessionStorage.removeItem(K); localStorage.removeItem(K); } catch {} });
 })();
 </script></body></html>
 `;

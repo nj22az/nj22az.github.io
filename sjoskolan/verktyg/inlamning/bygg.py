@@ -7,7 +7,7 @@ Här finns bara veckornas rubrik och sista inlämningsdag samt HTML-mallen.
 """
 from html import escape
 
-V = '20260928'
+V = '20260930'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 VECKOR = {
     37: {'titel': 'Elens grunder och elsäkerhet', 'sista': '2026-09-13'},
@@ -22,9 +22,28 @@ VECKOR = {
 }
 
 
+NAMNRUTA = '''<div class="sj-panel soft dbox"><h2>Ditt namn ger dina egna värden</h2><p>Flera uppgifter använder talet <strong>D</strong>, som räknas fram ur ditt namn. Skriv ditt för- och efternamn här, och skriv samma namn överst i inlämningen och i labbprotokollen. Läraren räknar fram samma D ur namnet och kan kontrollera dina svar.</p><p><label for="elevnamn">Förnamn och efternamn</label><br><input id="elevnamn" type="text" autocomplete="name" placeholder="Förnamn Efternamn"></p><p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att räkna fram D.</noscript></p></div>
+<script type="module">import {elevtal,fulltNamn,sparatNamn,sparaNamn} from '/sjoskolan/gemensamt/elevtal.mjs?v=20260930';const i=document.getElementById('elevnamn'),o=document.getElementById('elevtal');i.value=sparatNamn();const visa=()=>{const ok=fulltNamn(i.value);o.innerHTML=ok?`Ditt tal är <strong>D = ${elevtal(i.value)}</strong>. Använd det i uppgifterna nedan.`:'Skriv både förnamn och efternamn, så visas ditt D.';if(ok)sparaNamn(i.value);};i.addEventListener('input',visa);visa();</script>
+'''
+
+
 def datum(iso):
     y, m, d = map(int, iso.split('-'))
     return f'{d} {MONTHS[m - 1]}'
+
+
+# Veckor med resultatkod: D slumpas på enheten, svaren skrivs i rutor och skickas med QR-koden (vecka-XX/aktuell/resultat.mjs).
+RESULTATKOD = {40}
+
+
+def dbox(nr):
+    if nr not in RESULTATKOD:
+        return NAMNRUTA
+    return (f'<div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder talet <strong>D</strong>. Det slumpas första gången du öppnar veckan på en dator eller telefon och sparas där. Du behöver inte skriva ditt namn nu: det gör du i slutet, på sidan <a href="Resultat.html">Skicka resultat</a>.</p>'
+            '<p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att visa D.</noscript></p>'
+            '<details><summary>Har du redan ett D på en annan dator eller telefon?</summary><p><label for="annatD">Skriv D därifrån (1–31)</label><br><input id="annatD" inputmode="numeric" autocomplete="off" style="width:6em"> <button type="button" id="annatD-ok" class="sj-btn">Använd</button></p><p id="annatD-not" role="status"></p></details>'
+            '<p>Skriv dina svar i rutorna under uppgift 1–3. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
+            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}"></script>\n')
 
 
 def page(nr, w, items):
@@ -34,9 +53,7 @@ def page(nr, w, items):
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-{nr}/aktuell/">Vecka {nr}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Vecka {nr}</a></div><article class="course-reading">
 <p class="course-kicker">Vecka {nr} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
 <p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} via den inlämningskanal läraren har anvisat.</p>
-<div class="sj-panel soft dbox"><h2>Ditt namn ger dina egna värden</h2><p>Flera uppgifter använder talet <strong>D</strong>, som räknas fram ur ditt namn. Skriv ditt för- och efternamn här, och skriv samma namn överst i inlämningen och i labbprotokollen. Läraren räknar fram samma D ur namnet och kan kontrollera dina svar.</p><p><label for="elevnamn">Förnamn och efternamn</label><br><input id="elevnamn" type="text" autocomplete="name" placeholder="Förnamn Efternamn"></p><p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att räkna fram D.</noscript></p></div>
-<script type="module">import {{elevtal,fulltNamn,sparatNamn,sparaNamn}} from '/sjoskolan/gemensamt/elevtal.mjs?v=20260929';const i=document.getElementById('elevnamn'),o=document.getElementById('elevtal');i.value=sparatNamn();const visa=()=>{{const ok=fulltNamn(i.value);o.innerHTML=ok?`Ditt tal är <strong>D = ${{elevtal(i.value)}}</strong>. Använd det i uppgifterna nedan.`:'Skriv både förnamn och efternamn, så visas ditt D.';if(ok)sparaNamn(i.value);}};i.addEventListener('input',visa);visa();</script>
-<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
+{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
 {items}
 <h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li><li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>

@@ -81,6 +81,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     automatiskt i genomgång, artikel, labb och övningar när texten innehåller u(t), sin(2π…), arctan/fasvinkel eller
     mH, µF, ms. Allt samlat på `gemensamt/Raknehjalp.html` med omvandlare. Nya kurstexter får korten utan extra arbete.
 
+29. **Namnet skrivs sist, D slumpas per enhet (vecka 40 och framåt).** `mittD()` i `gemensamt/elevtal.mjs`. Eleven
+    skickar resultaten som QR-kod (`vecka-XX/aktuell/Resultat.html`); läraren läser dem i `larare/resultat.html`.
+    Facit för resultatkoden finns bara i den krypterade lärarsidan, aldrig i elevens moduler. Vecka 37–39 räknar
+    fortfarande D ur namnet (`RESULTATKOD` i `verktyg/inlamning/bygg.py` och `verktyg/veckosidor/bygg.py`).
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -128,3 +133,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   lärarpresentation, 18 bilder) med hjulfigur, och filmen Radianer och grader (Måns och Sigge, 2 min). Filmen länkas
   från veckosidan del 1, RAD-kortet i räknarhjälpen och Raknehjalp.html. Måndagens pass 2 börjar med bild 12 före
   övning 6–7; fördjupningen är nu bild 13–14. Lärarplanen (PDF) omgjord med de nya bildnumren.
+- **2026-09-27** Vecka 40, resultatkod: D slumpas på elevens enhet och namnet skrivs först i slutet. Svarsrutor för
+  inlämning uppgift 1–3, sidan Skicka resultat med QR-kod (inlämningssvar, guidade labbens protokoll, avbockade
+  övningar) och lärarsidan Resultatkoder (kamera, skärmbilder eller länk; rätt/fel mot elevens D, klasslista, CSV).
+  Lärarsidornas lösenord kan sparas på lärarens enhet. Måndagens pass 2 omplanerat (bild 13 tillsammans, bild 14
+  självstudier, inlämning påbörjas, QR-kod sist).

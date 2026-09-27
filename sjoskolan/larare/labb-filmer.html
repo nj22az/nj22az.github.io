@@ -11,31 +11,32 @@ h1{font-size:34px;line-height:1.15;margin:8px 0 16px}label{display:block;font-we
 input{font:inherit;width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--field);border-radius:8px;background:#fff;color:inherit}
 button{font:inherit;font-weight:700;min-height:48px;margin-top:16px;padding:10px 22px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
 button:hover{background:var(--accent-dark)}button:disabled{opacity:.6}
-:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}label.minns{display:flex;gap:10px;align-items:center;font-weight:400;margin:14px 0 0}label.minns input{width:22px;min-height:22px;margin:0}
 </style></head><body><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main>
 <p class="kicker">Sjöskolan · lärarstöd</p><h1>Filmerna · Lärarportal</h1>
 <p>Sidan är till för lärare och är skyddad med lösenord.</p>
-<form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
+<form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><label class="minns"><input id="minns" type="checkbox"> Kom ihåg lösenordet på den här enheten (bara din egen telefon eller dator)</label><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
 </main>
 <script id="lock-data" type="application/json">{"v":1,"it":600000,"salt":"DJnvjL1MvM+PhD64a7RxXQ==","iv":"My0/p7LHzfJdn3Pt","ct":"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"}</script>
 <script>
 (() => {
   const d = JSON.parse(document.getElementById('lock-data').textContent), K = 'sjoskolan-lararlosen';
   const bytes = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-  async function open(pw) {
+  async function open(pw, minns) {
     const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
     const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: bytes(d.salt), iterations: d.it }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
     const html = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(d.iv) }, k, bytes(d.ct)));
-    try { sessionStorage.setItem(K, pw); } catch {}
+    try { sessionStorage.setItem(K, pw); if (minns) localStorage.setItem(K, pw); } catch {}
     document.open(); document.write(html); document.close();
   }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), go = document.getElementById('go');
   if (!window.crypto || !crypto.subtle) { msg.textContent = 'Webbläsaren saknar stöd för dekryptering. Öppna sidan via https i en aktuell webbläsare.'; go.disabled = true; return; }
   f.addEventListener('submit', async (e) => {
     e.preventDefault(); go.disabled = true; msg.textContent = 'Öppnar …';
-    try { await open(document.getElementById('pw').value); } catch { msg.textContent = 'Fel lösenord.'; go.disabled = false; }
+    try { await open(document.getElementById('pw').value, document.getElementById('minns').checked); } catch { msg.textContent = 'Fel lösenord.'; go.disabled = false; }
   });
-  let saved = null; try { saved = sessionStorage.getItem(K); } catch {}
-  if (saved) open(saved).catch(() => { try { sessionStorage.removeItem(K); } catch {} });
+  // Sparat i fliken, eller på enheten om läraren har valt det (t.ex. för att läsa resultatkoder med telefonens kamera).
+  let saved = null; try { saved = sessionStorage.getItem(K) || localStorage.getItem(K); } catch {}
+  if (saved) open(saved).catch(() => { try { sessionStorage.removeItem(K); localStorage.removeItem(K); } catch {} });
 })();
 </script></body></html>

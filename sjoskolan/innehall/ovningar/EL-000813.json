@@ -3,7 +3,7 @@
   "titel": "Grundprotokollet från den guidade labben",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,18 +22,18 @@
     "delfragor": [
       {
         "id": "a",
-        "text": "Skriv ditt namn i labbet, samma som på inlämningen. Då får du egna värden. Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara."
+        "text": "Labbet använder ditt D, samma som på inlämningen, så du får egna värden. Genomför alla åtta uppgifter: förutsäg, läs av och jämför, förklara."
       },
       {
         "id": "b",
-        "text": "Spara grundprotokollet som PDF."
+        "text": "Skicka resultaten med QR-koden på sidan Skicka resultat. Protokollet följer med i koden."
       },
       {
         "id": "c",
         "text": "Välj en uppgift där din första förutsägelse inte stämde och förklara vad du hade missat. Stämde alla, välj den uppgift du tyckte var svårast och förklara vad som lätt blir fel."
       }
     ],
-    "svarsformat": "Grundprotokollet som PDF och förklaringen."
+    "svarsformat": "QR-koden med grundprotokollet och förklaringen."
   },
   "referenser": {
     "ursprung": [

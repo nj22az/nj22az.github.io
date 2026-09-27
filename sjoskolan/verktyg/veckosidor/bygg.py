@@ -19,6 +19,8 @@ for _p in _json.loads((ROOT / 'innehall' / 'ut' / 'id-register.json').read_text(
     for _pl in _p.get('placeringar', []):
         if _pl['yta'] == 'inlamning':
             INLAMNING.setdefault(int(_pl['plats'].split('-')[1].split('/')[0]), []).append((_pl['ankare'], _pl['nummer'], _p['titel']))
+# Veckor där eleven skickar resultaten som QR-kod (samma mängd som i verktyg/inlamning/bygg.py).
+RESULTATKOD = {40}
 V = '20260929'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
@@ -138,7 +140,7 @@ VECKOR = {
                 lank('Lektion_3.html', 'Artikel: effekt och effektfaktor', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
             ]},
         ],
-        'labbar': [lank(LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad', 'labb', 'åtta uppgifter i tre delar; skriv ditt namn först och spara protokollet som PDF')],
+        'labbar': [lank(LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad', 'labb', 'åtta uppgifter i tre delar med egna värden ur ditt D; skicka resultatet med QR-koden')],
         'slaupp': [lank('Beteckningar.html', 'Förkortningar och beteckningar', 'läs', 'RMS, X_{L}, PF och alla andra tecken i veckan')],
         'redovisa': [],
         'fordjupning': [
@@ -335,6 +337,8 @@ def page(nr, w):
                   f'<p>Gör labben när du har gått igenom del 1–{n} och övningarna. Labben bygger på det du har lärt dig och är veckans avslutning.</p>'
                   f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in labbar)}</ul></div></li>')
     redovisa = ''.join(f'<li><a href="Inlamning.html#{a}">{escape(n)}. {escape(t)}</a></li>' for a, n, t in INLAMNING[nr])
+    # Veckor med resultatkod: eleven skickar resultaten som QR-kod sist i varje lektion (vecka-XX/aktuell/Resultat.html).
+    skicka = '<p><a class="sj-btn primary" href="Resultat.html">Skicka resultat (QR-kod)</a></p><p>Gör det sist varje lektion: skriv ditt namn, ta en skärmbild av koden och skicka den till läraren.</p>' if nr in RESULTATKOD else ''
     fordj = ''
     if w['fordjupning']:
         fordj = ('<h3>Fördjupning, frivillig</h3><ul class="lesson-items">'
@@ -348,7 +352,7 @@ def page(nr, w):
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vecka {nr}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
 <header class="course-heading week-heading"><p class="course-kicker">Vecka {nr} · {datum(start)}–{datum(end, True)}</p><h1>{escape(w["titel"])}</h1><p class="course-lead">{escape(w["mal"])}</p><p>{intro}</p><p class="week-due"><strong>Inlämning senast söndag {datum(w["sista"])}.</strong> <a href="Inlamning.html">Se vad du lämnar in</a></p><p class="course-actions"><a class="sj-btn primary large" href="{startlank}">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p></header>
 {notis}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">Arbeta i den här ordningen</h2><ol class="lesson-list">{delar}</ol></section>
-<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul><p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
+<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3>Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
 '''
