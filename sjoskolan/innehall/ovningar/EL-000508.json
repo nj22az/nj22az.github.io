@@ -3,7 +3,7 @@
   "titel": "Eget försök med andra värden: effekt och effektfaktor",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En enfaslast tar P = 2 300 W vid U = 230 V och PF = 0,50. Beräkna I och S. Förklara om P skulle ändras bara för att PF förbättras i vår modell.",
+    "fraga": "En enfaslast tar P = 4 140 W vid U = 230 V och PF = 0,60. Beräkna I och S. Förklara om P skulle ändras bara för att PF förbättras i vår modell.",
     "instruktion": "Räkna innan facit visas."
   },
   "referenser": {
@@ -33,7 +33,7 @@
     "losning_publik": true
   },
   "losning": {
-    "text": "I = 20,00 A. S = 4 600 VA. P hålls oförändrad i modellen.",
+    "text": "I = 30,00 A. S = 6 900 VA. P hålls oförändrad i modellen.",
     "status": "migrerad"
   }
 }

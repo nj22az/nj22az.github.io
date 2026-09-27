@@ -7,7 +7,7 @@ export const KONTROLLFRAGOR = [
   "ovning": "EL-000508",
   "title": "Eget försök med andra värden: effekt och effektfaktor",
   "check": "Räkna innan facit visas.",
-  "answer": "I = 20,00 A. S = 4 600 VA. P hålls oförändrad i modellen."
+  "answer": "I = 30,00 A. S = 6 900 VA. P hålls oförändrad i modellen."
  },
  {
   "del": "impedans",
@@ -31,7 +31,7 @@ export const KONTROLLFRAGOR = [
   "ovning": "EL-000507",
   "title": "Eget försök med andra värden: spole, motstånd och ström",
   "check": "Räkna innan facit visas.",
-  "answer": "|Z| = 50 Ω. I = 2,00 A. Strömmen släpar."
+  "answer": "|Z| = 150 Ω. I ≈ 1,53 A. Strömmen släpar."
  },
  {
   "del": "sinus",
@@ -63,6 +63,6 @@ export const KONTROLLFRAGOR = [
   "ovning": "EL-000504",
   "title": "Eget försök med andra värden: sinus och mätvärden",
   "check": "Räkna innan facit visas.",
-  "answer": "T = 10,00 ms. û ≈ 33,94 V. Multimetern visar 24,00 V."
+  "answer": "T ≈ 8,33 ms. û ≈ 67,88 V. Multimetern visar 48,00 V."
  }
 ];

@@ -947,7 +947,7 @@
   },
   {
    "id": "EL-000080",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Serieresonans",
@@ -3235,7 +3235,7 @@
   },
   {
    "id": "EL-000187",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Förenklad felström",
@@ -5479,7 +5479,7 @@
   },
   {
    "id": "EL-000504",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eget försök med andra värden: sinus och mätvärden",
@@ -5527,7 +5527,7 @@
   },
   {
    "id": "EL-000507",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eget försök med andra värden: spole, motstånd och ström",
@@ -5543,7 +5543,7 @@
   },
   {
    "id": "EL-000508",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eget försök med andra värden: effekt och effektfaktor",

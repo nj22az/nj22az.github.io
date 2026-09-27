@@ -52,8 +52,11 @@ def figur(f, datafig=None):
     nr = f'<span class="fignr">{html.escape(f["nr"])}</span>' if f.get('nr') else ''
     klass = f.get('klass', 'fig-uppg')
     df = f' data-fig="{datafig}"' if datafig else ''
-    return (f'<figure class="{klass}"{df}>\n<img src="{html.escape(fil, quote=True)}" class="{klass}" alt="{html.escape(f["alt"], quote=True)}" />\n'
-            f'<figcaption aria-hidden="true">{nr}{html.escape(cap)}</figcaption>\n</figure>\n')
+    # Index (X_{L}): nedsänkt i bildtexten, uppläsbart i alt-texten (”X L”).
+    alt = re.sub(r'_\{([^{}]*)\}', r' \1', f['alt'])
+    capt = re.sub(r'_\{([^{}]*)\}', r'<sub>\1</sub>', html.escape(cap))
+    return (f'<figure class="{klass}"{df}>\n<img src="{html.escape(fil, quote=True)}" class="{klass}" alt="{html.escape(alt, quote=True)}" />\n'
+            f'<figcaption aria-hidden="true">{nr}{capt}</figcaption>\n</figure>\n')
 
 
 def uppgift_xhtml(pl, p, kapfil, losfil):

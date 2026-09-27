@@ -102,3 +102,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Eleven skriver sitt namn i stället för D (inlämning alla veckor, guidade växelströmslabben, lärarguiden,
   Lärarstöd vecka 40). Guidade labben ger egna värden ur namnet; protokollet visar första förutsägelse, antal försök och
   tider. Inlämning vecka 40 uppgift 4 omformulerad. Ledtrådsexempel flyttade utanför elevernas svarsintervall.
+- **2026-09-27** Elev- och lärargranskning av vecka 40: ”Eget försök” i genomgången gav svaret på övning EL-000075,
+  EL-000064 och räkna-först-uppgiften EL-000319; nya värden (48 V/120 Hz, 90/120 Ω vid 230 V, 4 140 W vid PF 0,60).
+  Lärarsidornas upplägg samordnat med elevsidan: måndag, tisdag, fredag 2 × 45 min, labben sist.
