@@ -324,7 +324,7 @@ export const UPPGIFTER = [
   "deck": "Skenbar effekt",
   "theory": "s",
   "setup": {
-   "P": 1200,
+   "P": 1500,
    "Qc": 0,
    "Rcable": 0.2,
    "U": 230,
@@ -332,7 +332,7 @@ export const UPPGIFTER = [
    "f": 60,
    "pf": 0.75
   },
-  "task": "En pump tar P = 1 200 W vid PF = 0,75. Beräkna den skenbara effekten S.",
+  "task": "En pump tar P = 1 500 W vid PF = 0,75. Beräkna den skenbara effekten S.",
   "ask": {
    "key": "S",
    "label": "S",
@@ -365,7 +365,7 @@ export const UPPGIFTER = [
   "deck": "Exempel: reaktiv effekt från PF",
   "theory": "exempel",
   "setup": {
-   "P": 1200,
+   "P": 1500,
    "Qc": 0,
    "Rcable": 0.2,
    "U": 230,
@@ -373,7 +373,7 @@ export const UPPGIFTER = [
    "f": 60,
    "pf": 0.75
   },
-  "task": "Samma pump: P = 1 200 W och PF = 0,75. Beräkna den reaktiva effekten Q.",
+  "task": "Samma pump: P = 1 500 W och PF = 0,75. Beräkna den reaktiva effekten Q.",
   "ask": {
    "key": "Q",
    "label": "Q",

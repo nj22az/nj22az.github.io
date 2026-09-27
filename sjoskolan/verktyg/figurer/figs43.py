@@ -112,7 +112,7 @@ def trafo(name, n1, n2, u1, u2, i1=None, i2=None, load=False):
     save(F, name)
 trafo("v43_02_s06_trafo", "N₁", "N₂", "440 V", "110 V")
 trafo("v43_02_s11_ovn1", "N₁ = 1 000", "N₂ = 100", "U₁ = 230 V", "U₂ = ?")
-trafo("v43_02_s13_ovn2", "N₁", "N₂", "U₁ = 240 V", "U₂ = 24 V", i1="I₁ = ?", i2="I₂ = 3 A", load=True)
+trafo("v43_02_s13_ovn2", "N₁", "N₂", "U₁ = 230 V", "U₂ = 24 V", i1="I₁ = ?", i2="I₂ = 3 A", load=True)
 
 # s8: fält och rotor, eftersläpning
 F = fig(4.3, 4.1); ax = cax(F, (-2.15, 2.15), (-2.1, 2.0))

@@ -105,7 +105,7 @@ test('svensk formatering och tolkning av svar', () => {
 test('alla uppgifter har rimliga facit och masker', () => {
   const want = {
     period: 2.5, topp: 33.94, moment: 11.44, fas: 45, xl: 49.95, strom: 2.0, rc: -36.87, resonans: 58.12,
-    skenbar: 1600, reaktiv: 1058.3, matstrom: 20, kompensering: 1500,
+    skenbar: 2000, reaktiv: 1322.9, matstrom: 20, kompensering: 1500,
   };
   assert.equal(CHALLENGES.length, Object.keys(want).length);
   for (const c of CHALLENGES) {

@@ -3,7 +3,7 @@
   "titel": "Läs av periodtiden",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

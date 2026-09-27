@@ -3,7 +3,7 @@
   "titel": "Ström vid effektfaktorn 1,00",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true

@@ -3,7 +3,7 @@
   "titel": "Skenbar effekt",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En pump tar P = 1 200 W vid PF = 0,75. Beräkna den skenbara effekten S."
+    "fraga": "En pump tar P = 1 500 W vid PF = 0,75. Beräkna den skenbara effekten S."
   },
   "referenser": {
     "ursprung": [
@@ -42,7 +42,7 @@
     "svar": [
       {
         "storhet": "S",
-        "varde": 1600,
+        "varde": 2000,
         "tolerans": {
           "rel": 0.01
         },
@@ -55,7 +55,7 @@
   },
   "parametrar": {
     "P": {
-      "varde": 1200,
+      "varde": 1500,
       "enhet": "W"
     },
     "PF": {
@@ -67,7 +67,7 @@
     "validering": {
       "typ": "numerisk",
       "funktion": "vaxelstromslabbet.forvantat",
-      "facit": 1600,
+      "facit": 2000,
       "tolerans": {
         "rel": 0.01
       }
@@ -76,7 +76,7 @@
     "initial": {
       "U": 230,
       "f": 60,
-      "P": 1200,
+      "P": 1500,
       "pf": 0.75,
       "character": "induktiv",
       "Qc": 0,

@@ -3,7 +3,7 @@
   "titel": "Avbrott i neutralledaren",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "att-granska",
     "kommentar": "Kontrollerat: bokens 400 V är linjespänningen i resonemanget, inget svarsvärde. Boken och kursen säger samma sak.",

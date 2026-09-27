@@ -527,7 +527,7 @@
   },
   {
    "id": "EL-000048",
-   "revision": 2,
+   "revision": 3,
    "status": "att-granska",
    "publik": "elev",
    "titel": "Två källor och en last",
@@ -1189,7 +1189,7 @@
   },
   {
    "id": "EL-000094",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Linjespänning",
@@ -1321,7 +1321,7 @@
   },
   {
    "id": "EL-000100",
-   "revision": 2,
+   "revision": 3,
    "status": "att-granska",
    "publik": "elev",
    "titel": "Avbrott i neutralledaren",
@@ -2685,7 +2685,7 @@
   },
   {
    "id": "EL-000162",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Transformatorström",
@@ -4679,7 +4679,7 @@
   },
   {
    "id": "EL-000317",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skenbar effekt",
@@ -4695,7 +4695,7 @@
   },
   {
    "id": "EL-000318",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Reaktiv effekt",
@@ -4999,7 +4999,7 @@
   },
   {
    "id": "EL-000337",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kontrollera båda mätarna",
@@ -5015,7 +5015,7 @@
   },
   {
    "id": "EL-000338",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Läs av periodtiden",
@@ -5031,7 +5031,7 @@
   },
   {
    "id": "EL-000339",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämför toppvärde och RMS",
@@ -5047,7 +5047,7 @@
   },
   {
    "id": "EL-000340",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna spolens reaktans",
@@ -5063,7 +5063,7 @@
   },
   {
    "id": "EL-000341",
-   "revision": 7,
+   "revision": 8,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beräkna impedansens belopp",
@@ -5079,7 +5079,7 @@
   },
   {
    "id": "EL-000342",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämför strömmen med och utan spole",
@@ -5095,7 +5095,7 @@
   },
   {
    "id": "EL-000343",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström vid effektfaktorn 1,00",
@@ -5111,7 +5111,7 @@
   },
   {
    "id": "EL-000344",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma aktiva effekt, lägre effektfaktor",
@@ -7339,7 +7339,7 @@
   },
   {
    "id": "EL-000810",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen sinusspänning",
@@ -7355,7 +7355,7 @@
   },
   {
    "id": "EL-000811",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen RL-last",
@@ -7371,7 +7371,7 @@
   },
   {
    "id": "EL-000812",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekt och kompensering",
