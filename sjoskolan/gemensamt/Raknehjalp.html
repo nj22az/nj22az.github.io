@@ -1,24 +1,44 @@
-<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Räknarhjälp · Sjöskolan</title><meta name="description" content="RAD eller DEG på räknaren, och hur du byter mH, µF och ms mot H, F och s."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/gemensamt/Raknehjalp.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260929"><link rel="stylesheet" href="/sjoskolan/gemensamt/raknehjalp.css?v=20260929">
-<style>.rh-sida .rh-kort{border-left-width:8px}.omv{display:grid;gap:10px;max-width:34em;margin:12px 0}.omv label{font-weight:700}.omv input,.omv select{min-height:44px;font:inherit;padding:4px 10px;border:1px solid var(--sj-field,#8aa0b2);border-radius:8px}.omv-rad{display:flex;gap:8px;flex-wrap:wrap}.omv output{font-size:22px;font-weight:700;color:#064f91}.regel{font-size:20px;font-weight:700}</style>
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Räknarhjälp · Sjöskolan</title><meta name="description" content="Radianer och grader, RAD eller DEG på räknaren, fasvinkeln och hur du byter mH, µF och ms mot H, F och s. Med bilder att pröva själv."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/gemensamt/Raknehjalp.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260929"><link rel="stylesheet" href="/sjoskolan/gemensamt/raknehjalp.css?v=20260928-bild">
 <script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav>
 <main id="main-content" class="course-main"><article class="course-reading rh-sida">
 <p class="course-kicker">Att slå upp</p><h1>Räknarhjälp</h1>
-<p class="course-lead">Två saker som ofta ger fel svar trots rätt formel: räknaren står i fel vinkelläge, eller ett prefix (m, µ) följer inte med in i formeln.</p>
-<p class="regel">Står det π eller 2π · f · t i vinkeln: RAD. Står det ° eller söker du en fasvinkel: DEG.</p>
-<p>Varför ett varv är 2π: se filmen <a href="/sjoskolan/filmer/#radianer">Radianer och grader</a> (2 min) med Måns och Sigge.</p>
-<div id="rad"></div><div id="deg"></div><div id="prefix"></div>
-<h2 id="omvandla">Omvandla själv</h2>
-<form class="omv" onsubmit="return false"><label for="tal">Tal</label><div class="omv-rad"><input id="tal" inputmode="decimal" value="382" aria-label="Tal"><select id="pre" aria-label="Prefix och enhet"><option value="1e-3|H|mH">mH</option><option value="1e-6|F|µF">µF</option><option value="1e-9|F|nF">nF</option><option value="1e-3|s|ms">ms</option><option value="1e-6|s|µs">µs</option><option value="1e-3|A|mA">mA</option><option value="1e-3|V|mV">mV</option><option value="1e3|W|kW">kW</option><option value="1e3|Ω|kΩ">kΩ</option></select></div>
-<output id="ut" aria-live="polite"></output></form>
+<p class="course-lead">Två saker ger ofta fel svar trots rätt formel: räknaren står i fel vinkelläge, eller ett prefix (m, µ) följer inte med in i formeln. Här ser du varför, med bilder du kan pröva själv.</p>
+<p class="regel">Står det π eller 2π · f · t i vinkeln: RAD.<br>Står det ° eller söker du en fasvinkel: DEG.</p>
+<nav class="rhb-innehall" aria-label="På sidan"><ol><li><a href="#radian">Vad är en radian?</a></li><li><a href="#sinus">Varför RAD i u(t)</a></li><li><a href="#rad">Fel läge på räknaren</a></li><li><a href="#deg">Fasvinkeln i grader</a></li><li><a href="#prefix">Prefix: m, µ, n och k</a></li></ol></nav>
+
+<section class="rhb-del" aria-labelledby="radian"><h2 id="radian"><span class="rhb-nr">1</span>Vad är en radian?</h2>
+<p>Grader delar ett varv i 360 delar. Det är ett val som människor har gjort. <b>Radianer mäter vinkeln med cirkelns egen radie:</b> lägg radien som ett snöre längs kanten. Där snöret tar slut har du vridit <b>1 radian</b>, ungefär 57,3°.</p>
+<p>Runt hela cirkeln får radien plats 2π gånger, ungefär 6,28 gånger. Därför är <b>ett varv = 360° = 2π rad</b>.</p>
+<figure class="rhb-bild" data-bild="radianen" aria-label="Cirkel där bågen mäts i radier. Dra i reglaget eller välj en vinkel."><figcaption>Dra i reglaget. De gula strecken visar var bågen blir 1, 2, 3 … radier lång.</figcaption></figure>
+<p>Vill du se det i rörelse: filmen <a href="/sjoskolan/filmer/#radianer">Radianer och grader</a> (2 min) med Måns och Sigge.</p></section>
+
+<section class="rhb-del" aria-labelledby="sinus"><h2 id="sinus"><span class="rhb-nr">2</span>Varför RAD i u(t) = û · sin(2π · f · t)</h2>
+<p>Växelspänning kommer från en generator som snurrar. Tänk dig en pil som snurrar runt: <b>pilens höjd är spänningen</b> just nu. När pilen pekar rakt upp är spänningen som högst (û), när den ligger ner är den noll.</p>
+<p>2π · f · t säger hur långt pilen har snurrat: f varv per sekund, gånger t sekunder, gånger 2π radianer per varv. <b>Svaret blir en vinkel i radianer.</b> Därför ska räknaren stå i RAD när du räknar sin(2π · f · t).</p>
+<figure class="rhb-bild" data-bild="varv-sinus" aria-label="En snurrande pil till vänster och sinuskurvan till höger. Fartyget: 440 V, 60 Hz, toppvärde 622 V."><figcaption>Fartygets nät: 440 V, 60 Hz, toppvärdet û = 622 V. Flytta tiden och se pilen och kurvan följas åt.</figcaption></figure></section>
+
+<section class="rhb-del" aria-labelledby="rad-rubrik"><h2 id="rad-rubrik"><span class="rhb-nr">3</span>Fel läge på räknaren: samma knapptryck, två svar</h2>
+<p>Räknaren vet inte om ditt tal är radianer eller grader. Den tror det som står i fönstret: <b>R</b> (RAD) eller <b>D</b> (DEG). Skriver du sin(0,565) i DEG tror räknaren att du menar 0,565 <i>grader</i>, en nästan platt vinkel, och svaret blir nästan noll.</p>
+<figure class="rhb-bild" data-bild="raknaren" aria-label="En räknare som visar sin(0,565) i RAD och i DEG, och cirkeln med den vinkel räknaren använder."><figcaption>Tryck RAD och DEG och jämför. Samma exempel som ovan, vid t = 1,5 ms.</figcaption></figure>
+<p><b>Snabbkoll före varje sinusuppgift:</b> räkna sin(π/2). Blir det 1 står räknaren i RAD. Blir det 0,0274 står den i DEG.</p>
+<div id="rad"></div></section>
+
+<section class="rhb-del" aria-labelledby="deg-rubrik"><h2 id="deg-rubrik"><span class="rhb-nr">4</span>Fasvinkeln räknas i grader</h2>
+<p>I en krets med resistor och spole ritas R liggande och X<sub>L</sub> stående. Tillsammans blir de en rätvinklig triangel där den sneda sidan är impedansen Z. <b>Vinkeln φ mellan R och Z är fasvinkeln.</b> Den vill vi ha i grader, därför DEG och tan⁻¹ (arctan).</p>
+<figure class="rhb-bild" data-bild="fasvinkeln" aria-label="Impedanstriangel med R, X_L, Z och fasvinkeln φ. Ändra R och X_L med reglagen."><figcaption>Ändra R och X<sub>L</sub>. Ju större spolen är jämfört med resistorn, desto större fasvinkel.</figcaption></figure>
+<div id="deg"></div></section>
+
+<section class="rhb-del" aria-labelledby="prefix-rubrik"><h2 id="prefix-rubrik"><span class="rhb-nr">5</span>Prefix: byt m, µ och n mot en tiopotens</h2>
+<p>Formlerna räknar i grundenheter: henry (H), farad (F), sekunder (s). Ett prefix är en förkortning för en tiopotens. Varje steg i trappan nedan är <b>1 000 gånger</b>: kommat flyttar <b>tre platser</b> per steg. Mot grundenheten från m, µ eller n blir talet mindre. Från k blir det större.</p>
+<figure class="rhb-bild" id="omvandla" data-bild="prefixtrappan" aria-label="Prefixtrappan n, µ, m, grundenhet, k. Skriv ett tal och välj prefix och enhet."><figcaption>Skriv ett eget tal eller välj ett exempel. Pilen visar hur många steg det är till grundenheten.</figcaption></figure>
+<div id="prefix"></div></section>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module">
 import {KORT} from '/sjoskolan/gemensamt/raknehjalp.mjs?v=20260929c';
-for(const id of ['rad','deg','prefix'])document.getElementById(id).innerHTML=`<details class="rh-kort rh-${id}" open><summary>${KORT[id].titel}</summary>${KORT[id].html}</details>`;
-const tal=document.getElementById('tal'),pre=document.getElementById('pre'),ut=document.getElementById('ut');
-const sv=v=>v.toLocaleString('sv-SE',{maximumSignificantDigits:6});
-function visa(){const [f,enh,namn]=pre.value.split('|');const x=Number(tal.value.replace(',','.').replace(/\s/g,''));
- ut.textContent=Number.isFinite(x)?`${sv(x)} ${namn} = ${sv(x)} · ${f==='1e3'?'1 000':f==='1e-3'?'0,001':f==='1e-6'?'10⁻⁶':'10⁻⁹'} ${enh} = ${sv(x*Number(f))} ${enh}`:'Skriv ett tal.';}
-tal.addEventListener('input',visa);pre.addEventListener('change',visa);visa();
-if(location.hash)document.getElementById(location.hash.slice(1))?.scrollIntoView();
+import {monteraBilder} from '/sjoskolan/gemensamt/raknehjalp-bilder.mjs?v=20260928';
+const kort={rad:'Så ställer du räknaren i RAD',deg:'Så ställer du räknaren i DEG',prefix:'Kortversion: prefixtabellen'};
+for(const id of ['rad','deg','prefix'])document.getElementById(id).innerHTML=`<details class="rh-kort rh-${id}"><summary>${kort[id]}</summary>${KORT[id].html}</details>`;
+monteraBilder();
+if(location.hash){const m={'#rad':'rad-rubrik','#deg':'deg-rubrik','#prefix':'prefix-rubrik'}[location.hash];document.getElementById(m||location.hash.slice(1))?.scrollIntoView();}
 </script></body></html>

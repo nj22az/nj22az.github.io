@@ -100,6 +100,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-28** Räknarhjälpen förklarar med interaktiva bilder (`gemensamt/raknehjalp-bilder.mjs`): radianen som
+  bågen mätt i radier, snurrande visare till sinuskurva (u(t) vid 440 V/60 Hz), samma knapptryck i RAD och DEG,
+  impedanstriangeln med fasvinkeln och prefixtrappan där kommat flyttar tre platser per steg. Exempeltalen
+  (1,5 ms, 0,565 rad, 333 V, R 30 Ω/X_{L} 45 Ω) kontrollerade mot databasens svar. Korten i `raknehjalp.mjs` oförändrade.
 - **2026-09-28** Trefaslabbets stationsprotokoll (EL-000406) pekade på en flik ”Neutralledaren” som inte finns; nu ”2 Bruten neutralledare”.
 - **2026-09-28** Trefas-, Hållkrets- och Isolationslabbet enklare på iPad och mobil: uppgiften står först och reglagen
   bredvid diagrammet från 768 px (inte klistrade), flikarna blir en lista på mobil, S1 och S0 skriver läget (släppt /
