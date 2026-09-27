@@ -197,7 +197,7 @@ function circuitSVG() {
       label(100,217,'10 V DC')+label(285,122,'R1 · 1 MΩ')+label(285,220,'R2 · 1 MΩ');
     if(state.jack==='v'&&['dc','ac'].includes(state.mode)&&state.red&&state.black&&state.red!==state.black){
       const ys={S:65,M:165,G:265},top=Math.min(ys[state.red],ys[state.black]),bottom=Math.max(ys[state.red],ys[state.black]),mid=(top+bottom)/2;
-      body+=`<g class="meter-branch"><title>Mätarens ingångsresistans mellan ${state.red} och ${state.black}</title><path d="M 390 ${top} H 535 V ${mid-19} M 535 ${mid+19} V ${bottom} H 390"/><rect x="522" y="${mid-19}" width="26" height="38"/>${label(535,top-13,'Mätaren')}${label(510,bottom+24,'Rin = '+(state.input/1e6)+' MΩ')}</g>`;
+      body+=`<g class="meter-branch"><title>Mätarens ingångsresistans mellan ${state.red} och ${state.black}</title><path d="M 390 ${top} H 535 V ${mid-19} M 535 ${mid+19} V ${bottom} H 390"/><rect x="522" y="${mid-19}" width="26" height="38"/>${label(500,top-42,'Mätaren')}${label(500,top-13,'Rin = '+(state.input/1e6)+' MΩ')}</g>`;
     }
   } else if(state.circuit==='station') {
     const g=rigOf(state);
@@ -213,6 +213,7 @@ function circuitSVG() {
 }
 function renderCircuit() {
   if(state.circuit==='category')return;
+  $('#workbench').dataset.circuit=state.circuit;
   $('#diagram').innerHTML=circuitSVG();
   $('#circuit-title').textContent=state.circuit==='lamp'?`${titles.lamp} · ${state.voltage} V DC`:titles[state.circuit];
   $('#source-status').textContent=['resistor','fuse'].includes(state.circuit)?'Frikopplad':state.power?'Matning till':'Matning bruten';
@@ -244,6 +245,12 @@ function drawLeads(pointer=null) {
   if(state.circuit==='category')return;
   const bench=$('#workbench').getBoundingClientRect();
   if(!bench.width)return;
+  const diagram=$('#diagram'),circuit=$('#circuit').getBoundingClientRect();
+  // SVG text otherwise shrinks to about 8 px on phones and compact desktops.
+  if(state.circuit==='divider'&&circuit.width)diagram.style.setProperty('--diagram-label-size',`${Math.max(15,14*600/circuit.width)}px`);
+  else diagram.style.removeProperty('--diagram-label-size');
+  // Hidden, disconnected probes have no position; do not draw leads to (0, 0).
+  if($('#workbench').classList.contains('prediction-mode')&&!state.red&&!state.black){$('#leads').replaceChildren();return;}
   $('#leads').setAttribute('viewBox',`0 0 ${bench.width} ${bench.height}`);
   const center=el=>{const r=el.getBoundingClientRect();return{x:r.left+r.width/2-bench.left,y:r.top+r.height/2-bench.top};};
   let paths='';
@@ -253,7 +260,17 @@ function drawLeads(pointer=null) {
     if(!anchor||!target)continue;
     const a=center(anchor),b=pointer&&drag?.color===c?{x:pointer.x-bench.left,y:pointer.y-bench.top}:center(target);
     const offset=c==='black'?18:35,route=Math.min(bench.height-7,Math.max(a.y,b.y)+offset);
-    paths+=`<path d="M ${a.x} ${a.y} C ${a.x} ${route}, ${b.x} ${route}, ${b.x} ${b.y}" fill="none" stroke="white" stroke-width="6" opacity=".65"/><path d="M ${a.x} ${a.y} C ${a.x} ${route}, ${b.x} ${route}, ${b.x} ${b.y}" fill="none" stroke="${c==='black'?'#263540':'#be313b'}" stroke-width="3.5" stroke-linecap="round"/>`;
+    let d=`M ${a.x} ${a.y} C ${a.x} ${route}, ${b.x} ${route}, ${b.x} ${b.y}`;
+    if(state.circuit==='divider'&&!pointer){
+      // Keep leads in the workbench gutter, clear of the checklist and display.
+      const area=$('.circuit-area').getBoundingClientRect(),meter=$('.meter').getBoundingClientRect();
+      const gutter=area.right-bench.left-(c==='black'?10:5);
+      const bottom=Math.min(bench.height-5,meter.bottom-bench.top+(c==='black'?9:17));
+      const row=Math.max(circuit.bottom-bench.top+(c==='black'?8:17),b.y+24);
+      const approach=b.x+(state[c]?(c==='black'?18:10):0);
+      d=`M ${a.x} ${a.y} L ${a.x+24} ${a.y+14} V ${bottom} H ${gutter} V ${row} H ${approach} V ${b.y+12} L ${b.x} ${b.y}`;
+    }
+    paths+=`<path d="${d}" fill="none" stroke="white" stroke-width="6" opacity=".65"/><path d="${d}" fill="none" stroke="${c==='black'?'#263540':'#be313b'}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
   }
   $('#leads').innerHTML=paths;
 }
@@ -420,6 +437,7 @@ $('#clear-progress').addEventListener('click',()=>{
   saved={done:[],records:[],revisions:{}};save();confirmClear=false;$('#clear-progress').textContent='Nollställ framsteg';startLesson(0);
 });
 new ResizeObserver(()=>drawLeads()).observe($('#workbench'));
+new ResizeObserver(()=>drawLeads()).observe($('#circuit'));
 window.addEventListener('resize',()=>drawLeads());
 const requested=new URLSearchParams(location.search).get('ovning');
 startLesson(Math.max(0,LESSONS.findIndex(l=>l.id===requested)),false);

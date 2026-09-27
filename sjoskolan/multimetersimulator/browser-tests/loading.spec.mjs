@@ -34,6 +34,33 @@ async function layout(page) {
 async function picture(page, info, name, selector = '.sim-layout') {
   await page.locator(selector).screenshot({ path: info.outputPath(`${name}.png`) });
 }
+async function clearWiring(page) {
+  const covered = await page.evaluate(() => {
+    const protectedElements = [...document.querySelectorAll('#diagram text, .node-name, #divider-key, #loading-observation, #input-help, #wiring-guide, .meter-screen')];
+    const rects = protectedElements.filter(el => el.getClientRects().length).map(el => ({
+      name: el.id || el.textContent, rect: el.getBoundingClientRect(),
+    }));
+    const overlaps = [];
+    for (const path of document.querySelectorAll('#leads path')) {
+      const matrix = path.getScreenCTM();
+      for (let distance = 0; distance < path.getTotalLength(); distance += 2) {
+        const point = path.getPointAtLength(distance).matrixTransform(matrix);
+        for (const { name, rect } of rects) {
+          if (point.x > rect.left - 2 && point.x < rect.right + 2 && point.y > rect.top - 2 && point.y < rect.bottom + 2) overlaps.push(name);
+        }
+      }
+    }
+    for (const label of document.querySelectorAll('.meter-branch text')) {
+      const r = label.getBoundingClientRect();
+      for (const probe of document.querySelectorAll('.probe')) {
+        const p = probe.getBoundingClientRect();
+        if (r.left < p.right && r.right > p.left && r.top < p.bottom && r.bottom > p.top) overlaps.push(label.textContent);
+      }
+    }
+    return [...new Set(overlaps)];
+  });
+  expect.soft(covered, 'Leads and handles must not obscure labels, instructions or readings').toEqual([]);
+}
 async function toMeasurement(page, touch) {
   await page.locator('#number-answer').fill('5,00');
   await activate(page, '#check', touch);
@@ -50,6 +77,7 @@ test('seven-step lesson, polarity, protocol, CSV and responsive controls', async
   await page.goto(route);
   await expect(page.locator('#task-heading')).toContainText('Steg 1 av 7');
   await locked(page, true);
+  await expect(page.locator('#leads path')).toHaveCount(0);
   await layout(page);
   if (page.viewportSize().width <= 620) await expect.soft(page.locator('.meter')).toBeHidden();
   await picture(page, info, '01-prediction');
@@ -77,8 +105,10 @@ test('seven-step lesson, polarity, protocol, CSV and responsive controls', async
     text: el.textContent, font: parseFloat(getComputedStyle(el).fontSize) * el.getScreenCTM().a,
   })));
   expect.soft(labels.filter(label => label.font < 12), 'Circuit labels remain readable at display scale').toEqual([]);
+  await clearWiring(page);
   await layout(page);
   await picture(page, info, '03-measurement-10M');
+  await picture(page, info, '03-circuit', '.circuit-area');
   await activate(page, '#check-reading', isMobile);
   await expect(page.locator('#feedback-text')).toContainText('Minustecknet');
   await locked(page, true);
@@ -93,6 +123,7 @@ test('seven-step lesson, polarity, protocol, CSV and responsive controls', async
   await expect(page.locator('#feedback-text')).toContainText('Välj 1 MΩ');
   await page.locator('#input').selectOption('1000000');
   await expect(page.locator('#reading')).toHaveText('-3,33');
+  await clearWiring(page);
   await layout(page);
   await picture(page, info, '05-measurement-1M');
   await activate(page, '#check-reading', isMobile);
@@ -119,6 +150,12 @@ test('seven-step lesson, polarity, protocol, CSV and responsive controls', async
   await expect(page.locator('#protocol-rows')).toContainText(explanation);
   await expect(page.locator('#protocol-rows')).toContainText('-4,76 V');
   await expect(page.locator('#protocol-rows')).toContainText('-3,33 V');
+  // The wide protocol scrolls within its own region, never the whole page.
+  const protocol = page.locator('.protocol-scroll');
+  await protocol.evaluate(el => { el.scrollLeft = el.scrollWidth; });
+  const lastCell = page.locator('#protocol-rows tr:last-child td:last-child');
+  const region = await protocol.boundingBox(), cell = await lastCell.boundingBox();
+  expect(cell.x + cell.width).toBeLessThanOrEqual(region.x + region.width + 1);
   await layout(page);
   await picture(page, info, '08-protocol', '#protocol-view');
   const downloadPromise = page.waitForEvent('download');
@@ -135,6 +172,44 @@ test('seven-step lesson, polarity, protocol, CSV and responsive controls', async
   await expect(page.locator('#progress')).toHaveText('1 av 9 klara');
   await expect(page.locator('#protocol-rows tr')).toHaveCount(7);
   expect(errors).toEqual([]);
+});
+
+test('touch drags connect probes and turn the dial without scrolling the page', async ({ page, browserName, isMobile }) => {
+  test.skip(browserName !== 'chromium' || !isMobile, 'Chromium touch-event injection; taps are covered in all projects.');
+  await page.goto(route);
+  await toMeasurement(page, true);
+  const session = await page.context().newCDPSession(page);
+  async function swipe(from, to) {
+    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [from] });
+    for (let i = 1; i <= 10; i++) await session.send('Input.dispatchTouchEvent', {
+      type: 'touchMove', touchPoints: [{ x: from.x + (to.x - from.x) * i / 10, y: from.y + (to.y - from.y) * i / 10 }],
+    });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  }
+  async function centre(selector) {
+    const r = await page.locator(selector).boundingBox();
+    return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+  }
+  // The handles sit below the SVG; bring the actual drag source into view.
+  await page.locator('#probe-black').scrollIntoViewIfNeeded();
+  await expect(page.locator('#probe-black')).toBeInViewport();
+  const scrollY = await page.evaluate(() => window.scrollY);
+  await swipe(await centre('#probe-black'), await centre('[data-node="G"]'));
+  await expect(page.locator('#black-node')).toHaveValue('G');
+  await swipe(await centre('#probe-red'), await centre('[data-node="M"]'));
+  await expect(page.locator('#black-node')).toHaveValue('G');
+  await expect(page.locator('#red-node')).toHaveValue('M');
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+  await page.locator('#dial-knob').scrollIntoViewIfNeeded();
+  const r = await page.locator('#dial-knob').boundingBox();
+  const point = angle => ({ x: r.x + r.width / 2 + Math.sin(angle * Math.PI / 180) * r.width * .3,
+    y: r.y + r.height / 2 - Math.cos(angle * Math.PI / 180) * r.height * .3 });
+  await swipe(point(-120), point(-72));
+  await expect(page.locator('#dial-knob')).toHaveAttribute('aria-valuenow', '1');
+  await activate(page, '#power', true);
+  await expect(page.locator('#reading')).toHaveText('4,76');
+  await clearWiring(page);
+  await session.detach();
 });
 
 test('guided/free transitions clear locks, answers, diagram and measurement actions', async ({ page, isMobile }) => {
