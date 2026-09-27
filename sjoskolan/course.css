@@ -127,3 +127,7 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 @media(max-width:900px){.week-grid{grid-template-columns:1fr;gap:24px}}
 @media(max-width:520px){.lesson-list>li{grid-template-columns:1fr;gap:8px}.lesson-items li{grid-template-columns:1fr}.lesson-items .kind{grid-row:auto}}
 @media print{.week-grid{display:block}.week-aside{background:none;border:1px solid #999}.course-actions{display:none}}
+/* Veckosidans väg: tre steg per del, resten under Mer, inlämningen syns direkt */
+.route-steps .kind{color:var(--sj-accent,#064f91)}
+.week-more{margin:8px 0 0}.week-more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--sj-muted,#4d6579);font-weight:700}
+.week-due{margin:12px 0;padding:10px 14px;border-left:6px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:8px}

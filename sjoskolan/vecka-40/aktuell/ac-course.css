@@ -17,4 +17,4 @@
 .lesson-check{background:var(--ac-soft);border-left:6px solid var(--ac-blue);padding:12px 16px;border-radius:8px}
 @media(min-width:1000px){.lesson-stage.has-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}.lesson-stage.has-visual .lesson-visual{margin-top:48px}}
 .lesson-stage .formula{white-space:pre-wrap}
-@media(max-width:767px){.lesson-route{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.lesson-route li{flex:none}}
+@media(max-width:767px){.lesson-route{display:none}}

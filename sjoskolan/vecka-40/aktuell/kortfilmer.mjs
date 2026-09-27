@@ -10,7 +10,7 @@ function configure(){
  pause();scenes=lesson.film.map(id=>lesson.slides.find(s=>s.id===id));duration=scenes.length*STEG;time=0;current=-1;
  $('seek').max=duration;$('film-choice').value=lesson.id;$('film-title').textContent=lesson.filmTitle;
  $('transcript').innerHTML=scenes.map((s,i)=>`<section><h2>${i+1}. ${m(s.title)}</h2>${s.body.map(t=>`<p>${m(t)}</p>`).join('')}${s.formula?`<p>${m(s.formula)}</p>`:''}</section>`).join('');
- $('film-lab').href=`../../vaxelstromslabbet/?lage=guidad&del=${lesson.id}`;$('film-theory').href=`Genomgang.html?del=${lesson.id}`;
+ $('film-lab').href=`../../vaxelstromslabbet/?lage=guidad&del=${lesson.id}`;$('film-ovning').href=`Formelstod_och_ovningar.html?del=v40_0${lesson.number}`;$('film-theory').href=`Genomgang.html?del=${lesson.id}`;
  $('film-status').textContent='Tryck Spela eller gå ett steg i taget. Pausa när du behöver räkna.';
  history.replaceState(null,'',`?del=${lesson.id}`);draw();
 }
@@ -26,7 +26,7 @@ function draw(){
 function tick(now){
  if(!playing)return;
  time=Math.min(duration,time+(now-last)/1000*Number($('speed').value));last=now;draw();
- if(time>=duration){pause();$('film-status').textContent='Filmen är klar. Prova nu motsvarande uppgift i den guidade labben.';return;}
+ if(time>=duration){pause();$('film-status').textContent='Filmen är klar. Nästa steg: övningarna.';return;}
  raf=requestAnimationFrame(tick);
 }
 function pause(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Spela';$('play').setAttribute('aria-pressed','false');}

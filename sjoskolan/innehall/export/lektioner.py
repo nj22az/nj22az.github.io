@@ -88,13 +88,13 @@ def artikel(a, l, alla):
     nasta = next((x for x in alla if x['number'] == nr + 1), None)
     toc = [('mal', 'Det här ska du kunna'), ('beteckningar', 'Förkortningar och beteckningar'), ('teori', 'Så fungerar det'), ('instrument', 'Se vad instrumentet visar'), ('exempel', 'Följ ett genomräknat exempel'),
            ('prova', 'Prova själv'), ('labb', 'Det här använder du i labben')] + ([('fordjupning', 'Fördjupning')] if fordjup else []) + [('nasta', 'Nästa steg')]
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260927-qa"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
 <main id="main-content" class="course-main art-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 40</a></div>
 <div class="art-layout"><aside class="art-toc"><details open><summary>På denna sida</summary><ol>{''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)}</ol></details></aside>
 <article class="course-reading art-artikel">
 <p class="course-kicker">Vecka 40 · Del {nr}</p><h1>{e(l["title"])}</h1><p class="course-lead">{R.h(l["goal"])}</p>
-<p class="art-meta">{e(l["minutes"])} · <a href="Genomgang.html?del={tab}">Genomgång bild för bild</a> · <a href="Kortfilmer.html?del={tab}">Kort stegfilm</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Bildspel</a></p>''']
+<p class="art-meta">{e(l["minutes"])} · Artikel: samma innehåll som <a href="Genomgang.html?del={tab}">genomgången</a> · <a href="Kortfilmer.html?del={tab}">Film</a> · <a href="Formelstod_och_ovningar.html?del=v40_0{l["number"]}">Övningar</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Bildspel</a></p>''']
     # 1 Det här ska du kunna
     mal = slides.get('mal')
     h.append(f'<h2 id="mal">Det här ska du kunna</h2><p>Efter den här delen kan du: {R.h(l["goal"][0].lower() + l["goal"][1:])}</p>')
@@ -112,7 +112,7 @@ def artikel(a, l, alla):
     # 3 Instrumentet
     h.append('<h2 id="instrument">Se vad instrumentet visar</h2>')
     h += [avsnitt({**slides[i], 'id': 'instrument-' + i} if i == 'labb' else slides[i], prova=True) for i in INSTRUMENT[tab] if i in slides]
-    h.append(f'<p class="art-lank"><a href="Kortfilmer.html?del={tab}">Kort stegfilm: {e(l["filmTitle"])}</a> · <a href="../../vaxelstromslabbet/?flik={tab}">Öppna fliken i Växelströmslabbet</a></p>')
+    h.append(f'<p class="art-lank"><a href="Kortfilmer.html?del={tab}">Film: {e(l["filmTitle"])}</a> · <a href="../../vaxelstromslabbet/?flik={tab}">Öppna fliken i labbet</a></p>')
     # 4 Exempel
     if 'exempel' in slides:
         h.append('<h2 id="exempel">Följ ett genomräknat exempel</h2>')

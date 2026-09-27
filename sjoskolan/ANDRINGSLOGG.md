@@ -21,7 +21,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 4. **Uppgifter på riggen stannar på skyddsklenspänning.** Labbarnas mätuppgifter och protokollexempel följer den
    fysiska riggen (SELV, 9–24 V). Det är exemplen och ledtrådarna som hämtas från hem och fartyg.
 5. **Visa var eleven kan läsa.** En uppgift som kräver en metod pekar på exakt bild i genomgången
-   (”Läs genomgången del 1, bild 7: …”), räknat ur lektionerna så att det stämmer när bilder flyttas.
+   (”Läs genomgången del 1, avsnitt 7: …”), räknat ur lektionerna så att det stämmer när bilder flyttas.
 6. **Ge eleven ett tydligt besked.** Visa elevens egen förutsägelse med den etiketten (”Din förutsägelse”), aldrig
    ”Förväntat”, och säg om den stämmer (Rätt! / Skiljer sig) med kursens tolerans 2 %.
 7. **Förkortningar förklaras.** Varje förkortning finns i `innehall/beteckningar.json` och förklaras första gången.
@@ -70,6 +70,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 25. **Protokoll ska visa hur eleven kom fram till svaret.** En ändrad förutsägelse får aldrig skriva över den första;
     protokollet visar första förutsägelse, antal försök och tider.
 
+26. **Eleven ska alltid veta nästa steg.** Varje del har samma väg: genomgång → film → övningar, labben sist.
+    Samma ord överallt: Genomgång (avsnitt), Bildspel (bilder, PowerPoint, PDF), Artikel, Film, Övningar, Labb,
+    Inlämning. Inga interna koder (v40_01) i elevtext. Extramaterial ligger under ”Mer att läsa”.
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -105,3 +109,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Elev- och lärargranskning av vecka 40: ”Eget försök” i genomgången gav svaret på övning EL-000075,
   EL-000064 och räkna-först-uppgiften EL-000319; nya värden (48 V/120 Hz, 90/120 Ω vid 230 V, 4 140 W vid PF 0,60).
   Lärarsidornas upplägg samordnat med elevsidan: måndag, tisdag, fredag 2 × 45 min, labben sist.
+- **2026-09-27** Vecka 40 lättare att följa: veckosidan visar tre steg per del (genomgång, film, övningar) och
+  inlämningen överst; övningssidan visar en del i taget med ”Markera som klar” och framsteg; genomgången börjar med
+  ”Det här ska du kunna” och visar bara rullistan i telefonen; filmer och genomgång pekar på nästa steg; samma ord
+  överallt.

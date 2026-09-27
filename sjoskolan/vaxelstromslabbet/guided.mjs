@@ -10,7 +10,7 @@ const KEY='sjoskolan-ac-grund-v3';
 const tid=iso=>iso?new Date(iso).toLocaleString('sv-SE',{dateStyle:'short',timeStyle:'short'}):'';
 // Läshänvisning: den bild i genomgången som förklarar metoden (del och bildnummer räknas ur lektionerna).
 function las(task){const l=LESSONS.find(x=>x.id===task.lesson),i=l?l.slides.findIndex(x=>x.id===task.theory):-1;const href=`../vecka-40/aktuell/Genomgang.html?del=${task.lesson}&amp;avsnitt=${task.theory}`;
- return i<0?`<a href="${href}" target="_blank" rel="noopener">Läs motsvarande del av genomgången</a>`:`Kan du inte metoden? Läs genomgången <a href="${href}" target="_blank" rel="noopener">del ${l.number}, bild ${i+1}: ${m(l.slides[i].title)}</a> (öppnas i ny flik) och gör sedan uppgiften.`;}
+ return i<0?`<a href="${href}" target="_blank" rel="noopener">Läs motsvarande del av genomgången</a>`:`Kan du inte metoden? Läs genomgången <a href="${href}" target="_blank" rel="noopener">del ${l.number}, avsnitt ${i+1}: ${m(l.slides[i].title)}</a> (öppnas i ny flik) och gör sedan uppgiften.`;}
 export function mountGuide(root){
  let data={version:GUIDE_VERSION,name:'',D:null,rows:{}},storageOK=true;
  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s?.version===GUIDE_VERSION&&s.rows&&typeof s.rows==='object'&&fulltNamn(s.name))data={version:GUIDE_VERSION,name:String(s.name),D:elevtal(s.name),rows:s.rows};}catch{storageOK=false;}
