@@ -68,6 +68,46 @@
       "ordning": 4,
       "nummer": "Eget försök med andra värden",
       "ankare": "sinus:eget"
+    },
+    {
+      "ovning": "EL-000863",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 5,
+      "nummer": "Din tur: belysningsnätet ombord",
+      "ankare": "sinus:tur-topp"
+    },
+    {
+      "ovning": "EL-000864",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "sinus",
+      "ordning": 6,
+      "nummer": "Din tur: momentanvärde i vägguttaget",
+      "ankare": "sinus:tur-moment"
+    },
+    {
+      "ovning": "EL-000865",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "impedans",
+      "ordning": 4,
+      "nummer": "Din tur: ventilationsfläkten",
+      "ankare": "impedans:tur-z"
+    },
+    {
+      "ovning": "EL-000866",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "impedans",
+      "ordning": 5,
+      "nummer": "Din tur: fläktens fasvinkel",
+      "ankare": "impedans:tur-fas"
+    },
+    {
+      "ovning": "EL-000867",
+      "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+      "del": "effekt",
+      "ordning": 2,
+      "nummer": "Din tur: kylskåpets kompressor",
+      "ankare": "effekt:tur-effekt"
     }
   ]
 }

@@ -118,7 +118,7 @@ VECKOR = {
         'mal': 'Du kan läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
         'delar': [
             {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'steg': [
-                genomgang('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'v40_01_Sinusformad_vaxelspanning_elev.pptx', 18),
+                genomgang('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'v40_01_Sinusformad_vaxelspanning_elev.pptx', 20),
                 lank('Kortfilmer.html?del=sinus', 'Film: Vad visar kurvan och multimetern?', 'film', '2 min, svensk text'),
                 lank('Formelstod_och_ovningar.html?del=v40_01', 'Övningar: sinusformad växelspänning', 'övning', '10 övningar med facit, bocka av när du är klar'),
             ], 'mer': [
@@ -126,14 +126,14 @@ VECKOR = {
                 lank('../../filmer/#radianer', 'Film: Radianer och grader', 'film', 'Måns och Sigge, 2 min: RAD eller DEG på räknaren'),
             ]},
             {'titel': 'Spole, motstånd och ström', 'mal': 'Reaktans, impedans och strömmen i en RL-krets.', 'steg': [
-                genomgang('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'v40_02_Reaktans_och_impedans_elev.pptx', 16),
+                genomgang('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'v40_02_Reaktans_och_impedans_elev.pptx', 18),
                 lank('Kortfilmer.html?del=impedans', 'Film: Vad händer när vi lägger till en spole?', 'film', '2 min, svensk text'),
                 lank('Formelstod_och_ovningar.html?del=v40_02', 'Övningar: reaktans och impedans', 'övning', '10 övningar med facit, bocka av när du är klar'),
             ], 'mer': [
                 lank('Lektion_2.html', 'Artikel: spole, motstånd och ström', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
             ]},
             {'titel': 'Effekt och effektfaktor', 'mal': 'P, Q och S och hur effektfaktorn påverkar matningsströmmen.', 'steg': [
-                genomgang('Genomgang.html?del=effekt', 'Genomgång: effekt och effektfaktor', 'v40_03_Effekt_i_vaxelstromskretsar_elev.pptx', 15),
+                genomgang('Genomgang.html?del=effekt', 'Genomgång: effekt och effektfaktor', 'v40_03_Effekt_i_vaxelstromskretsar_elev.pptx', 16),
                 lank('Kortfilmer.html?del=effekt', 'Film: Samma aktiva effekt, olika ström', 'film', '2 min, svensk text'),
                 lank('Formelstod_och_ovningar.html?del=v40_03', 'Övningar: effekt i växelströmskretsar', 'övning', '10 övningar med facit, bocka av när du är klar'),
             ], 'mer': [

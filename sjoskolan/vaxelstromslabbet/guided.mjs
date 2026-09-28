@@ -3,7 +3,7 @@ import {markHtml as m,markText} from '../gemensamt/markering.mjs?v=20260928';
 import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber,personligUppgift,elevtal} from './guided-lessons.mjs?v=20260930';
 import {mittD,sattMittD,harMittD,sparatNamn} from '../gemensamt/elevtal.mjs?v=20260930';
 import {hjalpHtml} from '../gemensamt/raknehjalp.mjs?v=20260929c';
-import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260930';
+import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260930t';
 import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260929';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const n=v=>v.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2});

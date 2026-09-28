@@ -182,7 +182,7 @@ GENOMGANG_V40 = {'sinus': 'vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_ele
 
 def genomgang_v40():
     """Vecka 40:s presentationer följer genomgångens text (vecka-40/aktuell/lektioner.mjs): bild n + 1 = genomgångens bild n.
-    Formerna heter title, body och formula (verktyg/ac/build-decks.mjs). Etiketter i figurerna får nedsänkta index."""
+    Formerna heter title, body, formula, check och svar (verktyg/ac/build-decks.mjs, Din tur-bilderna). Etiketter i figurerna får nedsänkta index."""
     import json
     from pptx import Presentation
     js = "import('%s').then(m=>console.log(JSON.stringify(m.LESSONS)))" % (R.SJO / 'vecka-40' / 'aktuell' / 'lektioner.mjs').as_uri()
@@ -196,6 +196,9 @@ def genomgang_v40():
         for i, s in enumerate(l['slides']):
             former = {sh.name: sh for sh in _former(slides[i + 1]).values()}
             mal = {'title': [s['title']], 'body': [y for b in s['body'] for y in (b, '')][:-1], 'formula': [s['formula']] if s.get('formula') else None}
+            # Kontrollfrågan och, på Din tur-bilderna, svaret (visas vid klick) kommer ur innehållsdatabasen.
+            mal['check'] = [s['check']] if s.get('check') else None
+            mal['svar'] = [s['answer']] if s.get('tur') and s.get('answer') else None
             for namn, stycken in mal.items():
                 sh = former.get(namn)
                 if sh is None or stycken is None:

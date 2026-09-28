@@ -7832,6 +7832,86 @@
      "ankare": "tenta-12"
     }
    ]
+  },
+  {
+   "id": "EL-000863",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: belysningsnätet ombord",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: belysningsnätet ombord",
+     "ankare": "sinus:tur-topp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000864",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: momentanvärde i vägguttaget",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: momentanvärde i vägguttaget",
+     "ankare": "sinus:tur-moment"
+    }
+   ]
+  },
+  {
+   "id": "EL-000865",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: ventilationsfläkten",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: ventilationsfläkten",
+     "ankare": "impedans:tur-z"
+    }
+   ]
+  },
+  {
+   "id": "EL-000866",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: fläktens fasvinkel",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: fläktens fasvinkel",
+     "ankare": "impedans:tur-fas"
+    }
+   ]
+  },
+  {
+   "id": "EL-000867",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: kylskåpets kompressor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: kylskåpets kompressor",
+     "ankare": "effekt:tur-effekt"
+    }
+   ]
   }
  ]
 }
