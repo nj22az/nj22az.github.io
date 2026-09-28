@@ -120,7 +120,7 @@ def sida(a, l, alla, plan, pl_av):
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module">
-import {{visual}} from './visuals.mjs?v=20260929';
+import {{visual}} from './visuals.mjs?v=20260928fg';
 const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});
 draw();addEventListener('resize',draw);
 // Avbockade övningar sparas med samma nyckel som övningssidan, så att de följer med i QR-koden.

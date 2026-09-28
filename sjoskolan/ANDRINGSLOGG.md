@@ -108,6 +108,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     numren för hand. En övningstext hänvisar inte till ett nummer (”som i uppgift 9”), utan skriver ”föregående övning”
     eller övningens namn, eftersom samma post har olika nummer i kursen och boken.
     *Kontroll: `innehall.py kontrollera` (numrering).*
+34. **Figurer i presentationer är bilder, inte PowerPoint-diagram eller lösa linjer.** Vecka 40:s kurvdiagram (inbäddad
+    arbetsbok) och trianglar av separata linjer ritades fel i PowerPoint och Keynote, fast LibreOffice-renderingen såg
+    rätt ut. Figurerna ritas ur webbens `vecka-40/aktuell/visuals.mjs` med `verktyg/ac/figurbilder.py`. Etiketter står vid
+    sin egen sida och får inte krocka; kurvor med olika enheter (u och i) ritas med olika höjd.
 
 ### Boken
 
@@ -216,3 +220,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Komponentkortet är också ett datablad: IEC-symbol, beteckning, märkdata, läge i vila och vad kortet inte
   anger (säkringens AC/DC-märkning och brytförmåga). På mobil staplas raderna. Uppgifterna står i `studieplan-v40.json`
   (komponentkort). M2:s mätområden behålls.
+- **2026-09-28** Vecka 40:s presentationer: kurvdiagram och trianglar ersatta med bilder ur webbens figurer (samma i
+  PowerPoint, Keynote och webben). Figurerna rättade: trianglarnas etiketter krockade, periodmarkeringen låg över kurvan,
+  resistorns u och i låg ovanpå varandra. Större text i presentationerna. Lärarkopior, PDF och bildspel byggda om.

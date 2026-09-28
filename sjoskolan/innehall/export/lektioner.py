@@ -151,7 +151,7 @@ def artikel(a, l, alla):
     h.append(f'<nav class="art-nav" aria-label="Lektioner"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>')
     h.append(f'''<p class="source-note">Ideala undervisningsmodeller. Praktisk instrumentanslutning följer den verkliga stationens anvisningar. Övningarna kommer ur kursens innehållsdatabas.</p>
 </article></div></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
-<script type="module">import {{visual}} from './visuals.mjs?v=20260929';const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});draw();addEventListener('resize',draw);if(innerWidth<900)document.querySelector('.art-toc details').open=false;</script>
+<script type="module">import {{visual}} from './visuals.mjs?v=20260928fg';const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});draw();addEventListener('resize',draw);if(innerWidth<900)document.querySelector('.art-toc details').open=false;</script>
 </body></html>
 ''')
     text = ''.join(h)

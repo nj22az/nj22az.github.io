@@ -4,7 +4,7 @@ import {GUIDE_TASKS,GUIDE_VERSION,guideValues,parseGuideNumber,personligUppgift,
 import {mittD,sattMittD,harMittD,sparatNamn} from '../gemensamt/elevtal.mjs?v=20260930';
 import {hjalpHtml} from '../gemensamt/raknehjalp.mjs?v=20260929c';
 import {LESSONS} from '../vecka-40/aktuell/lektioner.mjs?v=20260930u';
-import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260929';
+import {visual} from '../vecka-40/aktuell/visuals.mjs?v=20260928fg';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const n=v=>v.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2});
 const KEY='sjoskolan-ac-grund-v3';

@@ -13,3 +13,7 @@ node sjoskolan/verktyg/ac/build-decks.mjs /absolute/path/to/fresh-build-director
 Finaliseraren skriver aldrig över en tidigare slutfil eller verifieringsrapport. Använd en ny byggkatalog, granska de renderade bilderna och kopiera därefter de verifierade PowerPoint-filerna från `output-final` till veckans katalog.
 
 Presentationerna kan också uppdateras direkt: stycken skrivs med `satt_stycke` i `innehall/export/presentationer.py` (behåller nedsänkta index), och PDF och bildspel byggs med `pdf_och_bildspel`.
+
+Kurvdiagram och trianglar i presentationerna är bilder ur `../../vecka-40/aktuell/visuals.mjs` (samma figurer som webben).
+Rita om dem efter ändringar med `python3 sjoskolan/verktyg/ac/figurbilder.py`, bygg sedan PDF och bildspel och kör
+`verktyg/larare/lararnoter.py` för lärarkopiorna.
