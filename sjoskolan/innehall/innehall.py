@@ -223,6 +223,13 @@ def cmd_kontrollera(a):
     brister = rapport(kat, con, tyst=True)
     brister['fel'] += oforklarade(kat)
     brister['fel'] += svar_i_ledtradar(kat)
+    # Numreringen vecka för vecka (Övning <del>.<nummer>, Inlämning <nummer>) följer registret i numrering.py.
+    import numrering
+    _, onskat = numrering.onskat()
+    for (yta, i), nr in onskat.items():
+        pl = json.loads((ROT / 'placeringar' / f'{yta}.json').read_text(encoding='utf-8'))['placeringar'][i]
+        if pl['nummer'] != nr:
+            brister['fel'].append(f'{yta}: {pl["ovning"]} har numret ”{pl["nummer"]}”, registret säger ”{nr}” (kör numrering.py --skriv)')
     # Maskinöversättning: varje elevsida laddar gemensamt/oversattning.js (formler och enheter markeras translate="no").
     for f in sorted(SJO.rglob('*.html')):
         rel = f.relative_to(SJO).as_posix()

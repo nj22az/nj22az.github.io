@@ -4,16 +4,16 @@ from html import escape
 from pathlib import Path
 
 
-# Del 1–3 har en sida var med samma ordning: översikt, teori, exempel, övningar, labben (innehall/export/delsidor.py).
+# Växelströmmens del 2–4 har en sida var (Del_1–3.html) med samma ordning: översikt, teori, exempel, övningar, labben (innehall/export/delsidor.py).
 # Frånskiljningen (från vecka 38) finns kvar i arbetsrummet.
 def knapp(i, id_, title):
     if i == 0:
         return f'<a class="sj-btn" href="Genomgang.html?del={id_}&amp;fortsatt=1">Arbeta med {title.lower()}</a>'
-    return f'<a class="sj-btn primary" href="Del_{i}.html">Öppna del {i}: {title.lower()}</a>'
+    return f'<a class="sj-btn primary" href="Del_{i}.html">Öppna del {i + 1}: {title.lower()}</a>'
 
 
 def till_delsida(html):
-    """Länkar till del 1–3 i arbetsrummet eller på övningssidan går till delsidorna (Del_N.html)."""
+    """Länkar till växelströmmens delar i arbetsrummet eller på övningssidan går till delsidorna (Del_N.html)."""
     import re
     nr = {'sinus': 1, 'impedans': 2, 'effekt': 3}
     def genomgang(m):
@@ -33,7 +33,7 @@ def page(w, schedule):
     for i, (id_, brief) in enumerate(lessons.items()):
         title = escape(brief['titel'])
         rows.append(f'''<li id="{id_}" data-lesson="{id_}">
-<h3>{'Först' if i == 0 else f'Del {i}'}: {title}</h3>
+<h3>Del {i + 1}: {title}</h3>
 <p><strong>Varför:</strong> {escape(brief['syfte'])}</p>
 <p class="study-note"><strong>När:</strong> {escape(brief['nar'])}</p>
 <p class="lesson-progress" aria-live="polite">Inte påbörjad</p>
@@ -44,10 +44,10 @@ def page(w, schedule):
 <p id="week-purpose">På fredag ska du kunna <strong>beräkna ett förväntat värde, läsa av instrumentet och förklara skillnaden</strong> i växelströmslabbet. Veckans förklaringar och övningar förbereder dig för det.</p>
 <div id="nu" class="study-panel"><h2>Vad gör jag först?</h2><p id="resume-text">Börja med frånskiljning: följ två möjliga matningar i en figur och beskriv vad som måste kontrolleras. Sedan väljer du instrument med hjälp av korten på sidan.</p><a id="resume" class="sj-btn primary large" href="Genomgang.html?del=franskiljning&amp;avsnitt=mal">Börja med frånskiljning</a></div>
 </header>
-<section aria-labelledby="sa-gor-du"><h2 id="sa-gor-du">Så arbetar du</h2><p>Del 1, 2 och 3 är uppbyggda på samma sätt, och du arbetar uppifrån och ned:</p><ol class="study-method"><li><strong>Översikt.</strong> Vad du ska kunna och när du gör det.</li><li><strong>Teori.</strong> Korta avsnitt med figur. Läs i ordning.</li><li><strong>Exempel.</strong> Följ Så räknar du med papper och räknare. Räkna sedan Din tur själv innan du tittar på svaret.</li><li><strong>Övningar.</strong> Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och vilket teoriavsnitt som förklarar den. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> hela metoden med andra tal. Öppna facit när du har ett eget svar och bocka av övningen.</li><li><strong>Fredag: labben.</strong> Samma metoder: räkna först, läs av, jämför och förklara.</li></ol><p class="study-note">Sist på varje lektion: <a href="Resultat.html">Skicka resultat</a> med namn och QR-kod. Dina avbockningar sparas i den här webbläsaren.</p></section>
+<section aria-labelledby="sa-gor-du"><h2 id="sa-gor-du">Så arbetar du</h2><p>Del 2, 3 och 4 är uppbyggda på samma sätt, och du arbetar uppifrån och ned:</p><ol class="study-method"><li><strong>Översikt.</strong> Vad du ska kunna och när du gör det.</li><li><strong>Teori.</strong> Korta avsnitt med figur. Läs i ordning.</li><li><strong>Exempel.</strong> Följ Så räknar du med papper och räknare. Räkna sedan Din tur själv innan du tittar på svaret.</li><li><strong>Övningar.</strong> Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och vilket teoriavsnitt som förklarar den. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> hela metoden med andra tal. Öppna facit när du har ett eget svar och bocka av övningen.</li><li><strong>Fredag: labben.</strong> Samma metoder: räkna först, läs av, jämför och förklara.</li></ol><p class="study-note">Sist på varje lektion: <a href="Resultat.html">Skicka resultat</a> med namn och QR-kod. Dina avbockningar sparas i den här webbläsaren.</p></section>
 <section aria-labelledby="ordning"><h2 id="ordning">Vad gör vi under veckan?</h2><p>Arbeta i den här ordningen och följ lektionernas plan. Varje del samlar förklaringar, exempel och övningar på samma sida.</p><ol class="study-lessons">{''.join(rows)}</ol></section>
-<section class="study-stage" id="labb"><p class="study-kicker">Fredag · efter del 1–3</p><h2>Använd det du har tränat på i labben</h2><p>Öppna den guidade simulatorlabben och gör åtta uppgifter. För varje mätning: <strong>beräkna först, läs av, jämför och förklara</strong>. Dina mätningar blir ett protokoll som används i växelströmsinlämningens uppgift 4.</p><a class="sj-btn" href="../../vaxelstromslabbet/?lage=guidad">Öppna den guidade simulatorlabben</a></section>
-<section class="study-stage" id="inlamning"><h2>Vad ska jag lämna in?</h2><p><strong>Senast söndag 4 oktober:</strong> lämna båda inlämningarna via den kanal läraren har anvisat.</p><ol><li><a href="Inlamning.html">Växelström, uppgift 1–4</a>: beräkningar, förklaringar och labbprotokoll.</li><li><a href="../../vecka-38/aktuell/Inlamning.html">Frånskiljning och mätteknik, uppgift 1–3</a>: dina svar och motiveringar.</li></ol><p>Övningarna i arbetsrummet är <strong>träning inför dessa inlämningar</strong>. Att läsa alla avsnitt innebär inte att du har lämnat in.</p><p>Efter lektionen: öppna <a href="Resultat.html">Skicka resultat</a>, skriv ditt namn, ta en skärmbild av QR-koden och skicka den till läraren. Följ också instruktionerna på respektive inlämningssida.</p></section>
+<section class="study-stage" id="labb"><p class="study-kicker">Fredag · efter del 1–4</p><h2>Använd det du har tränat på i labben</h2><p>Öppna den guidade simulatorlabben och gör åtta uppgifter. För varje mätning: <strong>beräkna först, läs av, jämför och förklara</strong>. Dina mätningar blir ett protokoll som används i inlämning 7.</p><a class="sj-btn" href="../../vaxelstromslabbet/?lage=guidad">Öppna den guidade simulatorlabben</a></section>
+<section class="study-stage" id="inlamning"><h2>Vad ska jag lämna in?</h2><p><strong>Senast söndag 4 oktober:</strong> lämna båda inlämningarna via den kanal läraren har anvisat.</p><ol><li><a href="../../vecka-38/aktuell/Inlamning.html">Inlämning 1–3: Frånskiljning och mätteknik</a>: dina svar och motiveringar.</li><li><a href="Inlamning.html">Inlämning 4–7: Växelström</a>: beräkningar, förklaringar och labbprotokoll.</li></ol><p>Övningarna i arbetsrummet är <strong>träning inför dessa inlämningar</strong>. Att läsa alla avsnitt innebär inte att du har lämnat in.</p><p>Efter lektionen: öppna <a href="Resultat.html">Skicka resultat</a>, skriv ditt namn, ta en skärmbild av QR-koden och skicka den till läraren. Följ också instruktionerna på respektive inlämningssida.</p></section>
 <details class="study-resources" id="schema"><summary>Detaljerad plan: på lektionen och hemma</summary>{schedule}</details>
 <details class="study-resources"><summary>Film, presentation och extra stöd</summary><p>Läraren använder presentation och film på lektionen. För eget arbete följer du arbetsrummets steg; använd filmen eller artikeln när du vill repetera en förklaring.</p><p><a href="../../bildspel/">Bildspel, PowerPoint och PDF</a> · <a href="Kortfilmer.html">Korta filmer</a> · <a href="Beteckningar.html">Beteckningar</a> · <a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a></p></details>
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>'''

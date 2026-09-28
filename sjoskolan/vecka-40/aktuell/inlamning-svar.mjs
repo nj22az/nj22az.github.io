@@ -1,8 +1,8 @@
-// Inlämningen vecka 40: visar elevens D (slumpat på enheten) och lägger svarsrutor under uppgift 1–3.
+// Inlämningen vecka 40: visar elevens D (slumpat på enheten) och lägger svarsrutor under inlämning 4–6 (ankare uppgift-1–3).
 // Svaren sparas i webbläsaren och följer med i QR-koden på sidan Skicka resultat. Inget facit finns här.
 import {mittD, sattMittD} from '../../gemensamt/elevtal.mjs?v=20260930';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
-import {SVAR, lasSvar, sparaSvar, tal} from './resultat.mjs?v=20260930-qr1';
+import {SVAR, lasSvar, sparaSvar, tal} from './resultat.mjs?v=20260928-nr';
 
 const n = (v) => v.toLocaleString('sv-SE', {maximumFractionDigits: 4});
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
@@ -29,7 +29,7 @@ for (const u of SVAR) {
   const box = document.createElement('form');
   box.className = 'mina-svar';
   box.setAttribute('onsubmit', 'return false');
-  box.innerHTML = `<h3>Mina svar, uppgift ${u.uppgift}</h3><div class="rad">${u.falt.map(([k, l, e]) => `<label>${m(l)} (${e})<input name="${k}" inputmode="decimal" autocomplete="off" value="${Number.isFinite(svar[k]) ? esc(n(svar[k])) : ''}"></label>`).join('')}</div><p class="status" aria-live="polite"></p>`;
+  box.innerHTML = `<h3>Mina svar, inlämning ${u.nr}</h3><div class="rad">${u.falt.map(([k, l, e]) => `<label>${m(l)} (${e})<input name="${k}" inputmode="decimal" autocomplete="off" value="${Number.isFinite(svar[k]) ? esc(n(svar[k])) : ''}"></label>`).join('')}</div><p class="status" aria-live="polite"></p>`;
   sek.append(box);
   const status = box.querySelector('.status');
   const rakna = () => { const k = u.falt.filter(([f]) => Number.isFinite(svar[f])).length; status.textContent = `${k} av ${u.falt.length} svar sparade. De skickas med QR-koden.`; };

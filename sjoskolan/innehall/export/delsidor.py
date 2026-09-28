@@ -38,6 +38,7 @@ def stycken(text):
 
 def sida(a, l, alla, plan, pl_av):
     nr, tab = l['number'], l['id']
+    dnr, antal = nr + 1, len(alla) + 1  # delens nummer i veckan: frånskiljningen är del 1 (innehall/numrering.py)
     guide = plan['vagledning'][tab]
     slides = [s for s in l['slides']]
     teori = [s for s in slides if s['id'] not in EJ_TEORI and not s.get('example') and not s.get('tur')]
@@ -49,11 +50,11 @@ def sida(a, l, alla, plan, pl_av):
     kort = hjalp([' '.join([p['uppgift']['fraga'], *p['uppgift'].get('samband', []), p['uppgift'].get('givet', '')]) for _, p, _ in poster])
     nasta = next((x for x in alla if x['number'] == nr + 1), None)
 
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Del {nr}: {e(l["title"])} · Vecka 40 · Sjöskolan</title><meta name="description" content="{e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Del_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v=20260928"><link rel="stylesheet" href="del.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Del {dnr}: {e(l["title"])} · Vecka 40 · Sjöskolan</title><meta name="description" content="{e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Del_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v=20260928"><link rel="stylesheet" href="del.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="index.html">Vecka 40</a><a href="Resultat.html">Skicka resultat</a></nav>
 <main id="main-content" class="course-main del-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 40</a></div>
 <article class="course-reading del-sida">
-<p class="course-kicker">Vecka 40 · Del {nr} av 3</p><h1>{e(l["title"])}</h1>
+<p class="course-kicker">Vecka 40 · Del {dnr} av {antal}</p><h1>Del {dnr}: {e(l["title"])}</h1>
 <nav class="del-steg" aria-label="Delens ordning"><a href="#oversikt"><b>1</b>Översikt</a><a href="#teori"><b>2</b>Teori</a><a href="#exempel"><b>3</b>Exempel</a><a href="#ovningar"><b>4</b>Övningar</a><a href="#labb"><b>5</b>Fredag: labben</a></nav>''']
 
     # 1 Översikt
@@ -65,7 +66,7 @@ def sida(a, l, alla, plan, pl_av):
 <h3>Så gör du</h3><ol class="del-gor">
 <li><strong>Läs teorin</strong> ({len(teori)} korta avsnitt). Titta på figuren till varje avsnitt.</li>
 <li><strong>Följ exemplen</strong> med papper och räknare. Räkna sedan Din tur och Eget försök innan du öppnar svaret.</li>
-<li><strong>Gör övningarna</strong> ({len(poster)} st). Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och var i teorin den förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> hela metoden med andra tal. Öppna facit när du har ett eget svar.</li>
+<li><strong>Gör övningarna</strong> {dnr}.1–{dnr}.{len(poster)}. Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och var i teorin den förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> hela metoden med andra tal. Öppna facit när du har ett eget svar.</li>
 <li><strong>Skicka resultat</strong> sist på lektionen: <a href="Resultat.html">Skicka resultat</a>, skriv ditt namn och ta en skärmbild av QR-koden.</li></ol>
 <p class="del-mer">Film: <a href="Kortfilmer.html?del={tab}">{e(l["filmTitle"])}</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Lärarens presentation</a> · <a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a> · <a href="Inlamning.html">Veckans inlämning</a></p>''')
     texter = [l['goal']] + [t for s in slides for t in [s['title'], *s['body'], s.get('check'), s.get('answer')]] + [p['uppgift']['fraga'] for _, p, _ in poster]
@@ -110,12 +111,12 @@ def sida(a, l, alla, plan, pl_av):
     h.append('</section>')
 
     # 5 Labben
-    h.append('<section id="labb" class="del-block"><h2><span>5</span> Fredag: labben</h2><p>Labben gör du på fredag, efter del 1–3. Du använder samma metoder som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>. Ledtrådarna i labben pekar tillbaka till teorin på den här sidan.</p>')
+    h.append('<section id="labb" class="del-block"><h2><span>5</span> Fredag: labben</h2><p>Labben gör du på fredag, efter del 2–4. Du använder samma metoder som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>. Ledtrådarna i labben pekar tillbaka till teorin på den här sidan.</p>')
     h += [LK.avsnitt({**s, 'id': 'labb-' + s['id']}, prova=False) for s in labb]
-    h.append(f'<p><a class="sj-btn" href="../../vaxelstromslabbet/?lage=guidad&amp;del={tab}">Öppna den guidade labben, del {nr}</a></p></section>')
+    h.append(f'<p><a class="sj-btn" href="../../vaxelstromslabbet/?lage=guidad&amp;del={tab}">Öppna den guidade labben, del {dnr}</a></p></section>')
 
-    fore = f'<a href="Del_{nr - 1}.html">← Del {nr - 1}</a>' if nr > 1 else '<a href="index.html">← Vecka 40</a>'
-    efter = f'<a href="Del_{nasta["number"]}.html">Del {nasta["number"]}: {e(nasta["title"])} →</a>' if nasta else '<a href="../../vaxelstromslabbet/?lage=guidad">Guidad labb →</a>'
+    fore = f'<a href="Del_{nr - 1}.html">← Del {dnr - 1}</a>' if nr > 1 else '<a href="Genomgang.html?del=franskiljning">← Del 1: Frånskiljning</a>'
+    efter = f'<a href="Del_{nasta["number"]}.html">Del {nasta["number"] + 1}: {e(nasta["title"])} →</a>' if nasta else '<a href="../../vaxelstromslabbet/?lage=guidad">Guidad labb →</a>'
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script type="module">

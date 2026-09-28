@@ -30,8 +30,8 @@ test('workspace: attempts, staged solutions, draft persistence and navigation',(
   $('show-solution').click();assert.equal($('solution').hidden,false);assert.match($('exercise-status').textContent,/Lösning genomgången/);
   jump('EL-000063');fill(['17']);submit();assert.equal($('exercise-status').textContent,'Rätt svar');
   assert.match($('next-instruction').textContent,/beskriva hur du räknade/);
-  assert.match($('session-boundary').textContent,/hemma med övning 4–10/);
-  assert.match($('next').textContent,/Hemma: övning 4/);
+  assert.match($('session-boundary').textContent,/hemma med övning 2\.4–2\.10/);
+  assert.match($('next').textContent,/Hemma: övning 2\.4 /);
   fill(['999']);assert.notEqual($('exercise-status').textContent,'Rätt svar');assert.equal($('feedback').textContent,'');assert.ok($('show-solution').disabled);
   jump('EL-000064');assert.equal($('solution').hidden,true);assert.ok($('show-solution').disabled);
   jump('EL-000063');assert.equal($('answer-0').value,'999');assert.notEqual($('exercise-status').textContent,'Rätt svar');

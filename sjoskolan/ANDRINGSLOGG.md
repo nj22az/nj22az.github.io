@@ -101,6 +101,13 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     veckosidor, inlämning (`innehall.py bygg`) och bildspel (`verktyg/bildspel/bygg.py`, fältet `vecka`).
 32. **Resurslänkar skrivs relativt `sjoskolan/`.** ”Använd:”-länkar på inlämningssidorna utan mapp (`Elevuppgifter.html`,
     `Elevprotokoll.html`, `01A_…`) pekade på filer som inte finns. *Kontroll: `innehall.py kontrollera` (resurslänkar).*
+33. **Numrera vecka för vecka: Övning del.nummer och Inlämning N.** Numren V2-1, E1, ”övning v40_02 nr 3” och
+    ”uppgift 1” på två sidor samtidigt gick inte att följa. Vecka 40: del 1 frånskiljning (1.1–1.7), del 2 sinus,
+    del 3 spole, del 4 effekt; inlämning 1–3 (frånskiljning) och 4–7 (växelström). Registret är fältet `nummer` i
+    placeringarna och reglerna står i `innehall/numrering.py`. Ändra reglerna och kör `numrering.py --skriv`, aldrig
+    numren för hand. En övningstext hänvisar inte till ett nummer (”som i uppgift 9”), utan skriver ”föregående övning”
+    eller övningens namn, eftersom samma post har olika nummer i kursen och boken.
+    *Kontroll: `innehall.py kontrollera` (numrering).*
 
 ### Boken
 
@@ -200,3 +207,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Vecka 40, en sida per del (`Del_1.html`–`Del_3.html`, exportören `delsidor`): Översikt → Teori →
   Exempel → Övningar → Fredag: labben. Varje övning har Ledtråd 1 (vilken formel och vilket teoriavsnitt), Ledtråd 2
   (hur du börjar), räknarhjälp och facit; avbockningen följer med i QR-koden. Veckosidan och dagplanen länkar dit.
+- **2026-09-28** Registervård och numrering vecka för vecka (`innehall/numrering.py`, 456 nummer). Övningarna heter
+  nu Övning del.nummer på webben, i presentationerna, i facit, i lärarmanus och i QR-koden. Vecka 40: del 1–4, inlämning
+  1–7, lärarens QR-granskare visar Inlämning 4–6. Fem övningstexter som hänvisade till gamla nummer skrevs om.

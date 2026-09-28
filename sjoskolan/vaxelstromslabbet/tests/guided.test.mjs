@@ -58,7 +58,7 @@ assert.match(document.getElementById('guide-save').textContent,/Spara ändringen
  assert.match(document.getElementById('guide-task').selectedOptions[0].textContent,/· Förklarad$/);
  // Sista uppgiften i del 1 leder till del 2.
  const topp=pick('grund-topp');f=document.getElementById('guide-predict');f.elements.peak.value=n(guideValues(topp).peak);submit(f);document.getElementById('guide-explain').click();const e2=document.getElementById('guide-explanation');e2.elements.explanation.value='Toppen är roten ur två gånger RMS.';submit(e2);
- assert.match(document.getElementById('guide-next').textContent,/^Nästa del: 2\./);
+ assert.match(document.getElementById('guide-next').textContent,/^Nästa del: 3\./);
  // Ett utkast med bara blanksteg räknas inte som förklarat.
  const per=pick('grund-period');f=document.getElementById('guide-predict');f.elements.T.value=n(guideValues(per).T);submit(f);document.getElementById('guide-explain').click();
  const box=document.getElementById('guide-explanation').elements.explanation;box.value='   ';box.dispatchEvent(new window.Event('input',{bubbles:true}));pick('grund-period');

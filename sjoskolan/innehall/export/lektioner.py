@@ -91,12 +91,12 @@ def artikel(a, l, alla):
     nasta = next((x for x in alla if x['number'] == nr + 1), None)
     toc = [('mal', 'Det här ska du kunna'), ('beteckningar', 'Förkortningar och beteckningar'), ('teori', 'Så fungerar det'), ('instrument', 'Se vad instrumentet visar'), ('exempel', 'Följ ett genomräknat exempel'),
            ('prova', 'Prova själv'), ('labb', 'Det här använder du i labben')] + ([('fordjupning', 'Fördjupning')] if fordjup else []) + [('nasta', 'Nästa steg')]
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(l["title"])} · Vecka 40 · Del {nr + 1} · Sjöskolan</title><meta name="description" content="Lektionsartikel i elteknik: {e(l["goal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-40/aktuell/Lektion_{nr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><link rel="stylesheet" href="ac-course.css?v=20260929"><link rel="stylesheet" href="lektion.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v={V}"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
 <main id="main-content" class="course-main art-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 40</a></div>
 <div class="art-layout"><aside class="art-toc"><details open><summary>På denna sida</summary><ol>{''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)}</ol></details></aside>
 <article class="course-reading art-artikel">
-<p class="course-kicker">Vecka 40 · Del {nr}</p><h1>{e(l["title"])}</h1><p class="course-lead">{R.h(l["goal"])}</p>
+<p class="course-kicker">Vecka 40 · Del {nr + 1}</p><h1>{e(l["title"])}</h1><p class="course-lead">{R.h(l["goal"])}</p>
 <p class="art-meta">{e(l["minutes"])} · Artikel: samma innehåll som <a href="Genomgang.html?del={tab}">genomgången</a> · <a href="Kortfilmer.html?del={tab}">Film</a> · <a href="Formelstod_och_ovningar.html?del=v40_0{l["number"]}">Övningar</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Bildspel</a></p>''']
     # 1 Det här ska du kunna
     mal = slides.get('mal')
@@ -127,7 +127,7 @@ def artikel(a, l, alla):
         h.append(f'<section class="art-uppgift" id="eget"><h3>{R.h(s["title"])}</h3>' + ''.join(f'<p>{R.h(t)}</p>' for t in s['body']) + (f'<details class="facit"><summary>Visa facit</summary><p>{R.h(s["answer"])}</p></details>' if s.get('answer') else '') + '</section>')
     h += [ovning(pl, p, tab) for pl, p in grunduppgifter]
     # 6 Labben
-    h.append('<h2 id="labb">Det här använder du i labben</h2><p>Gör den guidade labben sist, efter del 1–3 och övningarna. Du förutsäger varje värde, läser av det och förklarar skillnaden. Uppgifterna i den här delen:</p><ol>')
+    h.append('<h2 id="labb">Det här använder du i labben</h2><p>Gör den guidade labben sist, efter del 2–4 och övningarna. Du förutsäger varje värde, läser av det och förklarar skillnaden. Uppgifterna i den här delen:</p><ol>')
     h += [f'<li><strong>{R.h(p["titel"])}.</strong> {R.h(p["uppgift"]["fraga"])}</li>' for pl, p in guidade]
     h.append(f'</ol><p class="art-lank"><a class="ac-link-button" href="../../vaxelstromslabbet/?lage=guidad&amp;del={tab}">Öppna den guidade labben, del {nr}</a></p>')
     if 'klart' in slides:
@@ -137,7 +137,7 @@ def artikel(a, l, alla):
     if fordjup:
         h.append('<h2 id="fordjupning">Fördjupning</h2><p class="muted">Utanför den guidade labbens grunddel. Läs förklaringen innan du gör motsvarande övning.</p>')
         if tab == 'effekt':
-            h.append('<p>Kompensering och kabelförlust behövs också i <a href="Inlamning.html#uppgift-3">inlämningsuppgift 3</a>. Läs <a href="Formelstod_och_ovningar.html#kompensering-metod">metoden för att nå en bestämd effektfaktor</a> innan du räknar.</p>')
+            h.append('<p>Kompensering och kabelförlust behövs också i <a href="Inlamning.html#uppgift-3">inlämning 6</a>. Läs <a href="Formelstod_och_ovningar.html#kompensering-metod">metoden för att nå en bestämd effektfaktor</a> innan du räknar.</p>')
         h += [avsnitt(s, prova=True) for s in fordjup]
         h += [ovning(pl, p, tab) for pl, p in extra_uppgifter]
     # 8 Nästa
@@ -146,8 +146,8 @@ def artikel(a, l, alla):
         h.append(f'<p class="art-lank"><a class="ac-link-button" href="Lektion_{nasta["number"]}.html">Fortsätt till del {nasta["number"]}: {e(nasta["title"])}</a></p>')
     else:
         h.append('<p class="art-lank"><a class="ac-link-button" href="../../vaxelstromslabbet/?lage=guidad">Fortsätt till den guidade labben</a> · <a href="Inlamning.html">Veckans inlämning</a></p>')
-    fore = f'<a href="Lektion_{nr - 1}.html">← Del {nr - 1}</a>' if nr > 1 else '<a href="index.html">← Vecka 40</a>'
-    efter = f'<a href="Lektion_{nasta["number"]}.html">Del {nasta["number"]} →</a>' if nasta else '<a href="../../vaxelstromslabbet/?lage=guidad">Guidad labb →</a>'
+    fore = f'<a href="Lektion_{nr - 1}.html">← Del {nr}</a>' if nr > 1 else '<a href="index.html">← Vecka 40</a>'
+    efter = f'<a href="Lektion_{nasta["number"]}.html">Del {nasta["number"] + 1} →</a>' if nasta else '<a href="../../vaxelstromslabbet/?lage=guidad">Guidad labb →</a>'
     h.append(f'<nav class="art-nav" aria-label="Lektioner"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>')
     h.append(f'''<p class="source-note">Ideala undervisningsmodeller. Praktisk instrumentanslutning följer den verkliga stationens anvisningar. Övningarna kommer ur kursens innehållsdatabas.</p>
 </article></div></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>

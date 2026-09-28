@@ -64,18 +64,18 @@ VECKOR = {
                 ppt('v37_01_Forberedelsefragor_1A_elev.pptx', 'Förberedelsefrågor 1A', 1, 'svara innan genomgången'),
                 ppt('v37_02_Elens_grunder_ombord_elev.pptx', 'Elens grunder ombord', 50),
                 lank('01A_Elens_grunder/Elens_grunder.html', 'Elens grunder steg för steg', 'läs', 'samma genomgång som text'),
-                lank('01A_Elens_grunder/Arbetsblad.html', 'Arbetsblad 1A: elens grunder', 'övning', 'E1–E7'),
+                lank('01A_Elens_grunder/Arbetsblad.html', 'Arbetsblad 1A: elens grunder', 'övning', 'övning 1.1–1.7'),
             ]},
             {'titel': 'Elsäkerhet och riskbedömning', 'mal': 'Skilj på fara, händelse och skada och skriv en riskrad som hänger ihop.', 'poster': [
                 ppt('v37_03_Forberedelsefragor_1B_elev.pptx', 'Förberedelsefrågor 1B', 1, 'svara innan genomgången'),
                 ppt('v37_04_Elsakerhet_och_riskbedomning_elev.pptx', 'Elsäkerhet och riskbedömning', 46),
                 lank('01B_Elsakerhet_och_riskbedomning/Elsakerhet_steg_for_steg.html', 'Elsäkerhet steg för steg', 'läs', 'samma genomgång som text'),
                 lank('01B_Elsakerhet_och_riskbedomning/Lampkretsen_bildguide.html', 'Lampkretsen: delar och symboler', 'läs'),
-                lank('01B_Elsakerhet_och_riskbedomning/Arbetsblad.html', 'Arbetsblad 1B: elsäkerhet och riskbedömning', 'övning', 'E1–E6'),
+                lank('01B_Elsakerhet_och_riskbedomning/Arbetsblad.html', 'Arbetsblad 1B: elsäkerhet och riskbedömning', 'övning', 'övning 2.1–2.10'),
                 lank('01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html', 'Mall för riskbedömning', 'mall'),
             ]},
         ],
-        'redovisa': ['Arbetsblad 1A, E1–E7, med metod och enhet i varje beräkning.', 'Arbetsblad 1B, E1–E6.', 'En egen riskbedömning i mallen.'],
+        'redovisa': ['Arbetsblad 1A, övning 1.1–1.7, med metod och enhet i varje beräkning.', 'Arbetsblad 1B, övning 2.3–2.8.', 'En egen riskbedömning i mallen.'],
         'fordjupning': [lank('01B_Elsakerhet_och_riskbedomning/Bildkallor.html', 'Bildkällor till föreläsning 1B', 'läs')],
     },
     # Mappen vecka-38 har inte undervisats än. Den ingår i vecka 40 och börjar måndagens lektion 28 september.
@@ -90,11 +90,11 @@ VECKOR = {
                 lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'utan ljud, med text'),
             ]},
             {'titel': 'Instrumentval och noggrannhet', 'mal': 'Välj rätt funktion och räkna instrumentets felgräns.', 'poster': [
-                lank('Elevuppgifter.html', 'Elevuppgifter V2-1 till V2-4', 'övning'),
-                lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i V2-2'),
+                lank('Elevuppgifter.html', 'Övning 1.1–1.4', 'övning'),
+                lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i övning 1.2'),
             ]},
         ],
-        'redovisa': ['Elevuppgifterna V2-1 till V2-4, var och en med metod och motivering.'],
+        'redovisa': ['Övning 1.1–1.4, var och en med metod och motivering.'],
         'fordjupning': [lank('Fordjupning_elev.html', 'Fördjupning: mätfrågor, upplösning och mätprotokoll', 'övning')],
     },
     39: {
@@ -132,10 +132,10 @@ VECKOR = {
         'forst': {'titel': 'Frånskiljning och mätteknik', 'mal': 'De fem stegen, alla matningsvägar, instrumentval och instrumentets felgräns. Måndag, före del 1.', 'steg': [
             ppt('../../vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx', 'Frånskiljning och mätteknik', 19),
             lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'utan ljud, med text'),
-            lank(V38 + 'Elevuppgifter.html', 'Elevuppgifter V2-1 till V2-4', 'övning', 'V2-1 och V2-2 på lektionen, V2-3 och V2-4 hemma'),
+            lank(V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4', 'övning', '1.1 och 1.2 på lektionen, 1.3 och 1.4 hemma'),
         ], 'mer': [
             lank(V38 + 'Fordjupning_elev.html', 'Fördjupning: mätfrågor, upplösning och mätprotokoll', 'övning', 'frivillig'),
-            lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i V2-2'),
+            lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i övning 1.2'),
         ]},
         'dagar': [],  # fylls i av DAGAR40 nedan
         'delar': [
@@ -304,38 +304,38 @@ def steg(kind, titel, href, minuter, text='', ovningar=None):
 G, K, O = 'Genomgang.html?del=', 'Kortfilmer.html?del=', 'Formelstod_och_ovningar.html?del='
 BILDSPEL38 = '../../bildspel/?d=v38_01_Franskiljning_och_matteknik'
 DAGAR40 = [
-    {'id': 'mandag', 'dag': 'Måndag 28/9', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-09-28T00:00', 'rubrik': 'Frånskiljning, sedan del 1: sinus', 'pass': [
-        ('Pass 1', 'Frånskiljning och mätteknik: de fem stegen, alla matningsvägar, instrumentval och felgräns. Film: Fem steg. Elevuppgift V2-1 och V2-2 i par.'),
-        ('Pass 2', 'Del 1 Sinus och mätvärden: genomgången och filmen tillsammans, sedan övning 1–3.'),
+    {'id': 'mandag', 'dag': 'Måndag 28/9', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-09-28T00:00', 'rubrik': 'Del 1: frånskiljning, sedan del 2: sinus', 'pass': [
+        ('Pass 1', 'Frånskiljning och mätteknik: de fem stegen, alla matningsvägar, instrumentval och felgräns. Film: Fem steg. Övning 1.1 och 1.2 i par.'),
+        ('Pass 2', 'Del 2 Sinus och mätvärden: teori och exempel tillsammans, sedan övning 2.1–2.3.'),
         ('Sist', 'Skicka resultat med QR-koden.'),
-     ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Elevuppgifter'), (G + 'sinus', 'Genomgång del 1'), (K + 'sinus', 'Film del 1')]},
+     ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4'), (G + 'sinus', 'Del 2: sinus'), (K + 'sinus', 'Film del 2')]},
     {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
-        steg('Del 1 · Läs och prova själv', 'Fortsätt med övning 4–10', G + 'sinus&uppgift=v40_01-q4', 75, 'följ arbetsrummet: läs förklaringen vid varje ny typ av uppgift, räkna och kontrollera ditt svar', 'v40_01:4-10'),
-        steg('Frånskiljning · Övningar', 'Elevuppgift V2-3 och V2-4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
-     ], 'fore': ('Före tisdagens lektion', 'Alla tio övningar i del 1 är bearbetade; ta med uppgifter som behöver hjälp. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
-    {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 2: spole, motstånd och ström', 'pass': [
-        ('Pass 1', 'Dina frågor från del 1. Del 2: genomgången och filmen tillsammans.'),
-        ('Pass 2', 'Övning 1–4. Påbörja inlämningen Växelström, uppgift 1.'),
+        steg('Del 2 · Övningar', 'Fortsätt med övning 2.4–2.10', G + 'sinus&uppgift=v40_01-q4', 75, 'läs teorin som ledtråd 1 pekar på, räkna och jämför med facit', 'v40_01:4-10'),
+        steg('Del 1 · Övningar', 'Övning 1.3 och 1.4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
+     ], 'fore': ('Före tisdagens lektion', 'Övning 2.1–2.10 är bearbetade; ta med uppgifter som behöver hjälp. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
+    {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 3: spole, motstånd och ström', 'pass': [
+        ('Pass 1', 'Dina frågor från del 2. Del 3: teori och exempel tillsammans.'),
+        ('Pass 2', 'Övning 3.1–3.4. Påbörja inlämning 4.'),
         ('Sist', 'Skicka resultat med QR-koden.'),
-     ], 'material': [(G + 'impedans', 'Genomgång del 2'), (K + 'impedans', 'Film del 2'), (O + 'v40_02', 'Övningar del 2'), ('Inlamning.html#uppgift-1', 'Inlämning uppgift 1')]},
+     ], 'material': [(G + 'impedans', 'Del 3: spole'), (K + 'impedans', 'Film del 3'), (O + 'v40_02', 'Övning 3.1–3.10'), ('Inlamning.html#uppgift-1', 'Inlämning 4')]},
     {'id': 'onsdag', 'dag': 'Tisdag kväll och onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T17:00', 'steg': [
-        steg('Del 2 · Läs och prova själv', 'Följ exemplet och gör övning 5–10', G + 'impedans&avsnitt=exempel', 55, 'fortsätt i arbetsrummet; förklaringar, exempel och egna försök kommer i ordning', 'v40_02:5-10'),
-        steg('Frånskiljning · Inlämning', 'Uppgift 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
-     ], 'fore': ('Före fredagens lektion', 'Del 2 är klar med alla tio övningar. Frånskiljningens inlämning är skriven.')},
+        steg('Del 3 · Övningar', 'Följ exemplet och gör övning 3.5–3.10', G + 'impedans&avsnitt=exempel', 55, 'fortsätt på delsidan: exempel först, sedan övningarna', 'v40_02:5-10'),
+        steg('Del 1 · Inlämning', 'Inlämning 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
+     ], 'fore': ('Före fredagens lektion', 'Övning 3.1–3.10 är klara. Inlämning 1–3 är skriven.')},
     {'id': 'torsdag', 'dag': 'Torsdag 1/10', 'typ': 'Hemma', 'start': '2026-10-01T00:00', 'steg': [
-        steg('Del 3 · Läs och prova själv', 'Effekt och effektfaktor, till och med övning 6', G + 'effekt', 70, 'följ arbetsrummets förklaringar och egna försök; stanna efter övning 6', 'v40_03:1-6'),
-        steg('Del 3 · Film', 'Samma aktiva effekt, olika ström', K + 'effekt', 5, '2 min, svensk text'),
-        steg('Växelström · Inlämning', 'Uppgift 1 och 2', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
-     ], 'fore': ('Före fredagens lektion', 'Du har läst del 3 och gjort övning 1–6. Ta med dina frågor. Labben på fredag bygger på del 1–3.')},
-    {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 3 och labben', 'pass': [
-        ('Pass 1', 'Dina frågor från del 3. Övning 7–10 tillsammans.'),
+        steg('Del 4 · Teori, exempel och övningar', 'Effekt och effektfaktor, till och med övning 4.6', G + 'effekt', 70, 'läs teorin och exemplen, stanna efter övning 4.6', 'v40_03:1-6'),
+        steg('Del 4 · Film', 'Samma aktiva effekt, olika ström', K + 'effekt', 5, '2 min, svensk text'),
+        steg('Inlämning', 'Inlämning 4 och 5', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
+     ], 'fore': ('Före fredagens lektion', 'Du har läst del 4 och gjort övning 4.1–4.6. Ta med dina frågor. Labben på fredag bygger på del 2–4.')},
+    {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 4 och labben', 'pass': [
+        ('Pass 1', 'Dina frågor från del 4. Övning 4.7–4.10 tillsammans.'),
         ('Pass 2', 'Labb: växelströmslabbet, guidad. Alla åtta uppgifter. Veckans sista steg.'),
         ('Sist', 'Skicka resultat med QR-koden, nu med labbprotokollet.'),
-     ], 'material': [(O + 'v40_03#v40_03-q7', 'Övning 7–10'), (LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad'), ('Resultat.html', 'Skicka resultat')]},
+     ], 'material': [(O + 'v40_03#v40_03-q7', 'Övning 4.7–4.10'), (LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad'), ('Resultat.html', 'Skicka resultat')]},
     {'id': 'helgen', 'dag': 'Fredag eftermiddag och helgen', 'typ': 'Hemma', 'start': '2026-10-02T11:00', 'steg': [
         steg('Labb', 'Gör klart labbet', LABB['ac'] + '?lage=guidad', 30, 'de uppgifter du inte hann på fredagen'),
-        steg('Växelström · Inlämning', 'Uppgift 3 och 4', 'Inlamning.html#uppgift-3', 45, 'uppgift 4 är protokollet från labbet'),
-        steg('Inlämning', 'Lämna in båda inlämningarna', '#inlamning', 10, 'Växelström och Frånskiljning, via den inlämningskanal läraren har anvisat'),
+        steg('Inlämning', 'Inlämning 6 och 7', 'Inlamning.html#uppgift-3', 45, 'inlämning 7 är protokollet från labbet'),
+        steg('Inlämning', 'Lämna in inlämning 1–7', '#inlamning', 10, 'frånskiljning 1–3 och växelström 4–7, via den inlämningskanal läraren har anvisat'),
         steg('Skicka resultat', 'QR-koden', 'Resultat.html', 5, 'skriv ditt namn, ta en skärmbild och skicka den till läraren'),
      ], 'fore': ('Senast söndag 4 oktober', 'Båda inlämningarna är inlämnade och du har skickat resultatet med QR-koden.')},
 ]
@@ -479,8 +479,8 @@ def page(nr, w):
         actions = (f'<div class="nu-panel" id="nu" aria-live="polite"><p class="nu-etikett">Börja här</p><p class="nu-rubrik">{escape(d0["dag"])}: {escape(d0["rubrik"])}</p>'
                    f'<p class="nu-knapp"><a class="sj-btn primary large" href="#{d0["id"]}">Se planen för {escape(d0["dag"].split()[0].lower())}</a></p></div>')
         inl38 = ', '.join(f'{escape(x)}' for _, x, _t in INLAMNING[38])
-        due = (f'<p class="week-due"><strong>Inlämning senast söndag {datum(w["sista"])}:</strong> <a href="Inlamning.html">Växelström, uppgift 1–{len(INLAMNING[nr])}</a> '
-               f'och <a href="../../vecka-38/aktuell/Inlamning.html">Frånskiljning och mätteknik, uppgift 1–{len(INLAMNING[38])}</a>.</p>')
+        due = (f'<p class="week-due"><strong>Inlämning senast söndag {datum(w["sista"])}:</strong> <a href="../../vecka-38/aktuell/Inlamning.html">Inlämning 1–{len(INLAMNING[38])}: Frånskiljning och mätteknik</a> '
+               f'och <a href="Inlamning.html">Inlämning {len(INLAMNING[38]) + 1}–{len(INLAMNING[38]) + len(INLAMNING[nr])}: Växelström</a>.</p>')
         plan = dagplan(nr)
         script = f'<script type="module" src="dagplan.mjs?v={DAGPLAN_V}"></script>'
         rubrik_ordning = 'Allt material, del för del'

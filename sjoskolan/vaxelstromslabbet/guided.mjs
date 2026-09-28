@@ -10,8 +10,13 @@ const n=v=>v.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigi
 const KEY='sjoskolan-ac-grund-v3';
 const tid=iso=>iso?new Date(iso).toLocaleString('sv-SE',{dateStyle:'short',timeStyle:'short'}):'';
 // Läshänvisning: den bild i genomgången som förklarar metoden (del och bildnummer räknas ur lektionerna).
-function las(task){const l=LESSONS.find(x=>x.id===task.lesson),i=l?l.slides.findIndex(x=>x.id===task.theory):-1;const href=`../vecka-40/aktuell/Genomgang.html?del=${task.lesson}&amp;avsnitt=${task.theory}`;
- return i<0?`<a href="${href}" target="_blank" rel="noopener">Läs motsvarande del av genomgången</a>`:`Kan du inte metoden? Läs genomgången <a href="${href}" target="_blank" rel="noopener">del ${l.number}, avsnitt ${i+1}: ${m(l.slides[i].title)}</a> (öppnas i ny flik) och gör sedan uppgiften.`;}
+// Läshänvisning till delsidan (vecka-40/aktuell/Del_N.html): teoriavsnittets nummer räknas som på delsidan
+// (innehall/export/delsidor.py). Delens nummer i veckan är number + 1: frånskiljningen är del 1.
+const EJ_TEORI=['mal','exempel','eget','klart','labb','matarna','protokoll'];
+function las(task){const l=LESSONS.find(x=>x.id===task.lesson);if(!l)return '';const s=l.slides.find(x=>x.id===task.theory),d=l.number+1,sida=`../vecka-40/aktuell/Del_${l.number}.html`;
+ const teori=l.slides.filter(x=>!EJ_TEORI.includes(x.id)&&!x.example&&!x.tur),j=teori.findIndex(x=>x.id===task.theory);
+ const [href,text]=!s?[sida,`del ${d}`]:j>=0?[`${sida}#teori-${s.id}`,`del ${d}, teori ${j+1}: ${m(s.title)}`]:s.example||s.id==='exempel'?[`${sida}#exempel-${s.id}`,`del ${d}, exemplet: ${m(s.title)}`]:[`${sida}#labb-${s.id}`,`del ${d}: ${m(s.title)}`];
+ return `Kan du inte metoden? Läs <a href="${href}" target="_blank" rel="noopener">${text}</a> (öppnas i ny flik) och gör sedan uppgiften.`;}
 export function mountGuide(root){
  // D slumpas en gång per enhet (gemensamt/elevtal.mjs). Namnet skrivs först i slutet, på sidan Skicka resultat.
  // Ett äldre protokoll med namn behåller sitt D (räknat ur namnet), så att påbörjat arbete inte går förlorat.
@@ -47,15 +52,15 @@ export function mountGuide(root){
   el.scrollIntoView?.({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'});}
  function setTask(id,fromUser=true){task=TASKS.find(t=>t.id===id)||TASKS[0];phase=row().measured&&ready()?2:0;render(fromUser);}
  function nextInfo(){const next=TASKS[TASKS.indexOf(task)+1];if(!next)return {next:null,label:'Visa hela grundprotokollet'};
-  if(next.lesson===task.lesson)return {next,label:`Nästa uppgift: ${m(next.title)}`};const L=LESSONS.find(l=>l.id===next.lesson);return {next,label:L?`Nästa del: ${L.number}. ${m(L.title)}`:`Nästa uppgift: ${m(next.title)}`};}
+  if(next.lesson===task.lesson)return {next,label:`Nästa uppgift: ${m(next.title)}`};const L=LESSONS.find(l=>l.id===next.lesson);return {next,label:L?`Nästa del: ${L.number+1}. ${m(L.title)}`:`Nästa uppgift: ${m(next.title)}`};}
  function render(fromUser=false){
   guardUntil=now()+600;
   const eq=publishEquipment({tab:task.lesson,values:task.setup,locked:phase===0,editable:false,taskId:task.id});
   const lesson=LESSONS.find(l=>l.id===task.lesson),r=row(),items=TASKS.filter(t=>t.lesson===task.lesson),saved=phase===2&&forklarad(r);
   const suffix=t=>{const x=data.rows[t.id];return forklarad(x)?' · Förklarad':x?.measured?' · Avläst':'';};
   const klart=i=>i<phase||(i===2&&saved);
-  root.innerHTML=`<div class="guide-pickers"><label>Del<select id="guide-lesson">${LESSONS.map(l=>`<option value="${l.id}"${l.id===lesson.id?' selected':''}>${l.number}. ${l.title}</option>`).join('')}</select></label><label>Uppgift<select id="guide-task">${items.map(t=>`<option value="${t.id}"${t.id===task.id?' selected':''}>${m(t.title)}${suffix(t)}</option>`).join('')}</select></label></div>
-  <p class="guide-label">Uppgift ${items.indexOf(task)+1} av ${items.length} i del ${lesson.number}</p><h2>${m(task.title)}</h2><p class="guide-source">${m(task.source)}</p>
+  root.innerHTML=`<div class="guide-pickers"><label>Del<select id="guide-lesson">${LESSONS.map(l=>`<option value="${l.id}"${l.id===lesson.id?' selected':''}>Del ${l.number+1}: ${l.title}</option>`).join('')}</select></label><label>Uppgift<select id="guide-task">${items.map(t=>`<option value="${t.id}"${t.id===task.id?' selected':''}>${m(t.title)}${suffix(t)}</option>`).join('')}</select></label></div>
+  <p class="guide-label">Uppgift ${items.indexOf(task)+1} av ${items.length} i del ${lesson.number+1}</p><h2>${m(task.title)}</h2><p class="guide-source">${m(task.source)}</p>
   <p class="guide-steg" id="guide-steg" tabindex="-1">Steg ${phase+1} av 3: ${STEG[phase]}</p>
   <ol class="guide-progress" aria-label="Arbetsgång">${STEG.map((t,i)=>`<li${i===phase?' aria-current="step"':''}${klart(i)?' class="klart"':''}>${i+1}. ${t}${klart(i)?' – klart':''}</li>`).join('')}</ol>
   <div id="guide-step"></div>

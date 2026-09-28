@@ -14,14 +14,15 @@ export const DELAR = ['v40_01', 'v40_02', 'v40_03'];
 export const OVNINGAR_PER_DEL = 10;
 export const LARARSIDA = '/sjoskolan/larare/resultat.html';
 
-// Inlämningens svarsfält: [nyckel, storhet, enhet]. Samma ordning i lärarsidan.
+// Inlämningens svarsfält: [nyckel, storhet, enhet]. Samma ordning i lärarsidan. uppgift = sidans ankare (uppgift-N),
+// nr = numret eleven ser (vecka 40: inlämning 4–6, efter frånskiljningens 1–3, se innehall/numrering.py).
 export const SVAR = [
-  { uppgift: 1, titel: 'Egen sinusspänning', falt: [
+  { uppgift: 1, nr: 4, titel: 'Egen sinusspänning', falt: [
     ['u1_top', 'û, beräknat', 'V'], ['u1_upp', 'U_{pp}, beräknat', 'V'], ['u1_T', 'T, beräknad', 'ms'],
     ['u1_topL', 'û, avläst på oscilloskopet', 'V'], ['u1_TL', 'T, avläst på oscilloskopet', 'ms']] },
-  { uppgift: 2, titel: 'Egen RL-last', falt: [
+  { uppgift: 2, nr: 5, titel: 'Egen RL-last', falt: [
     ['u2_XL', 'X_{L}', 'Ω'], ['u2_Z', '|Z|', 'Ω'], ['u2_I', 'I', 'A'], ['u2_fi', 'φ', '°'], ['u2_I100', 'I vid 100 Hz', 'A']] },
-  { uppgift: 3, titel: 'Effekt och kompensering', falt: [
+  { uppgift: 3, nr: 6, titel: 'Effekt och kompensering', falt: [
     ['u3_S', 'S', 'kVA'], ['u3_Q', 'Q', 'kvar'], ['u3_I', 'I', 'A'], ['u3_QC', 'Q_{C} för cos φ = 0,95', 'kvar'],
     ['u3_Iny', 'I efter kompenseringen', 'A'], ['u3_forl', 'Ny kabelförlust i % av den tidigare', '%']] },
 ];

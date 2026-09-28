@@ -14,25 +14,25 @@ export const STUDY = {
   "guidance": {
     "franskiljning": {
       "titel": "Frånskiljning och mätteknik",
-      "nar": "Måndag: V2-1 och V2-2 på lektionen. V2-3 och V2-4 hemma före tisdagens lektion.",
+      "nar": "Måndag: övning 1.1 och 1.2 på lektionen. Övning 1.3 och 1.4 hemma före tisdagens lektion.",
       "syfte": "Du ska kunna upptäcka när underlaget inte räcker för en säker mätning och välja ett instrument som passar uppgiften.",
       "gor": [
         "Följ matning A och B i figuren. Skriv vad som behöver kontrolleras innan arbetsområdet kan bedömas som spänningslöst.",
         "Läs instrumentkorten. Välj mätfunktion och beskriv anslutningen för varje fall.",
-        "Följ räkneexemplet om felgräns och använd sedan metoden i V2-3. Avsluta med att beskriva vilket underlag som saknas i V2-4."
+        "Följ räkneexemplet om felgräns och använd sedan metoden i övning 1.3. Avsluta med att beskriva vilket underlag som saknas i övning 1.4."
       ],
-      "klar": "Du har sparat ett eget försök till V2-1–V2-4 och kan peka ut det du behöver hjälp med. Läraren bedömer dina motiveringar.",
+      "klar": "Du har sparat ett eget försök till övning 1.1–1.4 och kan peka ut det du behöver hjälp med. Läraren bedömer dina motiveringar.",
       "lasuppdrag": {
         "matningar": "Följ A och B fram till lasten i figuren. Leta efter vad vi vet och vad som fortfarande måste verifieras.",
         "instrument": "Jämför kort M1 och M2. Hitta vilka funktioner och begränsningar som avgör om ett instrument går att använda.",
         "felgrans": "Ta reda på vad procentdelen respektive siffrorna betyder. Du ska snart räkna båda delarna i volt.",
-        "exempel": "Räkna med på papper. Försök få fram nästa rad innan du visar den. Du använder sedan metoden med andra värden i V2-3.",
+        "exempel": "Räkna med på papper. Försök få fram nästa rad innan du visar den. Du använder sedan metoden med andra värden i övning 1.3.",
         "ansvar": "Leta efter de uppgifter och ansvariga roller som måste vara klarlagda innan ett arbete kan planeras."
       }
     },
     "sinus": {
       "titel": "Sinus och mätvärden",
-      "nar": "Måndag: övning 1–3 med läraren. Övning 4–10 hemma före tisdagens lektion.",
+      "nar": "Måndag: övning 2.1–2.3 med läraren. Övning 2.4–2.10 hemma före tisdagens lektion.",
       "syfte": "En kurva och en multimeter kan visa olika tal för samma spänning. Du ska kunna avgöra vilket värde du läser och förutsäga mätarens visning.",
       "gor": [
         "Läs hur du hittar en period och räknar tiden för den. Prova sedan själv i svarsfälten.",
@@ -58,7 +58,7 @@ export const STUDY = {
     },
     "impedans": {
       "titel": "Spole, motstånd och ström",
-      "nar": "Tisdag: övning 1–4 med läraren. Övning 5–10 hemma tisdag kväll och onsdag.",
+      "nar": "Tisdag: övning 3.1–3.4 med läraren. Övning 3.5–3.10 hemma tisdag kväll och onsdag.",
       "syfte": "En motorlindning påverkar växelström på fler sätt än ett vanligt motstånd. Du tränar på att beräkna strömmen innan du läser av den i simulatorn.",
       "gor": [
         "Läs först om resistorn och spolen. Räkna spolens reaktans och sedan hela kretsens impedans.",
@@ -84,7 +84,7 @@ export const STUDY = {
     },
     "effekt": {
       "titel": "Effekt och effektfaktor",
-      "nar": "Torsdag hemma: övning 1–6. Fredag med läraren: övning 7–10, sedan simulatorlabben.",
+      "nar": "Torsdag hemma: övning 4.1–4.6. Fredag med läraren: övning 4.7–4.10, sedan simulatorlabben.",
       "syfte": "Två laster med samma aktiva effekt kan kräva olika ström. Du ska kunna förklara skillnaden och vad den betyder för matningen och ledningsförlusterna.",
       "gor": [
         "Läs vad aktiv effekt och effektfaktor betyder. Följ hur strömmen beräknas.",
@@ -286,7 +286,7 @@ export const STUDY = {
       "id": "EL-000630",
       "revision": 3,
       "title": "Två matningar",
-      "number": "V2-1",
+      "number": "Övning 1.1",
       "anchor": "v2-1",
       "question": {
         "fraga": "Ange varför A:s öppna brytare inte räcker som säkerhetsbevis. Skriv ett underlagskrav och en verifieringsfråga.",
@@ -324,15 +324,15 @@ export const STUDY = {
       ],
       "syfte": "välja mätfunktion och anslutning utifrån det som faktiskt ska mätas",
       "stopp": {
-        "text": "Här slutar måndagens första pass. På lektionen fortsätter du med del 1: sinus. Gör V2-3 och V2-4 hemma före tisdagens lektion.",
+        "text": "Här slutar måndagens första pass. På lektionen fortsätter du med del 2: sinus. Gör övning 1.3 och 1.4 hemma före tisdagens lektion.",
         "href": "?del=sinus&fortsatt=1",
-        "label": "På lektionen: fortsätt till del 1",
+        "label": "På lektionen: fortsätt till del 2",
         "nasta": "Hemma: instrumentets felgräns"
       },
       "id": "EL-000631",
       "revision": 3,
       "title": "Instrumentval",
-      "number": "V2-2",
+      "number": "Övning 1.2",
       "anchor": "v2-2",
       "question": {
         "fraga": "Välj instrument/funktion för 12 V DC, 12 V AC vid 50 Hz, cirka 4 mA DC och ett löst 1 kΩ-motstånd. Beskriv anslutning.",
@@ -369,7 +369,7 @@ export const STUDY = {
       "id": "EL-000632",
       "revision": 4,
       "title": "Osäkerhet",
-      "number": "V2-3",
+      "number": "Övning 1.3",
       "anchor": "v2-3",
       "question": {
         "fraga": "Beräkna gränsen enligt denna specifikation. Bedöm om 12,04 V avviker säkert från ett referensvärde 12,00 V om övriga osäkerheter försummas.",
@@ -416,7 +416,7 @@ export const STUDY = {
       "id": "EL-000633",
       "revision": 3,
       "title": "Högspänningsfall på skärm",
-      "number": "V2-4",
+      "number": "Övning 1.4",
       "anchor": "v2-4",
       "question": {
         "fraga": "Beskriv vilka uppgifter/roller som behöver finnas. Gör inga förslag på manöverordning eller generella säkerhetsavstånd.",
@@ -452,7 +452,7 @@ export const STUDY = {
       "id": "EL-000061",
       "revision": 6,
       "title": "Period vid 50 Hz",
-      "number": "Övning 1",
+      "number": "Övning 2.1",
       "anchor": "v40_01-q1",
       "question": {
         "fraga": "Beräkna periodtiden i sekunder och millisekunder för en signal på 50 Hz.",
@@ -513,7 +513,7 @@ export const STUDY = {
       "id": "EL-000062",
       "revision": 6,
       "title": "Frekvens från kurvan",
-      "number": "Övning 2",
+      "number": "Övning 2.2",
       "anchor": "v40_01-q2",
       "question": {
         "fraga": "En sinus upprepar sig var 4,0 ms. Beräkna frekvensen.",
@@ -566,13 +566,13 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "jämföra multimeterns effektivvärde med kurvans högsta spänning",
       "stopp": {
-        "text": "Här slutar måndagens gemensamma räkneövningar i del 1. Fortsätt hemma med övning 4–10 före tisdagens lektion. Ta med frågor om det som är oklart.",
-        "nasta": "Hemma: övning 4 · Effektivvärde"
+        "text": "Här slutar måndagens gemensamma räkneövningar i del 2. Fortsätt hemma med övning 2.4–2.10 före tisdagens lektion. Ta med frågor om det som är oklart.",
+        "nasta": "Hemma: övning 2.4 · Effektivvärde"
       },
       "id": "EL-000063",
       "revision": 6,
       "title": "Toppvärde",
-      "number": "Övning 3",
+      "number": "Övning 2.3",
       "anchor": "v40_01-q3",
       "question": {
         "fraga": "En sinusspänning har effektivvärdet 12,0 V. Beräkna toppvärdet.",
@@ -625,7 +625,7 @@ export const STUDY = {
       "id": "EL-000064",
       "revision": 6,
       "title": "Effektivvärde",
-      "number": "Övning 4",
+      "number": "Övning 2.4",
       "anchor": "v40_01-q4",
       "question": {
         "fraga": "En sinus har toppvärdet 34,0 V. Beräkna effektivvärdet.",
@@ -680,7 +680,7 @@ export const STUDY = {
       "id": "EL-000065",
       "revision": 6,
       "title": "Topp till topp",
-      "number": "Övning 5",
+      "number": "Övning 2.5",
       "anchor": "v40_01-q5",
       "question": {
         "fraga": "Ett oscilloskop visar 20,0 V mellan sinusens positiva och negativa topp. Beräkna toppvärde och effektivvärde.",
@@ -742,7 +742,7 @@ export const STUDY = {
       "id": "EL-000069",
       "revision": 6,
       "title": "Effekt i resistor",
-      "number": "Övning 9",
+      "number": "Övning 2.9",
       "anchor": "v40_01-q9",
       "question": {
         "fraga": "En sinusspänning på 12,0 V RMS ligger över 24 Ω. Beräkna medeleffekten.",
@@ -797,7 +797,7 @@ export const STUDY = {
       "id": "EL-000066",
       "revision": 6,
       "title": "Momentanvärde",
-      "number": "Övning 6",
+      "number": "Övning 2.6",
       "anchor": "v40_01-q6",
       "question": {
         "fraga": "u(t) = 17,0 sin(2π · 50t) V. Beräkna spänningen vid t = 5,0 ms.",
@@ -850,12 +850,12 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "tolka ett negativt värde som omvänd polaritet under sinusens negativa halvperiod",
       "id": "EL-000067",
-      "revision": 6,
+      "revision": 7,
       "title": "Negativ halvvåg",
-      "number": "Övning 7",
+      "number": "Övning 2.7",
       "anchor": "v40_01-q7",
       "question": {
-        "fraga": "Samma signal som i uppgift 6. Beräkna u vid t = 15,0 ms.",
+        "fraga": "Samma signal som i föregående övning. Beräkna u vid t = 15,0 ms.",
         "givet": "t = 15,0 ms = 0,0150 s. Räknaren står i RAD.",
         "samband": [
           "u(t) = 17,0 · sin(2π · 50t) V"
@@ -875,7 +875,7 @@ export const STUDY = {
         {
           "niva": "nasta-steg",
           "status": "utkast",
-          "text": "Samma recept som i övning 6: 1) t i sekunder, 2) vinkeln 2πft med räknaren i RAD, 3) sin med tecken, 4) multiplicera med û. Är vinkeln mellan π (≈ 3,14) och 2π (≈ 6,28) rad ligger du i den negativa halvvågen och sinus blir negativ. Exempel: vinkeln 4,5 rad ger sin ≈ −0,978; med û = 15 V blir u ≈ −14,7 V. Skriv med minustecknet i svaret."
+          "text": "Samma recept som i föregående övning: 1) t i sekunder, 2) vinkeln 2πft med räknaren i RAD, 3) sin med tecken, 4) multiplicera med û. Är vinkeln mellan π (≈ 3,14) och 2π (≈ 6,28) rad ligger du i den negativa halvvågen och sinus blir negativ. Exempel: vinkeln 4,5 rad ger sin ≈ −0,978; med û = 15 V blir u ≈ −14,7 V. Skriv med minustecknet i svaret."
         }
       ],
       "solution": {
@@ -907,7 +907,7 @@ export const STUDY = {
       "id": "EL-000068",
       "revision": 6,
       "title": "Fas från tidsavstånd",
-      "number": "Övning 8",
+      "number": "Övning 2.8",
       "anchor": "v40_01-q8",
       "question": {
         "fraga": "Två sinussignaler på 50 Hz är förskjutna 2,0 ms mot varandra. Beräkna fasvinkeln.",
@@ -961,7 +961,7 @@ export const STUDY = {
       "id": "EL-000070",
       "revision": 8,
       "title": "Jämförelse av vågformer",
-      "number": "Övning 10",
+      "number": "Övning 2.10",
       "anchor": "v40_01-q10",
       "question": {
         "fraga": "A är en sinus med toppvärdet 12 V. B är en symmetrisk fyrkantvåg som växlar mellan +12 V och −12 V. Jämför effektivvärde och medelvärde.",
@@ -1039,7 +1039,7 @@ export const STUDY = {
       "id": "EL-000071",
       "revision": 7,
       "title": "Spolens reaktans",
-      "number": "Övning 1",
+      "number": "Övning 3.1",
       "anchor": "v40_02-q1",
       "question": {
         "fraga": "L = 0,10 H och f = 50 Hz. Beräkna X_{L}.",
@@ -1093,7 +1093,7 @@ export const STUDY = {
       "id": "EL-000073",
       "revision": 8,
       "title": "RL-kretsens impedans",
-      "number": "Övning 3",
+      "number": "Övning 3.3",
       "anchor": "v40_02-q3",
       "question": {
         "fraga": "En seriekrets har R = 30 Ω och X_{L} = 40 Ω. Beräkna |Z|.",
@@ -1145,15 +1145,15 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "förutsäga strömmen i en krets med både motstånd och spole före en avläsning",
       "stopp": {
-        "text": "Här slutar tisdagens gemensamma övningar i del 2. Påbörja sedan växelströmsinlämningens uppgift 1 på lektionen. Fortsätt hemma med övning 5–10, och skriv frånskiljningens inlämning under onsdagen.",
+        "text": "Här slutar tisdagens gemensamma övningar i del 3. Påbörja sedan inlämning 4 på lektionen. Fortsätt hemma med övning 3.5–3.10, och skriv frånskiljningens inlämning 1–3 under onsdagen.",
         "href": "Inlamning.html#uppgift-1",
-        "label": "På lektionen: inlämningens uppgift 1",
-        "nasta": "Hemma: följ exemplet inför övning 5"
+        "label": "På lektionen: inlämning 4",
+        "nasta": "Hemma: följ exemplet inför övning 3.5"
       },
       "id": "EL-000074",
-      "revision": 7,
+      "revision": 8,
       "title": "Strömmen i RL-kretsen",
-      "number": "Övning 4",
+      "number": "Övning 3.4",
       "anchor": "v40_02-q4",
       "question": {
         "fraga": "100 V RMS matar en krets med R = 30 Ω och X_{L} = 40 Ω i serie. Beräkna strömmen.",
@@ -1176,7 +1176,7 @@ export const STUDY = {
         {
           "niva": "nasta-steg",
           "status": "utkast",
-          "text": "1) Räkna |Z| = √(R² + X_{L}²) som i övning 13. 2) I = U_{RMS}/|Z|, båda effektivvärden. 3) Enheten blir A. Kontroll: I ska vara mindre än U/R (strömmen som om spolen inte fanns). Exempel: 230 V över R = 24 Ω och X_{L} = 10 Ω: |Z| = √(576 + 100) = 26 Ω och I = 230/26 ≈ 8,8 A."
+          "text": "1) Räkna |Z| = √(R² + X_{L}²) som i föregående övning. 2) I = U_{RMS}/|Z|, båda effektivvärden. 3) Enheten blir A. Kontroll: I ska vara mindre än U/R (strömmen som om spolen inte fanns). Exempel: 230 V över R = 24 Ω och X_{L} = 10 Ω: |Z| = √(576 + 100) = 26 Ω och I = 230/26 ≈ 8,8 A."
         }
       ],
       "solution": {
@@ -1207,7 +1207,7 @@ export const STUDY = {
       "id": "EL-000075",
       "revision": 7,
       "title": "Spänningar i serie",
-      "number": "Övning 5",
+      "number": "Övning 3.5",
       "anchor": "v40_02-q5",
       "question": {
         "fraga": "RL-kretsen har I = 2,0 A, R = 30 Ω och X_{L} = 40 Ω. Beräkna U_{R}, U_{L} och källspänningen.",
@@ -1280,7 +1280,7 @@ export const STUDY = {
       "id": "EL-000076",
       "revision": 7,
       "title": "Fasvinkel i RL",
-      "number": "Övning 6",
+      "number": "Övning 3.6",
       "anchor": "v40_02-q6",
       "question": {
         "fraga": "R = 30 Ω, X_{L} = 40 Ω. Bestäm φ och ange om strömmen leder eller släpar spänningen.",
@@ -1340,7 +1340,7 @@ export const STUDY = {
       "id": "EL-000072",
       "revision": 7,
       "title": "Kondensatorns reaktans",
-      "number": "Övning 2",
+      "number": "Övning 3.2",
       "anchor": "v40_02-q2",
       "question": {
         "fraga": "C = 100 µF och f = 50 Hz. Beräkna X_{C}.",
@@ -1394,7 +1394,7 @@ export const STUDY = {
       "id": "EL-000077",
       "revision": 7,
       "title": "RC-krets",
-      "number": "Övning 7",
+      "number": "Övning 3.7",
       "anchor": "v40_02-q7",
       "question": {
         "fraga": "R = 60 Ω och X_{C} = 80 Ω i serie över 200 V RMS. Bestäm |Z|, I och φ.",
@@ -1465,7 +1465,7 @@ export const STUDY = {
       "id": "EL-000078",
       "revision": 7,
       "title": "Dubbel frekvens",
-      "number": "Övning 8",
+      "number": "Övning 3.8",
       "anchor": "v40_02-q8",
       "question": {
         "fraga": "Frekvensen ökas från 50 till 100 Hz. Hur ändras X_{L} och X_{C} när komponenterna är desamma?",
@@ -1524,7 +1524,7 @@ export const STUDY = {
       "id": "EL-000079",
       "revision": 7,
       "title": "RLC-krets",
-      "number": "Övning 9",
+      "number": "Övning 3.9",
       "anchor": "v40_02-q9",
       "question": {
         "fraga": "R = 30 Ω, X_{L} = 50 Ω och X_{C} = 10 Ω i serie. U = 100 V RMS. Bestäm nettoreaktans, |Z| och I.",
@@ -1594,7 +1594,7 @@ export const STUDY = {
       "id": "EL-000080",
       "revision": 8,
       "title": "Serieresonans",
-      "number": "Övning 10",
+      "number": "Övning 3.10",
       "anchor": "v40_02-q10",
       "question": {
         "fraga": "En ideal RLC-krets i serie har R = 20 Ω och X_{L} = X_{C} = 40 Ω. Den matas med 100 V RMS. Bestäm strömmen och fasvinkeln.",
@@ -1658,7 +1658,7 @@ export const STUDY = {
       "id": "EL-000081",
       "revision": 6,
       "title": "Skenbar effekt",
-      "number": "Övning 1",
+      "number": "Övning 4.1",
       "anchor": "v40_03-q1",
       "question": {
         "fraga": "En enfaslast har U = 230 V och I = 4,0 A RMS. Beräkna S.",
@@ -1712,7 +1712,7 @@ export const STUDY = {
       "id": "EL-000082",
       "revision": 6,
       "title": "Aktiv effekt",
-      "number": "Övning 2",
+      "number": "Övning 4.2",
       "anchor": "v40_03-q2",
       "question": {
         "fraga": "S = 920 VA och cos φ = 0,75. Beräkna P. Spänning och ström är sinusformade.",
@@ -1767,7 +1767,7 @@ export const STUDY = {
       "id": "EL-000083",
       "revision": 6,
       "title": "Effekttriangel",
-      "number": "Övning 3",
+      "number": "Övning 4.3",
       "anchor": "v40_03-q3",
       "question": {
         "fraga": "En induktiv enfaslast har P = 600 W och Q = 800 var. Bestäm S och PF.",
@@ -1829,7 +1829,7 @@ export const STUDY = {
       "id": "EL-000084",
       "revision": 6,
       "title": "Reaktiv effekt",
-      "number": "Övning 4",
+      "number": "Övning 4.4",
       "anchor": "v40_03-q4",
       "question": {
         "fraga": "S = 2,0 kVA och cos φ = 0,80. Lasten är induktiv och sinusformad. Bestäm P och Q.",
@@ -1891,7 +1891,7 @@ export const STUDY = {
       "id": "EL-000085",
       "revision": 6,
       "title": "Energin på elmätaren",
-      "number": "Övning 5",
+      "number": "Övning 4.5",
       "anchor": "v40_03-q5",
       "question": {
         "fraga": "En last har P = 1,60 kW och S = 2,0 kVA. Den går i 3 h. Beräkna den aktiva energin.",
@@ -1943,15 +1943,15 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "förutsäga matningsströmmen när effektfaktorn är lägre än ett",
       "stopp": {
-        "text": "Här slutar torsdagens övningar hemma. Skriv också växelströmsinlämningens uppgift 1 och 2. Ta med frågor till fredag; då gör vi övning 7–10 och den guidade labben tillsammans.",
+        "text": "Här slutar torsdagens övningar hemma. Skriv också inlämning 4 och 5. Ta med frågor till fredag; då gör vi övning 4.7–4.10 och den guidade labben tillsammans.",
         "href": "Inlamning.html#uppgift-1",
-        "label": "Hemma: inlämningens uppgift 1 och 2",
+        "label": "Hemma: inlämning 4 och 5",
         "nasta": "Fredag: läs om kompensering"
       },
       "id": "EL-000086",
       "revision": 6,
       "title": "Matningsström",
-      "number": "Övning 6",
+      "number": "Övning 4.6",
       "anchor": "v40_03-q6",
       "question": {
         "fraga": "En enfaslast tar P = 1 840 W vid 230 V och PF = 0,80. Bestäm strömmen.",
@@ -2005,7 +2005,7 @@ export const STUDY = {
       "id": "EL-000087",
       "revision": 6,
       "title": "Full kompensering",
-      "number": "Övning 7",
+      "number": "Övning 4.7",
       "anchor": "v40_03-q7",
       "question": {
         "fraga": "En last har P = 3 kW och Q = +4 kvar. Hur stor kapacitiv reaktiv effekt behövs för att Qtotal ska bli 0?",
@@ -2060,7 +2060,7 @@ export const STUDY = {
       "id": "EL-000088",
       "revision": 6,
       "title": "Ström före och efter",
-      "number": "Övning 8",
+      "number": "Övning 4.8",
       "anchor": "v40_03-q8",
       "question": {
         "fraga": "En enfaslast har P = 1 800 W vid 230 V. PF höjs från 0,60 till 0,90. Beräkna strömmen i matningen före och efter.",
@@ -2123,7 +2123,7 @@ export const STUDY = {
       "id": "EL-000089",
       "revision": 6,
       "title": "Ledningsförlust",
-      "number": "Övning 9",
+      "number": "Övning 4.9",
       "anchor": "v40_03-q9",
       "question": {
         "fraga": "Strömmen i en kabel minskar från 12 A till 8 A. Hur stor del av den tidigare förlusten I² · R är kvar?",
@@ -2177,7 +2177,7 @@ export const STUDY = {
       "id": "EL-000090",
       "revision": 6,
       "title": "Övertoner",
-      "number": "Övning 10",
+      "number": "Övning 4.10",
       "anchor": "v40_03-q10",
       "question": {
         "fraga": "En mätare visar P = 800 W, S = 1 000 VA och cos φ = 0,95 för grundtonen. Beräkna PF och förklara skillnaden.",

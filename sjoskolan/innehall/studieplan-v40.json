@@ -200,9 +200,9 @@
       ],
       "syfte": "välja mätfunktion och anslutning utifrån det som faktiskt ska mätas",
       "stopp": {
-        "text": "Här slutar måndagens första pass. På lektionen fortsätter du med del 1: sinus. Gör V2-3 och V2-4 hemma före tisdagens lektion.",
+        "text": "Här slutar måndagens första pass. På lektionen fortsätter du med del 2: sinus. Gör övning 1.3 och 1.4 hemma före tisdagens lektion.",
         "href": "?del=sinus&fortsatt=1",
-        "label": "På lektionen: fortsätt till del 1",
+        "label": "På lektionen: fortsätt till del 2",
         "nasta": "Hemma: instrumentets felgräns"
       }
     },
@@ -253,8 +253,8 @@
       "tillampning": false,
       "syfte": "jämföra multimeterns effektivvärde med kurvans högsta spänning",
       "stopp": {
-        "text": "Här slutar måndagens gemensamma räkneövningar i del 1. Fortsätt hemma med övning 4–10 före tisdagens lektion. Ta med frågor om det som är oklart.",
-        "nasta": "Hemma: övning 4 · Effektivvärde"
+        "text": "Här slutar måndagens gemensamma räkneövningar i del 2. Fortsätt hemma med övning 2.4–2.10 före tisdagens lektion. Ta med frågor om det som är oklart.",
+        "nasta": "Hemma: övning 2.4 · Effektivvärde"
       }
     },
     "EL-000064": {
@@ -353,10 +353,10 @@
       "tillampning": false,
       "syfte": "förutsäga strömmen i en krets med både motstånd och spole före en avläsning",
       "stopp": {
-        "text": "Här slutar tisdagens gemensamma övningar i del 2. Påbörja sedan växelströmsinlämningens uppgift 1 på lektionen. Fortsätt hemma med övning 5–10, och skriv frånskiljningens inlämning under onsdagen.",
+        "text": "Här slutar tisdagens gemensamma övningar i del 3. Påbörja sedan inlämning 4 på lektionen. Fortsätt hemma med övning 3.5–3.10, och skriv frånskiljningens inlämning 1–3 under onsdagen.",
         "href": "Inlamning.html#uppgift-1",
-        "label": "På lektionen: inlämningens uppgift 1",
-        "nasta": "Hemma: följ exemplet inför övning 5"
+        "label": "På lektionen: inlämning 4",
+        "nasta": "Hemma: följ exemplet inför övning 3.5"
       }
     },
     "EL-000075": {
@@ -478,9 +478,9 @@
       "tillampning": false,
       "syfte": "förutsäga matningsströmmen när effektfaktorn är lägre än ett",
       "stopp": {
-        "text": "Här slutar torsdagens övningar hemma. Skriv också växelströmsinlämningens uppgift 1 och 2. Ta med frågor till fredag; då gör vi övning 7–10 och den guidade labben tillsammans.",
+        "text": "Här slutar torsdagens övningar hemma. Skriv också inlämning 4 och 5. Ta med frågor till fredag; då gör vi övning 4.7–4.10 och den guidade labben tillsammans.",
         "href": "Inlamning.html#uppgift-1",
-        "label": "Hemma: inlämningens uppgift 1 och 2",
+        "label": "Hemma: inlämning 4 och 5",
         "nasta": "Fredag: läs om kompensering"
       }
     },
@@ -525,25 +525,25 @@
   "vagledning": {
     "franskiljning": {
       "titel": "Frånskiljning och mätteknik",
-      "nar": "Måndag: V2-1 och V2-2 på lektionen. V2-3 och V2-4 hemma före tisdagens lektion.",
+      "nar": "Måndag: övning 1.1 och 1.2 på lektionen. Övning 1.3 och 1.4 hemma före tisdagens lektion.",
       "syfte": "Du ska kunna upptäcka när underlaget inte räcker för en säker mätning och välja ett instrument som passar uppgiften.",
       "gor": [
         "Följ matning A och B i figuren. Skriv vad som behöver kontrolleras innan arbetsområdet kan bedömas som spänningslöst.",
         "Läs instrumentkorten. Välj mätfunktion och beskriv anslutningen för varje fall.",
-        "Följ räkneexemplet om felgräns och använd sedan metoden i V2-3. Avsluta med att beskriva vilket underlag som saknas i V2-4."
+        "Följ räkneexemplet om felgräns och använd sedan metoden i övning 1.3. Avsluta med att beskriva vilket underlag som saknas i övning 1.4."
       ],
-      "klar": "Du har sparat ett eget försök till V2-1–V2-4 och kan peka ut det du behöver hjälp med. Läraren bedömer dina motiveringar.",
+      "klar": "Du har sparat ett eget försök till övning 1.1–1.4 och kan peka ut det du behöver hjälp med. Läraren bedömer dina motiveringar.",
       "lasuppdrag": {
         "matningar": "Följ A och B fram till lasten i figuren. Leta efter vad vi vet och vad som fortfarande måste verifieras.",
         "instrument": "Jämför kort M1 och M2. Hitta vilka funktioner och begränsningar som avgör om ett instrument går att använda.",
         "felgrans": "Ta reda på vad procentdelen respektive siffrorna betyder. Du ska snart räkna båda delarna i volt.",
-        "exempel": "Räkna med på papper. Försök få fram nästa rad innan du visar den. Du använder sedan metoden med andra värden i V2-3.",
+        "exempel": "Räkna med på papper. Försök få fram nästa rad innan du visar den. Du använder sedan metoden med andra värden i övning 1.3.",
         "ansvar": "Leta efter de uppgifter och ansvariga roller som måste vara klarlagda innan ett arbete kan planeras."
       }
     },
     "sinus": {
       "titel": "Sinus och mätvärden",
-      "nar": "Måndag: övning 1–3 med läraren. Övning 4–10 hemma före tisdagens lektion.",
+      "nar": "Måndag: övning 2.1–2.3 med läraren. Övning 2.4–2.10 hemma före tisdagens lektion.",
       "syfte": "En kurva och en multimeter kan visa olika tal för samma spänning. Du ska kunna avgöra vilket värde du läser och förutsäga mätarens visning.",
       "gor": [
         "Läs hur du hittar en period och räknar tiden för den. Prova sedan själv i svarsfälten.",
@@ -569,7 +569,7 @@
     },
     "impedans": {
       "titel": "Spole, motstånd och ström",
-      "nar": "Tisdag: övning 1–4 med läraren. Övning 5–10 hemma tisdag kväll och onsdag.",
+      "nar": "Tisdag: övning 3.1–3.4 med läraren. Övning 3.5–3.10 hemma tisdag kväll och onsdag.",
       "syfte": "En motorlindning påverkar växelström på fler sätt än ett vanligt motstånd. Du tränar på att beräkna strömmen innan du läser av den i simulatorn.",
       "gor": [
         "Läs först om resistorn och spolen. Räkna spolens reaktans och sedan hela kretsens impedans.",
@@ -595,7 +595,7 @@
     },
     "effekt": {
       "titel": "Effekt och effektfaktor",
-      "nar": "Torsdag hemma: övning 1–6. Fredag med läraren: övning 7–10, sedan simulatorlabben.",
+      "nar": "Torsdag hemma: övning 4.1–4.6. Fredag med läraren: övning 4.7–4.10, sedan simulatorlabben.",
       "syfte": "Två laster med samma aktiva effekt kan kräva olika ström. Du ska kunna förklara skillnaden och vad den betyder för matningen och ledningsförlusterna.",
       "gor": [
         "Läs vad aktiv effekt och effektfaktor betyder. Följ hur strömmen beräknas.",

@@ -17,7 +17,7 @@ VECKOR = {
          'notis': 'Ingår i vecka 40. Lämnas in senast söndag 4 oktober, tillsammans med växelströmsuppgifterna. D på den här sidan räknas ur ditt namn och är ett annat tal än D i växelströmsuppgifterna.'},
     39: {'titel': 'Effekt, Kirchhoff och multimeter', 'sista': '2026-09-27'},
     40: {'titel': 'Växelström', 'sista': '2026-10-04',
-         'notis': 'Den här veckan lämnar du också in Frånskiljning och mätteknik, uppgift 1–3, på en egen sida.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
+         'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
     42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
     43: {'titel': 'Komponenter, motorer och scheman', 'sista': '2026-10-25'},
@@ -46,8 +46,8 @@ def dbox(nr):
     return (f'<div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder talet <strong>D</strong>. Det slumpas första gången du öppnar veckan på en dator eller telefon och sparas där. Du behöver inte skriva ditt namn nu: det gör du i slutet, på sidan <a href="Resultat.html">Skicka resultat</a>.</p>'
             '<p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att visa D.</noscript></p>'
             '<details><summary>Har du redan ett D på en annan dator eller telefon?</summary><p><label for="annatD">Skriv D därifrån (1–31)</label><br><input id="annatD" inputmode="numeric" autocomplete="off" style="width:6em"> <button type="button" id="annatD-ok" class="sj-btn">Använd</button></p><p id="annatD-not" role="status"></p></details>'
-            '<p>Skriv dina svar i rutorna under uppgift 1–3. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
-            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-qr1"></script>\n')
+            '<p>Skriv dina svar i rutorna under inlämning 4–6. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
+            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-nr"></script>\n')
 
 
 def page(nr, w, items):

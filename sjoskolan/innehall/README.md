@@ -45,6 +45,7 @@ LARARLOSEN=… LARARGUIDE_KLARTEXT=… python3 sjoskolan/innehall/innehall.py by
 BOKLOSEN=… python3 sjoskolan/innehall/innehall.py bygg bok   # bokens EPUB (kräver bok/bok.py packa-upp)
 (cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs) # separat PDF-sättning ur uppdaterad EPUB-arbetskopia
 python3 sjoskolan/innehall/innehall.py kontrollera           # CI: är de genererade filerna aktuella?
+python3 sjoskolan/innehall/numrering.py --skriv             # numrera om enligt registret (Övning del.nummer, Inlämning N)
 python3 sjoskolan/innehall/innehall.py rapport               # ofullständiga poster, trasiga referenser, versionskrockar
 python3 sjoskolan/innehall/innehall.py anvands EL-000123     # var visas övningen?
 python3 sjoskolan/innehall/innehall.py hitta v41_02-q3       # id för ett gammalt ankare eller alias
