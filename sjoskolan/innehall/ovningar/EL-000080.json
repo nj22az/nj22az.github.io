@@ -3,7 +3,7 @@
   "titel": "Serieresonans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 6,
+  "revision": 7,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Sätt in skillnaden mellan reaktanserna och räkna ut I och φ. Spänningen över spolen och kondensatorn kan ändå vara stor.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) X = X_{L} − X_{C}. 2) |Z| = √(R² + X²); när X är noll blir |Z| = R. 3) I = U_{RMS}/|Z|. 4) φ = arctan(X/R). 5) Kontroll: räkna U_{L} = I · X_{L}; den kan bli större än matningen. Exempel: 230 V och R = 92 Ω vid resonans ger I = 2,5 A; med X_{L} = 60 Ω blir U_{L} = 2,5 · 60 = 150 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

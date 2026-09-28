@@ -3,7 +3,7 @@
   "titel": "Energin på elmätaren",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,6 +35,11 @@
       "niva": "metod",
       "text": "Välj aktiv effekt och multiplicera med tiden. Behåll enheten kWh.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Välj den aktiva effekten P i kW; S används inte. 2) E = P · t med t i timmar. 3) Enheten blir kWh, som på elmätaren. Är tiden i minuter: dela med 60 först. Exempel: en vattenkokare på 2,3 kW i 90 min = 1,5 h ger E = 2,3 · 1,5 = 3,45 kWh.",
+      "status": "utkast"
     }
   ],
   "losning": {

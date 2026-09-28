@@ -3,7 +3,7 @@
   "titel": "Skenbar effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,6 +35,11 @@
       "niva": "metod",
       "text": "Multiplicera U med I och ange svaret i VA – den aktiva effekten är inte känd.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv S = U_{RMS} · I_{RMS}. 2) Multiplicera spänning och ström. 3) Skriv enheten VA, inte W, eftersom du inte vet effektfaktorn. Rimlighet: några ampere vid 230 V ger några hundra VA. Exempel: 230 V och 2,5 A ger S = 575 VA.",
+      "status": "utkast"
     }
   ],
   "losning": {

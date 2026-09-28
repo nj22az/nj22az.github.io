@@ -3,7 +3,7 @@
   "titel": "Spänningar i serie",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Räkna ut spänningen över varje komponent och använd sedan Pythagoras sats för källspänningen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) U_{R} = I · R. 2) U_{L} = I · X_{L}. 3) Källspänningen med Pythagoras: U = √(U_{R}² + U_{L}²), inte U_{R} + U_{L}. 4) Kontroll: U ska bli lika med I · |Z|. Exempel: I = 0,30 A, R = 24 Ω och X_{L} = 10 Ω ger U_{R} = 7,2 V, U_{L} = 3,0 V och U = √(51,8 + 9,0) = 7,8 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

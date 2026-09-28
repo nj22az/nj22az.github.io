@@ -3,7 +3,7 @@
   "titel": "Effektivvärde",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,6 +35,11 @@
       "niva": "metod",
       "text": "Dela toppvärdet med √2. Avrunda inte förrän i svaret.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv U_{RMS} = û/√2. 2) Dela toppvärdet med 1,414 (samma sak som att multiplicera med 0,707). 3) Avrunda först i svaret, till en decimal. Kontroll: effektivvärdet ska bli ungefär 70 % av toppvärdet, alltså mindre. Exempel: û = 200 V ger U_{RMS} = 200/1,414 ≈ 141 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

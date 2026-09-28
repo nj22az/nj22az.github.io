@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
 import text as T  # noqa: E402
 
 SJO = Path(__file__).resolve().parents[2]
-LEDTRAD = {'begrepp': 'vad betyder storheterna?', 'metod': 'hur går jag vidare?', 'nasta-steg': 'nästa steg'}
+LEDTRAD = {'begrepp': 'vad betyder storheterna?', 'metod': 'hur går jag vidare?', 'nasta-steg': 'steg för steg'}
 
 
 def h(text):

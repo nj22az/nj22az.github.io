@@ -3,7 +3,7 @@
   "titel": "RC-krets",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Använd X = −80 Ω. Räkna impedans, ström och vinkel i den ordningen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Sätt X = −X_{C} (kapacitiv reaktans är negativ). 2) |Z| = √(R² + X²); tecknet försvinner i kvadraten. 3) I = U_{RMS}/|Z|. 4) φ = arctan(X/R) med räknaren i DEG; svaret blir negativt. Exempel: R = 24 Ω, X_{C} = 10 Ω och 65 V ger |Z| = 26 Ω, I = 2,5 A och φ = arctan(−10/24) ≈ −22,6°.",
+      "status": "utkast"
     }
   ],
   "losning": {

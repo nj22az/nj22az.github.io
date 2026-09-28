@@ -3,7 +3,7 @@
   "titel": "Fas från tidsavstånd",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,6 +35,11 @@
       "niva": "metod",
       "text": "Räkna ut T och sätt in Δt/T. För att veta vilken signal som ligger före måste du se kurvorna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna T = 1/f, i ms om Δt är i ms. 2) Bilda kvoten Δt/T, andelen av en hel period (ett tal mellan 0 och 1). 3) |φ| = 360° · Δt/T. Exempel: 100 Hz och Δt = 1,5 ms ger T = 10 ms, 1,5/10 = 0,15 och |φ| = 54°. Rimlighet: en halv period är 180°, så en liten del av perioden ger en liten vinkel.",
+      "status": "utkast"
     }
   ],
   "losning": {
