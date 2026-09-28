@@ -50,6 +50,9 @@ def filer(a):
                 formler = [x for _, p in pls for x in p['uppgift'].get('samband', [])]
                 lista = R.beteckningar_i(texter, a.beteckningar(), formler)
                 rad.insert(0, R.beteckningar_html(lista, 'Förkortningar och beteckningar i övningarna', prefix=del_ + '-') + '<p class="muted"><a href="Beteckningar.html">Alla beteckningar för veckan</a></p>')
+            if int(del_[1:3]) >= 41:  # från vecka 41 finns en delsida med teori, exempel och ledtrådar i tre steg
+                rad.insert(0, f'<p class="sj-panel week-note"><strong>Tips:</strong> samma övningar finns på <a href="Del_{int(del_[4:6])}.html#ovningar">delsidan för del {int(del_[4:6])}</a>, '
+                              f'med teorin och exemplen först och ledtrådar i tre steg. Börja där.</p>')
             forsta = r'<article class="exercise" id="%s-q\d+">.*?</article>(?=\s*</section>)' % re.escape(del_)
             text = ersatt(text, f'ovningar-{del_}', '\n' + '\n'.join(rad) + '\n', forsta)
         ut[plats] = text

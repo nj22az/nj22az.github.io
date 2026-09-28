@@ -444,7 +444,9 @@ def page(nr, w):
     delar = ''.join(
         f'<li id="del-{i}"><span class="lesson-number" aria-hidden="true">{i}</span><div><h3>Del {i}. {escape(d["titel"])}</h3>'
         f'<p>{escape(d["mal"])}</p>'
-        + (f'<p><a class="sj-btn primary" href="Del_{i}.html">Öppna del {i}: teori, exempel och övningar</a></p><details class="week-more"><summary>Allt material i del {i}</summary>{innehall(d, items)}</details>' if delsida(i) else innehall(d, items))
+        + (f'<p><a class="sj-btn primary" href="Del_{i}.html">Öppna del {i}: teori, exempel och övningar</a></p>'
+           f'<p class="del-framsteg" data-prefix="v{nr}_0{i}-q" aria-live="polite"></p>'
+           f'<details class="week-more"><summary>Allt material i del {i}</summary>{innehall(d, items)}</details>' if delsida(i) else innehall(d, items))
         + '</div></li>'
         for i, (d, items) in enumerate(delar_, 1))
     if labbar:
@@ -520,6 +522,14 @@ def page(nr, w):
                  else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta
         rubrik_ordning = 'Lösningar och självhjälp'
         actions = ''
+        # Framsteg per del ur avbockningarna på delsidorna (samma nyckel i webbläsaren). Första ofärdiga delen markeras.
+        sjalv += ('<style>.del-framsteg{margin:4px 0 8px;font-weight:700;color:#4d6579}.del-framsteg.klar{color:#176844}'
+                  '.del-framsteg .nasta{display:inline-block;margin-left:8px;padding:2px 10px;border-radius:999px;background:#064f91;color:#fff;font-size:14px}</style>'
+                  '<script>addEventListener("DOMContentLoaded",()=>{let k={};try{k=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/vecka-' + str(nr)
+                  + '/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch{}let nasta=false;'
+                  'for(const el of document.querySelectorAll(".del-framsteg")){const n=Object.keys(k).filter(x=>k[x]&&x.startsWith(el.dataset.prefix)).length;'
+                  'el.textContent=n>=10?"✓ Alla 10 övningar klara":n+" av 10 övningar klara";el.classList.toggle("klar",n>=10);'
+                  'if(n<10&&!nasta){nasta=true;el.insertAdjacentHTML("beforeend",\'<span class="nasta">Nästa</span>\');}}});</script>')
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
 <header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{pres}{actions}{due}</header>
 {notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>

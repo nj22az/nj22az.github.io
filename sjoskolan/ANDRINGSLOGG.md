@@ -256,3 +256,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   länkar dit (Öppna del N, Övningar och facit i presentationsrutan). Vecka 43–45: övningsnummer d.k i passbilderna,
   ritningarna i v43_03 (symboler, huvudström, hållkrets) och v44_01 (enlinjeschema) som bilder, lärarkopior med manus
   och facit i lärarportalen för alla femton presentationer i vecka 41–45.
+- **2026-09-28** Tydligare väg för eleven, vecka 41–45: veckosidan visar framsteg per del (”3 av 10 övningar klara”,
+  ”Nästa” på första ofärdiga del), övningssidan hänvisar till delsidan, och inlämningens ”Använd:” börjar med delsidan
+  (Del N: teori och övningar).
