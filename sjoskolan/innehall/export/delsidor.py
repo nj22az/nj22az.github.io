@@ -65,7 +65,7 @@ def sida(a, l, alla, plan, pl_av):
 <h3>Så gör du</h3><ol class="del-gor">
 <li><strong>Läs teorin</strong> ({len(teori)} korta avsnitt). Titta på figuren till varje avsnitt.</li>
 <li><strong>Följ exemplen</strong> med papper och räknare. Räkna sedan Din tur och Eget försök innan du öppnar svaret.</li>
-<li><strong>Gör övningarna</strong> ({len(poster)} st). Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och var i teorin den förklaras. <em>Ledtråd 2</em> visar hur du börjar. Öppna facit när du har ett eget svar.</li>
+<li><strong>Gör övningarna</strong> ({len(poster)} st). Fastnar du: <em>Ledtråd 1</em> visar vilken formel du behöver och var i teorin den förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> hela metoden med andra tal. Öppna facit när du har ett eget svar.</li>
 <li><strong>Skicka resultat</strong> sist på lektionen: <a href="Resultat.html">Skicka resultat</a>, skriv ditt namn och ta en skärmbild av QR-koden.</li></ol>
 <p class="del-mer">Film: <a href="Kortfilmer.html?del={tab}">{e(l["filmTitle"])}</a> · <a href="../../bildspel/?d={e(l["deck"].replace("_elev.pptx", ""))}">Lärarens presentation</a> · <a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a> · <a href="Inlamning.html">Veckans inlämning</a></p>''')
     texter = [l['goal']] + [t for s in slides for t in [s['title'], *s['body'], s.get('check'), s.get('answer')]] + [p['uppgift']['fraga'] for _, p, _ in poster]
@@ -97,11 +97,13 @@ def sida(a, l, alla, plan, pl_av):
         formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []))
         led1 = (f'Använd {formel}. ' if formel else '') + (f'Läs {" och ".join(ref)}.' if ref else '')
         led2 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') in ('metod', 'begrepp'))
+        led3 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') == 'nasta-steg')
         svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(str(sv["varde"]).replace(".", ","))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
         h.append(f'''<article class="del-ovning" id="{pl["ankare"]}"><h3>{e(pl["nummer"])}: {R.h(p["titel"])}</h3>
 <p>{R.h(u["fraga"])}</p>{f'<p class="del-givet"><strong>Givet:</strong> {R.h(u["givet"])}</p>' if u.get("givet") else ''}
 {f'<details class="ledtrad"><summary>Ledtråd 1: vilken formel?</summary><p>{led1}</p></details>' if led1 else ''}
 {f'<details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>{led2}</p></details>' if led2 else ''}
+{f'<details class="ledtrad"><summary>Ledtråd 3: steg för steg med andra tal</summary><p>{led3}</p></details>' if led3 else ''}
 {rh}
 <details class="facit"><summary>Facit</summary>{stycken(los.get("text", ""))}{f'<p><strong>Svar:</strong> {svar}</p>' if svar else ''}</details>
 <button type="button" class="del-klar" data-id="{pl["ankare"]}">Markera som klar</button></article>''')
