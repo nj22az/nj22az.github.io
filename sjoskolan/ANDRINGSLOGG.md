@@ -240,3 +240,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   `verktyg/bildspel/bygg.py` hoppar över presentationer som inte heter vXX_NN.
 - **2026-09-28** Vecka 40 låst (148 filer, även frånskiljningsmaterialet som undervisas måndag vecka 40). Presentationernas
   rubriker följer numreringsregistret från vecka 41 (”Övning 1.3”, ”Stöd till övning 1.3”); vecka 37–40 rörs inte.
+- **2026-09-28** Vecka 41 och 42 som vecka 40: veckosidan börjar med Veckans presentationer (del för del, Öppna och
+  PowerPoint), sedan Lösningar och självhjälp (gäller vecka 41–45). Lärarkopior med manus i lärarportalen
+  (`verktyg/larare/lararmanus.py`: bildens text, guidens förklaringar och kontrollfrågor, facit och ledtråd på
+  övningsbilderna). Diagrammet och de två kopplingsschemana i vecka 41 är bilder (`verktyg/ac/scheman_v41.py`).
+  Passbilderna och Simulerade stationer använder övningsnumren d.k. Guidens Uᴸ/Uꜰ rättade till nedsänkta index.
+  Databasen: två kontrollerade poster granskade, EL-000100 är resonemang, strukturerade svar för EL-000091, 099, 114
+  och 123. `validera`: 0 fel, 0 anmärkningar.

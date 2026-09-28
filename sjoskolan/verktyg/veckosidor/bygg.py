@@ -492,9 +492,30 @@ def page(nr, w):
                  f'<details class="week-more"><summary>Mer att läsa</summary><ul class="lesson-items">{mer}</ul></details></div></li>')
         redovisa = ('<li><a href="Inlamning.html">Växelström</a><ul>' + redovisa + '</ul></li><li><a href="../../vecka-38/aktuell/Inlamning.html">Frånskiljning och mätteknik</a><ul>'
                     + ''.join(f'<li><a href="../../vecka-38/aktuell/Inlamning.html#{a}">{escape(n)}. {escape(t)}</a></li>' for a, n, t in INLAMNING[38]) + '</ul></li>')
+    pres, sjalv = '', ''
+    if nr >= 41 and not flytt:
+        # Från vecka 41: presentationerna först (samma princip som vecka 40), sedan lösningar och självhjälp del för del.
+        rader = []
+        for i, (d, items) in enumerate(delar_, 1):
+            for q in items + d.get('steg', []):
+                if q['typ'] == 'ppt':
+                    stem = q['fil'][:-5]
+                    oppna = stem + '.pdf' if (week_dir / (stem + '.pdf')).exists() else q['fil']
+                    rader.append(f'<li><span class="pres-del">Del {i}</span><span class="pres-titel">{escape(q["titel"])}</span>'
+                                 f'<span class="pres-knappar"><a class="sj-btn primary" href="{oppna}">Öppna</a> <a class="sj-btn" href="{q["fil"]}" download>PowerPoint</a></span></li>')
+        pres = ('<style>.week-pres{margin:22px 0 26px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
+                '.week-pres h2{margin:0 0 6px;font-size:26px}.week-pres ul{list-style:none;margin:12px 0 0;padding:0}'
+                '.week-pres li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid #cad8e2}'
+                '.week-pres .pres-del{font-weight:700;color:#064f91;min-width:3.4em}.week-pres .pres-titel{flex:1 1 14em;font-size:18px}'
+                '.week-pres .pres-knappar{display:flex;gap:10px}</style>'
+                f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
+                f'<p>Läraren visar dem på lektionen. Öppna den del ni arbetar med, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul></section>')
+        sjalv = f'<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>{actions}'
+        rubrik_ordning = 'Lösningar och självhjälp'
+        actions = ''
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
-<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt else f'<p>{intro}</p>'}{actions}{due}</header>
-{notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2><ol class="lesson-list">{forst}{delar}</ol></section>
+<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{pres}{actions}{due}</header>
+{notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>
 <aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3 id="inlamning">Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>Senast söndag {datum(w["sista"])}.</strong> Lämna via den inlämningskanal läraren har anvisat.</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>

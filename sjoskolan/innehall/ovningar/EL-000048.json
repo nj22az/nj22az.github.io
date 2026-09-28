@@ -3,9 +3,9 @@
   "titel": "Två källor och en last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
-    "status": "att-granska",
+    "status": "granskad",
     "kommentar": "Kontrollerat: V_{a} = 6,0 V; bokens grenströmmar (12 − 6)/3 = 2 A och (9 − 6)/3 = 1 A stämmer (summa 3 A genom 2 Ω ger 6 V). Boken och kursen säger samma sak.",
     "numeriskt_kontrollerad": true
   },

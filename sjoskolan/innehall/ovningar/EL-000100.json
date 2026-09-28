@@ -2,10 +2,10 @@
   "id": "EL-000100",
   "titel": "Avbrott i neutralledaren",
   "sprak": "sv",
-  "typ": "berakning",
-  "revision": 3,
+  "typ": "resonemang",
+  "revision": 4,
   "granskning": {
-    "status": "att-granska",
+    "status": "granskad",
     "kommentar": "Kontrollerat: bokens 400 V är linjespänningen i resonemanget, inget svarsvärde. Boken och kursen säger samma sak.",
     "numeriskt_kontrollerad": true
   },

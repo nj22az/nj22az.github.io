@@ -284,10 +284,10 @@
       "hash_publik": "a570f8b8406b58a7"
     },
     "EL-000048": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
-      "hash": "ae82df5a9a01002c",
-      "hash_publik": "cce3c6f81be6ab6e"
+      "hash": "51c0f52503af6000",
+      "hash_publik": "3f608cd60be52789"
     },
     "EL-000049": {
       "revision": 1,
@@ -542,10 +542,10 @@
       "hash_publik": "cf3b82102bde0078"
     },
     "EL-000091": {
-      "revision": 1,
+      "revision": 2,
       "skydd": "elev",
-      "hash": "e9ed1b040125a766",
-      "hash_publik": "1fdcee3b387baab7"
+      "hash": "6f002dda51f9eeb4",
+      "hash_publik": "8ffd421e01275f1e"
     },
     "EL-000092": {
       "revision": 1,
@@ -590,16 +590,16 @@
       "hash_publik": "aeef9ee2cb73ae23"
     },
     "EL-000099": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
-      "hash": "c887ae3ace5595e2",
-      "hash_publik": "ec7b9d7f8273a92e"
+      "hash": "cd5673aeeaad7bc6",
+      "hash_publik": "81cf1e7bae722322"
     },
     "EL-000100": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
-      "hash": "2a70f2bb2ea9c315",
-      "hash_publik": "440a81c5ee403bd5"
+      "hash": "2ba146c566c18112",
+      "hash_publik": "8590324d74ceb0ac"
     },
     "EL-000101": {
       "revision": 3,
@@ -680,10 +680,10 @@
       "hash_publik": "f41f6112c018a81d"
     },
     "EL-000114": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
-      "hash": "64ece39e77254798",
-      "hash_publik": "4a054d0e353f1a05"
+      "hash": "420bfeb13b3d3852",
+      "hash_publik": "44681bdd5f2c1c7a"
     },
     "EL-000115": {
       "revision": 1,
@@ -734,10 +734,10 @@
       "hash_publik": "eeb79c9b5553ad0c"
     },
     "EL-000123": {
-      "revision": 1,
+      "revision": 2,
       "skydd": "elev",
-      "hash": "950c92b3a8781477",
-      "hash_publik": "fcaf3646210f9a10"
+      "hash": "a896482a5c3f2dde",
+      "hash_publik": "ec816ae08318b986"
     },
     "EL-000124": {
       "revision": 1,

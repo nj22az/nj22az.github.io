@@ -3,7 +3,7 @@
   "titel": "Beröringspunkter",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -42,7 +42,17 @@
   "losning": {
     "text": "60 V, potentialskillnaden mellan de två punkter personen kan beröra samtidigt.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "beröringsspänning",
+        "varde": 60,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
