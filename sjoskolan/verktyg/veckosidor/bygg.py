@@ -308,7 +308,8 @@ DAGAR40 = [
         ('Pass 1', 'Frånskiljning och mätteknik: de fem stegen, alla matningsvägar, instrumentval och felgräns. Film: Fem steg. Övning 1.1 och 1.2 i par.'),
         ('Pass 2', 'Del 2 Sinus och mätvärden: teori och exempel tillsammans, sedan övning 2.1–2.3.'),
         ('Sist', 'Skicka resultat med QR-koden.'),
-     ], 'material': [(BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4'), (G + 'sinus', 'Del 2: sinus'), (K + 'sinus', 'Film del 2')]},
+     ], 'material': [('Mandag_28_sep_vecka40.pptx', 'Dagens presentation (PowerPoint)'), ('Mandag_28_sep_vecka40.pdf', 'Dagens presentation (PDF)'),
+                     (BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4'), (G + 'sinus', 'Del 2: sinus'), (K + 'sinus', 'Film del 2')]},
     {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
         steg('Del 2 · Övningar', 'Fortsätt med övning 2.4–2.10', G + 'sinus&uppgift=v40_01-q4', 75, 'läs teorin som ledtråd 1 pekar på, räkna och jämför med facit', 'v40_01:4-10'),
         steg('Del 1 · Övningar', 'Övning 1.3 och 1.4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),

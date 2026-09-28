@@ -226,3 +226,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   resistorns u och i låg ovanpå varandra. Större text i presentationerna. Lärarkopior, PDF och bildspel byggda om.
 - **2026-09-28** Frånskiljning och mätteknik (v38_01): blockschemat, symbolerna och de två kopplingsschemana (bild 4, 6,
   11, 12) är bilder i stället för lösa linjer och rutor. PDF och bildspel byggda om.
+- **2026-09-28** Måndagens presentation i en fil (del 1 frånskiljning, del 2 sinus, övningar, hemuppgift, QR-koder till
+  webben): elevversion utan anteckningar på veckosidan (`vecka-40/aktuell/Mandag_28_sep_vecka40.pptx` och `.pdf`),
+  lärarversion med manus krypterad i lärarportalen (`larare/filer/Mandag_28_sep_vecka40_larare.pptx.enc`).
