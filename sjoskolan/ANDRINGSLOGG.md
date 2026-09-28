@@ -85,6 +85,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     skickar resultaten som QR-kod (`vecka-XX/aktuell/Resultat.html`); läraren läser dem i `larare/resultat.html`.
     Facit för resultatkoden finns bara i den krypterade lärarsidan, aldrig i elevens moduler. Vecka 37–39 räknar
     fortfarande D ur namnet (`RESULTATKOD` i `verktyg/inlamning/bygg.py` och `verktyg/veckosidor/bygg.py`).
+30. **Lärarmanuset och frågorna har var sin källa.** Manuset (Säg, Fråga, Klicka, Tänk på) står i `note` i
+    `vecka-40/aktuell/lektioner.mjs`. Frågor och svar på bilderna, också Din tur, är poster i innehållsdatabasen
+    (ytan `genomgang-v40`) och synkas till presentationerna av `bygg presentationer` (formerna check och svar).
+    Lärarkopiorna byggs om med `verktyg/larare/lararnoter.py` efter varje ändring. Nya exempelvärden jämförs med
+    alla svar för vecka 40, även inlämningens facit för D = 1–31, med samma enhet (regel 2).
 
 30. **Resultatkoder ska tåla båda transportformaten och kortning.** Ett befintligt komprimerings-API kan sakna
     `deflate-raw`; använd då JSON-reservformatet. Kortning får inte dela Unicode-surrogatpar eller lämna text när
@@ -184,3 +189,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-27** Lärarportalen, Inlämningar under lektionen (`larare/resultat.html?vy=presentera`): en rad per elev
   med rätt/fel per svar i uppgift 1–3 och labbet, klassens summa, ordning efter namn, flest fel eller senaste kod,
   initialer i stället för namn. Uppdateras direkt när en kod läses på datorn, också i en annan flik.
+- **2026-09-28** Vecka 40, läs upp och låt eleverna göra: fem Din tur-bilder (belysningsnätet 254 V, momentanvärde
+  i vägguttaget, ventilationsfläkten |Z| och φ, kylskåpets kompressor) som poster EL-000863–867, i genomgången,
+  elev- och lärarpresentationerna (svaret visas vid klick). Lärarmanus till alla bilder (Säg, Fråga, Klicka),
+  lärarkopiorna byggs med `verktyg/larare/lararnoter.py`. Nya bildnummer i dagsplanerna och utbildningsguiden.
+- **2026-09-28** Sammanslagning med main (verkliga lektionstider, arbetsrummet, Så räknar du-exemplen): manus och
+  Din tur-bilder följer den nya planen. Långa brödtexter i vecka 40:s presentationer får automatiskt den största
+  storlek som ryms (`kompakt` i `innehall/export/presentationer.py`); Så räknar du-texten gick annars in i sidfoten.
+  40 poster som main reviderat utan skyddade filer registrerades om med `revidera --alla` och lärarlösenordet.

@@ -643,7 +643,7 @@
   },
   {
    "id": "EL-000061",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Period vid 50 Hz",
@@ -659,7 +659,7 @@
   },
   {
    "id": "EL-000062",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Frekvens från kurvan",
@@ -675,7 +675,7 @@
   },
   {
    "id": "EL-000063",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Toppvärde",
@@ -691,7 +691,7 @@
   },
   {
    "id": "EL-000064",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effektivvärde",
@@ -707,7 +707,7 @@
   },
   {
    "id": "EL-000065",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Topp till topp",
@@ -723,7 +723,7 @@
   },
   {
    "id": "EL-000066",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Momentanvärde",
@@ -739,7 +739,7 @@
   },
   {
    "id": "EL-000067",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Negativ halvvåg",
@@ -755,7 +755,7 @@
   },
   {
    "id": "EL-000068",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fas från tidsavstånd",
@@ -771,7 +771,7 @@
   },
   {
    "id": "EL-000069",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekt i resistor",
@@ -787,7 +787,7 @@
   },
   {
    "id": "EL-000070",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämförelse av vågformer",
@@ -803,7 +803,7 @@
   },
   {
    "id": "EL-000071",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolens reaktans",
@@ -819,7 +819,7 @@
   },
   {
    "id": "EL-000072",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kondensatorns reaktans",
@@ -835,7 +835,7 @@
   },
   {
    "id": "EL-000073",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL-kretsens impedans",
@@ -851,7 +851,7 @@
   },
   {
    "id": "EL-000074",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Strömmen i RL-kretsen",
@@ -867,7 +867,7 @@
   },
   {
    "id": "EL-000075",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningar i serie",
@@ -883,7 +883,7 @@
   },
   {
    "id": "EL-000076",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fasvinkel i RL",
@@ -899,7 +899,7 @@
   },
   {
    "id": "EL-000077",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RC-krets",
@@ -915,7 +915,7 @@
   },
   {
    "id": "EL-000078",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Dubbel frekvens",
@@ -931,7 +931,7 @@
   },
   {
    "id": "EL-000079",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RLC-krets",
@@ -947,7 +947,7 @@
   },
   {
    "id": "EL-000080",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Serieresonans",
@@ -963,7 +963,7 @@
   },
   {
    "id": "EL-000081",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skenbar effekt",
@@ -979,7 +979,7 @@
   },
   {
    "id": "EL-000082",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Aktiv effekt",
@@ -995,7 +995,7 @@
   },
   {
    "id": "EL-000083",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekttriangel",
@@ -1011,7 +1011,7 @@
   },
   {
    "id": "EL-000084",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Reaktiv effekt",
@@ -1027,7 +1027,7 @@
   },
   {
    "id": "EL-000085",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Energin på elmätaren",
@@ -1043,7 +1043,7 @@
   },
   {
    "id": "EL-000086",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Matningsström",
@@ -1059,7 +1059,7 @@
   },
   {
    "id": "EL-000087",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Full kompensering",
@@ -1075,7 +1075,7 @@
   },
   {
    "id": "EL-000088",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström före och efter",
@@ -1091,7 +1091,7 @@
   },
   {
    "id": "EL-000089",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ledningsförlust",
@@ -1107,7 +1107,7 @@
   },
   {
    "id": "EL-000090",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Övertoner",
@@ -5351,7 +5351,7 @@
   },
   {
    "id": "EL-000406",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Labbprotokoll, Station B, trefas",
@@ -6107,7 +6107,7 @@
   },
   {
    "id": "EL-000630",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två matningar",
@@ -6123,7 +6123,7 @@
   },
   {
    "id": "EL-000631",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Instrumentval",
@@ -6139,7 +6139,7 @@
   },
   {
    "id": "EL-000632",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Osäkerhet",
@@ -6155,7 +6155,7 @@
   },
   {
    "id": "EL-000633",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Högspänningsfall på skärm",
@@ -7195,7 +7195,7 @@
   },
   {
    "id": "EL-000801",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Arbetslampans strömväg",
@@ -7211,7 +7211,7 @@
   },
   {
    "id": "EL-000802",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två lampor parallellt",
@@ -7227,7 +7227,7 @@
   },
   {
    "id": "EL-000803",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Riskbedömning av en länspump",
@@ -7259,7 +7259,7 @@
   },
   {
    "id": "EL-000805",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Välj instrument och funktion",
@@ -7435,7 +7435,7 @@
   },
   {
    "id": "EL-000816",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Stationerna A, B och C",
@@ -7830,6 +7830,86 @@
      "plats": "tentamen.html",
      "nummer": "12",
      "ankare": "tenta-12"
+    }
+   ]
+  },
+  {
+   "id": "EL-000863",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: belysningsnätet ombord",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: belysningsnätet ombord",
+     "ankare": "sinus:tur-topp"
+    }
+   ]
+  },
+  {
+   "id": "EL-000864",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: momentanvärde i vägguttaget",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: momentanvärde i vägguttaget",
+     "ankare": "sinus:tur-moment"
+    }
+   ]
+  },
+  {
+   "id": "EL-000865",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: ventilationsfläkten",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: ventilationsfläkten",
+     "ankare": "impedans:tur-z"
+    }
+   ]
+  },
+  {
+   "id": "EL-000866",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: fläktens fasvinkel",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: fläktens fasvinkel",
+     "ankare": "impedans:tur-fas"
+    }
+   ]
+  },
+  {
+   "id": "EL-000867",
+   "revision": 1,
+   "status": "migrerad",
+   "publik": "elev",
+   "titel": "Din tur: kylskåpets kompressor",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "genomgang-v40",
+     "plats": "vecka-40/aktuell/kontrollfragor.gen.mjs",
+     "nummer": "Din tur: kylskåpets kompressor",
+     "ankare": "effekt:tur-effekt"
     }
    ]
   }

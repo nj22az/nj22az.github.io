@@ -1,4 +1,4 @@
-import {LESSONS} from './lektioner.mjs?v=20260927b';
+import {LESSONS} from './lektioner.mjs?v=20260930u';
 import {STUDY} from './arbetsrum.gen.mjs?v=20260927c';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';

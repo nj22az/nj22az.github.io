@@ -3,7 +3,7 @@
   "titel": "Kondensatorns reaktans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 5,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
