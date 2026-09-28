@@ -3,7 +3,7 @@
   "titel": "Trefasdata",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna ut den förväntade grenspänningen, dra den från mätvärdet och tolka tecknet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna förväntat värde: U_{förv} = U_{L}/√3, utan att avrunda. 2) Räkna skillnaden: uppmätt minus förväntat. 3) Tecknet visar om mätningen ligger över eller under. Exempel: U_{L} = 24,0 V och uppmätt 13,80 V ger U_{förv} ≈ 13,856 V och ΔU ≈ −0,06 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

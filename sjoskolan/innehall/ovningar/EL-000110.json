@@ -3,7 +3,7 @@
   "titel": "Osymmetrisk aktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Summera faseffekterna. Förklara vilken symmetri som saknas för att använda en godtycklig I_{L} i √3-formeln.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Aktiv effekt adderas: lägg ihop fasernas effekter. 2) Formeln med √3 gäller bara om alla faser har samma ström och samma effektfaktor. Exempel: 2,1, 1,8 och 2,4 kW ger P_{total} = 6,3 kW. Förklara sedan varför en enda fasström inte beskriver en osymmetrisk last.",
+      "status": "utkast"
     }
   ],
   "losning": {

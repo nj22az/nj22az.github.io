@@ -3,7 +3,7 @@
   "titel": "Två lika faslaster",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut uttrycket under roten och dra sedan roten ur.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Sätt in strömmarna i formeln och kom ihåg att cos120° = −0,5. 2) Räkna uttrycket under roten steg för steg. 3) Dra roten ur. Exempel med olika strömmar: I_{1} = 10 A och I_{2} = 6 A ger √(100 + 36 + 2 · 10 · 6 · (−0,5)) = √(100 + 36 − 60) = √76 ≈ 8,72 A. Rimlighet: svaret ska vara mindre än summan av strömmarna.",
+      "status": "utkast"
     }
   ],
   "losning": {

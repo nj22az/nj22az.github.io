@@ -259,3 +259,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Tydligare väg för eleven, vecka 41–45: veckosidan visar framsteg per del (”3 av 10 övningar klara”,
   ”Nästa” på första ofärdiga del), övningssidan hänvisar till delsidan, och inlämningens ”Använd:” börjar med delsidan
   (Del N: teori och övningar).
+- **2026-09-28** Vecka 41: ledtråd 3 (steg för steg med andra tal, fartygsvärden) för alla 20 beräkningsövningar. Delsidan
+  visar den i stället för hänvisningen till exemplet. Kontrollen stoppade ett exempel som innehöll svaret (11 kW mot
+  11,3 A) och det byttes. Övning 2.2 hänvisade till ”uppgift 1” och säger nu ”föregående övning”.

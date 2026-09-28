@@ -3,7 +3,7 @@
   "titel": "Ström i Y",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Använd Y-lasten i uppgift 1. Bestäm grenströmmen och linjeströmmen.",
+    "fraga": "Använd Y-lasten i föregående övning. Bestäm grenströmmen och linjeströmmen.",
     "samband": [
       "I_{gren} = U_{gren}/R; Y: I_{L} = I_{gren}"
     ],
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna grenströmmen med Ohms lag.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna grenströmmen med Ohms lag: I_{gren} = U_{gren}/R. 2) I Y går linjeledarens ström rakt in i grenen, så I_{L} = I_{gren}. Exempel ombord: U_{gren} = 254 V och R = 20 Ω ger I_{gren} = 254/20 = 12,7 A och I_{L} = 12,7 A.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "AC-riggens toppvärde",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Multiplicera med √2 och skriv att sambandet bara gäller sinusform.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kontrollera att mätvärdet är effektivvärdet (RMS) av en ren sinus. 2) Multiplicera med √2 ≈ 1,414. Exempel: en källa på 9,0 V RMS har toppvärdet 1,414 · 9,0 ≈ 12,7 V. Rimlighet: toppvärdet är alltid större än effektivvärdet.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Plan för DC-mätning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna ut totalresistansen, strömmen och U_{2}, och rita voltmetern parallellt över R_{2}.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Lägg ihop resistanserna i serie. 2) Strömmen: I = U/R_{total}. 3) Spänningen över en resistor: U = I · R. Voltmetern kopplas parallellt över den resistor du mäter. Exempel: 24 V över 3 kΩ och 1 kΩ i serie ger I = 24/4 000 = 6,0 mA och 6,0 V över 1 kΩ-resistorn.",
+      "status": "utkast"
     }
   ],
   "losning": {

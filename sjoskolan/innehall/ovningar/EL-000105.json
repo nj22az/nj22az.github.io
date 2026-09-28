@@ -3,7 +3,7 @@
   "titel": "Skenbar och reaktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna ut S och sin φ var för sig, multiplicera och gör om till kVA och kvar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skenbar effekt: S = √3 · U_{L} · I_{L}. 2) Räkna sin φ = √(1 − cos²φ). 3) Reaktiv effekt: Q = S · sin φ. Exempel ombord: 440 V, 20 A och cos φ = 0,85 ger S ≈ 15,24 kVA, sin φ = √(1 − 0,7225) ≈ 0,527 och Q ≈ 15,24 · 0,527 ≈ 8,03 kvar. Rimlighet: P, Q och S ska passa i effekttriangeln, S² = P² + Q².",
+      "status": "utkast"
     }
   ],
   "losning": {

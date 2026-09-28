@@ -3,7 +3,7 @@
   "titel": "Neutralström vid symmetri",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Rita de tre visarna efter varandra, spets mot fot. Vad blir summan?",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Rita strömmarna som visare med rätt vinkel, 120° isär. 2) Lägg dem efter varandra, spets mot fot. 3) Pilen från första fot till sista spets är summan, och neutralströmmen är lika stor. Exempel med olika laster: 12 A, 8 A och 8 A resistivt ger I_{N} = 4 A, eftersom de två 8 A-visarna tillsammans tar ut 8 A av de 12 A. Rimlighet: ju mer lika fasströmmarna är, desto mindre blir I_{N}.",
+      "status": "utkast"
     }
   ],
   "losning": {

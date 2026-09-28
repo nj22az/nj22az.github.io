@@ -191,6 +191,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
         ex = exempel[1 if pass_ and len(exempel) > 1 else 0] if exempel else None
         led3 = ((f'Samma sätt att resonera: <a href="#exempel-{exempel.index(ex) + 1}">{R.h(ex[1])}</a>. Gör likadant med fallet i den här uppgiften och motivera varje steg.' if resonemang
                  else f'Samma metod med andra tal: <a href="#exempel-{exempel.index(ex) + 1}">{R.h(ex[1])}</a>. Följ stegen där och gör sedan likadant med talen i den här uppgiften.') if ex else '')
+        steg = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') == 'nasta-steg')
+        if steg:  # ledtråd 3 ur databasen: metoden steg för steg med andra tal
+            led3 = steg
         figs = [x for x in (pres_bild.get(p['id']) or []) if x[0] == 'fig']
         facit = ''.join(f'<p>{R.h(x)}</p>' for x in str(los.get('text', 'Facit saknas.')).split('\n\n') if x.strip())
         svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(str(sv["varde"]).replace(".", ","))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
@@ -199,7 +202,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
 {block_html(figs)}
 {f'<details class="ledtrad"><summary>Ledtråd 1: {"vilken princip?" if resonemang else "vilket samband?"}</summary><p>{led1}</p></details>' if led1 else ''}
 {f'<details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>{led2}</p></details>' if led2 else ''}
-{f'<details class="ledtrad"><summary>Ledtråd 3: samma metod i ett exempel</summary><p>{led3}</p></details>' if led3 else ''}
+{f'<details class="ledtrad"><summary>Ledtråd 3: {"steg för steg med andra tal" if steg else "samma metod i ett exempel"}</summary><p>{led3}</p></details>' if led3 else ''}
 {rh}
 <details class="facit"><summary>Facit</summary>{facit}{f'<p><strong>Svar:</strong> {svar}</p>' if svar else ''}</details>
 <button type="button" class="del-klar" data-id="{pl["ankare"]}">Markera som klar</button></article>''')

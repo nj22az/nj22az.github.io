@@ -3,7 +3,7 @@
   "titel": "Y-lastens grenspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut grenspänningen från linjespänningen. Resistansen behövs först i nästa uppgift.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) I Y ligger varje resistor över fasspänningen, inte över linjespänningen. 2) Dela U_{L} med √3. Resistansen påverkar inte grenspänningen. Exempel ombord: tre resistorer på 20 Ω i Y till 440 V ger U_{gren} = 440/1,732 ≈ 254 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

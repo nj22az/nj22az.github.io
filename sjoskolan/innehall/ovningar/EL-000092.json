@@ -3,7 +3,7 @@
   "titel": "Tidsförskjutning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna först ut periodtiden och sedan hur stor del av den som 120° motsvarar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna periodtiden T = 1/f i sekunder och gör om till ms. 2) Ta den del av perioden som vinkeln motsvarar: Δt = T · φ/360°. Exempel ombord: f = 60 Hz och φ = 90° ger T = 1/60 ≈ 16,67 ms och Δt = 16,67 · 90/360 ≈ 4,17 ms. Rimlighet: 90° är en fjärdedels period.",
+      "status": "utkast"
     }
   ],
   "losning": {

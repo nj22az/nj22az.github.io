@@ -1123,7 +1123,7 @@
   },
   {
    "id": "EL-000091",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fasförskjutning",
@@ -1145,7 +1145,7 @@
   },
   {
    "id": "EL-000092",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Tidsförskjutning",
@@ -1167,7 +1167,7 @@
   },
   {
    "id": "EL-000093",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fasspänning",
@@ -1189,7 +1189,7 @@
   },
   {
    "id": "EL-000094",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Linjespänning",
@@ -1211,7 +1211,7 @@
   },
   {
    "id": "EL-000095",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Trefasriggen",
@@ -1233,7 +1233,7 @@
   },
   {
    "id": "EL-000096",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Neutralström vid symmetri",
@@ -1255,7 +1255,7 @@
   },
   {
    "id": "EL-000097",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Bara en belastad fas",
@@ -1277,7 +1277,7 @@
   },
   {
    "id": "EL-000098",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två lika faslaster",
@@ -1299,7 +1299,7 @@
   },
   {
    "id": "EL-000099",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Mätvärden i protokollet",
@@ -1343,7 +1343,7 @@
   },
   {
    "id": "EL-000101",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Y-lastens grenspänning",
@@ -1365,7 +1365,7 @@
   },
   {
    "id": "EL-000102",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström i Y",
@@ -1387,7 +1387,7 @@
   },
   {
    "id": "EL-000103",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma resistorer i Δ",
@@ -1409,7 +1409,7 @@
   },
   {
    "id": "EL-000104",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Aktiv effekt",
@@ -1431,7 +1431,7 @@
   },
   {
    "id": "EL-000105",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skenbar och reaktiv effekt",
@@ -1497,7 +1497,7 @@
   },
   {
    "id": "EL-000108",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorström från axeleffekt",
@@ -1519,7 +1519,7 @@
   },
   {
    "id": "EL-000109",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Transformatorns märkström",
@@ -1541,7 +1541,7 @@
   },
   {
    "id": "EL-000110",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Osymmetrisk aktiv effekt",
@@ -1585,7 +1585,7 @@
   },
   {
    "id": "EL-000112",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Plan för DC-mätning",
@@ -1629,7 +1629,7 @@
   },
   {
    "id": "EL-000114",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "AC-riggens toppvärde",
@@ -1651,7 +1651,7 @@
   },
   {
    "id": "EL-000115",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Trefasdata",
