@@ -34,6 +34,9 @@ AVSNITT = {
     '41': {'Fas och huvudspänning': ('v41_01', 7), 'Neutralströmmen': ('v41_01', 21), 'Y och Δ': ('v41_02', 6),
            'Bruten neutral': ('v41_01', 22)},
     '42': {'Hur el skadar': ('v42_01', 6), 'Arbetsmetoder och ansvar': ('v42_02', 21), 'Riskbedömning och CAT': ('v42_03', 7)},
+    '43': {'Skyddsdata': ('v43_01', 7), 'Motor och transformator': ('v43_02', 6), 'Hållkretsen': ('v43_03', 8)},
+    '44': {'IT-nätet ombord': ('v44_01', 21), 'Isolationsmätning': ('v44_03', 7)},
+    '45': {'Felsökning': ('v45_01', 6), 'Mätresultat mot krav': ('v45_02', 7)},
 }
 NOTATION = [('Uᴸ', 'U_{L}'), ('Uꜰ', 'U_{F}'), ('Ugren', 'U_{gren}'), ('Igren', 'I_{gren}'), ('Iᴸ', 'I_{L}'), ('IN ', 'I_{N} ')]
 

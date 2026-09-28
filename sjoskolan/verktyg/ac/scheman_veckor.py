@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Vecka 41: diagram och kopplingsscheman i presentationerna som bilder (samma skäl som scheman_v38.py).
+"""Vecka 41–45: diagram och kopplingsscheman i presentationerna som bilder (samma skäl som scheman_v38.py).
 
 v41_01 bild 6: tre sinusspänningar (var ett PowerPoint-diagram).
-v41_02 bild 6: Y- och Δ-koppling (var lösa linjer).
-v41_03 bild 21: Station C, hållkretsen (var lösa linjer).
+v41_02 bild 6: Y- och Δ-koppling. v41_03 bild 21 och v43_03 bild 8: hållkretsen.
+v43_03 bild 6: symboler. v43_03 bild 7: huvudströmsschema för en motor. v44_01 bild 6: enlinjeschema.
 
 Formerna i figurens område (diagram, linjer och deras etikettrutor) tas bort och ersätts av en bild på samma plats.
 Rubrik, text och formel på bilden behålls.
 
-    python3 sjoskolan/verktyg/ac/scheman_v41.py
+    python3 sjoskolan/verktyg/ac/scheman_veckor.py
 """
 import math
 import subprocess
@@ -19,11 +19,9 @@ from pptx import Presentation
 from pptx.util import Emu
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from scheman_v38 import INK, BLA, GRON, RITA, instrument, ln, motstand, prick, t  # noqa: E402,F401
+from scheman_v38 import INK, BLA, GRON, RITA, bild6, instrument, ln, motstand, prick, t  # noqa: E402,F401
 
 SJO = Path(__file__).resolve().parents[2]
-V41 = SJO / 'vecka-41' / 'aktuell'
-UT = V41 / 'figurer'
 ORANGE = '#a94d0a'
 EMU = 914400
 
@@ -111,10 +109,55 @@ def hallkrets():
     return svg(b, h, s)
 
 
+def huvudstrom():
+    """Huvudströmsschema: L1–L3 genom säkringar F1, kontaktor K1 och överlastskydd F2 till motorn M 3~."""
+    b, h = 880, 330
+    s = ''
+    for k, y in enumerate((60, 120, 180)):
+        s += t(40, y + 7, f'L{k + 1}', 20, vikt=700) + ln((70, y), (160, y))
+        s += f'<rect x="160" y="{y - 11}" width="60" height="22" fill="none" stroke="{INK}" stroke-width="3"/>' + ln((150, y), (230, y)) + ln((230, y), (330, y))
+        s += prick(330, y) + ln((330, y), (382, y - 24)) + prick(392, y) + ln((392, y), (470, y))
+        s += f'<rect x="470" y="{y - 11}" width="60" height="22" fill="#fff" stroke="{INK}" stroke-width="3"/>'
+        s += f'<path d="M478,{y} h10 v-6 h12 v12 h12 v-6 h10" fill="none" stroke="{INK}" stroke-width="2"/>'
+        s += ln((530, y), (680 - math.sqrt(max(0, 70 ** 2 - (y - 120) ** 2)), y))
+    s += f'<circle cx="720" cy="120" r="70" fill="#fff" stroke="{INK}" stroke-width="3"/>' + t(720, 118, 'M', 34, vikt=700) + t(720, 150, '3~', 20)
+    s += ln((330, 36), (330, 204), farg='#9fb4c4', w=1.5).replace('stroke-linecap="round"', 'stroke-dasharray="6 5"')
+    s += t(190, 240, 'F1', 20, BLA, vikt=700) + t(190, 264, 'Säkringar', 17)
+    s += t(360, 240, 'K1', 20, BLA, vikt=700) + t(360, 264, 'Kontaktor', 17)
+    s += t(500, 240, 'F2', 20, BLA, vikt=700) + t(500, 264, 'Överlastskydd', 17)
+    s += t(720, 240, 'Motor', 17)
+    return svg(b, h, s)
+
+
+def enlinje():
+    """Enlinjeschema: källa, skydd, fördelning och last i en kedja, med mätpunkt A och B."""
+    b, h = 880, 260
+    s = t(440, 30, 'Enlinjemodell', 20, vikt=700)
+    lador = [(40, 'Källa'), (250, 'Skydd'), (460, 'Fördelning'), (670, 'Last')]
+    for x, namn in lador:
+        s += f'<rect x="{x}" y="90" width="170" height="80" rx="6" fill="#edf4f9" stroke="{BLA}" stroke-width="3"/>' + t(x + 85, 138, namn, 20, vikt=700)
+    for x in (210, 420, 630):
+        s += ln((x, 130), (x + 40, 130))
+    for x, namn in ((230, 'Mätpunkt A'), (650, 'Mätpunkt B')):
+        s += prick(x, 130) + ln((x, 125), (x, 72), farg=GRON, w=2) + t(x, 64, namn, 17, GRON, vikt=700)
+    s += t(440, 220, 'Driftläge och matningsväg avgör vilken väg energin tar.', 17)
+    return svg(b, h, s)
+
+
+def symboler():
+    """Grafiska symboler: motstånd, NO-kontakt, spänningsmätare, säkring, reläspole K1 och strömmätare."""
+    return bild6()
+
+
+# (vecka, presentation, bild, namn, ritfunktion)
 FIGURER = [
-    ('v41_01_Trefassystemets_grunder_elev.pptx', 6, 'sinus', sinus),
-    ('v41_02_Y_och_trefaseffekt_elev.pptx', 6, 'y-delta', y_delta),
-    ('v41_03_Fysisk_traff_och_matning_elev.pptx', 21, 'hallkrets', hallkrets),
+    (41, 'v41_01_Trefassystemets_grunder_elev.pptx', 6, 'sinus', sinus),
+    (41, 'v41_02_Y_och_trefaseffekt_elev.pptx', 6, 'y-delta', y_delta),
+    (41, 'v41_03_Fysisk_traff_och_matning_elev.pptx', 21, 'hallkrets', hallkrets),
+    (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 6, 'symboler', symboler),
+    (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 7, 'huvudstrom', huvudstrom),
+    (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 8, 'hallkrets', hallkrets),
+    (44, 'v44_01_Lagspanningssystem_elev.pptx', 6, 'enlinje', enlinje),
 ]
 
 
@@ -131,21 +174,25 @@ def inuti(sh, box, marg=0.15 * EMU):
 
 
 def main():
-    UT.mkdir(exist_ok=True)
-    filer = []
-    for _, n, namn, f in FIGURER:
-        fil = UT / f'{namn}.svg'
-        fil.write_text(f())
-        filer.append(str(fil))
     rot = subprocess.run(['npm', 'root', '-g'], capture_output=True, text=True, check=True).stdout.strip()
-    skript = UT / '.rita.cjs'
-    skript.write_text(RITA)
-    try:
-        subprocess.run(['node', str(skript), rot, *filer], check=True)
-    finally:
-        skript.unlink()
-    for deck, n, namn, f in FIGURER:
-        fil = V41 / deck
+    for vecka in sorted({v for v, *_ in FIGURER}):
+        UT = SJO / f'vecka-{vecka}' / 'aktuell' / 'figurer'
+        UT.mkdir(exist_ok=True)
+        filer = []
+        for v, _, n, namn, f in FIGURER:
+            if v == vecka:
+                fil = UT / f'{namn}.svg'
+                fil.write_text(f())
+                filer.append(str(fil))
+        skript = UT / '.rita.cjs'
+        skript.write_text(RITA)
+        try:
+            subprocess.run(['node', str(skript), rot, *filer], check=True)
+        finally:
+            skript.unlink()
+    for vecka, deck, n, namn, f in FIGURER:
+        UT = SJO / f'vecka-{vecka}' / 'aktuell' / 'figurer'
+        fil = SJO / f'vecka-{vecka}' / 'aktuell' / deck
         prs = Presentation(fil)
         bild = prs.slides[n - 1]
         # Figurbandet: mellan brödtexten (slutar 2,6 tum) och formeln (börjar 5,24 tum). Allt som börjar i bandet hör

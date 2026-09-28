@@ -116,6 +116,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 35. **En klar vecka låses.** Vecka 40 är låst (`verktyg/las/veckolas.py`, `verktyg/las/vecka-40.json`): SHA-256 för varje
     fil i veckan. CI och `innehall.py kontrollera` stoppar varje ändring. Arbeta framåt; ändra en låst vecka bara efter ett
     uttryckligt beslut (`veckolas.py las-upp 40`, ändra, `veckolas.py las 40`). Exportörer ska inte röra låsta veckor.
+36. **Varje vecka har en sida per del, som vecka 40.** Från vecka 41 bygger `innehall/export/delsidor_veckor.py`
+    Del_N.html ur presentationen (teori, exempel, figurer) och databasen (övningar med ledtrådstrappa och facit). Ändras en
+    presentation: kör `verktyg/veckosidor/figurer_ur_presentationer.py`, sedan `innehall.py bygg`. Ritningar i
+    presentationer ritas med `verktyg/ac/scheman_veckor.py`, manus med `verktyg/larare/lararmanus.py NN`.
 
 ### Boken
 
@@ -247,3 +251,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Passbilderna och Simulerade stationer använder övningsnumren d.k. Guidens Uᴸ/Uꜰ rättade till nedsänkta index.
   Databasen: två kontrollerade poster granskade, EL-000100 är resonemang, strukturerade svar för EL-000091, 099, 114
   och 123. `validera`: 0 fel, 0 anmärkningar.
+- **2026-09-28** Vecka 41–45 i nivå med vecka 40: en delsida per del (15 sidor: översikt med mål och startfråga, teori
+  och exempel ur presentationen med figurer, 150 övningar med ledtråd 1–3, räknarhjälp, facit och avbockning). Veckosidorna
+  länkar dit (Öppna del N, Övningar och facit i presentationsrutan). Vecka 43–45: övningsnummer d.k i passbilderna,
+  ritningarna i v43_03 (symboler, huvudström, hållkrets) och v44_01 (enlinjeschema) som bilder, lärarkopior med manus
+  och facit i lärarportalen för alla femton presentationer i vecka 41–45.

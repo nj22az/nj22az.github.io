@@ -439,9 +439,13 @@ def page(nr, w):
             mer = f'<details class="week-more"><summary>Mer att läsa</summary><ul class="lesson-items">{mer}</ul></details>' if mer else ''
             return f'<ol class="lesson-items route-steps">{"".join(post(p, week_dir, k) for k, p in enumerate(d["steg"], 1))}</ol>{mer}'
         return f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in items)}</ul>'
+    # Från vecka 41: varje del har en egen sida som vecka 40 (Del_N.html: översikt, teori, exempel, övningar med ledtrådar och facit).
+    delsida = lambda i: nr >= 41 and (week_dir / f'Del_{i}.html').exists()
     delar = ''.join(
         f'<li id="del-{i}"><span class="lesson-number" aria-hidden="true">{i}</span><div><h3>Del {i}. {escape(d["titel"])}</h3>'
-        f'<p>{escape(d["mal"])}</p>{innehall(d, items)}</div></li>'
+        f'<p>{escape(d["mal"])}</p>'
+        + (f'<p><a class="sj-btn primary" href="Del_{i}.html">Öppna del {i}: teori, exempel och övningar</a></p><details class="week-more"><summary>Allt material i del {i}</summary>{innehall(d, items)}</details>' if delsida(i) else innehall(d, items))
+        + '</div></li>'
         for i, (d, items) in enumerate(delar_, 1))
     if labbar:
         delar += (f'<li id="labb" class="lab-step"><span class="lesson-number" aria-hidden="true">{n + 1}</span><div><h3>Sist: labben</h3>'
@@ -501,16 +505,19 @@ def page(nr, w):
                 if q['typ'] == 'ppt':
                     stem = q['fil'][:-5]
                     oppna = stem + '.pdf' if (week_dir / (stem + '.pdf')).exists() else q['fil']
-                    rader.append(f'<li><span class="pres-del">Del {i}</span><span class="pres-titel">{escape(q["titel"])}</span>'
+                    los = f' <a class="pres-los" href="Del_{i}.html#ovningar">Övningar och facit</a>' if delsida(i) else ''
+                    rader.append(f'<li><span class="pres-del">Del {i}</span><span class="pres-titel">{escape(q["titel"])}{los}</span>'
                                  f'<span class="pres-knappar"><a class="sj-btn primary" href="{oppna}">Öppna</a> <a class="sj-btn" href="{q["fil"]}" download>PowerPoint</a></span></li>')
         pres = ('<style>.week-pres{margin:22px 0 26px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
                 '.week-pres h2{margin:0 0 6px;font-size:26px}.week-pres ul{list-style:none;margin:12px 0 0;padding:0}'
                 '.week-pres li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid #cad8e2}'
                 '.week-pres .pres-del{font-weight:700;color:#064f91;min-width:3.4em}.week-pres .pres-titel{flex:1 1 14em;font-size:18px}'
-                '.week-pres .pres-knappar{display:flex;gap:10px}</style>'
+                '.week-pres .pres-knappar{display:flex;gap:10px}.week-pres .pres-los{display:block;font-size:15px;margin-top:2px}</style>'
                 f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
                 f'<p>Läraren visar dem på lektionen. Öppna den del ni arbetar med, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul></section>')
-        sjalv = f'<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>{actions}'
+        forsta = ('<p class="course-actions"><a class="sj-btn primary large" href="Del_1.html">Börja med del 1: ' + escape(w['delar'][0]['titel']) + '</a></p>') if delsida(1) else actions
+        sjalv = ('<p>Varje del har en egen sida: översikt, teori, exempel och övningar med ledtrådar och facit. Gör delarna i ordning. Labben kommer sist.</p>' if delsida(1)
+                 else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta
         rubrik_ordning = 'Lösningar och självhjälp'
         actions = ''
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
