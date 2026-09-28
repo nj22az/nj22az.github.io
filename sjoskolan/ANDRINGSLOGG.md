@@ -196,3 +196,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Din tur-bilder följer den nya planen. Långa brödtexter i vecka 40:s presentationer får automatiskt den största
   storlek som ryms (`kompakt` i `innehall/export/presentationer.py`); Så räknar du-texten gick annars in i sidfoten.
   40 poster som main reviderat utan skyddade filer registrerades om med `revidera --alla` och lärarlösenordet.
+- **2026-09-28** Vecka 40, en sida per del (`Del_1.html`–`Del_3.html`, exportören `delsidor`): Översikt → Teori →
+  Exempel → Övningar → Fredag: labben. Varje övning har Ledtråd 1 (vilken formel och vilket teoriavsnitt), Ledtråd 2
+  (hur du börjar), räknarhjälp och facit; avbockningen följer med i QR-koden. Veckosidan och dagplanen länkar dit.

@@ -33,7 +33,7 @@ SJO = ROT.parent
 BUILD = ROT / 'build'
 UTGAVA = ROT / 'utgava.json'
 # Exportörer i körordning. Lätta körs alltid; tunga bara på begäran (de kräver LibreOffice, python-pptx, boken …).
-LATTA = ['beteckningar', 'kurssidor', 'simulatorer', 'lektioner', 'arbetsblad', 'arbetsrum', 'inlamning', 'tentamen', 'idregister']
+LATTA = ['beteckningar', 'kurssidor', 'simulatorer', 'lektioner', 'delsidor', 'arbetsblad', 'arbetsrum', 'inlamning', 'tentamen', 'idregister']
 TUNGA = ['presentationer', 'larare', 'bok']
 
 
@@ -128,6 +128,7 @@ def cmd_bygg(a):
 
 # Sidor där varje förkortning ska vara förklarad (beteckningar.json). Vecka för vecka, när ordlistan täcker veckan.
 BETECKNINGSSIDOR = ['vecka-40/aktuell/Lektion_1.html', 'vecka-40/aktuell/Lektion_2.html', 'vecka-40/aktuell/Lektion_3.html',
+                    'vecka-40/aktuell/Del_1.html', 'vecka-40/aktuell/Del_2.html', 'vecka-40/aktuell/Del_3.html',
                     'vecka-40/aktuell/Formelstod_och_ovningar.html', 'vecka-40/aktuell/Inlamning.html', 'vecka-40/aktuell/lektioner.mjs',
                     'vaxelstromslabbet/uppgifter.gen.mjs', 'vecka-40/aktuell/kontrollfragor.gen.mjs']
 KANDA_ORD = {'EL', 'SJÖSKOLAN', 'PDF', 'GENERERAD', 'FIL', 'UPPGIFTER', 'GUIDADE', 'KONTROLLFRAGOR', 'LEKTIONER', 'LESSONS', 'REVISION', 'BASE', 'STEG', 'AV', 'DEL', 'OK'}

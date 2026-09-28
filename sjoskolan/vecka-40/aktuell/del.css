@@ -1,0 +1,18 @@
+/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */
+.del-main{max-width:980px}.del-sida{max-width:76ch}
+.del-steg{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 24px;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.del-steg a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:4px 14px 4px 6px;border:1px solid var(--sj-line,#cad8e2);border-radius:999px;text-decoration:none;font-weight:700;background:#fff}
+.del-steg b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--sj-accent,#064f91);color:#fff}
+.del-block{margin:12px 0 40px;scroll-margin-top:72px}.del-block>h2{display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--sj-accent,#064f91);padding-bottom:6px}
+.del-block>h2 span{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--sj-accent,#064f91);color:#fff;font-size:22px}
+.del-block section,.del-ovning{scroll-margin-top:72px}
+.del-gor li{margin:8px 0}.del-mer{font-size:15px;color:var(--sj-muted,#4d6579)}
+.del-tur{margin:16px 0 24px;padding:8px 16px;border-left:8px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:0 12px 12px 0}
+.del-ovning{margin:20px 0 28px;padding:14px 18px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+.del-ovning h3{margin-top:0}.del-givet{color:var(--sj-muted,#4d6579)}
+.del-ovning .formula{font-weight:700;white-space:nowrap;font-size:inherit;display:inline;margin:0}
+.del-klar{margin-top:12px;min-height:44px;padding:6px 14px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;cursor:pointer}
+.del-ovning.klar{border-color:var(--sj-ok,#176844)}.del-ovning.klar .del-klar{background:var(--sj-ok,#176844);color:#fff;border-color:var(--sj-ok,#176844)}
+.del-status{font-weight:700;color:var(--sj-muted,#4d6579)}
+@media(max-width:700px){.del-steg{position:static;gap:6px}.del-steg a{min-height:40px;padding:2px 10px 2px 4px;font-size:15px}.del-steg b{width:26px;height:26px}}
+@media print{.del-steg,.del-klar,.art-nav,.school-nav{display:none}.del-ovning{break-inside:avoid}}

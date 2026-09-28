@@ -1,12 +1,16 @@
 // The overview derives progress from recorded reading and attempts, never checkboxes.
 import {STUDY} from './arbetsrum.gen.mjs?v=20260927c';
 import {studyStore, exerciseState, isWorked, isCorrect} from './studieprogress.mjs?v=20260927b';
-const store=studyStore(), aliases={v40_01:'sinus',v40_02:'impedans',v40_03:'effekt'};
+const store=studyStore(), aliases={v40_01:'sinus',v40_02:'impedans',v40_03:'effekt'}, DELAR={sinus:1,impedans:2,effekt:3};
+const KLARA='sj-ovningar:/sjoskolan/vecka-40/aktuell/Formelstod_och_ovningar.html';
+const klara=()=>{try{return JSON.parse(localStorage.getItem(KLARA)||'{}')||{};}catch{return {};}};
 function route(href){
   const url=new URL(href,location.href), p=url.searchParams;
   if(url.pathname.endsWith('/Formelstod_och_ovningar.html')&&url.pathname.includes('vecka-40')) {
-    url.pathname=url.pathname.replace('Formelstod_och_ovningar.html','Genomgang.html');
-    if(url.hash)p.set('uppgift',url.hash.slice(1));url.hash='';
+    const d=(p.get('del')||url.hash.slice(1)).slice(0,6);url.pathname=url.pathname.replace('Formelstod_och_ovningar.html',`Del_${Number(d.slice(-1))||1}.html`);
+    url.search='';url.hash=url.hash&&url.hash.includes('-q')?url.hash:'#ovningar';
+  } else if(url.pathname.endsWith('/Genomgang.html')&&DELAR[p.get('del')]) {
+    url.pathname=url.pathname.replace('Genomgang.html',`Del_${DELAR[p.get('del')]}.html`);url.search='';
   } else if(url.pathname.endsWith('/vecka-38/aktuell/Elevuppgifter.html')) {
     url.pathname='/sjoskolan/vecka-40/aktuell/Genomgang.html';p.set('del','franskiljning');p.set('uppgift',url.hash.slice(1)||'v2-1');url.hash='';
   }
@@ -19,6 +23,7 @@ function render(){
     const theory=seq.filter(x=>!x.startsWith('EL-')),tasks=seq.filter(x=>x.startsWith('EL-')).map(x=>STUDY.tasks[x]);
     const read=theory.filter(x=>s.read[`r1:${id}:${x}`]).length;
     const worked=tasks.filter(t=>isWorked(exerciseState(s,t))).length,correct=tasks.filter(t=>isCorrect(exerciseState(s,t))).length;
+    if(DELAR[id]){const k=klara(),n=tasks.filter(t=>k[t.anchor]).length;row.querySelector('.lesson-progress').textContent=n?`${n} av ${tasks.length} övningar klara`:'Inte påbörjad';continue;}
     row.querySelector('.lesson-progress').textContent=read||worked?`${read}/${theory.length} avsnitt genomgångna · ${worked}/${tasks.length} övningar bearbetade · ${correct} med rätt svar`:'Inte påbörjad';
   }
   const c=s.cursor;
@@ -35,8 +40,8 @@ function render(){
     if(li.dataset.ovningar){
       const [part,range]=li.dataset.ovningar.split(':'),[start,end]=range.split('-').map(Number);
       const tasks=Object.values(STUDY.tasks).filter(t=>t.del===aliases[part]&&Number(t.anchor.split('-q')[1])>=start&&Number(t.anchor.split('-q')[1])<=end);
-      const n=tasks.filter(t=>isWorked(exerciseState(s,t))).length;
-      text=`${n}/${tasks.length} bearbetade`;
+      const k=klara(),n=tasks.filter(t=>k[t.anchor]).length;
+      text=`${n}/${tasks.length} klara`;
     }else if(url.pathname.endsWith('Genomgang.html')){
       const id=aliases[url.searchParams.get('del')]||url.searchParams.get('del');
       const seq=STUDY.sequence[id]||[];
