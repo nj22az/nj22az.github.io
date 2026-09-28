@@ -1,5 +1,5 @@
 import {LESSONS} from './lektioner.mjs?v=20260930u';
-import {STUDY} from './arbetsrum.gen.mjs?v=20260927c';
+import {STUDY} from './arbetsrum.gen.mjs?v=20260928db';
 import {visual} from './visuals.mjs?v=20260929';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
 import {hjalpHtml} from '../../gemensamt/raknehjalp.mjs?v=20260929c';
@@ -54,15 +54,16 @@ function initial() {
 }
 step = initial();
 function cards(ids = []) {
-  return ids.map(id => { const c = STUDY.cards[id]; return `<aside class="study-panel"><h3>${esc(c.titel)}</h3><p data-read="card-${esc(id)}">${m(c.text)}</p></aside>`; }).join('');
+  // Databladen byggs av innehall/export/datablad.py (fast HTML ur studieplanen).
+  return ids.length ? `<div class="datablad-par">${ids.map(id => STUDY.cards[id].html).join('')}</div>` : '';
 }
 function picture(s) {
   if (s.image) return `<figure><img src="/sjoskolan/${esc(s.image)}" alt="${esc(s.alt || 'Två matningsvägar, A och B, mot arbetsområdet. Väljarens verkliga ställning är okänd.')}" loading="lazy"><figcaption>Figur 04 · Undervisningsmodell. Väljarens verkliga läge och spärrstatus är inte givna.</figcaption></figure>`;
   if (s.visual) return `<figure class="lesson-visual">${visual(s.visual, Math.min($('slide').clientWidth || 760, 760))}</figure>`;
   return '';
 }
-function explanation(s, compact = false) {
-  return `${picture(s)}${s.body.map((t,i) => `<p${compact ? '' : ` data-read="p${i}"`}>${m(t)}</p>`).join('')}${s.formula ? `<p class="formula"${compact ? '' : ' data-read="formula"'}>${m(s.formula)}</p>` : ''}${cards(s.cards)}`;
+function explanation(s, compact = false, visade = []) {
+  return `${picture(s)}${s.body.map((t,i) => `<p${compact ? '' : ` data-read="p${i}"`}>${m(t)}</p>`).join('')}${s.formula ? `<p class="formula"${compact ? '' : ' data-read="formula"'}>${m(s.formula)}</p>` : ''}${cards((s.cards || []).filter(id => !visade.includes(id)))}`;
 }
 function storageNote() {
   $('storage-note').textContent = store.persistent ? '' : 'Webbläsaren tillåter inte sparande. Dina svar finns kvar medan sidan är öppen. Skriv ut dem innan du lämnar sidan.';
@@ -142,7 +143,7 @@ function renderExercise(task) {
     <p>${m(q.fraga)}</p>${q.scenario?`<p class="study-panel"><strong>Underlag:</strong> ${m(q.scenario)}</p>`:''}${q.givet?`<p><strong>Givet:</strong> ${m(q.givet)}</p>`:''}
     ${picture(task)}${cards(task.cards)}
     <aside class="study-task" id="current-action"><strong>Gör så här</strong><ol><li>${(task.solution.svar||[]).length?'Skriv givna värden och välj samband. Räkna på papper eller med räknare.':'Läs underlaget och skriv ett eget svar på frågorna. Motivera dina val.'}</li><li>${(task.solution.svar||[]).length?'Skriv resultatet i varje fält nedan, i den enhet som står vid fältet.':'Skriv ditt resonemang i textrutan nedan.'}${needsText&&(task.solution.svar||[]).length?' Skriv också hur du tänkte i motiveringsrutan.':''}</li><li>${(task.solution.svar||[]).length?'Tryck på ”Kontrollera mitt svar”. Läs återkopplingen och använd ledtråden om du behöver försöka igen.':'Tryck på ”Spara mitt försök”. Läraren bedömer din motivering.'}</li></ol></aside>
-    <details id="repeat-theory" ${unread?'open':''}><summary>${unread?'Förklaringen du behöver för uppgiften':'Repetera förklaringen här'}</summary>${theories.map(s=>`<section data-theory="${s.id}"><h3>${m(s.title)}</h3>${explanation(s)}</section>`).join('')}</details>
+    <details id="repeat-theory" ${unread?'open':''}><summary>${unread?'Förklaringen du behöver för uppgiften':'Repetera förklaringen här'}</summary>${theories.map(s=>`<section data-theory="${s.id}"><h3>${m(s.title)}</h3>${explanation(s, false, task.cards || [])}</section>`).join('')}</details>
     ${q.samband?.length?`<p class="formula">${q.samband.map(m).join('<br>')}</p>`:''}
     ${hjalpHtml([q.fraga,...(q.samband||[]),q.givet||''].join(' '))}
     <h3>Ditt svar</h3><p class="study-note">Det här är en övning. Ditt försök sparas i den här webbläsaren. Inlämningarna finns på veckans startsida.</p>

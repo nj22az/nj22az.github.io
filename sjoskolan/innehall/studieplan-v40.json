@@ -4,11 +4,111 @@
   "kort": {
     "M1": {
       "titel": "Instrumentkort M1",
-      "text": "DC-spänning 0–20 V. Upplösning 0,01 V. Felgräns ±(0,5 % av visat värde + 2 siffror). Spänningsingångens resistans är 10 MΩ. Ingen AC-, ström- eller resistansfunktion anges. Konstruerat utbildningsunderlag."
+      "typ": "Digital DC-voltmeter",
+      "text": "Digital DC-voltmeter. Mäter bara DC-spänning 0–20 V. Ingen AC-spänning, ström eller resistans. Upplösning 0,01 V. Felgräns ±(0,5 % av visat värde + 2 siffror). Ingångsresistans 10 MΩ.",
+      "uttag": "COM och V⎓",
+      "funktioner": [
+        [
+          "DC-spänning",
+          "V⎓",
+          true,
+          "0–20 V"
+        ],
+        [
+          "AC-spänning",
+          "V~",
+          false,
+          ""
+        ],
+        [
+          "Likström",
+          "A⎓",
+          false,
+          ""
+        ],
+        [
+          "Växelström",
+          "A~",
+          false,
+          ""
+        ],
+        [
+          "Resistans",
+          "Ω",
+          false,
+          ""
+        ]
+      ],
+      "data": [
+        [
+          "Upplösning",
+          "0,01 V"
+        ],
+        [
+          "Felgräns",
+          "±(0,5 % av visat värde + 2 siffror)"
+        ],
+        [
+          "Ingångsresistans",
+          "10 MΩ"
+        ],
+        [
+          "Används till",
+          "Kretsar med högst 20 V DC. Inte nätspänning."
+        ]
+      ]
     },
     "M2": {
       "titel": "Instrumentkort M2",
-      "text": "Separata DC- och true-RMS AC-spänningslägen. AC-frekvensområde 40–400 Hz. Ω-funktion för avgränsat spänningslöst objekt. Säkrad mA-ingång för likström, högst 200 mA. Konstruerat utbildningsunderlag; övriga instrumentvillkor måste också följas."
+      "typ": "Digital multimeter, true RMS",
+      "text": "Digital multimeter, true RMS. DC-spänning 0–600 V. AC-spänning 0–600 V, 40–400 Hz. Likström 0–200 mA via säkrad mA-ingång. Ingen växelström. Resistans 0–20 MΩ på spänningslöst, avgränsat objekt. CAT III 600 V.",
+      "uttag": "COM, VΩ och mA (säkrad)",
+      "funktioner": [
+        [
+          "DC-spänning",
+          "V⎓",
+          true,
+          "0–600 V"
+        ],
+        [
+          "AC-spänning",
+          "V~",
+          true,
+          "0–600 V, true RMS, 40–400 Hz"
+        ],
+        [
+          "Likström",
+          "A⎓",
+          true,
+          "0–200 mA, säkrad mA-ingång"
+        ],
+        [
+          "Växelström",
+          "A~",
+          false,
+          ""
+        ],
+        [
+          "Resistans",
+          "Ω",
+          true,
+          "0–20 MΩ, bara på spänningslöst, avgränsat objekt"
+        ]
+      ],
+      "data": [
+        [
+          "Mätkategori",
+          "CAT III 600 V"
+        ],
+        [
+          "mA-ingång",
+          "Säkring 200 mA. Kopplas i serie med kretsen."
+        ],
+        [
+          "Används till",
+          "Följ också instrumentets övriga villkor och stationens instruktion."
+        ]
+      ]
     }
   },
   "franskiljning": {

@@ -3,7 +3,7 @@
   "titel": "Instrumentval",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "scenario": "Använd instrumentkorten M1 och M2. M1 har DC-spänningsmätning. M2 har DC, true-RMS AC 40–400 Hz, Ω för frånskilt mätobjekt och säkrad mA-ingång högst 200 mA. Korten gäller endast det beskrivna utbildningsfallet.",
+    "scenario": "Använd instrumentkorten M1 och M2. Tabellen Vad instrumentet kan mäta visar vilka mätningar varje instrument klarar (Ja) och inte klarar (Nej).",
     "fraga": "Välj instrument/funktion för 12 V DC, 12 V AC vid 50 Hz, cirka 4 mA DC och ett löst 1 kΩ-motstånd. Beskriv anslutning.",
     "instruktion": "egen lösning med metod och motivering."
   },
@@ -40,7 +40,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Läs funktion, mätområde och frekvensområde i korten nedan.",
+      "text": "Bestäm först vilken storhet som mäts och om den är DC eller AC. Leta sedan upp raden i tabellen Vad instrumentet kan mäta och läs Finns och Mätområde.",
       "status": "utkast"
     },
     {

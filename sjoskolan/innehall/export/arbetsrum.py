@@ -6,6 +6,7 @@ browser receives only student fields; protected teacher/book material stays out.
 import json
 import re
 import rendera as R
+import datablad
 
 PUBLIK = 'elev'
 
@@ -29,11 +30,12 @@ def filer(a):
         ids = [x for x in sequence if x.startswith('EL-')]
         assert len(ids) == len(set(ids)), f'Duplicated exercise in {lesson}'
         assert set(ids) == {x for x, p in tasks.items() if p['del'] == lesson}
-    data = {'version': plan['version'], 'cards': plan['kort'], 'guidance': plan['vagledning'], 'isolation': plan['franskiljning'],
+    data = {'version': plan['version'], 'cards': {k: {'titel': c['titel'], 'text': c['text'], 'html': datablad.html(k, c)} for k, c in plan['kort'].items()}, 'guidance': plan['vagledning'], 'isolation': plan['franskiljning'],
             'sequence': plan['ordning'], 'tasks': tasks}
     cards_page = R.SJO / 'gemensamt/Underlagskort.html'
-    cards_html = ''.join(f'<h2>{R.h(c["titel"])}</h2><p>{R.h(c["text"])}</p>' for c in plan['kort'].values())
-    cards_text = re.sub(r'<h2>Instrumentkort M1</h2>.*?(?=<h2>Komponentkort</h2>)', cards_html, cards_page.read_text(), flags=re.S)
+    cards_html = ('<h2>Instrumentkort M1 och M2</h2><p>Databladen visar vad varje instrument kan mäta (Ja eller Nej), '
+                  'i vilket mätområde, och vilka uttag det har.</p>' + datablad.alla(plan['kort']))
+    cards_text = re.sub(r'<h2>Instrumentkort M1.*?(?=<h2>Komponentkort</h2>)', lambda _: cards_html, cards_page.read_text(), flags=re.S)
     return {'gemensamt/Underlagskort.html': cards_text, 'vecka-40/aktuell/arbetsrum.gen.mjs':
             '// GENERERAD FIL · innehall.py bygg arbetsrum. Redigera innehall/ovningar och studieplan-v40.json.\n'
             + 'export const STUDY = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n'}

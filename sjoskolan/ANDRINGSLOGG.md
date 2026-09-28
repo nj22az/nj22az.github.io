@@ -210,3 +210,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Registervård och numrering vecka för vecka (`innehall/numrering.py`, 456 nummer). Övningarna heter
   nu Övning del.nummer på webben, i presentationerna, i facit, i lärarmanus och i QR-koden. Vecka 40: del 1–4, inlämning
   1–7, lärarens QR-granskare visar Inlämning 4–6. Fem övningstexter som hänvisade till gamla nummer skrevs om.
+- **2026-09-28** Instrumentkorten M1 och M2 är datablad (`innehall/export/datablad.py`, `gemensamt/datablad.css`): bild av
+  instrumentet med uttag, tabellen Vad instrumentet kan mäta (Ja/Nej och mätområde) och tekniska data. Uppgifterna står
+  strukturerat i `studieplan-v40.json` (kort). M2 fick mätområden och CAT III 600 V. Korten visas en gång per övning.
