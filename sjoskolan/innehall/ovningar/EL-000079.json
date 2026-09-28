@@ -3,7 +3,7 @@
   "titel": "RLC-krets",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Räkna ut X först och använd den – inte X_{L} ensam – i impedansformeln.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) X = X_{L} − X_{C}, med tecken (positivt betyder induktivt). 2) |Z| = √(R² + X²) med nettoreaktansen, inte X_{L}. 3) I = U_{RMS}/|Z|. Exempel: X_{L} = 25 Ω, X_{C} = 15 Ω och R = 24 Ω ger X = 10 Ω, |Z| = √(576 + 100) = 26 Ω, och 65 V ger I = 2,5 A. Rimlighet: |Z| är alltid minst lika stor som R.",
+      "status": "utkast"
     }
   ],
   "losning": {

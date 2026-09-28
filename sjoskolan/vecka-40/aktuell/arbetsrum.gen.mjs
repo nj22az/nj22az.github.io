@@ -450,7 +450,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "förutsäga hur lång en period ska vara innan du läser av en kurva",
       "id": "EL-000061",
-      "revision": 3,
+      "revision": 4,
       "title": "Period vid 50 Hz",
       "number": "Övning 1",
       "anchor": "v40_01-q1",
@@ -471,6 +471,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Dela 1 med frekvensen och gör sedan om sekunder till millisekunder."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv T = 1/f. 2) Sätt in f i Hz och tryck 1 ÷ f: T i sekunder blir ett litet decimaltal. 3) Gör om till ms genom att multiplicera med 1 000 (flytta kommat tre steg åt höger). Exempel med ett annat tal: f = 125 Hz ger T = 1/125 = 0,0080 s = 8,0 ms. Rimlighet: högre frekvens ger kortare period, så vid 50 Hz ska T bli längre än så."
         }
       ],
       "solution": {
@@ -506,7 +511,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "ta reda på en signals frekvens från tiden mellan två upprepningar",
       "id": "EL-000062",
-      "revision": 3,
+      "revision": 4,
       "title": "Frekvens från kurvan",
       "number": "Övning 2",
       "anchor": "v40_01-q2",
@@ -527,6 +532,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Gör om ms till s och dela sedan 1 med periodtiden."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Gör om periodtiden till sekunder: dela ms med 1 000 (till exempel 8,0 ms = 0,0080 s). 2) Tryck 1 ÷ T, så får du f i Hz. 3) Kontrollera enheten: en period på några ms ger en frekvens på hundratals Hz. Exempel: T = 8,0 ms ger f = 1/0,0080 = 125 Hz. Kortare period ska ge högre frekvens."
         }
       ],
       "solution": {
@@ -560,7 +570,7 @@ export const STUDY = {
         "nasta": "Hemma: övning 4 · Effektivvärde"
       },
       "id": "EL-000063",
-      "revision": 3,
+      "revision": 4,
       "title": "Toppvärde",
       "number": "Övning 3",
       "anchor": "v40_01-q3",
@@ -581,6 +591,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Multiplicera effektivvärdet med √2. Toppvärdet ska bli större än effektivvärdet."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv û = √2 · U_{RMS}. 2) Tryck √2 på räknaren (≈ 1,414) och multiplicera med effektivvärdet. 3) Ange svaret i V med en decimal. Kontroll: toppvärdet ska bli ungefär 40 % större än effektivvärdet, aldrig mindre. Exempel: fartygets 440 V RMS har toppvärdet 1,414 · 440 ≈ 622 V."
         }
       ],
       "solution": {
@@ -608,7 +623,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "översätta kurvans toppvärde till den spänning en AC-multimeter normalt visar för en sinus",
       "id": "EL-000064",
-      "revision": 3,
+      "revision": 4,
       "title": "Effektivvärde",
       "number": "Övning 4",
       "anchor": "v40_01-q4",
@@ -629,6 +644,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Dela toppvärdet med √2. Avrunda inte förrän i svaret."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv U_{RMS} = û/√2. 2) Dela toppvärdet med 1,414 (samma sak som att multiplicera med 0,707). 3) Avrunda först i svaret, till en decimal. Kontroll: effektivvärdet ska bli ungefär 70 % av toppvärdet, alltså mindre. Exempel: û = 200 V ger U_{RMS} = 200/1,414 ≈ 141 V."
         }
       ],
       "solution": {
@@ -658,7 +678,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "skilja oscilloskopets topp-till-topp-värde från toppvärde och effektivvärde",
       "id": "EL-000065",
-      "revision": 3,
+      "revision": 4,
       "title": "Topp till topp",
       "number": "Övning 5",
       "anchor": "v40_01-q5",
@@ -680,6 +700,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Halvera först U_{pp} och räkna sedan om toppvärdet till effektivvärde."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Halvera: û = U_{pp}/2. 2) Räkna om toppvärdet: U_{RMS} = û/√2, alltså dela med 1,414. 3) Ange båda värdena i V. Kontroll: effektivvärdet blir ungefär 35 % av det oscilloskopet visar. Exempel: U_{pp} = 70 V ger û = 35 V och U_{RMS} = 35/1,414 ≈ 24,7 V."
         }
       ],
       "solution": {
@@ -715,7 +740,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "använda effektivvärdet för att beräkna värmeeffekten i ett motstånd",
       "id": "EL-000069",
-      "revision": 3,
+      "revision": 4,
       "title": "Effekt i resistor",
       "number": "Övning 9",
       "anchor": "v40_01-q9",
@@ -736,6 +761,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Kvadrera effektivvärdet och dela med R. Använd inte toppvärdet i den här formeln."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv P = U_{RMS}²/R. 2) Kvadrera effektivvärdet först (U · U), dela sedan med R. 3) Kontroll: räkna I = U/R och sedan P = U · I; det ska ge samma tal. Exempel: en vattenkokare på 230 V med R = 23 Ω: 230² = 52 900, 52 900/23 = 2 300 W. Enheten blir W."
         }
       ],
       "solution": {
@@ -765,7 +795,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "bestämma spänningen vid ett visst ögonblick i en period",
       "id": "EL-000066",
-      "revision": 3,
+      "revision": 4,
       "title": "Momentanvärde",
       "number": "Övning 6",
       "anchor": "v40_01-q6",
@@ -786,6 +816,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna först vinkeln, sedan sinus, och multiplicera sist med toppvärdet."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Gör om t till sekunder: ms ÷ 1 000. 2) Räkna vinkeln 2π · f · t; ställ räknaren i RAD. 3) Ta sin av vinkeln, ett tal mellan −1 och 1. 4) Multiplicera med û. Exempel: û = 15 V, f = 60 Hz och t = 1,0 ms ger vinkeln 2π · 60 · 0,0010 ≈ 0,377 rad, sin ≈ 0,368 och u ≈ 5,5 V. Svaret kan aldrig bli större än û."
         }
       ],
       "solution": {
@@ -815,7 +850,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "tolka ett negativt värde som omvänd polaritet under sinusens negativa halvperiod",
       "id": "EL-000067",
-      "revision": 3,
+      "revision": 4,
       "title": "Negativ halvvåg",
       "number": "Övning 7",
       "anchor": "v40_01-q7",
@@ -836,6 +871,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Beräkna 2πft och sinus med tecken. RMS-värdet används inte som amplitud."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "Samma recept som i övning 6: 1) t i sekunder, 2) vinkeln 2πft med räknaren i RAD, 3) sin med tecken, 4) multiplicera med û. Är vinkeln mellan π (≈ 3,14) och 2π (≈ 6,28) rad ligger du i den negativa halvvågen och sinus blir negativ. Exempel: vinkeln 4,5 rad ger sin ≈ −0,978; med û = 15 V blir u ≈ −14,7 V. Skriv med minustecknet i svaret."
         }
       ],
       "solution": {
@@ -865,7 +905,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "uttrycka avståndet mellan två kurvor som en fasvinkel",
       "id": "EL-000068",
-      "revision": 3,
+      "revision": 4,
       "title": "Fas från tidsavstånd",
       "number": "Övning 8",
       "anchor": "v40_01-q8",
@@ -886,6 +926,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna ut T och sätt in Δt/T. För att veta vilken signal som ligger före måste du se kurvorna."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Räkna T = 1/f, i ms om Δt är i ms. 2) Bilda kvoten Δt/T, andelen av en hel period (ett tal mellan 0 och 1). 3) |φ| = 360° · Δt/T. Exempel: 100 Hz och Δt = 1,5 ms ger T = 10 ms, 1,5/10 = 0,15 och |φ| = 54°. Rimlighet: en halv period är 180°, så en liten del av perioden ger en liten vinkel."
         }
       ],
       "solution": {
@@ -914,7 +959,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "avgöra varför vågform och toppvärde båda behövs när du bedömer ett mätvärde",
       "id": "EL-000070",
-      "revision": 5,
+      "revision": 6,
       "title": "Jämförelse av vågformer",
       "number": "Övning 10",
       "anchor": "v40_01-q10",
@@ -936,6 +981,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna effektivvärdet med rätt formel för varje vågform och jämför sedan ytorna över och under nollan för medelvärdet."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "Ett fullständigt svar har tre delar: 1) sinusens effektivvärde med U_{RMS} = û/√2, 2) fyrkantvågens effektivvärde med U_{RMS} = û, 3) medelvärdet för var och en, där du jämför ytan över nollan med ytan under (tecknet räknas). Avsluta med en mening om vilken vågform som ger högst effektivvärde vid samma toppvärde och varför."
         }
       ],
       "solution": {
@@ -987,7 +1037,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "förutsäga hur mycket en spole motverkar växelström vid en viss frekvens",
       "id": "EL-000071",
-      "revision": 4,
+      "revision": 5,
       "title": "Spolens reaktans",
       "number": "Övning 1",
       "anchor": "v40_02-q1",
@@ -1008,6 +1058,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Multiplicera 2, π, f och L. Kontrollera att L är i henry."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) L i henry: mH ÷ 1 000 (50 mH = 0,050 H). 2) X_{L} = 2π · f · L: multiplicera i ordning 2 · π · f · L. 3) Enheten blir Ω. Exempel: 60 Hz och 0,20 H ger 2 · π · 60 · 0,20 ≈ 75 Ω. Rimlighet: en spole på tiondelar av en henry ger tiotals Ω vid nätfrekvens, och högre f ger större X_{L}."
         }
       ],
       "solution": {
@@ -1036,7 +1091,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "kombinera resistans och reaktans till kretsens totala impedans",
       "id": "EL-000073",
-      "revision": 5,
+      "revision": 6,
       "title": "RL-kretsens impedans",
       "number": "Övning 3",
       "anchor": "v40_02-q3",
@@ -1057,6 +1112,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Kvadrera R och X, lägg ihop och dra roten ur. Lägg inte ihop R och X rakt av."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Kvadrera R och X_{L} var för sig. 2) Lägg ihop kvadraterna. 3) Dra roten ur summan: |Z| = √(R² + X_{L}²). Exempel: R = 12 Ω och X_{L} = 5 Ω ger √(144 + 25) = √169 = 13 Ω. Kontroll: |Z| ska vara större än den största av R och X_{L} men mindre än R + X_{L}."
         }
       ],
       "solution": {
@@ -1091,7 +1151,7 @@ export const STUDY = {
         "nasta": "Hemma: följ exemplet inför övning 5"
       },
       "id": "EL-000074",
-      "revision": 4,
+      "revision": 5,
       "title": "Strömmen i RL-kretsen",
       "number": "Övning 4",
       "anchor": "v40_02-q4",
@@ -1112,6 +1172,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna först ut impedansen och dela sedan U med den."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Räkna |Z| = √(R² + X_{L}²) som i övning 13. 2) I = U_{RMS}/|Z|, båda effektivvärden. 3) Enheten blir A. Kontroll: I ska vara mindre än U/R (strömmen som om spolen inte fanns). Exempel: 230 V över R = 24 Ω och X_{L} = 10 Ω: |Z| = √(576 + 100) = 26 Ω och I = 230/26 ≈ 8,8 A."
         }
       ],
       "solution": {
@@ -1140,7 +1205,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "kontrollera källspänningen när delspänningarna är fasförskjutna",
       "id": "EL-000075",
-      "revision": 4,
+      "revision": 5,
       "title": "Spänningar i serie",
       "number": "Övning 5",
       "anchor": "v40_02-q5",
@@ -1162,6 +1227,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna ut spänningen över varje komponent och använd sedan Pythagoras sats för källspänningen."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) U_{R} = I · R. 2) U_{L} = I · X_{L}. 3) Källspänningen med Pythagoras: U = √(U_{R}² + U_{L}²), inte U_{R} + U_{L}. 4) Kontroll: U ska bli lika med I · |Z|. Exempel: I = 0,30 A, R = 24 Ω och X_{L} = 10 Ω ger U_{R} = 7,2 V, U_{L} = 3,0 V och U = √(51,8 + 9,0) = 7,8 V."
         }
       ],
       "solution": {
@@ -1208,7 +1278,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "ange hur mycket strömmen är förskjuten och om den kommer före eller efter spänningen",
       "id": "EL-000076",
-      "revision": 4,
+      "revision": 5,
       "title": "Fasvinkel i RL",
       "number": "Övning 6",
       "anchor": "v40_02-q6",
@@ -1229,6 +1299,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Dela X med R, ta arctan och tolka tecknet."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Ställ räknaren i DEG. 2) Dela X_{L} med R; kvoten är ett rent tal. 3) Tryck arctan (tan^{−1}, ofta SHIFT + tan). 4) Tolka tecknet: positiv φ i en RL-krets betyder att strömmen ligger efter (släpar). Exempel: X_{L} = 5 Ω och R = 12 Ω ger 5/12 ≈ 0,417 och arctan ≈ 22,6°. Rimlighet: liten X_{L} mot R ger liten vinkel, stor X_{L} mot R ger stor vinkel."
         }
       ],
       "solution": {
@@ -1263,7 +1338,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "beräkna hur en kondensator påverkar växelström vid en viss frekvens",
       "id": "EL-000072",
-      "revision": 4,
+      "revision": 5,
       "title": "Kondensatorns reaktans",
       "number": "Övning 2",
       "anchor": "v40_02-q2",
@@ -1284,6 +1359,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Gör om µF till F. Räkna ut hela nämnaren innan du delar 1 med den."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) C i farad: µF · 10^{−6} (47 µF = 0,000047 F). 2) Räkna nämnaren 2 · π · f · C först och skriv ner den. 3) Tryck 1 ÷ nämnaren, så får du X_{C} i Ω. Exempel: 60 Hz och 47 µF ger nämnaren 2 · π · 60 · 0,000047 ≈ 0,0177 och X_{C} ≈ 56 Ω. Rimlighet: större C eller högre f ger mindre X_{C}."
         }
       ],
       "solution": {
@@ -1312,7 +1392,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "förutsäga ström och fas när kretsen innehåller en kondensator",
       "id": "EL-000077",
-      "revision": 4,
+      "revision": 5,
       "title": "RC-krets",
       "number": "Övning 7",
       "anchor": "v40_02-q7",
@@ -1334,6 +1414,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Använd X = −80 Ω. Räkna impedans, ström och vinkel i den ordningen."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Sätt X = −X_{C} (kapacitiv reaktans är negativ). 2) |Z| = √(R² + X²); tecknet försvinner i kvadraten. 3) I = U_{RMS}/|Z|. 4) φ = arctan(X/R) med räknaren i DEG; svaret blir negativt. Exempel: R = 24 Ω, X_{C} = 10 Ω och 65 V ger |Z| = 26 Ω, I = 2,5 A och φ = arctan(−10/24) ≈ −22,6°."
         }
       ],
       "solution": {
@@ -1378,7 +1463,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "bedöma vad en ändrad frekvens gör med samma spole och kondensator",
       "id": "EL-000078",
-      "revision": 4,
+      "revision": 5,
       "title": "Dubbel frekvens",
       "number": "Övning 8",
       "anchor": "v40_02-q8",
@@ -1399,6 +1484,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Byt f mot 2f i båda formlerna och jämför med de ursprungliga värdena."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "Ett fullständigt svar har en del för varje reaktans: 1) skriv X_{L} = 2πfL med f bytt mot 2f och säg hur X_{L} ändras (ökar eller minskar, och med vilken faktor). 2) Gör samma sak med X_{C} = 1/(2πfC), där f står i nämnaren. 3) Avsluta med en mening om varför de två går åt olika håll. Du behöver inga siffror, bara faktorn och riktningen."
         }
       ],
       "solution": {
@@ -1432,7 +1522,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "beräkna ström när en spole och en kondensator delvis motverkar varandra",
       "id": "EL-000079",
-      "revision": 4,
+      "revision": 5,
       "title": "RLC-krets",
       "number": "Övning 9",
       "anchor": "v40_02-q9",
@@ -1454,6 +1544,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna ut X först och använd den – inte X_{L} ensam – i impedansformeln."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) X = X_{L} − X_{C}, med tecken (positivt betyder induktivt). 2) |Z| = √(R² + X²) med nettoreaktansen, inte X_{L}. 3) I = U_{RMS}/|Z|. Exempel: X_{L} = 25 Ω, X_{C} = 15 Ω och R = 24 Ω ger X = 10 Ω, |Z| = √(576 + 100) = 26 Ω, och 65 V ger I = 2,5 A. Rimlighet: |Z| är alltid minst lika stor som R."
         }
       ],
       "solution": {
@@ -1497,7 +1592,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "känna igen resonansfallet där kretsens reaktiva delar tar ut varandra",
       "id": "EL-000080",
-      "revision": 5,
+      "revision": 6,
       "title": "Serieresonans",
       "number": "Övning 10",
       "anchor": "v40_02-q10",
@@ -1519,6 +1614,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Sätt in skillnaden mellan reaktanserna och räkna ut I och φ. Spänningen över spolen och kondensatorn kan ändå vara stor."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) X = X_{L} − X_{C}. 2) |Z| = √(R² + X²); när X är noll blir |Z| = R. 3) I = U_{RMS}/|Z|. 4) φ = arctan(X/R). 5) Kontroll: räkna U_{L} = I · X_{L}; den kan bli större än matningen. Exempel: 230 V och R = 92 Ω vid resonans ger I = 2,5 A; med X_{L} = 60 Ω blir U_{L} = 2,5 · 60 = 150 V."
         }
       ],
       "solution": {
@@ -1556,7 +1656,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "beskriva matningens skenbara effekt utifrån spänning och ström",
       "id": "EL-000081",
-      "revision": 3,
+      "revision": 4,
       "title": "Skenbar effekt",
       "number": "Övning 1",
       "anchor": "v40_03-q1",
@@ -1577,6 +1677,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Multiplicera U med I och ange svaret i VA – den aktiva effekten är inte känd."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv S = U_{RMS} · I_{RMS}. 2) Multiplicera spänning och ström. 3) Skriv enheten VA, inte W, eftersom du inte vet effektfaktorn. Rimlighet: några ampere vid 230 V ger några hundra VA. Exempel: 230 V och 2,5 A ger S = 575 VA."
         }
       ],
       "solution": {
@@ -1605,7 +1710,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "skilja den aktiva effekten från den skenbara effekten",
       "id": "EL-000082",
-      "revision": 3,
+      "revision": 4,
       "title": "Aktiv effekt",
       "number": "Övning 2",
       "anchor": "v40_03-q2",
@@ -1626,6 +1731,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Multiplicera S med cos φ. P kan aldrig bli större än S."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv P = S · cos φ. 2) cos φ är ett tal mellan 0 och 1 utan enhet, så VA blir W. 3) Kontroll: P kan aldrig bli större än S; vid cos φ = 1 är P = S. Exempel: S = 575 VA och cos φ = 0,80 ger P = 575 · 0,80 = 460 W."
         }
       ],
       "solution": {
@@ -1655,7 +1765,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "använda effekttriangeln för att beskriva en induktiv last",
       "id": "EL-000083",
-      "revision": 3,
+      "revision": 4,
       "title": "Effekttriangel",
       "number": "Övning 3",
       "anchor": "v40_03-q3",
@@ -1676,6 +1786,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna P och Q i samma enhet (W och var, inte kW). Räkna ut S innan du räknar P/S."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) S = √(P² + Q²): kvadrera, lägg ihop, dra roten ur. 2) PF = P/S, ett tal utan enhet. 3) Rimlighet: S är större än både P och Q, och PF ligger mellan 0 och 1. Exempel: P = 2 400 W och Q = 1 000 var ger S = √(5 760 000 + 1 000 000) = 2 600 VA och PF = 2 400/2 600 ≈ 0,92."
         }
       ],
       "solution": {
@@ -1712,7 +1827,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "skilja den aktiva och reaktiva delen åt när skenbar effekt och effektfaktor är kända",
       "id": "EL-000084",
-      "revision": 3,
+      "revision": 4,
       "title": "Reaktiv effekt",
       "number": "Övning 4",
       "anchor": "v40_03-q4",
@@ -1734,6 +1849,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Med S i kVA får du P i kW och Q i kvar. Räkna först P, sedan sin φ, och multiplicera till sist S med sin φ för att få Q."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) P = S · cos φ (kVA ger kW). 2) sin φ = √(1 − cos φ · cos φ): kvadrera cos φ, dra från 1, ta roten. 3) Q = S · sin φ (kVA ger kvar). 4) Kontroll: √(P² + Q²) ska ge S igen. Exempel: S = 2,5 kVA och cos φ = 0,60 ger P = 1,5 kW, sin φ = 0,80 och Q = 2,0 kvar."
         }
       ],
       "solution": {
@@ -1769,7 +1889,7 @@ export const STUDY = {
       "tillampning": false,
       "syfte": "beräkna aktiv energianvändning med effekt och drifttid",
       "id": "EL-000085",
-      "revision": 3,
+      "revision": 4,
       "title": "Energin på elmätaren",
       "number": "Övning 5",
       "anchor": "v40_03-q5",
@@ -1790,6 +1910,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Välj aktiv effekt och multiplicera med tiden. Behåll enheten kWh."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Välj den aktiva effekten P i kW; S används inte. 2) E = P · t med t i timmar. 3) Enheten blir kWh, som på elmätaren. Är tiden i minuter: dela med 60 först. Exempel: en vattenkokare på 2,3 kW i 90 min = 1,5 h ger E = 2,3 · 1,5 = 3,45 kWh."
         }
       ],
       "solution": {
@@ -1824,7 +1949,7 @@ export const STUDY = {
         "nasta": "Fredag: läs om kompensering"
       },
       "id": "EL-000086",
-      "revision": 3,
+      "revision": 4,
       "title": "Matningsström",
       "number": "Övning 6",
       "anchor": "v40_03-q6",
@@ -1845,6 +1970,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna ut nämnaren och dela P med den."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Räkna nämnaren U · PF först. 2) I = P/(U · PF). 3) Enheten blir A. Rimlighet: I blir större än P/U, eftersom PF är mindre än 1. Exempel: en pumpmotor på 1 380 W vid 230 V och PF = 0,80 ger nämnaren 230 · 0,80 = 184 och I = 1 380/184 = 7,5 A."
         }
       ],
       "solution": {
@@ -1873,7 +2003,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "beskriva vilken kapacitiv reaktiv effekt som tar ut lastens induktiva del i modellen",
       "id": "EL-000087",
-      "revision": 3,
+      "revision": 4,
       "title": "Full kompensering",
       "number": "Övning 7",
       "anchor": "v40_03-q7",
@@ -1894,6 +2024,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Lös ut Qkondensator och ange både tecken och storlek. Du behöver inte räkna ut kondensatorns kapacitans."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) Skriv Qtotal = Qlast + Qkondensator och sätt Qtotal = 0. 2) Lös ut Qkondensator. 3) Ange både tecken (kapacitiv är negativ) och storlek i kvar. P behövs inte i den här uppgiften. Exempel: en last med Qlast = +2,5 kvar kompenseras helt av Qkondensator = −2,5 kvar."
         }
       ],
       "solution": {
@@ -1923,7 +2058,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "jämföra hur stor ström samma aktiva effekt kräver vid två effektfaktorer",
       "id": "EL-000088",
-      "revision": 3,
+      "revision": 4,
       "title": "Ström före och efter",
       "number": "Övning 8",
       "anchor": "v40_03-q8",
@@ -1944,6 +2079,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Vid samma aktiva effekt minskar strömmen när PF ökar. Använd samma P och U i båda beräkningarna och byt bara PF."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) I_{1} = P/(U · PF_{1}): räkna nämnaren först. 2) I_{2} = P/(U · PF_{2}) med samma P och U, bara PF byts. 3) Jämför: I_{2} ska bli mindre än I_{1}. Exempel: en pumpmotor på 1 380 W vid 230 V ger 1 380/(230 · 0,40) = 15,0 A vid PF 0,40 och 1 380/(230 · 0,80) = 7,5 A vid PF 0,80."
         }
       ],
       "solution": {
@@ -1981,7 +2121,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "bedöma hur en ändrad ström påverkar förlusten i samma kabel",
       "id": "EL-000089",
-      "revision": 3,
+      "revision": 4,
       "title": "Ledningsförlust",
       "number": "Övning 9",
       "anchor": "v40_03-q9",
@@ -2003,6 +2143,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Kvadrera strömkvoten. Skilj på procent som återstår och procentuell minskning."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "Ett fullständigt svar har tre delar: 1) kvoten I_{2}/I_{1} (nya strömmen delad med den gamla), 2) kvoten i kvadrat, som är den andel av förlusten som återstår, gärna i procent, 3) minskningen i procent, 100 minus det som återstår. Kvoterna saknar enhet. Exempel: går strömmen från 16 A till 8 A är kvoten 0,5 och kvadraten 0,25, alltså 25 % kvar och 75 % mindre."
         }
       ],
       "solution": {
@@ -2030,7 +2175,7 @@ export const STUDY = {
       "tillampning": true,
       "syfte": "skilja verklig effektfaktor från grundtonens cos φ när övertoner finns",
       "id": "EL-000090",
-      "revision": 3,
+      "revision": 4,
       "title": "Övertoner",
       "number": "Övning 10",
       "anchor": "v40_03-q10",
@@ -2051,6 +2196,11 @@ export const STUDY = {
           "niva": "metod",
           "status": "migrerad",
           "text": "Räkna PF direkt ur mätvärdena och förklara varför cos φ ensam inte beskriver en förvrängd ström."
+        },
+        {
+          "niva": "nasta-steg",
+          "status": "utkast",
+          "text": "1) PF = P/S med mätarens P och S; ett tal utan enhet, två decimaler. 2) Jämför med grundtonens cos φ. 3) Ett fullständigt svar förklarar två saker: vad övertonerna gör med strömmen och S, och varför de inte bidrar till P. Rimlighet: PF kan inte vara större än cos φ när strömmen är förvrängd."
         }
       ],
       "solution": {

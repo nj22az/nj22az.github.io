@@ -3,7 +3,7 @@
   "titel": "Dubbel frekvens",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -34,6 +34,11 @@
       "niva": "metod",
       "text": "Byt f mot 2f i båda formlerna och jämför med de ursprungliga värdena.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "Ett fullständigt svar har en del för varje reaktans: 1) skriv X_{L} = 2πfL med f bytt mot 2f och säg hur X_{L} ändras (ökar eller minskar, och med vilken faktor). 2) Gör samma sak med X_{C} = 1/(2πfC), där f står i nämnaren. 3) Avsluta med en mening om varför de två går åt olika håll. Du behöver inga siffror, bara faktorn och riktningen.",
+      "status": "utkast"
     }
   ],
   "losning": {

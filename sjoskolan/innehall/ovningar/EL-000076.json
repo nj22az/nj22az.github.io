@@ -3,7 +3,7 @@
   "titel": "Fasvinkel i RL",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,6 +35,11 @@
       "niva": "metod",
       "text": "Dela X med R, ta arctan och tolka tecknet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Ställ räknaren i DEG. 2) Dela X_{L} med R; kvoten är ett rent tal. 3) Tryck arctan (tan^{−1}, ofta SHIFT + tan). 4) Tolka tecknet: positiv φ i en RL-krets betyder att strömmen ligger efter (släpar). Exempel: X_{L} = 5 Ω och R = 12 Ω ger 5/12 ≈ 0,417 och arctan ≈ 22,6°. Rimlighet: liten X_{L} mot R ger liten vinkel, stor X_{L} mot R ger stor vinkel.",
+      "status": "utkast"
     }
   ],
   "losning": {

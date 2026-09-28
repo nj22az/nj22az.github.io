@@ -3,7 +3,7 @@
   "titel": "Reaktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Med S i kVA får du P i kW och Q i kvar. Räkna först P, sedan sin φ, och multiplicera till sist S med sin φ för att få Q.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) P = S · cos φ (kVA ger kW). 2) sin φ = √(1 − cos φ · cos φ): kvadrera cos φ, dra från 1, ta roten. 3) Q = S · sin φ (kVA ger kvar). 4) Kontroll: √(P² + Q²) ska ge S igen. Exempel: S = 2,5 kVA och cos φ = 0,60 ger P = 1,5 kW, sin φ = 0,80 och Q = 2,0 kvar.",
+      "status": "utkast"
     }
   ],
   "losning": {

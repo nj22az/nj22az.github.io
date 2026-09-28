@@ -3,7 +3,7 @@
   "titel": "Ledningsförlust",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Kvadrera strömkvoten. Skilj på procent som återstår och procentuell minskning.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "Ett fullständigt svar har tre delar: 1) kvoten I_{2}/I_{1} (nya strömmen delad med den gamla), 2) kvoten i kvadrat, som är den andel av förlusten som återstår, gärna i procent, 3) minskningen i procent, 100 minus det som återstår. Kvoterna saknar enhet. Exempel: går strömmen från 16 A till 8 A är kvoten 0,5 och kvadraten 0,25, alltså 25 % kvar och 75 % mindre.",
+      "status": "utkast"
     }
   ],
   "losning": {
