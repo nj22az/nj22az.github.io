@@ -229,3 +229,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Måndagens presentation i en fil (del 1 frånskiljning, del 2 sinus, övningar, hemuppgift, QR-koder till
   webben): elevversion utan anteckningar på veckosidan (`vecka-40/aktuell/Mandag_28_sep_vecka40.pptx` och `.pdf`),
   lärarversion med manus krypterad i lärarportalen (`larare/filer/Mandag_28_sep_vecka40_larare.pptx.enc`).
+- **2026-09-28** Veckosidan vecka 40 börjar med dagens presentation (rutan väljer dagens eller nästa lektion efter datum:
+  måndag del 1–2, tisdag del 3, fredag del 4). Därefter Lösningar och självhjälp (del 1–4), labben, inlämningen, Så arbetar
+  du och den detaljerade planen.
