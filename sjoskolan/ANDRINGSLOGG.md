@@ -232,3 +232,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Veckosidan vecka 40 börjar med dagens presentation (rutan väljer dagens eller nästa lektion efter datum:
   måndag del 1–2, tisdag del 3, fredag del 4). Därefter Lösningar och självhjälp (del 1–4), labben, inlämningen, Så arbetar
   du och den detaljerade planen.
+- **2026-09-28** Frånskiljning och mätteknik (v38_01): omslagets båtfoto ersatt med en ritad effektbrytare i FRÅN-läge,
+  låst med hänglås och skylten FRÅNSKILD – MANÖVRERA EJ (`verktyg/ac/brytare.mjs`). Även i måndagens samlade presentation.
+  `verktyg/bildspel/bygg.py` hoppar över presentationer som inte heter vXX_NN.

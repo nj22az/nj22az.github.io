@@ -163,6 +163,8 @@ if __name__ == '__main__':
     force = '--alla' in sys.argv
     decks = []
     for pptx in sorted(ROOT.glob('vecka-*/aktuell/*.pptx')):
+        if not re.match(r'v\d+_\d+', pptx.stem):  # bara kapitelpresentationer (vXX_NN), inte t.ex. måndagens samlade fil
+            continue
         if not pptx.with_suffix('.pdf').exists():
             print('saknar PDF, hoppar över:', pptx.name)
             continue

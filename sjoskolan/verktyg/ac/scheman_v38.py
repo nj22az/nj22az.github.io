@@ -6,6 +6,8 @@ i PowerPoint. Här ritas samma figurer som SVG, renderas till PNG och ersätter 
 likadana ut i PowerPoint, Keynote och LibreOffice. Rubrik, sidfot och förklarande text på bilden behålls.
 
     python3 sjoskolan/verktyg/ac/scheman_v38.py
+
+Omslaget (bild 1) är en ritad effektbrytare i FRÅN-läge med hänglås (verktyg/ac/brytare.mjs).
 """
 import subprocess
 import sys
@@ -149,7 +151,22 @@ def main():
         subprocess.run(['node', str(skript), rot, *filer], check=True)
     finally:
         skript.unlink()
+    # Omslaget: effektbrytare i FRÅN-läge med hänglås och skylt (verktyg/ac/brytare.mjs) i stället för båtfotot.
+    svg = subprocess.run(['node', str(Path(__file__).with_name('brytare.mjs'))], capture_output=True, text=True, check=True).stdout
+    (UT / 'v38_01_omslag.svg').write_text(svg)
+    skript.write_text(RITA)
+    try:
+        subprocess.run(['node', str(skript), rot, str(UT / 'v38_01_omslag.svg')], check=True)
+    finally:
+        skript.unlink()
     prs = Presentation(DECK)
+    forsta = prs.slides[0]
+    gammal = next(sh for sh in forsta.shapes if sh.name in ('Bildobjekt 1', 'omslag-brytare'))
+    ny = forsta.shapes.add_picture(str(UT / 'v38_01_omslag.png'), gammal.left, gammal.top, gammal.width, gammal.height)
+    ny.name = 'omslag-brytare'
+    ny._element.nvPicPr.cNvPr.set('descr', 'Effektbrytare i FRÅN-läge, låst med rött hänglås och gul skylt: FRÅNSKILD, MANÖVRERA EJ.')
+    gammal._element.addprevious(ny._element)  # samma plats i ordningen: bakom rubriken
+    gammal._element.getparent().remove(gammal._element)
     for n in FIGURER:
         bild = prs.slides[n - 1]
         titel = bild.shapes.title
