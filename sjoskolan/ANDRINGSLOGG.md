@@ -120,6 +120,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Del_N.html ur presentationen (teori, exempel, figurer) och databasen (övningar med ledtrådstrappa och facit). Ändras en
     presentation: kör `verktyg/veckosidor/figurer_ur_presentationer.py`, sedan `innehall.py bygg`. Ritningar i
     presentationer ritas med `verktyg/ac/scheman_veckor.py`, manus med `verktyg/larare/lararmanus.py NN`.
+37. **Veckolåset följer också simulatorns körningsberoenden.** En låst veckomapp räcker inte när labbet,
+    resultatkoden och lärarstödet använder filer utanför mappen. `veckolas.py` följer explicita startfiler och
+    jämför både hashar och hela beroendemängden; nya dynamiskt laddade resurser ska tas med innan omlåsning.
+    Frys inte hela gemensamma mappar. *Kontroll: `verktyg/las/test_veckolas.py` och `veckolas.py kontrollera`.*
 
 ### Boken
 
@@ -129,6 +133,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
 
 ## Ändringar
+
+- **2026-09-28** Vecka 40:s lås förstärkt med Växelströmslabbets transitiva körningsberoenden, även genererade
+  uppgifter, beräkningar, instrumentbänk och använda gemensamma moduler. Manifestet utökat från 148 till 174 filer;
+  tidigare hashar och allt elevmaterial oförändrade. Kontroll av startfiler, omfattning och tillkomna/bortfallna
+  beroenden samt regressionstester i CI. Oanvända senare-veckofiler, labbtester och byggverktyg lämnas utanför låset.
 
 - **2026-09-28** Vecka 40, övning 1–30: en tredje ledtråd ”steg för steg” i varje post (formel i kursens notation, ordning, enhetsomvandling, RAD/DEG, rimlighetskoll och ett exempel med andra tal, kontrollerat mot alla svar i databasen). Visas som Ledtråd 3 i arbetsrummet och på övningssidan.
 - **2026-09-28** Lärarsidorna följer den nya planen: lärarportalens veckolista, utbildningsguiden vecka 38 (kursvecka 1, mapp vecka-37), frånskiljningen som måndag pass 1 i vecka 40, vecka 40:s plan med lektionstider och hemmablock, Lärarstöd vecka 40 och talaranteckningarna på bild 2 i lärarens PowerPoint v40_01–03. Upplåst utanför repot och låst igen.

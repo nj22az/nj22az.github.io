@@ -28,6 +28,8 @@ jobs:
           python3 sjoskolan/verktyg/las/veckolas.py kontrollera
       - name: Vecka 40 – länkar och publicerade artefakter
         run: python3 sjoskolan/verktyg/qa/week40.py
+      - name: Veckolås – beroenden och avgränsning
+        run: python3 -m unittest discover -s sjoskolan/verktyg/las -p 'test_*.py'
       - name: Labbens modelltester
         run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
       - name: Vecka 40 – resultatkod och lärarlänk
