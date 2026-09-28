@@ -718,5 +718,61 @@
         "klart": "Besvara frågorna med egna ord. Repetera det du behöver innan du öppnar simulatorlabben."
       }
     }
+  },
+  "komponentkort": {
+    "titel": "Komponentkort",
+    "typ": "Komponenter i styrkretsen (funktionsövning)",
+    "text": "R: motstånd 1 kΩ ±5 %, 0,25 W. F: säkring 1 A; AC/DC-märkning och brytförmåga anges inte och kontrolleras i verkligt underlag. K: reläspole 12 V DC med en NO-hjälpkontakt. STOPP: tryckknapp NC. START: tryckknapp NO.",
+    "rader": [
+      {
+        "id": "R",
+        "symbol": "motstand",
+        "namn": "Motstånd",
+        "data": "1 kΩ ±5 %, högst 0,25 W",
+        "vila": "–",
+        "saknas": "–"
+      },
+      {
+        "id": "F",
+        "symbol": "sakring",
+        "namn": "Säkring",
+        "data": "1 A",
+        "vila": "Sluten (hel säkring)",
+        "saknas": "AC/DC-märkning och brytförmåga. Kontrollera i verkligt underlag."
+      },
+      {
+        "id": "K",
+        "symbol": "spole",
+        "namn": "Relä, spole",
+        "data": "12 V DC",
+        "vila": "Strömlös",
+        "saknas": "–"
+      },
+      {
+        "id": "K",
+        "symbol": "no",
+        "namn": "Relä, hjälpkontakt",
+        "data": "NO (slutande)",
+        "vila": "Öppen när spolen är strömlös",
+        "saknas": "–"
+      },
+      {
+        "id": "STOPP",
+        "symbol": "knapp-nc",
+        "namn": "Tryckknapp",
+        "data": "NC (brytande)",
+        "vila": "Sluten tills den trycks",
+        "saknas": "–"
+      },
+      {
+        "id": "START",
+        "symbol": "knapp-no",
+        "namn": "Tryckknapp",
+        "data": "NO (slutande)",
+        "vila": "Öppen tills den trycks",
+        "saknas": "–"
+      }
+    ],
+    "anm": "Kortet räcker för funktionsövning, inte för inköp eller installation."
   }
 }

@@ -213,3 +213,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Instrumentkorten M1 och M2 är datablad (`innehall/export/datablad.py`, `gemensamt/datablad.css`): bild av
   instrumentet med uttag, tabellen Vad instrumentet kan mäta (Ja/Nej och mätområde) och tekniska data. Uppgifterna står
   strukturerat i `studieplan-v40.json` (kort). M2 fick mätområden och CAT III 600 V. Korten visas en gång per övning.
+- **2026-09-28** Komponentkortet är också ett datablad: IEC-symbol, beteckning, märkdata, läge i vila och vad kortet inte
+  anger (säkringens AC/DC-märkning och brytförmåga). På mobil staplas raderna. Uppgifterna står i `studieplan-v40.json`
+  (komponentkort). M2:s mätområden behålls.

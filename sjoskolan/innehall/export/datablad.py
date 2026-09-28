@@ -75,3 +75,38 @@ def html(id_, c):
 
 def alla(kort):
     return '<div class="datablad-par">' + ''.join(html(k, c) for k, c in kort.items()) + '</div>'
+
+
+# Komponentkortet: IEC-symbol per rad. Ritas i en ruta 64 × 40.
+def _sym(namn):
+    L = f'stroke="{INK}" stroke-width="2.2" fill="none" stroke-linecap="round"'
+    ledn = f'<line x1="2" y1="20" x2="18" y2="20" {L}/><line x1="46" y1="20" x2="62" y2="20" {L}/>'
+    if namn == 'motstand':
+        s = ledn + f'<rect x="18" y="13" width="28" height="14" {L}/>'
+    elif namn == 'sakring':
+        s = ledn + f'<rect x="18" y="13" width="28" height="14" {L}/><line x1="12" y1="20" x2="52" y2="20" {L}/>'
+    elif namn == 'spole':
+        s = ledn + f'<rect x="18" y="10" width="28" height="20" {L}/>'
+    else:
+        kontakt = (f'<line x1="2" y1="26" x2="22" y2="26" {L}/><line x1="42" y1="26" x2="62" y2="26" {L}/>'
+                   + (f'<line x1="22" y1="26" x2="44" y2="14" {L}/>' if namn in ('no', 'knapp-no')
+                      else f'<line x1="42" y1="26" x2="42" y2="18" {L}/><line x1="22" y1="26" x2="46" y2="18" {L}/>'))
+        s = kontakt
+        if namn.startswith('knapp'):
+            s += (f'<line x1="33" y1="20" x2="33" y2="6" stroke="{INK}" stroke-width="1.6" stroke-dasharray="3 2"/>'
+                  f'<path d="M27 3 H39 M27 3 V7 M39 3 V7" {L}/>')
+    return f'<svg viewBox="0 0 64 40" width="64" height="40" aria-hidden="true">{s}</svg>'
+
+
+def komponentkort(c):
+    rader = ''.join(
+        f'<tr><td class="db-symbol">{_sym(r["symbol"])}</td><td class="db-id" translate="no">{R.h(r["id"])}</td><th scope="row">{R.h(r["namn"])}</th>'
+        f'<td data-etikett="Märkdata">{R.h(r["data"])}</td><td data-etikett="I vila" class="{"db-tom" if r["vila"] == "–" else ""}">{R.h(r["vila"])}</td>'
+        f'<td data-etikett="Anges inte" class="{"db-saknas" if r["saknas"] != "–" else "db-tom"}">{R.h(r["saknas"])}</td></tr>'
+        for r in c['rader'])
+    return (f'<section class="datablad db-komponenter" aria-labelledby="db-komponenter" data-read="card-komponenter">'
+            f'<header class="db-head"><h3 id="db-komponenter">{R.h(c["titel"])}</h3><p>{R.h(c["typ"])}</p></header>'
+            f'<div class="db-bred"><table class="db-komp"><caption>Komponenter, märkdata och läge i vila</caption>'
+            f'<thead><tr><th scope="col">Symbol</th><th scope="col">Bet.</th><th scope="col">Komponent</th><th scope="col">Märkdata</th>'
+            f'<th scope="col">I vila</th><th scope="col">Anges inte på kortet</th></tr></thead><tbody>{rader}</tbody></table></div>'
+            f'<p class="db-anm">{R.h(c["anm"])} Konstruerat utbildningsunderlag, inte en produktmanual.</p></section>')

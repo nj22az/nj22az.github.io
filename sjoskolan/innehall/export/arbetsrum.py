@@ -35,7 +35,8 @@ def filer(a):
     cards_page = R.SJO / 'gemensamt/Underlagskort.html'
     cards_html = ('<h2>Instrumentkort M1 och M2</h2><p>Databladen visar vad varje instrument kan mäta (Ja eller Nej), '
                   'i vilket mätområde, och vilka uttag det har.</p>' + datablad.alla(plan['kort']))
-    cards_text = re.sub(r'<h2>Instrumentkort M1.*?(?=<h2>Komponentkort</h2>)', lambda _: cards_html, cards_page.read_text(), flags=re.S)
+    cards_html += '<h2>Komponentkort</h2>' + datablad.komponentkort(plan['komponentkort'])
+    cards_text = re.sub(r'<h2>Instrumentkort M1.*?(?=<h2>Källkort K1)', lambda _: cards_html, cards_page.read_text(), flags=re.S)
     return {'gemensamt/Underlagskort.html': cards_text, 'vecka-40/aktuell/arbetsrum.gen.mjs':
             '// GENERERAD FIL · innehall.py bygg arbetsrum. Redigera innehall/ovningar och studieplan-v40.json.\n'
             + 'export const STUDY = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n'}

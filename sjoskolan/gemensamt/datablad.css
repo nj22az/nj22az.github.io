@@ -33,3 +33,23 @@
 .datablad .db-funk thead th:nth-child(2) { width: 17%; }
 .datablad .db-anm, .datablad p { max-width: none; }
 @media (max-width: 620px) { .datablad .db-funk thead th:nth-child(1) { width: 44%; } .datablad .db-funk thead th:nth-child(2) { width: 22%; } }
+/* Komponentkortet */
+.datablad .db-bred { padding: 16px; }
+.datablad .db-komp { margin: 0; }
+.datablad .db-komp thead th:nth-child(1) { width: 76px; }
+.datablad .db-komp thead th:nth-child(2) { width: 70px; }
+.datablad .db-symbol { padding: 4px 6px; }
+.datablad .db-symbol svg { display: block; }
+.datablad .db-komp tbody th { white-space: normal; }
+.datablad .db-id { font-family: "Courier New", monospace; font-weight: 700; color: #064f91; }
+.datablad .db-saknas { color: #9a4a12; font-weight: 700; }
+@media (max-width: 700px) {
+  .datablad .db-komp thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .datablad .db-komp, .datablad .db-komp tbody { display: block; }
+  .datablad .db-komp tr { display: grid; grid-template-columns: 70px auto 1fr; align-items: center; gap: 2px 10px; padding: 10px 0; border-bottom: 1px solid #cad8e2; }
+  .datablad .db-komp tr > * { border: 0; padding: 2px 0; background: none; }
+  .datablad .db-komp td[data-etikett] { grid-column: 1 / -1; }
+  .datablad .db-komp td[data-etikett]::before { content: attr(data-etikett) ": "; font-weight: 700; color: #4d6579; }
+  .datablad .db-komp td.db-tom { display: none; }
+  .datablad .db-komp caption { display: block; }
+}
