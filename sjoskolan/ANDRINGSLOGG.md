@@ -262,3 +262,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Vecka 41: ledtråd 3 (steg för steg med andra tal, fartygsvärden) för alla 20 beräkningsövningar. Delsidan
   visar den i stället för hänvisningen till exemplet. Kontrollen stoppade ett exempel som innehöll svaret (11 kW mot
   11,3 A) och det byttes. Övning 2.2 hänvisade till ”uppgift 1” och säger nu ”föregående övning”.
+- **2026-09-28** Vecka 42–45: ledtråd 3 (steg för steg med andra tal) för alla 44 beräkningsövningar. Kontrollen stoppade
+  ett exempel som gav svaret (23,2 mot 23,1) och det byttes. Rättat: EL-000157 räknade med 400 V i stället för 440 V,
+  EL-000225 hänvisade till ”uppgift 4” (nu ”föregående övning”), EL-000235 hade svaret som φ i stället för cos φ.
+  Lärarkopior med manus för vecka 43–45 byggda om. Vecka 40 orörd (låset oförändrat).

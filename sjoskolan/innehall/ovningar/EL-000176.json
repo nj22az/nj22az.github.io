@@ -3,7 +3,7 @@
   "titel": "Spolspänning i vila",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Följ vägen till spolen. Använd sedan Ohms lag för att avgöra spänningen över den.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Följ vägen från +12 V genom STOPP, sedan START eller hållkontakten, genom spolen och tillbaka till returen. 2) Är vägen bruten någonstans går ingen ström genom spolen. 3) Spänningen över spolen är U = R · I. Exempel med en sluten väg: 24 V över en sluten brytare och en last på 12 Ω ger I = 2 A och 24 V över lasten. Jämför med läget i uppgiften: är vägen sluten eller bruten?",
+      "status": "utkast"
     }
   ],
   "losning": {

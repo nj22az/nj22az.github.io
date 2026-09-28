@@ -1827,7 +1827,7 @@
   },
   {
    "id": "EL-000123",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringspunkter",
@@ -1849,7 +1849,7 @@
   },
   {
    "id": "EL-000124",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Räkneexempel med begränsning",
@@ -2509,7 +2509,7 @@
   },
   {
    "id": "EL-000154",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Differensström",
@@ -2575,7 +2575,7 @@
   },
   {
    "id": "EL-000157",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning",
@@ -2663,7 +2663,7 @@
   },
   {
    "id": "EL-000161",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Omsättning",
@@ -2685,7 +2685,7 @@
   },
   {
    "id": "EL-000162",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Transformatorström",
@@ -2707,7 +2707,7 @@
   },
   {
    "id": "EL-000163",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Synkront varvtal",
@@ -2729,7 +2729,7 @@
   },
   {
    "id": "EL-000164",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sex poler",
@@ -2751,7 +2751,7 @@
   },
   {
    "id": "EL-000165",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eftersläpning",
@@ -2773,7 +2773,7 @@
   },
   {
    "id": "EL-000166",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ändrad frekvens",
@@ -2839,7 +2839,7 @@
   },
   {
    "id": "EL-000169",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorförluster",
@@ -2993,7 +2993,7 @@
   },
   {
    "id": "EL-000176",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning i vila",
@@ -3015,7 +3015,7 @@
   },
   {
    "id": "EL-000177",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning under start",
@@ -3037,7 +3037,7 @@
   },
   {
    "id": "EL-000178",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning över STOPP",
@@ -3213,7 +3213,7 @@
   },
   {
    "id": "EL-000186",
-   "revision": 1,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "DC-fördelning",
@@ -3235,7 +3235,7 @@
   },
   {
    "id": "EL-000187",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Förenklad felström",
@@ -3257,7 +3257,7 @@
   },
   {
    "id": "EL-000188",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ändrad slingimpedans",
@@ -3323,7 +3323,7 @@
   },
   {
    "id": "EL-000191",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningsbegrepp",
@@ -3345,7 +3345,7 @@
   },
   {
    "id": "EL-000192",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström vid 6,6 kV",
@@ -3367,7 +3367,7 @@
   },
   {
    "id": "EL-000193",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma effekt vid 400 V",
@@ -3389,7 +3389,7 @@
   },
   {
    "id": "EL-000194",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Strömtransformator",
@@ -3543,7 +3543,7 @@
   },
   {
    "id": "EL-000201",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två ledare i tången",
@@ -3565,7 +3565,7 @@
   },
   {
    "id": "EL-000202",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Tångens utgång",
@@ -3587,7 +3587,7 @@
   },
   {
    "id": "EL-000203",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Isolationsdata",
@@ -3609,7 +3609,7 @@
   },
   {
    "id": "EL-000204",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Parallell isolation",
@@ -3631,7 +3631,7 @@
   },
   {
    "id": "EL-000205",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jordresistansmodell",
@@ -3653,7 +3653,7 @@
   },
   {
    "id": "EL-000206",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Oscilloskopets tidsbas",
@@ -3675,7 +3675,7 @@
   },
   {
    "id": "EL-000207",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Probens dämpning",
@@ -3697,7 +3697,7 @@
   },
   {
    "id": "EL-000208",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Instrumentgräns",
@@ -3719,7 +3719,7 @@
   },
   {
    "id": "EL-000209",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Upprepade mätningar",
@@ -3829,7 +3829,7 @@
   },
   {
    "id": "EL-000214",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning över avbrott",
@@ -3851,7 +3851,7 @@
   },
   {
    "id": "EL-000215",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Felström i en förenklad beräkning",
@@ -3873,7 +3873,7 @@
   },
   {
    "id": "EL-000216",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kontaktförlust",
@@ -3895,7 +3895,7 @@
   },
   {
    "id": "EL-000217",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Utan last och med last",
@@ -4049,7 +4049,7 @@
   },
   {
    "id": "EL-000224",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Mätning under last",
@@ -4071,7 +4071,7 @@
   },
   {
    "id": "EL-000225",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Resistansfördelning",
@@ -4203,7 +4203,7 @@
   },
   {
    "id": "EL-000231",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Energi och verkningsgrad",
@@ -4225,7 +4225,7 @@
   },
   {
    "id": "EL-000232",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Strömlagen",
@@ -4247,7 +4247,7 @@
   },
   {
    "id": "EL-000233",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningsdelare med last",
@@ -4269,7 +4269,7 @@
   },
   {
    "id": "EL-000234",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sinus och period",
@@ -4291,7 +4291,7 @@
   },
   {
    "id": "EL-000235",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL och effektfaktor",
@@ -4313,7 +4313,7 @@
   },
   {
    "id": "EL-000236",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Trefaseffekt",
@@ -4335,7 +4335,7 @@
   },
   {
    "id": "EL-000237",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Mätgräns",
@@ -4401,7 +4401,7 @@
   },
   {
    "id": "EL-000240",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Felsökning med data",

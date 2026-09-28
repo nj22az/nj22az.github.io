@@ -3,7 +3,7 @@
   "titel": "Två ledare i tången",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Lägg ihop strömmarna med tecken och jämför med en mätning runt bara en ledare.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Tången mäter summan av alla strömmar som går genom den, med riktning. 2) Ström åt ena hållet räknas plus och åt andra hållet minus. Exempel: 6 A ut i en ledare och 4 A tillbaka i en annan, båda inne i tången, medan 2 A tar en annan väg: tången visar 6 − 4 = 2 A. Använd samma tänkande på uppgiften.",
+      "status": "utkast"
     }
   ],
   "losning": {

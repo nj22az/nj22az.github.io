@@ -3,7 +3,7 @@
   "titel": "Omsättning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut förhållandet N_{2}/N_{1} och multiplicera primärspänningen med det.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Omsättningen är kvoten mellan varvtalen: N_{2}/N_{1}. 2) Multiplicera primärspänningen med den kvoten. Exempel ombord: 440 V på primärsidan, N_{1} = 500 och N_{2} = 125 ger U_{2} = 440 · 125/500 = 110 V. Rimlighet: färre varv på sekundärsidan ger lägre spänning.",
+      "status": "utkast"
     }
   ],
   "losning": {

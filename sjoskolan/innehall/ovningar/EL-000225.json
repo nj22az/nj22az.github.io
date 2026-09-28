@@ -3,7 +3,7 @@
   "titel": "Resistansfördelning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -23,7 +23,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Använd värdena i uppgift 4. Beräkna resistansen i framledaren och i returledaren.",
+    "fraga": "Använd värdena i föregående övning. Beräkna resistansen i framledaren och i returledaren.",
     "samband": [
       "R_{fram} = ΔU_{fram}/I; R_{retur} = ΔU_{retur}/I"
     ],
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna ut fallet i framledaren och dela varje spänningsfall med strömmen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Använd R = ΔU/I för varje ledare för sig. 2) Samma ström går genom båda ledarna. Exempel: 1,2 V i framledaren och 0,8 V i returledaren vid 4 A ger R_{fram} = 0,30 Ω och R_{retur} = 0,20 Ω.",
+      "status": "utkast"
     }
   ],
   "losning": {

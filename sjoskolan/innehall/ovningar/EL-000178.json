@@ -3,7 +3,7 @@
   "titel": "Spänning över STOPP",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Ange potential på STOPP-kontaktens båda sidor. Beräkna deras skillnad.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Bestäm potentialen på båda sidor om den öppna kontakten. 2) Före kontakten: följ ledaren från källan. Efter kontakten: följ vägen genom spolen till returen. 3) Spänningen över kontakten är skillnaden. Exempel: i en 24 V-krets är potentialen 24 V före en öppen kontakt och returens potential efter den, så det ligger 24 V över kontakten.",
+      "status": "utkast"
     }
   ],
   "losning": {

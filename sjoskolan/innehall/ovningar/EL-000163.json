@@ -3,7 +3,7 @@
   "titel": "Synkront varvtal",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Multiplicera frekvensen med 120 och dela med antalet poler.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kontrollera att p är antalet poler, inte polpar. 2) Sätt in i n_{s} = 120 · f/p. Exempel ombord: 60 Hz och fyra poler ger n_{s} = 120 · 60/4 = 1 800 r/min. Rimlighet: fler poler ger lägre varvtal.",
+      "status": "utkast"
     }
   ],
   "losning": {

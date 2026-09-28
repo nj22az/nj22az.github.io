@@ -3,7 +3,7 @@
   "titel": "Räkneexempel med begränsning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut strömmen och förklara varför ett antaget R inte kan avgöra vad som är säkert.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Använd Ohms lag: I = U/R med U i volt och R i ohm. 2) Svaret blir i ampere. Gör om till mA genom att multiplicera med 1 000. 3) Fråga dig sedan hur säkert värdet på R är. Exempel: 50 V och 2 500 Ω ger I = 0,020 A = 20 mA. Kroppens resistans ändras med fukt, kontaktyta och spänning, så ett antaget R är bara ett räkneexempel.",
+      "status": "utkast"
     }
   ],
   "losning": {

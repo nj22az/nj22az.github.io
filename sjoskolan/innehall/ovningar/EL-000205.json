@@ -3,7 +3,7 @@
   "titel": "Jordresistansmodell",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Gör om mA till A innan du delar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Gör om strömmen till ampere. 2) R = U/I. Exempel: 0,90 V vid 30 mA ger R = 0,90/0,030 = 30 Ω.",
+      "status": "utkast"
     }
   ],
   "losning": {

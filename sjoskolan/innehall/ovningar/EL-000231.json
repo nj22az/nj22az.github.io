@@ -3,7 +3,7 @@
   "titel": "Energi och verkningsgrad",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Gör om W till kW och multiplicera med tiden – kW · h ger kWh.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Tillförd effekt: P_{in} = P_{ut}/η, med η som decimaltal. 2) Energi: E = P_{in} · t. Räkna P i kW och t i timmar, så blir E i kWh. Exempel: en länspump ger 750 W på axeln med η = 0,75 och går i 4 h: P_{in} = 1 000 W och E = 1,0 kW · 4 h = 4,0 kWh.",
+      "status": "utkast"
     }
   ],
   "losning": {

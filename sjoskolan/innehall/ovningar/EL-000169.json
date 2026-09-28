@@ -3,7 +3,7 @@
   "titel": "Motorförluster",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Dela axeleffekten med den tillförda effekten och multiplicera med 100 för procent. Räkna förlusten för sig.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Verkningsgraden är det nyttiga delat med det tillförda: η = P_{axel}/P_{in}. 2) Förlusten är skillnaden: P_{in} − P_{axel}. Exempel: en fläktmotor tar 7,5 kW och ger 6,6 kW på axeln: η = 6,6/7,5 = 0,88 = 88 % och förlusten 0,9 kW. Rimlighet: η ska ligga under 100 %.",
+      "status": "utkast"
     }
   ],
   "losning": {

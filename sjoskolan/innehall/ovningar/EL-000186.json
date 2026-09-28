@@ -3,7 +3,7 @@
   "titel": "DC-fördelning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna ut spänningsfallet och dra det från källans spänning.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Spänningsfallet i ledningen: ΔU = I · R_{slinga}. 2) Lastspänningen: U_{last} = U_{källa} − ΔU. Exempel: 12 V, 8 A och slingresistansen 0,10 Ω ger ΔU = 0,8 V och U_{last} = 11,2 V. Rimlighet: lastspänningen blir alltid lite lägre än källans.",
+      "status": "utkast"
     }
   ],
   "losning": {

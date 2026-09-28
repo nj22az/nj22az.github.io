@@ -3,7 +3,7 @@
   "titel": "Strömlagen",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Skriv upp ekvationen, lägg ihop strömmarna in och dra bort den kända strömmen ut.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Summan av strömmarna in i noden är lika med summan ut. 2) Ställ upp ekvationen och lös ut den okända. Exempel: 6,0 A och 2,5 A in, 3,0 A och I_{x} ut ger I_{x} = 6,0 + 2,5 − 3,0 = 5,5 A.",
+      "status": "utkast"
     }
   ],
   "losning": {

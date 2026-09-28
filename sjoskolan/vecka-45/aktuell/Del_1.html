@@ -39,7 +39,7 @@
 <figure class="del-figur"><img src="figurer/v45_01-b17-1.png" alt="24 V matar en resistor via en öppen kontakt; ström och spänning över kontakten okända" loading="lazy"></figure>
 <details class="ledtrad"><summary>Ledtråd 1: vilket samband?</summary><p>Använd <span class="formula">Öppen seriegren: I = 0</span> och <span class="formula">U<sub>resistor</sub> = R · I; Ukontakt = U<sub>källa</sub> − U<sub>resistor</sub></span>. Läs <a href="#teori-5">Teori 5: Avbrott och kortslutning</a>.</p></details>
 <details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>En öppen kontakt stoppar strömmen, och utan ström blir det ingen spänning över resistorn. Räkna först strömmen och använd sedan spänningslagen för spänningen över kontakten.</p></details>
-<details class="ledtrad"><summary>Ledtråd 3: samma metod i ett exempel</summary><p>Samma metod med andra tal: <a href="#exempel-1">Exempel: observation och hypotes</a>. Följ stegen där och gör sedan likadant med talen i den här uppgiften.</p></details>
+<details class="ledtrad"><summary>Ledtråd 3: steg för steg med andra tal</summary><p>1) En öppen kontakt i en seriekrets bryter strömmen i hela kretsen. 2) Utan ström blir spänningsfallet över resistorn U = R · I. 3) Spänningen över kontakten är källans spänning minus fallet över resistorn. Exempel: en 12 V-krets med en lampa och en öppen brytare: lampan lyser inte och hela 12 V ligger över brytaren.</p></details>
 
 <details class="facit"><summary>Facit</summary><p>I = 0. Resistorn får inget fall, så hela 24 V ligger över den öppna kontakten.</p><p><strong>Svar:</strong> I ≈ 0,0 A · kontaktspänning ≈ 24,0 V</p></details>
 <button type="button" class="del-klar" data-id="v45_01-q4">Markera som klar</button></article><article class="del-ovning" id="v45_01-q5"><h3>Övning 1.5: Felström i en förenklad beräkning</h3>
@@ -47,7 +47,7 @@
 
 <details class="ledtrad"><summary>Ledtråd 1: vilket samband?</summary><p>Använd <span class="formula">I = U/R<sub>total</sub></span>. Läs <a href="#teori-1">Teori 1: Observation och prövbar hypotes</a>.</p></details>
 <details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>R<sub>total</sub> är resistansen i hela den oavsiktliga strömvägen. V/Ω ger A. Räkna ut strömmen och förklara att källans verkliga inre resistans och skydden påverkar vad som händer.</p></details>
-<details class="ledtrad"><summary>Ledtråd 3: samma metod i ett exempel</summary><p>Samma metod med andra tal: <a href="#exempel-1">Exempel: observation och hypotes</a>. Följ stegen där och gör sedan likadant med talen i den här uppgiften.</p></details>
+<details class="ledtrad"><summary>Ledtråd 3: steg för steg med andra tal</summary><p>1) Använd I = U/R med den totala resistansen i kortslutningsvägen. 2) Fundera sedan på vad beräkningen inte tar med: källans inre resistans och skyddet. Exempel: 12 V genom 0,08 Ω ger I = 150 A i en förenklad beräkning.</p></details>
 
 <details class="facit"><summary>Facit</summary><p>I = 24/0,10 = 240 A. I verkligheten begränsar källans inre impedans och skyddet strömmen.</p></details>
 <button type="button" class="del-klar" data-id="v45_01-q5">Markera som klar</button></article><article class="del-ovning" id="v45_01-q6"><h3>Övning 1.6: Kontaktförlust</h3>
@@ -55,7 +55,7 @@
 
 <details class="ledtrad"><summary>Ledtråd 1: vilket samband?</summary><p>Använd <span class="formula">ΔU = I · R; P = I² · R</span>. Läs <a href="#teori-6">Teori 6: Glapp och förhöjd resistans</a>.</p></details>
 <details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>ΔU är anslutningens spänningsfall i V och P dess värmeeffekt i W. Räkna spänningsfallet. Kvadrera därefter strömmen när du beräknar värmeeffekten.</p></details>
-<details class="ledtrad"><summary>Ledtråd 3: samma metod i ett exempel</summary><p>Samma metod med andra tal: <a href="#exempel-2">Exempel: förhöjd kontaktresistans</a>. Följ stegen där och gör sedan likadant med talen i den här uppgiften.</p></details>
+<details class="ledtrad"><summary>Ledtråd 3: steg för steg med andra tal</summary><p>1) Spänningsfallet: ΔU = I · R. 2) Värmeeffekten: P = I² · R. Exempel: en glapp klämma med 0,05 Ω och 16 A ger ΔU = 0,8 V och P = 256 · 0,05 = 12,8 W. Rimlighet: effekten växer med strömmen i kvadrat.</p></details>
 
 <details class="facit"><summary>Facit</summary><p>ΔU = 10 · 0,20 = 2,0 V. P = 100 · 0,20 = 20 W.</p><p><strong>Svar:</strong> ΔU ≈ 2,0 V · P ≈ 20,0 W</p></details>
 <button type="button" class="del-klar" data-id="v45_01-q6">Markera som klar</button></article><article class="del-ovning" id="v45_01-q7"><h3>Övning 1.7: Utan last och med last</h3>
@@ -63,7 +63,7 @@
 <figure class="del-figur"><img src="figurer/v45_01-b28-1.png" alt="Källan håller 24 V, lasten får 18 V vid 3 A; den extra serieresistansen okänd" loading="lazy"></figure>
 <details class="ledtrad"><summary>Ledtråd 1: vilket samband?</summary><p>Använd <span class="formula">ΔU = U<sub>källa</sub> − U<sub>last</sub>; R<sub>extra</sub> = ΔU/I</span>. Läs <a href="#teori-6">Teori 6: Glapp och förhöjd resistans</a>.</p></details>
 <details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>Resistansen du får fram är all resistans mellan mätpunkterna tillsammans. Använd värdena som mättes samtidigt under last. Räkna ut spänningsfallet och dela med strömmen.</p></details>
-<details class="ledtrad"><summary>Ledtråd 3: samma metod i ett exempel</summary><p>Samma metod med andra tal: <a href="#exempel-2">Exempel: förhöjd kontaktresistans</a>. Följ stegen där och gör sedan likadant med talen i den här uppgiften.</p></details>
+<details class="ledtrad"><summary>Ledtråd 3: steg för steg med andra tal</summary><p>1) Spänningen som saknas vid lasten är spänningsfallet: ΔU = U<sub>källa</sub> − U<sub>last</sub>. 2) Resistansen: R = ΔU/I. Exempel: källan har 24 V och lasten 22 V vid 2,5 A: ΔU = 2 V och R = 2/2,5 = 0,8 Ω.</p></details>
 
 <details class="facit"><summary>Facit</summary><p>ΔU = 6 V. Rextra = 6/3 = 2,0 Ω.</p><p><strong>Svar:</strong> R ≈ 2,0 Ω</p></details>
 <button type="button" class="del-klar" data-id="v45_01-q7">Markera som klar</button></article><article class="del-ovning" id="v45_01-q8"><h3>Övning 1.8: Hållningen uteblir</h3>

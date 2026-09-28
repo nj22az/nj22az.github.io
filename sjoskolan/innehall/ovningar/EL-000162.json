@@ -3,7 +3,7 @@
   "titel": "Transformatorström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut effekten på sekundärsidan och dela med primärspänningen. Håll isär primär- och sekundärsidan.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) En ideal transformator har samma effekt in som ut: U_{1} · I_{1} = U_{2} · I_{2}. 2) Räkna först effekten på sekundärsidan. 3) Dela med primärspänningen. Exempel: 12 V och 5 A på sekundärsidan ger P = 60 W, och med 230 V på primärsidan blir I_{1} = 60/230 ≈ 0,26 A. Rimlighet: högre spänning ger lägre ström på primärsidan.",
+      "status": "utkast"
     }
   ],
   "losning": {

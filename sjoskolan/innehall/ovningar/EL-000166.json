@@ -3,7 +3,7 @@
   "titel": "Ändrad frekvens",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Sätt in 40 Hz och fyra poler.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Sätt in den nya frekvensen i n_{s} = 120 · f/p. Polantalet är detsamma. Exempel: en sexpolig motor som matas med 30 Hz från en frekvensomriktare får n_{s} = 120 · 30/6 = 600 r/min. Rimlighet: lägre frekvens ger lägre varvtal i samma proportion.",
+      "status": "utkast"
     }
   ],
   "losning": {

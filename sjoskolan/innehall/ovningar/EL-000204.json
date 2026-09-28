@@ -3,7 +3,7 @@
   "titel": "Parallell isolation",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Använd parallellformeln och räkna i MΩ hela vägen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Parallella vägar ger lägre resistans än den minsta vägen. 2) Använd R_{p} = R_{1} · R_{2}/(R_{1} + R_{2}). Exempel: 30 MΩ och 60 MΩ parallellt ger R_{p} = 1 800/90 = 20 MΩ.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Spänning över avbrott",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,6 +41,11 @@
       "niva": "metod",
       "text": "Räkna först strömmen och använd sedan spänningslagen för spänningen över kontakten.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) En öppen kontakt i en seriekrets bryter strömmen i hela kretsen. 2) Utan ström blir spänningsfallet över resistorn U = R · I. 3) Spänningen över kontakten är källans spänning minus fallet över resistorn. Exempel: en 12 V-krets med en lampa och en öppen brytare: lampan lyser inte och hela 12 V ligger över brytaren.",
+      "status": "utkast"
     }
   ],
   "losning": {

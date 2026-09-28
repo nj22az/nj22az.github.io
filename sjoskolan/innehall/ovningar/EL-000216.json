@@ -3,7 +3,7 @@
   "titel": "Kontaktförlust",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna spänningsfallet. Kvadrera därefter strömmen när du beräknar värmeeffekten.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Spänningsfallet: ΔU = I · R. 2) Värmeeffekten: P = I² · R. Exempel: en glapp klämma med 0,05 Ω och 16 A ger ΔU = 0,8 V och P = 256 · 0,05 = 12,8 W. Rimlighet: effekten växer med strömmen i kvadrat.",
+      "status": "utkast"
     }
   ],
   "losning": {

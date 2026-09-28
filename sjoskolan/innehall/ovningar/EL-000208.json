@@ -3,7 +3,7 @@
   "titel": "Instrumentgräns",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,6 +41,11 @@
       "niva": "metod",
       "text": "Räkna de två delarna var för sig, lägg ihop dem och räkna ut intervallets båda gränser.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Procentdelen: a % av det visade värdet. 2) Siffrorna: n gånger upplösningen. 3) Lägg ihop och skriv intervallet visning − δ till visning + δ. Exempel: 230,0 V med ±(1,0 % + 3 siffror) och upplösningen 0,1 V ger δ = 2,3 + 0,3 = 2,6 V och intervallet 227,4–232,6 V.",
+      "status": "utkast"
     }
   ],
   "losning": {
