@@ -154,7 +154,12 @@ def artikel(a, l, alla):
 <script type="module">import {{visual}} from './visuals.mjs?v=20260929';const draw=()=>document.querySelectorAll('[data-visual]').forEach(el=>{{el.querySelector('svg')?.remove();el.insertAdjacentHTML('afterbegin',visual(el.dataset.visual,Math.min(el.clientWidth,760)));}});draw();addEventListener('resize',draw);if(innerWidth<900)document.querySelector('.art-toc details').open=false;</script>
 </body></html>
 ''')
-    return ''.join(h)
+    text = ''.join(h)
+    # Independent practice is handled in the workspace, after actual attempts.
+    practice = f'<p><a href="Genomgang.html?del={tab}">Öva med stegvis hjälp i arbetsrummet</a></p>'
+    text = re.sub(r'<details(?: class="facit")?><summary>Visa (?:svar|facit)</summary>.*?</details>', practice, text, flags=re.S)
+    text = text.replace('Öppna ledtråden om du fastnar och facit när du är klar.', 'Använd arbetsrummet för ledtrådar, egna försök och stegvis lösning.')
+    return text
 
 
 CSS = '''/* Lektionsartiklar vecka 40 (genereras inte; layout för Lektion_N.html) */

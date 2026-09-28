@@ -6,7 +6,7 @@
 <meta name="description" content="Isolationsövervakning, första och andra jordfelet i fartygets IT-nät och isolationsprovning av en motor.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/isolationslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
-<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="../gemensamt/labbpekskarm.css?v=20260928">
 <script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="ac-page">
 <nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-44/aktuell/">Vecka 44</a></nav>
@@ -20,40 +20,38 @@
     <ul class="deck-links" aria-label="Presentationer"><li><a href="../bildspel/?d=v44_01_Lagspanningssystem">Bildspel: v44_01 Lågspänningssystem</a></li><li><a href="../bildspel/?d=v44_03_Fordjupad_matteknik">Bildspel: v44_03 Mätteknik</a></li><li><a href="../filmer/#it-nat">Film: IT-nätet ombord</a></li></ul>
   </header>
   <section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="/sjoskolan/vecka-44/aktuell/">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li><strong>Förutsäg.</strong> Välj en uppgift under ”Räkna först”. Reglagen låses och värdena döljs. Räkna och skriv ditt svar.</li><li><strong>Läs av och jämför.</strong> Tryck ”Kontrollera”. Värdena visas och du kan jämföra med din beräkning.</li><li><strong>Förklara.</strong> Ändra isolation och kapacitans själv och förklara vad som händer. För in dina mätningar i labbprotokollet längst ned.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
-  <div id="lab" class="lab">
+  <div id="lab" class="lab lab-bred">
+    <section class="challenge-card" aria-labelledby="challenge-title">
+      <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+      <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+      <div id="challenge-body" hidden>
+        <p class="deck-ref" id="challenge-deck"></p>
+        <p id="challenge-task" class="task"></p>
+        <form id="answer-form" class="answer-form" autocomplete="off">
+          <label for="answer" id="answer-label">Svar</label>
+          <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+        </form>
+        <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+      </div>
+      <p id="challenge-intro" class="muted">Välj en uppgift. Nätet ställs in och värdena döljs tills du har räknat.</p>
+    </section>
     <section class="stage" aria-label="Schema och mätvärden">
       <div id="figures" class="figures"></div>
       <dl id="readouts" class="readouts" aria-live="polite"></dl>
       <p id="principle" class="principle"></p>
     </section>
-    <aside class="panel">
-      <section class="controls-card" aria-labelledby="controls-title">
-        <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
-        <p id="lock-note" class="lock-note" hidden>Reglagen är låsta medan du löser uppgiften.</p>
-        <div id="controls" class="controls"></div>
-      </section>
-      <section class="challenge-card" aria-labelledby="challenge-title">
-        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
-        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
-        <div id="challenge-body" hidden>
-          <p class="deck-ref" id="challenge-deck"></p>
-          <p id="challenge-task" class="task"></p>
-          <form id="answer-form" class="answer-form" autocomplete="off">
-            <label for="answer" id="answer-label">Svar</label>
-            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
-          </form>
-          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
-          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
-          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
-        </div>
-        <p id="challenge-intro" class="muted">Välj en uppgift. Nätet ställs in och värdena döljs tills du har räknat.</p>
-      </section>
-    </aside>
+    <section class="controls-card" aria-labelledby="controls-title">
+      <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
+      <p id="lock-note" class="lock-note" hidden>Reglagen är låsta medan du löser uppgiften.</p>
+      <div id="controls" class="controls"></div>
+    </section>
   </div>
   <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Isolationsprova bara ett frånskilt och kontrollerat objekt.</li><li>Koppla bort elektronik som kan skadas av provspänningen.</li><li>Ladda ur kabel och lindning efter provningen. De kan hålla laddning.</li><li>Gränsvärdena i labbet är exempel. Verkliga krav står i fartygets instruktioner.</li></ul></details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
-<script type="module" src="app.mjs?v=20260929-not"></script>
+<script type="module" src="app.mjs?v=20260928-pek"></script>
 </body></html>

@@ -180,6 +180,49 @@ GENOMGANG_V40 = {'sinus': 'vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_ele
                  'effekt': 'vecka-40/aktuell/v40_03_Effekt_i_vaxelstromskretsar_elev.pptx'}
 
 
+def kompakt(sh, tom_under, ned_till=None):
+    """Brödtext som inte ryms i 21 pt med tomma rader mellan styckena (till exempel Så räknar du-bilderna) får
+    styckeavstånd i stället för tomma rader och den största storleken 21–14 pt som ryms ovanför formeln eller
+    sidfoten. Text som ryms lämnas orörd. Uppskattningen: Calibri ≈ 0,48 · storlek per tecken, radhöjd 1,2 · storlek.
+    Returnerar True om något ändrades."""
+    import math
+    from pptx.util import Emu, Pt
+    if sh is None:
+        return False
+    stycken = [stycke_text(p) for p in sh.text_frame.paragraphs]
+    text = [t for t in stycken if t.strip()]
+    if not text:
+        return False
+    bredd = sh.width / 12700
+    botten = 5950000 if tom_under else (ned_till or sh.top + sh.height)
+    hojd_max = (botten - sh.top) / 12700
+
+    def hojd(pt, tomma, luft):
+        rader = sum(max(1, math.ceil(len(t) * 0.48 * pt / bredd)) for t in text)
+        return rader * 1.2 * pt + (len(text) - 1) * (1.2 * pt if tomma else luft)
+
+    if hojd(21, True, 0) <= min(hojd_max, sh.height / 12700):
+        return False
+    storlek = next((pt for pt in range(21, 13, -1) if hojd(pt, False, 8) <= hojd_max), 14)
+    andrat = False
+    for p in list(sh.text_frame.paragraphs):
+        if not stycke_text(p).strip() and len(sh.text_frame.paragraphs) > 1:
+            p._p.getparent().remove(p._p)
+            andrat = True
+    for p in sh.text_frame.paragraphs:
+        if p.space_after != Pt(8):
+            p.space_after = Pt(8)
+            andrat = True
+        for r in p.runs:
+            if r.font.size != Pt(storlek):
+                r.font.size = Pt(storlek)
+                andrat = True
+    if sh.top + sh.height != botten:
+        sh.height = Emu(botten - sh.top)
+        andrat = True
+    return andrat
+
+
 def genomgang_v40():
     """Vecka 40:s presentationer följer genomgångens text (vecka-40/aktuell/lektioner.mjs): bild n + 1 = genomgångens bild n.
     Formerna heter title, body, formula, check och svar (verktyg/ac/build-decks.mjs, Din tur-bilderna). Etiketter i figurerna får nedsänkta index."""
@@ -208,6 +251,10 @@ def genomgang_v40():
                 if [x for x in nu if x] != [re.sub(r'\s+', ' ', x).strip() for x in stycken if x]:  # stycke_text slår ihop blanktecken
                     satt_form(sh, stycken)
                     andrat += 1
+            kropp = former.get('body')
+            under = [former[n].top for n in ('formula', 'check') if kropp is not None and n in former and s.get(n) and former[n].top > kropp.top]
+            if kompakt(former.get('body'), tom_under=not under, ned_till=min(under) - 60000 if under else None):
+                andrat += 1
             for sh in former.values():
                 if sh.name.endswith('-label') and re.search(r'(?<![\w{])X[LC](?![\w}])', ' '.join(stycke_text(p) for p in sh.text_frame.paragraphs)):
                     satt_form(sh, [re.sub(r'(?<![\w{])X([LC])(?![\w}])', r'X_{\1}', stycke_text(p)) for p in sh.text_frame.paragraphs])

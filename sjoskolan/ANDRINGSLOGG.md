@@ -91,6 +91,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Lärarkopiorna byggs om med `verktyg/larare/lararnoter.py` efter varje ändring. Nya exempelvärden jämförs med
     alla svar för vecka 40, även inlämningens facit för D = 1–31, med samma enhet (regel 2).
 
+30. **Resultatkoder ska tåla båda transportformaten och kortning.** Ett befintligt komprimerings-API kan sakna
+    `deflate-raw`; använd då JSON-reservformatet. Kortning får inte dela Unicode-surrogatpar eller lämna text när
+    gränsen är noll. Trasiga koder ska ge ett läsbart fel även när webbläsarens strömfel saknar meddelande.
+    *Kontroll: `node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs` (lärarsidans integration kräver `LARARLOSEN`).*
+31. **Mappen är inte veckan.** Kursen började vecka 38, så `vecka-37/` visas som vecka 38 och `vecka-38/` ingår i vecka 40.
+    Byt aldrig namn på en mapp (länkar, nedladdningar, resultatkoder, sparade elevdata). Ändra veckan eleven ser:
+    `vecka` i `verktyg/veckosidor/bygg.py` och `verktyg/inlamning/bygg.py`, startsidans lista och `weeks`, och bygg om
+    veckosidor, inlämning (`innehall.py bygg`) och bildspel (`verktyg/bildspel/bygg.py`, fältet `vecka`).
+32. **Resurslänkar skrivs relativt `sjoskolan/`.** ”Använd:”-länkar på inlämningssidorna utan mapp (`Elevuppgifter.html`,
+    `Elevprotokoll.html`, `01A_…`) pekade på filer som inte finns. *Kontroll: `innehall.py kontrollera` (resurslänkar).*
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -99,6 +110,37 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
 
 ## Ändringar
+
+- **2026-09-28** Lärarsidorna följer den nya planen: lärarportalens veckolista, utbildningsguiden vecka 38 (kursvecka 1, mapp vecka-37), frånskiljningen som måndag pass 1 i vecka 40, vecka 40:s plan med lektionstider och hemmablock, Lärarstöd vecka 40 och talaranteckningarna på bild 2 i lärarens PowerPoint v40_01–03. Upplåst utanför repot och låst igen.
+- **2026-09-28** Vecka 40: verkliga lektionstider i dagplanen och lärarens anteckningar (måndag 09.00–11.00, tisdag 15.00–17.00, fredag 09.00–11.00); hemmablocken börjar när lektionen slutar.
+- **2026-09-27** Kursen började vecka 38, inte vecka 37. Startsidan visar vecka 38–45 (Elens grunder vecka 38,
+  14–18 september) och väljer vecka 40 från måndag 28 september. Frånskiljning och mätteknik (mappen `vecka-38`, inte
+  undervisad) ingår i vecka 40, måndag; den gamla sidan säger det och länkar dit, och dess inlämning lämnas senast
+  söndag 4 oktober. Presentationens sidfot och omslag (kursvecka 3, vecka 40) och bildspelet omgjorda. Vecka 40 har en
+  plan dag för dag (`dagplan.mjs`): lektion måndag, tisdag och fredag, hemma måndag kväll, onsdag, torsdag och helgen
+  med steg, tid, avbockning, framsteg från övningssidan och ”Före nästa lektion”; panelen ”I dag” visar nästa steg.
+  Lärarens anteckningar i `lektioner.mjs` följer planen. Mappar, länkar och resultatkoder oförändrade. Trasiga
+  ”Använd:”-länkar i inlämning vecka 37, 38 och 41 rättade (regel 32).
+- **2026-09-28** Räknarhjälpen förklarar med interaktiva bilder (`gemensamt/raknehjalp-bilder.mjs`): radianen som
+  bågen mätt i radier, snurrande visare till sinuskurva (u(t) vid 440 V/60 Hz), samma knapptryck i RAD och DEG,
+  impedanstriangeln med fasvinkeln och prefixtrappan där kommat flyttar tre platser per steg. Exempeltalen
+  (1,5 ms, 0,565 rad, 333 V, R 30 Ω/X_{L} 45 Ω) kontrollerade mot databasens svar. Korten i `raknehjalp.mjs` oförändrade.
+- **2026-09-28** Trefaslabbets stationsprotokoll (EL-000406) pekade på en flik ”Neutralledaren” som inte finns; nu ”2 Bruten neutralledare”.
+- **2026-09-28** Trefas-, Hållkrets- och Isolationslabbet enklare på iPad och mobil: uppgiften står först och reglagen
+  bredvid diagrammet från 768 px (inte klistrade), flikarna blir en lista på mobil, S1 och S0 skriver läget (släppt /
+  ✓ intryckt). Ingen knapp ser vald ut efter ett tryck (:hover), 44 px tryckytor, större reglageknopp, 17 px text och
+  fält i protokollet (ingen inzoomning i iOS). Beskedet efter ”Hämta avläsning” står i mätningens ruta. Ny
+  `gemensamt/labbpekskarm.css`; Växelströmslabbet och multimetern oförändrade. Sparade protokoll och länkar oförändrade.
+- **2026-09-28** Växelströmslabbet enklare på iPad och mobil: steget skrivs ut (Steg 1 av 3) och stegraden är
+  status, inte knappar. Förutsägelsen står bredvid rutan där värdet visas efter sparandet. Bänken visar uppgiftens
+  instrument i närbild med en rad Visa: och en rad Bild: (3D-bild/Siffror); vridning borttagen så att sidan alltid
+  kan rullas. Dubbeltryck ignoreras kort efter stegbyte, tydliga fel per fält, 44 px tryckytor och 17 px text i
+  labbets egna delar. Sparade svar (v3-nyckeln) och QR-flödet oförändrade. 33 tester.
+- **2026-09-27** Fokuserade regressionstester för vecka 40:s resultatkoder: z/j-rundtur, svenska tal, Unicode,
+  kortningsgränser, trasiga koder, version/vecka, partiella labbdata, separat labb-D och lärarsidans verkliga
+  hashimport. Rättat komprimeringsreservväg, Unicode-/nollkortning och tomma felmeddelanden. Kortningsbeskedet
+  jämför nu med originaltexten och samma datasnapshot används genom QR-kortningen. Cacheversioner uppdaterade;
+  lärarsidan behåller krypteringen. Separat CI-steg, utan presentatörs- eller sorteringstester.
 
 - **2026-09-25** Innehållsdatabasen (`innehall/`), kursrevision, arbetsmapp för boken.
 - **2026-09-26** Vecka 40: alla förkortningar förklarade. En storhet, ett skrivsätt i allt material (notation.py och
@@ -150,3 +192,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   i vägguttaget, ventilationsfläkten |Z| och φ, kylskåpets kompressor) som poster EL-000863–867, i genomgången,
   elev- och lärarpresentationerna (svaret visas vid klick). Lärarmanus till alla bilder (Säg, Fråga, Klicka),
   lärarkopiorna byggs med `verktyg/larare/lararnoter.py`. Nya bildnummer i dagsplanerna och utbildningsguiden.
+- **2026-09-28** Sammanslagning med main (verkliga lektionstider, arbetsrummet, Så räknar du-exemplen): manus och
+  Din tur-bilder följer den nya planen. Långa brödtexter i vecka 40:s presentationer får automatiskt den största
+  storlek som ryms (`kompakt` i `innehall/export/presentationer.py`); Så räknar du-texten gick annars in i sidfoten.
+  40 poster som main reviderat utan skyddade filer registrerades om med `revidera --alla` och lärarlösenordet.

@@ -3,7 +3,7 @@
   "titel": "Frekvens från kurvan",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "f = 1/0,0040 s = 250 Hz.",
+    "text": "Byt till sekunder innan du använder f = 1/T.\n\n4,0 ms = 4,0/1 000 = 0,0040 s.\n\nf = 1/0,0040 = 250 Hz. Kontroll: 250 perioder på 0,0040 s ger en sekund.",
     "svar": [
       {
         "storhet": "f",

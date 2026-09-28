@@ -3,7 +3,7 @@
   "titel": "Dubbel frekvens",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,9 +37,25 @@
     }
   ],
   "losning": {
-    "text": "X_{L} fördubblas. X_{C} halveras.",
+    "text": "I X_{L} = 2πfL multipliceras med f. Dubbelt f ger dubbelt X_{L}.\n\nI X_{C} = 1/(2πfC) står f i nämnaren. Dubbelt f ger hälften så stort X_{C}.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "X_{L}",
+        "varde": "fördubblas",
+        "tolerans": {
+          "rel": 0.02
+        }
+      },
+      {
+        "storhet": "X_{C}",
+        "varde": "halveras",
+        "tolerans": {
+          "rel": 0.02
+        }
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

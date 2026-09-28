@@ -3,7 +3,7 @@
   "titel": "Period vid 50 Hz",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,16 +38,23 @@
     }
   ],
   "losning": {
-    "text": "T = 1/50 = 0,020 s = 20 ms.",
+    "text": "Frekvensen anger antal perioder på en sekund. För en enda period delar du därför 1 s med 50.\n\nT = 1/50 = 0,020 s.\n\nEn sekund är 1 000 ms: 0,020 · 1 000 = 20 ms.\n\nKontroll: 50 · 0,020 s = 1 s.",
     "svar": [
       {
         "storhet": "T",
         "varde": 0.02,
-        "avrundning": "3 decimaler",
         "tolerans": {
           "rel": 0.02
         },
         "enhet": "s"
+      },
+      {
+        "storhet": "T",
+        "varde": 20,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "ms"
       }
     ],
     "status": "migrerad",

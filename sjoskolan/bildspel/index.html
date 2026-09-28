@@ -45,10 +45,12 @@ const STORE = 'sjoskolan-bildspel-';
 
 async function list() {
   const decks = await (await fetch('lista.json')).json();
-  const weeks = [...new Set(decks.map((d) => d.week))];
+  // Visad vecka (d.vecka) kan skilja sig från mappen: kursen började vecka 38 (verktyg/bildspel/bygg.py).
+  const vk = (d) => d.vecka ?? d.week;
+  const weeks = [...new Set(decks.map(vk))];
   document.title = 'Bildspel · Sjöskolan';
   app.innerHTML = `<div class="course-heading"><p class="course-kicker">Kursens presentationer</p><h1>Bildspel</h1><p class="course-lead">Alla presentationer som bildspel på webben. Bläddra med pilarna, läs texten under bilden och gå direkt till övningarna.</p></div>` +
-    weeks.map((w) => `<section class="list-week"><h2>Vecka ${w}</h2><ul>${decks.filter((d) => d.week === w).map((d) => {
+    weeks.map((w) => `<section class="list-week"><h2>Vecka ${w}</h2><ul>${decks.filter((d) => vk(d) === w).map((d) => {
       let pos = null; try { pos = localStorage.getItem(STORE + d.id); } catch {}
       return `<li><a href="?d=${esc(d.id)}">${esc(d.title)}</a><small>${d.n} ${d.n === 1 ? 'bild' : 'bilder'}${pos && Number(pos) > 1 ? ` · du var på bild ${pos}` : ''}</small></li>`;
     }).join('')}</ul></section>`).join('');
@@ -59,11 +61,12 @@ async function viewer() {
   try { d = await (await fetch(`${encodeURIComponent(id)}/data.json`)).json(); }
   catch { app.innerHTML = '<p>Bildspelet hittades inte. <a href="./">Visa alla bildspel</a>.</p>'; return; }
   const n = d.slides.length, src = (i) => `${d.id}/${String(i).padStart(2, '0')}.webp`;
-  document.title = `${d.title} · vecka ${d.week} · Sjöskolan`;
+  const vecka = d.vecka ?? d.week;
+  document.title = `${d.title} · vecka ${vecka} · Sjöskolan`;
   document.documentElement.style.setProperty('--ar', `${d.w}/${d.h}`);
-  document.getElementById('nav-week').outerHTML = `<a href="${esc(d.weekUrl)}">Vecka ${d.week}</a>`;
+  document.getElementById('nav-week').outerHTML = `<a href="${esc(d.weekUrl)}">Vecka ${vecka}</a>`;
   app.innerHTML = `
-    <div class="deck-head"><div><p class="course-kicker">Vecka ${d.week} · bildspel</p><h1>${esc(d.title)}</h1></div>
+    <div class="deck-head"><div><p class="course-kicker">Vecka ${vecka} · bildspel</p><h1>${esc(d.title)}</h1></div>
       <div class="deck-links">${d.exercises ? `<a href="${esc(d.exercises)}">Övningar med facit</a>` : ''}<a href="${esc(d.weekUrl)}">Veckans sida</a><a href="${esc(d.pdf)}">PDF</a><a href="${esc(d.pptx)}">PowerPoint</a></div></div>
     <div class="progress" aria-hidden="true"><span id="prog"></span></div>
     <div class="stage" id="stage"><img id="img" alt="" width="${d.w}" height="${d.h}"><button class="nav-btn prev" id="zprev" aria-label="Föregående bild"></button><button class="nav-btn next" id="znext" aria-label="Nästa bild"></button></div>

@@ -3,7 +3,7 @@
   "titel": "Stationerna A, B och C",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -46,11 +46,11 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "Simulerade_stationer.html",
+        "url": "vecka-41/aktuell/Simulerade_stationer.html",
         "titel": "Simulerade stationer A, B och C"
       },
       {
-        "url": "Elevprotokoll.html",
+        "url": "vecka-41/aktuell/Elevprotokoll.html",
         "titel": "Elevprotokoll"
       }
     ],

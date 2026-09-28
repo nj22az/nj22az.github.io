@@ -3,7 +3,7 @@
   "titel": "RC-krets",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,12 +39,19 @@
     }
   ],
   "losning": {
-    "text": "|Z| = 100 Ω, I = 2,0 A, φ = arctan(−80/60) ≈ −53,1°. Strömmen leder spänningen.",
+    "text": "Kondensatorn ger negativ nettoreaktans: X = −80 Ω.\n\n|Z| = √(60² + (−80)²) = 100 Ω. I = 200/100 = 2,0 A.\n\nI DEG: φ = arctan(−80/60) ≈ −53,1°. Strömmen leder.",
     "svar": [
       {
+        "storhet": "|Z|",
+        "varde": 100,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      },
+      {
         "storhet": "I",
-        "varde": 2.0,
-        "avrundning": "heltal",
+        "varde": 2,
         "tolerans": {
           "rel": 0.02
         },
@@ -52,8 +59,7 @@
       },
       {
         "storhet": "φ",
-        "varde": -53.1,
-        "avrundning": "1 decimaler",
+        "varde": -53.13010235415598,
         "tolerans": {
           "rel": 0.02
         },

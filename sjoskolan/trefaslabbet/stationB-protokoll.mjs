@@ -19,7 +19,7 @@ const need = (patch) => ({ ...RIG_3F, ...patch });
 export const STATION_B_3F_PROTOKOLL = {
   key: 'stationB-3f', station: 'Station B · trefas · simulerad',
   title: 'Labbprotokoll: Station B, trefas',
-  intro: 'Använd fliken ”Neutralledaren” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts.',
+  intro: 'Använd fliken ”2 Bruten neutralledare” och ställ in stationens trefasrigg med knapparna nedan. Mät fasspänning, fasströmmar och neutralström, och undersök vad som händer när neutralledaren bryts.',
   instrument: 'Rigg: SELV-trefasrigg, huvudspänning (linjespänning) U_{L} uppmätt till 12,2 V, 50 Hz. Tre resistiva laster i Y märkta 100 Ω ±5 % (uppmätta: 98, 103 och 101 Ω), var och en med frånkopplingslänk. Neutralledaren har en brytbar länk, och lastens stjärnpunkt har ett eget mätuttag S på lastsidan av länken. Strömmätlänkar finns i L1, L2, L3 och N. Instrument: RMS-multimeter för spänning och multimeter i mA-läge via strömmätlänken för ström. En vanlig strömtång löser inte upp några mA. I simulatorn är instrumenten ideala.',
   checks: [
     { k: 'rigg', text: 'Trefasriggen är avsedd och dokumenterad: SELV, huvudspänning, strömgräns och mätpunkter L1, L2, L3, N och S.' },

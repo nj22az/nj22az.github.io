@@ -33,5 +33,37 @@ assert.ok(document.getElementById('guide-explanation'),'reload resumes the saved
 assert.equal(document.getElementById('guide-explanation').elements.explanation.value,'Min egen förklaring med tal och enheter.');
 assert.equal(Number(localStorage.getItem('sj-elev-d')),D,'D stays the same after reload');
 localStorage.setItem('sj-elevnamn','Anna Svensson');mountGuide(document.getElementById('guided-workspace'));assert.match(document.getElementById('guide-records').textContent,/Anna Svensson/);
+// Tydligare flöde: stegrubrik, avläsning bredvid egen siffra, fältfel utan webbläsarbubbla, en huvudåtgärd per läge.
+{const KEY='sjoskolan-ac-grund-v3',n=v=>v.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2});
+ const submit=f=>f.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));
+ const pick=id=>{const t=TASKS.find(x=>x.id===id);const l=document.getElementById('guide-lesson');l.value=t.lesson;l.dispatchEvent(new window.Event('change'));const s=document.getElementById('guide-task');s.value=id;s.dispatchEvent(new window.Event('change'));return t;};
+ localStorage.removeItem(KEY);const u=new URL(location.href);u.searchParams.set('steg','kalibrator');history.replaceState(null,'',u);
+ mountGuide(document.getElementById('guided-workspace'));
+ assert.match(document.getElementById('guide-steg').textContent,/Steg 1 av 3/);
+ const task=TASKS.find(t=>t.id==='kalibrator');let f=document.getElementById('guide-predict');
+ assert.equal(f.getAttribute('novalidate'),'');
+ for(const [k]of task.fields){const pair=f.elements[k].closest('.guide-pair');assert.ok(pair,k+' pair');assert.match(pair.querySelector('.guide-reading').textContent,/\?/);assert.ok(!f.elements[k].required);}
+ submit(f);assert.match(document.getElementById('guide-error').textContent,/Skriv din förutsägelse/);assert.equal(JSON.parse(localStorage.getItem(KEY)||'{"rows":{}}').rows.kalibrator,undefined,'no row on empty submit');assert.equal(f.elements.trms.getAttribute('aria-invalid'),'true');
+ f.elements.trms.value='10';f.elements.avg.value='x';submit(f);assert.match(document.getElementById('guide-error').textContent,/^Sinuskalibrerad mätare: Skriv ett positivt tal/);assert.equal(f.elements.avg.getAttribute('aria-invalid'),'true');
+ for(const [k]of task.fields)f.elements[k].value=n(guideValues(task)[k]);submit(f);
+ assert.match(document.getElementById('guide-steg').textContent,/Steg 2 av 3/);
+ const lcd=[...document.querySelectorAll('.guide-measurements .guide-lcd')].map(e=>e.textContent);task.fields.forEach(([k],i)=>assert.ok(lcd[i].startsWith(n(guideValues(task)[k])),k+' reading'));
+ assert.match(document.querySelector('.guide-progress').textContent,/klart/);
+ document.getElementById('guide-explain').click();const e=document.getElementById('guide-explanation');e.elements.explanation.value='Båda visar RMS för sinus.';submit(e);
+ const next=document.getElementById('guide-next');assert.ok(next.classList.contains('primary'));assert.equal(next.hidden,false);assert.match(next.textContent,/^Nästa (uppgift|del)|Visa hela/);
+ assert.ok(!document.getElementById('guide-save').classList.contains('primary'));assert.equal(document.getElementById('guide-save').hidden,true,'Spara ändringen visas först när texten ändras');
+ // Dubbeltryck: ett fingertryck direkt efter stegbytet ignoreras (tangentbordet, detail 0, påverkas inte).
+ {const nx=document.getElementById('guide-next'),before=document.getElementById('guide-steg').textContent;nx.dispatchEvent(new window.MouseEvent('click',{bubbles:true,cancelable:true,detail:1}));assert.equal(document.getElementById('guide-steg').textContent,before,'double tap ignored');}
+assert.match(document.getElementById('guide-save').textContent,/Spara ändringen/);
+ assert.match(document.getElementById('guide-task').selectedOptions[0].textContent,/· Förklarad$/);
+ // Sista uppgiften i del 1 leder till del 2.
+ const topp=pick('grund-topp');f=document.getElementById('guide-predict');f.elements.peak.value=n(guideValues(topp).peak);submit(f);document.getElementById('guide-explain').click();const e2=document.getElementById('guide-explanation');e2.elements.explanation.value='Toppen är roten ur två gånger RMS.';submit(e2);
+ assert.match(document.getElementById('guide-next').textContent,/^Nästa del: 2\./);
+ // Ett utkast med bara blanksteg räknas inte som förklarat.
+ const per=pick('grund-period');f=document.getElementById('guide-predict');f.elements.T.value=n(guideValues(per).T);submit(f);document.getElementById('guide-explain').click();
+ const box=document.getElementById('guide-explanation').elements.explanation;box.value='   ';box.dispatchEvent(new window.Event('input',{bubbles:true}));pick('grund-period');
+ assert.doesNotMatch(document.getElementById('guide-task').selectedOptions[0].textContent,/Förklarad/);assert.match(document.getElementById('guide-task').selectedOptions[0].textContent,/· Avläst$/);
+ assert.match(document.querySelector('#guide-protocol summary').textContent,/2 av 8/);
+}
 console.log('PASS: random D without name, personal values, first prediction kept, all 8 guided tasks, both calibration readings, explanations and persistence.');
 await window.happyDOM.close();

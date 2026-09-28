@@ -7,3 +7,29 @@
 .rh-tabell{border-collapse:collapse;margin:6px 0}.rh-tabell th,.rh-tabell td{border:1px solid var(--sj-line,#cad8e2);padding:4px 8px;text-align:left}
 .rh-mer{font-size:15px}
 @media print{.raknehjalp{display:none}}
+/* Räknarhjälpssidan (Raknehjalp.html) med interaktiva bilder (raknehjalp-bilder.mjs) */
+.rh-sida .rh-kort{border-left-width:8px}
+.rh-sida .regel{font-size:20px;font-weight:700;line-height:1.5;border-left:8px solid #064f91;background:#edf4f9;border-radius:12px;padding:12px 16px}
+.rhb-innehall ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(15em,1fr));gap:0 18px;padding-left:1.4em;margin:12px 0 4px}
+.rhb-innehall a{display:inline-flex;align-items:center;min-height:44px}
+.rhb-del{margin:34px 0 0;padding-top:6px;border-top:1px solid var(--sj-line,#cad8e2)}
+.rhb-del h2{display:flex;align-items:center;gap:12px}
+.rhb-nr{display:inline-grid;place-items:center;min-width:40px;height:40px;border-radius:50%;background:#064f91;color:#fff;font-size:20px}
+.rhb-bild{margin:16px 0;padding:14px;border:1px solid var(--sj-line,#cad8e2);border-radius:14px;background:#fff}
+.rhb-bild canvas{display:block;max-width:100%;touch-action:pan-y}
+.rhb-bild figcaption{font-size:15px;color:#4d6579;margin:0 0 8px}
+.rhb-text{font-size:17px;line-height:1.6;margin:10px 0 0;padding:10px 14px;background:#edf4f9;border-radius:10px}
+.rhb-reglage{display:grid;grid-template-columns:minmax(6em,auto) 1fr 6.5em;align-items:center;gap:12px;margin:12px 0 0;font-weight:700}
+.rhb-reglage input[type=range]{width:100%;min-height:44px;margin:0;accent-color:#064f91}
+.rhb-reglage output{font-size:18px;color:#064f91;text-align:right}
+.rhb-knappar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.rhb-knappar button{min-height:44px;min-width:64px;padding:8px 16px;font:inherit;font-size:17px;border:1px solid #8aa0b2;border-radius:10px;background:#fff;color:#163248;cursor:pointer}
+.rhb-knappar button[aria-pressed=true]{background:#064f91;border-color:#064f91;color:#fff;font-weight:700}
+.rhb-knappar button[aria-pressed=true]::before{content:"✓ "}
+@media (hover:hover){.rhb-knappar button:not([aria-pressed=true]):hover{background:#edf4f9;border-color:#064f91}}
+.rhb-knappar button:focus-visible,.rhb-reglage input:focus-visible,.rhb-omv input:focus-visible,.rhb-omv select:focus-visible{outline:3px solid #ffd43d;outline-offset:2px;box-shadow:0 0 0 5px #163248}
+.rhb-omv{display:flex;flex-wrap:wrap;gap:10px 16px;margin:12px 0 0}
+.rhb-omv label{display:grid;gap:4px;font-weight:700}
+.rhb-omv input,.rhb-omv select{min-height:44px;font:inherit;font-size:17px;padding:4px 10px;border:1px solid #8aa0b2;border-radius:8px;width:9em}
+@media (max-width:520px){.rhb-reglage{grid-template-columns:1fr 6em}.rhb-reglage input{grid-column:1/-1;grid-row:2}}
+@media print{.rhb-knappar,.rhb-reglage input,.rhb-omv{display:none}.rhb-bild{break-inside:avoid}}

@@ -1,0 +1,130 @@
+/* Sjöskolan · pekskärm och storlekar för Trefas-, Hållkrets- och Isolationslabbet.
+   Laddas efter ../vaxelstromslabbet/lab.css och labbprotokoll.css, bara av de tre labbarna, så att
+   Växelströmslabbet och multimetersimulatorn inte ändras. Följer DESIGN.md: 17 px brödtext, minst 14 px,
+   tryckytor 44 px, synlig fokusring, läget skrivs ut i text. */
+
+.ac-page .ac-app{font-size:17px;line-height:1.55}
+.ac-page .ac-app :focus-visible,.ac-page .lp :focus-visible{outline:3px solid #163248;outline-offset:2px;box-shadow:0 0 0 6px #ffd43d}
+.ac-page .ac-app input,.ac-page .ac-app select,.ac-page .ac-app textarea{font-size:17px} /* under 16 px zoomar iOS in vid fokus */
+
+/* Arbetsyta: uppgiften först i HTML. Från 768 px står diagrammet till vänster och uppgift + reglage till höger,
+   så att reglagen ligger bredvid det de ändrar. Inget är klistrat (sticky): allt rullar med sidan. */
+.ac-page .lab{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+.ac-page .lab>.challenge-card{order:1}.ac-page .lab>.stage{order:2}.ac-page .lab>.controls-card{order:3}
+@media(min-width:768px){
+  .ac-page .lab{grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto 1fr;grid-template-areas:"stage challenge" "stage controls";gap:16px 20px}
+  .ac-page .lab>.stage{grid-area:stage}.ac-page .lab>.challenge-card{grid-area:challenge}.ac-page .lab>.controls-card{grid-area:controls}
+}
+@media(min-width:1100px){.ac-page .lab{grid-template-columns:minmax(0,1fr) 360px;gap:16px 24px}}
+/* Ett brett schema (Hållkrets, Isolation) blir för litet bredvid panelen på iPad i stående läge: schemat över hela
+   bredden, uppgift och reglage bredvid varandra under. Uppgiften är först i fokusordningen (schemat har inga reglage). */
+@media(min-width:768px) and (max-width:999px){
+  .ac-page .lab.lab-bred{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:"stage stage" "challenge controls"}
+}
+.ac-page .figures{grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))}
+.ac-page .readouts{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))}
+@media(max-width:767px){.ac-page .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Flikar: vald flik fetstil, blå understrykning och fylld siffra. På mobil en lista i stället för dold vågrät rullning. */
+.ac-page .tabs button{min-height:48px;font-size:17px}
+.ac-page .tabs button[aria-selected=true]{font-weight:700;border-bottom-width:4px}
+.ac-page .tabs button span{font-size:14px;width:26px;height:26px}
+
+/* Text: minst 14 px */
+.ac-page .fig figcaption,.ac-page .deck-ref{font-size:14px;letter-spacing:.06em}
+.ac-page .legend,.ac-page .readouts dt,.ac-page .readouts dd>span,.ac-page .num,.ac-page .progress,.ac-page .control label,.ac-page .challenge-select,.ac-page .answer-form label,.ac-page .answer-row span,.ac-page .muted,.ac-page #hint{font-size:15px}
+.ac-page .fig-note{font-size:15px}
+.ac-page .lock-note{font-size:15px;font-weight:700}
+.ac-page .principle,.ac-page .feedback{font-size:16px}
+.ac-page .task{font-size:17px}
+.ac-page .readouts dd strong{font-size:22px}
+
+/* Reglage: 44 px tryckytor, större reglageknopp */
+.ac-page .num input{width:96px;min-height:44px!important;padding:6px 8px!important}
+.ac-page .control input[type=range]{-webkit-appearance:none;appearance:none;height:44px;margin:0;background:transparent;touch-action:pan-y}
+.ac-page .control input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:#cad8e2}
+.ac-page .control input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;margin-top:-11px;border-radius:50%;background:var(--lab-blue);border:3px solid #fff;box-shadow:0 0 0 1px var(--lab-blue)}
+.ac-page .control input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:#cad8e2}
+.ac-page .control input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--lab-blue);border:3px solid #fff;box-shadow:0 0 0 1px var(--lab-blue)}
+.ac-page .control input[type=range]:disabled::-webkit-slider-thumb{background:#8a9aa8;box-shadow:0 0 0 1px #8a9aa8}
+.ac-page .check{min-height:44px;font-size:17px}
+.ac-page .check input{width:24px;height:24px;flex:none}
+.ac-page .answer-row input{min-height:48px}
+.ac-page .answer-row button.primary{min-height:48px}
+.ac-page #hint summary,.ac-page .teacher-notes summary{min-height:44px;display:flex;align-items:center;font-weight:700}
+.ac-page #hint summary::before,.ac-page .teacher-notes summary::before{content:"▸";margin-right:8px}
+.ac-page #hint[open] summary::before,.ac-page .teacher-notes[open] summary::before{content:"▾"}
+.ac-page #hint summary::-webkit-details-marker,.ac-page .teacher-notes summary::-webkit-details-marker{display:none}
+.ac-page .card-head h2{font-size:20px}
+
+/* Länkar i löptext och presentationslänkar: större tryckyta utan att raden flyttas */
+.ac-page .deck-links{font-size:15px;row-gap:0}
+.ac-page .deck-links a{display:inline-flex;align-items:center;min-height:44px}
+.ac-page .lab-start a{padding:12px 0}
+
+/* Hållkretsens tryckknappar: namn och läge i text, vald knapp blå med ✓ */
+.ac-page .btn-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ac-page .ac-app button.toggle{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:56px;padding:8px 12px;border:2px solid var(--lab-blue);border-radius:8px;background:#fff;color:var(--lab-blue);font-weight:700;text-align:left;white-space:normal;min-width:0}
+.ac-page .ac-app button.toggle .toggle-state{font-size:15px;font-weight:400;color:var(--lab-ink)}
+.ac-page .ac-app button.toggle[aria-pressed=true]{background:var(--lab-blue);color:#fff}
+.ac-page .ac-app button.toggle[aria-pressed=true] .toggle-state{color:#fff;font-weight:700}
+.ac-page .ac-app button.toggle[aria-pressed=true] .toggle-state::before{content:"✓ ";content:"✓ " / ""}
+@media(hover:hover){.ac-page .ac-app button.toggle:not([aria-pressed=true]):not(:disabled):hover{background:#edf5fc}.ac-page .ac-app button.toggle[aria-pressed=true]:hover{background:#053f74}}
+.ac-page .ac-app button.toggle:disabled{opacity:.55}
+
+/* Pekskärmar: :hover fastnar efter ett tryck, så att en knapp ser vald ut fast den inte är det. Grundläget här
+   skriver över lab.css och labbprotokoll.css :hover (samma specificitet, laddas senare). Hovring läggs bara till
+   där det finns en riktig muspekare (hover:hover). */
+.ac-page .ac-app button{border-color:var(--lab-line);background:#fff}
+.ac-page .ac-app button.primary{background:var(--lab-blue);border-color:var(--lab-blue);color:#fff}
+.ac-page .ac-app button.plain{background:none;border-color:transparent}
+.ac-page .ac-app .lab-start button{background:#064f91}
+.ac-page .ac-app .tabs button{background:none;border-color:transparent}
+.ac-page .ac-app .tabs button[aria-selected=true]{border-bottom-color:var(--lab-blue)}
+.ac-page .lp button{border-color:var(--lp-line);background:#fff}
+.ac-page .lp .lp-presets button{background:var(--lp-soft)}
+.ac-page .lp .lp-fetch{background:var(--lp-blue);border-color:var(--lp-blue);color:#fff}
+@media(hover:hover){
+  .ac-page .ac-app button:not(.primary):not(.plain):not(.toggle):not([role=tab]):not(:disabled):hover{border-color:var(--lab-blue);background:#edf5fc}
+  .ac-page .ac-app button.primary:not(:disabled):hover,.ac-page .lp .lp-fetch:hover{background:#053f74}
+  .ac-page .ac-app .tabs button:not(:disabled):hover{background:#e6eef5}
+  .ac-page .ac-app button.plain:hover{background:none;border-color:transparent;text-decoration-thickness:2px}
+}
+/* Mobil: flikarna är en lista (efter grundläget ovan, så att kanterna gäller) */
+@media(max-width:767px){
+  .ac-page .tabs{flex-direction:column;gap:0;overflow:visible;border-bottom:0}
+  .ac-page .ac-app .tabs button{white-space:normal;text-align:left;display:flex;align-items:center;border:0;border-bottom:1px solid var(--lab-line);border-left:4px solid transparent}
+  .ac-page .ac-app .tabs button[aria-selected=true]{border-bottom-color:var(--lab-line);border-left-color:var(--lab-blue);background:#fff}
+}
+.ac-page .ac-app button:active:not(:disabled){filter:brightness(.94)}
+
+/* Labbprotokollet (gemensamt/labbprotokoll.css) i de här labbarna */
+.ac-page .lp{font-size:17px;line-height:1.5}
+.ac-page .lp h2{font-size:24px}.ac-page .lp h3{font-size:20px}
+.ac-page .lp-kicker{font-size:14px;letter-spacing:.06em}
+.ac-page .lp button{min-height:44px;padding:8px 14px}
+.ac-page .lp .lp-fetch{min-height:44px;padding:8px 16px}
+.ac-page .lp-presets button{color:var(--lp-blue)}
+.ac-page .lp label{font-size:15px;gap:4px}
+.ac-page .lp input:not([type=checkbox]),.ac-page .lp textarea,.ac-page .lp select{font-size:17px;min-height:48px;border-color:#5d7282;border-radius:8px;padding:8px 10px}
+.ac-page .lp textarea{min-height:5em}
+.ac-page .lp small,.ac-page .lp-opt,.ac-page .lp-foot,.ac-page .lp-q small{font-size:14px}
+.ac-page .lp-help{font-size:15px}
+.ac-page .lp-checks label{font-size:17px;min-height:44px;align-items:center;padding:4px 0}
+.ac-page .lp-checks input{width:24px;height:24px;margin-top:0}
+.ac-page .lp-example summary{min-height:44px;display:flex;align-items:center}
+.ac-page .lp-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.ac-page .lp-row-head strong{font-size:17px}
+.ac-page .lp-msg{font-weight:700}
+/* Besked vid ”Hämta avläsning” visas i mätningens ruta (labbprotokoll.mjs, rowMessages) */
+.ac-page .lp-row-msg{margin:0 0 10px;padding:8px 12px;border-radius:8px;background:#edf5fc;font-weight:700}
+.ac-page .lp-row-msg:empty{display:none}
+.ac-page .lp-row-msg.warn{background:#fff4e5;color:var(--lp-warn)}
+@media(max-width:767px){.ac-page .lp{padding:16px}.ac-page .lp-actions{display:grid;grid-template-columns:1fr;width:100%}.ac-page .lp-presets{display:grid;grid-template-columns:1fr}.ac-page .lp-presets button,.ac-page .lp-actions button{text-align:left}.ac-page .lp-row-head .lp-fetch{width:100%}}
+
+@media print{
+  .ac-page .lab>.challenge-card,.ac-page .lab>.controls-card{display:none}
+  .ac-page .lab{display:block}
+}
+.ac-page .btn-hint{grid-column:1/-1;margin:0}
+.ac-page .challenge-select select,.ac-page .control select{min-width:0;max-width:100%;width:100%}

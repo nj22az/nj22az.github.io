@@ -3,7 +3,7 @@
   "titel": "Arbetslampans strömväg",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -49,11 +49,11 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "01A_Elens_grunder/Elens_grunder.html",
+        "url": "vecka-37/aktuell/01A_Elens_grunder/Elens_grunder.html",
         "titel": "Elens grunder steg för steg"
       },
       {
-        "url": "01B_Elsakerhet_och_riskbedomning/Lampkretsen_bildguide.html",
+        "url": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Lampkretsen_bildguide.html",
         "titel": "Lampkretsen: delar och symboler"
       }
     ],

@@ -3,7 +3,7 @@
   "titel": "Momentanvärde",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "2π · 50 · 0,005 = π/2 rad. u = 17,0 · sin(π/2) = 17,0 V, den positiva toppen.",
+    "text": "Skriv tiden i sekunder: 5,0 ms = 0,0050 s. Ställ räknaren i RAD.\n\nRäkna vinkeln: 2π · 50 · 0,0050 = π/2 rad.\n\nsin(π/2) = 1. Multiplicera med amplituden: u = 17,0 · 1 = 17,0 V.",
     "svar": [
       {
         "storhet": "u(5 ms)",

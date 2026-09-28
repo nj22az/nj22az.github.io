@@ -3,7 +3,7 @@
   "titel": "Full kompensering",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,7 +38,7 @@
     }
   ],
   "losning": {
-    "text": "Qkondensator = −4 kvar, alltså 4 kvar kapacitiv reaktiv effekt.",
+    "text": "Målet är Q_{total} = 0. Kondensatorn måste därför bidra med motsatt tecken.\n\nQkondensator = 0 − 4 = −4 kvar. Behovets belopp är 4 kvar.",
     "svar": [
       {
         "storhet": "Qkondensator",

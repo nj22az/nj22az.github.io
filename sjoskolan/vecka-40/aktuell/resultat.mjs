@@ -3,6 +3,8 @@
 // skickas aldrig till någon server. Här finns bara fälten och kodningen, inget facit: facit räknas i lärarsidan.
 import {GUIDE_TASKS} from '../../vaxelstromslabbet/guided-lessons.mjs?v=20260930';
 import {mittD} from '../../gemensamt/elevtal.mjs?v=20260930';
+import {STUDY} from './arbetsrum.gen.mjs?v=20260927b';
+import {STUDY_KEY, normalise, verifiedExercises} from './studieprogress.mjs?v=20260927b';
 
 export const VECKA = 40;
 export const SVARNYCKEL = 'sj-v40-svar';
@@ -25,6 +27,7 @@ export const SVAR = [
 ];
 
 const las = (k, def) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? def; } catch { return def; } };
+const kontrollerade = () => verifiedExercises(STUDY.tasks, normalise(las(STUDY_KEY, null)));
 export const lasSvar = () => las(SVARNYCKEL, {});
 export function sparaSvar(svar) { try { localStorage.setItem(SVARNYCKEL, JSON.stringify(svar)); } catch { /* privat läge */ } }
 
@@ -35,10 +38,16 @@ export function tal(s) {
   return Number(t);
 }
 const avrunda = (v) => Number(Number(v).toPrecision(5));
+// Gränsen räknas i UTF-16-enheter, men ett Unicode-tecken får inte delas mitt i ett surrogatpar.
+function korta(text, max) {
+  if (text.length <= max) return text;
+  if (max <= 0) return '';
+  return text.slice(0, max - 1).replace(/[\uD800-\uDBFF]$/, '') + '…';
+}
 
 /** Vad som finns sparat på enheten, för sammanfattningen på elevsidan. */
 export function lage() {
-  const svar = lasSvar(), klara = las(OVNINGSNYCKEL, {}), labb = las(LABBNYCKEL, null);
+  const svar = lasSvar(), klara = kontrollerade(), labb = las(LABBNYCKEL, null);
   const rader = labb?.rows && typeof labb.rows === 'object' ? labb.rows : {};
   return {
     D: mittD(),
@@ -50,7 +59,7 @@ export function lage() {
 
 /** Resultaten som ett kompakt objekt. Förklaringarna kortas till max tecken var. */
 export function samla(namn, max = 400) {
-  const svar = lasSvar(), klara = las(OVNINGSNYCKEL, {}), labb = las(LABBNYCKEL, null);
+  const svar = lasSvar(), klara = kontrollerade(), labb = las(LABBNYCKEL, null);
   const s = {};
   for (const u of SVAR) for (const [k] of u.falt) if (Number.isFinite(svar[k])) s[k] = avrunda(svar[k]);
   const o = DELAR.map((d) => Array.from({ length: OVNINGAR_PER_DEL }, (_, i) => (klara[`${d}-q${i + 1}`] ? 1 : 0) << i).reduce((a, b) => a | b, 0));
@@ -60,7 +69,7 @@ export function samla(namn, max = 400) {
     if (!r) return 0;
     const forsta = r.first || r.predicted || {};
     const text = String(r.explanation || '').trim().replace(/\s+/g, ' ');
-    return [r.attempts || 0, t.fields.map(([k]) => (Number.isFinite(forsta[k]) ? avrunda(forsta[k]) : null)), r.measured ? 1 : 0, text.length > max ? text.slice(0, Math.max(0, max - 1)) + '…' : text];
+    return [r.attempts || 0, t.fields.map(([k]) => (Number.isFinite(forsta[k]) ? avrunda(forsta[k]) : null)), r.measured ? 1 : 0, korta(text, max)];
   });
   const ut = { v: 1, w: VECKA, n: String(namn || '').trim().replace(/\s+/g, ' '), d: mittD(), t: Math.round(Date.now() / 60000), s, o, g };
   if (Number.isInteger(labb?.D) && labb.D !== ut.d) ut.gd = labb.D;
@@ -75,27 +84,35 @@ async function stream(u8, T) { return new Uint8Array(await new Response(new Blob
 /** Kodar objektet till text för länken: z + komprimerat, eller j + okomprimerat om webbläsaren saknar komprimering. */
 export async function koda(obj) {
   const u8 = new TextEncoder().encode(JSON.stringify(obj));
-  if (typeof CompressionStream === 'function') return 'z' + b64(await stream(u8, CompressionStream));
+  if (typeof CompressionStream === 'function') {
+    try { return 'z' + b64(await stream(u8, CompressionStream)); }
+    catch { /* API kan finnas utan stöd för deflate-raw. Behåll då JSON-formatet. */ }
+  }
   return 'j' + b64(u8);
 }
 export async function avkoda(text) {
   const t = String(text || '').trim();
-  const u8 = unb64(t.slice(1));
-  const raw = t[0] === 'z' ? await stream(u8, DecompressionStream) : t[0] === 'j' ? u8 : null;
-  if (!raw) throw new Error('okänt format');
-  const obj = JSON.parse(new TextDecoder().decode(raw));
+  if (t[0] !== 'z' && t[0] !== 'j') throw new Error('okänt format');
+  if (t[0] === 'z' && typeof DecompressionStream !== 'function') throw new Error('Webbläsaren saknar stöd för komprimerade resultatkoder.');
+  let obj;
+  try {
+    const u8 = unb64(t.slice(1));
+    const raw = t[0] === 'z' ? await stream(u8, DecompressionStream) : u8;
+    obj = JSON.parse(new TextDecoder().decode(raw));
+  } catch { throw new Error('Resultatkoden är skadad eller ofullständig.'); }
   if (obj?.v !== 1 || obj.w !== VECKA) throw new Error('fel version eller vecka');
   return obj;
 }
 
 /** Länken i QR-koden. Förklaringarna kortas tills länken ryms i en QR-kod som går att läsa från en skärm. */
 export async function lank(namn, bas = location.origin, grans = 1250) {
+  const full = samla(namn, Infinity);
   let obj, kod;
   for (const max of [400, 240, 160, 110, 70, 40, 0]) {
-    obj = samla(namn, max);
+    obj = {...full, g: full.g.map((row) => row && [...row.slice(0, 3), korta(row[3], max)])};
     kod = await koda(obj);
     if (kod.length + bas.length + LARARSIDA.length + 3 <= grans) break;
   }
-  const kortat = obj.g.some((x) => x && x[3].endsWith('…'));
+  const kortat = obj.g.some((x, i) => x && x[3] !== full.g[i][3]);
   return { url: `${bas}${LARARSIDA}#r=${kod}`, obj, kortat };
 }

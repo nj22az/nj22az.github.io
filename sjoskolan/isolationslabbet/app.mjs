@@ -3,7 +3,7 @@ import { itNet, insulationTest, fmt, fmtR, fmtI, parseAnswer, isClose, OBJECTS, 
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, expected } from './lessons.mjs';
 import { ISO_PROTOKOLL, LAGEN } from './protokoll.mjs?v=20260929-not';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#176844', red: '#b8323c', ink: '#163248', muted: '#4d6579', line: '#cad8e2' };
@@ -68,6 +68,7 @@ function renderControls() {
     h += `<div class="control control-select"><label for="c-u">Provspänning</label><select id="c-u">${opt([[250, '250 V DC'], [500, '500 V DC'], [1000, '1 000 V DC']], s.Uprov)}</select></div>`;
     h += `<div class="control control-check"><label class="check"><input type="checkbox" id="c-frans"${s.frans ? ' checked' : ''}> Frånskilt, låst och kontrollerat spänningslöst</label></div>`;
   }
+  const focused = $('controls').contains(document.activeElement) ? document.activeElement.id : ''; // behåll fokus när reglagen ritas om
   $('controls').innerHTML = h;
   $('c-del').onchange = (e) => update({ del: e.target.value });
   if (s.del === 'overvakning') {
@@ -83,6 +84,7 @@ function renderControls() {
   }
   $('controls').querySelectorAll('select,input').forEach((el) => { el.disabled = locked; });
   $('lock-note').hidden = !locked;
+  if (focused && $(focused) && !$(focused).disabled) $(focused).focus({ preventScroll: true });
 }
 function render() {
   const s = state.s;
@@ -160,12 +162,12 @@ renderSelect(); render();
 if (params.get('uppgift')) start(params.get('uppgift'));
 
 // ---------- labbprotokoll ----------
-mountProtocol(document.getElementById('labbprotokoll'), { ...ISO_PROTOKOLL,
+mountProtocol(document.getElementById('labbprotokoll'), { ...ISO_PROTOKOLL, rowMessages: true,
   presets: Object.entries(LAGEN).map(([k, l]) => ({ label: l.label, apply: () => { if (state.challenge) leave(); state.s = { ...DEFAULTS, ...l.set }; state.lage = k; render(); }, done: `Läget är inställt: ${l.text}.` })),
   snapshot(plan) {
     if (state.challenge) return { error: 'Lös eller lämna uppgiften först. Mätvärdena är dolda medan du räknar.' };
     const n = plan?.need || {}, nr = ISO_PROTOKOLL.rows.indexOf(plan) + 1;
-    if (n.lage && state.lage !== n.lage) return { error: `Mätning ${nr} gäller läget ”${LAGEN[n.lage].label}”. Tryck på den knappen först. Ändrar du ett reglage därefter behöver du trycka igen.` };
+    if (n.lage && state.lage !== n.lage) return { error: `Mätning ${nr} gäller läget ”${LAGEN[n.lage].label}”. Tryck på den knappen överst i protokollet. Ändrar du ett reglage därefter behöver du trycka igen.` };
     const s = state.s;
     if (plan.q === 'prov') {
       if (s.par !== n.par) return { error: `Mätning ${nr} gäller ${n.par.replace('-', ' mot ')}. Välj det under ”Mät mellan”.` };

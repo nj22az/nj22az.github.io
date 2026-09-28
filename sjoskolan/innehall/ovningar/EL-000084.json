@@ -3,7 +3,7 @@
   "titel": "Reaktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,16 +39,23 @@
     }
   ],
   "losning": {
-    "text": "P = 1,6 kW. sin φ = 0,60. Q = 1,2 kvar.",
+    "text": "S står i kVA. Därför får vi P i kW och Q i kvar.\n\nP = 2,0 · 0,80 = 1,6 kW.\n\nsin φ = √(1 − 0,80²) = 0,60. Q = 2,0 · 0,60 = 1,2 kvar.",
     "svar": [
       {
         "storhet": "P",
         "varde": 1.6,
-        "avrundning": "2 decimaler",
         "tolerans": {
           "rel": 0.02
         },
         "enhet": "kW"
+      },
+      {
+        "storhet": "Q",
+        "varde": 1.2,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kvar"
       }
     ],
     "status": "migrerad",

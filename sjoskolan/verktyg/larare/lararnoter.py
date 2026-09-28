@@ -46,10 +46,10 @@ def manus(l, s):
             rader += ['', f'Facit: {s["answer"]}']
         else:
             rader += ['', f'Kontrollfrågan: {s["check"]}', f'Svar: {s["answer"]}']
+    rader += ['', f'Webbgenomgång: {WEBB}/vecka-40/aktuell/Genomgang.html?del={l["id"]}&avsnitt={s["id"]}',
+              '', f'Guidad labb: {WEBB}/vaxelstromslabbet/?lage=guidad&del={l["id"]}']
     if s['id'] == 'mal':
-        rader += ['', f'Webbgenomgång: {WEBB}/vecka-40/aktuell/Genomgang.html?del={l["id"]}&avsnitt=mal',
-                  f'Guidad labb: {WEBB}/vaxelstromslabbet/?lage=guidad&del={l["id"]}',
-                  f'Inlämningar under lektionen: {WEBB}/larare/resultat.html?vy=presentera']
+        rader += ['', f'Inlämningar under lektionen: {WEBB}/larare/resultat.html?vy=presentera']
     return rader
 
 

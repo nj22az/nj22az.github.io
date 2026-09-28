@@ -154,6 +154,7 @@ Eleverna möter presentationerna som bildspel på webben (`bildspel/?d=<id>`): b
 | `course.css` | veckosidor, läsmaterial, övningar, formelblad och filmlistor (`body.course`) |
 | `vecka-40/aktuell/ac-course.css` | genomgångar och veckosida för vecka 40 samt Växelströmslabbet |
 | `gemensamt/skolnav.css` | meny och startruta i labbarna |
+| `gemensamt/labbpekskarm.css` | Trefas-, Hållkrets- och Isolationslabbet: arbetsytans ordning (uppgift, diagram, reglage), 44 px tryckytor, 17 px text och protokollets storlekar, ingen fastnad :hover på pekskärm |
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
