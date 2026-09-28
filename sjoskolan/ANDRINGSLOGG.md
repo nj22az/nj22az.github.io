@@ -111,7 +111,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 34. **Figurer i presentationer är bilder, inte PowerPoint-diagram eller lösa linjer.** Vecka 40:s kurvdiagram (inbäddad
     arbetsbok) och trianglar av separata linjer ritades fel i PowerPoint och Keynote, fast LibreOffice-renderingen såg
     rätt ut. Figurerna ritas ur webbens `vecka-40/aktuell/visuals.mjs` med `verktyg/ac/figurbilder.py`. Etiketter står vid
-    sin egen sida och får inte krocka; kurvor med olika enheter (u och i) ritas med olika höjd.
+    sin egen sida och får inte krocka; kurvor med olika enheter (u och i) ritas med olika höjd. Frånskiljningens
+    presentation (v38_01) ritas på samma sätt med `verktyg/ac/scheman_v38.py`.
 
 ### Boken
 
@@ -223,3 +224,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Vecka 40:s presentationer: kurvdiagram och trianglar ersatta med bilder ur webbens figurer (samma i
   PowerPoint, Keynote och webben). Figurerna rättade: trianglarnas etiketter krockade, periodmarkeringen låg över kurvan,
   resistorns u och i låg ovanpå varandra. Större text i presentationerna. Lärarkopior, PDF och bildspel byggda om.
+- **2026-09-28** Frånskiljning och mätteknik (v38_01): blockschemat, symbolerna och de två kopplingsschemana (bild 4, 6,
+  11, 12) är bilder i stället för lösa linjer och rutor. PDF och bildspel byggda om.
