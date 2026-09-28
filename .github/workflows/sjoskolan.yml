@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 sjoskolan/innehall/innehall.py validera
           python3 sjoskolan/innehall/innehall.py kontrollera
+          python3 sjoskolan/verktyg/las/veckolas.py kontrollera
       - name: Vecka 40 – länkar och publicerade artefakter
         run: python3 sjoskolan/verktyg/qa/week40.py
       - name: Labbens modelltester

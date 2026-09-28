@@ -113,6 +113,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     rätt ut. Figurerna ritas ur webbens `vecka-40/aktuell/visuals.mjs` med `verktyg/ac/figurbilder.py`. Etiketter står vid
     sin egen sida och får inte krocka; kurvor med olika enheter (u och i) ritas med olika höjd. Frånskiljningens
     presentation (v38_01) ritas på samma sätt med `verktyg/ac/scheman_v38.py`.
+35. **En klar vecka låses.** Vecka 40 är låst (`verktyg/las/veckolas.py`, `verktyg/las/vecka-40.json`): SHA-256 för varje
+    fil i veckan. CI och `innehall.py kontrollera` stoppar varje ändring. Arbeta framåt; ändra en låst vecka bara efter ett
+    uttryckligt beslut (`veckolas.py las-upp 40`, ändra, `veckolas.py las 40`). Exportörer ska inte röra låsta veckor.
 
 ### Boken
 
@@ -235,3 +238,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-28** Frånskiljning och mätteknik (v38_01): omslagets båtfoto ersatt med en ritad effektbrytare i FRÅN-läge,
   låst med hänglås och skylten FRÅNSKILD – MANÖVRERA EJ (`verktyg/ac/brytare.mjs`). Även i måndagens samlade presentation.
   `verktyg/bildspel/bygg.py` hoppar över presentationer som inte heter vXX_NN.
+- **2026-09-28** Vecka 40 låst (148 filer, även frånskiljningsmaterialet som undervisas måndag vecka 40). Presentationernas
+  rubriker följer numreringsregistret från vecka 41 (”Övning 1.3”, ”Stöd till övning 1.3”); vecka 37–40 rörs inte.

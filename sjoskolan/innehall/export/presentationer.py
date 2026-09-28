@@ -171,6 +171,20 @@ def skriv_deck(a, plats, placeringar):
                 continue
             satt_form(sh, mal, int(nr) if nr else None)
             andrat += 1
+    # Bildrubrikerna följer numreringsregistret (innehall/numrering.py): ”Övning 1.3” och ”Stöd till övning 1.3”.
+    for pl, p in placeringar:
+        if pl.get('kontroll') or not pl.get('nummer', '').startswith('Övning '):
+            continue
+        if int(re.search(r'vecka-(\d+)', plats).group(1)) <= 40:  # vecka 37–40 är klara och ändras inte (se verktyg/las)
+            continue
+        for bild, mall in ((pl.get('bild'), '{nr}'), (pl.get('stodbild'), 'Stöd till övning {k}')):
+            if not bild:
+                continue
+            mal = mall.format(nr=pl['nummer'], k=pl['nummer'][len('Övning '):])
+            for sh in slides[bild - 1].shapes:
+                if sh.has_text_frame and re.match(r'^(Stöd till övning|Övning) [\d.]+$', sh.text_frame.text.strip()) and sh.text_frame.text.strip() != mal:
+                    satt_form(sh, [mal])
+                    andrat += 1
     if andrat:
         prs.save(fil)
     return andrat, avvik

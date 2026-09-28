@@ -20,6 +20,7 @@ import importlib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -224,6 +225,10 @@ def cmd_kontrollera(a):
     brister['fel'] += oforklarade(kat)
     brister['fel'] += svar_i_ledtradar(kat)
     # Numreringen vecka för vecka (Övning <del>.<nummer>, Inlämning <nummer>) följer registret i numrering.py.
+    # Låsta veckor (verktyg/las/veckolas.py): en klar vecka får inte ändras av misstag.
+    las = subprocess.run([sys.executable, str(ROT.parent / 'verktyg' / 'las' / 'veckolas.py'), 'kontrollera'], capture_output=True, text=True)
+    if las.returncode:
+        brister['fel'] += [r[4:] for r in las.stdout.splitlines() if r.startswith('FEL ')]
     import numrering
     _, onskat = numrering.onskat()
     for (yta, i), nr in onskat.items():
