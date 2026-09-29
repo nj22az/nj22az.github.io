@@ -70,7 +70,7 @@ def bygg(kat, fil):
             for pl in y['placeringar']:
                 if pl['ovning'] not in kat.poster:
                     continue  # skyddad post som inte är öppnad
-                extra = {k: pl[k] for k in ('former', 'kontroll') if k in pl}
+                extra = {k: pl[k] for k in ('former', 'kontroll', 'teorikort') if k in pl}
                 con.execute('INSERT INTO placering (yta, ovning_id, plats, del, ordning, nummer, ankare, bild, stodbild, roll, extra) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
                             (namn, pl['ovning'], pl['plats'], pl.get('del'), pl['ordning'], pl.get('nummer'), pl.get('ankare'), pl.get('bild'), pl.get('stodbild'), pl.get('roll'),
                              json.dumps(extra, ensure_ascii=False) if extra else None))

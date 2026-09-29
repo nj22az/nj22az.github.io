@@ -411,7 +411,8 @@
       "del": "v41_01",
       "ordning": 1,
       "nummer": "Övning 1.1",
-      "ankare": "v41_01-q1"
+      "ankare": "v41_01-q1",
+      "teorikort": "Tre sinusspänningar"
     },
     {
       "ovning": "EL-000092",
@@ -419,7 +420,8 @@
       "del": "v41_01",
       "ordning": 2,
       "nummer": "Övning 1.2",
-      "ankare": "v41_01-q2"
+      "ankare": "v41_01-q2",
+      "teorikort": "Tre sinusspänningar"
     },
     {
       "ovning": "EL-000093",
@@ -427,7 +429,8 @@
       "del": "v41_01",
       "ordning": 3,
       "nummer": "Övning 1.3",
-      "ankare": "v41_01-q3"
+      "ankare": "v41_01-q3",
+      "teorikort": "Två sätt att ange spänning"
     },
     {
       "ovning": "EL-000094",
@@ -435,7 +438,8 @@
       "del": "v41_01",
       "ordning": 4,
       "nummer": "Övning 1.4",
-      "ankare": "v41_01-q4"
+      "ankare": "v41_01-q4",
+      "teorikort": "Två sätt att ange spänning"
     },
     {
       "ovning": "EL-000095",
@@ -443,7 +447,8 @@
       "del": "v41_01",
       "ordning": 5,
       "nummer": "Övning 1.5",
-      "ankare": "v41_01-q5"
+      "ankare": "v41_01-q5",
+      "teorikort": "Två sätt att ange spänning"
     },
     {
       "ovning": "EL-000096",
@@ -451,7 +456,8 @@
       "del": "v41_01",
       "ordning": 6,
       "nummer": "Övning 1.6",
-      "ankare": "v41_01-q6"
+      "ankare": "v41_01-q6",
+      "teorikort": "Neutralledaren vid symmetri"
     },
     {
       "ovning": "EL-000097",
@@ -459,7 +465,8 @@
       "del": "v41_01",
       "ordning": 7,
       "nummer": "Övning 1.7",
-      "ankare": "v41_01-q7"
+      "ankare": "v41_01-q7",
+      "teorikort": "Osymmetri och övertoner"
     },
     {
       "ovning": "EL-000098",
@@ -467,7 +474,8 @@
       "del": "v41_01",
       "ordning": 8,
       "nummer": "Övning 1.8",
-      "ankare": "v41_01-q8"
+      "ankare": "v41_01-q8",
+      "teorikort": "Osymmetri och övertoner"
     },
     {
       "ovning": "EL-000099",
@@ -475,7 +483,8 @@
       "del": "v41_01",
       "ordning": 9,
       "nummer": "Övning 1.9",
-      "ankare": "v41_01-q9"
+      "ankare": "v41_01-q9",
+      "teorikort": "Mätpunkten bestämmer tolkningen"
     },
     {
       "ovning": "EL-000100",
@@ -483,7 +492,8 @@
       "del": "v41_01",
       "ordning": 10,
       "nummer": "Övning 1.10",
-      "ankare": "v41_01-q10"
+      "ankare": "v41_01-q10",
+      "teorikort": "Osymmetri och övertoner"
     },
     {
       "ovning": "EL-000101",
@@ -491,7 +501,8 @@
       "del": "v41_02",
       "ordning": 1,
       "nummer": "Övning 2.1",
-      "ankare": "v41_02-q1"
+      "ankare": "v41_02-q1",
+      "teorikort": "Y- och Δ-koppling"
     },
     {
       "ovning": "EL-000102",
@@ -499,7 +510,8 @@
       "del": "v41_02",
       "ordning": 2,
       "nummer": "Övning 2.2",
-      "ankare": "v41_02-q2"
+      "ankare": "v41_02-q2",
+      "teorikort": "Linjeström och grenström"
     },
     {
       "ovning": "EL-000103",
@@ -507,7 +519,8 @@
       "del": "v41_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v41_02-q3"
+      "ankare": "v41_02-q3",
+      "teorikort": "Linjeström och grenström"
     },
     {
       "ovning": "EL-000104",
@@ -515,7 +528,8 @@
       "del": "v41_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v41_02-q4"
+      "ankare": "v41_02-q4",
+      "teorikort": "Trefaseffekt"
     },
     {
       "ovning": "EL-000105",
@@ -523,7 +537,8 @@
       "del": "v41_02",
       "ordning": 5,
       "nummer": "Övning 2.5",
-      "ankare": "v41_02-q5"
+      "ankare": "v41_02-q5",
+      "teorikort": "Trefaseffekt"
     },
     {
       "ovning": "EL-000106",
@@ -531,7 +546,8 @@
       "del": "v41_02",
       "ordning": 6,
       "nummer": "Övning 2.6",
-      "ankare": "v41_02-q6"
+      "ankare": "v41_02-q6",
+      "teorikort": "Motorns märkning"
     },
     {
       "ovning": "EL-000107",
@@ -539,7 +555,8 @@
       "del": "v41_02",
       "ordning": 7,
       "nummer": "Övning 2.7",
-      "ankare": "v41_02-q7"
+      "ankare": "v41_02-q7",
+      "teorikort": "Motorns märkning"
     },
     {
       "ovning": "EL-000108",
@@ -547,7 +564,8 @@
       "del": "v41_02",
       "ordning": 8,
       "nummer": "Övning 2.8",
-      "ankare": "v41_02-q8"
+      "ankare": "v41_02-q8",
+      "teorikort": "Axeleffekt och elektrisk effekt"
     },
     {
       "ovning": "EL-000109",
@@ -555,7 +573,8 @@
       "del": "v41_02",
       "ordning": 9,
       "nummer": "Övning 2.9",
-      "ankare": "v41_02-q9"
+      "ankare": "v41_02-q9",
+      "teorikort": "Trefastransformatorn"
     },
     {
       "ovning": "EL-000110",
@@ -563,7 +582,8 @@
       "del": "v41_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v41_02-q10"
+      "ankare": "v41_02-q10",
+      "teorikort": "Trefaseffekt"
     },
     {
       "ovning": "EL-000111",
@@ -571,7 +591,8 @@
       "del": "v41_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v41_03-q1"
+      "ankare": "v41_03-q1",
+      "teorikort": "Ramar för stationspasset"
     },
     {
       "ovning": "EL-000112",
@@ -579,7 +600,8 @@
       "del": "v41_03",
       "ordning": 2,
       "nummer": "Övning 3.2",
-      "ankare": "v41_03-q2"
+      "ankare": "v41_03-q2",
+      "teorikort": "Station A: DC-delare"
     },
     {
       "ovning": "EL-000113",
@@ -587,7 +609,8 @@
       "del": "v41_03",
       "ordning": 3,
       "nummer": "Övning 3.3",
-      "ankare": "v41_03-q3"
+      "ankare": "v41_03-q3",
+      "teorikort": "Station A: DC-delare"
     },
     {
       "ovning": "EL-000114",
@@ -595,7 +618,8 @@
       "del": "v41_03",
       "ordning": 4,
       "nummer": "Övning 3.4",
-      "ankare": "v41_03-q4"
+      "ankare": "v41_03-q4",
+      "teorikort": "Station B: AC och trefas"
     },
     {
       "ovning": "EL-000115",
@@ -603,7 +627,8 @@
       "del": "v41_03",
       "ordning": 5,
       "nummer": "Övning 3.5",
-      "ankare": "v41_03-q5"
+      "ankare": "v41_03-q5",
+      "teorikort": "Station B: AC och trefas"
     },
     {
       "ovning": "EL-000116",
@@ -611,7 +636,8 @@
       "del": "v41_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v41_03-q6"
+      "ankare": "v41_03-q6",
+      "teorikort": "Station C: hållkrets"
     },
     {
       "ovning": "EL-000117",
@@ -619,7 +645,8 @@
       "del": "v41_03",
       "ordning": 7,
       "nummer": "Övning 3.7",
-      "ankare": "v41_03-q7"
+      "ankare": "v41_03-q7",
+      "teorikort": "Station C: hållkrets"
     },
     {
       "ovning": "EL-000118",
@@ -627,7 +654,8 @@
       "del": "v41_03",
       "ordning": 8,
       "nummer": "Övning 3.8",
-      "ankare": "v41_03-q8"
+      "ankare": "v41_03-q8",
+      "teorikort": "Station C: hållkrets"
     },
     {
       "ovning": "EL-000119",
@@ -635,7 +663,8 @@
       "del": "v41_03",
       "ordning": 9,
       "nummer": "Övning 3.9",
-      "ankare": "v41_03-q9"
+      "ankare": "v41_03-q9",
+      "teorikort": "Mätprotokoll och rimlighet"
     },
     {
       "ovning": "EL-000120",
@@ -643,7 +672,8 @@
       "del": "v41_03",
       "ordning": 10,
       "nummer": "Övning 3.10",
-      "ankare": "v41_03-q10"
+      "ankare": "v41_03-q10",
+      "teorikort": "Mätprotokoll och rimlighet"
     },
     {
       "ovning": "EL-000121",
@@ -651,7 +681,8 @@
       "del": "v42_01",
       "ordning": 1,
       "nummer": "Övning 1.1",
-      "ankare": "v42_01-q1"
+      "ankare": "v42_01-q1",
+      "teorikort": "Risker i marin miljö"
     },
     {
       "ovning": "EL-000122",
@@ -659,7 +690,8 @@
       "del": "v42_01",
       "ordning": 2,
       "nummer": "Övning 1.2",
-      "ankare": "v42_01-q2"
+      "ankare": "v42_01-q2",
+      "teorikort": "Ljusbågens konsekvenser"
     },
     {
       "ovning": "EL-000123",
@@ -667,7 +699,8 @@
       "del": "v42_01",
       "ordning": 3,
       "nummer": "Övning 1.3",
-      "ankare": "v42_01-q3"
+      "ankare": "v42_01-q3",
+      "teorikort": "Beröringsspänning"
     },
     {
       "ovning": "EL-000124",
@@ -675,7 +708,8 @@
       "del": "v42_01",
       "ordning": 4,
       "nummer": "Övning 1.4",
-      "ankare": "v42_01-q4"
+      "ankare": "v42_01-q4",
+      "teorikort": "Beröringsspänning"
     },
     {
       "ovning": "EL-000125",
@@ -683,7 +717,8 @@
       "del": "v42_01",
       "ordning": 5,
       "nummer": "Övning 1.5",
-      "ankare": "v42_01-q5"
+      "ankare": "v42_01-q5",
+      "teorikort": "Risker i marin miljö"
     },
     {
       "ovning": "EL-000126",
@@ -691,7 +726,8 @@
       "del": "v42_01",
       "ordning": 6,
       "nummer": "Övning 1.6",
-      "ankare": "v42_01-q6"
+      "ankare": "v42_01-q6",
+      "teorikort": "Ljusbågens konsekvenser"
     },
     {
       "ovning": "EL-000127",
@@ -699,7 +735,8 @@
       "del": "v42_01",
       "ordning": 7,
       "nummer": "Övning 1.7",
-      "ankare": "v42_01-q7"
+      "ankare": "v42_01-q7",
+      "teorikort": "En inträffad elolycka"
     },
     {
       "ovning": "EL-000128",
@@ -707,7 +744,8 @@
       "del": "v42_01",
       "ordning": 8,
       "nummer": "Övning 1.8",
-      "ankare": "v42_01-q8"
+      "ankare": "v42_01-q8",
+      "teorikort": "En inträffad elolycka"
     },
     {
       "ovning": "EL-000129",
@@ -715,7 +753,8 @@
       "del": "v42_01",
       "ordning": 9,
       "nummer": "Övning 1.9",
-      "ankare": "v42_01-q9"
+      "ankare": "v42_01-q9",
+      "teorikort": "Tillbud och lärande"
     },
     {
       "ovning": "EL-000130",
@@ -723,7 +762,8 @@
       "del": "v42_01",
       "ordning": 10,
       "nummer": "Övning 1.10",
-      "ankare": "v42_01-q10"
+      "ankare": "v42_01-q10",
+      "teorikort": "Tillbud och lärande"
     },
     {
       "ovning": "EL-000131",
@@ -731,7 +771,8 @@
       "del": "v42_02",
       "ordning": 1,
       "nummer": "Övning 2.1",
-      "ankare": "v42_02-q1"
+      "ankare": "v42_02-q1",
+      "teorikort": "Reglernas olika uppgifter"
     },
     {
       "ovning": "EL-000132",
@@ -739,7 +780,8 @@
       "del": "v42_02",
       "ordning": 2,
       "nummer": "Övning 2.2",
-      "ankare": "v42_02-q2"
+      "ankare": "v42_02-q2",
+      "teorikort": "SS-EN 50110-1 och ESA"
     },
     {
       "ovning": "EL-000133",
@@ -747,7 +789,8 @@
       "del": "v42_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v42_02-q3"
+      "ankare": "v42_02-q3",
+      "teorikort": "SS-EN 50110-1 och ESA"
     },
     {
       "ovning": "EL-000134",
@@ -755,7 +798,8 @@
       "del": "v42_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v42_02-q4"
+      "ankare": "v42_02-q4",
+      "teorikort": "Fem säkerhetsåtgärder"
     },
     {
       "ovning": "EL-000135",
@@ -763,7 +807,8 @@
       "del": "v42_02",
       "ordning": 5,
       "nummer": "Övning 2.5",
-      "ankare": "v42_02-q5"
+      "ankare": "v42_02-q5",
+      "teorikort": "Roller och kommunikation"
     },
     {
       "ovning": "EL-000136",
@@ -771,7 +816,8 @@
       "del": "v42_02",
       "ordning": 6,
       "nummer": "Övning 2.6",
-      "ankare": "v42_02-q6"
+      "ankare": "v42_02-q6",
+      "teorikort": "Roller och kommunikation"
     },
     {
       "ovning": "EL-000137",
@@ -779,7 +825,8 @@
       "del": "v42_02",
       "ordning": 7,
       "nummer": "Övning 2.7",
-      "ankare": "v42_02-q7"
+      "ankare": "v42_02-q7",
+      "teorikort": "Regler för fartyg"
     },
     {
       "ovning": "EL-000138",
@@ -787,7 +834,8 @@
       "del": "v42_02",
       "ordning": 8,
       "nummer": "Övning 2.8",
-      "ankare": "v42_02-q8"
+      "ankare": "v42_02-q8",
+      "teorikort": "Regler för fartyg"
     },
     {
       "ovning": "EL-000139",
@@ -795,7 +843,8 @@
       "del": "v42_02",
       "ordning": 9,
       "nummer": "Övning 2.9",
-      "ankare": "v42_02-q9"
+      "ankare": "v42_02-q9",
+      "teorikort": "Avgränsning före beslut"
     },
     {
       "ovning": "EL-000140",
@@ -803,7 +852,8 @@
       "del": "v42_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v42_02-q10"
+      "ankare": "v42_02-q10",
+      "teorikort": "Underlag för regelval"
     },
     {
       "ovning": "EL-000141",
@@ -811,7 +861,8 @@
       "del": "v42_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v42_03-q1"
+      "ankare": "v42_03-q1",
+      "teorikort": "Arbetsmomentets gränser"
     },
     {
       "ovning": "EL-000142",
@@ -819,7 +870,8 @@
       "del": "v42_03",
       "ordning": 2,
       "nummer": "Övning 3.2",
-      "ankare": "v42_03-q2"
+      "ankare": "v42_03-q2",
+      "teorikort": "Arbetsmomentets gränser"
     },
     {
       "ovning": "EL-000143",
@@ -827,7 +879,8 @@
       "del": "v42_03",
       "ordning": 3,
       "nummer": "Övning 3.3",
-      "ankare": "v42_03-q3"
+      "ankare": "v42_03-q3",
+      "teorikort": "Prioritering av skydd"
     },
     {
       "ovning": "EL-000144",
@@ -835,7 +888,8 @@
       "del": "v42_03",
       "ordning": 4,
       "nummer": "Övning 3.4",
-      "ankare": "v42_03-q4"
+      "ankare": "v42_03-q4",
+      "teorikort": "Provare, låsning och märkning"
     },
     {
       "ovning": "EL-000145",
@@ -843,7 +897,8 @@
       "del": "v42_03",
       "ordning": 5,
       "nummer": "Övning 3.5",
-      "ankare": "v42_03-q5"
+      "ankare": "v42_03-q5",
+      "teorikort": "Provare, låsning och märkning"
     },
     {
       "ovning": "EL-000146",
@@ -851,7 +906,8 @@
       "del": "v42_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v42_03-q6"
+      "ankare": "v42_03-q6",
+      "teorikort": "Jordning och kortslutning"
     },
     {
       "ovning": "EL-000147",
@@ -859,7 +915,8 @@
       "del": "v42_03",
       "ordning": 7,
       "nummer": "Övning 3.7",
-      "ankare": "v42_03-q7"
+      "ankare": "v42_03-q7",
+      "teorikort": "Kvarstående risk och stoppvillkor"
     },
     {
       "ovning": "EL-000148",
@@ -867,7 +924,8 @@
       "del": "v42_03",
       "ordning": 8,
       "nummer": "Övning 3.8",
-      "ankare": "v42_03-q8"
+      "ankare": "v42_03-q8",
+      "teorikort": "Från identifierad fara till beslut"
     },
     {
       "ovning": "EL-000149",
@@ -875,7 +933,8 @@
       "del": "v42_03",
       "ordning": 9,
       "nummer": "Övning 3.9",
-      "ankare": "v42_03-q9"
+      "ankare": "v42_03-q9",
+      "teorikort": "Kvarstående risk och stoppvillkor"
     },
     {
       "ovning": "EL-000150",
@@ -883,7 +942,8 @@
       "del": "v42_03",
       "ordning": 10,
       "nummer": "Övning 3.10",
-      "ankare": "v42_03-q10"
+      "ankare": "v42_03-q10",
+      "teorikort": "Kvarstående risk och stoppvillkor"
     },
     {
       "ovning": "EL-000151",
@@ -891,7 +951,8 @@
       "del": "v43_01",
       "ordning": 1,
       "nummer": "Övning 1.1",
-      "ankare": "v43_01-q1"
+      "ankare": "v43_01-q1",
+      "teorikort": "Kontaktor och relä"
     },
     {
       "ovning": "EL-000152",
@@ -899,7 +960,8 @@
       "del": "v43_01",
       "ordning": 2,
       "nummer": "Övning 1.2",
-      "ankare": "v43_01-q2"
+      "ankare": "v43_01-q2",
+      "teorikort": "Säkring och dvärgbrytare"
     },
     {
       "ovning": "EL-000153",
@@ -907,7 +969,8 @@
       "del": "v43_01",
       "ordning": 3,
       "nummer": "Övning 1.3",
-      "ankare": "v43_01-q3"
+      "ankare": "v43_01-q3",
+      "teorikort": "Säkring och dvärgbrytare"
     },
     {
       "ovning": "EL-000154",
@@ -915,7 +978,8 @@
       "del": "v43_01",
       "ordning": 4,
       "nummer": "Övning 1.4",
-      "ankare": "v43_01-q4"
+      "ankare": "v43_01-q4",
+      "teorikort": "Jordfelsbrytare"
     },
     {
       "ovning": "EL-000155",
@@ -923,7 +987,8 @@
       "del": "v43_01",
       "ordning": 5,
       "nummer": "Övning 1.5",
-      "ankare": "v43_01-q5"
+      "ankare": "v43_01-q5",
+      "teorikort": "Jordfelsbrytare"
     },
     {
       "ovning": "EL-000156",
@@ -931,7 +996,8 @@
       "del": "v43_01",
       "ordning": 6,
       "nummer": "Övning 1.6",
-      "ankare": "v43_01-q6"
+      "ankare": "v43_01-q6",
+      "teorikort": "Kontaktor och relä"
     },
     {
       "ovning": "EL-000157",
@@ -939,7 +1005,8 @@
       "del": "v43_01",
       "ordning": 7,
       "nummer": "Övning 1.7",
-      "ankare": "v43_01-q7"
+      "ankare": "v43_01-q7",
+      "teorikort": "Kontaktor och relä"
     },
     {
       "ovning": "EL-000158",
@@ -947,7 +1014,8 @@
       "del": "v43_01",
       "ordning": 8,
       "nummer": "Övning 1.8",
-      "ankare": "v43_01-q8"
+      "ankare": "v43_01-q8",
+      "teorikort": "Selektivitet"
     },
     {
       "ovning": "EL-000159",
@@ -955,7 +1023,8 @@
       "del": "v43_01",
       "ordning": 9,
       "nummer": "Övning 1.9",
-      "ankare": "v43_01-q9"
+      "ankare": "v43_01-q9",
+      "teorikort": "Säkring och dvärgbrytare"
     },
     {
       "ovning": "EL-000160",
@@ -963,7 +1032,8 @@
       "del": "v43_01",
       "ordning": 10,
       "nummer": "Övning 1.10",
-      "ankare": "v43_01-q10"
+      "ankare": "v43_01-q10",
+      "teorikort": "Motorskydd"
     },
     {
       "ovning": "EL-000161",
@@ -971,7 +1041,8 @@
       "del": "v43_02",
       "ordning": 1,
       "nummer": "Övning 2.1",
-      "ankare": "v43_02-q1"
+      "ankare": "v43_02-q1",
+      "teorikort": "Transformatorns omsättning"
     },
     {
       "ovning": "EL-000162",
@@ -979,7 +1050,8 @@
       "del": "v43_02",
       "ordning": 2,
       "nummer": "Övning 2.2",
-      "ankare": "v43_02-q2"
+      "ankare": "v43_02-q2",
+      "teorikort": "Transformatorns omsättning"
     },
     {
       "ovning": "EL-000163",
@@ -987,7 +1059,8 @@
       "del": "v43_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v43_02-q3"
+      "ankare": "v43_02-q3",
+      "teorikort": "Asynkronmotorns roterande fält"
     },
     {
       "ovning": "EL-000164",
@@ -995,7 +1068,8 @@
       "del": "v43_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v43_02-q4"
+      "ankare": "v43_02-q4",
+      "teorikort": "Asynkronmotorns roterande fält"
     },
     {
       "ovning": "EL-000165",
@@ -1003,7 +1077,8 @@
       "del": "v43_02",
       "ordning": 5,
       "nummer": "Övning 2.5",
-      "ankare": "v43_02-q5"
+      "ankare": "v43_02-q5",
+      "teorikort": "Eftersläpning"
     },
     {
       "ovning": "EL-000166",
@@ -1011,7 +1086,8 @@
       "del": "v43_02",
       "ordning": 6,
       "nummer": "Övning 2.6",
-      "ankare": "v43_02-q6"
+      "ankare": "v43_02-q6",
+      "teorikort": "Asynkronmotorns roterande fält"
     },
     {
       "ovning": "EL-000167",
@@ -1019,7 +1095,8 @@
       "del": "v43_02",
       "ordning": 7,
       "nummer": "Övning 2.7",
-      "ankare": "v43_02-q7"
+      "ankare": "v43_02-q7",
+      "teorikort": "Startutrustning"
     },
     {
       "ovning": "EL-000168",
@@ -1027,7 +1104,8 @@
       "del": "v43_02",
       "ordning": 8,
       "nummer": "Övning 2.8",
-      "ankare": "v43_02-q8"
+      "ankare": "v43_02-q8",
+      "teorikort": "Frekvensomriktarens delar"
     },
     {
       "ovning": "EL-000169",
@@ -1035,7 +1113,8 @@
       "del": "v43_02",
       "ordning": 9,
       "nummer": "Övning 2.9",
-      "ankare": "v43_02-q9"
+      "ankare": "v43_02-q9",
+      "teorikort": "Transformator och roterande maskin"
     },
     {
       "ovning": "EL-000170",
@@ -1043,7 +1122,8 @@
       "del": "v43_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v43_02-q10"
+      "ankare": "v43_02-q10",
+      "teorikort": "Felsökning i motordriften"
     },
     {
       "ovning": "EL-000171",
@@ -1051,7 +1131,8 @@
       "del": "v43_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v43_03-q1"
+      "ankare": "v43_03-q1",
+      "teorikort": "Så läses styrkretsen"
     },
     {
       "ovning": "EL-000172",
@@ -1059,7 +1140,8 @@
       "del": "v43_03",
       "ordning": 2,
       "nummer": "Övning 3.2",
-      "ankare": "v43_03-q2"
+      "ankare": "v43_03-q2",
+      "teorikort": "Symboler och referenser"
     },
     {
       "ovning": "EL-000173",
@@ -1067,7 +1149,8 @@
       "del": "v43_03",
       "ordning": 3,
       "nummer": "Övning 3.3",
-      "ankare": "v43_03-q3"
+      "ankare": "v43_03-q3",
+      "teorikort": "Hållkretsens funktion"
     },
     {
       "ovning": "EL-000174",
@@ -1075,7 +1158,8 @@
       "del": "v43_03",
       "ordning": 4,
       "nummer": "Övning 3.4",
-      "ankare": "v43_03-q4"
+      "ankare": "v43_03-q4",
+      "teorikort": "Hållkretsens funktion"
     },
     {
       "ovning": "EL-000175",
@@ -1083,7 +1167,8 @@
       "del": "v43_03",
       "ordning": 5,
       "nummer": "Övning 3.5",
-      "ankare": "v43_03-q5"
+      "ankare": "v43_03-q5",
+      "teorikort": "Kretsschema och förbindning"
     },
     {
       "ovning": "EL-000176",
@@ -1091,7 +1176,8 @@
       "del": "v43_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v43_03-q6"
+      "ankare": "v43_03-q6",
+      "teorikort": "Mätpunkter och referens"
     },
     {
       "ovning": "EL-000177",
@@ -1099,7 +1185,8 @@
       "del": "v43_03",
       "ordning": 7,
       "nummer": "Övning 3.7",
-      "ankare": "v43_03-q7"
+      "ankare": "v43_03-q7",
+      "teorikort": "Mätpunkter och referens"
     },
     {
       "ovning": "EL-000178",
@@ -1107,7 +1194,8 @@
       "del": "v43_03",
       "ordning": 8,
       "nummer": "Övning 3.8",
-      "ankare": "v43_03-q8"
+      "ankare": "v43_03-q8",
+      "teorikort": "Mätpunkter och referens"
     },
     {
       "ovning": "EL-000179",
@@ -1115,7 +1203,8 @@
       "del": "v43_03",
       "ordning": 9,
       "nummer": "Övning 3.9",
-      "ankare": "v43_03-q9"
+      "ankare": "v43_03-q9",
+      "teorikort": "Dokumentets status"
     },
     {
       "ovning": "EL-000180",
@@ -1123,7 +1212,8 @@
       "del": "v43_03",
       "ordning": 10,
       "nummer": "Övning 3.10",
-      "ankare": "v43_03-q10"
+      "ankare": "v43_03-q10",
+      "teorikort": "Hållkretsens funktion"
     },
     {
       "ovning": "EL-000181",
@@ -1131,7 +1221,8 @@
       "del": "v44_01",
       "ordning": 1,
       "nummer": "Övning 1.1",
-      "ankare": "v44_01-q1"
+      "ankare": "v44_01-q1",
+      "teorikort": "TN-system"
     },
     {
       "ovning": "EL-000182",
@@ -1139,7 +1230,8 @@
       "del": "v44_01",
       "ordning": 2,
       "nummer": "Övning 1.2",
-      "ankare": "v44_01-q2"
+      "ankare": "v44_01-q2",
+      "teorikort": "TT-system"
     },
     {
       "ovning": "EL-000183",
@@ -1147,7 +1239,8 @@
       "del": "v44_01",
       "ordning": 3,
       "nummer": "Övning 1.3",
-      "ankare": "v44_01-q3"
+      "ankare": "v44_01-q3",
+      "teorikort": "IT-system och övervakning"
     },
     {
       "ovning": "EL-000184",
@@ -1155,7 +1248,8 @@
       "del": "v44_01",
       "ordning": 4,
       "nummer": "Övning 1.4",
-      "ankare": "v44_01-q4"
+      "ankare": "v44_01-q4",
+      "teorikort": "Första och andra felet"
     },
     {
       "ovning": "EL-000185",
@@ -1163,7 +1257,8 @@
       "del": "v44_01",
       "ordning": 5,
       "nummer": "Övning 1.5",
-      "ankare": "v44_01-q5"
+      "ankare": "v44_01-q5",
+      "teorikort": "Matning, jordning och skydd"
     },
     {
       "ovning": "EL-000186",
@@ -1171,7 +1266,8 @@
       "del": "v44_01",
       "ordning": 6,
       "nummer": "Övning 1.6",
-      "ankare": "v44_01-q6"
+      "ankare": "v44_01-q6",
+      "teorikort": "Beräkning som stöd"
     },
     {
       "ovning": "EL-000187",
@@ -1179,7 +1275,8 @@
       "del": "v44_01",
       "ordning": 7,
       "nummer": "Övning 1.7",
-      "ankare": "v44_01-q7"
+      "ankare": "v44_01-q7",
+      "teorikort": "Beräkning som stöd"
     },
     {
       "ovning": "EL-000188",
@@ -1187,7 +1284,8 @@
       "del": "v44_01",
       "ordning": 8,
       "nummer": "Övning 1.8",
-      "ankare": "v44_01-q8"
+      "ankare": "v44_01-q8",
+      "teorikort": "Beräkning som stöd"
     },
     {
       "ovning": "EL-000189",
@@ -1195,7 +1293,8 @@
       "del": "v44_01",
       "ordning": 9,
       "nummer": "Övning 1.9",
-      "ankare": "v44_01-q9"
+      "ankare": "v44_01-q9",
+      "teorikort": "Matning och fördelning"
     },
     {
       "ovning": "EL-000190",
@@ -1203,7 +1302,8 @@
       "del": "v44_01",
       "ordning": 10,
       "nummer": "Övning 1.10",
-      "ankare": "v44_01-q10"
+      "ankare": "v44_01-q10",
+      "teorikort": "Matning och fördelning"
     },
     {
       "ovning": "EL-000191",
@@ -1211,7 +1311,8 @@
       "del": "v44_02",
       "ordning": 1,
       "nummer": "Övning 2.1",
-      "ankare": "v44_02-q1"
+      "ankare": "v44_02-q1",
+      "teorikort": "Spänningsnivå och överföring"
     },
     {
       "ovning": "EL-000192",
@@ -1219,7 +1320,8 @@
       "del": "v44_02",
       "ordning": 2,
       "nummer": "Övning 2.2",
-      "ankare": "v44_02-q2"
+      "ankare": "v44_02-q2",
+      "teorikort": "Spänningsnivå och överföring"
     },
     {
       "ovning": "EL-000193",
@@ -1227,7 +1329,8 @@
       "del": "v44_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v44_02-q3"
+      "ankare": "v44_02-q3",
+      "teorikort": "Spänningsnivå och överföring"
     },
     {
       "ovning": "EL-000194",
@@ -1235,7 +1338,8 @@
       "del": "v44_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v44_02-q4"
+      "ankare": "v44_02-q4",
+      "teorikort": "Mättransformatorer och reläskydd"
     },
     {
       "ovning": "EL-000195",
@@ -1243,7 +1347,8 @@
       "del": "v44_02",
       "ordning": 5,
       "nummer": "Övning 2.5",
-      "ankare": "v44_02-q5"
+      "ankare": "v44_02-q5",
+      "teorikort": "Mättransformatorer och reläskydd"
     },
     {
       "ovning": "EL-000196",
@@ -1251,7 +1356,8 @@
       "del": "v44_02",
       "ordning": 6,
       "nummer": "Övning 2.6",
-      "ankare": "v44_02-q6"
+      "ankare": "v44_02-q6",
+      "teorikort": "Ställverkets funktioner"
     },
     {
       "ovning": "EL-000197",
@@ -1259,7 +1365,8 @@
       "del": "v44_02",
       "ordning": 7,
       "nummer": "Övning 2.7",
-      "ankare": "v44_02-q7"
+      "ankare": "v44_02-q7",
+      "teorikort": "Ställverkets funktioner"
     },
     {
       "ovning": "EL-000198",
@@ -1267,7 +1374,8 @@
       "del": "v44_02",
       "ordning": 8,
       "nummer": "Övning 2.8",
-      "ankare": "v44_02-q8"
+      "ankare": "v44_02-q8",
+      "teorikort": "Avstånd och arbetsgräns"
     },
     {
       "ovning": "EL-000199",
@@ -1275,7 +1383,8 @@
       "del": "v44_02",
       "ordning": 9,
       "nummer": "Övning 2.9",
-      "ankare": "v44_02-q9"
+      "ankare": "v44_02-q9",
+      "teorikort": "Beredning för ett dokumentationsfall"
     },
     {
       "ovning": "EL-000200",
@@ -1283,7 +1392,8 @@
       "del": "v44_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v44_02-q10"
+      "ankare": "v44_02-q10",
+      "teorikort": "Skyddsfunktioner"
     },
     {
       "ovning": "EL-000201",
@@ -1291,7 +1401,8 @@
       "del": "v44_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v44_03-q1"
+      "ankare": "v44_03-q1",
+      "teorikort": "Strömtångens mätprincip"
     },
     {
       "ovning": "EL-000202",
@@ -1299,7 +1410,8 @@
       "del": "v44_03",
       "ordning": 2,
       "nummer": "Övning 3.2",
-      "ankare": "v44_03-q2"
+      "ankare": "v44_03-q2",
+      "teorikort": "Mätkedjan och enheterna"
     },
     {
       "ovning": "EL-000203",
@@ -1307,7 +1419,8 @@
       "del": "v44_03",
       "ordning": 3,
       "nummer": "Övning 3.3",
-      "ankare": "v44_03-q3"
+      "ankare": "v44_03-q3",
+      "teorikort": "Isolationsmätning"
     },
     {
       "ovning": "EL-000204",
@@ -1315,7 +1428,8 @@
       "del": "v44_03",
       "ordning": 4,
       "nummer": "Övning 3.4",
-      "ankare": "v44_03-q4"
+      "ankare": "v44_03-q4",
+      "teorikort": "Isolationsmätning"
     },
     {
       "ovning": "EL-000205",
@@ -1323,7 +1437,8 @@
       "del": "v44_03",
       "ordning": 5,
       "nummer": "Övning 3.5",
-      "ankare": "v44_03-q5"
+      "ankare": "v44_03-q5",
+      "teorikort": "Jordresistansmätning"
     },
     {
       "ovning": "EL-000206",
@@ -1331,7 +1446,8 @@
       "del": "v44_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v44_03-q6"
+      "ankare": "v44_03-q6",
+      "teorikort": "Oscilloskopets referens"
     },
     {
       "ovning": "EL-000207",
@@ -1339,7 +1455,8 @@
       "del": "v44_03",
       "ordning": 7,
       "nummer": "Övning 3.7",
-      "ankare": "v44_03-q7"
+      "ankare": "v44_03-q7",
+      "teorikort": "Mätkedjan och enheterna"
     },
     {
       "ovning": "EL-000208",
@@ -1347,7 +1464,8 @@
       "del": "v44_03",
       "ordning": 8,
       "nummer": "Övning 3.8",
-      "ankare": "v44_03-q8"
+      "ankare": "v44_03-q8",
+      "teorikort": "Osäkerhet och felgräns"
     },
     {
       "ovning": "EL-000209",
@@ -1355,7 +1473,8 @@
       "del": "v44_03",
       "ordning": 9,
       "nummer": "Övning 3.9",
-      "ankare": "v44_03-q9"
+      "ankare": "v44_03-q9",
+      "teorikort": "Osäkerhet och felgräns"
     },
     {
       "ovning": "EL-000210",
@@ -1363,7 +1482,8 @@
       "del": "v44_03",
       "ordning": 10,
       "nummer": "Övning 3.10",
-      "ankare": "v44_03-q10"
+      "ankare": "v44_03-q10",
+      "teorikort": "Isolationsmätning"
     },
     {
       "ovning": "EL-000211",
@@ -1371,7 +1491,8 @@
       "del": "v45_01",
       "ordning": 1,
       "nummer": "Övning 1.1",
-      "ankare": "v45_01-q1"
+      "ankare": "v45_01-q1",
+      "teorikort": "Observation och prövbar hypotes"
     },
     {
       "ovning": "EL-000212",
@@ -1379,7 +1500,8 @@
       "del": "v45_01",
       "ordning": 2,
       "nummer": "Övning 1.2",
-      "ankare": "v45_01-q2"
+      "ankare": "v45_01-q2",
+      "teorikort": "Funktionsuppdelning"
     },
     {
       "ovning": "EL-000213",
@@ -1387,7 +1509,8 @@
       "del": "v45_01",
       "ordning": 3,
       "nummer": "Övning 1.3",
-      "ankare": "v45_01-q3"
+      "ankare": "v45_01-q3",
+      "teorikort": "Halveringsmetoden"
     },
     {
       "ovning": "EL-000214",
@@ -1395,7 +1518,8 @@
       "del": "v45_01",
       "ordning": 4,
       "nummer": "Övning 1.4",
-      "ankare": "v45_01-q4"
+      "ankare": "v45_01-q4",
+      "teorikort": "Avbrott och kortslutning"
     },
     {
       "ovning": "EL-000215",
@@ -1403,7 +1527,8 @@
       "del": "v45_01",
       "ordning": 5,
       "nummer": "Övning 1.5",
-      "ankare": "v45_01-q5"
+      "ankare": "v45_01-q5",
+      "teorikort": "Avbrott och kortslutning"
     },
     {
       "ovning": "EL-000216",
@@ -1411,7 +1536,8 @@
       "del": "v45_01",
       "ordning": 6,
       "nummer": "Övning 1.6",
-      "ankare": "v45_01-q6"
+      "ankare": "v45_01-q6",
+      "teorikort": "Glapp och förhöjd resistans"
     },
     {
       "ovning": "EL-000217",
@@ -1419,7 +1545,8 @@
       "del": "v45_01",
       "ordning": 7,
       "nummer": "Övning 1.7",
-      "ankare": "v45_01-q7"
+      "ankare": "v45_01-q7",
+      "teorikort": "Glapp och förhöjd resistans"
     },
     {
       "ovning": "EL-000218",
@@ -1427,7 +1554,8 @@
       "del": "v45_01",
       "ordning": 8,
       "nummer": "Övning 1.8",
-      "ankare": "v45_01-q8"
+      "ankare": "v45_01-q8",
+      "teorikort": "En skiljande kontroll"
     },
     {
       "ovning": "EL-000219",
@@ -1435,7 +1563,8 @@
       "del": "v45_01",
       "ordning": 9,
       "nummer": "Övning 1.9",
-      "ankare": "v45_01-q9"
+      "ankare": "v45_01-q9",
+      "teorikort": "Glapp och förhöjd resistans"
     },
     {
       "ovning": "EL-000220",
@@ -1443,7 +1572,8 @@
       "del": "v45_01",
       "ordning": 10,
       "nummer": "Övning 1.10",
-      "ankare": "v45_01-q10"
+      "ankare": "v45_01-q10",
+      "teorikort": "Felsökningens arbetsgång"
     },
     {
       "ovning": "EL-000221",
@@ -1451,7 +1581,8 @@
       "del": "v45_02",
       "ordning": 1,
       "nummer": "Övning 2.1",
-      "ankare": "v45_02-q1"
+      "ankare": "v45_02-q1",
+      "teorikort": "Mätdata och slutsats"
     },
     {
       "ovning": "EL-000222",
@@ -1459,7 +1590,8 @@
       "del": "v45_02",
       "ordning": 2,
       "nummer": "Övning 2.2",
-      "ankare": "v45_02-q2"
+      "ankare": "v45_02-q2",
+      "teorikort": "Jämförelse med ett krav"
     },
     {
       "ovning": "EL-000223",
@@ -1467,7 +1599,8 @@
       "del": "v45_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v45_02-q3"
+      "ankare": "v45_02-q3",
+      "teorikort": "Mätvärde, intervall och slutsats"
     },
     {
       "ovning": "EL-000224",
@@ -1475,7 +1608,8 @@
       "del": "v45_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v45_02-q4"
+      "ankare": "v45_02-q4",
+      "teorikort": "Flera observationer tillsammans"
     },
     {
       "ovning": "EL-000225",
@@ -1483,7 +1617,8 @@
       "del": "v45_02",
       "ordning": 5,
       "nummer": "Övning 2.5",
-      "ankare": "v45_02-q5"
+      "ankare": "v45_02-q5",
+      "teorikort": "Flera observationer tillsammans"
     },
     {
       "ovning": "EL-000226",
@@ -1491,7 +1626,8 @@
       "del": "v45_02",
       "ordning": 6,
       "nummer": "Övning 2.6",
-      "ankare": "v45_02-q6"
+      "ankare": "v45_02-q6",
+      "teorikort": "Flera observationer tillsammans"
     },
     {
       "ovning": "EL-000227",
@@ -1499,7 +1635,8 @@
       "del": "v45_02",
       "ordning": 7,
       "nummer": "Övning 2.7",
-      "ankare": "v45_02-q7"
+      "ankare": "v45_02-q7",
+      "teorikort": "Åtgärd och rotorsak"
     },
     {
       "ovning": "EL-000228",
@@ -1507,7 +1644,8 @@
       "del": "v45_02",
       "ordning": 8,
       "nummer": "Övning 2.8",
-      "ankare": "v45_02-q8"
+      "ankare": "v45_02-q8",
+      "teorikort": "Kontrollprotokollets innehåll"
     },
     {
       "ovning": "EL-000229",
@@ -1515,7 +1653,8 @@
       "del": "v45_02",
       "ordning": 9,
       "nummer": "Övning 2.9",
-      "ankare": "v45_02-q9"
+      "ankare": "v45_02-q9",
+      "teorikort": "Mätdata och slutsats"
     },
     {
       "ovning": "EL-000230",
@@ -1523,7 +1662,8 @@
       "del": "v45_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v45_02-q10"
+      "ankare": "v45_02-q10",
+      "teorikort": "Kvalitetssäkrad återgång"
     },
     {
       "ovning": "EL-000231",
@@ -1531,7 +1671,8 @@
       "del": "v45_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v45_03-q1"
+      "ankare": "v45_03-q1",
+      "teorikort": "Likström och effekt"
     },
     {
       "ovning": "EL-000232",
@@ -1539,7 +1680,8 @@
       "del": "v45_03",
       "ordning": 2,
       "nummer": "Övning 3.2",
-      "ankare": "v45_03-q2"
+      "ankare": "v45_03-q2",
+      "teorikort": "Kirchhoff och delare"
     },
     {
       "ovning": "EL-000233",
@@ -1547,7 +1689,8 @@
       "del": "v45_03",
       "ordning": 3,
       "nummer": "Övning 3.3",
-      "ankare": "v45_03-q3"
+      "ankare": "v45_03-q3",
+      "teorikort": "Kirchhoff och delare"
     },
     {
       "ovning": "EL-000234",
@@ -1555,7 +1698,8 @@
       "del": "v45_03",
       "ordning": 4,
       "nummer": "Övning 3.4",
-      "ankare": "v45_03-q4"
+      "ankare": "v45_03-q4",
+      "teorikort": "AC och trefas"
     },
     {
       "ovning": "EL-000235",
@@ -1563,7 +1707,8 @@
       "del": "v45_03",
       "ordning": 5,
       "nummer": "Övning 3.5",
-      "ankare": "v45_03-q5"
+      "ankare": "v45_03-q5",
+      "teorikort": "AC och trefas"
     },
     {
       "ovning": "EL-000236",
@@ -1571,7 +1716,8 @@
       "del": "v45_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v45_03-q6"
+      "ankare": "v45_03-q6",
+      "teorikort": "AC och trefas"
     },
     {
       "ovning": "EL-000237",
@@ -1579,7 +1725,8 @@
       "del": "v45_03",
       "ordning": 7,
       "nummer": "Övning 3.7",
-      "ankare": "v45_03-q7"
+      "ankare": "v45_03-q7",
+      "teorikort": "Mätning och felsökning"
     },
     {
       "ovning": "EL-000238",
@@ -1587,7 +1734,8 @@
       "del": "v45_03",
       "ordning": 8,
       "nummer": "Övning 3.8",
-      "ankare": "v45_03-q8"
+      "ankare": "v45_03-q8",
+      "teorikort": "Säkerhet och regelval"
     },
     {
       "ovning": "EL-000239",
@@ -1595,7 +1743,8 @@
       "del": "v45_03",
       "ordning": 9,
       "nummer": "Övning 3.9",
-      "ankare": "v45_03-q9"
+      "ankare": "v45_03-q9",
+      "teorikort": "Mätning och felsökning"
     },
     {
       "ovning": "EL-000240",
@@ -1603,7 +1752,8 @@
       "del": "v45_03",
       "ordning": 10,
       "nummer": "Övning 3.10",
-      "ankare": "v45_03-q10"
+      "ankare": "v45_03-q10",
+      "teorikort": "Mätning och felsökning"
     }
   ]
 }
