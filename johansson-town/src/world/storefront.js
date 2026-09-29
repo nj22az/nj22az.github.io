@@ -2,6 +2,7 @@ import {createShopGlass} from './shop-glass.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {localToWorld} from './landmark-lots.js';
+import {buildSakuraDetails} from './exterior-details.js';
 // Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.
 
 /** How tall the sliding door is. The valance over it has to clear this. */
@@ -21,6 +22,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  const yaw=placement?.yaw??-site.side*Math.PI/2,scale=placement?.scale??1;
  const sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
  const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(x,0,z);group.rotation.y=yaw;group.scale.set(sx,sy,sz);parent.add(group);
+ buildSakuraDetails(group,{width,depth,doorX});
  const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
  box([width,.18,depth],[0,.09,mid],0xdad9c8,'plaster');box([width,3.7,.18],[0,1.85,back-.09],0xeee7d1,'plaster');
  for(const wall of [-1,1])box([.18,3.8,depth],[wall*(half+.09),1.9,mid],0xd9d7c9,'plaster');

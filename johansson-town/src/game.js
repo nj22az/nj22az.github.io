@@ -129,7 +129,8 @@ const INK_OPTIONS={
  // concrete and timber, which starts darker and busier, so the darks are tinted
  // less heavily and lifted further than the reference does — otherwise the street
  // goes to mud rather than to violet.
- gradeOptions:{shadowTint:0xd4cfe8,lift:.07,saturation:1.18}
+ inkOptions:{thickness:1.05,strength:.68,concaveAmount:.25},
+ gradeOptions:{shadowTint:0xd4cfe8,lift:.035,saturation:1.02,warmth:.025}
 };
 const inkRecovery=createInkRecovery({retries:4,cooldown:3500});
 let pipeline=null;
@@ -207,10 +208,10 @@ const townSky=createTownSky(scene);
 // used to do this work no longer reaches the town and these lights replace it.
 // A toon ramp shapes direct light only, and MeshToonMaterial has no image-based
 // lighting at all, so the sky fill has to make up what scene.environment used to add.
-const CEL_FILL=1.75;
+const CEL_FILL=1.35;
 // With tone mapping off, the grade carries the overall level; flat bands need more
 // headroom than the rolled-off highlights AgX used to give.
-const CEL_EXPOSURE=1.2;
+const CEL_EXPOSURE=1.04;
 const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const uplight=new THREE.DirectionalLight(0xc9b9e0,.35);uplight.position.set(4,-18,6);scene.add(uplight);

@@ -5,6 +5,7 @@ import {registerDetail} from './detail-stream.js';
 import {MAIN_STREET_SECTIONS} from './main-street-sections.js';
 import {FRONTAGE_COLLIDERS} from './main-street-colliders.js';
 import {frontageMaterial} from '../render/frontage-material.js';
+import {buildResidentialDetails} from './exterior-details.js';
 const sources=new Map(),pending=new Map();
 async function preloadSection(section){
  if(sources.has(section.id))return true;if(pending.has(section.id))return pending.get(section.id);
@@ -23,6 +24,7 @@ async function preloadSection(section){
 export async function preloadResidentialStreet(){return (await Promise.all(MAIN_STREET_SECTIONS.map(preloadSection))).every(Boolean);}
 export function buildResidentialStreet(world,options={}){
  const group=new THREE.Group();group.name='Main Street homes';world.group.add(group);
+ buildResidentialDetails(group,options);
  const pavement=new THREE.Mesh(new THREE.BoxGeometry(6.35,.12,49.852),new THREE.MeshStandardMaterial({color:0xb9b4a6,roughness:.96}));
  pavement.position.set(-10.175,-.04,5.574);pavement.name='Continuous Main Street pavement';pavement.receiveShadow=true;group.add(pavement);
  const masonry=new THREE.MeshStandardMaterial({color:0x969a90,roughness:1});

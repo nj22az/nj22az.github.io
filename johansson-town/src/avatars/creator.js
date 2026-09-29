@@ -25,7 +25,7 @@ const LABEL={
  straight:'Straight',arched:'Arched',thick:'Thick',thin:'Thin',worried:'Worried',bushy:'Bushy',none:'None',
  button:'Button',line:'Line',wide:'Wide',hook:'Hook',
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
- square:'Square',sun:'Shades',half:'Half-rim',
+ square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
  shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
@@ -42,7 +42,9 @@ const TABS=[
   {kind:'slider',at:'body.height',label:'Height'},{kind:'slider',at:'body.build',label:'Build'},
   {kind:'colours',at:'body.skin',label:'Skin',palette:PALETTE.skin}]},
  {id:'head',icon:'🙂',name:'Face',controls:[
-  {kind:'slider',at:'head.size',label:'Head size'},{kind:'slider',at:'head.shape',label:'Round ↔ tall'},
+  {kind:'chips',at:'head.form',label:'Face shape',list:PARTS.head},
+  {kind:'slider',at:'head.size',label:'Head size'},{kind:'slider',at:'head.shape',label:'Narrow ↔ broad'},
+  {kind:'slider',at:'head.jaw',label:'Jaw width'},{kind:'slider',at:'head.cheeks',label:'Cheek fullness'},
   {kind:'slider',at:'blush',label:'Rosy cheeks'},{kind:'slider',at:'wrinkles',label:'Laughter lines'},
   {kind:'toggle',at:'freckles',label:'Freckles'},{kind:'toggle',at:'mole',label:'Beauty spot'}]},
  {id:'hair',icon:'💇',name:'Hair',controls:[

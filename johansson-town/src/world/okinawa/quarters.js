@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
+import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
@@ -23,6 +24,8 @@ import {windowGlow} from '../../render/dusk.js';
 export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={}){
  const group=new THREE.Group();group.name='Okinawan quarters';world.group.add(group);
  const kit=createKit({shadows});
+ const plaster=createMaterials().material('plaster');
+ kit.surface('plaster',{map:plaster.map,normalMap:plaster.normalMap,normalScale:plaster.normalScale,roughnessMap:plaster.roughnessMap,aoMap:plaster.aoMap,metres:2});
  kit.surface('coral',{map:coralStone(),metres:1.6});
  kit.surface('tile',{map:roofTile(),metres:.9,roughness:.8,side:THREE.DoubleSide});
  kit.surface('hana',{map:flowerBlock(),metres:.42});

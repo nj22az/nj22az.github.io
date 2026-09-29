@@ -31,7 +31,7 @@ export function buildYuriHome(world,options,placement){
  world.group.add(building);
  if(exterior){
   const model=exterior.clone(true);model.userData.sharedAsset=true;model.name='Thuan house exterior';
-  model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;for(const m of Array.isArray(o.material)?o.material:[o.material])m.userData.keepPhysical=true;}});
   building.add(model);
  }else{
   const fallback=new THREE.Mesh(new THREE.BoxGeometry(6,6.4,8),new THREE.MeshStandardMaterial({color:0xc9b89a,roughness:.9}));

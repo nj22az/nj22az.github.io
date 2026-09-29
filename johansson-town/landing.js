@@ -296,8 +296,9 @@
     setMode(ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length]);
   });
 
+  document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
   ticks();
   tick();
-  setInterval(tick, 80);
+  setInterval(tick, 1000);
 })();

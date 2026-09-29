@@ -48,7 +48,7 @@ export function shisa(kit,x,y,z,ry=0,scale=1){
 export function redTileHouse(kit,{w=8.4,d=6.8,seed=1,wall=C.plaster}={}){
  const r=rng(seed),W=w/2,D=d/2,floor=.45,eaves=2.85,front=D-1.1;
  kit.block(-W,W,0,floor,-D,D,C.stone,'coral');                       // stone footing
- kit.block(-W+.05,W-.05,floor,eaves,-D+.05,front,wall);               // the house body
+ kit.block(-W+.05,W-.05,floor,eaves,-D+.05,front,wall,'plaster');               // the house body
  // The verandah deck in front of the doors, and the posts that carry the eave.
  kit.block(-W,W,floor-.04,floor+.02,front,D,C.timberLight);   // clear of the footing's top
  for(let i=0;i<=4;i++){const x=-W+.12+i*(w-.24)/4;kit.box(.14,eaves-floor,.14,x,(floor+eaves)/2,D-.12,C.timber);}
@@ -86,10 +86,10 @@ export function redTileHouse(kit,{w=8.4,d=6.8,seed=1,wall=C.plaster}={}){
  */
 export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  const r=rng(seed),W=w/2,D=d/2,storey=2.8,H=storey*2;
- kit.block(-W,W,0,H,-D,D,colour);
+ kit.block(-W,W,0,H,-D,D,colour,'plaster');
  kit.block(-W-.02,W+.02,0,.35,-D-.02,D+.02,0xb9b3a6);                // a darker plinth
  kit.block(-W-.12,W+.12,H,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
- for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour);
+ for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
  // Ground floor: aluminium sliding windows and a door under a thin concrete canopy.
  const window=(x,y,wd,ht)=>{
   kit.box(wd+.12,ht+.12,.06,x,y,D+.03,0xb8bec0,{finish:'metal'});
@@ -135,9 +135,9 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
 export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
  const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=D-2.2;
  // The body, stopping short of the front so the shop floor is a real room.
- kit.block(-W,W,0,H,-D,back,colour);
- kit.block(-W,-open,0,ground,back,D,colour);kit.block(open,W,0,ground,back,D,colour);
- kit.block(-W,W,ground,H,back,D,colour);
+ kit.block(-W,W,0,H,-D,back,colour,'plaster');
+ kit.block(-W,-open,0,ground,back,D,colour,'plaster');kit.block(open,W,0,ground,back,D,colour,'plaster');
+ kit.block(-W,W,ground,H,back,D,colour,'plaster');
  kit.block(-W-.02,W+.02,0,.3,-D-.02,D+.02,0xb3ad9f);
  // Inside: floor, back wall, shelves of goods, a counter; lit, so it glows at night.
  kit.block(-open,open,.02,.08,back,D-.05,0x9d9486);
@@ -167,7 +167,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   for(const y of [ground+.55,ground+2.55])kit.box(.05,.05,.5,W-.32,y,D+.22,C.steel);
  }
  // Roof: parapet, tank, aerial; rust runs down the front from the parapet's fixings.
- for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H,H+.5,z0,z1,colour);
+ for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H,H+.5,z0,z1,colour,'plaster');
  kit.block(-W-.04,W+.04,H+.5,H+.58,D-.18,D+.04,trim);
  kit.cyl(.5,.5,1.1,-W*.4,H+1.2,-D*.4,C.tank,{segments:12,finish:'gloss'});
  kit.box(1,.65,1,-W*.4,H+.33,-D*.4,C.steel,{finish:'metal'});

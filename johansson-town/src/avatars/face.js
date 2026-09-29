@@ -20,7 +20,7 @@ function shade(hex,k){
 /** Where the parts sit, in canvas units, from the recipe's sliders. */
 export function faceLayout(recipe){
  const e=recipe.eyes,b=recipe.brows,n=recipe.nose,m=recipe.mouth;
- const eyeY=112+(e.height-.5)*-36,spread=30+(e.spacing-.5)*26,eyeS=.78+e.size*.62;
+ const eyeY=104+(e.height-.5)*-36,spread=33+(e.spacing-.5)*26,eyeS=.88+e.size*.75;
  return {
   eyeY,spread,eyeS,eyeTilt:(e.tilt-.5)*.55,
   browY:eyeY-24*eyeS-4+(b.height-.5)*-22,browS:.75+b.size*.6,browTilt:(b.tilt-.5)*.6,
