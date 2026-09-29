@@ -13,6 +13,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
+from beroenden import beroenden
 
 SJO = Path(__file__).resolve().parents[2]
 HAR = Path(__file__).resolve().parent
@@ -25,11 +26,20 @@ OMFANG = {
            'bildspel/v38_01_*/**/*'],
 }
 
+# Labbens körningsgraf, inte vaxelstromslabbet/**/* eller gemensamt/**/*.
+# Resultatkoden och lärarstödet använder labbens uppgifter/beräkningar även utan
+# labbsidan. Ta därför med deras ingångar, också om labbets importer ändras.
+STARTFILER = {
+    '40': ['vaxelstromslabbet/index.html', 'vecka-40/aktuell/resultat.mjs',
+           'vecka-40/aktuell/lararstod.mjs'],
+}
+
 
 def filer(vecka):
     ut = set()
     for m in OMFANG[vecka]:
         ut |= {p for p in SJO.glob(m) if p.is_file() and '__pycache__' not in p.parts and p.name != '.DS_Store'}
+    ut |= beroenden(SJO, STARTFILER.get(vecka, []))
     return sorted(ut)
 
 
@@ -39,7 +49,10 @@ def summa(p):
 
 def las(vecka):
     data = {str(p.relative_to(SJO)): summa(p) for p in filer(vecka)}
-    (HAR / f'vecka-{vecka}.json').write_text(json.dumps({'vecka': vecka, 'omfang': OMFANG[vecka], 'filer': data}, ensure_ascii=False, indent=1) + '\n')
+    (HAR / f'vecka-{vecka}.json').write_text(json.dumps({
+        'vecka': vecka, 'omfang': OMFANG[vecka],
+        'startfiler': STARTFILER.get(vecka, []), 'filer': data,
+    }, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f'vecka {vecka} låst: {len(data)} filer')
 
 
@@ -48,15 +61,26 @@ def kontrollera():
     for lasfil in sorted(HAR.glob('vecka-*.json')):
         d = json.loads(lasfil.read_text())
         v = d['vecka']
-        nu = {str(p.relative_to(SJO)): p for p in filer(v)} if v in OMFANG else {}
+        if v not in OMFANG:
+            fel.append(f'vecka {v}: låsets omfattning saknas')
+            continue
+        if d.get('omfang') != OMFANG[v] or d.get('startfiler', []) != STARTFILER.get(v, []):
+            fel.append(f'vecka {v}: låsets omfattning/startfiler stämmer inte med verktyget')
+        try:
+            nu = {str(p.relative_to(SJO)): p for p in filer(v)}
+        except (ValueError, OSError) as e:
+            fel.append(f'vecka {v}: {e}')
+            continue
         for rel, s in d['filer'].items():
             p = SJO / rel
-            if not p.exists():
+            if not p.is_file():
                 fel.append(f'vecka {v} är låst: {rel} har tagits bort')
             elif summa(p) != s:
                 fel.append(f'vecka {v} är låst: {rel} har ändrats')
         for rel in sorted(set(nu) - set(d['filer'])):
             fel.append(f'vecka {v} är låst: {rel} är ny')
+        for rel in sorted(set(d['filer']) - set(nu)):
+            fel.append(f'vecka {v}: {rel} ingår inte längre i omfattningen/beroendena')
     for f in fel[:40]:
         print('FEL', f)
     if fel:
