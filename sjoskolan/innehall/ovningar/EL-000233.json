@@ -3,7 +3,7 @@
   "titel": "Spänningsdelare med last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Rp = 4 · 4/8 = 2 kΩ. Uut = 24 · 2/(2 + 2) = 12 V.",
+    "text": "Rp = 4 · 4/8 = 2 kΩ. U_{ut} = 24 · 2/(2 + 2) = 12 V.",
     "svar": [
       {
         "storhet": "U_{ut}",

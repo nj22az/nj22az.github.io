@@ -2839,7 +2839,7 @@
   },
   {
    "id": "EL-000169",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorförluster",
@@ -4247,7 +4247,7 @@
   },
   {
    "id": "EL-000233",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningsdelare med last",
