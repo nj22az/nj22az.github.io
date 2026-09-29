@@ -463,3 +463,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   11.00–16.00.** Eleverna läser genomgången själva, gör övning 3.1–3.5 och skriver sina förutsägelser innan de kommer.
   Veckoplanen, veckosidans rad om presentationerna, v41_03 bild 3, Labbet.html och labbhandboken säger nu det, och
   lärarens förberedelse på plats ligger före 11.00.
+- **2026-09-29 – Del 3 läses efter del 2, som avslutning på veckans teori.** Eleverna läser genomgången av del 3 själva
+  och gör övning 3.1–3.5 mellan tisdag kväll och torsdag. Fredag förmiddag är de på plats men gör annat förberedande
+  arbete, och labbet är 11.00–16.00. Veckoplanen, rutan med presentationerna (”Läs själv efter del 2, senast
+  torsdag”), v41_03 bild 3, Labbet.html och labbhandboken säger nu det.
