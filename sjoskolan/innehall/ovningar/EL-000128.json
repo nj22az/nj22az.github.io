@@ -3,7 +3,7 @@
   "titel": "Efter strömgenomgång",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -44,7 +44,7 @@
     }
   ],
   "losning": {
-    "text": "Avbryt arbetet och gå till säker plats. Kontakta sjukvården, eftersom skador kan visa sig senare. Rapportera händelsen enligt arbetsplatsens rutin.",
+    "text": "Avbryt arbetet och gå till säker plats. Kontakta den som har sjukvårdsansvaret ombord, som tar kontakt med radiomedicinsk rådgivning (TMAS) till sjöss eller sjukvården i hamn. Skador kan visa sig senare. Rapportera händelsen enligt fartygets rutin.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

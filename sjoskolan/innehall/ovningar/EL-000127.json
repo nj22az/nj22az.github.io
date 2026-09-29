@@ -3,7 +3,7 @@
   "titel": "Räddning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -44,7 +44,7 @@
     }
   ],
   "losning": {
-    "text": "Hjälparen får inte själv bli exponerad. Bryt strömmen eller se till att platsen är säkrad innan du rör personen. Larma 112.",
+    "text": "Hjälparen får inte själv bli exponerad. Bryt strömmen eller se till att platsen är säkrad innan du rör personen. Larma enligt fartygets nödinstruktion, det vill säga bryggan. Till sjöss ges medicinsk rådgivning via radio (TMAS). I hamn eller på land: 112.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

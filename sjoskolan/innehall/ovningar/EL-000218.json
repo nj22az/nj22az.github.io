@@ -3,7 +3,7 @@
   "titel": "Hållningen uteblir",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Mät matningen och spolspänningen under START. Är de rätt är matningen godkänd. Kontrollera sedan hållkontakten: sluter den när K1 drar, och är ledarna till den hela?",
+    "text": "Mät källspänningen och spolspänningen medan START hålls in. Är båda rätt räcker matningen. Pröva sedan hållvägen spänningslöst: resistansen över K1:s NO-kontakt och dess ledare medan K1 påverkas enligt instruktionen. Nära 0 Ω betyder att hållvägen är hel, mycket hög resistans att den är bruten. Spänning över hållkontakten under START visar alltid ungefär 0 V, eftersom START ligger parallellt.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

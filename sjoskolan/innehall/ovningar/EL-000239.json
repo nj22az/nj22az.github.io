@@ -3,7 +3,7 @@
   "titel": "Hållkrets",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -45,7 +45,7 @@
     }
   ],
   "losning": {
-    "text": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter. Kontroll: mät över hållkontakten med K1 draget. 0 V betyder att den sluter, full spänning att den är öppen.",
+    "text": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter. Kontroll: gör styrkretsen spänningslös enligt mätplanen och mät resistansen i hållvägen, från START-knappens ena anslutning via K1:s NO-kontakt till den andra, medan K1 påverkas med kontaktorns testfunktion eller enligt instruktionen. Nära 0 Ω: hållvägen är hel. Mycket hög resistans: hållvägen är bruten. Obs: att mäta spänning över hållkontakten medan START hålls in visar alltid ungefär 0 V, eftersom START ligger parallellt. Den mätningen skiljer inte orsakerna åt.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

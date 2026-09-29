@@ -4,7 +4,7 @@ export const KONTROLLFRAGOR = [
  {
   "id": "v41_01-k1",
   "nummer": "Kontrollfråga 1.1",
-  "fraga": "Ombordnätet har 440 V mellan faserna. Vilken spänning ligger mellan en fas och neutral?",
+  "fraga": "Ombordnätet har 440 V mellan faserna. Vilken spänning ligger mellan en fas och generatorns neutralpunkt?",
   "alternativ": [
    "440 V",
    "254 V",

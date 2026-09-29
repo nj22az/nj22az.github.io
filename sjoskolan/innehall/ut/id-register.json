@@ -1717,7 +1717,7 @@
   },
   {
    "id": "EL-000118",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Förberett fel",
@@ -1915,7 +1915,7 @@
   },
   {
    "id": "EL-000127",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Räddning",
@@ -1937,7 +1937,7 @@
   },
   {
    "id": "EL-000128",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Efter strömgenomgång",
@@ -3411,7 +3411,7 @@
   },
   {
    "id": "EL-000195",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Reläskyddets kedja",
@@ -3917,7 +3917,7 @@
   },
   {
    "id": "EL-000218",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållningen uteblir",
@@ -4379,7 +4379,7 @@
   },
   {
    "id": "EL-000239",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållkrets",
@@ -7467,7 +7467,7 @@
   },
   {
    "id": "EL-000818",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringsspänning i en modell",
@@ -7563,7 +7563,7 @@
   },
   {
    "id": "EL-000824",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Högspänning och strömtransformator",
@@ -7915,7 +7915,7 @@
   },
   {
    "id": "EL-000868",
-   "revision": 3,
+   "revision": 4,
    "status": "utkast",
    "publik": "elev",
    "titel": "Kontrollfråga 1.1",

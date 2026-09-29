@@ -3,7 +3,7 @@
   "titel": "Reläskyddets kedja",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -45,7 +45,7 @@
     }
   ],
   "losning": {
-    "text": "Mättransformator → skyddsrelä → brytare.",
+    "text": "Mättransformator → skyddsrelä → brytare. Utan hjälpspänning kan skyddsreläet inte ge utlösningssignal, och brytaren kopplar inte bort ett fel. Därför övervakas hjälpspänningen, ombord ofta 24 V DC från batteri, och bortfallet larmar.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

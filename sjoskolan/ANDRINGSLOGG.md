@@ -347,3 +347,20 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   lärarsida. Vecka 40 orörd.
   Regel: en knapp på delsidan får inte ha klassen `del-klar` om den inte bockar av en övning, eftersom avbockningen
   letar efter `.del-ovning`.
+- **2026-09-29** Granskning av vecka 41–45 ur fyra perspektiv: elektriker, fartygsingenjör, lärare och sjöman. Genomgånget:
+  alla övningar, inlämningar, kontrollfrågor och presentationernas teoribilder. Rättat:
+  - **Hållkretsen (EL-000118, EL-000239, EL-000218):** facit mätte spänning över hållkontakten medan START hölls in. Det
+    ger alltid ungefär 0 V (START ligger parallellt) och skiljer inte orsakerna åt. Nu: spänningslös resistansmätning i
+    hållvägen medan K1 påverkas enligt instruktionen.
+  - **Elolycka (EL-000127, EL-000128):** ”Larma 112” och ”kontakta sjukvården” är ändrat till fartygets nödinstruktion och
+    bryggan, TMAS till sjöss och 112 i hamn. Presentationen sa redan detta.
+  - **Reläskydd (EL-000195):** facit besvarade inte frågan om hjälpspänning. Svaret är tillagt.
+  - **Bogpropeller (EL-000824):** strömtransformatorn 200/1 A var underdimensionerad för 159–457 A. Nu 600/1 A, också i
+    lärarfacit.
+  - **Kontrollfråga 1.1:** ”fas och neutral” ombord är ändrat till ”generatorns neutralpunkt”, eftersom ombordnätet sällan
+    har utdragen neutralledare.
+  - **Beröringsspänning (EL-000818):** modellen anges som TN-system, inte IT-nät.
+  - **Lärarfacit 43-2b:** den uppmätta differensströmmen heter I_{Δ}, märkvärdet I_{Δn}.
+  För kontroll av läraren (kunde inte verifieras här): att TSFS 2014:1 är upphävd genom TSFS 2019:4, att övergångsdatumet
+  för SS-EN 50110-1 utgåva 4:2024 är 29 maj 2026, och om SS-EN 50110-1 har fyra arbetsmetoder som ESA eller tre.
+  Regel: en kontroll ska ge olika resultat för olika orsaker. Mät aldrig över en kontakt som har en sluten kontakt parallellt.

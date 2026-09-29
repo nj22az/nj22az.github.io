@@ -3,7 +3,7 @@
   "titel": "Kontrollfråga 1.1",
   "sprak": "sv",
   "typ": "flerval",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "utkast"
   },
@@ -17,7 +17,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ombordnätet har 440 V mellan faserna. Vilken spänning ligger mellan en fas och neutral?",
+    "fraga": "Ombordnätet har 440 V mellan faserna. Vilken spänning ligger mellan en fas och generatorns neutralpunkt?",
     "alternativ": [
       "440 V",
       "254 V",
@@ -33,7 +33,7 @@
     }
   ],
   "losning": {
-    "text": "Fasspänningen är huvudspänningen delad med √3: 440/1,732 ≈ 254 V.",
+    "text": "Fasspänningen är huvudspänningen delad med √3: 440/1,732 ≈ 254 V. Ombordnätet har oftast ingen utdragen neutralledare, så 254 V är generatorns fasspänning.",
     "status": "utkast",
     "kommentar": "254 V"
   },
