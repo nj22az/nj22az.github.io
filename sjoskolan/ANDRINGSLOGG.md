@@ -374,3 +374,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   - Övergångsdatumet 29 maj 2026 för SS-EN 50110-1 utgåva 4:2024 är bekräftat.
   Regel: när en uppgift använder 400 V eller 50 Hz ska texten säga att det gäller land eller landström vid kaj.
   Ombord till sjöss gäller 440 V och 60 Hz. Frekvensen påverkar n_{s} och X_{L}.
+- **2026-09-29 – ESA:s fyra arbetsmetoder mot standardens tre.** Facit i övning EL-000133 (kursen och boken) lyder nu:
+  arbete utan spänning, arbete med spänning (AMS), arbete inom närområde (arbete nära spänning) och arbete utanför
+  närområde. En mening förklarar att SS-EN 50110-1 har tre metoder och att ESA lägger till arbete utanför närområde.
+  v42_02 bild 7 skriver: ”SS-EN 50110-1: tre metoder (…). ESA: fyra metoder (kompletterar med arbete utanför närområde).”
+  Regel: när ESA:s fyra metoder nämns ska standardens tre stå bredvid, så att begreppen inte blandas ihop.

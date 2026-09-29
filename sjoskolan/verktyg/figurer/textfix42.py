@@ -37,7 +37,7 @@ subscript_tokens(p, SUBS); replace_words(p, WORDS)
 replace_links(p, OLD_TS, NEW_TS); drop_notes_line(p); p.save(f"{dst}/{f}")
 
 f = "v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx"; p = Presentation(f"{src}/{f}")
-set_paras(shape(p.slides[6], 5), ["SS-EN 50110-1 har tre arbetsmetoder: utan spänning, med spänning och nära spänning (avsnitt 6.2–6.4).", "ESA delar in i fyra: utan och med spänning, inom och utanför närområdet."])
+set_paras(shape(p.slides[6], 5), ["SS-EN 50110-1: tre metoder (utan spänning, med spänning, nära spänning).", "ESA: fyra metoder (kompletterar med arbete utanför närområde)."])
 set_paras(shape(p.slides[13], 10), ["Metoderna skiljer sig i hur nära spänning arbetet sker"])
 set_paras(shape(p.slides[28], 10), ["Kontrollera föreskriftens status i regellistan"])
 set_paras(shape(p.slides[28], 11), ["Transportstyrelsens regellista visar om en föreskrift gäller eller är upphävd. Ett nytt nummer kräver ändå kontroll av tillämpningen."])
