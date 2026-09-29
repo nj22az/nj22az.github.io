@@ -320,3 +320,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Förtydligat: effekt vid växelström (F2), kabellängd och slinga, kortslutningsslingan, 30 mA för jordfelsbrytare
   och att felströmsmodellen gäller TN-system. Etiketter som ”två faser:” ritas små. Nu 62 formler på 12 sidor.
   Regel: kör täckningskontrollen (alla `samband`) när nya övningar läggs till.
+- **2026-09-29** Formelsamlingen är nu en bok på 30 sidor A4. Omslag och baksida följer POPEYE
+  (awesome-design-md-jp, design-md/popeye): koboltblått #343ec9, vikt 400, spärrad DM Sans, asymmetriska hörn 24/5 px
+  och orange logotyp. Omslaget har trefaskurvor, kapitelremsa och ”62 formler”. Baksidan har presentationstext, kapitel,
+  QR-kod till webbversionen och en formelremsa. Inlagan följer LINE (design-md/line): vitt, svart text, grönt #06c755
+  och kort med 12 px hörn, med LINE:s webbstorlekar anpassade till tryck. Nytt innehåll: titelsida med kolofon, förord,
+  innehåll med sidnummer (räknas i två pass), metoden i fem steg med ett genomräknat pumpexempel, ”Sex vanliga fel”,
+  rimlighetstabell med värden ombord, kapitelöppningar med ”Det här ska du kunna”, register, bilagor och
+  anteckningssidor (jämnt antal sidor för dubbelsidig utskrift). Länkarna i PDF:en fungerar. Källa:
+  `verktyg/formelsamling/bygg.py`.
