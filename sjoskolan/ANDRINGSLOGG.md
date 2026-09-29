@@ -409,3 +409,13 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   - Figurerna är kontrollerade, bland annat plintbyglarna för Y och Δ. De är oförändrade.
   Regel: kontrollera varje övnings teorihänvisning mot avsnittet där formeln faktiskt står. Ange `teori` i
   placeringen när det automatiska valet blir fel.
+- **2026-09-29 – v41 Del 2 byggd som Del 1: figurerna definierar storheterna.**
+  - **Bild 6 (Y/Δ):** U_{L} står som dubbelpil mellan L1 och L2. Grenen med U_{gren} är markerad. Stjärnpunkten heter
+    ”stjärnpunkt” och inte N, eftersom en Y-last inte behöver ha en utdragen neutralledare. Etiketterna är större. Texten
+    lyder: ”I Y … stjärnpunkten: U_{gren} = U_{F}. I Δ … två faser: U_{gren} = U_{L}.”
+  - **Bild 7 (strömmar i Δ):** figuren visar I_{L1}, som delar sig i I_{12} och I_{31}. En visarbild bredvid visar
+    I_{L1} = I_{12} − I_{31} som vektoriell skillnad med beloppet √3 · I_{gren}, samma bild som U_{12} i Del 1.
+  - **Bild 21 (plinten):** under Y står ”lindning: U_{L}/√3” och under Δ ”lindning: U_{L}”. Texten säger att märkningen
+    anger nätets U_{L} för varje koppling.
+  - Alt-texterna säger samma sak (`spec41.json`, `scheman_veckor.py`).
+  Regel: en teorifigur ska visa mellan vilka punkter storheten gäller. Den ska inte bara visa kopplingen.

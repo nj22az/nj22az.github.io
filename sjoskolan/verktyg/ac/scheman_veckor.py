@@ -57,7 +57,7 @@ def sinus():
     return svg(b, h + 30, s)
 
 
-def gren(x1, y1, x2, y2):
+def gren(x1, y1, x2, y2, farg=INK):
     """En lastgren: ledare med ett motstånd på mitten, längs linjen."""
     dx, dy = x2 - x1, y2 - y1
     L = math.hypot(dx, dy)
@@ -66,29 +66,45 @@ def gren(x1, y1, x2, y2):
     c = (x1 + ux * (L / 2 + 30), y1 + uy * (L / 2 + 30))
     vinkel = math.degrees(math.atan2(dy, dx))
     mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-    return (ln((x1, y1), a) + ln(c, (x2, y2))
-            + f'<rect x="{mx - 30}" y="{my - 11}" width="60" height="22" fill="#fff" stroke="{INK}" stroke-width="3" transform="rotate({vinkel:.1f} {mx} {my})"/>')
+    return (ln((x1, y1), a, farg=farg) + ln(c, (x2, y2), farg=farg)
+            + f'<rect x="{mx - 30}" y="{my - 11}" width="60" height="22" fill="#fff" stroke="{farg}" stroke-width="3" transform="rotate({vinkel:.1f} {mx} {my})"/>')
+
+
+def ti(x, y, bas, index, size=26, farg=INK, anchor='middle', vikt=400):
+    """Text med nedsänkt index, till exempel U_{gren}."""
+    return t(x, y, f'{bas}<tspan dy="{size * 0.25:.0f}" font-size="{size * 0.7:.0f}">{index}</tspan>', size, farg, anchor, vikt)
+
+
+def pil2(p1, p2, farg=BLA):
+    """Dubbelpil för en spänning mellan två punkter."""
+    (x1, y1), (x2, y2) = p1, p2
+    L = math.hypot(x2 - x1, y2 - y1); ux, uy = (x2 - x1) / L, (y2 - y1) / L; nx, ny = -uy, ux
+    spets = lambda x, y, sx, sy: f'<path d="M{x},{y} L{x - 14 * sx + 6 * nx:.1f},{y - 14 * sy + 6 * ny:.1f} L{x - 14 * sx - 6 * nx:.1f},{y - 14 * sy - 6 * ny:.1f} Z" fill="{farg}"/>'
+    return ln(p1, p2, farg=farg, w=2.5) + spets(x2, y2, ux, uy) + spets(x1, y1, -ux, -uy)
 
 
 def y_delta():
-    """Y: tre grenar mellan fas och stjärnpunkt. Δ: tre grenar mellan två faser."""
-    b, h = 880, 330
+    """Y: varje gren ligger mellan en fas och stjärnpunkten, U_{gren} = U_{L}/√3. Δ: varje gren ligger mellan två faser, U_{gren} = U_{L}."""
+    b, h = 880, 410
     s = ''
     # Y till vänster
-    cx, cy = 220, 170
-    p = {'L1': (90, 50), 'L2': (350, 50), 'L3': (220, 300)}
+    cx, cy = 220, 215
+    p = {'L1': (80, 95), 'L2': (360, 95), 'L3': (220, 355)}
     for namn, (x, y) in p.items():
-        s += gren(x, y, cx, cy) + prick(x, y)
-    s += prick(cx, cy) + t(90, 36, 'L1', 20, vikt=700) + t(350, 36, 'L2', 20, vikt=700) + t(248, 306, 'L3', 20, anchor='start', vikt=700)
-    s += t(cx + 18, cy + 6, 'N', 18, BLA, 'start') + t(cx, 325, 'Y', 24, BLA, vikt=700)
+        s += gren(x, y, cx, cy, BLA if namn == 'L1' else INK) + prick(x, y)
+    s += prick(cx, cy) + t(66, 101, 'L1', 32, anchor='end', vikt=700) + t(374, 101, 'L2', 32, anchor='start', vikt=700) + t(240, 350, 'L3', 32, anchor='start', vikt=700)
+    s += t(cx + 22, cy + 8, 'stjärnpunkt', 24, '#6b6b6b', 'start')
+    s += pil2((92, 55), (348, 55)) + ti(220, 36, 'U', 'L', 34, BLA)
+    s += ti(122, 205, 'U', 'gren', 34, BLA, 'end') + t(220, 395, 'Y', 34, BLA, vikt=700)
     # Δ till höger
-    q = {'L1': (530, 60), 'L2': (790, 60), 'L3': (660, 285)}
-    s += gren(*q['L1'], *q['L2']) + gren(*q['L2'], *q['L3']) + gren(*q['L3'], *q['L1'])
+    q = {'L1': (530, 95), 'L2': (810, 95), 'L3': (670, 335)}
+    s += gren(*q['L1'], *q['L2'], BLA) + gren(*q['L2'], *q['L3']) + gren(*q['L3'], *q['L1'])
     for x, y in q.values():
         s += prick(x, y)
-    s += t(530, 44, 'L1', 20, vikt=700) + t(790, 44, 'L2', 20, vikt=700) + t(688, 292, 'L3', 20, anchor='start', vikt=700)
-    s += t(660, 325, 'Δ', 24, BLA, vikt=700)
-    return svg(b, h + 10, s)
+    s += t(516, 101, 'L1', 32, anchor='end', vikt=700) + t(824, 101, 'L2', 32, anchor='start', vikt=700) + t(690, 342, 'L3', 32, anchor='start', vikt=700)
+    s += pil2((542, 55), (798, 55)) + ti(670, 36, 'U', 'L', 34, BLA)
+    s += ti(670, 140, 'U', 'gren', 34, BLA) + t(670, 395, 'Δ', 34, BLA, vikt=700)
+    return svg(b, h, s)
 
 
 def kontakt(x, y, nc=False):

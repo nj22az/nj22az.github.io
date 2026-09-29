@@ -143,12 +143,29 @@ ax.text(4.35,2.2,"Ua och Ub\nändras – varför?",ha="right",color=RED,fontsize
 save(F,"v41_01_s34_ovn10")
 
 # ================= v41_02 Y, Δ och trefaseffekt =================
-# s7 teori: linje- och grenström i Δ
-F=fig(4.3,3.6); ax=cax(F,(-2.1,2.3),(-1.4,2.3)); V=dload(ax,0,0,1.25,tlabels=("","L2","L3"))
-lead(ax,V[0],"I_{L}")
-u=np.array(V[1])-np.array(V[0]); u=u/np.linalg.norm(u); nrm=np.array([-u[1],u[0]]); a0=np.array(V[0])+u*0.35-nrm*0.3; a1=a0+u*0.7
-ax.add_patch(FancyArrowPatch(tuple(a0),tuple(a1),arrowstyle="-|>",mutation_scale=16,color=BLUE,lw=2)); ax.text(*(a0+u*0.35-nrm*0.3),"Igren",color=BLUE,fontsize=15,ha="right")
-ax.text(2.25,-1.3,"I_{L} = √3 · I_{gren}",ha="right",fontsize=15)
+# s7 teori: linje- och grenström i Δ. Linjeströmmen är den vektoriella skillnaden av två grenströmmar (visarbilden till höger).
+F=fig(5.2,3.6); ax=cax(F,(-2.0,4.9),(-1.55,2.25)); V=dload(ax,0,0,1.2,tlabels=("","L2","L3"))
+lead(ax,V[0],"I_{L1}")
+def along(P,Q,t0,t1,lab,rev=False):
+    """Strömpil utanför grenen P–Q, riktad från P mot Q (eller tvärtom)."""
+    P,Q=np.array(P),np.array(Q); u=(Q-P)/np.linalg.norm(Q-P); m=(P+Q)/2; n=m/np.linalg.norm(m); L=np.linalg.norm(Q-P)
+    p0=P+u*L*t0+n*0.28; p1=P+u*L*t1+n*0.28
+    if rev: p0,p1=p1,p0
+    ax.add_patch(FancyArrowPatch(tuple(p0),tuple(p1),arrowstyle="-|>",mutation_scale=15,color=BLUE,lw=2,zorder=5,shrinkA=0,shrinkB=0))
+    c=P+u*L*(t0+t1)/2+n*0.62; ax.text(*c,lab,color=BLUE,fontsize=14,ha="center",va="center")
+along(V[0],V[1],0.08,0.3,"I_{12}")
+along(V[0],V[2],0.08,0.3,"I_{31}",rev=True)
+# visarbild: I_{12} + (−I_{31}) = I_{L1}, längd √3 · I_{gren}
+o=np.array([2.2,0.9]); k=1.2
+e1=o+k*np.array([1,0]); e2=e1+k*np.array([np.cos(np.radians(-60)),np.sin(np.radians(-60))])
+ax.add_patch(FancyArrowPatch(tuple(o),tuple(e1),arrowstyle="-|>",mutation_scale=16,color=BLUE,lw=2.4,shrinkA=0,shrinkB=0))
+ax.add_patch(FancyArrowPatch(tuple(e1),tuple(e2),arrowstyle="-|>",mutation_scale=16,color=ORANGE,lw=2.4,shrinkA=0,shrinkB=0))
+ax.add_patch(FancyArrowPatch(tuple(o),tuple(e2),arrowstyle="-|>",mutation_scale=18,color=INK,lw=2.8,shrinkA=0,shrinkB=0))
+ax.text(*(o+e1)/2+np.array([0,0.16]),"I_{12}",color=BLUE,fontsize=14,ha="center")
+ax.text(*(e1+e2)/2+np.array([0.14,0.05]),"−I_{31}",color=ORANGE,fontsize=14,ha="left")
+ax.text(*(o+e2)/2+np.array([-0.12,-0.14]),"I_{L1}",color=INK,fontsize=14,ha="right",va="top")
+ax.text(3.35,-0.95,"I_{L1} = I_{12} − I_{31}",ha="center",fontsize=14)
+ax.text(3.35,-1.4,"|I_{L1}| = √3 · I_{gren}",ha="center",fontsize=14)
 save(F,"v41_02_s07_delta_strom")
 # s11 Ö1 / s13 Ö2: Y-last
 def ytask(name,labels,extra,tl=("L1","L2","L3")):
@@ -191,7 +208,8 @@ def plint(ax,x0,y0,mode,title,q=False):
         for k in range(3): ax.plot([x0+k*dx,x0+k*dx],[y0,y0+0.55],color=c,lw=4,solid_capstyle="round",zorder=2)
     for k,n in enumerate(("L1","L2","L3")): ax.plot([x0+k*dx,x0+k*dx],[y0-0.1,y0-0.55],color=INK,lw=1.6); ax.text(x0+k*dx,y0-0.72,n,ha="center",fontsize=11)
     ax.text(x0+dx,y0+1.05,title,ha="center",fontsize=15,color=c)
-F=fig(4.3,3.4); ax=cax(F,(-0.5,4.2),(-1.0,2.3)); plint(ax,0.0,0.3,"Y","Y (stjärna)"); plint(ax,2.35,0.3,"D","Δ (triangel)")
+F=fig(4.3,3.6); ax=cax(F,(-0.5,4.2),(-1.45,2.3)); plint(ax,0.0,0.3,"Y","Y (stjärna)"); plint(ax,2.35,0.3,"D","Δ (triangel)")
+ax.text(0.62,-0.95,"lindning: U_{L}/√3",ha="center",fontsize=13,color=BLUE); ax.text(2.97,-0.95,"lindning: U_{L}",ha="center",fontsize=13,color=BLUE)
 save(F,"v41_02_s21_plint")
 # s22 teori: effektflöde i motorn
 F=fig(4.3,3.0); ax=cax(F,(-0.2,4.4),(-0.6,2.5))
