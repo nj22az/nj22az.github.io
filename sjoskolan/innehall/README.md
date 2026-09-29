@@ -22,6 +22,7 @@ lärarguide, boken) genereras härifrån och får aldrig redigeras direkt.
 - **Permanent id** `EL-000123`: oberoende av vecka, kapitel, titel och nummer. Återanvänds aldrig.
 - **Placering**: numrering (`Övning 3`, `10.3`, `E4`), ankare (`v41_02-q3`) och presentationsbild hör till placeringen, inte posten.
   `alias` behåller äldre länkar och sparade id. `innehall.py hitta v41_02-q3` slår upp id.
+  `teorikort` anger den exakta rubriken på övningens primära teoriavsnitt i samma del (vecka 41–45).
 - **Parametrar och svar**: `parametrar` är strukturerade värden, `losning.svar[]` strukturerade svar med tolerans och
   `berakning` = id för en registrerad funktion i `lib/berakningar.py`. Innehållet innehåller aldrig kod.
   Labbarnas kontrollfunktioner registreras i `<labb>/funktioner.mjs` och refereras med id.
@@ -114,6 +115,30 @@ provkapitel enligt `elteknik/files/manifest.json`. Klartext i `bok/.bok/` och `.
 `migrering/` innehåller engångsskripten (`extrahera.py` med `kallor.py`, `familjer.py`, `familjer_sidor.py`, `labbar.mjs`),
 inventeringen (`INVENTERING.md`, `inventering.json`), konfliktloggen (`konflikter.json`) och talkontrollen (`numerik.json`).
 De läser källorna ur git-revisionen `8cabde3` och körs inte igen efter migreringen. Boken: se `bok/README.md`.
+
+## Teorikort och övningar vecka 41–45
+
+Alla 150 övningsplaceringar i `placeringar/kurs-formelstod.json` har ett granskat `teorikort`.
+Fältet går genom SQLite och `Atkomst` till `export/delsidor_veckor.py`. Det väljer det primära
+teoriavsnitt som eleven ska läsa före övningen. Samma referens används för kortets **Öva nu** och
+övningens **Ledtråd 1**; ämnet väljs aldrig genom ordlikhet eller en reservregel för lektionspass.
+
+Ny övning: välj en befintlig, ämnesmässigt relevant teorirubrik i samma del. Finns inget sådant avsnitt,
+komplettera teorikällan innan övningen läggs in. Rubriken måste matcha exakt en teoribild i delens
+presentation. Bygg och kontroll stoppar vid saknad, omdöpt eller tvetydig rubrik; bilder får flyttas,
+eftersom kortnummer och länkar räknas om. Vid avsiktligt namnbyte uppdateras även placeringarna.
+Övnings-id, nummer, ankare och sparade elevdata ändras inte av teorikopplingen.
+
+```sh
+python3 sjoskolan/innehall/innehall.py bygg delsidor_veckor
+python3 -m unittest discover -s sjoskolan/innehall/tests -p 'test_*.py'
+python3 sjoskolan/innehall/innehall.py kontrollera
+```
+
+Testet följer samtliga placeringar genom databasen till båda länkriktningarna och jämför publicerade
+sidor med exporten. Namngivna ämnesfall skyddar bland annat trefaseffekt, beröringsspänning,
+apparater, isolation och repetition. Septembergranskningen 2026 flyttade 76 kopplingar till ett mer
+relevant kort (vecka 41: 12, vecka 42: 14, vecka 43: 19, vecka 44: 13, vecka 45: 18).
 
 ## Sammanhängande arbetsrum vecka 40
 

@@ -2,7 +2,8 @@
 
 Teori och exempel kommer ur presentationen (samma text och figurer som läraren visar), övningarna ur databasen (ytan
 kurs-formelstod). Varje övning har en ledtrådstrappa: ledtråd 1 visar sambandet och vilket teoriavsnitt som förklarar
-det, ledtråd 2 hur man börjar, ledtråd 3 exemplet som räknar samma sorts uppgift med andra tal. Facit sist. Figurerna
+det, ledtråd 2 hur man börjar, ledtråd 3 exemplet som räknar samma sorts uppgift med andra tal. Facit sist. Teorikortet
+anges uttryckligen i övningens placering (teorikort), inte genom ordlikhet eller presentationsordning. Figurerna
 ligger i vecka-NN/aktuell/figurer (verktyg/veckosidor/figurer_ur_presentationer.py).
 """
 import html
@@ -114,9 +115,20 @@ def block_html(block, nummerlista=False):
     return ''.join(ut)
 
 
-def ord_av(s):
-    s = re.sub(r'_\{([^}]*)\}', r'\1', s.lower())
-    return {w for w in re.findall(r'[a-zåäöδφ√]+[0-9]*|[a-zåäö]*\d+[a-zåäö]*', s) if len(w) >= 2} - {'och', 'är', 'en', 'ett', 'av', 'på', 'med', 'för', 'som', 'den', 'det', 'till', 'om', 'att', 'de'}
+def teori_for(pl, teori):
+    """Slå upp placeringens exakta teorirubrik inom delen. Gissa aldrig vid saknad/tvetydig referens.
+
+    Rubriken är nyckeln, inte bild- eller kortnumret: flyttade bilder får nya ankarlänkar automatiskt.
+    En ändrad rubrik kräver ett uttryckligt beslut i placeringen och stoppar annars bygg/kontrollera.
+    """
+    var = f'{pl["plats"]} / {pl["del"]} / {pl["ovning_id"]}'
+    titel = pl.get('teorikort')
+    if not isinstance(titel, str) or not titel.strip():
+        raise ValueError(f'{var}: saknar teorikort i placeringar/kurs-formelstod.json')
+    match = [(i, t) for i, (_, t, _) in enumerate(teori, 1) if t == titel]
+    if len(match) != 1:
+        raise ValueError(f'{var}: teorikort {titel!r} måste matcha exakt ett teoriavsnitt i delen (fann {len(match)})')
+    return match[0]
 
 
 def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
@@ -135,22 +147,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
     exempel = [b for b in bilder if b[1].startswith('Exempel')]
     teori = [b for b in bilder[1:] if b not in (mal, metod, avslut, kallor) and b not in exempel and not b[1].startswith(HOPPA)
              and not re.match(r'^(Stöd till övning|Övning) \d', b[1])]
-    pass2 = next((nr for nr, t, _ in bilder if t == 'Pass 2'), 99)
     ovn = sorted(pl_ovn.get(kap, []), key=lambda x: x[0]['ordning'])
     poster = [(pl, p) for pl, p in ovn]
     kort = hjalp([' '.join([p['uppgift']['fraga'], *p['uppgift'].get('samband', []), p['uppgift'].get('givet', '')]) for _, p in poster])
-
-    def teori_for(p, pass_):
-        """Det teoriavsnitt som delar flest begrepp med sambandet, annars det första i samma pass."""
-        mal_ord = ord_av(' '.join(p['uppgift'].get('samband', [])) + ' ' + p['titel'])
-        bast, poang = None, 0
-        for i, (nr, t, bl) in enumerate(teori, 1):
-            s = len(mal_ord & ord_av(t + ' ' + ' '.join(x[1] for x in bl if x[0] != 'fig')))
-            if s > poang:
-                bast, poang = (i, t), s
-        if bast:
-            return bast
-        return next(((i, t) for i, (nr, t, _) in enumerate(teori, 1) if (nr > pass2) == pass_), (1, teori[0][1]) if teori else None)
+    teorireferenser = {pl['ankare']: teori_for(pl, teori) for pl, _ in poster}
 
     titel = f'Del {dnr}: {deltitel}'
     h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {v} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
@@ -185,7 +185,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
     # och varje avsnitt slutar med de övningar som bygger på det (läs lite, öva direkt).
     ova = {}
     for pl, p in poster:
-        ref = teori_for(p, pl['ordning'] > 5)
+        ref = teorireferenser[pl['ankare']]
         if ref:
             ova.setdefault(ref[0], []).append(pl)
     h.append('<section id="teori" class="del-block"><h2><span>2</span> Teori</h2><p>Ett avsnitt i taget: öppna det, läs, och gör sedan övningarna som står sist i avsnittet. '
@@ -212,7 +212,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
     for k, ((pl, p), rh) in enumerate(zip(poster, kort), 1):
         u, los = p['uppgift'], p.get('losning') or {}
         pass_ = pl['ordning'] > 5
-        ref = teori_for(p, pass_)
+        ref = teorireferenser[pl['ankare']]
         formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []))
         resonemang = p.get('typ') == 'resonemang'
         led1 = ((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else '')

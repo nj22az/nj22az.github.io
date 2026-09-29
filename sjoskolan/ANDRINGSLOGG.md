@@ -125,6 +125,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     jämför både hashar och hela beroendemängden; nya dynamiskt laddade resurser ska tas med innan omlåsning.
     Frys inte hela gemensamma mappar. *Kontroll: `verktyg/las/test_veckolas.py` och `veckolas.py kontrollera`.*
 
+38. **Teorikoppling är ett pedagogiskt val, inte ordlikhet.** Vecka 41–45 anger `teorikort` i övningens
+    databasplacering. Samma exakta rubrik styr Öva nu och Ledtråd 1. Saknad eller tvetydig referens stoppar
+    exporten; flyttade bilder får omräknade kortnummer. *Kontroll: `innehall/tests/test_delsidor_veckor.py`.*
+
 ### Boken
 
 18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
@@ -133,6 +137,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
 
 ## Ändringar
+
+- **2026-09-29** Teorikopplingarna för alla 150 övningar vecka 41–45 granskade mot kortens innehåll.
+  76 flyttade till ett mer relevant kort, bland annat aktiv effekt 2.4 till Trefaseffekt i vecka 41.
+  Ordlikhet ersatt med explicit `teorikort` i placeringarna, bevarat genom SQLite. Schema kräver fältet;
+  exporten avvisar saknade, omdöpta och tvetydiga rubriker. Alla 15 delsidor ombyggda. Regressionstest
+  kontrollerar ämnesfall och båda länkriktningarna genom hela källflödet. Vecka 40:s lås oförändrat.
 
 - **2026-09-28** Vecka 40:s lås förstärkt med Växelströmslabbets transitiva körningsberoenden, även genererade
   uppgifter, beräkningar, instrumentbänk och använda gemensamma moduler. Manifestet utökat från 148 till 174 filer;
