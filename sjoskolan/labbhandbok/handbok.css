@@ -1,0 +1,30 @@
+/* Labbhandbok för läraren (sjoskolan/labbhandbok). Bygger på gemensamt/sjoskolan.css och course.css. */
+.hb-intro{font-size:20px;line-height:1.5;color:var(--sj-ink,#163248)}
+.hb-meny{display:flex;flex-wrap:wrap;gap:8px 12px;margin:16px 0 24px;padding:0;list-style:none}
+.hb-meny a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font-weight:700;text-decoration:none}
+.hb-meny a[aria-current=page]{background:var(--sj-blue,#064f91);border-color:var(--sj-blue,#064f91);color:#fff}
+.hb-steg{counter-reset:steg;list-style:none;padding:0;margin:16px 0}
+.hb-steg>li{counter-increment:steg;position:relative;padding:12px 16px 12px 60px;margin:8px 0;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+.hb-steg>li::before{content:counter(steg);position:absolute;left:16px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--sj-blue,#064f91);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.hb-panel{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:16px 18px;margin:16px 0;background:var(--sj-soft,#edf4f9)}
+.hb-panel>:first-child{margin-top:0}.hb-panel>:last-child{margin-bottom:0}
+.hb-fara{border-left:6px solid var(--sj-warn,#9a4a12);background:#fff7f0}
+.hb-ok{border-left:6px solid var(--sj-ok,#176844);background:#f1f8f4}
+.hb-beslut{border-left:6px solid var(--sj-blue,#064f91);background:#fff}
+.hb-tabell{overflow-x:auto;margin:16px 0}
+.hb-tabell table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.45;background:#fff}
+.hb-tabell th,.hb-tabell td{border:1px solid var(--sj-line,#cad8e2);padding:8px 10px;text-align:left;vertical-align:top}
+.hb-tabell th{background:var(--sj-soft,#edf4f9)}
+.hb-tabell td.fyll{min-width:7em;height:2.2em}
+.hb-formel{font-size:22px;color:var(--sj-blue,#064f91);font-weight:700;margin:12px 0}
+.hb-status{display:inline-block;padding:0 8px;border-radius:6px;font-size:14px;font-weight:700;white-space:nowrap}
+.hb-status.finns{background:#e3f1e9;color:var(--sj-ok,#176844)}
+.hb-status.saknas{background:#fbeee4;color:var(--sj-warn,#9a4a12)}
+.hb-status.beslut{background:#e6eef7;color:var(--sj-blue,#064f91)}
+.hb-check{list-style:none;padding-left:0}
+.hb-check li{position:relative;padding-left:32px;margin:8px 0}
+.hb-check li::before{content:"";position:absolute;left:0;top:3px;width:18px;height:18px;border:2px solid var(--sj-ink,#163248);border-radius:4px;background:#fff}
+.hb-figur{margin:16px 0;overflow-x:auto}.hb-figur svg{max-width:100%;height:auto;display:block}
+.hb-figur figcaption{font-size:15px;color:var(--sj-muted,#4d6579);margin-top:6px}
+.hb-liten{font-size:15px;color:var(--sj-muted,#4d6579)}
+@media print{.school-nav,.hb-meny,.course-breadcrumb{display:none}.hb-steg>li,.hb-panel,.hb-tabell{break-inside:avoid}body{background:#fff}}

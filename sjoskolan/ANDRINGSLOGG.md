@@ -427,3 +427,14 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   - **Övning 2.6 (EL-000106):** facit förklarar också varför Δ väljs bort: varje lindning skulle få 400 V mot
     märkspänningen 230 V. Bokens lösning hade redan steget.
   Regel: en definition i ordlistan som bara gäller enfas ska få trefasformen när trefas införs.
+- **2026-09-29 – Labbhandbok för läraren (`labbhandbok/`, olåst, noindex, inte länkad från elevsidorna).** Den bygger på
+  laborationsunderlaget och inköpsguiden (position 01–16) och har tre sidor:
+  - **Översikt och beslut:** vad det inköpta räcker till, kopplingen till LM-1…LM-9 och beslut som ska kontrolleras
+    (märkskylt, startarens kapsling, 12 V-riggarna som inte är inköpta, gruppstorlek).
+  - **Iordningställ motorstationen:** motorn och startaren är övningsobjekt som aldrig ansluts. Blecken kopplar Y och Δ,
+    och eleverna går igenom delarna. Lärarens referensmätning: 2R i Y, (2/3)R i Δ, kvoten 3.
+  - **Labbpasset 9/10:** tre roterande stationer (motorn, startaren och skylten, strömtången på SELV), protokoll,
+    handledning och ett förslag till ny Del 3.
+  Motorn körs inte, och regel 4 (SELV) gäller oförändrad. Del 3 i vecka 41 är ännu inte ombyggd.
+  Regel: labbuppgifter bygger bara på utrustning som finns i inköpslistan. Utrustning som inte är inköpt, som
+  12 V-trefasriggen, används inte i elevmaterialet.
