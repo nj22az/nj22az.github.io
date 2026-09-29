@@ -65,7 +65,7 @@ for k,col in enumerate(PHC): ax.plot(t,np.sin(2*np.pi*(t-k*20/3)/20),color=col,l
 ax.set_xlim(0,31); ax.set_ylim(-1.35,1.7); ax.set_xticks([]); ax.set_yticks([])
 ax.plot([5,5],[0,1.05],color=GRAY,lw=1,ls=":"); ax.plot([5+20/3,5+20/3],[0,1.05],color=GRAY,lw=1,ls=":")
 bracket(ax,5,5+20/3,1.12,"Δt = ?",color=RED)
-ax.text(1,1.25,"L1",color=PHC[0],fontsize=14); ax.text(1+20/3+0.4,1.25,"L2",color=PHC[1],fontsize=14); ax.text(30.5,-1.3,"f = 50 Hz",ha="right",fontsize=13,color=BLUE)
+ax.text(1,1.25,"L1",color=PHC[0],fontsize=14); ax.text(5+20/3+0.9,0.95,"L2",color=PHC[1],fontsize=14); ax.text(30.5,-1.3,"f = 50 Hz",ha="right",fontsize=13,color=BLUE)
 save(F,"v41_01_s13_ovn2")
 # s15 Ö3 / s17 Ö4: spänningar mellan ledare
 def supply(name,lab12,lab1n):

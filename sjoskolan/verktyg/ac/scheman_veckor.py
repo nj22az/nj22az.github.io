@@ -31,20 +31,29 @@ def svg(b, h, inner):
 
 
 def sinus():
-    """L1, L2 och L3 över 20 ms (50 Hz), normaliserade, 120° isär."""
-    b, h, v, r, top, bot = 880, 300, 70, 110, 30, 250
+    """L1, L2 och L3 över 20 ms (50 Hz) med toppvärdet 1, 120° isär. Streckad: linjespänningen U12 = L1 − L2 med toppvärdet √3 ≈ 1,73."""
+    b, h, v, r, top, bot = 880, 330, 70, 130, 36, 280
+    R3 = math.sqrt(3)
     X = lambda ms: v + ms / 20 * (b - v - r)
-    Y = lambda u: top + (1 - u) / 2 * (bot - top)
+    Y = lambda u: top + (R3 - u) / (2 * R3) * (bot - top)
     s = ''
     for ms in (0, 5, 10, 15, 20):
         s += ln((X(ms), top), (X(ms), bot), farg='#cad8e2', w=1.5) + t(X(ms), bot + 24, str(ms), 17)
-    for u, txt in ((1, '1'), (0, '0'), (-1, '−1')):
+    for u, txt in ((R3, '√3'), (1, '1'), (0, '0'), (-1, '−1'), (-R3, '−√3')):
         s += ln((v, Y(u)), (X(20), Y(u)), farg='#cad8e2', w=1.5) + t(v - 10, Y(u) + 6, txt, 17, anchor='end')
-    s += t(X(20), bot + 48, 'Tid (ms)', 17, anchor='end') + t(v - 50, top - 8, 'u/û', 17, anchor='start')
-    for k, (namn, farg) in enumerate((('L1', BLA), ('L2', ORANGE), ('L3', GRON))):
-        pts = [(X(ms), Y(math.sin(2 * math.pi * 50 * ms / 1000 - k * 2 * math.pi / 3))) for ms in [i / 10 for i in range(0, 201)]]
-        s += ln(*[(round(x, 1), round(y, 1)) for x, y in pts], farg=farg, w=3.5)
-        s += ln((b - r + 30, 80 + k * 40), (b - r + 60, 80 + k * 40), farg=farg, w=4) + t(b - r + 70, 87 + k * 40, namn, 19, farg, 'start', 700)
+    s += t(X(20), bot + 48, 'Tid (ms)', 17, anchor='end') + t(v - 50, top - 16, 'u/û', 17, anchor='start')
+    kurvor = (('L1', BLA, 1, 0, ''), ('L2', ORANGE, 1, 1, ''), ('L3', GRON, 1, 2, ''), ('U₁₂', INK, R3, None, '8 6'))
+    for k, (namn, farg, a, fas, streck) in enumerate(kurvor):
+        f = (lambda x: math.sin(x) - math.sin(x - 2 * math.pi / 3)) if fas is None else (lambda x, fas=fas: math.sin(x - fas * 2 * math.pi / 3))
+        pts = [(X(ms), Y(f(2 * math.pi * 50 * ms / 1000))) for ms in [i / 10 for i in range(0, 201)]]
+        linje = ln(*[(round(x, 1), round(y, 1)) for x, y in pts], farg=farg, w=3 if streck else 3.5)
+        if streck:
+            linje = linje.replace('/>', f' stroke-dasharray="{streck}"/>', 1)
+        s += linje
+        mark = ln((b - r + 30, 70 + k * 40), (b - r + 60, 70 + k * 40), farg=farg, w=4)
+        if streck:
+            mark = mark.replace('/>', f' stroke-dasharray="6 4"/>', 1)
+        s += mark + t(b - r + 70, 77 + k * 40, namn, 19, farg, 'start', 700)
     return svg(b, h + 30, s)
 
 

@@ -383,3 +383,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   skrovet” är ändrat till ”Vid ett jordfel får de två friska faserna hela 440 V mot skrovet”. Den felande fasen ligger
   då på skrovets potential. De två andra faserna går från ≈ 254 V till linjespänningen mot skrov.
   Regel: säg vilken fas som avses när spänning mot skrov beskrivs vid jordfel.
+- **2026-09-29 – Figurerna i v41 Del 1 (fas- och linjespänning).**
+  - **Bild 6:** sinusfiguren har en fjärde, streckad kurva U_{12} = L1 − L2 med toppvärdet √3. Axeln går till ±√3, så
+    linjespänningen syns större än fasspänningen.
+  - **Övning 1.2 (bild 13):** etiketten L2 krockade med ”Δt = ?” och är flyttad.
+  - **Bild 7:** U_{F} (U_{1N}, U_{2N}, U_{3N}) mäts mellan en fas och nollpunkten. U_{L} (U_{12}, U_{23}, U_{31}) mäts
+    mellan två faser.
+  - **Bild 8:** U_{12} = U_{1N} − U_{2N} är en vektoriell skillnad. U_{L} = √3 · U_{F} i ett symmetriskt system,
+    aldrig 2 · U_{F}.
+  - **Bild 23:** vid nollavbrott eller jordfel kan fas–jord visa allt från 0 V till hela U_{L}.
+  - Alt-texterna till figurerna säger samma sak (`spec41.json`, `scheman_veckor.py`).
+  Regel: en normaliserad kurva med fasspänningar ska inte lämnas ensam där linjespänning diskuteras. Visa U_{L} med
+  toppvärdet √3 eller skriv det ut.
