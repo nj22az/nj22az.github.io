@@ -25,7 +25,7 @@ PSEUDO = {'ᴸ': 'L', 'ᶜ': 'C', 'ᴿ': 'R', 'ꜰ': 'F', 'ɴ': 'N'}
 GRANS, SLUT = r'(?<![\wÅÄÖåäö{}_])', r'(?![^\W²³¹⁰⁴⁵⁶⁷⁸⁹]|})'
 
 # Filer med elevtext som inte genereras ur databasen. HTML: bara textnoder utanför genererade regioner.
-HTML = ['gemensamt/Formelblad_och_begrepp.html', 'gemensamt/Underlagskort.html', 'gemensamt/Bildgalleri.html', 'tentamen.html', 'index.html',
+HTML = ['gemensamt/Formelblad_och_begrepp.html', 'gemensamt/Formelsamling.html', 'gemensamt/Underlagskort.html', 'gemensamt/Bildgalleri.html', 'tentamen.html', 'index.html',
         'vecka-*/aktuell/*.html', 'vecka-*/aktuell/*/*.html', 'filmer/index.html', 'filmer/spela.html',
         'multimetersimulator/index.html', 'vaxelstromslabbet/index.html', 'trefaslabbet/index.html', 'hallkretslabbet/index.html', 'isolationslabbet/index.html']
 # JavaScript med elevtext i strängar: bara strängar skrivs om, och en sträng som bara är ett ord (en nyckel som 'UF') lämnas.

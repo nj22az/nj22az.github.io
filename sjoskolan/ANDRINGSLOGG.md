@@ -300,3 +300,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   (bild 32) är omritade. De nya beteckningarna har `labbdata: false` och följer inte med i `beteckningar.gen.mjs`,
   som vecka 40:s växelströmslabb läser (låst). Pᵢₙ och Pförlust står kvar i vecka 39 (arbeta bara framåt).
   Regel: en ny beteckning efter vecka 40 får `labbdata: false`.
+- **2026-09-29** Ny formelsamling för hela kursen: `gemensamt/Formelsamling.pdf` (A4, 11 sidor) och
+  `gemensamt/Formelsamling.html`. Den har 58 numrerade formler (F1–F58) i kursens ordning, vecka 38–45. Varje formel har
+  beteckningar med enhet, utlösta former, ett räknat exempel med fartygsvärden och ”Se upp” med det vanligaste felet.
+  Dessutom finns ”Så använder du formelsamlingen” i fyra steg, registret ”Jag söker …”, prefix, konstanter och nät samt
+  en bilaga med beteckningar (ur `beteckningar.json`) och svenska–engelska. Samlingen länkas från startsidan, tentamen,
+  formelbladet och veckosidorna 41–45. Källa: `verktyg/formelsamling/bygg.py` (skriver HTML och PDF). Notationen
+  kontrolleras av `notation.py`. Regel: ändra en formel i `bygg.py` och kör skriptet, redigera aldrig HTML eller PDF.
