@@ -288,3 +288,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-29** Vecka 41–45, veckosidan: den dubbla knappen ”Börja med del 1” är borttagen (delens egen knapp och
   ”Nästa” visar var eleven fortsätter). Rutan med presentationerna slutar med vad som ska vara klart senast söndag:
   övningarna, labben och inlämningen med e-post. Förut stod fristen bara längst ner. Vecka 40 orörd.
+- **2026-09-29** Delsidorna vecka 41–45 blev kortare och mer pedagogiska. Teorin består av kort, ett per avsnitt, med
+  rubrik och avsnittets formel synliga. Eleven öppnar ett avsnitt i taget, och varje avsnitt slutar med ”Öva nu”: de
+  övningar som bygger på det. Exemplen visas ett steg i taget (”Visa steg 2 av 3”, ”Visa alla steg”), så att eleven
+  hinner försöka själv. Länkar från ledtrådarna öppnar rätt kort. Utan JavaScript syns allt. Övningarna börjar nu
+  efter ungefär 3 800 px på mobil, mot 7 300 px förut. Vecka 40 orörd.

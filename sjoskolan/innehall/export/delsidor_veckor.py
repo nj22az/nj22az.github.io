@@ -15,7 +15,7 @@ import rendera as R
 from delsidor import CSS as CSS40, hjalp
 
 PUBLIK = 'elev'
-V = '20260928w'
+V = '20260929k'
 VECKOR = range(41, 46)
 EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
@@ -28,6 +28,22 @@ CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Ö
 .del-exempel{margin:18px 0 30px;padding:10px 18px;border-left:8px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:0 12px 12px 0}
 .del-start{padding:10px 16px;border:1px dashed var(--sj-accent,#064f91);border-radius:10px}
 .del-ovning .formula{white-space:normal;overflow-wrap:anywhere}
+/* Kort för teori och exempel: rubriken och formeln syns, texten öppnas ett avsnitt i taget */
+.del-verktyg{margin:6px 0 14px}.del-alla{min-height:44px;padding:6px 14px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;font-weight:700;color:var(--sj-accent,#064f91);cursor:pointer}
+details.del-kort{margin:10px 0;padding:0;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+details.del-kort.del-exempel{border-left:8px solid var(--sj-accent,#064f91)}
+.course-reading details.del-kort>summary{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;list-style:none;min-height:44px;font-weight:400}
+details.del-kort>summary::-webkit-details-marker{display:none}
+details.del-kort>summary::after{content:"Öppna";margin-left:auto;align-self:center;padding-left:8px;font-size:14px;font-weight:700;color:var(--sj-accent,#064f91);white-space:nowrap}
+details.del-kort[open]>summary::after{content:"Stäng"}
+details.del-kort[open]>summary{border-bottom:1px solid var(--sj-line,#cad8e2)}
+.kort-nr{flex:none;display:inline-grid;place-items:center;min-width:32px;height:32px;padding:0 6px;border-radius:16px;background:var(--sj-soft,#edf4f9);color:var(--sj-accent,#064f91);font-weight:700}
+.kort-text{display:flex;flex-direction:column;gap:4px;min-width:0}.kort-titel{font-weight:700;font-size:19px;line-height:1.3}
+.kort-formel{font-weight:700;color:var(--sj-accent,#064f91);font-size:16px;overflow-wrap:anywhere}
+.kort-kropp{padding:4px 18px 12px}
+.del-ova{margin:16px 0 4px;padding:10px 14px;border-radius:10px;background:var(--sj-soft,#edf4f9)}
+@media print{details.del-kort>summary::after{content:none}.steg-knappar{display:none}}
+.steg-knappar{margin:10px 0 4px;display:flex;flex-wrap:wrap;gap:8px}
 '''
 
 
@@ -153,8 +169,8 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
 <div class="sj-panel soft"><h3>Det här ska du kunna</h3><ul>{''.join(f'<li>{R.h(b[1])}</li>' for b in kunna)}</ul></div>
 {f'<p class="del-start"><strong>Fundera först:</strong> {" ".join(R.h(b[1]) for b in fraga)} Svaret finns i teorin nedan.</p>' if fraga else ''}
 <h3>Så gör du</h3><ol class="del-gor">
-<li><strong>Läs teorin</strong> ({len(teori)} korta avsnitt). Titta på figuren till varje avsnitt.</li>
-<li><strong>Följ exemplen</strong> med papper och räknare, steg för steg.</li>
+<li><strong>Läs teorin ett avsnitt i taget</strong> ({len(teori)} korta avsnitt). Sist i varje avsnitt står vilka övningar du kan göra direkt.</li>
+<li><strong>Följ exemplen</strong> med papper och räknare, steg för steg. Gissa nästa steg innan du läser det.</li>
 <li><strong>Gör övningarna</strong> {dnr}.1–{dnr}.{len(poster)}. Fastnar du: <em>Ledtråd 1</em> visar vilket samband du behöver och var i teorin det förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> exemplet som räknar samma sorts uppgift med andra tal. Öppna facit när du har ett eget svar.</li>
 <li><strong>Lämna in</strong> veckans uppgifter: <a href="Inlamning.html">Veckans inlämning</a>.</li></ol>''')
     if metod:
@@ -165,16 +181,29 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
     h.append(R.beteckningar_html(R.beteckningar_i(texter, a.beteckningar(), formler), 'Förkortningar och beteckningar i den här delen'))
     h.append('</section>')
 
-    # 2 Teori
-    h.append('<section id="teori" class="del-block"><h2><span>2</span> Teori</h2><p>Läs avsnitten i ordning. Övningarna hänvisar hit.</p>')
+    # 2 Teori: ett kort per avsnitt. Rubriken och avsnittets formel syns direkt, texten öppnas ett avsnitt i taget,
+    # och varje avsnitt slutar med de övningar som bygger på det (läs lite, öva direkt).
+    ova = {}
+    for pl, p in poster:
+        ref = teori_for(p, pl['ordning'] > 5)
+        if ref:
+            ova.setdefault(ref[0], []).append(pl)
+    h.append('<section id="teori" class="del-block"><h2><span>2</span> Teori</h2><p>Ett avsnitt i taget: öppna det, läs, och gör sedan övningarna som står sist i avsnittet. '
+             f'Formeln bredvid rubriken är det viktigaste i avsnittet.</p><p class="del-verktyg"><button type="button" class="del-alla" data-mal="teori" aria-pressed="false">Öppna alla {len(teori)} avsnitt</button></p>')
     for i, (nr, t, bl) in enumerate(teori, 1):
-        h.append(f'<section class="del-teori" id="teori-{i}"><h3>{i}. {R.h(t)}</h3>{block_html(bl)}</section>')
+        formel = next((x[1] for x in bl if x[0] == 'formel'), '')
+        forhand = f'<span class="kort-formel">{R.h(formel)}</span>' if formel else ''
+        lank = ', '.join(f'<a href="#{x["ankare"]}">{e(x["nummer"])}</a>' for x in ova.get(i, []))
+        ovning = f'<p class="del-ova"><strong>Öva nu:</strong> {lank}</p>' if lank else ''
+        h.append(f'<details class="del-kort del-teori" id="teori-{i}"{" open" if i == 1 else ""}><summary><span class="kort-nr">{i}</span><span class="kort-text"><span class="kort-titel">{R.h(t)}</span>{forhand}</span></summary>'
+                 f'<div class="kort-kropp">{block_html(bl)}{ovning}</div></details>')
     h.append('</section>')
 
-    # 3 Exempel
-    h.append('<section id="exempel" class="del-block"><h2><span>3</span> Exempel</h2><p>Följ exemplet steg för steg med papper och räknare. Övningarna använder samma metod med andra tal.</p>')
+    # 3 Exempel: samma kort. Det första är öppet.
+    h.append('<section id="exempel" class="del-block"><h2><span>3</span> Exempel</h2><p>Följ exemplet steg för steg med papper och räknare. Försök själv med nästa steg innan du läser det. Övningarna använder samma metod med andra tal.</p>')
     for i, (nr, t, bl) in enumerate(exempel, 1):
-        h.append(f'<section class="del-exempel" id="exempel-{i}"><h3>{R.h(t)}</h3>{block_html(bl, nummerlista=True)}</section>')
+        h.append(f'<details class="del-kort del-exempel" id="exempel-{i}"{" open" if i == 1 else ""}><summary><span class="kort-nr">E{i}</span><span class="kort-text"><span class="kort-titel">{R.h((lambda x: x[:1].upper() + x[1:])(t.removeprefix("Exempel:").strip()))}</span></span></summary>'
+                 f'<div class="kort-kropp">{block_html(bl, nummerlista=True)}</div></details>')
     h.append('</section>')
 
     # 4 Övningar
@@ -228,6 +257,16 @@ const knappar=[...document.querySelectorAll('.del-klar')];
 const rita=()=>{{let n=0;for(const b of knappar){{const k=!!klara[b.dataset.id];n+=k;b.textContent=k?'✓ Klar':'Markera som klar';b.setAttribute('aria-pressed',String(k));b.closest('.del-ovning').classList.toggle('klar',k);}}document.getElementById('del-status').textContent=`${{n}} av ${{knappar.length}} övningar klara.`;}};
 for(const b of knappar)b.addEventListener('click',()=>{{klara[b.dataset.id]=!klara[b.dataset.id];try{{localStorage.setItem(K,JSON.stringify(klara));}}catch{{}}rita();}});
 rita();}})();
+// Teori och exempel är kort som öppnas ett i taget. En länk dit (ledtråd, Öva nu, stegraden) öppnar kortet.
+(()=>{{const oppna=h=>{{if(!h||h.length<2)return;const m=document.getElementById(decodeURIComponent(h.slice(1)));if(!m)return;for(let d=m;d;d=d.parentElement?.closest('details'))if(d.tagName==='DETAILS')d.open=true;}};
+document.addEventListener('click',ev=>{{const a=ev.target.closest('a[href^="#"]');if(a)oppna(a.getAttribute('href'));}});
+addEventListener('hashchange',()=>oppna(location.hash));oppna(location.hash);
+// Exemplen visas ett steg i taget: eleven försöker själv innan nästa steg visas. Utan JavaScript syns alla steg.
+for(const ol of document.querySelectorAll('.del-exempel ol')){{const steg=[...ol.children];if(steg.length<2)continue;const efter=[...ol.parentElement.children].slice([...ol.parentElement.children].indexOf(ol)+1);
+let n=1;const p=document.createElement('p');p.className='steg-knappar';const nasta=document.createElement('button'),alla=document.createElement('button');nasta.type=alla.type='button';nasta.className='sj-btn primary';alla.className='sj-btn';alla.textContent='Visa alla steg';
+const visa=()=>{{steg.forEach((li,i)=>li.hidden=i>=n);efter.forEach(x=>x.hidden=n<steg.length);nasta.hidden=alla.hidden=n>=steg.length;nasta.textContent=`Visa steg ${{n+1}} av ${{steg.length}}`;}};
+nasta.onclick=()=>{{n++;visa();}};alla.onclick=()=>{{n=steg.length;visa();}};p.append(nasta,' ',alla);ol.after(p);visa();}}
+for(const b of document.querySelectorAll('.del-alla'))b.addEventListener('click',()=>{{const kort=[...document.querySelectorAll('#'+b.dataset.mal+' .del-kort')];const alla=!kort.every(d=>d.open);kort.forEach(d=>d.open=alla);b.setAttribute('aria-pressed',String(alla));b.textContent=alla?'Stäng alla avsnitt':'Öppna alla '+kort.length+' avsnitt';}});}})();
 </script></body></html>
 ''')
     return ''.join(h)
