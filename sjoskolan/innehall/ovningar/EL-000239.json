@@ -3,7 +3,7 @@
   "titel": "Hållkrets",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Föreslå en orsak i hållvägen och en kontroll som prövar den, enligt en säker mätplan.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Matningen är rätt under starten, så vilken del av kretsen återstår? 2) Välj en tänkbar orsak i hållvägen. 3) Beskriv en mätning som skiljer ”kontakten sluter” från ”kontakten sluter inte”. Följ en säker mätplan.",
+      "status": "utkast"
     }
   ],
   "losning": {

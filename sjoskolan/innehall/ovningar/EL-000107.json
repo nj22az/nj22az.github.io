@@ -3,7 +3,7 @@
   "titel": "Motor 400/690 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Jämför nätets linjespänning med respektive märkspänning. Full dokumentation styr verklig anslutning.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv upp vilken linjespänning märkningen anger för Δ och vilken för Y. 2) Jämför nätets linjespänning med de två talen. 3) Kopplingen vars märkspänning är lika med nätets är driftkopplingen. Annat fall: ombord med 440 V mellan faserna och en motor märkt Δ/Y 440/760 V. Vilken koppling passar där, och varför?",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Förberett fel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Föreslå en orsak i hållvägen. Beskriv vilken observation som skulle stödja eller försvaga hypotesen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Beskriv vad som fungerar: K1 drar via START. 2) Beskriv vad som inte fungerar: strömvägen när START släpps. 3) Vilka delar ingår bara i den vägen som inte fungerar? Välj en av dem som hypotes. 4) Beskriv en mätning som ger olika resultat om hypotesen stämmer och om den inte stämmer. Annat fall: en lampa lyser bara när du håller i sladden, så leta i den delen som rörs.",
+      "status": "utkast"
     }
   ],
   "losning": {

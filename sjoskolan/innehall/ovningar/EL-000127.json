@@ -3,7 +3,7 @@
   "titel": "Räddning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Förklara varför din egen säkerhet kommer först och vad du gör innan du rör personen. Följ larm- och räddningsinstruktionerna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vem blir nästa skadade om platsen fortfarande är spänningssatt? 2) Vad måste göras innan någon rör personen: bryta, säkra, larma? 3) Vilken instruktion och vilket nummer gäller ombord och i land? Skriv svaret i den ordning du skulle göra det.",
+      "status": "utkast"
     }
   ],
   "losning": {

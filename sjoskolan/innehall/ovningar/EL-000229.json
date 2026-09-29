@@ -3,7 +3,7 @@
   "titel": "Förändrade driftvillkor",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Skriv vad som är kontrollerat och vad som återstår, utan att godkänna allt.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv vad som är kontrollerat och i vilket driftfall. 2) Skriv vad som inte är kontrollerat. 3) Skriv vad som återstår. Godkänn inte mer än du har provat.",
+      "status": "utkast"
     }
   ],
   "losning": {

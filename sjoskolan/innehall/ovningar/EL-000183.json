@@ -3,7 +3,7 @@
   "titel": "IT-princip",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange vad isolationsvakten mäter och varför en försämring måste tas på allvar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Hur är fasledarna anslutna till jord i ett IT-system? 2) Vilken storhet visar om isolationen håller? 3) Varför vill man få larm tidigt, innan ett andra fel uppstår?",
+      "status": "utkast"
     }
   ],
   "losning": {

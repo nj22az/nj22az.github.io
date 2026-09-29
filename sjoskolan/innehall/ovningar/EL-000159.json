@@ -3,7 +3,7 @@
   "titel": "Brytförmåga",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Jämför värdena och motivera om valet uppfyller kravet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Jämför brytförmågan med den möjliga kortslutningsströmmen. 2) Är brytförmågan större eller mindre? 3) Finns något dokumenterat skydd som hjälper till? Skriv beslutet med värdena. Annat fall: 10 kA möjlig ström, 15 kA brytförmåga.",
+      "status": "utkast"
     }
   ],
   "losning": {

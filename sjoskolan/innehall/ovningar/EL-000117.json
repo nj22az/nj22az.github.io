@@ -3,7 +3,7 @@
   "titel": "Hållkretsens start",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Följ strömvägen medan START hålls in och efter att den släppts. Beskriv hur kontakterna ändrar läge.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Beskriv vad som händer med spolen när START trycks in. 2) Vad gör en NO-kontakt när dess apparat drar? 3) Var sitter kontakten i förhållande till START? 4) Vad händer med strömvägen när START släpps? Beskriv läget före, under och efter tryckningen.",
+      "status": "utkast"
     }
   ],
   "losning": {

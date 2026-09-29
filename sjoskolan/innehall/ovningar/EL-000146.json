@@ -3,7 +3,7 @@
   "titel": "Jordningsutrustning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Ange minst två konkreta tillägg. Beskriv vad som ska kontrolleras – inte hur du själv skulle manövrera.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad ska jordas, och på vilka punkter? 2) Vilken utrustning, och är den dimensionerad för anläggningen? 3) Vem ansvarar och vem kontrollerar? Välj två och skriv varför de behövs. Beskriv inte hur du själv skulle jorda.",
+      "status": "utkast"
     }
   ],
   "losning": {

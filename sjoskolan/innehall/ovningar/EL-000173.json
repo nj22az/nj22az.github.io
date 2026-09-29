@@ -3,7 +3,7 @@
   "titel": "Hållning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Följ strömvägen före start, under start och efter att S1 har släppts.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad händer när START släpps om inget annat finns? 2) Vad gör K1:s NO-kontakt när K1 drar? 3) Varför måste den ligga parallellt med START och inte i serie? Följ strömvägen före, under och efter tryckningen.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Batteriets risk",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Vad händer i slingan när R_{slinga} är liten? Hitta inte på ett amperetal.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv Ohms lag för kortslutningsslingan: I = U/R. 2) Vad händer med strömmen om R är mycket liten, även när U är låg? 3) Vad gör stor ström på kort tid: värme, gnistor, brand? 4) Ge ett exempel på hur det kan hända, till exempel med ett verktyg. Hitta inte på ett amperetal.",
+      "status": "utkast"
     }
   ],
   "losning": {

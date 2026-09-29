@@ -3,7 +3,7 @@
   "titel": "Två matningar",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Jämför energikällorna i planen med dem i fallet och ange vad som måste läggas till innan arbetet kan börja.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Lista alla vägar som kan ge el till fördelningen. 2) Jämför listan med planen. Vilken väg saknas? 3) Vad kan hända om den vägen inte är frånskild? 4) Vad måste planen få med för varje väg? Annat fall: en pump som kan styras både från bryggan och lokalt.",
+      "status": "utkast"
     }
   ],
   "losning": {

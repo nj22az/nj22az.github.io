@@ -3,7 +3,7 @@
   "titel": "Fartygssystem",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange vilket underlag du behöver för att avgöra jordningssystemet för varje del.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kan olika delnät ha olika jordning? 2) Vad skiljer dem åt: transformatorer, jordningspunkter, skydd? 3) Vilket underlag visar det för varje del?",
+      "status": "utkast"
     }
   ],
   "losning": {

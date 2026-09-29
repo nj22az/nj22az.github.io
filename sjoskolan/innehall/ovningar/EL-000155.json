@@ -3,7 +3,7 @@
   "titel": "Överlast utan jordfel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Förklara vilket fel jordfelsfunktionen mäter och vilket fel ett separat överströmsskydd behöver hantera.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad jämför jordfelsbrytaren: strömmen ut och strömmen tillbaka. 2) Vid överlast, hur stor blir skillnaden om all ström kommer tillbaka? 3) Vilket skydd hanterar då den för stora strömmen? Annat fall: en kortslutning mellan fas och neutral. Löser jordfelsbrytaren då?",
+      "status": "utkast"
     }
   ],
   "losning": {

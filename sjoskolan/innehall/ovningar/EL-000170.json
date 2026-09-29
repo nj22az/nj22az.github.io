@@ -3,7 +3,7 @@
   "titel": "Larm efter överlast",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Formulera två olika hypoteser och ange vilka data som kan skilja dem åt, till exempel fasströmmarna och hur lasten varierar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Tänk på lasten: kan pumpen gå tyngre än den ska? 2) Tänk på matningen: fattas en fas, eller är spänningen obalanserad? 3) Tänk på skyddet: är inställningen rätt? 4) Välj två och skriv vilken mätning som skiljer dem, till exempel strömmen i varje fas.",
+      "status": "utkast"
     }
   ],
   "losning": {

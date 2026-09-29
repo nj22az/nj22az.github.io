@@ -202,7 +202,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
 {block_html(figs)}
 {f'<details class="ledtrad"><summary>Ledtråd 1: {"vilken princip?" if resonemang else "vilket samband?"}</summary><p>{led1}</p></details>' if led1 else ''}
 {f'<details class="ledtrad"><summary>Ledtråd 2: hur börjar jag?</summary><p>{led2}</p></details>' if led2 else ''}
-{f'<details class="ledtrad"><summary>Ledtråd 3: {"steg för steg med andra tal" if steg else "samma metod i ett exempel"}</summary><p>{led3}</p></details>' if led3 else ''}
+{f'<details class="ledtrad"><summary>Ledtråd 3: {("steg för steg" if resonemang else "steg för steg med andra tal") if steg else "samma metod i ett exempel"}</summary><p>{led3}</p></details>' if led3 else ''}
 {rh}
 <details class="facit"><summary>Facit</summary>{facit}{f'<p><strong>Svar:</strong> {svar}</p>' if svar else ''}</details>
 <button type="button" class="del-klar" data-id="{pl["ankare"]}">Markera som klar</button></article>''')

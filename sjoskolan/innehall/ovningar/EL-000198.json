@@ -3,7 +3,7 @@
   "titel": "Säkerhetsavstånd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange vilka uppgifter som saknas. Det går inte att räkna fram något avstånd med de här uppgifterna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad styr hur stort avståndet måste vara: spänningen, arbetsmetoden, verktyg och rörelser? 2) Vilka av dem är okända i fallet? 3) Vem eller vilka krav bestämmer avståndet?",
+      "status": "utkast"
     }
   ],
   "losning": {

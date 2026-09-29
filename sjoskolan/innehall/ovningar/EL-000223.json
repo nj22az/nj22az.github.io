@@ -3,7 +3,7 @@
   "titel": "Skillnad mellan instrument",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Räkna ut intervallen och den del de har gemensamt. Dra ingen starkare slutsats än jämförelsen tillåter.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna intervallet för A. 2) Räkna intervallet för B. 3) Har intervallen något gemensamt? 4) Vad betyder det för frågan om ett instrument är fel?",
+      "status": "utkast"
     }
   ],
   "losning": {

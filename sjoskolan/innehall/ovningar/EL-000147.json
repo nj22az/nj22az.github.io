@@ -3,7 +3,7 @@
   "titel": "Ändrade förutsättningar",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Stoppa det berörda arbetet, ta reda på vad UPS:en matar och ange vad som krävs för ett nytt startbesked.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad kan en UPS mata, även när huvudmatningen är bruten? 2) Vad gör ni med arbetet i det berörda området nu? 3) Vad måste läggas till i beredningen och i riskbedömningen innan ni får fortsätta?",
+      "status": "utkast"
     }
   ],
   "losning": {

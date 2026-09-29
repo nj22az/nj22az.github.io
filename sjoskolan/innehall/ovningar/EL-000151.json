@@ -3,7 +3,7 @@
   "titel": "Kontaktor",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Följ vad som händer när spolen får rätt matning och koppla det till kontaktorns huvuduppgift.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skilj manöverkrets och kraftkrets. 2) Vad händer i kraftkretsen när spolen får matning? 3) Vilken fördel ger det att en liten ström styr en stor? Annat fall: ett relä som tänder strålkastarna från bryggan.",
+      "status": "utkast"
     }
   ],
   "losning": {

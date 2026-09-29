@@ -3,7 +3,7 @@
   "titel": "Kontroll av åtgärden",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Skriv en tydligare formulering och ange att den gällande instruktionen bestämmer metod och vad som är godkänt.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vem gör kontrollen? 2) Vad kontrolleras, med vilken beteckning? 3) Enligt vilken instruktion? 4) Vart förs resultatet, och när? Mall: ”[Vem] kontrollerar [vad] enligt [instruktion] [när]. Resultatet förs in i [var].”",
+      "status": "utkast"
     }
   ],
   "losning": {

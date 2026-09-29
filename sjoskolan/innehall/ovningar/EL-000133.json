@@ -3,7 +3,7 @@
   "titel": "Arbetsmetoder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Ange de fyra namnen. Vid ett verkligt arbete måste valet av metod motiveras.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Metoderna skiljer sig i om anläggningen är spänningssatt och hur nära spänningsförande delar arbetet görs. 2) Två av metoderna handlar om själva spänningen. 3) Två handlar om avståndet till spänningsförande delar. Leta upp namnen i presentationen eller ESA och sortera dem i de två paren.",
+      "status": "utkast"
     }
   ],
   "losning": {

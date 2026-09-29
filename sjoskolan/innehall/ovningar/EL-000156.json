@@ -3,7 +3,7 @@
   "titel": "Hjälpkontakt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Ange kontaktens läge före och efter att K1 drar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad betyder NO? 2) I vilket läge ritas kontakten i schemat? 3) Vad händer med kontakten när spolen får ström? Skriv läget före och efter.",
+      "status": "utkast"
     }
   ],
   "losning": {

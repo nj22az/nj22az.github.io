@@ -3,7 +3,7 @@
   "titel": "Fuktig miljö",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Välj två omständigheter i fallet och förklara hur var och en ökar risken.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Läs fallet och stryk under allt som har med vatten, metall, skador och okontrollerat skydd att göra. 2) Välj två. 3) För varje: skriv hur den gör det lättare för ström att gå genom kroppen, eller att isolationen inte skyddar. Annat fall: en borrmaskin med sprucken kåpa i ett fuktigt pumprum. Vilka omständigheter ökar risken där?",
+      "status": "utkast"
     }
   ],
   "losning": {

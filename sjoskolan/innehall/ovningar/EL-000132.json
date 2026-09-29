@@ -3,7 +3,7 @@
   "titel": "Aktuell utgåva",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Jämför pärmens utgåva med den aktuella och kontrollera även de lokala anvisningarna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Leta upp utgåvenumret och året i hänvisningen. 2) Jämför med den utgåva kursen hänvisar till. 3) Gäller den äldre utgåvan fortfarande efter övergångstiden? 4) Vilka lokala dokument behöver du också kontrollera?",
+      "status": "utkast"
     }
   ],
   "losning": {

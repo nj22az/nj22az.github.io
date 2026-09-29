@@ -3,7 +3,7 @@
   "titel": "Motor 230/400 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Räkna ut spänningen över en lindning i Y och i Δ och jämför med märkningen. Motivera valet med ett värde.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Läs märkningen: vilken nätspänning hör till Δ och vilken till Y? 2) Räkna spänningen över en lindning i Δ (hela linjespänningen) och i Y (linjespänningen/√3) på nätet i uppgiften. 3) Välj den koppling där lindningsspänningen stämmer med den lägre märkspänningen. Annat fall: ett nät med 230 V mellan faserna och samma motor. Pröva båda kopplingarna där först.",
+      "status": "utkast"
     }
   ],
   "losning": {

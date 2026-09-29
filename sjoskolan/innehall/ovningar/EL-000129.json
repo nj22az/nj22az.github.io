@@ -3,7 +3,7 @@
   "titel": "Tillbud",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Förklara hur rapporten leder till åtgärder som förebygger. Beskriv vad som hände, inte vad personen kan ha tänkt.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skilj på vad som hände och vad som kunde ha hänt. 2) Vad kan rapporten leda till: hitta orsaken, ändra rutin, informera andra? 3) Varför är det bättre att lära sig av ett tillbud än av en olycka? Annat fall: en halkolycka som ”nästan” hände på ett vått däck.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "NO och NC",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Skriv ut båda förkortningarna och ange om strömvägen är öppen eller sluten i vila.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv ut förkortningarna på engelska. 2) Opåverkat läge betyder att ingen trycker och att spolen är strömlös. 3) Skriv för varje kontakt om det finns en strömväg i det läget.",
+      "status": "utkast"
     }
   ],
   "losning": {

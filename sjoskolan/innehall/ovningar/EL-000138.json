@@ -3,7 +3,7 @@
   "titel": "Gammal föreskrift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Ange vilken hänvisning som är inaktuell och vad som behöver verifieras i ersättningsregelverket.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilken källa visar vilka föreskrifter som gäller? 2) Slå upp numret där. Är det gällande eller upphävt, och vad har ersatt det? 3) Vad måste du kontrollera i det nya regelverket innan du hänvisar till det?",
+      "status": "utkast"
     }
   ],
   "losning": {

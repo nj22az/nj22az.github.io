@@ -3,7 +3,7 @@
   "titel": "Egen slutsats",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Visa summan och jämför med källan. Vad visar jämförelsen, och vad visar den inte?",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv jämförelsen med siffror: summan av fallen mot källan. 2) Skriv vad jämförelsen visar, med ett verb som ”stöder” och inte ”bevisar”. 3) Skriv vad den inte visar: andra driftfall, instrumentets osäkerhet. Mall: ”Summan … V jämfört med källan … V. Mätningen stöder … Den visar inte …”",
+      "status": "utkast"
     }
   ],
   "losning": {

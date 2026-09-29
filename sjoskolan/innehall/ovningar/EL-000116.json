@@ -3,7 +3,7 @@
   "titel": "Hållkretsens vila",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Följ båda de parallella vägarna efter S0 och avgör om någon av dem är obruten ända fram till spolen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Rita strömvägen från matningen via S0 fram till spolen. 2) Efter S0 finns två parallella vägar: via START och via K1:s hållkontakt. 3) Ange för varje kontakt om den är öppen eller sluten i det givna läget. 4) Räcker det att en av vägarna är sluten? Annat fall: samma krets men START intryckt. Följ vägen på samma sätt.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Två märkdata",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Koppla den ena uppgiften till normal last och den andra till den största felström som måste kunna brytas.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilket tal hör till normal drift? 2) Vilket tal hör till ett kortslutningsfel? 3) Förklara varför skyddet behöver klara båda. Tänk på enheterna: A och kA.",
+      "status": "utkast"
     }
   ],
   "losning": {

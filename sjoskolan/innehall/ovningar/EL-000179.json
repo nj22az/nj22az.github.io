@@ -3,7 +3,7 @@
   "titel": "Brist i en ritning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Beskriv osäkerheten och vem som måste reda ut vilken ritning som gäller och uppdatera den innan arbetet fortsätter.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Stämmer ritningen och anläggningen? 2) Kan du lita på en ritning utan revision? 3) Vem ska få veta, och vad måste göras innan arbetet fortsätter? Skriv slutsatsen och åtgärden i två meningar.",
+      "status": "utkast"
     }
   ],
   "losning": {

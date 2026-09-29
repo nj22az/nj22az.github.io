@@ -3,7 +3,7 @@
   "titel": "Spårbar slutsats",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Ange vilka förhållanden som måste jämföras innan du drar en slutsats. Håll isär ett lägre mätvärde och en bevisad skada.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilka förhållanden påverkar ett isolationsvärde: provspänning, mättid, temperatur, fukt och vad som var inkopplat? 2) Var de lika vid de två mätningarna? 3) Skriv slutsatsen så att den skiljer mellan ”lägre värde” och ”skadad isolation”.",
+      "status": "utkast"
     }
   ],
   "losning": {

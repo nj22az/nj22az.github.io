@@ -3,7 +3,7 @@
   "titel": "Två sorters skada",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Beskriv hur var och en skadar och ange den viktigaste skillnaden.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Beskriv strömgenomgång: var går strömmen och vad i kroppen påverkas? 2) Beskriv ljusbåge: vad frigörs (värme, tryck, ljus, metall) och hur träffar det personen? 3) Skriv skillnaden i en mening: måste personen ingå i strömvägen eller inte?",
+      "status": "utkast"
     }
   ],
   "losning": {

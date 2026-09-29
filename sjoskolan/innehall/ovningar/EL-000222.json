@@ -3,7 +3,7 @@
   "titel": "Kravjämförelse",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna ut båda intervallen och jämför särskilt de nedre gränserna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna kravets gränser: nominellt ± procent. 2) Räkna mätningens gränser: mätvärde ± felgräns. 3) Ligger hela mätintervallet inom kravet? Jämför särskilt den nedre gränsen. Annat fall: krav 24,0 V ±10 %, mätning 22,0 ±0,5 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

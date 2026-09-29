@@ -3,7 +3,7 @@
   "titel": "Släckt panel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Ange vad den släckta panelen faktiskt visar och vilken kontroll som fortfarande saknas.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad styr panelen: manöverkretsen eller kraftmatningen? 2) Vilka andra källor kan finnas kvar: huvudmatning, reserv, lagrad energi i kondensatorer? 3) Vilken kontroll visar spänningslöshet på riktigt? Annat fall: en släckt skärm på en omriktare betyder inte att mellanledet är urladdat.",
+      "status": "utkast"
     }
   ],
   "losning": {

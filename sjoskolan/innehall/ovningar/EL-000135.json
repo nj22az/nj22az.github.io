@@ -3,7 +3,7 @@
   "titel": "Otydligt besked",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Ange två uppgifter som saknas och varför var och en gör att arbetet inte kan börja säkert.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Läs beskedet ord för ord. Vilket ord visar att ingen kontroll är gjord? 2) Vad borde ett besked innehålla: objekt, gräns, kontroller, vem som ger och vem som tar emot? 3) Välj två som saknas och skriv varför var och en stoppar starten.",
+      "status": "utkast"
     }
   ],
   "losning": {

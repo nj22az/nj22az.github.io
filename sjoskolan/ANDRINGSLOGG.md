@@ -269,3 +269,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-29** Vecka 41–45: inlämning med e-post till nils@sjoskolan.se. Inlämningssidan och veckosidan har rutan
   ”Så lämnar du in” (ett mejl, ämnesrad med vecka och namn, labbprotokoll som PDF) och en knapp som öppnar ett ifyllt
   mejl. Adressen och rutan finns på ett ställe (`verktyg/inlamning/bygg.py`, `EPOST`, `epost_knapp`). Vecka 40 orörd.
+- **2026-09-29** Vecka 41–45: ledtråd 3 (”steg för steg”) för alla 86 resonemangsövningar. Ledtråden ger frågor i
+  ordning som bygger upp svaret, ofta med ett annat fall, men inte svaret. Två utkast som räknade upp svaret
+  (arbetsmetoderna i ESA, pumpens funktioner) skrevs om före publicering. Delsidan visar ”Ledtråd 3: steg för steg”
+  för resonemang och ”steg för steg med andra tal” för beräkningar.

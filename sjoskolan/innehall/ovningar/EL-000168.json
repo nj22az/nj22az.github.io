@@ -3,7 +3,7 @@
   "titel": "Omriktarens funktioner",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Följ energins väg från nät till motor och placera delarna i funktionell ordning.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilken form har elen från nätet: AC eller DC? 2) Vilken form behöver mellanledet ha för att kunna lagra energi? 3) Vad behövs sist för att få variabel frekvens till motorn? Skriv delarna i den ordning energin passerar.",
+      "status": "utkast"
     }
   ],
   "losning": {

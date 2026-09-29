@@ -3,7 +3,7 @@
   "titel": "Samlad slutsats",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Räkna ut båda och beskriv vad de visar. Ange också vilken föreskriven kontroll av anslutning eller säkerhet som återstår.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna resistansen före: U/I. 2) Räkna resistansen efter vid samma ström. 3) Skriv vad jämförelsen visar. 4) Skriv vilken föreskriven kontroll av anslutning eller skydd som återstår. Annat fall: 2,4 V vid 4 A före och 0,2 V vid 4 A efter.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Reservkraft",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange vad som måste kontrolleras i båda fallen. Ange ingen utlösningstid – skyddets data saknas.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Hur beror ett skydds utlösningstid på strömmen? 2) Vilket av de två fallen ger längst tid? 3) Vilka data behövs för att kontrollera tiden i båda fallen? Ange ingen tid själv.",
+      "status": "utkast"
     }
   ],
   "losning": {

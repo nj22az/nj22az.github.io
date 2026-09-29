@@ -3,7 +3,7 @@
   "titel": "Säkringens uppgift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Beskriv båda typerna och skillnaden i förlopp. Hänvisa till ström–tidsegenskapen för utlösning.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Tänk på en hel krets där lasten drar för mycket under lång tid. 2) Tänk på en oavsiktlig väg med mycket låg impedans. 3) Ge varje fall sitt namn och beskriv skillnaden i strömmens storlek och hur snabbt det går.",
+      "status": "utkast"
     }
   ],
   "losning": {
