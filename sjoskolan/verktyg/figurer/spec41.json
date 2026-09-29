@@ -16,6 +16,8 @@
  "32":["ovn","v41_01_s32_ovn9","Stapeldiagram med linjespänningarna 400, 402 och 398 V; medelvärde och avvikelse okända"],
  "34":["ovn","v41_01_s34_ovn10","Två olika laster Ra och Rb från L1 och L2 till en gemensam punkt där neutralledaren är bruten"]}},
 "v41_02": {"src":"sjoskolan/vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx","dst":"sjoskolan/vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx","slides":{
+ "8":["th", "v41_02_s08_trefaseffekt", "Effekttriangel för 440 V, 20 A och cos φ = 0,85: P ≈ 13,0 kW, Q ≈ 8,0 kvar och S ≈ 15,2 kVA"],
+ "23":["th", "v41_02_s23_transformator", "Trefastransformator Dyn: primär Δ 6,6 kV med U1,gren = 6 600 V, sekundär Y 440 V med U2,gren ≈ 254 V; N1/N2 = U1,gren/U2,gren"],
  "7":["th","v41_02_s07_delta_strom","Δ-last: linjeströmmen IL1 delar sig i grenströmmarna I12 och I31. Visarbilden visar IL1 = I12 − I31 som vektoriell skillnad, √3 gånger grenströmmen"],
  "11":["ovn","v41_02_s11_ovn1","Y-last med tre resistorer på 40 ohm vid linjespänningen 400 V; grenspänningen okänd"],
  "13":["ovn","v41_02_s13_ovn2","Y-last med tre resistorer på 40 ohm vid 400 V; linjeström och grenström okända"],

@@ -1,0 +1,94 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motorlabbet · Labbet på distans · Sjöskolan</title>
+<meta name="description" content="Labbet vecka 41 på distans: koppla Y och Δ i motorns plint i 3D, mät med multimeter, gå igenom startaren, prova strömtången och hitta ett fel i plinten.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/motorlabbet/"><link rel="icon" href="/assets/images/apple-touch-icon.png">
+<link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928">
+<style>
+.ml-main{max-width:1240px;margin:0 auto;padding:0 16px 48px}
+.ml-flikar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.ml-flikar button{min-height:44px;padding:0 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;font-weight:700;color:var(--sj-blue,#064f91);cursor:pointer}
+.ml-flikar button[aria-selected=true]{background:var(--sj-blue,#064f91);color:#fff;border-color:var(--sj-blue,#064f91)}
+.ml-yta{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);gap:16px;align-items:start}
+@media(max-width:900px){.ml-yta{grid-template-columns:1fr}}
+#ml-3d{position:relative;height:480px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;overflow:hidden;background:#edf3f7}
+#ml-3d canvas{display:block;touch-action:none}
+.ml-platt{padding:24px}
+#ml-panel{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:16px 18px;background:#fff}
+#ml-panel h2{margin-top:0;font-size:22px}#ml-panel fieldset{border:1px solid var(--sj-line,#cad8e2);border-radius:10px;margin:12px 0;padding:10px 12px}
+#ml-panel legend{font-weight:700;padding:0 6px}.ml-rad{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.ml-rad select{min-height:44px;font:inherit;padding:0 8px;border-radius:8px;border:1px solid var(--sj-line,#cad8e2);margin-left:6px}
+.ml-bleck{min-height:44px;padding:0 12px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;cursor:pointer}
+.ml-bleck[aria-pressed=true]{background:#f6e7b8;border-color:#b8942a;font-weight:700}
+.ml-visning{font-family:"Courier New",monospace;font-size:34px;font-weight:700;background:#c9d7c1;color:#10200f;border-radius:8px;padding:6px 14px;display:inline-block;margin:8px 0 0}
+.ml-tips{font-size:15px;color:var(--sj-muted,#4d6579);font-weight:400}
+.ml-plint svg{width:100%;max-width:340px;height:auto}
+#ml-status{min-height:1.6em;font-weight:700;color:var(--sj-warn,#9a4a12)}
+.ml-hjalp{font-size:15px;color:var(--sj-muted,#4d6579)}
+.prot{overflow-x:auto;margin:12px 0}.prot table{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.prot th,.prot td{border:1px solid var(--sj-line,#cad8e2);padding:6px 8px;text-align:left;vertical-align:top}.prot th{background:var(--sj-soft,#edf4f9)}
+.prot input,.prot textarea{width:100%;min-height:36px;font:inherit;border:1px solid var(--sj-line,#cad8e2);border-radius:6px;padding:4px 6px;box-sizing:border-box}
+[data-primar]{background:var(--sj-blue,#064f91)!important;color:#fff!important}
+@media print{.school-nav,.ml-flikar,.ml-yta,.ml-intro-knapp{display:none}}
+</style>
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/vecka-41/aktuell/">Vecka 41</a><a href="/sjoskolan/vecka-41/aktuell/Labbet.html">Labbet på plats</a></nav>
+<main id="main-content" class="ml-main">
+<p class="course-kicker">Vecka 41 · labbet på distans</p>
+<h1>Motorlabbet</h1>
+<p class="sj-lead">Samma stationer som labbet på plats fredag 9 oktober, för dig som inte kan komma. Du kopplar Y och Δ i motorns plint, mäter med multimeter, går igenom startaren, provar strömtången och hittar ett fel i plinten.</p>
+<p class="ml-hjalp">Ditt nummer D = <strong id="ml-d">–</strong> ger dina egna lindningsvärden. Vrid och zooma 3D-bilden med musen eller fingrarna. Klicka på plintar och kontakter för att sätta mätsladdarna, eller använd knapparna. Alla värden är simulerade och är inte den fysiska motorns.</p>
+
+<div class="ml-flikar" role="tablist" aria-label="Station">
+<button type="button" role="tab" data-station="M" aria-selected="true">M · Motorn</button>
+<button type="button" role="tab" data-station="S" aria-selected="false">S · Startaren</button>
+<button type="button" role="tab" data-station="T" aria-selected="false">T · Tången</button>
+<button type="button" role="tab" data-station="F" aria-selected="false">Felsökning</button>
+</div>
+<p id="ml-status" role="status" aria-live="polite"></p>
+<div class="ml-yta">
+<div id="ml-3d" aria-label="3D-bild av labbänken"></div>
+<section id="ml-panel" aria-label="Station"></section>
+</div>
+
+<h2>Protokoll</h2>
+<p>Samma protokoll som på plats. Det du skriver sparas i den här webbläsaren. Skriv ut eller spara som PDF och lämna in det som <a href="/sjoskolan/vecka-41/aktuell/Inlamning.html#uppgift-3">inlämning 3</a>.</p>
+<p class="ml-intro-knapp"><button type="button" class="sj-btn" onclick="print()">Skriv ut protokollet</button></p>
+<div id="ml-protokoll">
+<div class="prot"><table>
+<thead><tr><th colspan="4">Station M · mätsladdarnas resistans: <input name="sladdar" style="width:6em"> Ω</th></tr><tr><th>Mätpunkter</th><th>Förväntat</th><th>Uppmätt (Ω)</th><th>Stämmer? Varför?</th></tr></thead>
+<tbody>
+<tr><td>U1–U2, V1–V2, W1–W2 utan bleck</td><td><input name="m1f"></td><td><input name="m1u"></td><td><input name="m1s"></td></tr>
+<tr><td>U1–V1 utan bleck</td><td><input name="m2f"></td><td><input name="m2u"></td><td><input name="m2s"></td></tr>
+<tr><td>U1–V1, V1–W1, W1–U1 i Y</td><td><input name="m3f"></td><td><input name="m3u"></td><td><input name="m3s"></td></tr>
+<tr><td>U1–V1, V1–W1, W1–U1 i Δ</td><td><input name="m4f"></td><td><input name="m4u"></td><td><input name="m4s"></td></tr>
+<tr><td>Kvoten R<sub>Y</sub>/R<sub>Δ</sub></td><td><input name="m5f"></td><td><input name="m5u"></td><td><input name="m5s"></td></tr>
+<tr><td>Koppling på 400 V enligt skylten</td><td colspan="3"><input name="m6"></td></tr>
+</tbody></table></div>
+<div class="prot"><table>
+<thead><tr><th>Station S · mätpunkter</th><th>Förväntat</th><th>Uppmätt</th><th>Slutsats</th></tr></thead>
+<tbody>
+<tr><td>A1–A2</td><td><input name="s1f"></td><td><input name="s1u"></td><td><input name="s1s"></td></tr>
+<tr><td>13–14</td><td><input name="s2f"></td><td><input name="s2u"></td><td><input name="s2s"></td></tr>
+<tr><td>95–96 före testknappen</td><td><input name="s3f"></td><td><input name="s3u"></td><td><input name="s3s"></td></tr>
+<tr><td>95–96 efter testknappen</td><td><input name="s4f"></td><td><input name="s4u"></td><td><input name="s4s"></td></tr>
+<tr><td>Överlastreläets inställning enligt skylten</td><td colspan="3"><input name="s5"></td></tr>
+</tbody></table></div>
+<div class="prot"><table>
+<thead><tr><th>Station T · tången runt</th><th>Förväntat</th><th>Uppmätt (A)</th><th>Förklaring</th></tr></thead>
+<tbody>
+<tr><td>Sladden en gång</td><td><input name="t1f"></td><td><input name="t1u"></td><td><input name="t1s"></td></tr>
+<tr><td>Sladden två varv</td><td><input name="t2f"></td><td><input name="t2u"></td><td><input name="t2s"></td></tr>
+<tr><td>Hårnål, ut och tillbaka</td><td><input name="t3f"></td><td><input name="t3u"></td><td><input name="t3s"></td></tr>
+</tbody></table></div>
+<div class="prot"><table>
+<thead><tr><th colspan="2">Felsökningslogg</th></tr></thead>
+<tbody>
+<tr><td>Observation: U1–V1, V1–W1, W1–U1</td><td><input name="f1"></td></tr>
+<tr><td>Hypotes</td><td><input name="f2"></td></tr>
+<tr><td>Kontroll och resultat</td><td><input name="f3"></td></tr>
+<tr><td>Slutsats, åtgärd och mätning efter rättning</td><td><input name="f4"></td></tr>
+</tbody></table></div>
+<p><label>Slutsats (två eller tre meningar: vad mätningarna visar om Y och Δ, och vad tången mäter)<br><textarea name="slutsats" rows="4"></textarea></label></p>
+</div>
+<p class="ml-hjalp">3D-bänken använder three.js (MIT-licens, <a href="vendor/THREE-LICENSE.txt">licens</a>). Motorn och startaren är övningsobjekt: i den fysiska labben ansluts de aldrig till nätet.</p>
+</main>
+<script type="module" src="app.mjs?v=20260929"></script>
+</body></html>

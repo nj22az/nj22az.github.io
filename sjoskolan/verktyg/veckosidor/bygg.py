@@ -194,6 +194,7 @@ VECKOR = {
                 ppt('v41_03_Fysisk_traff_och_matning_elev.pptx', 'Fysisk träff och mätning', 36),
                 lank('Formelstod_och_ovningar.html#v41_03', 'Övningar: motorn, startaren och tången', 'övning', '10 övningar med facit'),
                 lank('Labbet.html', 'Labbet fredag 9 oktober 11.00–16.00', 'labb', 'stationerna M, S och T, felsökning och protokoll'),
+                lank('../../motorlabbet/', 'Motorlabbet: labbet på distans', 'labb', 'samma stationer i 3D för dig som inte kan komma'),
                 lank('Elevprotokoll.html', 'Elevprotokoll och riskmall', 'mall', 'riskbedömning och mätplan'),
             ]},
         ],

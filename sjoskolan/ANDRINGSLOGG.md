@@ -467,3 +467,16 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   och gör övning 3.1–3.5 mellan tisdag kväll och torsdag. Fredag förmiddag är de på plats men gör annat förberedande
   arbete, och labbet är 11.00–16.00. Veckoplanen, rutan med presentationerna (”Läs själv efter del 2, senast
   torsdag”), v41_03 bild 3, Labbet.html och labbhandboken säger nu det.
+- **2026-09-29 – Del 2 fick de två saknade teorifigurerna, och Motorlabbet är nytt.**
+  - **Del 2:** teoriavsnitten Trefaseffekt (effekttriangel för 440 V, 20 A, cos φ = 0,85) och Trefastransformatorn
+    (Dyn 6,6 kV/440 V med U_{1,gren} och U_{2,gren}) har nu figur, som de andra avsnitten.
+  - **Motorlabbet (`motorlabbet/`):** labbet vecka 41 i 3D för den som inte kan komma. Samma stationer och protokoll
+    som på plats: motorns plint med Y och Δ och multimeter, startaren med testknapp, tången med ett varv, två varv och
+    hårnål, och en felsökning med ett fel per elev.
+    - Resistansen räknas med nodanalys för varje bleckkombination. Lindningarna får egna värden ur elevens D.
+    - Reglerna från den fysiska labben gäller: blecken flyttas bara med mätsladdarna bortkopplade, och sladden vid
+      tången bara med utgången avslagen.
+    - Utan WebGL fungerar allt med knapparna och plintbilden. three.js buntas lokalt (`tools/build.mjs`).
+    - Motorlabbet är länkat från veckosidan, Labbet.html och labbhandboken. `model.test.mjs` körs i CI.
+  Regel: en distansversion av en fysisk labb ska ha samma steg, regler och protokoll som labben på plats. Simulerade
+  värden märks som simulerade.

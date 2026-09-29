@@ -249,6 +249,21 @@ ax.set_xticks([0,1,2]); ax.set_xticklabels(["P₁","P₂","P₃"],fontsize=14); 
 ax.text(2.4,1.9,"P_{total} = ?",ha="right",color=RED,fontsize=16)
 save(F,"v41_02_s34_ovn10")
 
+# v41_02 s8 teori: trefaseffekt som effekttriangel (bildens exempel 440 V, 20 A, cos φ = 0,85)
+F=fig(4.3,3.2); ax=triangle(F,13.0,8.0,("P ≈ 13,0 kW","Q ≈ 8,0 kvar","S ≈ 15,2 kVA"),rect=(0.06,0.04,0.9,0.92),angle_label="φ",note="440 V, 20 A, cos φ = 0,85",pad=9)
+ax.set_xlim(-6.5,26.5)
+save(F,"v41_02_s08_trefaseffekt")
+# v41_02 s23 teori: trefastransformator Dyn, fartygsexempel 6,6 kV/440 V
+F=fig(4.8,3.0); ax=cax(F,(-0.3,5.6),(-1.3,2.3))
+V=dload(ax,1.0,0.55,0.85,tlabels=("L1","L2","L3"))
+Y=yload(ax,3.9,0.55,0.85,tlabels=("","",""))
+ax.text(3.9-0.3,0.55+0.05,"N",fontsize=12,color=GRAY)
+ax.text(1.0,1.95,"Primär Δ: 6,6 kV",ha="center",fontsize=14,fontweight="bold"); ax.text(3.9,1.95,"Sekundär Y: 440 V",ha="center",fontsize=14,fontweight="bold")
+ax.text(1.0,-0.72,"U_{1,gren} = 6 600 V",ha="center",fontsize=13,color=BLUE); ax.text(3.9,-0.72,"U_{2,gren} = 440/√3 ≈ 254 V",ha="center",fontsize=13,color=BLUE)
+ax.text(2.45,-1.15,"N₁/N₂ = U_{1,gren}/U_{2,gren}",ha="center",fontsize=14)
+ax.annotate("",xy=(3.0,0.55),xytext=(1.95,0.55),arrowprops=dict(arrowstyle="-|>",color=GRAY,lw=1.5))
+save(F,"v41_02_s23_transformator")
+
 # ================= v41_03 Fysisk träff: motorn, startaren och tången =================
 # Motorn och startaren är övningsobjekt som aldrig ansluts. Figurerna visar delar, plint och mätningar.
 def motor_side(ax,labels=True):
