@@ -193,12 +193,12 @@ VECKOR = {
             {'titel': 'Motorn, startaren och strömtången', 'mal': 'Koppla Y och Δ i plinten, kontrollera med mätning och känn igen delarna.', 'poster': [
                 ppt('v41_03_Fysisk_traff_och_matning_elev.pptx', 'Fysisk träff och mätning', 36),
                 lank('Formelstod_och_ovningar.html#v41_03', 'Övningar: motorn, startaren och tången', 'övning', '10 övningar med facit'),
-                lank('Labbet.html', 'Labbet fredag 9 oktober', 'labb', 'stationerna M, S och T med protokoll'),
+                lank('Labbet.html', 'Labbet fredag 9 oktober 11.00–16.00', 'labb', 'stationerna M, S och T, felsökning och protokoll'),
                 lank('Elevprotokoll.html', 'Elevprotokoll och riskmall', 'mall', 'riskbedömning och mätplan'),
             ]},
         ],
         'redovisa': ['Protokollet från labbet fredag 9 oktober: station M, S och T.'],
-        'notis': 'Labbet fredag 9 oktober: motorn och startaren är övningsobjekt som aldrig ansluts. Gör övning 3.1–3.5 och skriv dina förutsägelser i protokollet före träffen.',
+        'notis': 'Labbet fredag 9 oktober 11.00–16.00, lunch 12.00–13.00: motorn och startaren är övningsobjekt som aldrig ansluts. Gör övning 3.1–3.5 och skriv dina förutsägelser i protokollet före träffen.',
         'fordjupning': [lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'övning', 'extra övning i simulatorerna'), lank(LABB['hallkrets'], 'Hållkretslabbet', 'övning', 'inför vecka 43')],
     },
     42: {
@@ -436,8 +436,8 @@ def veckoplan(nr, w, n, delsidor):
         (f'{dag(0).isoformat()}T11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', f'Övning 1.6–1.10 på {del_(1)}{kontroll(1)}. Använd ledtrådarna innan du öppnar facit.'),
         (f'{dag(1).isoformat()}T14:00', f'Tisdag {fmt(dag(1))}', 'Lektion 15.00–17.00', f'Presentationen för {del_(2)}. Övning 2.1–2.5 i klassen.'),
         (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}' + (f' Förbered labbet: läs teorin och gör övning 3.1–3.5 på {del_(3)}.' if nr == 41 else '')),
-        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.' + (' Motorn, startaren och strömtången: <a href="Labbet.html">tre stationer med protokoll</a>.' if nr == 41 else '')),
-        (f'{dag(4).isoformat()}T11:00', 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
+        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', (f'Presentationen för {del_(n)}. Labbet 11.00–16.00 med lunch 12.00–13.00: <a href="Labbet.html">motorn, startaren och strömtången</a>.' if nr == 41 else f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.')),
+        (f'{dag(4).isoformat()}T{"16:00" if nr == 41 else "11:00"}', 'Fredag kväll och helgen' if nr == 41 else 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
     ]
     rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)
     return ('<style>.veckoplan{margin:0 0 26px}.veckoplan h2{font-size:22px;margin:0 0 8px}.veckoplan ol{list-style:none;margin:0;padding:0;border-top:1px solid #cad8e2}'

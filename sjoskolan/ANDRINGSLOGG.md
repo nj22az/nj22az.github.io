@@ -453,3 +453,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Simulerade stationer A, B och C är nu frivillig extra övning.
   Regel: labbuppgifter bygger bara på inköpt utrustning. Övningarna använder exempeltal tills lärarens referensmätning
   finns.
+- **2026-09-29 – Labbet vecka 41 flyttat till fredag 11.00–16.00 med lunch 12.00–13.00.** Genomgången av del 3 är
+  kl. 09.00–11.00. Stationerna M, S och T har nu 40 minuter var, så att varje elev kopplar och mäter själv.
+  - **Felsökningsuppdrag på slutet:** läraren lägger in ett fel i plinten (saknat bleck, fel koppling, lös mutter), och
+    varje grupp hittar det med en felsökningslogg (observation, hypotes, kontroll, slutsats).
+  - **Uppdaterat:** labbhandboken (tidsplan, morgonchecklista för lärare som kommer först på fredagen), Labbet.html,
+    v41_03 bild 3 och veckoplanen.
