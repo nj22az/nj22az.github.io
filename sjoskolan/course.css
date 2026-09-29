@@ -169,3 +169,4 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 .flyttad{border-left-color:var(--sj-blue,#064f91)}
 @media(max-width:520px){.dag-steg li{gap:4px 10px}.klar-ruta{padding:0 10px}.dag.nu{margin:0 -8px;padding:16px 8px}}
 @media print{.nu-panel,.klar-ruta{display:none!important}.dag.nu{background:none;box-shadow:none}}
+.handin-mail{margin:16px 0;max-width:72ch}.handin-mail ol{padding-left:22px}.course-main .handin-mail h3{margin-top:0}.week-aside .handin-mail{background:var(--sj-bg,#fff)}

@@ -31,6 +31,20 @@ NAMNRUTA = '''<div class="sj-panel soft dbox"><h2>Ditt namn ger dina egna värde
 '''
 
 
+# Från vecka 41 lämnar eleven in med e-post till läraren. Veckosidan (verktyg/veckosidor/bygg.py) använder samma knapp.
+EPOST = 'nils@sjoskolan.se'
+
+
+def epost_knapp(nr, vn):
+    from urllib.parse import quote
+    amne = quote(f'Inlämning vecka {vn}: Förnamn Efternamn')
+    kropp = quote(f'Hej!\n\nHär är min inlämning för vecka {vn}.\n\nNamn: \nBifogat: uträkningar (foto eller PDF) och labbprotokoll (PDF).\n')
+    return (f'<div class="sj-panel soft handin-mail"><h3>Så lämnar du in</h3><ol><li>Räkna och skriv på papper eller i dator. Ta tydliga foton eller spara som PDF.</li>'
+            f'<li>Skicka allt i <strong>ett</strong> mejl till <a href="mailto:{EPOST}">{EPOST}</a>.</li>'
+            f'<li>Ämnesrad: <strong>Inlämning vecka {vn}: ditt för- och efternamn</strong>.</li><li>Bifoga labbprotokollet som PDF.</li></ol>'
+            f'<p><a class="sj-btn primary" href="mailto:{EPOST}?subject={amne}&amp;body={kropp}">Skriv mejlet till läraren</a></p></div>')
+
+
 def datum(iso):
     y, m, d = map(int, iso.split('-'))
     return f'{d} {MONTHS[m - 1]}'
@@ -58,12 +72,14 @@ def page(nr, w, items):
     if w.get('notis'):
         lank = f' <a href="{w["notis_lank"][0]}">{escape(w["notis_lank"][1])}</a>' if w.get('notis_lank') else ''
         notis = f'<p class="sj-panel week-note"><strong>{escape(w["notis"])}</strong>{lank}</p>\n'
+    kanal = f'med e-post till <a href="mailto:{EPOST}">{EPOST}</a>' if nr >= 41 else 'via den inlämningskanal läraren har anvisat'
+    mejl = epost_knapp(nr, vn) + '\n' if nr >= 41 else ''
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {vn}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {vn} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">
 <style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.dbox input{{min-height:44px;font:inherit;padding:4px 10px;width:22em;max-width:100%;border:1px solid var(--sj-field);border-radius:8px}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="{veckosida}">Vecka {vn}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="{veckosida}">← Vecka {vn}</a></div><article class="course-reading">
 <p class="course-kicker">Vecka {vn} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
-<p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} via den inlämningskanal läraren har anvisat.</p>
-{notis}{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
+<p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} {kanal}.</p>
+{notis}{mejl}{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
 {items}
 <h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li><li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>

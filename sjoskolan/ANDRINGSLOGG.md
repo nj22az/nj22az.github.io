@@ -266,3 +266,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   ett exempel som gav svaret (23,2 mot 23,1) och det byttes. Rättat: EL-000157 räknade med 400 V i stället för 440 V,
   EL-000225 hänvisade till ”uppgift 4” (nu ”föregående övning”), EL-000235 hade svaret som φ i stället för cos φ.
   Lärarkopior med manus för vecka 43–45 byggda om. Vecka 40 orörd (låset oförändrat).
+- **2026-09-29** Vecka 41–45: inlämning med e-post till nils@sjoskolan.se. Inlämningssidan och veckosidan har rutan
+  ”Så lämnar du in” (ett mejl, ämnesrad med vecka och namn, labbprotokoll som PDF) och en knapp som öppnar ett ifyllt
+  mejl. Adressen och rutan finns på ett ställe (`verktyg/inlamning/bygg.py`, `EPOST`, `epost_knapp`). Vecka 40 orörd.
