@@ -419,3 +419,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     anger nätets U_{L} för varje koppling.
   - Alt-texterna säger samma sak (`spec41.json`, `scheman_veckor.py`).
   Regel: en teorifigur ska visa mellan vilka punkter storheten gäller. Den ska inte bara visa kopplingen.
+- **2026-09-29 – Granskning av v41 Del 2 (extern genomgång).** Alla tal, facit och kontrollfrågor är bekräftade, och
+  märkningen land/sjö följs. Två förslag är genomförda:
+  - **Ordlistan:** S, P och Q har fått trefassambandet (S = √3 · U_{L} · I_{L}, P = … · cos φ, Q = … · sin φ) i det
+    nya fältet `trefas` i `beteckningar.json`. Tillägget visas på delsidor och kurssidor från vecka 41. Vecka 40 är
+    låst och visar det inte, och fältet följer inte med till `beteckningar.gen.mjs`.
+  - **Övning 2.6 (EL-000106):** facit förklarar också varför Δ väljs bort: varje lindning skulle få 400 V mot
+    märkspänningen 230 V. Bokens lösning hade redan steget.
+  Regel: en definition i ordlistan som bara gäller enfas ska få trefasformen när trefas införs.

@@ -59,8 +59,9 @@ def beteckningar_i(texter, alla, formler=()):
     return [b for _, b in sorted(ut, key=lambda x: x[0])]
 
 
-def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix=''):
-    """Ordlista som <details> (kort i löptexten, går att öppna när man behöver den)."""
+def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix='', trefas=False):
+    """Ordlista som <details> (kort i löptexten, går att öppna när man behöver den).
+    trefas: visa fältet trefas (trefassambandet). Används från vecka 41; den låsta vecka 40 visar det inte."""
     if not lista:
         return ''
     rader = []
@@ -69,7 +70,8 @@ def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix=''):
         enhet = f' <span class="bet-enhet">Enhet: {h(b["enhet"])}.</span>' if b.get('enhet') else ''
         exempel = f' {h(b["exempel"])}' if b.get('exempel') else ''
         obs = f' <strong>Obs:</strong> {h(b["obs"])}' if b.get('obs') else ''
-        rader.append(f'<div class="bet-rad" id="{prefix}bet-{b["id"]}"><dt>{h(b["visa"])}</dt><dd><strong>{h(b["namn"])}</strong>{extra}. {h(b["forklaring"])}{enhet}{exempel}{obs}</dd></div>')
+        tre = f' {h(b["trefas"])}' if trefas and b.get('trefas') else ''
+        rader.append(f'<div class="bet-rad" id="{prefix}bet-{b["id"]}"><dt>{h(b["visa"])}</dt><dd><strong>{h(b["namn"])}</strong>{extra}. {h(b["forklaring"])}{tre}{enhet}{exempel}{obs}</dd></div>')
     return (f'<details class="beteckningar"{" open" if oppen else ""}><summary>{h(rubrik)} ({len(lista)})</summary>'
             f'<dl class="bet-lista">{"".join(rader)}</dl></details>')
 

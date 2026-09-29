@@ -3,7 +3,7 @@
   "titel": "Motor 230/400 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -44,7 +44,7 @@
     }
   ],
   "losning": {
-    "text": "Y. Då får varje lindning 400/1,732 ≈ 231 V, vilket stämmer med 230 V.",
+    "text": "Y. Då får varje lindning 400/1,732 ≈ 231 V, vilket stämmer med 230 V. I Δ skulle varje lindning få hela 400 V, långt över märkspänningen 230 V. Motorn skulle överhettas och kunna förstöras.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

@@ -185,7 +185,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     h.append(f'<p class="del-mer"><a href="../../bildspel/?d={e(deck[:-5].removesuffix("_elev"))}">Lärarens presentation</a> · <a href="{e(deck[:-5])}.pdf">PDF</a> · <a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a> · <a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad</a></p>')
     texter = [t for _, t, bl in bilder for t in [t, *[x[1] for x in bl if x[0] == 'p']]] + [p['uppgift']['fraga'] for _, p in poster]
     formler = [x[1] for _, _, bl in bilder for x in bl if x[0] == 'formel'] + [x for _, p in poster for x in p['uppgift'].get('samband', [])]
-    h.append(R.beteckningar_html(R.beteckningar_i(texter, a.beteckningar(), formler), 'Förkortningar och beteckningar i den här delen'))
+    h.append(R.beteckningar_html(R.beteckningar_i(texter, a.beteckningar(), formler), 'Förkortningar och beteckningar i den här delen', trefas=True))
     h.append('</section>')
 
     # 2 Teori: ett kort per avsnitt. Rubriken och avsnittets formel syns direkt, texten öppnas ett avsnitt i taget,
