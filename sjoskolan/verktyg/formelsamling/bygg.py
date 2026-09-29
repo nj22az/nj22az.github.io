@@ -35,10 +35,10 @@ KAPITEL = [
           'Räkna i grundenheter: 1 kΩ = 1 000 Ω och 1 mA = 0,001 A.', ['ström', 'spänning', 'resistans']),
         F('Effekt', 'P = U · I = I² · R = U²/R', 'P effekt (W)',
           '24 V och 2,0 A ger P = 48 W.', 'I = P/U · U = √(P · R)',
-          'I² · R och U²/R gäller bara för resistiv last (DC eller ren resistans).', ['effekt']),
+          'P = U · I gäller vid likström och ren resistans. Med spole eller kondensator: se Effekt i växelström (kapitel 2). I² · R ger alltid effekten i själva resistansen.', ['effekt']),
         F('Energi', 'E = P · t', 'E energi (J = Ws, eller kWh) · t tid (s eller h)',
           'En värmare på 2 kW i 3 h: E = 6 kWh.', 'P = E/t · t = E/P',
-          'kW gånger h ger kWh. 1 kWh = 3,6 MJ.', ['energi']),
+          'Tiden i timmar: 20 min = 20/60 h. kW gånger h ger kWh. 1 kWh = 3,6 MJ.', ['energi']),
         F('Laddning (batterikapacitet)', 'Q = I · t', 'Q laddning (Ah) · I ström (A) · t tid (h)',
           'Ett batteri som ger 5 A i 20 h: Q = 100 Ah.', 't = Q/I',
           'Ah är laddning, inte energi. Energin är ungefär U · Q (Wh).', ['batteri', 'laddning']),
@@ -51,8 +51,8 @@ KAPITEL = [
         F('Parallellkoppling', ['1/R_{tot} = 1/R_{1} + 1/R_{2} + …', 'två grenar: R_{tot} = R_{1} · R_{2}/(R_{1} + R_{2})'], 'Samma spänning över alla grenar',
           '6 Ω parallellt med 3 Ω: R_{tot} = 18/9 = 2 Ω.', '',
           'R_{tot} är alltid mindre än den minsta resistansen.', ['resistans', 'parallell']),
-        F('Spänningsdelare', 'U_{ut} = U_{in} · R_{2}/(R_{1} + R_{2})', 'U_{ut} spänningen över R_{2}',
-          '12 V över 1 kΩ och 2 kΩ: U_{ut} = 12 · 2/3 = 8 V.', '',
+        F('Spänningsdelare', ['U_{ut} = U_{in} · R_{2}/(R_{1} + R_{2})', 'med last över R_{2}: R_{p} = R_{2} · R_{last}/(R_{2} + R_{last})'], 'U_{ut} spänningen över R_{2}. Med last: byt R_{2} mot R_{p}',
+          'U_{in} = 12 V, R_{1} = 1 kΩ och R_{2} = 2 kΩ: U_{ut} = 12 · 2/3 = 8 V.', '',
           'En last över R_{2} ligger parallellt med R_{2} och sänker U_{ut}.', ['spänning', 'spänningsdelare']),
         F('Strömdelare', 'I_{1} = I_{tot} · R_{2}/(R_{1} + R_{2})', 'I_{1} strömmen genom R_{1}',
           '3 A delas mellan 6 Ω (R_{1}) och 3 Ω (R_{2}): I_{1} = 3 · 3/9 = 1 A.', '',
@@ -63,13 +63,19 @@ KAPITEL = [
         F('Kirchhoffs spänningslag', ['ΣU = 0 runt en slinga', 'U_{källa} = U_{1} + U_{2} + …'], 'Källans höjning = summan av spänningsfallen',
           '12 V-källa: 4 V över R_{1} ger 8 V över R_{2}.', '',
           'Gå runt slingan åt ett håll och håll ordning på tecknen.', ['spänning', 'kirchhoff', 'slinga']),
+        F('Två spänningskällor i serie', ['medverkande: I = (E_{1} + E_{2})/(R_{1} + R_{2})', 'motverkande: I = (E_{1} − E_{2})/(R_{1} + R_{2})'], 'E källspänning (V)',
+          'E_{1} = 12 V, E_{2} = 6 V, R_{1} = 2 Ω och R_{2} = 4 Ω: medverkande 3 A, motverkande 1 A.', '',
+          'Motverkande källor: strömmen går i den största källans riktning.', ['källor i serie', 'ström', 'kirchhoff']),
+        F('Nodspänning (en okänd nod)', '(E_{1} − V_{a})/R_{1} + (E_{2} − V_{a})/R_{2} = V_{a}/R_{3}', 'V_{a} nodens spänning mot referensen (V). Strömmar in i noden = ström ut',
+          'E_{1} = 12 V, E_{2} = 6 V och alla R = 2 Ω: 18 − 2V_{a} = V_{a}, V_{a} = 6 V.', '',
+          'Räkna V_{a} först. Grenströmmarna följer sedan med Ohms lag.', ['nod', 'nodspänning', 'kirchhoff']),
         F('Ledares resistans', 'R = ρ · l/A', 'ρ resistivitet (Ω·mm²/m) · l längd (m) · A area (mm²)',
-          'Kabel 2 × 50 m, 2,5 mm² koppar: R = 0,0175 · 100/2,5 = 0,70 Ω.', 'l = R · A/ρ · A = ρ · l/R',
+          'Kabel 50 m, 2,5 mm² koppar. Slingan är 100 m: R = 0,0175 · 100/2,5 = 0,70 Ω.', 'l = R · A/ρ · A = ρ · l/R',
           'Slingan är fram och tillbaka: l = 2 · kabelns längd.', ['resistans', 'kabel', 'ledare']),
-        F('Spänningsfall i kabel', ['ΔU = I · R_{slinga}', 'U_{last} = U_{källa} − ΔU'], 'ΔU spänningsfall (V) · R_{slinga} ledarnas resistans (Ω)',
-          '10 A genom 0,70 Ω: ΔU = 7,0 V, lasten får 230 − 7 = 223 V.', '',
+        F('Spänningsfall i kabel', ['ΔU = I · R_{slinga}', 'U_{last} = U_{källa} − ΔU', 'fall i % = 100 · ΔU/U_{källa}', 'P_{förlust} = I² · R_{slinga}'], 'ΔU spänningsfall (V) · R_{slinga} ledarnas resistans (Ω)',
+          '10 A genom 0,70 Ω: ΔU = 7,0 V (3,0 %), lasten får 230 − 7 = 223 V och kabeln tar 70 W.', '',
           'Förlusten i kabeln är I² · R. Dubbel ström ger fyra gånger förlusten.', ['spänningsfall', 'kabel']),
-        F('Thévenins ekvivalent', 'I_{last} = U_{th}/(R_{th} + R_{last})', 'U_{th} tomgångsspänning (V) · R_{th} inre resistans med källan kortsluten (Ω)',
+        F('Thévenins ekvivalent', ['I_{last} = U_{th}/(R_{th} + R_{last})', 'ur spänningsdelare: U_{th} = U_{in} · R_{2}/(R_{1} + R_{2})', 'R_{th} = R_{1} · R_{2}/(R_{1} + R_{2})'], 'U_{th} tomgångsspänning (V) · R_{th} inre resistans med källan kortsluten (Ω)',
           'U_{th} = 12 V, R_{th} = 2 Ω och R_{last} = 4 Ω: I_{last} = 2 A.', '',
           'R_{th} räknas med spänningskällan ersatt av en kortslutning.', ['thévenin', 'ström', 'inre resistans']),
     ]),
@@ -80,7 +86,7 @@ KAPITEL = [
           'ms ska göras om till s innan du räknar f.', ['frekvens', 'period', 'tid']),
         F('Toppvärde och effektivvärde (sinus)', ['û = √2 · U_{RMS}', 'U_{pp} = 2 · û'], 'û toppvärde · U_{RMS} effektivvärde · U_{pp} topp–topp (V)',
           '440 V RMS: û ≈ 622 V och U_{pp} ≈ 1 245 V.', 'U_{RMS} = û/√2',
-          'Multimetern visar RMS. Oscilloskopet visar topp och topp–topp.', ['toppvärde', 'effektivvärde', 'rms']),
+          '√2 gäller bara sinus. Symmetrisk fyrkant: U_{RMS} = û. Multimetern visar RMS, oscilloskopet topp och topp–topp.', ['toppvärde', 'effektivvärde', 'rms']),
         F('Momentanvärde', 'u(t) = û · sin(2π · f · t)', 'u(t) spänningen vid tiden t',
           'û = 325 V, 50 Hz, t = 2 ms: u = 325 · sin(0,628) ≈ 191 V.', '',
           'Räknaren i RAD, eftersom 2π · f · t är i radianer.', ['momentanvärde', 'sinus']),
@@ -99,19 +105,22 @@ KAPITEL = [
         F('Ström i växelströmskrets', 'I = U/|Z|', 'U och I som RMS-värden',
           '230 V över |Z| = 50 Ω: I = 4,6 A.', 'U = I · |Z|',
           'Använd |Z|, inte R, när kretsen har spole eller kondensator.', ['ström', 'impedans']),
+        F('Spänningar i RL-krets (serie)', ['U_{R} = I · R', 'U_{L} = I · X_{L}', 'U = √(U_{R}² + U_{L}²)'], 'U_{R} över resistansen · U_{L} över spolen (V)',
+          'I = 2 A, R = 30 Ω och X_{L} = 40 Ω: U_{R} = 60 V, U_{L} = 80 V och U = 100 V.', '',
+          'Delspänningarna adderas som visare: 60 V och 80 V blir 100 V, inte 140 V.', ['spänning', 'spole', 'visare']),
         F('Fasvinkel och effektfaktor', ['φ = arctan(X/R)', 'cos φ = R/|Z|'], 'φ > 0: induktiv, strömmen släpar',
           'R = 30 Ω och X = 40 Ω: φ ≈ 53,1° och cos φ = 0,60.', '',
           'Räknaren i DEG när vinkeln ska vara i grader.', ['fasvinkel', 'effektfaktor', 'cos φ']),
         F('Resonansfrekvens', 'f_{0} = 1/(2π · √(L · C))', 'Vid f_{0} är X_{L} = X_{C} och |Z| = R',
           'L = 10 mH och C = 10 µF: f_{0} ≈ 503 Hz.', '',
           'Räkna L · C först, sedan roten.', ['resonans', 'frekvens']),
-        F('Effekt i växelström (enfas)', ['S = U · I', 'P = S · PF', 'Q = S · sin φ', 'S² = P² + Q²'], 'S skenbar (VA) · P aktiv (W) · Q reaktiv (var) · PF effektfaktor (sinus: PF = cos φ)',
+        F('Effekt i växelström (enfas)', ['S = U · I', 'P = S · PF', 'Q = S · sin φ', 'S² = P² + Q²', 'PF = P/S'], 'S skenbar (VA) · P aktiv (W) · Q reaktiv (var) · PF effektfaktor (sinus: PF = cos φ)',
           '230 V, 10 A, cos φ = 0,80: S = 2,3 kVA, P = 1,84 kW, Q = 1,38 kvar.', '',
           'Med övertoner är PF lägre än cos φ. Enheterna skiljer storheterna åt: W, VA och var.', ['effekt', 'skenbar effekt', 'reaktiv effekt']),
         F('Ström vid given effekt (enfas)', 'I = P/(U · PF)', '',
           '1,2 kW vid 230 V och PF = 0,80: I ≈ 6,5 A.', 'P = U · I · PF',
           'Lägre PF ger större ström för samma aktiva effekt.', ['ström', 'effekt']),
-        F('Reaktiv effekt i kondensator', 'Q_{C} = U²/X_{C}', 'Q_{C} (var)',
+        F('Reaktiv effekt i kondensator', ['Q_{C} = U²/X_{C}', 'Q_{total} = Q_{last} − Q_{C}'], 'Q_{C} (var). Induktiv last: Q_{last} > 0',
           '230 V över X_{C} = 31,8 Ω: Q_{C} ≈ 1,66 kvar.', '',
           'Kondensatorns reaktiva effekt tar ut en del av den induktiva.', ['reaktiv effekt', 'kondensator', 'faskompensering']),
     ]),
@@ -120,7 +129,7 @@ KAPITEL = [
         F('Huvud- och fasspänning', 'U_{L} = √3 · U_{F}', 'U_{L} huvudspänning (fas–fas) · U_{F} fasspänning (fas–neutral)',
           '440 V ombord: U_{F} = 440/√3 ≈ 254 V. I land: 400 V och 231 V.', 'U_{F} = U_{L}/√3',
           'Huvudspänningen är √3, inte 2, gånger fasspänningen.', ['spänning', 'trefas', 'fasspänning']),
-        F('Fasförskjutning', '120° = T/3', 'Tiden mellan två faser',
+        F('Fasförskjutning', ['fasavstånd = 360°/antal faser', '120° = T/3'], 'Tiden mellan två faser',
           '60 Hz: T/3 ≈ 5,56 ms.', '', '', ['fasförskjutning', 'trefas']),
         F('Y-koppling', ['U_{gren} = U_{L}/√3', 'I_{L} = I_{gren}'], 'U_{gren}, I_{gren} över och genom en gren av lasten',
           '440 V och 20 Ω per gren: U_{gren} ≈ 254 V, I_{L} ≈ 12,7 A.', '',
@@ -134,7 +143,7 @@ KAPITEL = [
         F('Effekt, osymmetrisk last', 'P_{total} = P_{1} + P_{2} + P_{3}', 'P_{1}, P_{2}, P_{3} effekt per fas (W)',
           '1,2 + 1,5 + 0,9 kW = 3,6 kW.', '',
           'Använd inte √3-formeln när faserna är olika belastade.', ['effekt', 'osymmetrisk']),
-        F('Neutralström', ['I_{N} = −(I_{1} + I_{2} + I_{3})', 'symmetrisk last: I_{N} = 0'], 'Strömmarna adderas som visare, med sina vinklar, inte som vanliga tal',
+        F('Neutralström', ['I_{N} = −(I_{1} + I_{2} + I_{3})', 'symmetrisk last: I_{N} = 0', 'två faser: I_{N} = √(I_{1}² + I_{2}² + 2 · I_{1} · I_{2} · cos 120°)'], 'Strömmarna adderas som visare, med sina vinklar, inte som vanliga tal',
           'Bara en fas belastad med 5 A: I_{N} = 5 A. Två lika faser: I_{N} = grenströmmen.', '',
           'Bryts neutralen i en osymmetrisk last flyttar sig spänningarna, och en last kan få för hög spänning.', ['neutralström', 'neutralledare']),
         F('Motorns märkning Δ/Y', 'Δ/Y U_{Δ}/U_{Y}', 'Är nätets U_{L} lika med det lägre värdet: Δ. Lika med det högre: Y.',
@@ -150,7 +159,7 @@ KAPITEL = [
     ('Elsäkerhet och skydd', 'Vecka 42',
      'Formlerna här visar storleksordningar. Arbetsmetod, frånskiljning och kontroll bestäms av instruktionerna, inte av en uträkning.', [
         F('Kortslutningsström', 'I = U/R_{slinga}', 'R_{slinga} hela felvägens resistans (Ω)',
-          '24 V-batteri, 0,01 Ω genom en skiftnyckel: I = 2 400 A.', '',
+          '24 V-batteri kortsluts av en skiftnyckel, hela slingan 0,01 Ω: I = 2 400 A.', '',
           'Låg spänning betyder inte liten risk. Liten resistans ger stor ström, värme och ljusbåge.', ['kortslutning', 'batteri', 'felström']),
         F('Riskpoäng i en riskmatris', 'riskpoäng = sannolikhet · konsekvens', 'Enhetslösa tal från matrisens skala',
           'Före: 3 · 4 = 12. Efter åtgärd: 1 · 4 = 4.', '',
@@ -172,13 +181,13 @@ KAPITEL = [
         F('Skyddets märkdata', ['märkström ≥ lastens ström i normal drift', 'brytförmåga ≥ möjlig kortslutningsström'], 'Märkström i A · brytförmåga i kA',
           'Dvärgbrytare 16 A och 6 kA räcker inte där kortslutningsströmmen kan bli 8 kA.', '',
           'Kontrollera båda. Märkströmmen säger inget om vad skyddet klarar att bryta.', ['skydd', 'brytförmåga', 'säkring']),
-        F('Jordfelsbrytarens differensström', 'I_{Δ} = |I_{ut} − I_{retur}|', 'I_{Δ} differensström (mA)',
+        F('Jordfelsbrytarens differensström', 'I_{Δ} = |I_{ut} − I_{retur}|', 'I_{Δ} differensström (mA). Personskydd: vanligen 30 mA',
           '5 000 mA ut och 4 970 mA tillbaka: I_{Δ} = 30 mA.', '',
           'Jordfelsbrytaren reagerar inte på överlast. Där behövs ett överströmsskydd.', ['jordfel', 'jordfelsbrytare']),
     ]),
     ('Elsystem och fördjupad mätteknik', 'Vecka 44',
      'Jordningssystem, fel och isolation. Ombord är IT-nätet vanligt: första jordfelet ger larm, inte bortkoppling.', [
-        F('Felström i modell', 'I_{k} ≈ U_{0}/Z_{s}', 'U_{0} spänning mot jord (V) · Z_{s} felslingans impedans (Ω)',
+        F('Felström i modell', 'I_{k} ≈ U_{0}/Z_{s}', 'TN-system. U_{0} spänning mot jord (V) · Z_{s} felslingans impedans (Ω)',
           '230 V och Z_{s} = 0,5 Ω: I_{k} ≈ 460 A.', 'Z_{s} = U_{0}/I_{k}',
           'Dubbel slingimpedans ger halva felströmmen och längre utlösningstid.', ['felström', 'kortslutning', 'impedans']),
         F('Beröringsspänning', 'U_{beröring} = |V_{A} − V_{B}|', 'V_{A}, V_{B} potential i två punkter som kan beröras samtidigt',
@@ -202,8 +211,8 @@ KAPITEL = [
         F('Mätintervall mot krav', ['mätintervall = visning ± δ', 'godkänt: hela intervallet inom kravet'], '',
           'Visning 230,0 ± 1,4 V: 228,6–231,4 V. Krav 230 V ±2 %: 225,4–234,6 V. Godkänt.', '',
           'Ett värde som ligger nära gränsen kan vara underkänt när felgränsen räknas med.', ['krav', 'mätintervall']),
-        F('Tolerans', 'R_{nom} · (1 ± p/100)', 'p tolerans (%)',
-          '470 Ω ±10 %: 423–517 Ω.', '', 'Ett värde precis på gränsen är godkänt.', ['tolerans', 'resistans']),
+        F('Tolerans och krav', 'gränser = nominellt värde · (1 ± p/100)', 'p tolerans (%). Gäller R_{nom}, U_{nom} och andra märkvärden',
+          '470 Ω ±10 %: 423–517 Ω. Krav 12,0 V ±5 %: 11,40–12,60 V.', '', 'Ett värde precis på gränsen är godkänt.', ['tolerans', 'resistans']),
         F('Strömtång', 'I = U_{tång}/k', 'k känslighet (mV/A)',
           '100 mV/A och 1,5 V: I = 1 500/100 = 15 A.', '',
           'Omslut en ledare. Båda ledarna i samma kabel tar ut varandra.', ['strömtång', 'ström']),
@@ -213,9 +222,12 @@ KAPITEL = [
         F('Upprepade mätningar', ['medelvärde = Σx/n', 'variationsbredd = x_{max} − x_{min}', 'avvikelse i % = 100 · |x − medel|/medel'], 'n antal mätningar',
           '400, 402 och 398 V: medel 400 V, största avvikelse 0,5 %.', '',
           'Skilj på spridning och fel. Ett systematiskt fel syns inte i spridningen.', ['medelvärde', 'avvikelse']),
-        F('Resistans ur spänningsfall', 'R = ΔU/I', 'ΔU spänningsfall över sträckan (V) vid strömmen I (A)',
+        F('Resistans ur spänningsfall', ['R = ΔU/I', 'ΔU_{total} = U_{källa} − U_{last}'], 'ΔU spänningsfall över sträckan (V) vid strömmen I (A)',
           'Före: 6 V vid 3 A ger 2,0 Ω. Efter: 0,3 V vid 3 A ger 0,10 Ω.', '',
           'Jämför bara värden mätta vid samma ström och i samma punkter.', ['resistans', 'felsökning', 'spänningsfall']),
+        F('Spänning mellan två mätpunkter', ['U_{AB} = V_{A} − V_{B}', 'över en kontakt: sluten ≈ 0 V, öppen = full spänning'], 'V_{A}, V_{B} spänning mot samma referens (V)',
+          'Före kontakten 24 V, efter kontakten 0 V mot minus: 24 V över kontakten, den är öppen.', '',
+          'Mät alltid mot samma referens. Mät från källan mot lasten och ringa in där spänningen försvinner.', ['felsökning', 'potential', 'kontakt']),
         F('Mätkategori CAT', ['CAT II: uttag och apparater', 'CAT III: fast installation, tavlor', 'CAT IV: matningens början'], '',
           'Mätning i en fördelningscentral ombord kräver minst CAT III med rätt spänning.', '',
           'Hela kedjan (instrument, sladdar, prober) ska ha rätt kategori och spänning.', ['cat', 'mätkategori', 'säkerhet']),
@@ -239,6 +251,14 @@ def h(s):
     return re.sub(r'_\{([^{}]*)\}', r'<sub>\1</sub>', s)
 
 
+def formelrad(x):
+    """En formelrad. En inledande etikett (”två faser:”, ”CAT II:”) ritas liten, så att formeln syns först."""
+    m = re.match(r'^([^=:]{2,26}): (.+)$', x)
+    if m and '=' not in m.group(1):
+        return f'<div class="fl"><span class="etikett">{h(m.group(1))}</span> {h(m.group(2))}</div>'
+    return f'<div class="fl">{h(x)}</div>'
+
+
 def bygg_html():
     bet = json.loads((SJO / 'innehall' / 'beteckningar.json').read_text(encoding='utf-8'))['beteckningar']
     nr, sok, kap_html, toc = 0, {}, [], []
@@ -248,7 +268,7 @@ def bygg_html():
             nr += 1
             for s in f['sok']:
                 sok.setdefault(s, []).append(nr)
-            formel = ''.join(f'<div class="fl">{h(x)}</div>' for x in f['formel'])
+            formel = ''.join(formelrad(x) for x in f['formel'])
             detalj = ''.join([
                 f'<p class="bet">{h(f["bet"])}</p>' if f['bet'] else '',
                 f'<p class="los"><b>Lös ut:</b> {h(f["los"])}</p>' if f['los'] else '',
@@ -297,7 +317,7 @@ td.sym{{font-weight:700;color:var(--bla);white-space:nowrap}}
 .rutnat{{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;align-items:start}}.f{{display:grid;grid-template-columns:34px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--linje);break-inside:avoid}}
 .f .nr{{font-weight:700;color:#fff;background:var(--bla);border-radius:7px;text-align:center;height:22px;line-height:22px;font-size:12.5px}}
 .f h3{{margin:0;font-size:15px}}
-.formel{{margin:3px 0 4px}}.fl{{font-size:17px;font-weight:700;color:var(--bla);line-height:1.3}}
+.formel{{margin:3px 0 4px}}.fl .etikett{{display:block;font-size:12px;font-weight:700;color:var(--dov);text-transform:uppercase;letter-spacing:.04em;line-height:1.4;margin-top:2px}}.fl{{font-size:17px;font-weight:700;color:var(--bla);line-height:1.3}}
 .f p{{margin:2px 0;font-size:12.5px;line-height:1.35}}.bet{{color:var(--dov)}}.los b,.ex b{{color:var(--text)}}
 .obs{{background:var(--varnbg);border-left:4px solid var(--varn);padding:2px 8px;border-radius:0 6px 6px 0}}.obs b{{color:var(--varn)}}
 .bilaga{{break-before:page}}.bilaga h2{{margin-top:6px}}

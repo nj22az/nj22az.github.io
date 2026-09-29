@@ -313,3 +313,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   I_{cu} och n_{s}. Pᵢₙ ska skrivas P_{in}. Alla har `labbdata: false`. Multimetersimulatorn behåller nu markeringen i
   texten och ritar index nedsänkt (markHtml), medan protokollet får oformaterad text (markText). Tidigare plattade
   exportören till ”Ukälla”. Vecka 40 orörd (låset oförändrat, QA grön).
+- **2026-09-29** Granskning av formelsamlingen. Alla exempel är omräknade. En täckningskontroll mot alla övningars
+  `samband` hittade samband som saknades. Nya formler: två spänningskällor i serie, nodspänning, spänningar i RL-krets
+  och spänning mellan två mätpunkter. Utökade formler: fall i % och P_{förlust} i kabel, Thévenin ur spänningsdelare,
+  PF = P/S, Q_{total}, fasavstånd, neutralström med två faser, spänningsdelare med last samt tolerans och krav.
+  Förtydligat: effekt vid växelström (F2), kabellängd och slinga, kortslutningsslingan, 30 mA för jordfelsbrytare
+  och att felströmsmodellen gäller TN-system. Etiketter som ”två faser:” ritas små. Nu 62 formler på 12 sidor.
+  Regel: kör täckningskontrollen (alla `samband`) när nya övningar läggs till.
