@@ -510,21 +510,37 @@ def page(nr, w):
     if nr >= 41 and not flytt:
         # Från vecka 41: presentationerna först (samma princip som vecka 40), sedan lösningar och självhjälp del för del.
         rader = []
+        # Lektionerna är måndag, tisdag och fredag (samma tider som vecka 40): del 1 måndag, del 2 tisdag, del 3 fredag.
+        import datetime as _dt
+        mandag = _dt.date.fromisoformat(w['datum'][0])
+        lektion = {1: (0, 'Måndag', '09.00–11.00'), 2: (1, 'Tisdag', '15.00–17.00'), 3: (4, 'Fredag', '09.00–11.00')}
         for i, (d, items) in enumerate(delar_, 1):
             for q in items + d.get('steg', []):
                 if q['typ'] == 'ppt':
                     stem = q['fil'][:-5]
                     oppna = stem + '.pdf' if (week_dir / (stem + '.pdf')).exists() else q['fil']
                     los = f' <a class="pres-los" href="Del_{i}.html#ovningar">Övningar och facit</a>' if delsida(i) else ''
-                    rader.append(f'<li><span class="pres-del">Del {i}</span><span class="pres-titel">{escape(q["titel"])}{los}</span>'
+                    dag = lektion.get(i)
+                    ld = mandag + _dt.timedelta(days=dag[0]) if dag else None
+                    nar = f'<span class="pres-nar">{dag[1]} {ld.day}/{ld.month} · {dag[2]}</span>' if dag else ''
+                    attr = f' data-dag="{ld.isoformat()}"' if dag else ''
+                    rader.append(f'<li{attr}><span class="pres-del">Del {i}</span><span class="pres-titel">{nar}{escape(q["titel"])}{los}</span>'
                                  f'<span class="pres-knappar"><a class="sj-btn primary" href="{oppna}">Öppna</a> <a class="sj-btn" href="{q["fil"]}" download>PowerPoint</a></span></li>')
         pres = ('<style>.week-pres{margin:22px 0 26px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
                 '.week-pres h2{margin:0 0 6px;font-size:26px}.week-pres ul{list-style:none;margin:12px 0 0;padding:0}'
                 '.week-pres li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid #cad8e2}'
                 '.week-pres .pres-del{font-weight:700;color:#064f91;min-width:3.4em}.week-pres .pres-titel{flex:1 1 14em;font-size:18px}'
-                '.week-pres .pres-knappar{display:flex;gap:10px}.week-pres .pres-los{display:block;font-size:15px;margin-top:2px}</style>'
+                '.week-pres .pres-knappar{display:flex;gap:10px}.week-pres .pres-los{display:block;font-size:15px;margin-top:2px}'
+                '.week-pres .pres-nar{display:block;font-size:14px;font-weight:700;color:#4d6579;letter-spacing:.02em}'
+                '.week-pres li.idag{margin:0 -12px;padding:12px;border:2px solid #064f91;border-radius:10px;background:#fff}'
+                '.week-pres li.idag .pres-nar{color:#064f91}</style>'
                 f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
-                f'<p>Läraren visar dem på lektionen. Öppna den del ni arbetar med, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul></section>')
+                f'<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul></section>'
+                # Dagens lektion (eller nästa lektion i veckan) lyfts fram. Utan JavaScript visas listan som den är.
+                '<script>(function(){var d=new Date(),t=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");'
+                'var r=[].slice.call(document.querySelectorAll(".week-pres li[data-dag]"));if(!r.length||t<r[0].dataset.dag||t>r[r.length-1].dataset.dag)return;'
+                'var n=r.filter(function(x){return x.dataset.dag>=t})[0];if(!n)return;n.classList.add("idag");var s=n.querySelector(".pres-nar");'
+                'if(s)s.textContent=(n.dataset.dag===t?"Idag · ":"Nästa lektion · ")+s.textContent;})();</script>')
         forsta = ('<p class="course-actions"><a class="sj-btn primary large" href="Del_1.html">Börja med del 1: ' + escape(w['delar'][0]['titel']) + '</a></p>') if delsida(1) else actions
         sjalv = ('<p>Varje del har en egen sida: översikt, teori, exempel och övningar med ledtrådar och facit. Gör delarna i ordning. Labben kommer sist.</p>' if delsida(1)
                  else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta

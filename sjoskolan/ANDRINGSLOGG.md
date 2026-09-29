@@ -282,3 +282,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   ordning som bygger upp svaret, ofta med ett annat fall, men inte svaret. Två utkast som räknade upp svaret
   (arbetsmetoderna i ESA, pumpens funktioner) skrevs om före publicering. Delsidan visar ”Ledtråd 3: steg för steg”
   för resonemang och ”steg för steg med andra tal” för beräkningar.
+- **2026-09-29** Vecka 41–45: schemat är måndag 09.00–11.00 (del 1), tisdag 15.00–17.00 (del 2) och fredag 09.00–11.00
+  (del 3), samma som vecka 40. Rutan ”Veckans presentationer” visar dag, datum och tid för varje del, och markerar
+  dagens lektion med ”Idag” eller nästa lektion i veckan med ”Nästa lektion”. Vecka 40 orörd.
