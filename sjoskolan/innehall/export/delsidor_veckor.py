@@ -145,8 +145,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     poster = [(pl, p) for pl, p in ovn]
     kort = hjalp([' '.join([p['uppgift']['fraga'], *p['uppgift'].get('samband', []), p['uppgift'].get('givet', '')]) for _, p in poster])
 
-    def teori_for(p, pass_):
-        """Det teoriavsnitt som delar flest begrepp med sambandet, annars det första i samma pass."""
+    def teori_for(p, pass_, pl=None):
+        """Placeringens angivna teoriavsnitt, annars det som delar flest begrepp med sambandet, annars det första i samma pass."""
+        if pl and pl.get('teori') and pl['teori'] <= len(teori):
+            return pl['teori'], teori[pl['teori'] - 1][1]
         mal_ord = ord_av(' '.join(p['uppgift'].get('samband', [])) + ' ' + p['titel'])
         bast, poang = None, 0
         for i, (nr, t, bl) in enumerate(teori, 1):
@@ -190,7 +192,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     # och varje avsnitt slutar med de övningar som bygger på det (läs lite, öva direkt).
     ova = {}
     for pl, p in poster:
-        ref = teori_for(p, pl['ordning'] > 5)
+        ref = teori_for(p, pl['ordning'] > 5, pl)
         if ref:
             ova.setdefault(ref[0], []).append(pl)
     h.append('<section id="teori" class="del-block"><h2><span>2</span> Teori</h2><p>Ett avsnitt i taget: öppna det, läs, och gör sedan övningarna som står sist i avsnittet. '
@@ -217,7 +219,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     for k, ((pl, p), rh) in enumerate(zip(poster, kort), 1):
         u, los = p['uppgift'], p.get('losning') or {}
         pass_ = pl['ordning'] > 5
-        ref = teori_for(p, pass_)
+        ref = teori_for(p, pass_, pl)
         formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []))
         resonemang = p.get('typ') == 'resonemang'
         led1 = ((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else '')
@@ -296,11 +298,15 @@ for(const b of document.querySelectorAll('.del-alla'))b.addEventListener('click'
 def filer(a):
     ut = {'gemensamt/delsida.css': CSS}
     placeringar = json.loads((R.SJO / 'innehall' / 'placeringar' / 'presentation.json').read_text())['placeringar']
+    # Angivet teoriavsnitt (fältet teori i kurs-formelstod.json) följer inte med i databasens placeringstabell.
+    teori_val = {x['ankare']: x['teori'] for x in json.loads((R.SJO / 'innehall' / 'placeringar' / 'kurs-formelstod.json').read_text())['placeringar'] if x.get('teori')}
     for v in VECKOR:
         mapp = R.SJO / f'vecka-{v}' / 'aktuell'
         decks = sorted(x.name for x in mapp.glob('v*_elev.pptx'))
         pl_ovn = {}
         for pl, p in a.placeringar('kurs-formelstod', f'vecka-{v}/aktuell/Formelstod_och_ovningar.html'):
+            if pl.get('ankare') in teori_val:
+                pl = {**pl, 'teori': teori_val[pl['ankare']]}
             pl_ovn.setdefault(pl['del'], []).append((pl, p))
         # Övningens figur: bilden i presentationen där övningen står.
         pres_bild = {}

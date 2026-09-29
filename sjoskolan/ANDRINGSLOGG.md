@@ -395,3 +395,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   - Alt-texterna till figurerna säger samma sak (`spec41.json`, `scheman_veckor.py`).
   Regel: en normaliserad kurva med fasspänningar ska inte lämnas ensam där linjespänning diskuteras. Visa U_{L} med
   toppvärdet √3 eller skriv det ut.
+- **2026-09-29 – v41 Del 2 (Y, Δ och trefaseffekt) granskad.**
+  - **Exempel E2** gav I_{L} ≈ 5,77 A, samma svar som övning 2.2. Det bröt regel 2. Exemplet räknar nu ombord:
+    P_{axel} = 3,0 kW, η = 0,80, PF = 0,75, 440 V, vilket ger P_{in} = 3,75 kW, I_{L} ≈ 6,56 A och förlust 0,75 kW
+    (v41_02 bild 24).
+  - **Teorihänvisningar:** övning 2.3 pekar nu på Teori 3 (I_{L} = √3 · I_{gren}), 2.4 och 2.10 på Teori 4
+    (Trefaseffekt). Placeringen kan ange avsnittet med det nya fältet `teori` i `kurs-formelstod.json`. Att vikta
+    formelord i det automatiska valet prövades men flyttade 25 hänvisningar i vecka 41–45, flera till sämre avsnitt.
+  - **Övning 2.7 (EL-000107):** ledtråd 1 löd ”Utgå från Jämför …”. Principen står nu som ”Nätets U_{L} = märkvärdet
+    för driftkopplingen”.
+  - **Teori:** ”I symmetrisk Δ är grenspänning och linjespänning lika” gäller alltid, inte bara vid symmetri (bild 4).
+    Trefaseffekt har fått raden ”Osymmetrisk last: summera fasernas aktiva effekter” (bild 8).
+  - Figurerna är kontrollerade, bland annat plintbyglarna för Y och Δ. De är oförändrade.
+  Regel: kontrollera varje övnings teorihänvisning mot avsnittet där formeln faktiskt står. Ange `teori` i
+  placeringen när det automatiska valet blir fel.

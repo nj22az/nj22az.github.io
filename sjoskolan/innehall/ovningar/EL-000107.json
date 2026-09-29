@@ -3,7 +3,7 @@
   "titel": "Motor 400/690 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
   "uppgift": {
     "fraga": "En motor är märkt Δ/Y 400/690 V. Nätet ger 400 V mellan faserna. Vilken driftkoppling stämmer?",
     "samband": [
-      "Jämför nätets U_{L} med båda märkvärdena"
+      "Nätets U_{L} = märkvärdet för driftkopplingen"
     ],
     "givet": "Landström vid kaj, 50 Hz. Nätet ger 400 V mellan faserna. Frågan gäller bara vilken koppling motorn ska ha i drift.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

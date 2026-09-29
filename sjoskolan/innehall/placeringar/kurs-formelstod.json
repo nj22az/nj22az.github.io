@@ -507,7 +507,8 @@
       "del": "v41_02",
       "ordning": 3,
       "nummer": "Övning 2.3",
-      "ankare": "v41_02-q3"
+      "ankare": "v41_02-q3",
+      "teori": 3
     },
     {
       "ovning": "EL-000104",
@@ -515,7 +516,8 @@
       "del": "v41_02",
       "ordning": 4,
       "nummer": "Övning 2.4",
-      "ankare": "v41_02-q4"
+      "ankare": "v41_02-q4",
+      "teori": 4
     },
     {
       "ovning": "EL-000105",
@@ -563,7 +565,8 @@
       "del": "v41_02",
       "ordning": 10,
       "nummer": "Övning 2.10",
-      "ankare": "v41_02-q10"
+      "ankare": "v41_02-q10",
+      "teori": 4
     },
     {
       "ovning": "EL-000111",
