@@ -183,6 +183,7 @@ VECKOR = {
                 ppt('v41_01_Trefassystemets_grunder_elev.pptx', 'Trefassystemets grunder', 36),
                 lank('Formelstod_och_ovningar.html#v41_01', 'Övningar: trefassystemets grunder', 'övning', '10 övningar med facit'),
                 lank('../../filmer/#varfor-rot-3', 'Film: Varför √3?', 'film', 'utan ljud, med text'),
+                lank('../../generatorn/', 'Generatorn i 3D', 'läs', 'vrid rotorn och se varför spänningarna ligger 120° isär'),
                 lank(LABB['trefas'], 'Trefaslabbet', 'labb', 'flik 1 och 2'),
             ]},
             {'titel': 'Y, Δ och trefaseffekt', 'mal': 'Välj rätt spänning och ström i Y och Δ och räkna effekten.', 'poster': [

@@ -124,6 +124,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     resultatkoden och lärarstödet använder filer utanför mappen. `veckolas.py` följer explicita startfiler och
     jämför både hashar och hela beroendemängden; nya dynamiskt laddade resurser ska tas med innan omlåsning.
     Frys inte hela gemensamma mappar. *Kontroll: `verktyg/las/test_veckolas.py` och `veckolas.py kontrollera`.*
+38. **3D bara där det fysiska är poängen.** 3D-figurer används för maskiner och apparater som eleven ska känna igen
+    (generatorn, plinten, transformatorns kärna). Visare, kurvor och formler ritas i 2D. Figuren ska vara läsbar i
+    halva bildbredden: rendera modellen mindre hellre än att krympa etiketterna. En etikett som dubblerar en annan tas bort.
+    3D-figurerna i vecka 41 byggs av `verktyg/figurer/figurer3d.py`, inte av `scheman_veckor.py` eller `figs41.py`.
 
 ### Boken
 
@@ -480,3 +484,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     - Motorlabbet är länkat från veckosidan, Labbet.html och labbhandboken. `model.test.mjs` körs i CI.
   Regel: en distansversion av en fysisk labb ska ha samma steg, regler och protokoll som labben på plats. Simulerade
   värden märks som simulerade.
+- **2026-09-29** 3D-figurer i vecka 41 del 1 och 2 och en interaktiv generator:
+    - Gemensamma three.js-modeller i `figurer3d/modeller.mjs` (generator, stjärnkoppling, plint, transformator),
+      renderade headless och etiketterade med kursens typsnitt av `verktyg/figurer/figurer3d.py`.
+    - v41_01 bild 4: generatorn i Y med kabeln, U_{L} mellan två fasledare och U_{F} mellan fasledare och N.
+    - v41_01 bild 6: generatorn med tre spolar 120° isär bredvid sinuskurvorna (ersätter enbart kurvorna).
+    - v41_02 bild 21: plinten i 3D, Y och Δ med bleck. Bild 23: transformatorn med tre ben, primär Δ 6,6 kV, sekundär Y 440 V.
+    - `generatorn/`: vrid rotorn och se u1, u2 och u3 ritas i takt, summan är 0 V. Länkad från veckosidan och Del 1
+      teori 2 (`INTERAKTIV` i `delsidor_veckor.py`).
+  Regel 38.

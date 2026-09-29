@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Vecka 41–45: diagram och kopplingsscheman i presentationerna som bilder (samma skäl som scheman_v38.py).
 
-v41_01 bild 6: tre sinusspänningar (var ett PowerPoint-diagram).
+v41_01 bild 6: tre sinusspänningar; figuren sätts nu ihop med generatorn i 3D av verktyg/figurer/figurer3d.py (sinus() används därifrån).
 v41_02 bild 6: Y- och Δ-koppling. v43_03 bild 8: hållkretsen (v41_03 bild 21 visar i stället startarens delar, verktyg/figurer/figs41.py).
 v43_03 bild 6: symboler. v43_03 bild 7: huvudströmsschema för en motor. v44_01 bild 6: enlinjeschema.
 
@@ -176,7 +176,7 @@ def symboler():
 
 # (vecka, presentation, bild, namn, ritfunktion)
 FIGURER = [
-    (41, 'v41_01_Trefassystemets_grunder_elev.pptx', 6, 'sinus', sinus),
+    # v41_01 bild 6 (sinus) ritas av verktyg/figurer/figurer3d.py tillsammans med generatorn i 3D.
     (41, 'v41_02_Y_och_trefaseffekt_elev.pptx', 6, 'y-delta', y_delta),
     (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 6, 'symboler', symboler),
     (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 7, 'huvudstrom', huvudstrom),

@@ -52,6 +52,12 @@ details.del-kort[open]>summary{border-bottom:1px solid var(--sj-line,#cad8e2)}
 '''
 
 
+# Interaktiva sidor som hör till ett teoriavsnitt: (presentation, avsnittets rubrik, länk, text).
+INTERAKTIV = [
+    ('v41_01', 'Tre sinusspänningar', '../../generatorn/', 'Vrid rotorn själv: Generatorn i 3D'),
+]
+
+
 def e(s):
     return html.escape(str(s), quote=False)
 
@@ -202,8 +208,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         forhand = f'<span class="kort-formel">{R.h(formel)}</span>' if formel else ''
         lank = ', '.join(f'<a href="#{x["ankare"]}">{e(x["nummer"])}</a>' for x in ova.get(i, []))
         ovning = f'<p class="del-ova"><strong>Öva nu:</strong> {lank}</p>' if lank else ''
+        interaktiv = ''.join(f'<p class="del-mer"><a href="{e(href)}">{e(txt)}</a></p>' for d_, t_, href, txt in INTERAKTIV if deck.startswith(d_) and t == t_)
         h.append(f'<details class="del-kort del-teori" id="teori-{i}"{" open" if i == 1 else ""}><summary><span class="kort-nr">{i}</span><span class="kort-text"><span class="kort-titel">{R.h(t)}</span>{forhand}</span></summary>'
-                 f'<div class="kort-kropp">{block_html(bl)}{ovning}</div></details>')
+                 f'<div class="kort-kropp">{block_html(bl)}{interaktiv}{ovning}</div></details>')
     h.append('</section>')
 
     # 3 Exempel: samma kort. Det första är öppet.

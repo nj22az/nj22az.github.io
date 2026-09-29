@@ -1,5 +1,6 @@
 {
 "v41_01": {"src":"sjoskolan/vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx","dst":"sjoskolan/vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx","slides":{
+ "4":["th","v41_01_s04_stjarna","Generatorn kopplad i Y med kabeln L1, L2, L3 och N: linjespänningen UL mäts mellan två fasledare, fasspänningen UF mellan en fasledare och N; stjärnpunkten blir N"],
  "7":["th","v41_01_s07_fas_linje","Fasspänningarna U1N, U2N och U3N (fas–nollpunkt) 120 grader isär; linjespänningen U12 (fas–fas, huvudspänning) är sträckan mellan två visarspetsar"],
  "8":["th","v41_01_s08_rot3","Linjespänningen U12 är den vektoriella skillnaden mellan fasspänningarna U1N och U2N, sträckan mellan visarspetsarna; i ett symmetriskt system √3 gånger fasspänningen"],
  "11":["ovn","v41_01_s11_ovn1","Tre fasvisare L1, L2 och L3 med okänd vinkel mellan L1 och L2"],
@@ -17,14 +18,14 @@
  "34":["ovn","v41_01_s34_ovn10","Två olika laster Ra och Rb från L1 och L2 till en gemensam punkt där neutralledaren är bruten"]}},
 "v41_02": {"src":"sjoskolan/vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx","dst":"sjoskolan/vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx","slides":{
  "8":["th", "v41_02_s08_trefaseffekt", "Effekttriangel för 440 V, 20 A och cos φ = 0,85: P ≈ 13,0 kW, Q ≈ 8,0 kvar och S ≈ 15,2 kVA"],
- "23":["th", "v41_02_s23_transformator", "Trefastransformator Dyn: primär Δ 6,6 kV med U1,gren = 6 600 V, sekundär Y 440 V med U2,gren ≈ 254 V; N1/N2 = U1,gren/U2,gren"],
+ "23":["th", "v41_02_s23_transformator3d", "Trefastransformator med järnkärna i tre ben: primärlindning 6,6 kV kopplad i Δ, sekundärlindning 440 V kopplad i Y; per ben N1/N2 = U1,gren/U2,gren"],
  "7":["th","v41_02_s07_delta_strom","Δ-last: linjeströmmen IL1 delar sig i grenströmmarna I12 och I31. Visarbilden visar IL1 = I12 − I31 som vektoriell skillnad, √3 gånger grenströmmen"],
  "11":["ovn","v41_02_s11_ovn1","Y-last med tre resistorer på 40 ohm vid linjespänningen 400 V; grenspänningen okänd"],
  "13":["ovn","v41_02_s13_ovn2","Y-last med tre resistorer på 40 ohm vid 400 V; linjeström och grenström okända"],
  "15":["ovn","v41_02_s15_ovn3","Δ-last med tre resistorer på 40 ohm vid 400 V; linjeström och grenström okända"],
  "17":["ovn","v41_02_s17_ovn4","Trefasmotor matad med 400 V och 10 A linjeström vid cos fi 0,80; aktiv effekt okänd"],
  "19":["ovn","v41_02_s19_ovn5","Effekttriangel för induktiv last med cos fi 0,80; S och Q okända"],
- "21":["th","v41_02_s21_plint","Motorns kopplingsplint: Y med bygel över W2, U2, V2 ger lindningsspänningen UL/√3; Δ med byglar U1–W2, V1–U2, W1–V2 ger lindningsspänningen UL"],
+ "21":["th","v41_02_s21_plint3d","Motorns kopplingsplint i 3D: Y med bleck över W2, U2, V2 ger lindningsspänningen UL/√3; Δ med bleck U1–W2, V1–U2, W1–V2 ger lindningsspänningen UL"],
  "22":["th","v41_02_s22_effektflode","Effektflöde i motorn: elektrisk inmatning blir axeleffekt och förluster"],
  "26":["ovn","v41_02_s26_ovn6","Motor märkt Δ/Y 230/400 V på 400 V-nät; Y- och Δ-koppling att välja mellan"],
  "28":["ovn","v41_02_s28_ovn7","Motor märkt Δ/Y 400/690 V på 400 V-nät; Y- och Δ-koppling att välja mellan"],
