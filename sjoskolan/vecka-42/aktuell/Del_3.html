@@ -99,6 +99,11 @@ const knappar=[...document.querySelectorAll('.del-klar')];
 const rita=()=>{let n=0;for(const b of knappar){const k=!!klara[b.dataset.id];n+=k;b.textContent=k?'✓ Klar':'Markera som klar';b.setAttribute('aria-pressed',String(k));b.closest('.del-ovning').classList.toggle('klar',k);}document.getElementById('del-status').textContent=`${n} av ${knappar.length} övningar klara.`;};
 for(const b of knappar)b.addEventListener('click',()=>{klara[b.dataset.id]=!klara[b.dataset.id];try{localStorage.setItem(K,JSON.stringify(klara));}catch{}rita();});
 rita();})();
+// Kontrollfrågor: första svaret sparas per fråga ({ankare: valt alternativ}) och följer med i resultatkoden.
+(()=>{const K='sj-kontroll:vecka-42';let sv={};try{sv=JSON.parse(localStorage.getItem(K)||'{}')||{};}catch{}
+const visa=(f,val)=>{const ok=val===Number(f.dataset.ratt);const u=f.querySelector('.kf-svar');u.hidden=false;u.querySelector('.kf-utfall').textContent=ok?'Rätt.':'Inte rätt. Rätt svar: '+f.querySelectorAll('label')[f.dataset.ratt].textContent.trim()+'.';f.classList.toggle('ratt',ok);f.classList.toggle('fel',!ok);};
+for(const f of document.querySelectorAll('form.kf')){if(Number.isInteger(sv[f.id])){const r=f.querySelector(`input[value="${sv[f.id]}"]`);if(r)r.checked=true;visa(f,sv[f.id]);}
+f.addEventListener('submit',ev=>{ev.preventDefault();const r=f.querySelector('input:checked');if(!r)return;const val=Number(r.value);if(!Number.isInteger(sv[f.id])){sv[f.id]=val;try{localStorage.setItem(K,JSON.stringify(sv));}catch{}}visa(f,val);});}})();
 // Teori och exempel är kort som öppnas ett i taget. En länk dit (ledtråd, Öva nu, stegraden) öppnar kortet.
 (()=>{const oppna=h=>{if(!h||h.length<2)return;const m=document.getElementById(decodeURIComponent(h.slice(1)));if(!m)return;for(let d=m;d;d=d.parentElement?.closest('details'))if(d.tagName==='DETAILS')d.open=true;};
 document.addEventListener('click',ev=>{const a=ev.target.closest('a[href^="#"]');if(a)oppna(a.getAttribute('href'));});

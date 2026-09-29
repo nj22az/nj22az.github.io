@@ -39,9 +39,11 @@ def epost_knapp(nr, vn):
     from urllib.parse import quote
     amne = quote(f'Inlämning vecka {vn}: Förnamn Efternamn')
     kropp = quote(f'Hej!\n\nHär är min inlämning för vecka {vn}.\n\nNamn: \nBifogat: uträkningar (foto eller PDF) och labbprotokoll (PDF).\n')
+    qr = (f'<li>Skapa din QR-kod på sidan <a href="/sjoskolan/vecka-{nr}/aktuell/Resultat.html">Skicka resultat</a> och bifoga en skärmbild av den.</li>'
+          if nr in SVARSRUTOR else '')
     return (f'<div class="sj-panel soft handin-mail"><h3>Så lämnar du in</h3><ol><li>Räkna och skriv på papper eller i dator. Ta tydliga foton eller spara som PDF.</li>'
             f'<li>Skicka allt i <strong>ett</strong> mejl till <a href="mailto:{EPOST}">{EPOST}</a>.</li>'
-            f'<li>Ämnesrad: <strong>Inlämning vecka {vn}: ditt för- och efternamn</strong>.</li><li>Bifoga labbprotokollet som PDF.</li></ol>'
+            f'<li>Ämnesrad: <strong>Inlämning vecka {vn}: ditt för- och efternamn</strong>.</li><li>Bifoga labbprotokollet som PDF.</li>{qr}</ol>'
             f'<p><a class="sj-btn primary" href="mailto:{EPOST}?subject={amne}&amp;body={kropp}">Skriv mejlet till läraren</a></p></div>')
 
 
@@ -54,7 +56,14 @@ def datum(iso):
 RESULTATKOD = {40}
 
 
+# Veckor med svarsrutor och resultatkod där D räknas ur namnet (vecka-XX/aktuell/inlamning-svar.mjs och Resultat.html).
+SVARSRUTOR = {41}
+
+
 def dbox(nr):
+    if nr in SVARSRUTOR:
+        return (NAMNRUTA.replace('</p></div>\n<script', '</p><p>Skriv dina svar i rutorna under inlämning 1 och 2. De sparas i webbläsaren och följer med i QR-koden på sidan <a href="Resultat.html">Skicka resultat</a>. Uträkningar, visardiagram och protokoll lämnar du i mejlet.</p></div>\n<script', 1)
+                + f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v=20260929"></script>\n')
     if nr not in RESULTATKOD:
         return NAMNRUTA
     return (f'<div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder talet <strong>D</strong>. Det slumpas första gången du öppnar veckan på en dator eller telefon och sparas där. Du behöver inte skriva ditt namn nu: det gör du i slutet, på sidan <a href="Resultat.html">Skicka resultat</a>.</p>'

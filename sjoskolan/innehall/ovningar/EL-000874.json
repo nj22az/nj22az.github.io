@@ -1,0 +1,49 @@
+{
+  "id": "EL-000874",
+  "titel": "Kontrollfråga 3.1",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 1 kΩ-resistor med tolerans ±5 % mäts till 1,06 kΩ. Bortse från instrumentets fel. Vilken bedömning gör du?",
+    "alternativ": [
+      "Inom tolerans",
+      "Utanför tolerans",
+      "Kan inte avgöras"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Räkna nedre och övre gräns först.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Gränserna är 950–1 050 Ω. 1 060 Ω ligger över den övre gränsen.",
+    "status": "utkast",
+    "kommentar": "Utanför tolerans"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_3.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

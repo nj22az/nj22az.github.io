@@ -1,0 +1,50 @@
+{
+  "id": "EL-000875",
+  "titel": "Kontrollfråga 3.2",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En seriekrets med två resistorer matas med 12 V. Över R_{1} mäts 4,0 V. Vilken spänning förväntar du dig över R_{2}?",
+    "alternativ": [
+      "4,0 V",
+      "8,0 V",
+      "12 V",
+      "16 V"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Kirchhoffs spänningslag.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Enligt spänningslagen är källans spänning lika med summan av fallen: 12 − 4,0 = 8,0 V.",
+    "status": "utkast",
+    "kommentar": "8,0 V"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_3.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

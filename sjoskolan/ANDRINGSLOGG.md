@@ -329,3 +329,21 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   rimlighetstabell med värden ombord, kapitelöppningar med ”Det här ska du kunna”, register, bilagor och
   anteckningssidor (jämnt antal sidor för dubbelsidig utskrift). Länkarna i PDF:en fungerar. Källa:
   `verktyg/formelsamling/bygg.py`.
+- **2026-09-29** Vecka 41 har nu samma stöd som vecka 40, i fyra delar:
+  1) **Svarsfält** under inlämning 1 och 2 (nio tal). D räknas ur namnet, som förut. `vecka-41/aktuell/inlamning-svar.mjs`
+     kopplas in via `SVARSRUTOR` i `verktyg/inlamning/bygg.py`.
+  2) **Resultatkod (QR)** på `vecka-41/aktuell/Resultat.html`: svar, kontrollfrågor, övningar, stationsprotokoll A–C
+     (mätningar, utanför tolerans, felsökningar med slutsats) och lösta uppgifter i Trefaslabbet. Kodningen ligger i den
+     nya `gemensamt/resultatkod.mjs`, eftersom vecka 40:s modul är låst. Inlämningsmejlet ska ha QR-koden som bilaga.
+  3) **Lärarsida** `larare/resultat-v41.html` (krypterad): facit ur namnets D, klassöversikt, presentatörsvy,
+     kamera/skärmbild/klistra in och CSV. Den varnar när kodens D inte stämmer med namnet. Den länkas från portalen och
+     från guiden för vecka 41. Vecka 40:s lärarsida är orörd.
+  4) **Veckans plan** på veckosidan (41–45): lektion och hemma, dag för dag, med markeringen ”Nu”.
+  **Kontrollfrågor:** tre per del, sist i övningarna. Nio flervalsposter EL-000868–876 och ytan
+  `placeringar/kontrollfragor.json`. Rätt alternativ står i `losning.kommentar` (`losning.svarstext` är ett skyddat
+  bokfält). Svaren sparas under `sj-kontroll:vecka-41`. Facit för lärarsidan genereras till
+  `vecka-41/aktuell/kontrollfragor.gen.mjs`.
+  Tester: `vecka-41/aktuell/resultat.test.mjs` (i CI). Kedjan är provad hela vägen: inlämning, delsida, QR, krypterad
+  lärarsida. Vecka 40 orörd.
+  Regel: en knapp på delsidan får inte ha klassen `del-klar` om den inte bockar av en övning, eftersom avbockningen
+  letar efter `.del-ovning`.

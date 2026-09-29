@@ -2718,6 +2718,60 @@
       "skydd": "elev",
       "hash": "9569316a4515b54a",
       "hash_publik": "9569316a4515b54a"
+    },
+    "EL-000868": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "4d1c0a8fd8cad026",
+      "hash_publik": "4d1c0a8fd8cad026"
+    },
+    "EL-000869": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "a36bebe2ab75f6e2",
+      "hash_publik": "a36bebe2ab75f6e2"
+    },
+    "EL-000870": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "8ba97978f2cdedf1",
+      "hash_publik": "8ba97978f2cdedf1"
+    },
+    "EL-000871": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "79722ff82090ec17",
+      "hash_publik": "79722ff82090ec17"
+    },
+    "EL-000872": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "3429fb0895842872",
+      "hash_publik": "3429fb0895842872"
+    },
+    "EL-000873": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "6a83b36d36e837a9",
+      "hash_publik": "6a83b36d36e837a9"
+    },
+    "EL-000874": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "899b3cb89f0f425d",
+      "hash_publik": "899b3cb89f0f425d"
+    },
+    "EL-000875": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "dc2c60ef27023c38",
+      "hash_publik": "dc2c60ef27023c38"
+    },
+    "EL-000876": {
+      "revision": 3,
+      "skydd": "elev",
+      "hash": "136fb3c87bd92b20",
+      "hash_publik": "136fb3c87bd92b20"
     }
   }
 }

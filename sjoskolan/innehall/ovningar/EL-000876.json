@@ -1,0 +1,50 @@
+{
+  "id": "EL-000876",
+  "titel": "Kontrollfråga 3.3",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "K1 drar när START hålls in men släpper när START släpps. Var sitter felet troligast?",
+    "alternativ": [
+      "I STOPP-knappen",
+      "I hållvägen: K1:s NO-kontakt eller dess ledare",
+      "I spolens matning",
+      "I START-knappen"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Vad fungerar, och vad behövs bara efter att START släpps?",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Eftersom K1 drar via START fungerar matning, STOPP och spole. Det som bara behövs efter släppet är hållvägen.",
+    "status": "utkast",
+    "kommentar": "I hållvägen: K1:s NO-kontakt eller dess ledare"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_3.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

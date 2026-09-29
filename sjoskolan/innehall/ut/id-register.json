@@ -7912,6 +7912,150 @@
      "ankare": "effekt:tur-effekt"
     }
    ]
+  },
+  {
+   "id": "EL-000868",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 1.1",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_1.html",
+     "nummer": "Kontrollfråga 1.1",
+     "ankare": "v41_01-k1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000869",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 1.2",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_1.html",
+     "nummer": "Kontrollfråga 1.2",
+     "ankare": "v41_01-k2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000870",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 1.3",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_1.html",
+     "nummer": "Kontrollfråga 1.3",
+     "ankare": "v41_01-k3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000871",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 2.1",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_2.html",
+     "nummer": "Kontrollfråga 2.1",
+     "ankare": "v41_02-k1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000872",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 2.2",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_2.html",
+     "nummer": "Kontrollfråga 2.2",
+     "ankare": "v41_02-k2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000873",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 2.3",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_2.html",
+     "nummer": "Kontrollfråga 2.3",
+     "ankare": "v41_02-k3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000874",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 3.1",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_3.html",
+     "nummer": "Kontrollfråga 3.1",
+     "ankare": "v41_03-k1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000875",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 3.2",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_3.html",
+     "nummer": "Kontrollfråga 3.2",
+     "ankare": "v41_03-k2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000876",
+   "revision": 3,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kontrollfråga 3.3",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "kontrollfragor",
+     "plats": "vecka-41/aktuell/Del_3.html",
+     "nummer": "Kontrollfråga 3.3",
+     "ankare": "v41_03-k3"
+    }
+   ]
   }
  ]
 }

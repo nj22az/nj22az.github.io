@@ -1,0 +1,50 @@
+{
+  "id": "EL-000871",
+  "titel": "Kontrollfråga 2.1",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre resistorer på 22 Ω kopplas i Y till 440 V. Vad är grenspänningen?",
+    "alternativ": [
+      "440 V",
+      "254 V",
+      "147 V",
+      "762 V"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I Y är det spänningen som delas med √3.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "I Y ligger varje gren mellan fas och neutralpunkt: 440/√3 ≈ 254 V.",
+    "status": "utkast",
+    "kommentar": "254 V"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_2.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

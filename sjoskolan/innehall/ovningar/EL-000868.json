@@ -1,0 +1,50 @@
+{
+  "id": "EL-000868",
+  "titel": "Kontrollfråga 1.1",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ombordnätet har 440 V mellan faserna. Vilken spänning ligger mellan en fas och neutral?",
+    "alternativ": [
+      "440 V",
+      "254 V",
+      "220 V",
+      "762 V"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "U_{F} = U_{L}/√3.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Fasspänningen är huvudspänningen delad med √3: 440/1,732 ≈ 254 V.",
+    "status": "utkast",
+    "kommentar": "254 V"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_1.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

@@ -43,6 +43,11 @@ details.del-kort[open]>summary{border-bottom:1px solid var(--sj-line,#cad8e2)}
 .kort-kropp{padding:4px 18px 12px}
 .del-ova{margin:16px 0 4px;padding:10px 14px;border-radius:10px;background:var(--sj-soft,#edf4f9)}
 @media print{details.del-kort>summary::after{content:none}.steg-knappar{display:none}}
+.del-kontroll{margin:28px 0;padding:14px 18px;border:2px solid var(--sj-accent,#064f91);border-radius:12px;background:var(--sj-soft,#edf4f9)}.del-kontroll h3{margin-top:0}
+.kf{margin:14px 0;padding:12px 14px;background:#fff;border:1px solid var(--sj-line,#cad8e2);border-radius:10px}.kf fieldset{border:0;margin:0;padding:0}.kf legend{padding:0;margin-bottom:6px}
+.kf label{display:flex;gap:10px;align-items:flex-start;min-height:40px;padding:6px 4px;cursor:pointer}.kf input{margin-top:5px}.kf .kf-led{font-size:14px;color:var(--sj-muted,#4d6579)}
+.kf-svara{min-height:44px;padding:6px 16px;border:1px solid var(--sj-accent,#064f91);border-radius:8px;background:var(--sj-accent,#064f91);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.kf.ratt{border-color:var(--sj-ok,#176844)}.kf.fel{border-color:#9a330f}.kf.ratt .kf-utfall{color:var(--sj-ok,#176844);font-weight:700}.kf.fel .kf-utfall{color:#9a330f;font-weight:700}
 .steg-knappar{margin:10px 0 4px;display:flex;flex-wrap:wrap;gap:8px}
 '''
 
@@ -119,7 +124,7 @@ def ord_av(s):
     return {w for w in re.findall(r'[a-zåäöδφ√]+[0-9]*|[a-zåäö]*\d+[a-zåäö]*', s) if len(w) >= 2} - {'och', 'är', 'en', 'ett', 'av', 'på', 'med', 'för', 'som', 'den', 'det', 'till', 'om', 'att', 'de'}
 
 
-def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
+def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     mapp = R.SJO / f'vecka-{v}' / 'aktuell'
     figmapp = mapp / 'figurer'
     kap = deck[:6]
@@ -235,6 +240,16 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
 {rh}
 <details class="facit"><summary>Facit</summary>{facit}{f'<p><strong>Svar:</strong> {svar}</p>' if svar else ''}</details>
 <button type="button" class="del-klar" data-id="{pl["ankare"]}">Markera som klar</button></article>''')
+    if kontroll:  # kontrollfrågor (placeringar/kontrollfragor.json): rätt alternativ står i losning.kommentar
+        fr = []
+        for pl, p in kontroll:
+            alt, ratt = p['uppgift']['alternativ'], p['losning']['kommentar']
+            val = ''.join(f'<label><input type="radio" name="{pl["ankare"]}" value="{i}"> {R.h(x)}</label>' for i, x in enumerate(alt))
+            led = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []))
+            fr.append(f'<form class="kf" id="{pl["ankare"]}" data-ratt="{alt.index(ratt)}"><fieldset><legend><b>{e(pl["nummer"])}.</b> {R.h(p["uppgift"]["fraga"])}</legend>{val}</fieldset>'
+                      f'<p class="kf-knapp"><button type="submit" class="kf-svara">Svara</button> <span class="kf-led">Ledtråd: {led}</span></p>'
+                      f'<div class="kf-svar" hidden><p class="kf-utfall"></p><p>{R.h(p["losning"]["text"])}</p></div></form>')
+        h.append(f'<section class="del-kontroll" id="kontroll"><h3>Kontrollfrågor: har du förstått delen?</h3><p>Svara på de tre frågorna innan du går vidare. Ditt första svar sparas och följer med i QR-koden på sidan <a href="Resultat.html">Skicka resultat</a>. Det är ingen poäng, det visar vad som behöver repeteras.</p>{"".join(fr)}</section>')
     if avslut:
         h.append(f'<section class="del-tur" id="klart"><h3>Klart med delen?</h3>{block_html(avslut[2])}</section>')
     h.append('</section>')
@@ -246,6 +261,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel):
         h.append(f'<details class="del-mer"><summary>Källor och fortsatt läsning</summary>{block_html(kallor[2])}</details>')
     h.append('</section>')
 
+    kf_nyckel = f'sj-kontroll:vecka-{v}'
     fore = f'<a href="Del_{dnr - 1}.html">← Del {dnr - 1}</a>' if dnr > 1 else '<a href="index.html">← Vecka ' + str(v) + '</a>'
     efter = f'<a href="Del_{dnr + 1}.html">Del {dnr + 1} →</a>' if dnr < antal else '<a href="index.html#labb">Labben →</a>'
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>
@@ -257,6 +273,11 @@ const knappar=[...document.querySelectorAll('.del-klar')];
 const rita=()=>{{let n=0;for(const b of knappar){{const k=!!klara[b.dataset.id];n+=k;b.textContent=k?'✓ Klar':'Markera som klar';b.setAttribute('aria-pressed',String(k));b.closest('.del-ovning').classList.toggle('klar',k);}}document.getElementById('del-status').textContent=`${{n}} av ${{knappar.length}} övningar klara.`;}};
 for(const b of knappar)b.addEventListener('click',()=>{{klara[b.dataset.id]=!klara[b.dataset.id];try{{localStorage.setItem(K,JSON.stringify(klara));}}catch{{}}rita();}});
 rita();}})();
+// Kontrollfrågor: första svaret sparas per fråga ({{ankare: valt alternativ}}) och följer med i resultatkoden.
+(()=>{{const K='{kf_nyckel}';let sv={{}};try{{sv=JSON.parse(localStorage.getItem(K)||'{{}}')||{{}};}}catch{{}}
+const visa=(f,val)=>{{const ok=val===Number(f.dataset.ratt);const u=f.querySelector('.kf-svar');u.hidden=false;u.querySelector('.kf-utfall').textContent=ok?'Rätt.':'Inte rätt. Rätt svar: '+f.querySelectorAll('label')[f.dataset.ratt].textContent.trim()+'.';f.classList.toggle('ratt',ok);f.classList.toggle('fel',!ok);}};
+for(const f of document.querySelectorAll('form.kf')){{if(Number.isInteger(sv[f.id])){{const r=f.querySelector(`input[value="${{sv[f.id]}}"]`);if(r)r.checked=true;visa(f,sv[f.id]);}}
+f.addEventListener('submit',ev=>{{ev.preventDefault();const r=f.querySelector('input:checked');if(!r)return;const val=Number(r.value);if(!Number.isInteger(sv[f.id])){{sv[f.id]=val;try{{localStorage.setItem(K,JSON.stringify(sv));}}catch{{}}}}visa(f,val);}});}}}})();
 // Teori och exempel är kort som öppnas ett i taget. En länk dit (ledtråd, Öva nu, stegraden) öppnar kortet.
 (()=>{{const oppna=h=>{{if(!h||h.length<2)return;const m=document.getElementById(decodeURIComponent(h.slice(1)));if(!m)return;for(let d=m;d;d=d.parentElement?.closest('details'))if(d.tagName==='DETAILS')d.open=true;}};
 document.addEventListener('click',ev=>{{const a=ev.target.closest('a[href^="#"]');if(a)oppna(a.getAttribute('href'));}});
@@ -289,6 +310,16 @@ def filer(a):
                 bild = Presentation(mapp / deck).slides[pl['bild'] - 1]
                 pres_bild[pl['ovning']] = las_bild(bild, deck, pl['bild'], mapp / 'figurer')[1]
         veckotitel = f'Vecka {v}'
+        kf = {}
+        for pl, p in a.placeringar('kontrollfragor'):
+            if pl['plats'].startswith(f'vecka-{v}/'):
+                kf.setdefault(pl['del'], []).append((pl, p))
         for deck in decks:
-            ut[f'vecka-{v}/aktuell/Del_{int(deck[5])}.html'] = sida(a, v, deck, decks, pl_ovn, pres_bild, veckotitel)
+            ut[f'vecka-{v}/aktuell/Del_{int(deck[5])}.html'] = sida(a, v, deck, decks, pl_ovn, pres_bild, veckotitel, kf.get(deck[:6], ()))
+        if kf:  # kontrollfrågornas rätta svar för lärarsidan med resultatkoder (larare/resultat-vNN.html)
+            rader = [{'id': pl['ankare'], 'nummer': pl['nummer'], 'fraga': p['uppgift']['fraga'], 'alternativ': p['uppgift']['alternativ'],
+                      'ratt': p['uppgift']['alternativ'].index(p['losning']['kommentar'])} for d in sorted(kf) for pl, p in kf[d]]
+            ut[f'vecka-{v}/aktuell/kontrollfragor.gen.mjs'] = ('// GENERERAD FIL · ur sjoskolan/innehall (placeringar/kontrollfragor.json, innehall.py bygg delsidor_veckor).\n'
+                                                              '// Redigera posterna i innehall/ovningar/, inte här. Samma frågor och rätta svar som på delsidorna.\n'
+                                                              'export const KONTROLLFRAGOR = ' + json.dumps(rader, ensure_ascii=False, indent=1) + ';\n')
     return ut

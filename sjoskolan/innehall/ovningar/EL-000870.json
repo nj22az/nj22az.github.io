@@ -1,0 +1,50 @@
+{
+  "id": "EL-000870",
+  "titel": "Kontrollfråga 1.3",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur lång tid går det mellan två faser vid 60 Hz?",
+    "alternativ": [
+      "5,56 ms",
+      "6,67 ms",
+      "16,7 ms",
+      "2,78 ms"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Räkna periodtiden först.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "T = 1/60 ≈ 16,7 ms. En tredjedels period, 120°, är 16,7/3 ≈ 5,56 ms.",
+    "status": "utkast",
+    "kommentar": "5,56 ms"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_1.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

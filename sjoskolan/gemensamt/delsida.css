@@ -39,4 +39,9 @@ details.del-kort[open]>summary{border-bottom:1px solid var(--sj-line,#cad8e2)}
 .kort-kropp{padding:4px 18px 12px}
 .del-ova{margin:16px 0 4px;padding:10px 14px;border-radius:10px;background:var(--sj-soft,#edf4f9)}
 @media print{details.del-kort>summary::after{content:none}.steg-knappar{display:none}}
+.del-kontroll{margin:28px 0;padding:14px 18px;border:2px solid var(--sj-accent,#064f91);border-radius:12px;background:var(--sj-soft,#edf4f9)}.del-kontroll h3{margin-top:0}
+.kf{margin:14px 0;padding:12px 14px;background:#fff;border:1px solid var(--sj-line,#cad8e2);border-radius:10px}.kf fieldset{border:0;margin:0;padding:0}.kf legend{padding:0;margin-bottom:6px}
+.kf label{display:flex;gap:10px;align-items:flex-start;min-height:40px;padding:6px 4px;cursor:pointer}.kf input{margin-top:5px}.kf .kf-led{font-size:14px;color:var(--sj-muted,#4d6579)}
+.kf-svara{min-height:44px;padding:6px 16px;border:1px solid var(--sj-accent,#064f91);border-radius:8px;background:var(--sj-accent,#064f91);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.kf.ratt{border-color:var(--sj-ok,#176844)}.kf.fel{border-color:#9a330f}.kf.ratt .kf-utfall{color:var(--sj-ok,#176844);font-weight:700}.kf.fel .kf-utfall{color:#9a330f;font-weight:700}
 .steg-knappar{margin:10px 0 4px;display:flex;flex-wrap:wrap;gap:8px}

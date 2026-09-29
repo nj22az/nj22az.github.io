@@ -419,6 +419,39 @@ def first_href(del_):
     return p.get('fil') or p['href']
 
 
+def veckoplan(nr, w, n, delsidor):
+    """Veckans plan från vecka 41: vad eleven gör på varje lektion (måndag, tisdag, fredag) och hemma mellan dem.
+    Övning d.1–d.5 görs på lektionen och d.6–d.10 hemma (samma delning som presentationernas pass). Den del av planen
+    som gäller just nu markeras med ”Nu”."""
+    import datetime as dt
+    mandag = dt.date.fromisoformat(w['datum'][0])
+    dag = lambda k: mandag + dt.timedelta(days=k)
+    fmt = lambda d: f'{d.day}/{d.month}'
+    svar = nr in _inl.SVARSRUTOR
+    del_ = lambda i: f'<a href="Del_{i}.html">del {i}</a>' if delsidor else f'del {i}'
+    kontroll = lambda i: f', sedan <a href="Del_{i}.html#kontroll">kontrollfrågorna</a>' if svar else ''
+    inl = 'Skriv svaren i rutorna på <a href="Inlamning.html">inlämningssidan</a>.' if svar else 'Börja på <a href="Inlamning.html">inlämningen</a>.'
+    skicka = ' Skapa QR-koden på <a href="Resultat.html">Skicka resultat</a> och bifoga den.' if svar else ''
+    steg = [
+        (f'{dag(0).isoformat()}T00:00', f'Måndag {fmt(dag(0))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(1)}. Övning 1.1–1.5 i klassen.'),
+        (f'{dag(0).isoformat()}T11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', f'Övning 1.6–1.10 på {del_(1)}{kontroll(1)}. Använd ledtrådarna innan du öppnar facit.'),
+        (f'{dag(1).isoformat()}T14:00', f'Tisdag {fmt(dag(1))}', 'Lektion 15.00–17.00', f'Presentationen för {del_(2)}. Övning 2.1–2.5 i klassen.'),
+        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}'),
+        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.'),
+        (f'{dag(4).isoformat()}T11:00', 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
+    ]
+    rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)
+    return ('<style>.veckoplan{margin:0 0 26px}.veckoplan h2{font-size:22px;margin:0 0 8px}.veckoplan ol{list-style:none;margin:0;padding:0;border-top:1px solid #cad8e2}'
+            '.veckoplan li{display:grid;grid-template-columns:minmax(11em,15em) 1fr;gap:4px 16px;padding:10px 8px;border-bottom:1px solid #cad8e2}'
+            '.veckoplan .plan-nar{color:#4d6579;font-size:15px}.veckoplan .plan-nar b{display:block;color:#163248}'
+            '.veckoplan li.nu{border:2px solid #064f91;border-radius:10px;background:#fff}.veckoplan li.nu .plan-nar b::before{content:"Nu · ";color:#064f91}'
+            '@media(max-width:640px){.veckoplan li{grid-template-columns:1fr}}</style>'
+            f'<section class="veckoplan" aria-labelledby="veckoplan"><h2 id="veckoplan">Veckans plan</h2><ol>{rader}</ol></section>'
+            '<script>(function(){var t=new Date(),r=[].slice.call(document.querySelectorAll(".veckoplan li[data-start]")),nu=null;'
+            'r.forEach(function(x){if(new Date(x.dataset.start)<=t)nu=x;});var slut=new Date(r[r.length-1].dataset.start);slut.setDate(slut.getDate()+3);'
+            'if(nu&&t<slut)nu.classList.add("nu");})();</script>')
+
+
 def page(nr, w):
     if nr == 40:
         from arbetsvecka40 import page as workspace_page
@@ -543,6 +576,7 @@ def page(nr, w):
                 'var r=[].slice.call(document.querySelectorAll(".week-pres li[data-dag]"));if(!r.length||t<r[0].dataset.dag||t>r[r.length-1].dataset.dag)return;'
                 'var n=r.filter(function(x){return x.dataset.dag>=t})[0];if(!n)return;n.classList.add("idag");var s=n.querySelector(".pres-nar");'
                 'if(s)s.textContent=(n.dataset.dag===t?"Idag · ":"Nästa lektion · ")+s.textContent;})();</script>')
+        pres += veckoplan(nr, w, n, delsida(1))
         forsta = '' if delsida(1) else actions  # delsidorna har egna knappar och ”Nästa” visar var eleven ska fortsätta
         sjalv = ('<p>Varje del har en egen sida: översikt, teori, exempel och övningar med ledtrådar och facit. Gör delarna i ordning. Labben kommer sist.</p>' if delsida(1)
                  else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta
