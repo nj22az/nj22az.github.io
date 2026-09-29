@@ -3,7 +3,7 @@
   "titel": "Skenbar och reaktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
       "S = √3 U_{L}I_{L} Q = S sin φ",
       "sin φ = √(1 − cos²φ)"
     ],
-    "givet": "U_{L} = 400 V, I_{L} = 10 A, cos φ = 0,80. Symmetrisk last med rena sinussignaler.",
+    "givet": "Landström vid kaj, 50 Hz. U_{L} = 400 V, I_{L} = 10 A, cos φ = 0,80. Symmetrisk last med rena sinussignaler.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

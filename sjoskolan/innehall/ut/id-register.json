@@ -1145,7 +1145,7 @@
   },
   {
    "id": "EL-000092",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Tidsförskjutning",
@@ -1167,7 +1167,7 @@
   },
   {
    "id": "EL-000093",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fasspänning",
@@ -1189,7 +1189,7 @@
   },
   {
    "id": "EL-000094",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Linjespänning",
@@ -1343,7 +1343,7 @@
   },
   {
    "id": "EL-000101",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Y-lastens grenspänning",
@@ -1365,7 +1365,7 @@
   },
   {
    "id": "EL-000102",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström i Y",
@@ -1387,7 +1387,7 @@
   },
   {
    "id": "EL-000103",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma resistorer i Δ",
@@ -1409,7 +1409,7 @@
   },
   {
    "id": "EL-000104",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Aktiv effekt",
@@ -1431,7 +1431,7 @@
   },
   {
    "id": "EL-000105",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skenbar och reaktiv effekt",
@@ -1453,7 +1453,7 @@
   },
   {
    "id": "EL-000106",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motor 230/400 V",
@@ -1475,7 +1475,7 @@
   },
   {
    "id": "EL-000107",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motor 400/690 V",
@@ -1497,7 +1497,7 @@
   },
   {
    "id": "EL-000108",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorström från axeleffekt",
@@ -1519,7 +1519,7 @@
   },
   {
    "id": "EL-000109",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Transformatorns märkström",
@@ -2157,7 +2157,7 @@
   },
   {
    "id": "EL-000138",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Gammal föreskrift",
@@ -2707,7 +2707,7 @@
   },
   {
    "id": "EL-000163",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Synkront varvtal",
@@ -2729,7 +2729,7 @@
   },
   {
    "id": "EL-000164",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sex poler",
@@ -2751,7 +2751,7 @@
   },
   {
    "id": "EL-000165",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eftersläpning",
@@ -2795,7 +2795,7 @@
   },
   {
    "id": "EL-000167",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Rätt motor för Δ-drift",
@@ -3235,7 +3235,7 @@
   },
   {
    "id": "EL-000187",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Förenklad felström",
@@ -3367,7 +3367,7 @@
   },
   {
    "id": "EL-000193",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma effekt vid 400 V",
@@ -4313,7 +4313,7 @@
   },
   {
    "id": "EL-000236",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Trefaseffekt",

@@ -3,7 +3,7 @@
   "titel": "Motor 400/690 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "samband": [
       "Jämför nätets U_{L} med båda märkvärdena"
     ],
-    "givet": "Nätet ger 400 V mellan faserna. Frågan gäller bara vilken koppling motorn ska ha i drift.",
+    "givet": "Landström vid kaj, 50 Hz. Nätet ger 400 V mellan faserna. Frågan gäller bara vilken koppling motorn ska ha i drift.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

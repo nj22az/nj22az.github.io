@@ -3,7 +3,7 @@
   "titel": "Gammal föreskrift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -46,7 +46,7 @@
     }
   ],
   "losning": {
-    "text": "TSFS 2014:1 är upphävd genom TSFS 2019:4. Kontrollera att ersättningsföreskriften gäller för just detta fartyg och arbete.",
+    "text": "TSFS 2014:1 är inte längre gällande. Den ersattes av TSFS 2017:26 om konstruktion och utrustning av fartyg. För internationell fart gäller också SOLAS kapitel II-1 del D. Kontrollera att ersättningsföreskriften gäller för just detta fartyg och arbete.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

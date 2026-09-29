@@ -3,7 +3,7 @@
   "titel": "Rätt motor för Δ-drift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "samband": [
       "Δ-koppling ger U_{gren} = U_{L}"
     ],
-    "givet": "Nät 400 V. Motor A: Δ/Y 230/400 V. Motor B: Δ/Y 400/690 V.",
+    "givet": "Landström vid kaj, 50 Hz. Nät 400 V. Motor A: Δ/Y 230/400 V. Motor B: Δ/Y 400/690 V.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

@@ -3,7 +3,7 @@
   "titel": "Motorström från axeleffekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
       "P_{in} = P_{axel}/η",
       "I_{L} = P_{in}/(√3 · U_{L} · PF)"
     ],
-    "givet": "P_{axel} = 5,5 kW, η = 0,88, PF = 0,80 och U_{L} = 400 V. Symmetrisk trefas.",
+    "givet": "Landström vid kaj, 50 Hz. P_{axel} = 5,5 kW, η = 0,88, PF = 0,80 och U_{L} = 400 V. Symmetrisk trefas.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

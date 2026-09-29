@@ -3,7 +3,7 @@
   "titel": "Samma resistorer i Δ",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
       "Δ: U_{gren} = U_{L}; I_{gren} = U_{gren}/R",
       "I_{L} = √3 · I_{gren}"
     ],
-    "givet": "Symmetrisk Δ-last, tre resistorer på 40 Ω och U_{L} = 400 V RMS.",
+    "givet": "Landström vid kaj, 50 Hz. Symmetrisk Δ-last, tre resistorer på 40 Ω och U_{L} = 400 V RMS.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

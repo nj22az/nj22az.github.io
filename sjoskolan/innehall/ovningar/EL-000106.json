@@ -3,7 +3,7 @@
   "titel": "Motor 230/400 V",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "samband": [
       "Y: U_{gren} = U_{L}/√3; Δ: U_{gren} = U_{L}"
     ],
-    "givet": "Motorn är märkt Δ/Y 230/400 V. Matningen är 400 V mellan faserna.",
+    "givet": "Landström vid kaj, 50 Hz. Motorn är märkt Δ/Y 230/400 V. Matningen är 400 V mellan faserna.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

@@ -3,7 +3,7 @@
   "titel": "Ström i Y",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
     "samband": [
       "I_{gren} = U_{gren}/R; Y: I_{L} = I_{gren}"
     ],
-    "givet": "Y-last med tre 40 Ω-resistorer och U_{L} = 400 V. U_{gren} = 400/√3 V.",
+    "givet": "Landström vid kaj, 50 Hz. Y-last med tre 40 Ω-resistorer och U_{L} = 400 V. U_{gren} = 400/√3 V.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

@@ -364,3 +364,13 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   För kontroll av läraren (kunde inte verifieras här): att TSFS 2014:1 är upphävd genom TSFS 2019:4, att övergångsdatumet
   för SS-EN 50110-1 utgåva 4:2024 är 29 maj 2026, och om SS-EN 50110-1 har fyra arbetsmetoder som ESA eller tre.
   Regel: en kontroll ska ge olika resultat för olika orsaker. Mät aldrig över en kontakt som har en sluten kontakt parallellt.
+- **2026-09-29 – Lärarens verifiering av granskningen.**
+  - **Övning 2.8 (EL-000138):** TSFS 2014:1 ersattes av TSFS 2017:26, inte av TSFS 2019:4. Lösningen nämner också
+    SOLAS kapitel II-1 del D för internationell fart. Samma rättelse är gjord i bokens skyddade lösning.
+  - **v42_02, bild 7:** SS-EN 50110-1 har tre arbetsmetoder: utan spänning, med spänning och nära spänning. ESA:s
+    indelning i fyra står som en egen rad.
+  - **Land och sjö:** övningar med 400 V eller 50 Hz anger nu sammanhanget i förutsättningarna (landström vid kaj,
+    landnät, nätstation i land). Gäller EL-000092–094, 101–109, 163–165, 167, 187, 193 och 236.
+  - Övergångsdatumet 29 maj 2026 för SS-EN 50110-1 utgåva 4:2024 är bekräftat.
+  Regel: när en uppgift använder 400 V eller 50 Hz ska texten säga att det gäller land eller landström vid kaj.
+  Ombord till sjöss gäller 440 V och 60 Hz. Frekvensen påverkar n_{s} och X_{L}.

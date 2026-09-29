@@ -3,7 +3,7 @@
   "titel": "Tidsförskjutning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
     "samband": [
       "T = 1/f; Δt = T · φ/360°"
     ],
-    "givet": "f = 50 Hz och φ = 120°.",
+    "givet": "Landnätet vid kaj. f = 50 Hz och φ = 120°.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
