@@ -7,63 +7,12 @@ etiketterna med kursens typsnitt. Ankarpunkterna från renderingen talar om var 
 Skriver v41_01_s04_stjarna.png, v41_01_s06_generator_sinus.png, v41_02_s21_plint3d.png och v41_02_s23_transformator3d.png.
 Kräver att sjoskolan/figurer3d/rendera.js är byggd (node sjoskolan/figurer3d/tools/build.mjs).
 """
-import json, math, socket, subprocess, sys, time
+import subprocess, sys
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from PIL import Image, ImageDraw
 
-SJO = Path(__file__).resolve().parents[2]
-REPO = SJO.parent
-UT = Path(sys.argv[1]); UT.mkdir(parents=True, exist_ok=True)
-RAW = UT / 'raa'; RAW.mkdir(exist_ok=True)
-FONT = '/usr/share/fonts/truetype/crosextra/Carlito-Regular.ttf'
-FONTB = '/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf'
-BLA, INK, GRA = (6, 79, 145), (22, 50, 72), (107, 107, 107)
-FAS = {'L1': (6, 79, 145), 'L2': (200, 100, 30), 'L3': (14, 124, 90), 'N': (110, 122, 132)}
-f = lambda s, b=False: ImageFont.truetype(FONTB if b else FONT, s)
-
-
-def rendera(jobb):
-    s = socket.socket(); s.bind(('127.0.0.1', 0)); port = s.getsockname()[1]; s.close()
-    server = subprocess.Popen([sys.executable, '-m', 'http.server', str(port)], cwd=REPO, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    try:
-        time.sleep(1)
-        rot = subprocess.run(['npm', 'root', '-g'], capture_output=True, text=True, check=True).stdout.strip()
-        subprocess.run(['node', str(SJO / 'figurer3d' / 'tools' / 'rendera.cjs'), rot, str(RAW), f'http://127.0.0.1:{port}', *jobb], check=True)
-    finally:
-        server.terminate()
-
-
-def las(namn):
-    return Image.open(RAW / f'{namn}.png').convert('RGB'), json.loads((RAW / f'{namn}.json').read_text())
-
-
-def text_sub(d, xy, bas, sub='', storlek=40, farg=INK, fet=False, ankare='la'):
-    """Text med nedsänkt index (U + L), som kursens U_{L}."""
-    fb, fs = f(storlek, fet), f(int(storlek * 0.68), fet)
-    wb = d.textlength(bas, font=fb); ws = d.textlength(sub, font=fs) if sub else 0
-    x, y = xy
-    if ankare[0] == 'm': x -= (wb + ws) / 2
-    if ankare[0] == 'r': x -= wb + ws
-    if ankare[1] == 'm': y -= storlek * 0.55
-    d.text((x, y), bas, font=fb, fill=farg)
-    if sub: d.text((x + wb, y + storlek * 0.42), sub, font=fs, fill=farg)
-    return wb + ws
-
-
-def pil(d, a, b, farg, w=4, spets=16, dubbel=False):
-    d.line([a, b], fill=farg, width=w)
-    def huvud(p, q):
-        v = math.atan2(p[1] - q[1], p[0] - q[0])
-        d.polygon([p, (p[0] - spets * math.cos(v - 0.4), p[1] - spets * math.sin(v - 0.4)), (p[0] - spets * math.cos(v + 0.4), p[1] - spets * math.sin(v + 0.4))], fill=farg)
-    huvud(b, a)
-    if dubbel: huvud(a, b)
-
-
-def beskar(im, marg=30):
-    import PIL.ImageOps
-    bb = PIL.ImageOps.invert(im.convert('L')).point(lambda v: 255 if v > 8 else 0).getbbox()
-    x0, y0, x1, y1 = bb
-    return (max(0, x0 - marg), max(0, y0 - marg), min(im.width, x1 + marg), min(im.height, y1 + marg))
+from fig3d import *  # noqa: F401,F403  (SJO, UT, RAW, rendera, las, text_sub, pil, beskar, f, färger)
 
 
 rendera(['gen=m=generator&v=0&w=1400&h=1200', 'stj=m=stjarna&w=1000&h=560', 'pY=m=plintY&w=640&h=480',

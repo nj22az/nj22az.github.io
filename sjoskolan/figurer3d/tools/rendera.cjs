@@ -7,7 +7,7 @@ const fs = require('fs');
   const p = await b.newPage();
   for (const j of jobb) {
     const i = j.indexOf('='), namn = j.slice(0, i), fraga = j.slice(i + 1);
-    await p.goto(`${bas}/sjoskolan/figurer3d/rendera.html?${fraga}`);
+    await p.goto(fraga.startsWith('/') ? `${bas}${fraga}` : `${bas}/sjoskolan/figurer3d/rendera.html?${fraga}`);   // /sökväg?… = annan renderingssida
     await p.waitForFunction(() => window.RESULTAT, null, { timeout: 60000, polling: 250 });
     const r = await p.evaluate(() => window.RESULTAT);
     fs.writeFileSync(`${ut}/${namn}.png`, Buffer.from(r.bild.split(',')[1], 'base64'));

@@ -1,14 +1,15 @@
 // Motorlabbets 3D-bänk (three.js): motorn med öppen kopplingslåda och plint, startaren med locket av och
 // tångstationen med DC-aggregat och labbsladd. Scenen visar bara; mätvärdena räknas i model.mjs och kommer via set().
 // Byggs till scen.js med tools/build.mjs. Klick på plintar, kontakter och knappar skickas till onPick.
+// Med bild: true renderas stillbilder till kursens figurer (rendera.html): vit bakgrund, valda stationer och ankarpunkter.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 const BLA = '#064f91', INK = '#163248';
 
-export function mount(el, { onPick }) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+export function mount(el, { onPick = () => {}, bild = false } = {}) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: bild });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -17,7 +18,7 @@ export function mount(el, { onPick }) {
   renderer.domElement.setAttribute('aria-label', 'Tredimensionell labbänk med motorn, startaren och tångstationen. Alla val görs också med knapparna bredvid.');
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#edf3f7');
+  scene.background = new THREE.Color(bild ? '#ffffff' : '#edf3f7');
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.49; controls.minDistance = 3; controls.maxDistance = 40;
@@ -63,6 +64,7 @@ export function mount(el, { onPick }) {
 
   // Bänken
   const bord = box(22, 0.4, 7.5, M.bord, 0.08); bord.position.set(0, -0.2, 0); scene.add(bord);
+  const ANK = {};                                                                   // namngivna punkter för figurernas etiketter
 
   // ---------- Motorn (station M) ----------
   const motor = new THREE.Group(); motor.position.set(-6.2, 0, -0.3); scene.add(motor);
@@ -114,6 +116,12 @@ export function mount(el, { onPick }) {
     return new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.64), new THREE.MeshBasicMaterial({ map: t }));
   })();
   skylt.position.set(-0.35, CY + 0.05, R + 0.2); motor.add(skylt);
+  const ank = (grupp, namn, x, y, z) => { const o = new THREE.Object3D(); o.position.set(x, y, z); grupp.add(o); ANK[namn] = o; };
+  ank(motor, 'skylt', -0.35, CY + 0.05, R + 0.2); ank(motor, 'stomme', 0.75, CY - 0.55, R + 0.1); ank(motor, 'flaktkapa', -L / 2 - 0.6, CY + 0.35, R * 0.9);
+  ank(motor, 'lagerskold', L / 2 + 0.08, CY - 0.45, R * 0.8); ank(motor, 'axel', L / 2 + 0.95, CY, 0); ank(motor, 'fot', 0.95, 0.15, 1.0);
+  ank(motor, 'lada', 0.1 + 0.75, CY + R + 0.3, 0.3); ank(motor, 'lock', 1.9, 0.1, 1.7);
+  for (const [t, p] of Object.entries(POS)) ank(lada, t, p.x, 0.36, p.z);
+  ank(lada, 'PE', 0.55, 0.3, 0.42);
 
   // Multimetern vid motorn
   function multimeter(x, z, rot = 0) {
@@ -150,6 +158,8 @@ export function mount(el, { onPick }) {
     const e = etikett(String(t), 0.22, 0.11); e.position.set(x, y + 0.16, 0.86); start.add(e);
   }
   const mmS = multimeter(3.2, 1.8, 0.35);
+  ank(start, 'K1', -0.3, 2.45, 0.85); ank(start, 'F2', -0.3, 0.8, 0.75); ank(start, 'test', 0.05, 1.15, 0.85); ank(start, 'ratt', -0.3, 1.15, 0.82);
+  for (const [t, [x, y]] of Object.entries(SPOS)) ank(start, 's' + t, x, y, 0.9);
   // ---------- Tångstationen (station T) ----------
   const tst = new THREE.Group(); tst.position.set(7.2, 0, -0.8); scene.add(tst);
   const agg = box(2.2, 1.3, 1.6, M.plast, 0.08); agg.position.set(0, 0.65, 0); tst.add(agg);
@@ -163,6 +173,9 @@ export function mount(el, { onPick }) {
   const tKaft = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.08, 12, 40), M.svart); tKaft.position.set(0, 1.1, 0); tangG.add(tKaft);
   const tS = skarm(0.44, 0.3); tS.position.set(0, 0.35, 0.16); tangG.add(tS);
   tangG.position.set(0, 1.0, 2.2);
+  ank(tangG, 'tang', 0, -0.2, 0.16); ank(tangG, 'tangskarm', 0, 0.35, 0.16); ank(tangG, 'kaft', 0, 1.1, 0); ank(tst, 'aggregat', -0.2, 0.95, 0.81);
+  ank(tst, 'utgang', 0.75, 0.95, 0.83); ank(tst, 'plus', -0.5, 0.35, 0.85); ank(tst, 'minus', 0.1, 0.35, 0.85);
+  ank(mmM.g, 'mmM', 0, 0.27, -0.4); ank(mmS.g, 'mmS', 0, 0.27, -0.4);
   let sladd = null;
   function sladdForm(lage) {
     if (sladd) { tst.remove(sladd); sladd.geometry.dispose(); }
@@ -184,8 +197,8 @@ export function mount(el, { onPick }) {
     const slut = till ?? j.clone().add(new THREE.Vector3(farg === 'rod' ? -0.3 : 0.3, 0.02, 0.6));
     const mitt = j.clone().lerp(slut, 0.5); mitt.y = Math.max(j.y, slut.y) + 0.8;
     const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([j, mitt, slut]), 40, 0.025, 8), farg === 'rod' ? M.rod : M.svart);
-    scene.add(m); ledningar.push(m);
-    const spets = cyl(0.03, 0.25, farg === 'rod' ? M.rod : M.svart, 12); spets.position.copy(slut).add(new THREE.Vector3(0, 0.12, 0)); scene.add(spets); ledningar.push(spets);
+    m.userData.mm = mm === mmM ? 'MM' : 'SM'; scene.add(m); ledningar.push(m);
+    const spets = cyl(0.03, 0.25, farg === 'rod' ? M.rod : M.svart, 12); spets.position.copy(slut).add(new THREE.Vector3(0, 0.12, 0)); spets.userData.mm = m.userData.mm; scene.add(spets); ledningar.push(spets);
   }
   const varld = (o) => o.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.1, 0));
 
@@ -218,8 +231,8 @@ export function mount(el, { onPick }) {
     renderer.setSize(w, h, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%';
     camera.aspect = w / h; camera.updateProjectionMatrix(); rita();
   }
-  const ro = new ResizeObserver(storlek); ro.observe(el);
-  storlek(); vy('M'); loop();
+  const ro = new ResizeObserver(storlek); if (!bild) ro.observe(el);
+  storlek(); vy('M'); if (!bild) loop();
 
   let senaste = {};
   function set(s) {
@@ -246,8 +259,22 @@ export function mount(el, { onPick }) {
     if (s.station && s.station !== senaste.station) { /* vyn byts bara på begäran */ }
     rita();
   }
+  const STATIONER = { M: [motor], MM: [mmM.g], S: [start], SM: [mmS.g], T: [tst] };   // MM och SM: stationens multimeter
   return {
     set, vy,
+    // Stillbilder: visa bara vissa stationer, sätt kameran, rendera och projicera ankarpunkterna.
+    bild({ visa = ['M', 'MM', 'S', 'SM', 'T'], bank = true, stangd = false, pos, mal, fov = 30, w, h }) {
+      for (const [k, gr] of Object.entries(STATIONER)) for (const g of gr) g.visible = visa.includes(k);
+      for (const m of ledningar) m.visible = visa.includes(m.userData.mm);
+      if (stangd) { lock.position.set(0.1, CY + R + 0.46, 0); lock.rotation.set(0, 0, 0); }   // kopplingslådan stängd
+      bord.visible = bank;
+      renderer.setPixelRatio(1); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = fov;
+      camera.position.set(...pos); controls.target.set(...mal); camera.lookAt(...mal); camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      const ankare = {};
+      for (const [n, o] of Object.entries(ANK)) { const v = o.getWorldPosition(new THREE.Vector3()).project(camera); ankare[n] = [Math.round((v.x + 1) / 2 * w), Math.round((1 - v.y) / 2 * h)]; }
+      return { bild: renderer.domElement.toDataURL('image/png'), ankare };
+    },
     stang() { cancelAnimationFrame(rafId); ro.disconnect(); controls.dispose(); renderer.dispose(); },
   };
 }

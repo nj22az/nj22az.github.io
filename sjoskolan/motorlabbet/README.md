@@ -14,3 +14,9 @@ felsökning (ett fel i plinten som eleven hittar och rättar).
   plintbilden.
 
 Värdena är simulerade och är inte den fysiska motorns.
+
+## Stillbilder till kursens figurer
+
+`rendera.html` visar bänken med vit bakgrund, valda stationer och en given kamera, och lämnar bilden och ankarpunkterna
+i `window.RESULTAT`. `verktyg/figurer/figurer3d_del3.py` använder den för figurerna i v41_03, Labbet.html och
+labbhandboken, så att presentationen, labbet och simulatorn visar samma motor, startare och tång.

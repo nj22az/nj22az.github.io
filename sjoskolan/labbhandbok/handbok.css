@@ -28,3 +28,5 @@
 .hb-figur figcaption{font-size:15px;color:var(--sj-muted,#4d6579);margin-top:6px}
 .hb-liten{font-size:15px;color:var(--sj-muted,#4d6579)}
 @media print{.school-nav,.hb-meny,.course-breadcrumb{display:none}.hb-steg>li,.hb-panel,.hb-tabell{break-inside:avoid}body{background:#fff}}
+
+.hb-bild{margin:10px 0 18px}.hb-bild img{display:block;width:100%;max-width:900px;height:auto;border-radius:8px;border:1px solid #cad8e2}.hb-bild figcaption{font-size:14px;color:#4d6579;margin-top:4px}

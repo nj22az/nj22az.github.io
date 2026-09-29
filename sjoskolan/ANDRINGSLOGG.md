@@ -127,7 +127,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 38. **3D bara där det fysiska är poängen.** 3D-figurer används för maskiner och apparater som eleven ska känna igen
     (generatorn, plinten, transformatorns kärna). Visare, kurvor och formler ritas i 2D. Figuren ska vara läsbar i
     halva bildbredden: rendera modellen mindre hellre än att krympa etiketterna. En etikett som dubblerar en annan tas bort.
-    3D-figurerna i vecka 41 byggs av `verktyg/figurer/figurer3d.py`, inte av `scheman_veckor.py` eller `figs41.py`.
+    3D-figurerna i vecka 41 byggs av `verktyg/figurer/figurer3d.py` (del 1–2) och `figurer3d_del3.py` (del 3 och labbet),
+    inte av `scheman_veckor.py` eller `figs41.py`. Labbets figurer renderas ur Motorlabbets egen scen, så att bilderna
+    och simulatorn aldrig visar olika utrustning. En figur i elevmaterialet får inte avslöja felsökningens fel.
 
 ### Boken
 
@@ -493,3 +495,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     - `generatorn/`: vrid rotorn och se u1, u2 och u3 ritas i takt, summan är 0 V. Länkad från veckosidan och Del 1
       teori 2 (`INTERAKTIV` i `delsidor_veckor.py`).
   Regel 38.
+- **2026-09-29** 3D-figurer i vecka 41 del 3 och i labbet, renderade ur Motorlabbets bänk (`motorlabbet/rendera.html`):
+    - v41_03 bild 6 motorns delar, bild 7 plinten med ohmmeterns sladdar och lindningarna streckade, bild 17 (övning 3.4)
+      motorn med stängd låda, bild 21 startarens delar, bild 22 strömtången en gång, två varv och hårnål. Bild 6 och 22
+      har nu figuren i full bredd mellan texten, som bild 21. Resistansnät och stapeldiagram är kvar i 2D.
+    - Labbet.html: en bild per station M, S och T. Labbhandboken: samma stationsbilder och de tre felen i felsökningen
+      (bara i handboken, `labbhandbok/bilder/`).
+    - Hjälpfunktionerna för 3D-figurerna ligger i `verktyg/figurer/fig3d.py`.
