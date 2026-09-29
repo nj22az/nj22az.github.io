@@ -569,15 +569,16 @@
       "teori": 4
     },
     {
-      "ovning": "EL-000111",
+      "ovning": "EL-000877",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 1,
       "nummer": "Övning 3.1",
-      "ankare": "v41_03-q1"
+      "ankare": "v41_03-q1",
+      "teori": 4
     },
     {
-      "ovning": "EL-000112",
+      "ovning": "EL-000878",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 2,
@@ -585,7 +586,7 @@
       "ankare": "v41_03-q2"
     },
     {
-      "ovning": "EL-000113",
+      "ovning": "EL-000879",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 3,
@@ -593,7 +594,7 @@
       "ankare": "v41_03-q3"
     },
     {
-      "ovning": "EL-000114",
+      "ovning": "EL-000880",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 4,
@@ -601,7 +602,7 @@
       "ankare": "v41_03-q4"
     },
     {
-      "ovning": "EL-000115",
+      "ovning": "EL-000881",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 5,
@@ -609,15 +610,16 @@
       "ankare": "v41_03-q5"
     },
     {
-      "ovning": "EL-000116",
+      "ovning": "EL-000882",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 6,
       "nummer": "Övning 3.6",
-      "ankare": "v41_03-q6"
+      "ankare": "v41_03-q6",
+      "teori": 4
     },
     {
-      "ovning": "EL-000117",
+      "ovning": "EL-000883",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 7,
@@ -625,7 +627,7 @@
       "ankare": "v41_03-q7"
     },
     {
-      "ovning": "EL-000118",
+      "ovning": "EL-000884",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 8,
@@ -633,7 +635,7 @@
       "ankare": "v41_03-q8"
     },
     {
-      "ovning": "EL-000119",
+      "ovning": "EL-000885",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 9,
@@ -641,7 +643,7 @@
       "ankare": "v41_03-q9"
     },
     {
-      "ovning": "EL-000120",
+      "ovning": "EL-000886",
       "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
       "del": "v41_03",
       "ordning": 10,

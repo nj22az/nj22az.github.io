@@ -76,36 +76,34 @@ export const KONTROLLFRAGOR = [
  {
   "id": "v41_03-k1",
   "nummer": "Kontrollfråga 3.1",
-  "fraga": "En 1 kΩ-resistor med tolerans ±5 % mäts till 1,06 kΩ. Bortse från instrumentets fel. Vilken bedömning gör du?",
+  "fraga": "En lindning har resistansen R. Blecken ligger för Y. Vad visar multimetern mellan U1 och V1?",
   "alternativ": [
-   "Inom tolerans",
-   "Utanför tolerans",
-   "Kan inte avgöras"
+   "R",
+   "2R",
+   "(2/3) · R"
   ],
   "ratt": 1
  },
  {
   "id": "v41_03-k2",
   "nummer": "Kontrollfråga 3.2",
-  "fraga": "En seriekrets med två resistorer matas med 12 V. Över R_{1} mäts 4,0 V. Vilken spänning förväntar du dig över R_{2}?",
+  "fraga": "En labbsladd med 2,0 A läggs två varv genom strömtångens käft. Vad visar tången?",
   "alternativ": [
-   "4,0 V",
-   "8,0 V",
-   "12 V",
-   "16 V"
+   "1,0 A",
+   "2,0 A",
+   "4,0 A"
   ],
-  "ratt": 1
+  "ratt": 2
  },
  {
   "id": "v41_03-k3",
   "nummer": "Kontrollfråga 3.3",
-  "fraga": "K1 drar när START hålls in men släpper när START släpps. Var sitter felet troligast?",
+  "fraga": "Du mäter 95–96 på överlastreläet i den spänningslösa startaren. Vad ska multimetern visa när reläet inte har löst ut?",
   "alternativ": [
-   "I STOPP-knappen",
-   "I hållvägen: K1:s NO-kontakt eller dess ledare",
-   "I spolens matning",
-   "I START-knappen"
+   "Nära 0 Ω, kontakten är sluten",
+   "Överområde, kontakten är öppen",
+   "Spolens resistans"
   ],
-  "ratt": 1
+  "ratt": 0
  }
 ];

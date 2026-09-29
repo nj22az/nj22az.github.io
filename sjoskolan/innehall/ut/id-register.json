@@ -1568,20 +1568,7 @@
    "publik": "elev",
    "titel": "Kontroll före stationen",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.1",
-     "ankare": "v41_03-q1"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.1",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000112",
@@ -1590,20 +1577,7 @@
    "publik": "elev",
    "titel": "Plan för DC-mätning",
    "typ": "berakning",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.2",
-     "ankare": "v41_03-q2"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.2",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000113",
@@ -1612,20 +1586,7 @@
    "publik": "elev",
    "titel": "Observerade DC-värden",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.3",
-     "ankare": "v41_03-q3"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.3",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000114",
@@ -1634,20 +1595,7 @@
    "publik": "elev",
    "titel": "AC-riggens toppvärde",
    "typ": "berakning",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.4",
-     "ankare": "v41_03-q4"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.4",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000115",
@@ -1656,20 +1604,7 @@
    "publik": "elev",
    "titel": "Trefasdata",
    "typ": "berakning",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.5",
-     "ankare": "v41_03-q5"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.5",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000116",
@@ -1678,20 +1613,7 @@
    "publik": "elev",
    "titel": "Hållkretsens vila",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.6",
-     "ankare": "v41_03-q6"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.6",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000117",
@@ -1700,20 +1622,7 @@
    "publik": "elev",
    "titel": "Hållkretsens start",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.7",
-     "ankare": "v41_03-q7"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.7",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000118",
@@ -1722,20 +1631,7 @@
    "publik": "elev",
    "titel": "Förberett fel",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.8",
-     "ankare": "v41_03-q8"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.8",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000119",
@@ -1744,20 +1640,7 @@
    "publik": "elev",
    "titel": "Mätvärde med avvikelse",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.9",
-     "ankare": "v41_03-q9"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.9",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000120",
@@ -1766,20 +1649,7 @@
    "publik": "elev",
    "titel": "Egen slutsats",
    "typ": "resonemang",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 3.10",
-     "ankare": "v41_03-q10"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
-     "nummer": "Övning 3.10",
-     "ankare": null
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000121",
@@ -6779,7 +6649,7 @@
   },
   {
    "id": "EL-000709",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Startfråga: v41_03",
@@ -6795,7 +6665,7 @@
   },
   {
    "id": "EL-000710",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v41_03",
@@ -7435,10 +7305,10 @@
   },
   {
    "id": "EL-000816",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
-   "titel": "Stationerna A, B och C",
+   "titel": "Labbet: motorn, startaren och tången",
    "typ": "resonemang",
    "placeringar": [
     {
@@ -8011,7 +7881,7 @@
   },
   {
    "id": "EL-000874",
-   "revision": 3,
+   "revision": 4,
    "status": "utkast",
    "publik": "elev",
    "titel": "Kontrollfråga 3.1",
@@ -8027,7 +7897,7 @@
   },
   {
    "id": "EL-000875",
-   "revision": 3,
+   "revision": 4,
    "status": "utkast",
    "publik": "elev",
    "titel": "Kontrollfråga 3.2",
@@ -8043,7 +7913,7 @@
   },
   {
    "id": "EL-000876",
-   "revision": 3,
+   "revision": 4,
    "status": "utkast",
    "publik": "elev",
    "titel": "Kontrollfråga 3.3",
@@ -8054,6 +7924,226 @@
      "plats": "vecka-41/aktuell/Del_3.html",
      "nummer": "Kontrollfråga 3.3",
      "ankare": "v41_03-k3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000877",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Blecken för fartygets nät",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.1",
+     "ankare": "v41_03-q1"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.1",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000878",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Lindningarna utan bleck",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.2",
+     "ankare": "v41_03-q2"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.2",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000879",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Förutsäg Y och Δ",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.3",
+     "ankare": "v41_03-q3"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.3",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000880",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Motorns delar",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.4",
+     "ankare": "v41_03-q4"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.4",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000881",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Kvoten mellan Y och Δ",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.5",
+     "ankare": "v41_03-q5"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.5",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000882",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Ett bleck som saknas",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.6",
+     "ankare": "v41_03-q6"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.6",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000883",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Startarens kontakter",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.7",
+     "ankare": "v41_03-q7"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.7",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000884",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Koppling och överlastrelä",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.8",
+     "ankare": "v41_03-q8"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.8",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000885",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Tången med flera varv",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.9",
+     "ankare": "v41_03-q9"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.9",
+     "ankare": null
+    }
+   ]
+  },
+  {
+   "id": "EL-000886",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Tången runt motorkabeln",
+   "typ": "resonemang",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-41/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 3.10",
+     "ankare": "v41_03-q10"
+    },
+    {
+     "yta": "presentation",
+     "plats": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx",
+     "nummer": "Övning 3.10",
+     "ankare": null
     }
    ]
   }

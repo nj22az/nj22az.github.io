@@ -1,9 +1,9 @@
 {
   "id": "EL-000816",
-  "titel": "Stationerna A, B och C",
+  "titel": "Labbet: motorn, startaren och tången",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,22 +18,22 @@
     ]
   },
   "uppgift": {
-    "fraga": "Genomför stationerna enligt stationssidan.",
+    "fraga": "Genomför labbet fredag 9 oktober enligt sidan Labbet och skriv ett eget protokoll.",
     "delfragor": [
       {
         "id": "a",
-        "text": "Protokoll för Station A och Station C med en felmodul."
+        "text": "Station M: lindningarna utan bleck, Y och Δ, kvoten R_{Y}/R_{Δ} och kopplingen enligt skylten."
       },
       {
         "id": "b",
-        "text": "Protokoll för Station B och en andra felmodul i Station C."
+        "text": "Station S och T: startarens kontakter spänningslöst och tångens värden med en gång, två varv och hårnål."
       },
       {
         "id": "c",
         "text": "Välj en mätning där uppmätt värde avvek från förväntat och förklara avvikelsen med dina siffror."
       }
     ],
-    "svarsformat": "Protokollen som PDF och förklaringen."
+    "svarsformat": "Protokollet som PDF eller foto, och förklaringen."
   },
   "referenser": {
     "ursprung": [

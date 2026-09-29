@@ -1,5 +1,5 @@
 {
-  "fingeravtryck_publikt": "3ff16d214643e2c3",
+  "fingeravtryck_publikt": "78bf5ab1a8437270",
   "schema_version": 1,
   "utdata": {
     "bok": {
@@ -322,7 +322,7 @@
       "sammanfattning": "408 avsnitt oförändrade, 72 omskrivna ur databasen. PDF måste sättas om separat."
     },
     "larare": {
-      "klartext_hash": "ae01870554d81135",
+      "klartext_hash": "3f491c6a8348e3e7",
       "revisioner": {
         "EL-000801": 3,
         "EL-000802": 3,
@@ -339,7 +339,7 @@
         "EL-000813": 4,
         "EL-000814": 1,
         "EL-000815": 1,
-        "EL-000816": 3,
+        "EL-000816": 4,
         "EL-000817": 1,
         "EL-000818": 2,
         "EL-000819": 1,
@@ -353,7 +353,7 @@
         "EL-000827": 1,
         "EL-000828": 1
       },
-      "sammanfattning": "Lararguide.html låst, klartext ae01870554d81135"
+      "sammanfattning": "Lararguide.html låst, klartext 3f491c6a8348e3e7"
     },
     "presentationer": {
       "avvikelser": [],
@@ -398,16 +398,6 @@
         "EL-000108": 5,
         "EL-000109": 3,
         "EL-000110": 3,
-        "EL-000111": 2,
-        "EL-000112": 2,
-        "EL-000113": 2,
-        "EL-000114": 5,
-        "EL-000115": 3,
-        "EL-000116": 2,
-        "EL-000117": 2,
-        "EL-000118": 3,
-        "EL-000119": 2,
-        "EL-000120": 2,
         "EL-000121": 2,
         "EL-000122": 2,
         "EL-000123": 4,
@@ -589,8 +579,8 @@
         "EL-000706": 1,
         "EL-000707": 1,
         "EL-000708": 1,
-        "EL-000709": 1,
-        "EL-000710": 1,
+        "EL-000709": 2,
+        "EL-000710": 2,
         "EL-000711": 1,
         "EL-000712": 1,
         "EL-000713": 1,
@@ -614,7 +604,17 @@
         "EL-000731": 1,
         "EL-000732": 1,
         "EL-000733": 1,
-        "EL-000734": 1
+        "EL-000734": 1,
+        "EL-000877": 1,
+        "EL-000878": 2,
+        "EL-000879": 1,
+        "EL-000880": 2,
+        "EL-000881": 1,
+        "EL-000882": 1,
+        "EL-000883": 2,
+        "EL-000884": 1,
+        "EL-000885": 2,
+        "EL-000886": 1
       },
       "sammanfattning": "24 presentationer ur databasen, 0 avvikelser i kontrollformer"
     }

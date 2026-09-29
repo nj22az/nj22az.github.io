@@ -438,3 +438,18 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Motorn körs inte, och regel 4 (SELV) gäller oförändrad. Del 3 i vecka 41 är ännu inte ombyggd.
   Regel: labbuppgifter bygger bara på utrustning som finns i inköpslistan. Utrustning som inte är inköpt, som
   12 V-trefasriggen, används inte i elevmaterialet.
+- **2026-09-29 – Vecka 41 Del 3 ombyggd med de fysiska stationerna.** Del 3 byggde tidigare på 12 V-riggar som inte
+  är inköpta (DC-delare, trefastränare, hållkrets). Nu bygger den på motorn och startaren, som aldrig ansluts, och på
+  strömtången vid DC-aggregatet (SELV). Allt som ändrats:
+  - **Presentationen v41_03:** sju teoriavsnitt: labbets ramar, motorns delar och märkskylt, lindningar och plint, Y och
+    Δ med bleck (2R och (2/3)R, kvoten 3), startarens delar, strömtången, protokoll och slutsats. Två exempel och nya
+    figurer (`figs41.py`, `spec41.json`).
+  - **Övningar 3.1–3.10:** nya poster EL-000877–886. De gamla posterna EL-000111–120 finns kvar i boken. Kontrollfrågorna
+    (EL-000874–876) och start- och avslutsfrågan (EL-000709, 710) är omskrivna. Övning 3.1 och 3.6 pekar på Teori 4
+    genom fältet `teori`.
+  - **Elevsidan `Labbet.html`:** stationerna M, S och T med regler, steg och protokoll. Inlämning 3 (EL-000816) och
+    lärarfacit följer den.
+  - **Veckosidan och startsidan:** ny text för del 3. Veckoplanen säger att övning 3.1–3.5 görs före träffen.
+    Simulerade stationer A, B och C är nu frivillig extra övning.
+  Regel: labbuppgifter bygger bara på inköpt utrustning. Övningarna använder exempeltal tills lärarens referensmätning
+  finns.

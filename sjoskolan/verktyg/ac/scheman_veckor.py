@@ -2,7 +2,7 @@
 """Vecka 41–45: diagram och kopplingsscheman i presentationerna som bilder (samma skäl som scheman_v38.py).
 
 v41_01 bild 6: tre sinusspänningar (var ett PowerPoint-diagram).
-v41_02 bild 6: Y- och Δ-koppling. v41_03 bild 21 och v43_03 bild 8: hållkretsen.
+v41_02 bild 6: Y- och Δ-koppling. v43_03 bild 8: hållkretsen (v41_03 bild 21 visar i stället startarens delar, verktyg/figurer/figs41.py).
 v43_03 bild 6: symboler. v43_03 bild 7: huvudströmsschema för en motor. v44_01 bild 6: enlinjeschema.
 
 Formerna i figurens område (diagram, linjer och deras etikettrutor) tas bort och ersätts av en bild på samma plats.
@@ -178,7 +178,6 @@ def symboler():
 FIGURER = [
     (41, 'v41_01_Trefassystemets_grunder_elev.pptx', 6, 'sinus', sinus),
     (41, 'v41_02_Y_och_trefaseffekt_elev.pptx', 6, 'y-delta', y_delta),
-    (41, 'v41_03_Fysisk_traff_och_matning_elev.pptx', 21, 'hallkrets', hallkrets),
     (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 6, 'symboler', symboler),
     (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 7, 'huvudstrom', huvudstrom),
     (43, 'v43_03_Elscheman_och_dokumentation_elev.pptx', 8, 'hallkrets', hallkrets),

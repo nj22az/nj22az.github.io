@@ -3,12 +3,13 @@
   "titel": "Kontrollfråga 3.3",
   "sprak": "sv",
   "typ": "flerval",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "utkast"
   },
   "larande": {
     "mal": [
+      "LM-1",
       "LM-4"
     ],
     "niva": "grund",
@@ -17,25 +18,24 @@
     ]
   },
   "uppgift": {
-    "fraga": "K1 drar när START hålls in men släpper när START släpps. Var sitter felet troligast?",
+    "fraga": "Du mäter 95–96 på överlastreläet i den spänningslösa startaren. Vad ska multimetern visa när reläet inte har löst ut?",
     "alternativ": [
-      "I STOPP-knappen",
-      "I hållvägen: K1:s NO-kontakt eller dess ledare",
-      "I spolens matning",
-      "I START-knappen"
+      "Nära 0 Ω, kontakten är sluten",
+      "Överområde, kontakten är öppen",
+      "Spolens resistans"
     ]
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Vad fungerar, och vad behövs bara efter att START släpps?",
+      "text": "95–96 är överlastreläets kontakt i styrkretsen. Är den normalt öppen eller normalt sluten?",
       "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Eftersom K1 drar via START fungerar matning, STOPP och spole. Det som bara behövs efter släppet är hållvägen.",
+    "text": "95–96 är normalt sluten (NC). Den öppnar först när reläet löser ut och bryter då spolens matning.",
     "status": "utkast",
-    "kommentar": "I hållvägen: K1:s NO-kontakt eller dess ledare"
+    "kommentar": "Nära 0 Ω, kontakten är sluten"
   },
   "referenser": {
     "ursprung": [

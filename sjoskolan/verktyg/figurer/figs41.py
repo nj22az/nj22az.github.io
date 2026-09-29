@@ -249,69 +249,141 @@ ax.set_xticks([0,1,2]); ax.set_xticklabels(["P₁","P₂","P₃"],fontsize=14); 
 ax.text(2.4,1.9,"P_{total} = ?",ha="right",color=RED,fontsize=16)
 save(F,"v41_02_s34_ovn10")
 
-# ================= v41_03 Fysisk träff och mätning =================
-def divider(name,labels,extra=lambda ax:None,src="12 V"):
-    F=fig(4.3,3.0); ax=cax(F,(-1.3,3.6),(-0.4,2.8))
-    wire(ax,(0,0),(0,2.2),(2.2,2.2),(2.2,0),(0,0))
-    ax.add_patch(Circle((0,1.1),0.26,fc="white",ec=INK,lw=LW,zorder=3)); ax.text(0,1.18,"+",ha="center",fontsize=12,zorder=4); ax.text(0,0.95,"−",ha="center",fontsize=12,zorder=4)
-    ax.text(-0.36,1.1,src,ha="right",va="center",fontsize=14)
-    resistor(ax,2.2,1.6,vert=True,label=labels[0],lpos="r"); resistor(ax,2.2,0.6,vert=True,label=labels[1],lpos="r")
-    extra(ax); save(F,name)
-divider("v41_03_s07_stationA",("R₁ = 1 kΩ","R₂ = 2 kΩ"),lambda ax:ax.text(1.2,1.1,"I = U/(R₁+R₂)",ha="center",fontsize=13))
-divider("v41_03_s13_ovn2",("R₁\n1 kΩ","R₂\n2 kΩ"),lambda ax:(ax.text(1.1,1.35,"I = ?",ha="center",fontsize=15,color=RED),ax.text(1.1,0.75,"U₂ = ?",ha="center",fontsize=15,color=RED)))
-def meas(ax):
-    vmark(ax,(3.0,2.1),(3.0,1.12),"3,98 V",off=(0.1,0)); vmark(ax,(3.0,1.08),(3.0,0.1),"7,96 V",off=(0.1,0))
-    ax.text(1.1,1.35,"summa = ?",ha="center",fontsize=15,color=RED)
-F=None
-def divider_meas(name):
-    F=fig(4.3,3.0); ax=cax(F,(-1.5,4.3),(-0.4,2.8)); wire(ax,(0,0),(0,2.2),(2.2,2.2),(2.2,0),(0,0))
-    ax.add_patch(Circle((0,1.1),0.26,fc="white",ec=INK,lw=LW,zorder=3)); ax.text(0,1.18,"+",ha="center",fontsize=12,zorder=4); ax.text(0,0.95,"−",ha="center",fontsize=12,zorder=4)
-    ax.text(-0.36,1.1,"11,94 V",ha="right",va="center",fontsize=14); resistor(ax,2.2,1.6,vert=True,label="R₁",lpos="r"); resistor(ax,2.2,0.6,vert=True,label="R₂",lpos="r")
-    meas(ax); save(F,name)
-divider_meas("v41_03_s15_ovn3"); divider_meas("v41_03_s34_ovn10")
-# s8 teori: trefasrigg i Y
-F=fig(4.3,3.4); ax=cax(F,(-1.7,2.7),(-1.4,1.8)); V=yload(ax,0,0,1.15)
-vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12 V",off=(0,-0.25),ha="center"); ax.text(0.95,0.75,"U_{gren} = U_{L}/√3",fontsize=14)
-save(F,"v41_03_s08_stationB")
-# s17 Ö4: riggens toppvärde
-F=fig(4.3,3.0); ax=wave_ax(F); t=T(0,20,400); ax.plot(t,np.sin(2*np.pi*t/20),color=BLUE,lw=2.4)
-ax.set_xlim(0,21); ax.set_ylim(-1.35,1.5); ax.set_xticks([]); ax.set_yticks([])
-ax.axhline(0.707,color=GREEN,lw=1.8,ls="--"); ax.text(20.6,0.76,"U = 12,1 V RMS",ha="right",va="bottom",color=GREEN,fontsize=14)
-ax.plot([5],[1],"o",color=RED,ms=5); ax.text(5.6,1.05,"û = ?",color=RED,fontsize=15,va="bottom")
-save(F,"v41_03_s17_ovn4")
-# s19 Ö5: uppmätt grenspänning
-F=fig(4.3,3.0); ax=cax(F,(-1.7,2.9),(-1.4,1.75)); V=yload(ax,0,0,1.15)
-vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12,0 V",off=(0,-0.25),ha="center")
-ax.text(0.95,0.85,"uppmätt 6,90 V",fontsize=14,color=BLUE); ax.text(0.95,0.45,"förväntat = ?",fontsize=15,color=RED)
-save(F,"v41_03_s19_ovn5")
-# hållkrets
-def latch(name,s0=True,s1=False,k1=False,coil_on=False,k1_unknown=False,note=None,timing=False,h=3.0):
-    F=fig(4.3,h); top=0.42 if timing else 0.0
-    ax=F.add_axes((0.0,top,1.0,1-top)); ax.set_xlim(-0.4,5.0); ax.set_ylim(-0.9,1.6); ax.set_aspect("equal"); ax.axis("off")
-    y=0.9; yl=0.0
-    ax.plot([0,4.6],[y,y],color=INK,lw=LW); ax.text(-0.05,y+0.25,"+12 V",fontsize=12,ha="left"); ax.text(4.6,y+0.25,"0 V",fontsize=12,ha="right")
-    contact(ax,0.8,y,s0,"S0 NC",nc=True)
-    dot(ax,1.5,y,0.05); dot(ax,3.1,y,0.05)
-    contact(ax,2.3,y,s1,"S1 NO")
-    ax.plot([1.5,1.5,3.1,3.1],[y,yl,yl,y],color=INK,lw=LW)
-    contact(ax,2.3,yl,k1,"K1 NO" if not k1_unknown else "K1 NO: ?",unknown=k1_unknown)
-    coil(ax,3.85,y,"K1",on=coil_on)
-    if note: ax.text(2.3,1.45,note,ha="center",fontsize=13,color=RED if "?" in note else INK)
-    if timing:
-        a2=F.add_axes((0.14,0.04,0.82,0.34)); a2.set_xlim(0,10); a2.set_ylim(-0.3,2.6); a2.axis("off")
-        for k,(lab,seq) in enumerate((("START",[(0,0),(2,0),(2,1),(5,1),(5,0),(10,0)]),("K1",[(0,0),(2.2,0),(2.2,1),(5.1,1),(5.1,0),(10,0)]))):
-            yy=1.5-1.4*k; xs,ys_=zip(*seq); a2.plot(xs,[yy+0.8*v for v in ys_],color=BLUE if k==0 else ORANGE,lw=2.4)
-            a2.text(-0.2,yy+0.3,lab,ha="right",va="center",fontsize=12)
-        a2.text(3.6,2.4,"K1 släpper med START",fontsize=12,color=INK)
+# ================= v41_03 Fysisk träff: motorn, startaren och tången =================
+# Motorn och startaren är övningsobjekt som aldrig ansluts. Figurerna visar delar, plint och mätningar.
+def motor_side(ax,labels=True):
+    """Trefasmotor från sidan: stomme med flänsar, fläktkåpa, lagersköldar, axel, fötter, kopplingslåda, märkskylt."""
+    ax.add_patch(Rectangle((0.9,0.5),2.6,1.3,fc="#e6ecf1",ec=INK,lw=LW))                 # stomme
+    for k in range(9): ax.plot([1.0+k*0.28,1.0+k*0.28],[0.55,1.75],color=GRAY,lw=0.8)       # kylflänsar
+    ax.add_patch(Rectangle((3.5,0.58),0.18,1.14,fc="#cfd9e2",ec=INK,lw=1.4))                 # lagersköld fram
+    ax.add_patch(Rectangle((0.72,0.58),0.18,1.14,fc="#cfd9e2",ec=INK,lw=1.4))                # lagersköld bak
+    ax.add_patch(Polygon([(0.72,0.62),(0.25,0.72),(0.25,1.58),(0.72,1.68)],closed=True,fc="#dde4ea",ec=INK,lw=1.4))  # fläktkåpa
+    for k in range(4): ax.plot([0.3,0.68],[0.85+k*0.22,0.85+k*0.22],color=GRAY,lw=0.8)
+    ax.add_patch(Rectangle((3.68,1.07),0.62,0.16,fc="#b9c3cc",ec=INK,lw=1.4))                # axel
+    ax.add_patch(Rectangle((3.9,1.21),0.3,0.05,fc="white",ec=INK,lw=1.0))                    # kil
+    ax.add_patch(Rectangle((1.9,1.8),0.8,0.42,fc="#e6ecf1",ec=INK,lw=LW))                   # kopplingslåda
+    ax.add_patch(Rectangle((1.25,0.85),0.5,0.32,fc="white",ec=INK,lw=1.2))                   # märkskylt
+    for k in range(3): ax.plot([1.3,1.7],[1.08-k*0.08,1.08-k*0.08],color=GRAY,lw=0.8)
+    for x in (1.1,3.0): ax.add_patch(Rectangle((x,0.28),0.45,0.22,fc="#cfd9e2",ec=INK,lw=1.4))  # fötter
+    if labels:
+        for (tx,ty,px,py,t) in ((2.3,2.62,2.3,2.2,"kopplingslåda med plint"),(0.75,2.25,0.5,1.6,"fläktkåpa med fläkt"),
+                               (3.1,2.25,3.2,1.72,"stomme med kylflänsar"),(1.5,-0.12,1.5,0.85,"märkskylt"),
+                               (4.3,0.55,4.05,1.07,"axel med kil"),(3.9,2.0,3.6,1.7,"lagersköld")):
+            ax.plot([tx,px],[ty-0.08 if ty>py else ty+0.1,py],color=GRAY,lw=0.9); ax.text(tx,ty,t,ha="center",va="bottom" if ty>py else "top",fontsize=12)
+F=fig(4.6,3.0); ax=cax(F,(-0.1,4.8),(-0.45,2.95)); motor_side(ax); save(F,"v41_03_s06_motor")
+
+def plint6(ax,x0,y0,dx=0.7,dy=0.75,tl=("W2","U2","V2"),bl=("U1","V1","W1"),windings=True,bleck=None):
+    """Plint 2 × 3: övre rad W2 U2 V2, undre U1 V1 W1. windings: streckade lindningar U1–U2, V1–V2, W1–W2."""
+    ax.add_patch(Rectangle((x0-0.4,y0-0.4),2*dx+0.8,dy+0.8,fc="#f4f7fa",ec=GRAY,lw=1.2))
+    P={}
+    for k in range(3):
+        P[tl[k]]=(x0+k*dx,y0+dy); P[bl[k]]=(x0+k*dx,y0)
+    if windings:
+        for a,b_,col in (("U1","U2",PHC[0]),("V1","V2",PHC[1]),("W1","W2",PHC[2])):
+            (xa,ya),(xb,yb)=P[a],P[b_]
+            ax.plot([xa,(xa+xb)/2+0.12,xb],[ya,(ya+yb)/2,yb],color=col,lw=2,ls="--",zorder=2)
+    for n,(x,y) in P.items():
+        ax.add_patch(Circle((x,y),0.1,fc="white",ec=INK,lw=1.6,zorder=4)); ax.text(x+0.14,y+(0.2 if y>y0 else -0.2),n,fontsize=12,va="center")
+    for a,b_ in (bleck or []):
+        (xa,ya),(xb,yb)=P[a],P[b_]; ax.plot([xa,xb],[ya,yb],color=INK,lw=5,solid_capstyle="round",zorder=3)
+    return P
+F=fig(4.3,3.0); ax=cax(F,(-0.7,3.9),(-0.9,2.1)); P=plint6(ax,0.2,0.2)
+ax.add_patch(Circle((3.15,0.9),0.32,fc="white",ec=BLUE,lw=2)); ax.text(3.15,0.9,"Ω",ha="center",va="center",fontsize=18,color=BLUE)
+ax.plot([P["U1"][0],P["U1"][0],2.83],[P["U1"][1],-0.55,0.8],color=BLUE,lw=1.4); ax.plot([P["U2"][0],P["U2"][0]+0.0,2.95],[P["U2"][1],1.75,1.15],color=BLUE,lw=1.4)
+ax.text(1.6,-0.78,"U1–U2 är samma lindning",ha="center",fontsize=12,color=BLUE)
+save(F,"v41_03_s07_plint")
+
+def rnet(ax,cx,cy,r,mode,lab,hl=True,q=None):
+    """Y eller Δ av tre lika lindningar R. Vägen U1–V1 markeras."""
+    V=[(cx+r*np.cos(np.radians(a)),cy+r*np.sin(np.radians(a))) for a in (150,30,270)]
+    names=("U1","V1","W1")
+    if mode=="Y":
+        for k,v in enumerate(V): rresistor(ax,v,(cx,cy),"R",color=BLUE if hl and k<2 else INK,lcolor=GRAY,fs=12)
+        dot(ax,cx,cy)
+    else:
+        for k,(i,j) in enumerate(((0,1),(1,2),(2,0))): rresistor(ax,V[i],V[j],"R",color=BLUE if hl and k==0 else ORANGE if hl else INK,lcolor=GRAY,fs=12)
+    for k,v in enumerate(V):
+        dot(ax,*v); a=np.radians((150,30,270)[k]); ax.text(v[0]+0.3*np.cos(a),v[1]+0.3*np.sin(a),names[k],ha="center",va="center",fontsize=13,fontweight="bold")
+    ax.text(cx,cy-r-0.55,lab,ha="center",va="top",fontsize=14,color=RED if q else INK)
+F=fig(4.6,3.2); ax=cax(F,(-1.6,5.0),(-2.45,1.9))
+rnet(ax,0,0,1.1,"Y","Y: R + R = 2R"); rnet(ax,3.3,0,1.1,"D","Δ: R parallellt med 2R\n= (2/3) · R")
+ax.text(1.65,1.65,"mellan U1 och V1",ha="center",fontsize=13,color=BLUE)
+save(F,"v41_03_s08_ydelta_r")
+
+def startare(ax,q=None,meter=None):
+    """Kontaktor K1 (spole A1–A2, huvudkontakter 1–2, 3–4, 5–6, hjälpkontakt 13–14) och överlastrelä F2 (95–96)."""
+    ax.add_patch(Rectangle((0.2,1.6),0.7,0.45,fc="white",ec=INK,lw=LW)); ax.text(0.55,1.825,"K1",ha="center",va="center",fontsize=13)
+    ax.text(0.1,1.95,"A1",ha="right",fontsize=11); ax.text(0.1,1.62,"A2",ha="right",fontsize=11)
+    ax.plot([0.55,0.55],[2.05,2.35],color=INK,lw=1.4); ax.plot([0.55,0.55],[1.6,1.3],color=INK,lw=1.4)
+    for k,(a,b_) in enumerate((("1","2"),("3","4"),("5","6"))):
+        x=1.4+k*0.45; ax.plot([x,x],[2.35,2.0],color=INK,lw=1.6); ax.plot([x,x+0.18],[1.72,2.0],color=INK,lw=1.6); ax.plot([x,x],[1.72,1.35],color=INK,lw=1.6)
+        ax.text(x+0.05,2.3,a,fontsize=10); ax.text(x+0.05,1.38,b_,fontsize=10)
+    ax.plot([1.35,2.35],[1.86,1.86],color=GRAY,lw=1,ls=":")
+    x=2.75; ax.plot([x,x],[2.35,2.0],color=INK,lw=1.6); ax.plot([x,x+0.18],[1.72,2.0],color=INK,lw=1.6); ax.plot([x,x],[1.72,1.35],color=INK,lw=1.6)
+    ax.text(x+0.07,2.3,"13",fontsize=10); ax.text(x+0.07,1.38,"14",fontsize=10); ax.text(x+0.28,1.8,"NO",fontsize=11,color=GRAY)
+    ax.add_patch(Rectangle((3.35,1.55),0.9,0.55,fc="#f4f7fa",ec=INK,lw=LW)); ax.text(3.8,1.82,"F2",ha="center",va="center",fontsize=13)
+    x=4.7; ax.plot([x,x],[2.35,2.0],color=INK,lw=1.6); ax.plot([x,x-0.2],[1.72,2.02],color=INK,lw=1.6); ax.plot([x-0.2,x],[2.02,2.02],color=INK,lw=1.6); ax.plot([x,x],[1.72,1.35],color=INK,lw=1.6)
+    ax.text(x+0.07,2.3,"95",fontsize=10); ax.text(x+0.07,1.38,"96",fontsize=10); ax.text(x+0.1,1.8,"NC",fontsize=11,color=GRAY)
+    ax.plot([4.25,4.5],[1.82,1.86],color=GRAY,lw=1,ls=":")
+    ax.text(0.55,1.1,"spole",ha="center",fontsize=11,color=GRAY); ax.text(1.85,1.1,"huvudkontakter",ha="center",fontsize=11,color=GRAY); ax.text(3.8,1.1,"överlastrelä",ha="center",fontsize=11,color=GRAY)
+    if meter:
+        for (x,t) in meter: ax.text(x,0.62,t,ha="center",fontsize=14,color=BLUE)
+    if q: ax.text(2.6,0.2,q,ha="center",fontsize=14,color=RED)
+F=fig(4.6,2.3); ax=cax(F,(-0.3,5.2),(0.85,2.6)); startare(ax); save(F,"v41_03_s21_startare")
+
+def clamp(ax,x,y,n_in=1,hair=False,lab=None,q=False,r=0.42):
+    """Strömtångens käft (ring) sedd framifrån med ledarna som passerar: × in, • ut."""
+    ax.add_patch(Circle((x,y),r,fc="none",ec=INK,lw=4))
+    ax.add_patch(Rectangle((x-0.12,y-r-0.55),0.24,0.5,fc="#dde4ea",ec=INK,lw=1.4))
+    pts=[]
+    if hair: pts=[(x-0.13,y,"×"),(x+0.13,y,"•")]
+    else: pts=[(x+(k-(n_in-1)/2)*0.24,y,"×") for k in range(n_in)]
+    for (px,py,m) in pts:
+        ax.add_patch(Circle((px,py),0.1,fc="white",ec=ORANGE,lw=1.6)); ax.text(px,py,m,ha="center",va="center",fontsize=11,color=ORANGE)
+    if lab: ax.text(x,y+r+0.18,lab,ha="center",fontsize=13,color=RED if q else INK)
+F=fig(4.6,2.4); ax=cax(F,(-0.5,5.1),(-0.95,1.35))
+clamp(ax,0.6,0.3,1,lab="en gång: I"); clamp(ax,2.3,0.3,2,lab="två varv: 2 · I"); clamp(ax,4.0,0.3,hair=True,lab="hårnål: 0")
+ax.text(2.3,-0.85,"× ström in i bilden   • ström ut ur bilden",ha="center",fontsize=11,color=GRAY)
+save(F,"v41_03_s22_tang")
+
+# Övningar
+def plate_net(name,plate,nat):
+    F=fig(4.3,3.0); ax=cax(F,(-0.5,4.2),(-1.05,2.75))
+    ax.add_patch(Rectangle((0.2,1.75),2.8,0.85,fc="#eef2f5",ec=INK,lw=1.6)); ax.text(1.6,2.35,"3~ motor",ha="center",fontsize=13); ax.text(1.6,1.98,plate,ha="center",fontsize=12.5,fontweight="bold")
+    plint(ax,0.0,0.05,"Y","Y ?",q=True); plint(ax,2.35,0.05,"D","Δ ?",q=True)
+    ax.text(4.15,2.2,nat,ha="right",va="center",fontsize=13,color=BLUE)
     save(F,name)
-latch("v41_03_s26_ovn6",s0=True,s1=False,k1=False,note="Sluten väg till K1-spolen?")
-latch("v41_03_s28_ovn7",s0=True,s1=True,k1=False,coil_on=True,k1_unknown=True,note="START intryckt, K1 drar (aktuellt läge)")
-latch("v41_03_s30_ovn8",s0=True,s1=False,k1=False,note="Efter släpp: K1 släppt. Felhypotes = ?",timing=True,h=4.0)
-# s32 Ö9: toleransgränser
-F=fig(4.3,3.0); ax=F.add_axes((0.06,0.3,0.88,0.4)); ax.set_xlim(0.9,1.1); ax.set_ylim(-1,1); ax.axis("off")
-ax.plot([0.92,1.08],[0,0],color=GRAY,lw=1.5); ax.add_patch(Rectangle((0.95,-0.25),0.10,0.5,fc=GREEN,alpha=0.15,ec=GREEN,lw=1.5))
-ax.plot([1,1],[-0.35,0.35],color=INK,lw=2); ax.text(1,0.5,"R_{nom} = 1 kΩ",ha="center",fontsize=14)
-ax.text(0.95,-0.45,"R_{min} = ?",ha="center",va="top",color=RED,fontsize=14); ax.text(1.05,-0.45,"R_{max} = ?",ha="center",va="top",color=RED,fontsize=14)
-ax.text(0.95,0.5,"−5 %",ha="center",fontsize=13,color=GREEN); ax.text(1.05,0.5,"+5 %",ha="center",fontsize=13,color=GREEN)
-F.text(0.5,0.12,"Uppmätt: 1,03 kΩ",ha="center",fontsize=15,color=BLUE)
-save(F,"v41_03_s32_ovn9")
+plate_net("v41_03_s11_ovn1","Δ/Y 254/440 V · 60 Hz","Ombord:\n440 V\n60 Hz")
+F=fig(4.3,3.0); ax=cax(F,(-0.7,4.1),(-0.9,2.1)); plint6(ax,0.2,0.2)
+for k,t in enumerate(("U1–U2: 4,1 Ω","V1–V2: 4,0 Ω","W1–W2: 4,2 Ω","sladdar: 0,3 Ω")): ax.text(2.35,1.45-k*0.36,t,fontsize=13,color=BLUE if k<3 else GRAY)
+ax.text(1.6,-0.78,"R_{lindning} = ?",ha="center",fontsize=15,color=RED); save(F,"v41_03_s13_ovn2")
+F=fig(4.6,3.0); ax=cax(F,(-1.6,5.0),(-2.1,1.9))
+rnet(ax,0,0,1.1,"Y","R_{Y} = ?",hl=False,q=True); rnet(ax,3.3,0,1.1,"D","R_{Δ} = ?",hl=False,q=True)
+ax.text(1.65,1.65,"R = 3,6 Ω per lindning",ha="center",fontsize=13,color=BLUE); save(F,"v41_03_s15_ovn3")
+F=fig(4.6,3.0); ax=cax(F,(-0.1,4.8),(-0.45,2.95)); motor_side(ax,labels=False)
+ax.text(2.4,2.6,"Vilken del öppnas? Vilka uppgifter avgör?",ha="center",fontsize=13,color=RED); save(F,"v41_03_s17_ovn4")
+def rbars(name,labels,vals,ymax,q):
+    F=fig(4.3,3.0); ax=F.add_axes((0.12,0.16,0.84,0.7))
+    for sp in ("top","right","left"): ax.spines[sp].set_visible(False)
+    ax.bar(range(len(vals)),vals,color=[BLUE,"#4f7fb0","#8fb0d3"][:len(vals)],width=0.55)
+    for k,v in enumerate(vals): ax.text(k,v+ymax*0.02,f"{c(v)} Ω",ha="center",fontsize=14)
+    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labels,fontsize=13); ax.set_yticks([]); ax.set_ylim(0,ymax)
+    F.text(0.97,0.92,q,ha="right",color=RED,fontsize=14); save(F,name)
+rbars("v41_03_s19_ovn5",["U1–V1 i Y","U1–V1 i Δ"],[8.1,2.8],10,"R_{Y}/R_{Δ} = ?")
+rbars("v41_03_s26_ovn6",["U1–V1","V1–W1","W1–U1"],[4.2,4.2,8.4],10,"Δ-koppling: vilket bleck saknas?")
+F=fig(4.6,2.4); ax=cax(F,(-0.3,5.2),(0.0,2.6)); startare(ax,q="95–96 efter testknappen = ?",meter=[(2.75,"OL"),(4.7,"0,1 Ω")]); save(F,"v41_03_s28_ovn7")
+F=fig(4.3,3.0); ax=cax(F,(-0.3,4.3),(-0.3,2.9))
+ax.add_patch(Rectangle((0.0,1.0),2.8,1.6,fc="#eef2f5",ec=INK,lw=1.6))
+for k,t in enumerate(("3~ motor  1,5 kW","Δ/Y 230/400 V","5,9/3,4 A","50 Hz")): ax.text(0.15,2.35-k*0.36,t,fontsize=13,fontweight="bold" if k==1 else "normal")
+ax.text(4.2,2.3,"Landnät\n400 V, 50 Hz",ha="right",va="center",fontsize=13,color=BLUE)
+ax.text(0.0,0.55,"Koppling = ?",fontsize=15,color=RED); ax.text(0.0,0.05,"Överlastrelä = ? A",fontsize=15,color=RED); save(F,"v41_03_s30_ovn8")
+F=fig(4.3,2.8); ax=cax(F,(-0.3,4.1),(-1.25,1.6))
+clamp(ax,0.9,0.3,2,lab="två varv: ?",q=True); clamp(ax,3.0,0.3,hair=True,lab="hårnål: ?",q=True)
+ax.text(1.95,-1.12,"I = 1,8 A genom sladden",ha="center",fontsize=13,color=BLUE); save(F,"v41_03_s32_ovn9")
+F=fig(4.3,3.0); ax=cax(F,(-0.3,4.4),(-0.3,2.9))
+for k in range(3): ax.plot([0.2,2.9],[1.55+k*0.1,1.55+k*0.1],color=PHC[k],lw=2)
+ax.add_patch(Rectangle((0.2,1.45),2.7,0.4,fc="none",ec=INK,lw=1.4))
+ax.add_patch(Circle((1.35,1.65),0.38,fc="none",ec=INK,lw=4)); ax.add_patch(Rectangle((1.23,0.72),0.24,0.55,fc="#dde4ea",ec=INK,lw=1.4))
+ax.add_patch(Circle((3.55,1.65),0.5,fc="white",ec=INK,lw=LW)); ax.text(3.55,1.65,"M\n3~",ha="center",va="center",fontsize=13); ax.plot([2.9,3.05],[1.65,1.65],color=INK,lw=2)
+ax.text(1.35,0.45,"0,2 A",ha="center",fontsize=15,color=BLUE); ax.text(0.2,2.35,"Ombord 440 V, 60 Hz, motorn går",fontsize=13,color=BLUE)
+ax.text(2.2,0.0,"Varför så lite? Hur mäts fasströmmen?",ha="center",fontsize=13,color=RED); save(F,"v41_03_s34_ovn10")

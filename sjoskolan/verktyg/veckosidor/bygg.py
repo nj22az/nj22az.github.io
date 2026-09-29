@@ -177,7 +177,7 @@ VECKOR = {
     },
     41: {
         'titel': 'Trefas och laboration', 'datum': ('2026-10-05', '2026-10-09'), 'sista': '2026-10-11',
-        'mal': 'Du kan räkna med fas- och huvudspänning i Y och Δ, förklara neutralströmmen och genomföra stationerna A, B och C med eget protokoll.',
+        'mal': 'Du kan räkna med fas- och huvudspänning i Y och Δ, förklara neutralströmmen och koppla Y och Δ i en riktig motors plint med eget protokoll.',
         'delar': [
             {'titel': 'Trefassystemets grunder', 'mal': 'Fas- och huvudspänning, visare och neutralström.', 'poster': [
                 ppt('v41_01_Trefassystemets_grunder_elev.pptx', 'Trefassystemets grunder', 36),
@@ -190,17 +190,16 @@ VECKOR = {
                 lank('Formelstod_och_ovningar.html#v41_02', 'Övningar: Y, Δ och trefaseffekt', 'övning', '10 övningar med facit'),
                 lank(LABB['trefas'] + '?flik=ydelta', 'Trefaslabbet', 'labb', 'flik 3: Y, Δ och motorns märkning'),
             ]},
-            {'titel': 'Stationerna A, B och C', 'mal': 'Förutsäg, mät, jämför och förklara vid tre stationer.', 'poster': [
+            {'titel': 'Motorn, startaren och strömtången', 'mal': 'Koppla Y och Δ i plinten, kontrollera med mätning och känn igen delarna.', 'poster': [
                 ppt('v41_03_Fysisk_traff_och_matning_elev.pptx', 'Fysisk träff och mätning', 36),
-                lank('Formelstod_och_ovningar.html#v41_03', 'Övningar: beräkning före mätning', 'övning', '10 övningar med facit'),
-                lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'labb', 'protokoll och ifyllda exempel'),
-                lank('Elevprotokoll.html', 'Elevprotokoll och riskmall', 'mall', 'för den fysiska träffen'),
-                lank('../../filmer/#hallkretsen', 'Film: Hållkretsen', 'film', 'inför Station C'),
+                lank('Formelstod_och_ovningar.html#v41_03', 'Övningar: motorn, startaren och tången', 'övning', '10 övningar med facit'),
+                lank('Labbet.html', 'Labbet fredag 9 oktober', 'labb', 'stationerna M, S och T med protokoll'),
+                lank('Elevprotokoll.html', 'Elevprotokoll och riskmall', 'mall', 'riskbedömning och mätplan'),
             ]},
         ],
-        'redovisa': ['Protokoll för Station A och Station C med en felmodul (under träffen fredag 9 oktober).', 'Protokoll för Station B och en andra felmodul i Station C.'],
-        'notis': 'Laborationen fredag 9 oktober använder den avsedda riggen och lärarens anvisningar. Förbered protokoll och riskbedömning före träffen.',
-        'fordjupning': [lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter')],
+        'redovisa': ['Protokollet från labbet fredag 9 oktober: station M, S och T.'],
+        'notis': 'Labbet fredag 9 oktober: motorn och startaren är övningsobjekt som aldrig ansluts. Gör övning 3.1–3.5 och skriv dina förutsägelser i protokollet före träffen.',
+        'fordjupning': [lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'övning', 'extra övning i simulatorerna'), lank(LABB['hallkrets'], 'Hållkretslabbet', 'övning', 'inför vecka 43')],
     },
     42: {
         'titel': 'Elektriska risker och skydd', 'datum': ('2026-10-12', '2026-10-16'), 'sista': '2026-10-18',
@@ -436,8 +435,8 @@ def veckoplan(nr, w, n, delsidor):
         (f'{dag(0).isoformat()}T00:00', f'Måndag {fmt(dag(0))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(1)}. Övning 1.1–1.5 i klassen.'),
         (f'{dag(0).isoformat()}T11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', f'Övning 1.6–1.10 på {del_(1)}{kontroll(1)}. Använd ledtrådarna innan du öppnar facit.'),
         (f'{dag(1).isoformat()}T14:00', f'Tisdag {fmt(dag(1))}', 'Lektion 15.00–17.00', f'Presentationen för {del_(2)}. Övning 2.1–2.5 i klassen.'),
-        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}'),
-        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.'),
+        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}' + (f' Förbered labbet: läs teorin och gör övning 3.1–3.5 på {del_(3)}.' if nr == 41 else '')),
+        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.' + (' Motorn, startaren och strömtången: <a href="Labbet.html">tre stationer med protokoll</a>.' if nr == 41 else '')),
         (f'{dag(4).isoformat()}T11:00', 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
     ]
     rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)

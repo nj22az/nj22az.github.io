@@ -3,12 +3,13 @@
   "titel": "Kontrollfråga 3.2",
   "sprak": "sv",
   "typ": "flerval",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "utkast"
   },
   "larande": {
     "mal": [
+      "LM-1",
       "LM-4"
     ],
     "niva": "grund",
@@ -17,25 +18,24 @@
     ]
   },
   "uppgift": {
-    "fraga": "En seriekrets med två resistorer matas med 12 V. Över R_{1} mäts 4,0 V. Vilken spänning förväntar du dig över R_{2}?",
+    "fraga": "En labbsladd med 2,0 A läggs två varv genom strömtångens käft. Vad visar tången?",
     "alternativ": [
-      "4,0 V",
-      "8,0 V",
-      "12 V",
-      "16 V"
+      "1,0 A",
+      "2,0 A",
+      "4,0 A"
     ]
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Kirchhoffs spänningslag.",
+      "text": "Tången räknar strömmen varje gång ledaren passerar käften.",
       "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Enligt spänningslagen är källans spänning lika med summan av fallen: 12 − 4,0 = 8,0 V.",
+    "text": "Strömmen passerar käften två gånger åt samma håll: 2 · 2,0 = 4,0 A.",
     "status": "utkast",
-    "kommentar": "8,0 V"
+    "kommentar": "4,0 A"
   },
   "referenser": {
     "ursprung": [
