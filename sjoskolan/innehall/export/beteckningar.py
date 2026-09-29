@@ -31,7 +31,7 @@ def sida(alla, vecka):
 
 def filer(a):
     alla = a.beteckningar()
-    data = [{k: b[k] for k in ('id', 'visa', 'former', 'efter_tal', 'formel', 'namn', 'utlasning', 'forklaring', 'enhet', 'exempel', 'obs') if k in b} for b in alla]
+    data = [{k: b[k] for k in ('id', 'visa', 'former', 'efter_tal', 'formel', 'namn', 'utlasning', 'forklaring', 'enhet', 'exempel', 'obs') if k in b} for b in alla if b.get('labbdata', True)]  # labbdata false: senare beteckningar, vecka 40:s labb är låst
     return {
         'gemensamt/beteckningar.gen.mjs': '// GENERERAD FIL · ur sjoskolan/innehall/beteckningar.json (innehall.py bygg). Redigera inte här.\nexport const BETECKNINGAR = ' + R.js(data, indent=1) + ';\n',
         'gemensamt/beteckningar.css': '/* GENERERAD FIL · innehall/export/rendera.py BET_CSS */\n' + R.BET_CSS + '\n.bet-sida .bet-rad{scroll-margin-top:16px}\n',

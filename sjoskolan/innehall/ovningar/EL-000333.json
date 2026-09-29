@@ -3,7 +3,7 @@
   "titel": "Ström i jordfelet",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -44,7 +44,7 @@
     "text": "I = 3 · 2π · 50 · 1,0 · 10⁻⁶ · 254 ≈ 0,239 A ≈ 239 mA. Strömmen är för liten för att säkringar ska lösa men tillräckligt stor för att ge stöt och gnistor.",
     "svar": [
       {
-        "storhet": "Ifel",
+        "storhet": "I_{fel}",
         "varde": 239.422,
         "tolerans": {
           "rel": 0.02
@@ -88,7 +88,7 @@
     },
     "fraga": {
       "storhet": "Ifault",
-      "etikett": "Ifel",
+      "etikett": "I_{fel}",
       "enhet": "mA",
       "skala": 0.001
     },

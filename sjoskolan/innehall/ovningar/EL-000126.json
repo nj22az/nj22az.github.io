@@ -3,7 +3,7 @@
   "titel": "Batteriets risk",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
   "uppgift": {
     "fraga": "Ett 24 V-batteri har stor kortslutningsförmåga. Ange en viktig risk som inte avgörs av spänningstalet ensamt.",
     "samband": [
-      "Ifel ≈ U/R_{slinga} i en enkel modell"
+      "I_{fel} ≈ U/R_{slinga} i en enkel modell"
     ],
     "givet": "Ett 24 V-batteri som kan ge stor kortslutningsström. Felkretsens resistans är inte känd, så strömmen kan inte räknas ut.",
     "instruktion": "Motivera ditt beslut."

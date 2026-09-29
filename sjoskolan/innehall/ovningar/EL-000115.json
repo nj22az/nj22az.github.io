@@ -3,7 +3,7 @@
   "titel": "Trefasdata",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,10 +24,10 @@
   "uppgift": {
     "fraga": "En symmetrisk trefasrigg har uppmätt linjespänning 12,0 V. Beräkna förväntad Y-grenspänning och jämför med uppmätt 6,90 V.",
     "samband": [
-      "Uförv = U_{L}/√3",
-      "ΔU = Uuppmätt − Uförv"
+      "U_{förv} = U_{L}/√3",
+      "ΔU = U_{uppmätt} − U_{förv}"
     ],
-    "givet": "Symmetrisk Y, U_{L} = 12,0 V och Uuppmätt = 6,90 V. Avrunda inte mellanresultatet.",
+    "givet": "Symmetrisk Y, U_{L} = 12,0 V och U_{uppmätt} = 6,90 V. Avrunda inte mellanresultatet.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -48,7 +48,7 @@
     }
   ],
   "losning": {
-    "text": "Uförv ≈ 6,93 V. ΔU = 6,90 − 6,93 ≈ −0,03 V. Uppmätt är något lägre än beräknat.",
+    "text": "U_{förv} ≈ 6,93 V. ΔU = 6,90 − 6,93 ≈ −0,03 V. Uppmätt är något lägre än beräknat.",
     "svar": [
       {
         "storhet": "avvikelse",

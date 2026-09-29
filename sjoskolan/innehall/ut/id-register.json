@@ -1497,7 +1497,7 @@
   },
   {
    "id": "EL-000108",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorström från axeleffekt",
@@ -1541,7 +1541,7 @@
   },
   {
    "id": "EL-000110",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Osymmetrisk aktiv effekt",
@@ -1651,7 +1651,7 @@
   },
   {
    "id": "EL-000115",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Trefasdata",
@@ -1893,7 +1893,7 @@
   },
   {
    "id": "EL-000126",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Batteriets risk",
@@ -2839,7 +2839,7 @@
   },
   {
    "id": "EL-000169",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorförluster",
@@ -3125,7 +3125,7 @@
   },
   {
    "id": "EL-000182",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "TT-princip",
@@ -4181,7 +4181,7 @@
   },
   {
    "id": "EL-000230",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samlad slutsats",
@@ -4871,7 +4871,7 @@
   },
   {
    "id": "EL-000329",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Vad mäter isolationsövervakningen?",
@@ -4887,7 +4887,7 @@
   },
   {
    "id": "EL-000330",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Larmar övervakningen?",
@@ -4935,7 +4935,7 @@
   },
   {
    "id": "EL-000333",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström i jordfelet",
@@ -5415,7 +5415,7 @@
   },
   {
    "id": "EL-000410",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Labbprotokoll, isolation och jordfel i IT-nät",

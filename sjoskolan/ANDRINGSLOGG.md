@@ -293,3 +293,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   övningar som bygger på det. Exemplen visas ett steg i taget (”Visa steg 2 av 3”, ”Visa alla steg”), så att eleven
   hinner försöka själv. Länkar från ledtrådarna öppnar rätt kort. Utan JavaScript syns allt. Övningarna börjar nu
   efter ungefär 3 800 px på mobil, mot 7 300 px förut. Vecka 40 orörd.
+- **2026-09-29** Notation vecka 41–45. Nya kanoniska beteckningar i `beteckningar.json`: P_{in}, P_{axel}, P_{total},
+  U_{1,gren}/U_{2,gren}, I_{1,märk}/I_{2,märk}, U_{förv}, U_{uppmätt}, R_{nom}, R_{före}/R_{efter}, R_{iso}, I_{fel},
+  Z_{fel}. De gamla formerna (Paxel, Ptotal, U₁,gren …) står i `avradda`, så CI stoppar dem. Presentationer, delsidor,
+  isolationslabbet, poster och bokens skyddade text är omskrivna, och figurerna i v41_02 (bild 22, 30, 34) och v41_03
+  (bild 32) är omritade. De nya beteckningarna har `labbdata: false` och följer inte med i `beteckningar.gen.mjs`,
+  som vecka 40:s växelströmslabb läser (låst). Pᵢₙ och Pförlust står kvar i vecka 39 (arbeta bara framåt).
+  Regel: en ny beteckning efter vecka 40 får `labbdata: false`.

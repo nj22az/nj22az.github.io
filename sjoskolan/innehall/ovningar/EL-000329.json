@@ -3,7 +3,7 @@
   "titel": "Vad mäter isolationsövervakningen?",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,10 +41,10 @@
     }
   ],
   "losning": {
-    "text": "1/Riso = 1/3 + 1/3 + 1/1,5 = 4/3. Riso = 0,75 MΩ. Den sämsta fasen drar ned hela nätets värde.",
+    "text": "1/R_{iso} = 1/3 + 1/3 + 1/1,5 = 4/3. R_{iso} = 0,75 MΩ. Den sämsta fasen drar ned hela nätets värde.",
     "svar": [
       {
-        "storhet": "Riso",
+        "storhet": "R_{iso}",
         "varde": 0.75,
         "tolerans": {
           "rel": 0.02
@@ -82,7 +82,7 @@
     },
     "fraga": {
       "storhet": "Riso",
-      "etikett": "Riso",
+      "etikett": "R_{iso}",
       "enhet": "MΩ",
       "skala": 1000000
     },

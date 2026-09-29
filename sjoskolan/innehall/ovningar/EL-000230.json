@@ -3,7 +3,7 @@
   "titel": "Samlad slutsats",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -24,7 +24,7 @@
   "uppgift": {
     "fraga": "Före åtgärden föll 6 V i kabeln vid 3 A. Efter åtgärden faller 0,3 V vid samma ström, och lasten fungerar. Skriv en teknisk slutsats och en kontroll som återstår.",
     "samband": [
-      "Rföre = ΔUföre/I; Refter = ΔUefter/I"
+      "R_{före} = ΔUföre/I; R_{efter} = ΔUefter/I"
     ],
     "givet": "Före: 6 V vid 3 A. Efter: 0,3 V vid 3 A. Lasten fungerar efter åtgärden.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Rföre = 2,0 Ω, Refter = 0,10 Ω. Åtgärden har minskat resistansen kraftigt. Kvar att göra: föreskriven kontroll av anslutning och skydd.",
+    "text": "R_{före} = 2,0 Ω, R_{efter} = 0,10 Ω. Åtgärden har minskat resistansen kraftigt. Kvar att göra: föreskriven kontroll av anslutning och skydd.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

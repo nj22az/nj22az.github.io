@@ -197,8 +197,8 @@ save(F,"v41_02_s21_plint")
 F=fig(4.3,3.0); ax=cax(F,(-0.2,4.4),(-0.6,2.5))
 ax.add_patch(Polygon([(0,1.6),(2.6,1.6),(3.6,1.15),(2.6,0.7),(0,0.7)],closed=True,fc=BLUE,alpha=0.25,ec=BLUE,lw=1.5))
 ax.add_patch(Polygon([(2.0,0.7),(2.35,0.7),(2.35,-0.2),(2.2,-0.4),(2.0,-0.2)],closed=True,fc=ORANGE,alpha=0.25,ec=ORANGE,lw=1.5))
-ax.text(0.2,1.15,"Pᵢₙ elektrisk",fontsize=15,va="center"); ax.text(3.65,1.15,"Paxel",fontsize=15,va="center"); ax.text(2.5,-0.2,"förluster",fontsize=14,color=ORANGE,va="center")
-ax.text(2.2,2.1,"η = Paxel / Pᵢₙ",fontsize=15,ha="center")
+ax.text(0.2,1.15,"P_{in} elektrisk",fontsize=15,va="center"); ax.text(3.65,1.15,"P_{axel}",fontsize=15,va="center"); ax.text(2.5,-0.2,"förluster",fontsize=14,color=ORANGE,va="center")
+ax.text(2.2,2.1,"η = P_{axel} / P_{in}",fontsize=15,ha="center")
 save(F,"v41_02_s22_effektflode")
 # s26 Ö6 / s28 Ö7: märkning och plint
 def plate_task(name,plate):
@@ -210,9 +210,9 @@ def plate_task(name,plate):
 plate_task("v41_02_s26_ovn6","Δ/Y 230/400 V"); plate_task("v41_02_s28_ovn7","Δ/Y 400/690 V")
 # s30 Ö8: motor med axeleffekt
 F=fig(4.3,3.0); ax=cax(F,(-0.6,4.4),(-0.6,2.9)); feed(ax,xm=2.6)
-ax.plot([3.1,3.9],[0.85,0.85],color=INK,lw=5); ax.text(3.5,0.55,"Paxel\n5,5 kW",fontsize=13,va="top",ha="center")
+ax.plot([3.1,3.9],[0.85,0.85],color=INK,lw=5); ax.text(3.5,0.55,"P_{axel}\n5,5 kW",fontsize=13,va="top",ha="center")
 ax.text(0.2,1.2,"U_{L} = 400 V\nη = 0,88\nPF = 0,80",fontsize=13,va="top")
-ax.text(4.35,2.6,"Pᵢₙ = ?   I_{L} = ?",color=RED,fontsize=15,ha="right")
+ax.text(4.35,2.6,"P_{in} = ?   I_{L} = ?",color=RED,fontsize=15,ha="right")
 save(F,"v41_02_s30_ovn8")
 # s32 Ö9: transformator
 F=fig(4.3,3.0); ax=cax(F,(-0.3,4.5),(-0.2,2.8))
@@ -228,7 +228,7 @@ for sp in ("top","right","left"): ax.spines[sp].set_visible(False)
 vals=(1.2,1.5,0.9); ax.bar([0,1,2],vals,color=PHC,width=0.55,alpha=0.9)
 for k,v in enumerate(vals): ax.text(k,v+0.05,f"{c(v)} kW",ha="center",fontsize=14)
 ax.set_xticks([0,1,2]); ax.set_xticklabels(["P₁","P₂","P₃"],fontsize=14); ax.set_yticks([]); ax.set_ylim(0,2.1)
-ax.text(2.4,1.9,"Ptotal = ?",ha="right",color=RED,fontsize=16)
+ax.text(2.4,1.9,"P_{total} = ?",ha="right",color=RED,fontsize=16)
 save(F,"v41_02_s34_ovn10")
 
 # ================= v41_03 Fysisk träff och mätning =================
@@ -292,8 +292,8 @@ latch("v41_03_s30_ovn8",s0=True,s1=False,k1=False,note="Efter släpp: K1 släppt
 # s32 Ö9: toleransgränser
 F=fig(4.3,3.0); ax=F.add_axes((0.06,0.3,0.88,0.4)); ax.set_xlim(0.9,1.1); ax.set_ylim(-1,1); ax.axis("off")
 ax.plot([0.92,1.08],[0,0],color=GRAY,lw=1.5); ax.add_patch(Rectangle((0.95,-0.25),0.10,0.5,fc=GREEN,alpha=0.15,ec=GREEN,lw=1.5))
-ax.plot([1,1],[-0.35,0.35],color=INK,lw=2); ax.text(1,0.5,"Rnom = 1 kΩ",ha="center",fontsize=14)
-ax.text(0.95,-0.45,"Rmin = ?",ha="center",va="top",color=RED,fontsize=14); ax.text(1.05,-0.45,"Rmax = ?",ha="center",va="top",color=RED,fontsize=14)
+ax.plot([1,1],[-0.35,0.35],color=INK,lw=2); ax.text(1,0.5,"R_{nom} = 1 kΩ",ha="center",fontsize=14)
+ax.text(0.95,-0.45,"R_{min} = ?",ha="center",va="top",color=RED,fontsize=14); ax.text(1.05,-0.45,"R_{max} = ?",ha="center",va="top",color=RED,fontsize=14)
 ax.text(0.95,0.5,"−5 %",ha="center",fontsize=13,color=GREEN); ax.text(1.05,0.5,"+5 %",ha="center",fontsize=13,color=GREEN)
 F.text(0.5,0.12,"Uppmätt: 1,03 kΩ",ha="center",fontsize=15,color=BLUE)
 save(F,"v41_03_s32_ovn9")

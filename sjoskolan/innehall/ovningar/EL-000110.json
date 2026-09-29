@@ -3,7 +3,7 @@
   "titel": "Osymmetrisk aktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "Den aktiva effekten i de tre faserna har mätts till 1,2, 1,5 och 0,9 kW. Bestäm den totala aktiva effekten. Varför kan du inte bara ta en av fasströmmarna och sätta in i formeln för symmetrisk last?",
     "samband": [
-      "Ptotal = P_{1} + P_{2} + P_{3}"
+      "P_{total} = P_{1} + P_{2} + P_{3}"
     ],
     "givet": "Uppmätt effekt per fas: 1,2, 1,5 och 0,9 kW. Lasten är inte symmetrisk.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -45,10 +45,10 @@
     }
   ],
   "losning": {
-    "text": "Ptotal = 3,6 kW. Formeln med √3 förutsätter lika ström och lika effektfaktor i alla faser. Här skiljer sig faserna.",
+    "text": "P_{total} = 3,6 kW. Formeln med √3 förutsätter lika ström och lika effektfaktor i alla faser. Här skiljer sig faserna.",
     "svar": [
       {
-        "storhet": "Ptotal",
+        "storhet": "P_{total}",
         "varde": 3.6,
         "avrundning": "1 decimaler",
         "tolerans": {

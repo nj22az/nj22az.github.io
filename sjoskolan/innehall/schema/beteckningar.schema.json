@@ -68,6 +68,10 @@
           "exempel": {
             "type": "string"
           },
+          "labbdata": {
+            "type": "boolean",
+            "description": "false: beteckningen följer inte med i gemensamt/beteckningar.gen.mjs, som växelströmslabbet i den låsta vecka 40 läser. Används för beteckningar som tillkommit efter vecka 40."
+          },
           "obs": {
             "type": "string",
             "description": "Varning för förväxling, till exempel samma beteckning med annan betydelse en annan vecka."

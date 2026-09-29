@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, isolation och jordfel i IT-nät",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -62,7 +62,7 @@
       {
         "id": "m1",
         "titel": "Isolationsvärde, friskt nät",
-        "storhet": "Riso (IMD)",
+        "storhet": "R_{iso} (IMD)",
         "punkter": "IMD: nät / skrov",
         "forvantat": "tre vägar parallellt",
         "tolerans": "±2 %",
@@ -90,7 +90,7 @@
       {
         "id": "m3",
         "titel": "Isolationsvärde, L1 nedsatt",
-        "storhet": "Riso (IMD)",
+        "storhet": "R_{iso} (IMD)",
         "punkter": "IMD: nät / skrov",
         "forvantat": "tre vägar parallellt",
         "tolerans": "±2 %",
@@ -118,7 +118,7 @@
       {
         "id": "m5",
         "titel": "Ström i jordfelet",
-        "storhet": "Ifel",
+        "storhet": "I_{fel}",
         "punkter": "tång runt felstället",
         "forvantat": "3ωC·U_{F}",
         "tolerans": "±5 %",
