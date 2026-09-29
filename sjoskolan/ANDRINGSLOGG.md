@@ -379,3 +379,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   närområde. En mening förklarar att SS-EN 50110-1 har tre metoder och att ESA lägger till arbete utanför närområde.
   v42_02 bild 7 skriver: ”SS-EN 50110-1: tre metoder (…). ESA: fyra metoder (kompletterar med arbete utanför närområde).”
   Regel: när ESA:s fyra metoder nämns ska standardens tre stå bredvid, så att begreppen inte blandas ihop.
+- **2026-09-29 – Jordfel i IT-nät (v41_01 bild 7, Del 1 avsnitt 3).** ”Vid ett jordfel kan en fas ha hela 440 V mot
+  skrovet” är ändrat till ”Vid ett jordfel får de två friska faserna hela 440 V mot skrovet”. Den felande fasen ligger
+  då på skrovets potential. De två andra faserna går från ≈ 254 V till linjespänningen mot skrov.
+  Regel: säg vilken fas som avses när spänning mot skrov beskrivs vid jordfel.
