@@ -8,7 +8,12 @@ const n = (v) => v.toLocaleString('sv-SE', {maximumFractionDigits: 4});
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 
 function visaD() {
-  document.getElementById('elevtal').innerHTML = `Ditt tal är <strong>D = ${mittD()}</strong>. Använd det i uppgifterna nedan.`;
+  const D = mittD(), k = (x) => x.toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+  document.getElementById('elevtal').innerHTML = `Ditt tal är <strong>D = ${D}</strong>. Använd det i uppgifterna nedan.`;
+  // Bara insättningen i uppgifternas uttryck (startvärdena), inga svar.
+  const vard = document.getElementById('mina-varden');
+  if (vard) vard.innerHTML = `<strong>Dina startvärden med D = ${D}:</strong> inlämning 4: U = 10 + ${D} = ${10 + D} V och f = ${D % 2 ? 50 : 60} Hz (${D % 2 ? 'D är udda' : 'D är jämnt'}) · `
+    + `inlämning 5: R = 20 + ${D} = ${20 + D} Ω · inlämning 6: P = 1,0 + ${D}/10 = ${k(1 + D / 10)} kW.`;
 }
 visaD();
 document.getElementById('annatD-ok')?.addEventListener('click', () => {

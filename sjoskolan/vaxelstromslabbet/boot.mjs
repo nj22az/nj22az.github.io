@@ -1,4 +1,4 @@
-import {mountGuide} from './guided.mjs?v=20260928fg';
+import {mountGuide} from './guided.mjs?v=20260930d';
 const p=new URLSearchParams(location.search);
 let mode=['guidad','fri','station'].includes(p.get('lage'))?p.get('lage'):(p.has('flik')||p.has('uppgift')?'fri':location.hash==='#labbprotokoll'?'station':'guidad');
 let freeModule=null,guide=null;

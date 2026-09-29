@@ -69,8 +69,11 @@ def dbox(nr):
     return (f'<div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder talet <strong>D</strong>. Det slumpas första gången du öppnar veckan på en dator eller telefon och sparas där. Du behöver inte skriva ditt namn nu: det gör du i slutet, på sidan <a href="Resultat.html">Skicka resultat</a>.</p>'
             '<p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att visa D.</noscript></p>'
             '<details><summary>Har du redan ett D på en annan dator eller telefon?</summary><p><label for="annatD">Skriv D därifrån (1–31)</label><br><input id="annatD" inputmode="numeric" autocomplete="off" style="width:6em"> <button type="button" id="annatD-ok" class="sj-btn">Använd</button></p><p id="annatD-not" role="status"></p></details>'
+            '<h3>Så används D</h3><p>Sätt in ditt D där det står D i uppgiften och räkna ut dina egna startvärden först. Står det (10 + D) V och du har D = 7, är din spänning 10 + 7 = 17 V. D/10 med D = 7 är 0,7. Sedan räknar du uppgiften som vanligt med dina värden. Alla använder samma metod, men alla får olika tal.</p>'
+            '<p id="mina-varden" aria-live="polite"></p>'
+            '<p>I den guidade labben sätter du inte in D själv: labben räknar fram dina värden ur samma D och skriver dem i varje uppgift.</p>'
             '<p>Skriv dina svar i rutorna under inlämning 4–6. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
-            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-nr"></script>\n')
+            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-d"></script>\n')
 
 
 def page(nr, w, items):

@@ -515,3 +515,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
       inlämning 6 ska vara klar före labben, eftersom labben görs på fredagens lektion och inlämning 6 efteråt.
     - Ny sida i labbhandboken: `labbhandbok/vecka-40.html`, fredagens plan med tidsplan, vad labben kräver från
       måndag, tisdag och torsdag, tre stopp för samtal och vanliga fel.
+- **2026-09-29** Vecka 40: hur D används står nu där eleven ser D (upplåst, ändrad, låst igen).
+    - Inlämningen: rutan Så används D med ett exempel på insättning (D = 7), elevens egna startvärden för inlämning 4–6
+      (bara insättningen, inga svar) och att labben räknar fram värdena själv.
+    - Guidade labben: D står överst, med samma förklaring, i stället för bara i det hopfällda protokollet.
+    - Labbhandboken (vecka-40.html): ett kort manus för att förklara D och en tabell över hur D används i varje uppgift.
