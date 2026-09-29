@@ -3,7 +3,7 @@
   "titel": "Last på Théveninkällan",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,7 +41,7 @@
     }
   ],
   "losning": {
-    "text": "Ilast = 8 V / (2/3 + 2) kΩ = 3,0 mA. Ulast = 3,0 mA · 2 kΩ = 6,0 V, samma som i övningen Belastad delare.",
+    "text": "I_{last} = 8 V / (2/3 + 2) kΩ = 3,0 mA. U_{last} = 3,0 mA · 2 kΩ = 6,0 V, samma som i övningen Belastad delare.",
     "svar": [
       {
         "storhet": "I_{last}",

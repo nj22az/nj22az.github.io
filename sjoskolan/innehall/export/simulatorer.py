@@ -77,9 +77,11 @@ def guidad(pl, p):
 
 
 def multimeter(pl, p):
+    # Texten behåller markeringen X_{L}; multimetersimulator/app.mjs ritar den med markHtml (gemensamt/markering.mjs).
+    M = lambda t: t
     sim, labb = p['simulator'], p['labb']
-    l = {'id': sim['alias'], 'ovning': p['id'], 'title': T.ren_text(p['titel']), 'circuit': sim['scenario'],
-         'slides': sim.get('kallhanvisning', '').replace('Multimeter och mätfel, bild ', ''), 'goal': T.ren_text(p['uppgift']['fraga'])}
+    l = {'id': sim['alias'], 'ovning': p['id'], 'title': M(p['titel']), 'circuit': sim['scenario'],
+         'slides': sim.get('kallhanvisning', '').replace('Multimeter och mätfel, bild ', ''), 'goal': M(p['uppgift']['fraga'])}
     if sim.get('lagringsversion'):
         l['revision'] = sim['lagringsversion']
     if sim.get('initial'):
@@ -92,8 +94,8 @@ def multimeter(pl, p):
         if s.get('typ'):
             st['kind'] = s['typ']
         if s.get('etikett'):
-            st['label'] = T.ren_text(s['etikett'])
-        st['task'] = T.ren_text(s['text'])
+            st['label'] = M(s['etikett'])
+        st['task'] = M(s['text'])
         if 'svar' in s:
             st['answer'] = s['svar']
         if s.get('tolerans'):
@@ -101,18 +103,18 @@ def multimeter(pl, p):
         if s.get('enhet'):
             st['unit'] = s['enhet']
         if s.get('alternativ'):
-            st['choices'] = [T.ren_text(x) for x in s['alternativ']]
+            st['choices'] = [M(x) for x in s['alternativ']]
             st['correct'] = s['ratt']
         kod = s.get('kod') or {}
         for k in ('input', 'comment'):
             if k in kod:
                 st[k] = kod[k]
         if s.get('ledtrad'):
-            st['hint'] = T.ren_text(s['ledtrad'])
+            st['hint'] = M(s['ledtrad'])
         if kod.get('test'):
             st['test'] = kod['test']
         if s.get('varfor'):
-            st['why'] = T.ren_text(s['varfor'])
+            st['why'] = M(s['varfor'])
         steg.append(st)
     l['steps'] = steg
     return l

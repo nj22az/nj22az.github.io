@@ -1,8 +1,9 @@
 import { initialState, network, measure, lampCurrent, MODES, RIGS, rigOf } from './model.mjs';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260926';
-import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260926';
+import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260929-index';
 import { protocolCSV } from './protocol.mjs';
+import { markHtml, markText } from '../gemensamt/markering.mjs';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const KEY = 'sjoskolan-multimeter-v1';
@@ -59,7 +60,7 @@ function save() {
   renderProgress();
 }
 function feedback(title,text,type='info') {
-  $('#feedback-title').textContent=title; $('#feedback-text').textContent=text;
+  $('#feedback-title').textContent=title; $('#feedback-text').innerHTML=markHtml(text);
   $('#feedback').className=`feedback ${type}`;
 }
 function currentLesson(){return LESSONS[lessonIndex];}
@@ -81,7 +82,7 @@ function renderProgress(){
   $('#progress').textContent=`${saved.done.length} av ${LESSONS.length} klara`;
   $('#record-count').textContent=`${saved.records.length ? saved.records.length+' kontrollerade moment.' : 'Inga kontrollerade mätningar ännu.'} ${storageOK ? 'Framsteg sparas på denna enhet.' : 'Lagring är avstängd. Ladda ner protokollet innan du lämnar sidan.'}`;
   $('#download-log').disabled=!saved.records.length;
-  $('#lesson-select').innerHTML=LESSONS.map((l,i)=>`<option value="${i}">${String(i+1).padStart(2,'0')} · ${l.title}${saved.done.includes(l.id)?' · klar':''}</option>`).join('');
+  $('#lesson-select').innerHTML=LESSONS.map((l,i)=>`<option value="${i}">${String(i+1).padStart(2,'0')} · ${markText(l.title)}${saved.done.includes(l.id)?' · klar':''}</option>`).join('');
   $('#lesson-select').value=lessonIndex;
   renderProtocol();
 }
@@ -99,22 +100,22 @@ function renderLesson() {
   $('#free-mode').textContent=free?'Till handledd övning':'Fri övning';
   $('#lesson-number').textContent=free?'Fri övning':`Övning ${String(lessonIndex+1).padStart(2,'0')} / ${String(LESSONS.length).padStart(2,'0')}`;
   $('#slide-ref').textContent=free?'':`Bild ${l.slides}`;
-  $('#lesson-title').textContent=free?'Undersök själv':l.title;
-  $('#lesson-goal').textContent=free?'Ändra koppling och inställningar. Se vad som händer.':l.goal;
-  $('#task').textContent=step.task;
-  $('#task-heading').textContent=`Steg ${stage+1} av ${l.steps.length}${step.label?' · '+step.label:''}`;
+  $('#lesson-title').innerHTML=free?'Undersök själv':markHtml(l.title);
+  $('#lesson-goal').innerHTML=free?'Ändra koppling och inställningar. Se vad som händer.':markHtml(l.goal);
+  $('#task').innerHTML=markHtml(step.task);
+  $('#task-heading').textContent=`Steg ${stage+1} av ${l.steps.length}${step.label?' · '+markText(step.label):''}`;
   $('#task').hidden=free;$('#task-heading').hidden=free;$('#step-marker').hidden=free;
   $('#hint').hidden=free;$('#check').hidden=free||passed;$('#next').hidden=free||!passed;
   $('#check').textContent=l.circuit==='category'||step.kind&&step.kind!=='measurement'?'Kontrollera svaret':'Kontrollera mätningen';
   $('#next').textContent=stage<l.steps.length-1?'Nästa steg →':lessonIndex<LESSONS.length-1?'Nästa övning →':'Se ditt resultat';
-  $('#hint-text').textContent=step.hint;
+  $('#hint-text').innerHTML=markHtml(step.hint);
   $('#step-marker').innerHTML=l.steps.map((_,i)=>`<span class="${i<stage?'done':i===stage?'active':''}"></span>`).join('');
   $('#step-marker').setAttribute('aria-label',`Steg ${stage+1} av ${l.steps.length}`);
   $('#free-settings').hidden=!free;$('#free-circuit').value=state.circuit;
   const p=principle[state.circuit];$('#principle-title').textContent=p[0];$('#principle-text').textContent=p[1];
   const cat=state.circuit==='category';$('#workbench').hidden=cat;$('#category-area').hidden=!cat;$('#meter-detail').hidden=cat;
   renderLoading();
-  if(cat){$('#cat-question').textContent=step.task;$('#cat-choices').innerHTML=step.choices.map((label,i)=>`<button data-choice="${i}" aria-pressed="${i===choice}">${label}</button>`).join('');}
+  if(cat){$('#cat-question').innerHTML=markHtml(step.task);$('#cat-choices').innerHTML=step.choices.map((label,i)=>`<button data-choice="${i}" aria-pressed="${i===choice}">${markHtml(label)}</button>`).join('');}
 }
 function renderLoading() {
   const active=isLoading(),step=currentStep(),theory=active&&step.kind!=='measurement';
@@ -127,7 +128,7 @@ function renderLoading() {
   $('#lesson-comment').disabled=passed;
   $('#lesson-choices').replaceChildren();
   if(theory&&step.choices)step.choices.forEach((label,i)=>{
-    const b=document.createElement('button');b.type='button';b.dataset.answerChoice=i;b.textContent=label;
+    const b=document.createElement('button');b.type='button';b.dataset.answerChoice=i;b.innerHTML=markHtml(label);
     b.setAttribute('aria-pressed',String(choice===i));b.disabled=passed;$('#lesson-choices').append(b);
   });
   $('#loading-comparison').hidden=!active||!answers.unloaded;
@@ -299,8 +300,8 @@ function check() {
   if(correct){
     passed=true;
     answers[step.key||stage]=m?{value:m.value,text:m.text}:answer;
-    const reading=m?`${m.text} ${m.unit}`:step.choices?step.choices[choice]:`${answer.value} ${step.unit}`;
-    saved.records.push({time:new Date().toISOString(),lesson:l.title,step:stage+1,moment:step.label||step.task,kind:step.kind||'measurement',mode:m?state.mode:'',jack:m?state.jack:'',red:m?state.red||'':'',black:m?state.black||'':'',reading,input:m&&state.circuit==='divider'?state.input:'',comment:step.comment?answer.comment:'',revision:l.revision||1});
+    const reading=m?`${m.text} ${m.unit}`:step.choices?markText(step.choices[choice]):`${answer.value} ${step.unit}`;
+    saved.records.push({time:new Date().toISOString(),lesson:markText(l.title),step:stage+1,moment:markText(step.label||step.task),kind:step.kind||'measurement',mode:m?state.mode:'',jack:m?state.jack:'',red:m?state.red||'':'',black:m?state.black||'':'',reading,input:m&&state.circuit==='divider'?state.input:'',comment:step.comment?answer.comment:'',revision:l.revision||1});
     saved.records=saved.records.slice(-200);
     if(stage===l.steps.length-1){if(!saved.done.includes(l.id))saved.done.push(l.id);saved.revisions[l.id]=l.revision||1;}
     save();renderLesson();renderCircuit();drawLeads();

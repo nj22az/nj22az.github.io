@@ -107,7 +107,7 @@ function render() {
     $('figures').innerHTML = testFigure(s, t);
     items = t.error ? [['Provning', 'stoppad', ''], ['Orsak', 'ej frånskilt', '']] : [
       ['Isolationsresistans', hide ? '?' : t.over ? '> 999 MΩ' : fmtR(t.R), `${s.par.replace('-', ' mot ')}, ${s.Uprov} V DC`],
-      ['Läckström', hide ? '?' : fmtI(t.I), 'R = Uprov / Iläck'],
+      ['Läckström', hide ? '?' : fmtI(t.I), 'R = U_{prov} / I_{läck}'],
       ['Gräns enligt instruktion', 'minst 1 MΩ', 'mot PE, i denna labb'],
     ];
     $('principle').textContent = t.error || 'Provaren lägger en hög likspänning mellan två punkter på det frånskilda objektet och mäter läckströmmen. Fukt, smuts och skadad isolation ger större ström och lägre resistans. Anteckna provspänning, tid, temperatur och vad som var inkopplat, så att mätningen kan jämföras senare.';

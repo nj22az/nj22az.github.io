@@ -3,7 +3,7 @@
   "titel": "Belastad spänningsdelare",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -31,7 +31,7 @@
     "losning_publik": true
   },
   "losning": {
-    "text": "Utan last: 24 · 6/9 = 16 V. Med last: Rp = 6 · 6/12 = 3 kΩ, Uut = 24 · 3/6 = 12 V. Lasten sänker utspänningen eftersom den nedre resistansen minskar.",
+    "text": "Utan last: 24 · 6/9 = 16 V. Med last: Rp = 6 · 6/12 = 3 kΩ, U_{ut} = 24 · 3/6 = 12 V. Lasten sänker utspänningen eftersom den nedre resistansen minskar.",
     "status": "migrerad",
     "kalla": "Övningstentans lösning"
   },

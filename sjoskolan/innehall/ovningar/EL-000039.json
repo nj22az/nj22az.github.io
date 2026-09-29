@@ -3,7 +3,7 @@
   "titel": "Val av area i en modell",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,7 +40,7 @@
     }
   ],
   "losning": {
-    "text": "Rmax = 0,8 V / 8 A = 0,10 Ω. Amin = 0,0175 · 24 m / 0,10 Ω = 4,2 mm². Välj närmast större standardarea och kontrollera även strömtålighet.",
+    "text": "R_{max} = 0,8 V / 8 A = 0,10 Ω. Amin = 0,0175 · 24 m / 0,10 Ω = 4,2 mm². Välj närmast större standardarea och kontrollera även strömtålighet.",
     "svar": [
       {
         "storhet": "Amin",

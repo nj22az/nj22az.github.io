@@ -219,7 +219,7 @@
   },
   {
    "id": "EL-000034",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorns inmatning",
@@ -285,7 +285,7 @@
   },
   {
    "id": "EL-000037",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning vid lasten",
@@ -307,7 +307,7 @@
   },
   {
    "id": "EL-000038",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Dubbel ström",
@@ -329,7 +329,7 @@
   },
   {
    "id": "EL-000039",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Val av area i en modell",
@@ -483,7 +483,7 @@
   },
   {
    "id": "EL-000046",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Belastad delare",
@@ -549,7 +549,7 @@
   },
   {
    "id": "EL-000049",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Thévenin vid tomgång",
@@ -571,7 +571,7 @@
   },
   {
    "id": "EL-000050",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Last på Théveninkällan",
@@ -1827,7 +1827,7 @@
   },
   {
    "id": "EL-000123",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringspunkter",
@@ -2839,7 +2839,7 @@
   },
   {
    "id": "EL-000169",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorförluster",
@@ -3213,7 +3213,7 @@
   },
   {
    "id": "EL-000186",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "DC-fördelning",
@@ -3565,7 +3565,7 @@
   },
   {
    "id": "EL-000202",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Tångens utgång",
@@ -3587,7 +3587,7 @@
   },
   {
    "id": "EL-000203",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Isolationsdata",
@@ -4967,7 +4967,7 @@
   },
   {
    "id": "EL-000335",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Isolationsprovning: resistans",
@@ -4983,7 +4983,7 @@
   },
   {
    "id": "EL-000336",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Isolationsprovning: skadad kabel",
@@ -5255,7 +5255,7 @@
   },
   {
    "id": "EL-000353",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Station A: DC-delare",
@@ -5287,7 +5287,7 @@
   },
   {
    "id": "EL-000402",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Labbprotokoll, Station A",
@@ -6443,7 +6443,7 @@
   },
   {
    "id": "EL-000651",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Ström i en förgrening",
@@ -7659,7 +7659,7 @@
   },
   {
    "id": "EL-000852",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Belastad spänningsdelare",

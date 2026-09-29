@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, Station A",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -200,7 +200,7 @@
     "fragor": [
       {
         "id": "slinga",
-        "text": "Slinglagen med dina mätvärden: Ukälla − U1 − U2 = ? Vad visar resten?",
+        "text": "Slinglagen med dina mätvärden: U_{källa} − U1 − U2 = ? Vad visar resten?",
         "kort": "slinglagen",
         "min_ord": 5
       },

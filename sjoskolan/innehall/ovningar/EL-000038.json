@@ -3,7 +3,7 @@
   "titel": "Dubbel ström",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
   "uppgift": {
     "fraga": "En kabel har R = 0,20 Ω. Jämför kabelns värmeförlust vid 5 A och 10 A.",
     "samband": [
-      "Pförlust = I² · R; P_{2}/P_{1} = (I_{2}/I_{1})²"
+      "P_{förlust} = I² · R; P_{2}/P_{1} = (I_{2}/I_{1})²"
     ],
     "givet": "Samma kabelresistans 0,20 Ω vid 5 A och 10 A. Temperaturändring försummas.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

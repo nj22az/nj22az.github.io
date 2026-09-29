@@ -3,7 +3,7 @@
   "titel": "DC-fördelning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -46,7 +46,7 @@
     }
   ],
   "losning": {
-    "text": "ΔU = 6 · 0,15 = 0,9 V. Ulast = 23,1 V.",
+    "text": "ΔU = 6 · 0,15 = 0,9 V. U_{last} = 23,1 V.",
     "svar": [
       {
         "storhet": "ΔU",

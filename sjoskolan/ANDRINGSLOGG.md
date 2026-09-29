@@ -307,3 +307,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   en bilaga med beteckningar (ur `beteckningar.json`) och svenska–engelska. Samlingen länkas från startsidan, tentamen,
   formelbladet och veckosidorna 41–45. Källa: `verktyg/formelsamling/bygg.py` (skriver HTML och PDF). Notationen
   kontrolleras av `notation.py`. Regel: ändra en formel i `bygg.py` och kör skriptet, redigera aldrig HTML eller PDF.
+- **2026-09-29** Samma notation i hela kursen, även vecka 39, formelbladet, tentamen och simulatorerna. Nya kanoniska
+  beteckningar: P_{nyttig}, P_{förlust}, U_{in}/U_{ut}, I_{in}/I_{ut}/I_{retur}, R_{min}/R_{max}, U_{th}/R_{th}, R_{in},
+  R_{tot}/I_{tot}, U_{last}/I_{last}/R_{last}, U_{källa}, R_{slinga}, U_{prov}, I_{läck}, U_{tång}, U_{beröring}, I_{k},
+  I_{cu} och n_{s}. Pᵢₙ ska skrivas P_{in}. Alla har `labbdata: false`. Multimetersimulatorn behåller nu markeringen i
+  texten och ritar index nedsänkt (markHtml), medan protokollet får oformaterad text (markText). Tidigare plattade
+  exportören till ”Ukälla”. Vecka 40 orörd (låset oförändrat, QA grön).

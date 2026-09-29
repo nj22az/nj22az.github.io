@@ -3,7 +3,7 @@
   "titel": "Isolationsprovning: resistans",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,7 +36,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "R = Uprov/Iläck. Omvandla mA till A först.",
+      "text": "R = U_{prov}/I_{läck}. Omvandla mA till A först.",
       "status": "migrerad"
     }
   ],

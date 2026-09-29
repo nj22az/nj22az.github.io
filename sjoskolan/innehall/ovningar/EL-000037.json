@@ -3,7 +3,7 @@
   "titel": "Spänning vid lasten",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,7 +41,7 @@
     }
   ],
   "losning": {
-    "text": "ΔU = 5,0 A · 0,140 Ω = 0,70 V. Ulast = 24 − 0,70 = 23,3 V. Fall = 100 · 0,70/24 ≈ 2,9 %.",
+    "text": "ΔU = 5,0 A · 0,140 Ω = 0,70 V. U_{last} = 24 − 0,70 = 23,3 V. Fall = 100 · 0,70/24 ≈ 2,9 %.",
     "svar": [
       {
         "storhet": "U_{last}",

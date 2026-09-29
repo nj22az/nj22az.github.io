@@ -228,7 +228,7 @@ export const UPPGIFTER = [
   "mask": [
    "prov"
   ],
-  "hint": "R = Uprov/Iläck. Omvandla mA till A först.",
+  "hint": "R = U_{prov}/I_{läck}. Omvandla mA till A först.",
   "solution": "R = 500/0,00040 = 1 250 000 Ω = 1,25 MΩ. Det klarar en gräns på 1 MΩ med liten marginal. Jämför med samma motor torr.",
   "mistakes": [
    {
@@ -251,13 +251,13 @@ export const UPPGIFTER = [
   "task": "En kabel med skadad mantel har 50 kΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA.",
   "ask": {
    "key": "prov",
-   "label": "Iläck",
+   "label": "I_{läck}",
    "unit": "mA"
   },
   "mask": [
    "prov"
   ],
-  "hint": "I = Uprov/R. 50 kΩ = 50 000 Ω.",
+  "hint": "I = U_{prov}/R. 50 kΩ = 50 000 Ω.",
   "solution": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
   "mistakes": [
    {

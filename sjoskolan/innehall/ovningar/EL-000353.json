@@ -3,7 +3,7 @@
   "titel": "Station A: DC-delare",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -83,7 +83,7 @@
       {
         "id": "s6",
         "text": "Mät spänningen över R1: röd på A och svart på B.",
-        "ledtrad": "Voltmetern kopplas parallellt över R1. Räkna först: U1 = Ukälla · R1/(R1 + R2).",
+        "ledtrad": "Voltmetern kopplas parallellt över R1. Räkna först: U1 = U_{källa} · R1/(R1 + R2).",
         "varfor": "Jämför med ditt förväntade värde. Räknar du med de uppmätta värdena blir avvikelsen liten.",
         "kod": {
           "test": "multimetersimulator.stationA.6"
@@ -92,7 +92,7 @@
       {
         "id": "s7",
         "text": "Mät spänningen över R2: röd på B och svart på N.",
-        "ledtrad": "Kontrollera sedan slinglagen: Ukälla − U1 − U2 ska bli nära noll.",
+        "ledtrad": "Kontrollera sedan slinglagen: U_{källa} − U1 − U2 ska bli nära noll.",
         "varfor": "Summan U1 + U2 ska vara lika med källspänningen, inom avläsningens upplösning.",
         "kod": {
           "test": "multimetersimulator.stationA.7"
@@ -102,7 +102,7 @@
         "id": "s8",
         "text": "Mät strömmen. Bryt matningen. Öppna länken P–A, välj A ⎓ och flytta röd sladd till mA. Röd till P och svart till A. Slå på.",
         "ledtrad": "Ampermetern ersätter länken så att strömmen går genom mätaren. Koppla om bara med bruten matning.",
-        "varfor": "Strömmen genom seriekretsen. Jämför med Ukälla/(R1 + R2). mA-uttagets inre resistans påverkar nästan inte här.",
+        "varfor": "Strömmen genom seriekretsen. Jämför med U_{källa}/(R1 + R2). mA-uttagets inre resistans påverkar nästan inte här.",
         "kod": {
           "test": "multimetersimulator.stationA.8"
         }
