@@ -459,3 +459,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     varje grupp hittar det med en felsökningslogg (observation, hypotes, kontroll, slutsats).
   - **Uppdaterat:** labbhandboken (tidsplan, morgonchecklista för lärare som kommer först på fredagen), Labbet.html,
     v41_03 bild 3 och veckoplanen.
+- **2026-09-29 – Fredag vecka 41: genomgången av del 3 är självstudier på distans 09.00–11.00, och labbet är på plats
+  11.00–16.00.** Eleverna läser genomgången själva, gör övning 3.1–3.5 och skriver sina förutsägelser innan de kommer.
+  Veckoplanen, veckosidans rad om presentationerna, v41_03 bild 3, Labbet.html och labbhandboken säger nu det, och
+  lärarens förberedelse på plats ligger före 11.00.

@@ -198,7 +198,7 @@ VECKOR = {
             ]},
         ],
         'redovisa': ['Protokollet från labbet fredag 9 oktober: station M, S och T.'],
-        'notis': 'Labbet fredag 9 oktober 11.00–16.00, lunch 12.00–13.00: motorn och startaren är övningsobjekt som aldrig ansluts. Gör övning 3.1–3.5 och skriv dina förutsägelser i protokollet före träffen.',
+        'notis': 'Fredag 9 oktober: läs genomgången av del 3 själv på distans 09.00–11.00 och gör övning 3.1–3.5. Labbet är på plats 11.00–16.00 med lunch 12.00–13.00. Motorn och startaren är övningsobjekt som aldrig ansluts.',
         'fordjupning': [lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'övning', 'extra övning i simulatorerna'), lank(LABB['hallkrets'], 'Hållkretslabbet', 'övning', 'inför vecka 43')],
     },
     42: {
@@ -435,8 +435,8 @@ def veckoplan(nr, w, n, delsidor):
         (f'{dag(0).isoformat()}T00:00', f'Måndag {fmt(dag(0))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(1)}. Övning 1.1–1.5 i klassen.'),
         (f'{dag(0).isoformat()}T11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', f'Övning 1.6–1.10 på {del_(1)}{kontroll(1)}. Använd ledtrådarna innan du öppnar facit.'),
         (f'{dag(1).isoformat()}T14:00', f'Tisdag {fmt(dag(1))}', 'Lektion 15.00–17.00', f'Presentationen för {del_(2)}. Övning 2.1–2.5 i klassen.'),
-        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}' + (f' Förbered labbet: läs teorin och gör övning 3.1–3.5 på {del_(3)}.' if nr == 41 else '')),
-        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Lektion 09.00–11.00', (f'Presentationen för {del_(n)}. Labbet 11.00–16.00 med lunch 12.00–13.00: <a href="Labbet.html">motorn, startaren och strömtången</a>.' if nr == 41 else f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.')),
+        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}'),
+        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Distans 09.00–11.00, labb på plats 11.00–16.00' if nr == 41 else 'Lektion 09.00–11.00', (f'09.00–11.00 på distans: läs genomgången av {del_(n)} själv och gör övning 3.1–3.5. Skriv dina förutsägelser i protokollet. 11.00–16.00 på plats, lunch 12.00–13.00: <a href="Labbet.html">labbet med motorn, startaren och strömtången</a>.' if nr == 41 else f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.')),
         (f'{dag(4).isoformat()}T{"16:00" if nr == 41 else "11:00"}', 'Fredag kväll och helgen' if nr == 41 else 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
     ]
     rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)
@@ -559,6 +559,8 @@ def page(nr, w):
                     attr = f' data-dag="{ld.isoformat()}"' if dag else ''
                     rader.append(f'<li{attr}><span class="pres-del">Del {i}</span><span class="pres-titel">{nar}{escape(q["titel"])}{los}</span>'
                                  f'<span class="pres-knappar"><a class="sj-btn primary" href="{oppna}">Öppna</a> <a class="sj-btn" href="{q["fil"]}" download>PowerPoint</a></span></li>')
+        pres_intro = ('<p>Lektioner måndag 09.00–11.00 och tisdag 15.00–17.00. Läraren visar dagens presentation på lektionen. Fredag 09.00–11.00 läser du genomgången av del 3 själv, på distans. Labbet är på plats 11.00–16.00. Öppna presentationen, eller ladda ner PowerPoint.</p>' if nr == 41
+                      else '<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p>')
         pres = ('<style>.week-pres{margin:22px 0 26px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
                 '.week-pres h2{margin:0 0 6px;font-size:26px}.week-pres ul{list-style:none;margin:12px 0 0;padding:0}'
                 '.week-pres li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid #cad8e2}'
@@ -568,7 +570,7 @@ def page(nr, w):
                 '.week-pres li.idag{margin:0 -12px;padding:12px;border:2px solid #064f91;border-radius:10px;background:#fff}'
                 '.week-pres li.idag .pres-nar{color:#064f91}.week-pres .pres-klart{margin:14px 0 0;padding-top:12px;border-top:1px solid #cad8e2}</style>'
                 f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
-                f'<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul>'
+                f'{pres_intro}<ul>{"".join(rader)}</ul>'
                 f'<p class="pres-klart"><strong>Klart senast söndag {datum(w["sista"])}:</strong> övningarna i del 1–{n}, labben och <a href="Inlamning.html">inlämningen</a> med e-post till läraren.</p></section>'
                 # Dagens lektion (eller nästa lektion i veckan) lyfts fram. Utan JavaScript visas listan som den är.
                 '<script>(function(){var d=new Date(),t=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");'
