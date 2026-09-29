@@ -130,6 +130,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     3D-figurerna i vecka 41 byggs av `verktyg/figurer/figurer3d.py` (del 1–2) och `figurer3d_del3.py` (del 3 och labbet),
     inte av `scheman_veckor.py` eller `figs41.py`. Labbets figurer renderas ur Motorlabbets egen scen, så att bilderna
     och simulatorn aldrig visar olika utrustning. En figur i elevmaterialet får inte avslöja felsökningens fel.
+39. **Ett facit visar aldrig ett oavrundat tal.** Vecka 40 visade û ≈ 16,970562748477143 V och fem liknande svar i
+    sex veckor, eftersom sidgeneratorerna skrev `str(varde)`. Svaret formateras med `rendera.svarsvarde`: postens
+    `avrundning`, annars tre värdesiffror. *Kontroll: `innehall.py kontrollera` (oavrundat tal i facit).*
+40. **En del heter samma sak överallt.** Vecka 40:s inlämning kallade sinus ”del 1”, spolen ”del 2” och effekten ”del 3”,
+    medan veckosidan och labben kallar dem del 2–4. Hänvisningar pekar på delsidan med samma nummer som veckosidan.
 
 ### Boken
 
@@ -502,3 +507,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     - Labbet.html: en bild per station M, S och T. Labbhandboken: samma stationsbilder och de tre felen i felsökningen
       (bara i handboken, `labbhandbok/bilder/`).
     - Hjälpfunktionerna för 3D-figurerna ligger i `verktyg/figurer/fig3d.py`.
+
+- **2026-09-29** Vecka 40 granskad inför fredagen (upplåst, ändrad, låst igen: Del_1–3.html och Inlamning.html):
+    - Sex facit med oavrundade tal rättade (övning 2.3, 2.5, 2.10, 3.6, 3.9 och 4.9). Samma formatering i vecka 41–45,
+      där svaren nu följer postens avrundning (0,60 i stället för 0,6, 12 i stället för 12,0).
+    - Inlämning 4–6 pekar på delsidorna med veckosidans numrering (del 2–4). Inlämning 7 säger inte längre att
+      inlämning 6 ska vara klar före labben, eftersom labben görs på fredagens lektion och inlämning 6 efteråt.
+    - Ny sida i labbhandboken: `labbhandbok/vecka-40.html`, fredagens plan med tidsplan, vad labben kräver från
+      måndag, tisdag och torsdag, tre stopp för samtal och vanliga fel.

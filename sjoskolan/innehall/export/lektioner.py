@@ -65,8 +65,7 @@ def ovning(pl, p, tab):
     los = p.get('losning') or {}
     led = [l for l in p.get('ledtradar', []) if l['niva'] == 'metod']
     def varde(sv):
-        v = sv['varde']
-        vt = v if isinstance(v, str) else f'{v:.3g}'.replace('.', ',')
+        vt = R.svarsvarde(sv)
         return f'{R.h(sv["storhet"])} ≈ {e(vt)} {e(sv.get("enhet", ""))}'
     facit = ' · '.join(varde(sv) for sv in los.get('svar', []))
     h = [f'<section class="art-uppgift" id="ovning-{pl["ankare"]}" data-ovning="{p["id"]}"><h3>{R.h(p["titel"])}</h3><p class="art-lank"><a href="#{sim["teoriavsnitt"]}">Läs förklaringen före uppgiften</a></p><p>{R.h(u["fraga"])}</p>']

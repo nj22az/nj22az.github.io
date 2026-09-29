@@ -15,6 +15,26 @@ def h(text):
     return T.html_text(text)
 
 
+def svarsvarde(sv):
+    """Ett facitvärde som text: postens avrundning ('heltal', '2 decimaler'); ett oavrundat tal (fler än fyra decimaler)
+    får tre värdesiffror, ett kort tal visas som det står. Decimalkomma och minustecken."""
+    import math
+    v = sv.get('varde')
+    if isinstance(v, str):
+        return v
+    a = sv.get('avrundning') or ''
+    if a == 'heltal':
+        d = 0
+    elif a.split()[:1] and a.split()[0].isdigit():
+        d = int(a.split()[0])
+    elif round(v, 4) == v:                                   # redan ett kort tal: visa som det står
+        return (str(int(v)) if v == int(v) else str(v)).replace('-', '−').replace('.', ',')
+    else:
+        d = max(0, 2 - math.floor(math.log10(abs(v))))
+    s = f'{round(v, d):.{d}f}'
+    return s.replace('-', '−').replace('.', ',')
+
+
 def attr(text):
     return html.escape(T.ren_text(text), quote=True)
 

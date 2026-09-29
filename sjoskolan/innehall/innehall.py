@@ -243,6 +243,10 @@ def cmd_kontrollera(a):
         s = f.read_text(encoding='utf-8')
         if 'lock-data' not in s and 'oversattning.js' not in s:
             brister['fel'].append(f'{rel}: saknar gemensamt/oversattning.js (översättningsskydd för formler och enheter)')
+        # Facit med oavrundat tal (16,970562748477143): svaret ska följa postens avrundning (rendera.svarsvarde).
+        for m in re.finditer(r'<strong>Svar:</strong>(.*?)</p>', s):
+            if (x := re.search(r'\d,\d{7,}', m.group(1))):
+                brister['fel'].append(f'{rel}: oavrundat tal i facit: {x.group(0)}')
     # Resurslänkar (”Använd:” på inlämningssidorna) skrivs relativt sjoskolan/, t.ex. vecka-38/aktuell/Elevuppgifter.html.
     # En länk utan mapp (Elevuppgifter.html) pekade fel från inlämningssidan; se ANDRINGSLOGG.md.
     for i, p in kat.poster.items():

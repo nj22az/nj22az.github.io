@@ -99,7 +99,7 @@ def sida(a, l, alla, plan, pl_av):
         led1 = (f'Använd {formel}. ' if formel else '') + (f'Läs {" och ".join(ref)}.' if ref else '')
         led2 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') in ('metod', 'begrepp'))
         led3 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') == 'nasta-steg')
-        svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(str(sv["varde"]).replace(".", ","))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
+        svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(R.svarsvarde(sv))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
         h.append(f'''<article class="del-ovning" id="{pl["ankare"]}"><h3>{e(pl["nummer"])}: {R.h(p["titel"])}</h3>
 <p>{R.h(u["fraga"])}</p>{f'<p class="del-givet"><strong>Givet:</strong> {R.h(u["givet"])}</p>' if u.get("givet") else ''}
 {f'<details class="ledtrad"><summary>Ledtråd 1: vilken formel?</summary><p>{led1}</p></details>' if led1 else ''}

@@ -3,7 +3,7 @@
   "titel": "Effekt och kompensering",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -49,8 +49,8 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "vecka-40/aktuell/Genomgang.html?del=effekt",
-        "titel": "Genomgång del 3: effekt och effektfaktor"
+        "url": "vecka-40/aktuell/Del_3.html",
+        "titel": "Del 4: effekt och effektfaktor"
       },
       {
         "url": "vecka-40/aktuell/Formelstod_och_ovningar.html#kompensering-metod",

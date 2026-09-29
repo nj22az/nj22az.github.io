@@ -7209,7 +7209,7 @@
   },
   {
    "id": "EL-000810",
-   "revision": 3,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen sinusspänning",
@@ -7225,7 +7225,7 @@
   },
   {
    "id": "EL-000811",
-   "revision": 3,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen RL-last",
@@ -7241,7 +7241,7 @@
   },
   {
    "id": "EL-000812",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekt och kompensering",
@@ -7257,7 +7257,7 @@
   },
   {
    "id": "EL-000813",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Grundprotokollet från den guidade labben",
