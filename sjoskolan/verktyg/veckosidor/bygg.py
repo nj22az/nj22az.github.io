@@ -533,15 +533,16 @@ def page(nr, w):
                 '.week-pres .pres-knappar{display:flex;gap:10px}.week-pres .pres-los{display:block;font-size:15px;margin-top:2px}'
                 '.week-pres .pres-nar{display:block;font-size:14px;font-weight:700;color:#4d6579;letter-spacing:.02em}'
                 '.week-pres li.idag{margin:0 -12px;padding:12px;border:2px solid #064f91;border-radius:10px;background:#fff}'
-                '.week-pres li.idag .pres-nar{color:#064f91}</style>'
+                '.week-pres li.idag .pres-nar{color:#064f91}.week-pres .pres-klart{margin:14px 0 0;padding-top:12px;border-top:1px solid #cad8e2}</style>'
                 f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
-                f'<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul></section>'
+                f'<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p><ul>{"".join(rader)}</ul>'
+                f'<p class="pres-klart"><strong>Klart senast söndag {datum(w["sista"])}:</strong> övningarna i del 1–{n}, labben och <a href="Inlamning.html">inlämningen</a> med e-post till läraren.</p></section>'
                 # Dagens lektion (eller nästa lektion i veckan) lyfts fram. Utan JavaScript visas listan som den är.
                 '<script>(function(){var d=new Date(),t=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");'
                 'var r=[].slice.call(document.querySelectorAll(".week-pres li[data-dag]"));if(!r.length||t<r[0].dataset.dag||t>r[r.length-1].dataset.dag)return;'
                 'var n=r.filter(function(x){return x.dataset.dag>=t})[0];if(!n)return;n.classList.add("idag");var s=n.querySelector(".pres-nar");'
                 'if(s)s.textContent=(n.dataset.dag===t?"Idag · ":"Nästa lektion · ")+s.textContent;})();</script>')
-        forsta = ('<p class="course-actions"><a class="sj-btn primary large" href="Del_1.html">Börja med del 1: ' + escape(w['delar'][0]['titel']) + '</a></p>') if delsida(1) else actions
+        forsta = '' if delsida(1) else actions  # delsidorna har egna knappar och ”Nästa” visar var eleven ska fortsätta
         sjalv = ('<p>Varje del har en egen sida: översikt, teori, exempel och övningar med ledtrådar och facit. Gör delarna i ordning. Labben kommer sist.</p>' if delsida(1)
                  else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta
         rubrik_ordning = 'Lösningar och självhjälp'

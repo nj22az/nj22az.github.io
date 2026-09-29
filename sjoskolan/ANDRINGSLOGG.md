@@ -285,3 +285,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-29** Vecka 41–45: schemat är måndag 09.00–11.00 (del 1), tisdag 15.00–17.00 (del 2) och fredag 09.00–11.00
   (del 3), samma som vecka 40. Rutan ”Veckans presentationer” visar dag, datum och tid för varje del, och markerar
   dagens lektion med ”Idag” eller nästa lektion i veckan med ”Nästa lektion”. Vecka 40 orörd.
+- **2026-09-29** Vecka 41–45, veckosidan: den dubbla knappen ”Börja med del 1” är borttagen (delens egen knapp och
+  ”Nästa” visar var eleven fortsätter). Rutan med presentationerna slutar med vad som ska vara klart senast söndag:
+  övningarna, labben och inlämningen med e-post. Förut stod fristen bara längst ner. Vecka 40 orörd.
