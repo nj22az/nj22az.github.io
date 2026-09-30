@@ -4,6 +4,7 @@ import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
+import {BEACH,beachHeight} from './beach-layout.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -28,7 +29,7 @@ export const EAST_LAWN=Object.freeze({
   * through it; it crosses the water plane at y -0.56 a little beyond the old shore,
   * which is where the tide line ends up.
   */
- beach:Object.freeze({profile:Object.freeze([[33.9,-.06],[38.5,-.18],[42.5,-.29],[45,-.37],[47.8,-1.05]])}),
+ beach:BEACH,
 });
 
 /** True on the lawn itself. The caller asks the park and the roads first. */
@@ -140,13 +141,19 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   coping.position.set(x,wall.height+.05,z);coping.receiveShadow=!!shadows;group.add(coping);
   colliders.push({id:'east-seawall',x,z,w:w+.14,d:d+.14,height:wall.height+.1});
  };
- parapet(wall.depth,depth+wall.depth,wall.x,(EAST_LAWN.minZ+EAST_LAWN.maxZ)/2);
+ // Real openings in the mesh and collision wall lead down to the sand.
+ let wallFrom=EAST_LAWN.minZ-wall.depth/2;
+ for(const access of [...BEACH.accesses,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}]){
+  const wallTo=access.z-access.half;
+  if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
+  wallFrom=access.z+access.half;
+ }
  parapet(wall.x-wall.southFrom+wall.depth,wall.depth,(wall.southFrom+wall.x)/2,wall.z);
 
  // Sand from the foot of the wall out into the water, laid as one ribbon of sloped
  // strips so the tide line is a straight edge rather than a stack of steps.
  const sand=new THREE.BufferGeometry(),positions=[],uv=[],indices=[];
- const z0=EAST_LAWN.minZ-2.2,z1=EAST_LAWN.maxZ+2.2;
+ const z0=BEACH.minZ,z1=BEACH.maxZ;
  for(const [i,[x,y]] of beach.profile.entries()){
   positions.push(x,y,z0,x,y,z1);uv.push(x/3,z0/3,x/3,z1/3);
   if(i)indices.push(i*2-2,i*2-1,i*2,i*2,i*2-1,i*2+1);
@@ -156,6 +163,18 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const grit=groundTexture('#d8caa4',[['#ded0aa',320,6],['#d0c199',260,7],['#e6dbbb',160,4]],'#cabb95');
  const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:0xd8caa4,map:grit,roughness:1,side:THREE.DoubleSide}));
  shore.name='east-beach-sand';shore.receiveShadow=!!shadows;group.add(shore);
+ for(const access of BEACH.accesses){
+  const {fromX,toX,z,half}=access,y=beachHeight(toX,z);
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute([
+   fromX,.008,z-half,fromX,.008,z+half,toX,y+.008,z-half,toX,y+.008,z+half],3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,0,1,1,0,1,1],2));
+  geometry.setIndex([0,1,2,2,1,3]);geometry.computeVertexNormals();
+  const ramp=new THREE.Mesh(geometry,stone);ramp.name='Beach access ramp';ramp.receiveShadow=!!shadows;group.add(ramp);
+  const anchor=new THREE.Object3D();anchor.position.set(fromX-.65,.9,z);group.add(anchor);
+  register(anchor,'Read the beach access sign',()=>onAction('read','East beach','The opening in the seawall leads down to the sand. Follow the shore to the other beach entrance.'));
+ }
+
 
  // A treeline closes the north end, where the land carries on past anything built.
  const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});

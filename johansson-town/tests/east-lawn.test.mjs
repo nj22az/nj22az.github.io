@@ -44,7 +44,7 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
  // and the lawn stops where the town does.
- assert.ok(!routeAt(EAST_LAWN.maxX+1.5,0),'The lawn runs past the seawall');
+ assert.equal(routeAt(EAST_LAWN.maxX+1.5,0)?.surface,'sand','The beach beyond the seawall is walkable');
  configureTownMode(TOWN_MODES.LEGACY);
  assert.ok(!routeAt(28,4),'Only the peninsula has an east side to stand on');
  configureTownMode(TOWN_MODES.PENINSULA);
@@ -55,8 +55,8 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const parent=new THREE.Group(),colliders=[];
  const {shore}=buildEastLawn({parent,colliders});
  const wall=colliders.filter(c=>c.id==='east-seawall');
- assert.equal(wall.length,2,'The wall returns along the south side to close the corner');
- for(const z of [-30,-10,10,20])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
+ assert.equal(wall.length,4,'The wall retains its south return and two beach openings');
+ for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
  // The north end is closed by something you can see rather than by ground that simply
  // stops, so the treeline is solid and stands where the trees are drawn.
  const trees=colliders.find(c=>c.id==='east-lawn-trees');

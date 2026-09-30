@@ -70,6 +70,32 @@ export function hillHeight(x,z){
 /** Inside the road cut, which the portal and wing walls close off rather than the hill. */
 const inCut=(dx,dz)=>Math.abs(dx)<TUNNEL.cut.half&&dz<.35;
 
+/** The same triangles support feet and the rendered headland. Cache heights once;
+ * movement never raycasts or resamples the procedural terrain. */
+export const HEADLAND=Object.freeze({minX:TUNNEL.x-33,maxX:TUNNEL.x+30,minZ:TUNNEL.z-8,maxZ:TUNNEL.z+60});
+const terrainLines=(from,to,step,...keep)=>{
+ const set=new Set(keep.filter(v=>v>from&&v<to));
+ for(let v=from;v<=to+1e-6;v+=step)set.add(+v.toFixed(3));
+ return [...set].sort((a,b)=>a-b);
+};
+const hillXs=terrainLines(HEADLAND.minX,HEADLAND.maxX,1.5,TUNNEL.x-TUNNEL.cut.half,TUNNEL.x+TUNNEL.cut.half);
+const hillZs=terrainLines(HEADLAND.minZ,HEADLAND.maxZ,1.5,TUNNEL.z+.35);
+const hillYs=hillZs.map(z=>hillXs.map(x=>hillHeight(x,z)));
+function cellAt(lines,value){
+ if(value<lines[0]||value>lines.at(-1))return -1;
+ let lo=0,hi=lines.length-1;
+ while(hi-lo>1){const mid=(lo+hi)>>1;if(lines[mid]<=value)lo=mid;else hi=mid;}
+ return lo;
+}
+export function headlandHeight(x,z){
+ const i=cellAt(hillXs,x),j=cellAt(hillZs,z);if(i<0||j<0)return null;
+ const x0=hillXs[i],x1=hillXs[i+1],z0=hillZs[j],z1=hillZs[j+1];
+ if(inCut((x0+x1)/2-TUNNEL.x,(z0+z1)/2-TUNNEL.z))return null;
+ const u=(x-x0)/(x1-x0),v=(z-z0)/(z1-z0);
+ const a=hillYs[j][i],b=hillYs[j][i+1],c=hillYs[j+1][i],d=hillYs[j+1][i+1];
+ return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);
+}
+
 /** The bore's inner outline, from the foot of one wall over the crown to the other. */
 function boreProfile(r=R,s=S,steps=18){
  const points=[[-r,0],[-r,s]];
@@ -217,15 +243,13 @@ function buildWingWalls(group,shadows){
 }
 
 /** The headland over the bore, grassed and wooded, with rock where it is steep. */
-function buildHill(parent,shadows){
- const lines=(from,to,step,...keep)=>{const set=new Set(keep.filter(v=>v>from&&v<to));for(let v=from;v<=to+1e-6;v+=step)set.add(+v.toFixed(3));return [...set].sort((a,b)=>a-b);};
- const X0=TUNNEL.x-33,X1=TUNNEL.x+30,Z0=TUNNEL.z-8,Z1=TUNNEL.z+60;
- const xs=lines(X0,X1,1.5,TUNNEL.x-TUNNEL.cut.half,TUNNEL.x+TUNNEL.cut.half);
- const zs=lines(Z0,Z1,1.5,TUNNEL.z+.35);
+function buildHill(parent,shadows,colliders){
+ const {minX:X0,maxX:X1}=HEADLAND;
+ const xs=hillXs,zs=hillZs;
  const positions=[],colours=[],index=[];
  const grass=new THREE.Color(0x4f6a3c),forest=new THREE.Color(0x3a5433),rock=new THREE.Color(0x6e6a5f),c=new THREE.Color();
- for(const z of zs)for(const x of xs){
-  const h=hillHeight(x,z);positions.push(x,h,z);
+ for(let j=0;j<zs.length;j++)for(let i=0;i<xs.length;i++){
+  const x=xs[i],z=zs[j],h=hillYs[j][i];positions.push(x,h,z);
   // Steep ground is bare rock; the rest is grass going over to woodland near the top.
   const e=.8,slope=Math.hypot(hillHeight(x+e,z)-hillHeight(x-e,z),hillHeight(x,z+e)-hillHeight(x,z-e))/(2*e);
   const tree=smooth((h-4)/7),bare=smooth((slope-.75)/.6);
@@ -255,11 +279,16 @@ function buildHill(parent,shadows){
  }
  const cone=new THREE.ConeGeometry(1,1,7);cone.translate(0,.5,0);
  const trees=new THREE.InstancedMesh(cone,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95,flatShading:true}),spots.length);
+ const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.09,.16,1,6),new THREE.MeshStandardMaterial({color:0x534535,roughness:1}),spots.length);
  const dummy=new THREE.Object3D(),tint=new THREE.Color();
  spots.forEach(([x,y,z,s,r],i)=>{
-  dummy.position.set(x,y-.3,z);dummy.scale.set(1.3*s,3.8*s,1.3*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
+  // Walking-height trunks with crowns above them leave room under the canopy.
+  dummy.position.set(x,y+1.25*s,z);dummy.scale.set(s,2.5*s,s);dummy.rotation.set(0,0,0);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
+  colliders.push({id:'headland-tree',x,z,w:.32*s,d:.32*s,height:y+6*s});
+  dummy.position.set(x,y+2.2*s,z);dummy.scale.set(1.3*s,3.8*s,1.3*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
   trees.setMatrixAt(i,dummy.matrix);trees.setColorAt(i,tint.setHex(0x2f4a2e).multiplyScalar(.85+r*.3));
  });
+ trunks.name='Minato headland trunks';trunks.castShadow=shadows;parent.add(trunks);
  trees.name='Minato headland trees';trees.castShadow=shadows;parent.add(trees);
  return {hill,trees};
 }
@@ -303,7 +332,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  const portal=buildPortal(group,shadows);
  const wings=buildWingWalls(group,shadows);
  buildNoPedestrians(group);
- const {hill,trees}=buildHill(parent,shadows);
+ const {hill,trees}=buildHill(parent,shadows,colliders);
  const bore=buildBore(),lamps=buildLamps(),dark=buildDark();
  parent.add(bore,lamps,dark);
 
@@ -323,7 +352,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
 
  // The portal stops you, arch and all: the hill and the headwall, from the portal's face back.
  const front=TUNNEL.z-TUNNEL.portal-.22;
- colliders.push({id:'tunnel-portal',x:TUNNEL.x,z:(front+TUNNEL.z+TUNNEL.depth)/2,w:TUNNEL.width,d:TUNNEL.z+TUNNEL.depth-front,height:TUNNEL.height});
+ colliders.push({id:'tunnel-portal',x:TUNNEL.x,z:(front+TUNNEL.z+TUNNEL.depth)/2,w:TUNNEL.cut.half*2+.5,d:TUNNEL.z+TUNNEL.depth-front,height:TUNNEL.height});
  for(const side of [-1,1])colliders.push({id:'tunnel-wing-wall',x:TUNNEL.x+side*(TUNNEL.cut.half+.3),z:TUNNEL.z-TUNNEL.cut.length/2,w:.6,d:TUNNEL.cut.length+.4,height:3});
 
  if(register){

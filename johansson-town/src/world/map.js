@@ -6,7 +6,12 @@ import {PARK,activePark} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
-import {TUNNEL} from './coyote-tunnel.js';
+import {TUNNEL,HEADLAND,headlandHeight} from './coyote-tunnel.js';
+import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
+// Small cached patches show the walkable headland beyond the original coastal slab.
+const headlandPatches=[];
+for(let z=HEADLAND.minZ;z<HEADLAND.maxZ;z+=4)for(let x=HEADLAND.minX;x<HEADLAND.maxX;x+=4)
+ if((headlandHeight(x+2,z+2)??-2)>BEACH.waterY+.025)headlandPatches.push([x,z]);
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {mapPlan} from './okinawa/layout.js';
 
@@ -23,6 +28,14 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   const px=x=>pad+(x-b.minX)*scale,pz=z=>h-pad-(z-b.minZ)*scale;
   ctx.fillStyle=FULL_TOWN.active?'#7ea3a8':'#eadfbe';ctx.fillRect(0,0,w,h);
   if(!FULL_TOWN.active){ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();}
+  if(!FULL_TOWN.active&&peninsulaActive()){
+    ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
+    const tide=BEACH_DRY_EDGE_X;
+    ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
+    ctx.strokeStyle='#8b8268';ctx.lineWidth=Math.max(2,2*scale);
+    for(const access of BEACH.accesses){ctx.beginPath();ctx.moveTo(px(access.fromX),pz(access.z));ctx.lineTo(px(access.toX),pz(access.z));ctx.stroke();}
+    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));ctx.fillText('HEADLAND',px(-19),pz(65));}
+  }
   if(FULL_TOWN.active){
     const g=FULL_TOWN.grid;
     ctx.fillStyle='#c4b496';
