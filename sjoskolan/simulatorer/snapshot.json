@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "365d20bfef5d119b6355cacd525910016b6021fd",
+  "stage": "First increment: engine room and Station A",
+  "sourceFiles": {
+    "sjoskolan/multimetersimulator/model.mjs": "39b5db16c4a8dde74cab8170e4365166a9fc7adf08a26c4ebae69a94df4b4ce0",
+    "sjoskolan/multimetersimulator/funktioner.mjs": "d810b5aef218c2395bacf4d907b86d52f773ce0742e5e000391921ebc277bd6b",
+    "sjoskolan/multimetersimulator/lessons.mjs": "2bc0328ae745cd8c0b5b2dc29c805b3e93ffdad076ff2774f6be8f783bb5986d",
+    "sjoskolan/multimetersimulator/uppgifter.gen.mjs": "5476576a21b1f36ac8f1fb738bda574d270fbd3a3c1944820b866a7057b80f41",
+    "sjoskolan/multimetersimulator/stationA-protokoll.mjs": "94fb9296a1381f8efa9a984eb64ef712f4acbae94f7b61942e02a3d3315c7c77",
+    "sjoskolan/multimetersimulator/model.test.mjs": "f5d428f4984a88a89aa4ce0a2f9a74b62ee68b3ad3ef723abc9830fa64e3647d",
+    "sjoskolan/multimetersimulator/protocol.mjs": "e6233593f5742470cb7e1eea9be4c5b09f626fa17d89d27fc4304cc007a3e03e"
+  },
+  "three": "../../johansson-town/vendor/three.module.js (r170)",
+  "nextStations": [
+    "generatorn",
+    "vaxelstromslabbet",
+    "trefaslabbet",
+    "motorlabbet",
+    "hallkretslabbet",
+    "isolationslabbet"
+  ],
+  "characterFiles": {
+    "johansson-town/src/avatars/build.js": "4af3e5759117653f165d413bb59651fbb623eae4a72827e2d25c4394e9e98306",
+    "johansson-town/src/avatars/cast.js": "df2236fb0eecfff2764e091404c6caff3fceffc9e4b30fd9797d4bd9f64c48a3",
+    "johansson-town/src/avatars/face.js": "d444242d553e7cae254a1ef4c4c1ed3721faf60e226ac1b64c54fe3acebccb11",
+    "johansson-town/src/avatars/head-profile.js": "8a452a870cf3f32d28ff310d41a980494d5e4c9842ebcdf9fbd81b581f3a8fc8",
+    "johansson-town/src/avatars/recipe.js": "c171d361329e4efdee59034d4aede7150f35ca68876345cb62cde92e885629e9"
+  },
+  "vendorFiles": {
+    "johansson-town/vendor/three.module.js": "89074684ade72d694575eed82346b55cd11a48f06dc9e368f427d3858b220977",
+    "johansson-town/vendor/BufferGeometryUtils.js": "3de832095679e56578beddf70f3e90846a47ec8a886fa8eb21c973cdaef88922"
+  }
+}

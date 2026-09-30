@@ -153,7 +153,7 @@ test('Station A: every rig gives consistent readings, the reference is isolated 
 });
 test('Station A protocol example matches the simulator and is complete',async()=>{
   const { STATION_A_PROTOKOLL:def } = await import('./stationA-protokoll.mjs');
-  const { missing, deviationMatches, deviation } = await import('../gemensamt/labbprotokoll.mjs');
+  const { missing, deviationMatches, deviation } = await import('../../gemensamt/labbprotokoll.mjs');
   assert.deepEqual(missing(def,def.example),[]);
   assert.equal(def.example.rows.length,def.rows.length);
   for(const r of def.example.rows){assert.equal(deviationMatches(r.avv,r.forv,r.uppm),true,JSON.stringify(r));assert.ok(Math.abs(deviation(r.forv,r.uppm).rel)<1,JSON.stringify(r));}
