@@ -94,7 +94,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
-    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','market','office','onsen','school']);
+    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','market','office','onsen','resident-home-aya','resident-home-kenji','school']);
     assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['bus-station','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
@@ -202,7 +202,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);
     }
-    assert.deepEqual([...visited].sort(),['frontrow','izakaya','market','office','onsen','school','warehouse']);
+    assert.deepEqual([...visited].sort(),['frontrow','izakaya','market','office','onsen','resident-home-aya','resident-home-kenji','school','warehouse']);
 
     // All four existing workers share this room after their afternoon shopping.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');

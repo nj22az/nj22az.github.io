@@ -316,7 +316,8 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  solid(keiTruck(kit,-20.4,11.5,{ry:Math.PI/2,colour:0xdcd6c6,load:'crates'}));
  solid(fishCrates(kit,-17.6,8,{rows:2,cols:2,seed:21}));
  solid(planterBoxes(kit,-23.4,9.5,{ry:Math.PI/2,count:5,seed:22}));
- solid(laundry(kit,-21.8,4.6,{ry:Math.PI/2,length:2.4}));
+ // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.
+ solid(laundry(kit,-23.3,5.2,{ry:Math.PI/2,length:2.2}));
  buildYardLife(kit,solid,{anchor,inspect,onAction});
  solid(gasBottles(kit,-16.4,17.8,{ry:Math.PI/2}));
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});

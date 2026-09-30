@@ -31,6 +31,26 @@ export const CAST_RECIPES=Object.freeze({
   hair:{style:'ponytail',colour:'#292a30'},eyes:{style:'almond',colour:'#2a1d16',size:.55,spacing:.5,height:.5,tilt:.6},
   brows:{style:'straight',colour:'#292a30',size:.5},nose:{style:'button',size:.4},mouth:{style:'grin',colour:'#b8544a',size:.5},blush:.3,
   outfit:{top:'apron',topColour:'#bd7557',bottom:'trousers',bottomColour:'#394b58',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#27304d',accent:'#f4f1ea'}}),
+ // Front-Row Books & Workshop, and the two little houses behind it.
+ Aya:R({name:'Aya',body:{height:.34,build:.38,skin:'#efc9a4'},head:{size:.5,shape:.52,form:'round',jaw:.35,cheeks:.6},
+  hair:{style:'bob',colour:'#2e211b'},eyes:{style:'round',colour:'#3a2a1e',size:.6,spacing:.5,height:.5,tilt:.5},
+  brows:{style:'arched',colour:'#2e211b',size:.45},nose:{style:'button',size:.35},mouth:{style:'small',colour:'#c4485a',size:.45},
+  glasses:{style:'round',colour:'#7a4a2a'},blush:.45,
+  outfit:{top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}}),
+ Reiko:R({name:'Reiko',body:{height:.46,build:.42,skin:'#e8bf98'},head:{size:.47,shape:.44,form:'oval',jaw:.4,cheeks:.4},
+  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,tilt:.6},
+  brows:{style:'straight',colour:'#1c1714',size:.5},nose:{style:'line',size:.4},mouth:{style:'smirk',colour:'#a8433e',size:.45},
+  outfit:{top:'smock',topColour:'#3f5f7a',bottom:'trousers',bottomColour:'#2b2b33',shoes:'#2b2b2b',hat:'headband',hatColour:'#d7263d',accent:'#f4f1ea'}}),
+ Kenji:R({name:'Kenji',body:{height:.6,build:.55,skin:'#c98d62'},head:{size:.48,shape:.5,form:'square',jaw:.6,cheeks:.45},
+  hair:{style:'spiky',colour:'#2b1d14'},eyes:{style:'sparkle',colour:'#2a1d16',size:.55},
+  brows:{style:'thick',colour:'#2b1d14',size:.55},nose:{style:'wide',size:.5},mouth:{style:'grin',size:.55},
+  facial:{style:'stubble',colour:'#2b1d14'},
+  outfit:{top:'kariyushi',topColour:'#f2a93b',pattern:'flowers',bottom:'shorts',bottomColour:'#3f5f7a',shoes:'#f4f1ea',hat:'headband',hatColour:'#2a8fcc',accent:'#f4f1ea'}}),
+ Tetsuo:R({name:'Tetsuo',body:{height:.44,build:.5,skin:'#dca97e'},head:{size:.5,shape:.5,form:'narrow',jaw:.55,cheeks:.35},
+  hair:{style:'horseshoe',colour:'#8a8680'},eyes:{style:'sleepy',colour:'#2a1d16',size:.45},
+  brows:{style:'bushy',colour:'#8a8680',size:.6},nose:{style:'hook',size:.55},mouth:{style:'flat',size:.5},
+  glasses:{style:'half',colour:'#2b2b2b'},wrinkles:.6,
+  outfit:{top:'jacket',topColour:'#6b6f4a',bottom:'trousers',bottomColour:'#4a4238',shoes:'#3a2a1e',accent:'#e8d7b0'}}),
 });
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */

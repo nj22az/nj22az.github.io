@@ -4,6 +4,8 @@ import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {DINING,restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
+import {peninsulaActive} from '../world/town-mode.js';
+import {YARD_RESIDENT_NAMES,YARD_HOMES} from '../world/yard-homes-layout.js';
 // Thuan's saved home fields remain for compatibility with archived saves; the
 // published shopping-district mode uses the Harbour Line commute instead.
 export const THUAN_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,"role":"Sakura shopkeeper","height":1.64,"work":[-4,-25.5],"evening":restaurantApproach('izakaya'),"friend":"Nao","start":540,"close":1200,"retire":1410,"supperStart":null,"supperEnd":null};
@@ -27,6 +29,13 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  // The shop staff stand at their own shop's door, and where that door is depends on
  // the layout, which is not known yet. Read it when somebody asks.
  if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
+ // The same for home: on the peninsula the shop's staff live in the yard houses behind
+ // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
+ if(YARD_RESIDENT_NAMES.includes(name)){
+  const yard=()=>peninsulaActive()?YARD_HOMES[householdFor(name)?.id]:null,street={home:profile.home,homeAddress:profile.homeAddress};
+  Object.defineProperty(profile,'home',{get:()=>yard()?[...yard().door]:street.home,enumerable:true,configurable:true});
+  Object.defineProperty(profile,'homeAddress',{get:()=>yard()?.address||street.homeAddress,enumerable:true,configurable:true});
+ }
  return profile;
 });
 export function residentHomeDescription(name){
@@ -40,7 +49,7 @@ export function residentHomeDescription(name){
 }
 /** Residents with a flat on the street. Minato's barfly lives on his stool and has none. */
 export const HOME_OWNERS=RESIDENTS.filter(p=>p.homeEntry);
-// Reintroduce residents deliberately, one at a time. Nao is the first neighbour back:
-// her work and daily errands are defined in social.js instead of sharing a crowd loop.
-export const STREET_CAST_NAMES=Object.freeze(['Thuan','Nao']);
+// Reintroduce residents deliberately, one at a time. Nao was the first neighbour back;
+// the Front-Row staff followed with their own homes in the yard behind the shop.
+export const STREET_CAST_NAMES=Object.freeze(['Thuan','Nao','Aya','Reiko','Kenji','Tetsuo']);
 export const STREET_CAST=RESIDENTS.filter(p=>STREET_CAST_NAMES.includes(p.name));

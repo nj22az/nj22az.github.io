@@ -11,7 +11,7 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {BUS_STATION} from '../world/bus-station.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard} from './commuter-schedule.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
@@ -257,7 +257,22 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
+/**
+ * The Front-Row staff at home in the yard: to work for their shift, a Sakura errand or
+ * an evening stop when one is due, and otherwise home — where they eat, read and, at
+ * night, sleep in their own beds for anybody who opens the door to see.
+ */
+function yardResidentPlan(profile,minutes,rain=false,state=null){
+ if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
+ // Their evening stops were timed against the last bus; living next door, they take
+ // at most a couple of hours after work before heading home to bed.
+ const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<120?afterWorkPlan(profile,minutes,rain):null;
+ if(evening)return evening;
+ return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
+}
 function commuterPlan(profile,minutes,rain=false,state=null){
+ if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};

@@ -10,8 +10,8 @@ import {forwardOnly} from '../src/people/facing.js';
 
 const nao=RESIDENTS.find(person=>person.name==='Nao');
 
-test('Nao is the only neighbour reintroduced beside Thuan',()=>{
- assert.deepEqual(STREET_CAST_NAMES,['Thuan','Nao']);
+test('Nao is back on the street beside Thuan',()=>{
+ assert.ok(STREET_CAST_NAMES.includes('Thuan')&&STREET_CAST_NAMES.includes('Nao'));
 });
 
 test('Nao has a distinct all-day town routine around her Izakaya shift',()=>{

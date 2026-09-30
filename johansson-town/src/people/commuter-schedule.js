@@ -1,3 +1,5 @@
+import {peninsulaActive} from '../world/town-mode.js';
+import {YARD_RESIDENT_NAMES} from '../world/yard-homes-layout.js';
 const shifts={
  // Day staff share the evening service; night staff return on the morning bus.
  // Work hours stay unchanged. Departure identifies the service's arrival time.
@@ -73,7 +75,10 @@ export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  return !!shift&&(shift.permanent||e>=shift.start-shift.arrival&&e<shift.finish-shift.arrival);
 }
+/** On the peninsula the Front-Row staff live in the yard behind the shop and never take the bus. */
+export const livesInYard=profile=>peninsulaActive()&&YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 export function commuterPhase(profile,minutes,rain=false){
+ if(livesInYard(profile))return 'town';
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  if(!shift)return 'town';
  if(shift.permanent)return 'permanent';

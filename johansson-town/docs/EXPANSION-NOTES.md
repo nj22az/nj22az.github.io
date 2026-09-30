@@ -23,6 +23,15 @@ git checkout 5c63eb8 -- johansson-town/assets/models/sea-cave
 | Okinawan quarter kit | `src/world/okinawa/*` (Sakura Crossing–derived) | Live | A procedural generator for new streets and districts. |
 | Thuan's flat above Sakura | `src/world/thuan-flat.js` | Exterior dressing only; her schedule still sends her to the canal-side house she shares with Nao | Move her home upstairs: households, `residents.js` home fields, commute and evening routines, and an interior. |
 
+## Residents
+
+On the street: Thuan, Nao, and the Front-Row staff — Aya and Reiko (books, evening press), Kenji and
+Tetsuo (workshop, radio repair) — who live in two yard houses behind the bookshop
+(`src/world/yard-homes*.js`) and sleep there instead of taking the bus. Still held back, in
+`STREET_CAST_NAMES`: Mrs Sato, the Harbour master, Officer Mori and the Bus driver; they would each
+need a home and a peninsula routine the same way. Thuan and Nao still commute; their flat above
+Sakura is dressed from outside only.
+
 ## Retired in the cleanup (recover from `5c63eb8`)
 
 | What | Files | Why |
