@@ -19,6 +19,7 @@ import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
 import {buildKobanInterior} from './world/interiors/koban.js';
 import {chooseOpening} from './world/openings.js';
+import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
 import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,satoRamenOpen} from './world/sato-ramen-layout.js';
 import {BUS_STATION} from './world/bus-station.js';
@@ -254,7 +255,9 @@ camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
 function controlsAllowed(){return !creatorOpen&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
-function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
+// Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
+function dragLook(dx,dy){const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
+const walkMotion=createMotion(),touchAutoRun=createAutoRun();
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 $('#cameraButton').onclick=()=>{toggleDir(false);openCamera();};$('#viewButton')&&($('#viewButton').onclick=()=>{if(started){toggleDir(false);setThirdPerson(!thirdPerson);}});$('#movesButton')&&($('#movesButton').onclick=()=>{toggleDir(false);movesMenu();});
@@ -817,10 +820,16 @@ function updatePlayer(dt){
   return;
  }
  if(seated){s=0;f=0;}
- move2.set(s,f);if(move2.lengthSq()>1)move2.normalize();
+ // On touch: the stick steers as well as walks, and pushed to its rim it runs.
+ const thumb=touchSticks.moving&&!seated,thumbPush=Math.hypot(touchSticks.move.x,touchSticks.move.y);
+ if(thumb)yaw+=steerYaw(touchSticks.move,dt,{looking:touchSticks.looking});
+ const thumbRun=thumb?touchAutoRun.update(thumbPush,dt):(touchAutoRun.reset(),false);
+ // Eased, so walking starts and stops like a person rather than a switch.
+ if(move2.set(s,f).lengthSq()>1)move2.normalize();
+ const eased=walkMotion.update(move2.x,move2.y,dt);if(seated)walkMotion.reset();move2.set(eased.x,eased.y);
  fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);
  if(moveVec.lengthSq()>.0001){
-  const running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
+  const running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||thumbRun||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
   const speed=(running?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
   const stoppedX=collides(nx,player.position.z),stoppedZ=collides(player.position.x,nz);
   if(!stoppedX)player.position.x=nx;

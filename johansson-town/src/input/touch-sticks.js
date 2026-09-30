@@ -52,6 +52,8 @@ export function createTouchSticks({canvas,movePad,stickBase,stickKnob,enabled,on
   // Looking has no stick on touch; a pad's right stick comes in through analogue.js.
   get look(){return {x:0,y:0};},
   get moving(){return !!joystick?.pressed;},
+  /** A thumb is dragging the view. */
+  get looking(){return !!drag&&drag.distance>4;},
   hint:on=>joystick?.hint(on),
   reset,
   suppressClick:()=>performance.now()<suppressClickUntil
