@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawFace} from './face.js';
+import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe} from './recipe.js';
 import {CAST_RECIPES} from './cast.js';
 import {svg} from '../ui/icons.js';
@@ -120,6 +121,7 @@ const CSS=`
 .shm-main{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);min-height:0}
 .shm-stage{position:relative;min-height:0;overflow:hidden}
 .shm-stage>canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.shm-drag-hint{position:absolute;top:8px;right:12px;max-width:50%;margin:0;font-size:12px;text-align:right;pointer-events:none}
 .shm-dice{position:absolute;top:8px;left:12px;display:flex;gap:8px}
 .shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:1px solid #e6e1d6;border-radius:14px;background:#fffaf0e8;color:inherit}
 .shm-poses{position:absolute;bottom:8px;left:12px;right:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800}
@@ -198,7 +200,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const canvas=el('canvas',{ariaLabel:'Your islander. Drag to turn.'});
  const dice=iconButton('shuffle','Randomise appearance'),undo=iconButton('undo','Undo',{disabled:true});
  const poses=el('div',{className:'shm-poses'});
- const stage=el('div',{className:'shm-stage'},canvas,el('div',{className:'shm-dice'},dice,undo),poses);
+ const dragHint=el('p',{className:'shm-drag-hint',id:'shm-drag-hint'});
+ canvas.setAttribute('aria-describedby','shm-drag-hint');
+ const stage=el('div',{className:'shm-stage'},canvas,dragHint,el('div',{className:'shm-dice'},dice,undo),poses);
  const category=el('select',{className:'shm-select',ariaLabel:'Appearance category'},...TABS.map(t=>el('option',{value:t.id,textContent:t.name})));
  const categoryRow=el('label',{className:'shm-category'},'Edit',category);
  const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'}),body=el('div',{className:'shm-body',id:'shm-body',role:'tabpanel'});
@@ -232,7 +236,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xe9dcc0}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
  const camera=new THREE.PerspectiveCamera(28,1,.05,50);
- let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0;
+ let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0,featureDrag=null;
  function rebuild(){
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
   avatar=buildAvatar(recipe,{shadows:false,faceSize:512});animator=createAvatarAnimator(avatar);holder.add(avatar.root);
@@ -252,16 +256,66 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function loop(){
   frame=requestAnimationFrame(loop);
   const now=performance.now(),dt=Math.min(.05,(now-clock)/1000);clock=now;
-  if(dirty){rebuild();dirty=false;}
+  if(dirty){
+   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width});avatar.face.texture.needsUpdate=true;}
+   else rebuild();
+   dirty=false;
+  }
   if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(0-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
   // A body faces -z in the town; here it turns round to face you.
-  holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
-  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
-  aim(dt);renderer.render(scene,camera);
+  if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
+  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+  if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
- canvas.addEventListener('pointerdown',e=>{dragging={x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);});
- canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=(e.clientX-dragging.x)/Math.max(120,canvas.clientWidth)*Math.PI*1.6;spinVelocity=(spin-(dragging.spin+dx))/-.016;spin=dragging.spin+dx;spinVelocity=THREE.MathUtils.clamp(spinVelocity,-8,8);});
- const endDrag=()=>{dragging=null;};canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
+ const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+ function facePoint(e){
+  const rect=canvas.getBoundingClientRect();
+  pointer.set((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2);
+  scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObject(avatar.face.head,false)[0];
+  return hit?.uv?{x:hit.uv.x*256,y:(1-hit.uv.y)*256}:null;
+ }
+ function syncPositionInputs(){
+  for(const range of body.querySelectorAll('input[type=range]')){
+   const value=get(recipe,range.dataset.at);
+   range.value=range.dataset.invert==='true'?1-value:value;
+  }
+ }
+ canvas.addEventListener('pointerdown',e=>{
+  if(dragging||e.button!==0||!e.isPrimary)return;
+  const point=POSITION_FEATURES.has(tab)?facePoint(e):null;
+  const hit=point&&hitFaceFeature(recipe,tab,point);
+  if(hit){
+   featureDrag={...hit,point,start:structuredClone(recipe),remembered:false};spinVelocity=0;
+  }
+  dragging={id:e.pointerId,x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);
+ });
+ canvas.addEventListener('pointermove',e=>{
+  if(!dragging||e.pointerId!==dragging.id)return;
+  if(featureDrag){
+   const point=facePoint(e);if(!point)return;
+   const fields=draggedFaceFields(featureDrag.start,featureDrag,point.x-featureDrag.point.x,point.y-featureDrag.point.y);
+   if(Object.entries(fields).every(([at,value])=>get(recipe,at)===value))return;
+   if(!featureDrag.remembered){history.push(structuredClone(featureDrag.start));if(history.length>60)history.shift();featureDrag.remembered=true;}
+   for(const [at,value] of Object.entries(fields))set(recipe,at,value);
+   recipe=normalizeRecipe(recipe);dirty=true;undo.disabled=false;syncPositionInputs();
+   return;
+  }
+  const dx=(e.clientX-dragging.x)/Math.max(120,canvas.clientWidth)*Math.PI*1.6;
+  spinVelocity=(spin-(dragging.spin+dx))/-.016;spin=dragging.spin+dx;spinVelocity=THREE.MathUtils.clamp(spinVelocity,-8,8);
+ });
+ function endDrag(e){
+  if(!dragging||(e&&e.pointerId!==dragging.id))return;
+  const id=dragging.id;
+  if(featureDrag){
+   if(e?.type==='pointercancel'&&featureDrag.remembered){recipe=featureDrag.start;history.pop();undo.disabled=!history.length;syncPositionInputs();}
+   else if(featureDrag.remembered&&JSON.stringify(recipe)===JSON.stringify(featureDrag.start)){history.pop();undo.disabled=!history.length;}
+   dirty=true;featureDrag=null;renderPictures();
+  }
+  dragging=null;if(canvas.hasPointerCapture(id))canvas.releasePointerCapture(id);
+ }
+ canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(canvas);resize();
 
  // ----- Part pictures -----
@@ -302,16 +356,20 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
 
  // ----- The panel -----
  function change(at,value,remember=true){
+  endDrag();
   if(get(recipe,at)===value)return;
   if(remember){history.push(structuredClone(recipe));if(history.length>60)history.shift();}
   set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;undo.disabled=false;
  }
- function chooseTab(id){tab=id;category.value=id;renderTabs();renderBody();body.scrollTop=0;}
+ function chooseTab(id){endDrag();tab=id;category.value=id;renderTabs();renderBody();body.scrollTop=0;}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
   if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,textContent:t.name});b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
   [...tabs.children].forEach((b,i)=>{const active=TABS[i].id===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
   body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);
+  const positioning=POSITION_FEATURES.has(tab);
+  dragHint.textContent=positioning?'Drag the '+tab+' on the face to position them. Sliders and arrow buttons also work.':'';
+  canvas.ariaLabel=positioning?'Your islander. Drag '+tab+' to position; drag elsewhere to turn.':'Your islander. Drag to turn.';
  }
  tabs.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=TABS.findIndex(t=>t.id===tab),n=e.key==='Home'?0:e.key==='End'?TABS.length-1:(i+(e.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;chooseTab(TABS[n].id);tabs.children[n].focus();tabs.children[n].scrollIntoView({block:'nearest',inline:'nearest'});};
  let pictureQueue=[],pictureJobs=[],pictureFrame=0;
@@ -369,11 +427,12 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  // ----- Buttons -----
- name.oninput=()=>{recipe.name=name.value.slice(0,24);};
- dice.onclick=()=>{history.push(structuredClone(recipe));const r=randomRecipe();r.name=recipe.name;recipe=normalizeRecipe(r);dirty=true;undo.disabled=!history.length;renderBody();};
- undo.onclick=()=>{const r=history.pop();if(!r)return;recipe=r;name.value=recipe.name||'';dirty=true;undo.disabled=!history.length;renderBody();};
- reset.onclick=()=>{history.push(structuredClone(recipe));recipe=normalizeRecipe({...CAST_RECIPES.Johansson,name:recipe.name});dirty=true;undo.disabled=!history.length;renderBody();};
+ name.oninput=()=>{endDrag();recipe.name=name.value.slice(0,24);};
+ dice.onclick=()=>{endDrag();history.push(structuredClone(recipe));const r=randomRecipe();r.name=recipe.name;recipe=normalizeRecipe(r);dirty=true;undo.disabled=!history.length;renderBody();};
+ undo.onclick=()=>{endDrag();const r=history.pop();if(!r)return;recipe=r;name.value=recipe.name||'';dirty=true;undo.disabled=!history.length;renderBody();};
+ reset.onclick=()=>{endDrag();history.push(structuredClone(recipe));recipe=normalizeRecipe({...CAST_RECIPES.Johansson,name:recipe.name});dirty=true;undo.disabled=!history.length;renderBody();};
  share.onclick=()=>{
+  endDrag();
   const code=encodeRecipe({...recipe,name:name.value});const link=shareLink?.(code);
   const text=el('textarea',{value:link||code,readOnly:true,ariaLabel:'Share link or code'});
   const paste=el('textarea',{placeholder:'Paste a code or link here to try it on',ariaLabel:'Import an islander'});
@@ -386,6 +445,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  };
  function finish(saving){
   if(!root.isConnected)return;
+  endDrag();
   cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});
