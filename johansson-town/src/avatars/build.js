@@ -34,7 +34,9 @@ export function measure(recipe){
  const upper=.22*k,fore=.2*k,hand=.052*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
  return {H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,depth,upper,fore,hand,hipY,chestY,neckY,headY,
-  headCentre:headY+Rh*headSY*.94,shoulderX:width/2+armR*.3,shoulderY:neckY-.045*k,hipX:width*.24,
+  // The arm hangs from just inside the torso's edge, below its top, so the shoulder
+  // rounds over it instead of the arm standing clear of the body.
+  headCentre:headY+Rh*headSY*.94,shoulderX:width/2-armR*.2,shoulderY:neckY-.075*k,hipX:width*.24,
   /** How far below the hip joint the backs of the thighs are when sitting. */
   seatDrop:legR*.95};
 }
@@ -256,8 +258,9 @@ export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','
 function addBody(list,recipe,m,swim=false){
  const o=recipe.outfit,skin=recipe.body.skin,top=swim?skin:o.topColour,bottom=swim?recipe.swim.colour:o.bottomColour;
  const W=m.width,D=m.depth,hipY=m.hipY;
- // The torso: a lathe, wide at the hips, sloping to the shoulders, in its clothes.
- const prof=[[0,-.1],[.86,-.08],[1,.05],[1.01,.13],[1.01,.15],[1.02,.3],[1,.5],[.97,.66],[.92,.78],[.83,.88],[.68,.95],[.46,1],[.22,1.03],[0,1.04]];
+ // The torso: a lathe, full width up to square shoulders that round off into the neck,
+ // in its clothes.
+ const prof=[[0,-.1],[.86,-.08],[1,.05],[1.01,.13],[1.01,.15],[1.02,.3],[1.01,.5],[1,.66],[1,.78],[.97,.86],[.88,.93],[.7,.98],[.46,1.01],[.22,1.03],[0,1.04]];
  const lathe=new THREE.LatheGeometry(prof.map(([r,y])=>new THREE.Vector2(r,y)),28);
  // The hem sits on a row of the lathe, so it is a clean line rather than a zigzag.
  const waist=hipY+m.torso*.13;
@@ -304,6 +307,11 @@ function addBody(list,recipe,m,swim=false){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
   limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,arm);
+  // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
+  // torso. Its inner side stays with the chest and its outer side goes with the arm, so
+  // it stretches over a raised arm rather than coming apart from the body.
+  const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
+  part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
   // A short sleeve is a wider bell over the top of the arm.
   if(!swim&&!longSleeve)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[1,1.1,.95],12,10);
