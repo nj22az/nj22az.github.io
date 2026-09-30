@@ -9,7 +9,7 @@ import {FULL_TOWN} from './full-town-state.js';
  * the textures back inside the range the ramp can band. The lawn outside the park uses
  * the same green, so the two are one field.
  */
-export const TURF_TINT=0x718365,PARK_PATH_TINT=0xa19c8b;
+export const TURF_TINT=0x7fbf55,PARK_PATH_TINT=0xcfc2a0;
 export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
 export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}

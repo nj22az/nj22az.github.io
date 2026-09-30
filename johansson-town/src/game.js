@@ -131,7 +131,9 @@ const INK_OPTIONS={
  // less heavily and lifted further than the reference does — otherwise the street
  // goes to mud rather than to violet.
  inkOptions:{thickness:1.05,strength:.68,concaveAmount:.25},
- gradeOptions:{shadowTint:0xd4cfe8,lift:.035,saturation:1.02,warmth:.025}
+ // Bright, soft and saturated, the way a life-sim island is: pale lilac shadows, a
+ // gentle lift in the darks and almost no vignette.
+ gradeOptions:{shadowTint:0xe0dcf0,lift:.045,saturation:1.15,warmth:.02,vignette:.05}
 };
 const inkRecovery=createInkRecovery({retries:4,cooldown:3500});
 let pipeline=null;

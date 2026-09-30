@@ -1,6 +1,7 @@
 import {assetURL} from '../assets.js';
 import * as THREE from '../../vendor/three.module.js';
 import {applyWorldUV} from './world-uv.js';
+import {paintedPaving} from './toy-surfaces.js';
 
 const sharedTextures=new Map();
 // Paint is a light finish: the old dark stone photograph tinted every wall charcoal
@@ -16,7 +17,8 @@ function plasterTexture(){
 }
 const EXTRA_SURFACES={
   concrete:{map:'materials/oga-concrete.jpg',roughness:.95,bump:.022},
-  paving:{map:'materials/oga-paving.jpg',roughness:.93,bump:.035},
+  // Crazy paving is painted (toy-surfaces.js), not the photograph: pale stones and grout.
+  paving:{painted:paintedPaving,roughness:1},
   bamboo:{map:'materials/oga-bamboo.jpg',normal:'materials/oga-bamboo-normal.jpg',roughness:.84}
 };
 
@@ -27,7 +29,7 @@ export function createMaterials({mobile=false,anisotropy=4}={}) {
     const id=kind+'/'+colour;if(materials.has(id))return materials.get(id);
     const extra=EXTRA_SURFACES[kind];let m;
     if(extra){
-      const map=texture(extra.map,true);
+      const map=extra.painted?extra.painted():texture(extra.map,true);
       m=new THREE.MeshStandardMaterial({color:colour,map,roughness:extra.roughness,metalness:0,dithering:true});
       if(extra.normal){m.normalMap=texture(extra.normal);m.normalScale=new THREE.Vector2(.35,.35);}
       // Small height inference for photographs without a supplied normal map.

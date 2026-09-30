@@ -7,6 +7,7 @@ import {PARK,PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,activePark,parkBenc
 import {peninsulaActive} from './town-mode.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
 /** The park's three lamp posts, in the model's own (unscaled) ground coordinates. */
 export const PARK_LAMPS=Object.freeze([[.75,-2.97],[-6.72,10.41],[13.03,-3.54]]);
 let source=null;
@@ -25,6 +26,8 @@ function toneGround(model){
   // because nothing else is competing for those pixels.
   if(!/^mtPark(Ground|Grass)0/.test(name))return;
   o.material.color.setHex(/Grass|00t|03t/.test(name)?TURF_TINT:PARK_PATH_TINT);
+  // The lawn itself is painted, not photographed; the blade cards keep their cut-outs.
+  if(name===PARK_TURF&&o.material.map!==paintedTurf()){o.material.map=paintedTurf();o.material.needsUpdate=true;}
  });
 }
 /**
@@ -36,7 +39,7 @@ export function parkFoliage(){
  const found={grass:null,bush:null};
  source?.traverse(o=>{
   if(!o.isMesh)return;const name=o.material?.name||o.name;
-  if(name===PARK_TURF)found.grass??=o.material?.map||null;
+  if(name===PARK_TURF)found.grass??=o.material?.map?paintedTurf():null;
   else if(name===PARK_BUSH)found.bush??=o.material?.map||null;
  });
  return found;

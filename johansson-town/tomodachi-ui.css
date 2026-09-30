@@ -1,0 +1,230 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap");
+
+/* Island HUD — a bright, bubbly life-sim skin over the street controls.
+   White rounded tiles with a coloured face and a chunky under-shadow, pill labels,
+   speech-bubble captions and one rounded typeface. Loaded last; layout, visibility and
+   behaviour stay with the stylesheets before it, this only changes how things look. */
+:root {
+  --isle-font: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --isle-ink: #3b3f55;
+  --isle-white: #ffffff;
+  --isle-cream: #fffaf0;
+  --isle-edge: #e6e1d6;
+  --isle-sky: #45b7f0;
+  --isle-sky-deep: #2a8fcc;
+  --isle-leaf: #7ccc4a;
+  --isle-leaf-deep: #57a52f;
+  --isle-sun: #ffc93c;
+  --isle-sun-deep: #e8a415;
+  --isle-peach: #ff8a65;
+  --isle-peach-deep: #e0643f;
+  --isle-berry: #f06ba8;
+  --isle-berry-deep: #cf4787;
+  --isle-grape: #9b7bf0;
+  --isle-grape-deep: #7556d4;
+}
+
+/* ---------- Place name & clock ---------- */
+#hud .placard {
+  padding: 6px 14px 7px 12px;
+  border-radius: 999px;
+  background: var(--isle-white);
+  box-shadow: 0 3px 0 var(--isle-edge), 0 6px 14px rgba(40, 60, 90, .16);
+  max-width: 60vw;
+}
+#hud .placard b {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--isle-ink);
+  font: 800 13px/1.2 var(--isle-font);
+  letter-spacing: .02em;
+  text-shadow: none;
+}
+#hud .placard b::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--isle-leaf);
+  box-shadow: inset 0 -2px 0 var(--isle-leaf-deep);
+}
+#hud #clock {
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: var(--isle-white);
+  color: var(--isle-sky-deep);
+  font: 800 16px/1.2 var(--isle-font);
+  letter-spacing: .04em;
+  box-shadow: 0 3px 0 var(--isle-edge), 0 6px 14px rgba(40, 60, 90, .16);
+}
+
+/* ---------- The right-hand rail: coloured tiles ---------- */
+#hud #directoryButton,
+#hud #cameraButton,
+#hud #viewButton,
+#hud #movesButton,
+#hud #bagButton {
+  --tile: var(--isle-sky);
+  --tile-deep: var(--isle-sky-deep);
+  border: 3px solid var(--isle-white);
+  border-radius: 18px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tile) 78%, #fff) 0%, var(--tile) 55%);
+  color: var(--isle-white);
+  font-family: var(--isle-font);
+  font-weight: 800;
+  box-shadow: 0 4px 0 var(--tile-deep), 0 8px 16px rgba(40, 60, 90, .22);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .3s ease;
+}
+#hud #directoryButton { --tile: var(--isle-sun); --tile-deep: var(--isle-sun-deep); }
+#hud #cameraButton { --tile: var(--isle-sky); --tile-deep: var(--isle-sky-deep); }
+#hud #viewButton { --tile: var(--isle-leaf); --tile-deep: var(--isle-leaf-deep); }
+#hud #movesButton { --tile: var(--isle-berry); --tile-deep: var(--isle-berry-deep); }
+#hud #bagButton { --tile: var(--isle-peach); --tile-deep: var(--isle-peach-deep); }
+#hud #viewButton[aria-pressed="true"] {
+  --tile: var(--isle-grape);
+  --tile-deep: var(--isle-grape-deep);
+  border-color: var(--isle-white);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tile) 78%, #fff) 0%, var(--tile) 55%);
+}
+#hud #directoryButton:active,
+#hud #cameraButton:active,
+#hud #viewButton:active,
+#hud #movesButton:active,
+#hud #bagButton:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--tile-deep), 0 3px 8px rgba(40, 60, 90, .2); }
+#hud #bagButton .bag-count {
+  background: var(--isle-white);
+  color: var(--isle-peach-deep);
+  font-family: var(--isle-font);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .12);
+}
+@media (pointer: coarse) {
+  #hud #directoryButton,
+  #hud #cameraButton,
+  #hud #viewButton,
+  #hud #movesButton,
+  #hud #bagButton { width: 54px; height: 54px; min-height: 54px; border-radius: 18px; }
+  #hud #directoryButton::before,
+  #hud #cameraButton::before,
+  #hud #viewButton::before,
+  #hud #movesButton::before { width: 26px; height: 26px; }
+  #hud #bagButton .ui-icon { width: 26px; height: 26px; }
+  #hud #cameraButton { top: max(114px, calc(env(safe-area-inset-top) + 108px)); }
+  #hud #viewButton { top: max(176px, calc(env(safe-area-inset-top) + 170px)); }
+  #hud #movesButton { top: max(238px, calc(env(safe-area-inset-top) + 232px)); }
+  #hud #bagButton { top: max(300px, calc(env(safe-area-inset-top) + 294px)); }
+  body.hud-moving #hud .icon-btn { opacity: .55; }
+}
+
+/* ---------- Captions: speech bubbles ---------- */
+#hud #subtitle {
+  padding: 13px 20px 14px;
+  border: 3px solid var(--isle-white);
+  border-radius: 24px;
+  background: var(--isle-cream);
+  color: var(--isle-ink);
+  font: 500 15px/1.5 var(--isle-font);
+  box-shadow: 0 4px 0 var(--isle-edge), 0 10px 24px rgba(40, 60, 90, .2);
+}
+#hud #subtitle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  background: var(--isle-cream);
+  border-right: 3px solid var(--isle-white);
+  border-bottom: 3px solid var(--isle-white);
+  transform: rotate(45deg);
+  border-bottom-right-radius: 5px;
+}
+#hud #prompt {
+  padding: 9px 16px;
+  border: 3px solid var(--isle-white);
+  border-radius: 999px;
+  background: var(--isle-sky);
+  color: var(--isle-white);
+  font: 800 14px/1.2 var(--isle-font);
+  letter-spacing: .02em;
+  box-shadow: 0 4px 0 var(--isle-sky-deep), 0 8px 18px rgba(40, 60, 90, .22);
+}
+
+/* ---------- Thumb buttons ---------- */
+.touch-controls #mobile #act,
+.touch-controls #mobile #movementActions #run,
+.touch-controls #mobile #movementActions #jump,
+.touch-controls #mobile #drink {
+  border: 3px solid var(--isle-white);
+  color: var(--isle-white);
+  font-family: var(--isle-font);
+  font-weight: 800;
+}
+.touch-controls #mobile #act {
+  background: radial-gradient(circle at 50% 35%, #7fd0ff, var(--isle-sky) 65%);
+  box-shadow: 0 5px 0 var(--isle-sky-deep), 0 10px 20px rgba(40, 60, 90, .25);
+}
+.touch-controls #mobile #movementActions #run {
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb08f, var(--isle-peach) 60%);
+  box-shadow: 0 4px 0 var(--isle-peach-deep), 0 8px 16px rgba(40, 60, 90, .22);
+}
+.touch-controls #mobile #movementActions #run[aria-pressed="true"] {
+  background: linear-gradient(180deg, #ff9dc6, var(--isle-berry) 60%);
+  box-shadow: 0 4px 0 var(--isle-berry-deep), 0 8px 16px rgba(40, 60, 90, .22);
+}
+.touch-controls #mobile #movementActions #jump {
+  border-radius: 50%;
+  background: linear-gradient(180deg, #a6e57c, var(--isle-leaf) 60%);
+  box-shadow: 0 4px 0 var(--isle-leaf-deep), 0 8px 16px rgba(40, 60, 90, .22);
+}
+.touch-controls #mobile #drink {
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe07a, var(--isle-sun) 60%);
+  color: #6b4a00;
+  box-shadow: 0 4px 0 var(--isle-sun-deep), 0 8px 16px rgba(40, 60, 90, .22);
+}
+
+/* ---------- Menus ---------- */
+#directory .directory-card {
+  border: 4px solid var(--isle-white);
+  border-radius: 28px;
+  background: var(--isle-cream);
+  color: var(--isle-ink);
+  font-family: var(--isle-font);
+  box-shadow: 0 6px 0 var(--isle-edge), 0 18px 40px rgba(40, 60, 90, .3);
+}
+#directory .directory-head h2 { font: 800 26px/1.2 var(--isle-font); color: var(--isle-ink); }
+#directory #closeDirectory {
+  border: 3px solid var(--isle-white);
+  border-radius: 999px;
+  background: var(--isle-peach);
+  color: var(--isle-white);
+  font: 800 13px/1 var(--isle-font);
+  box-shadow: 0 3px 0 var(--isle-peach-deep);
+}
+#directory #townControls button,
+#directory #fullscreenButton {
+  border: 2px solid var(--isle-white);
+  border-radius: 999px;
+  background: #e3f4ff;
+  color: var(--isle-sky-deep);
+  font: 800 12px/1 var(--isle-font);
+  box-shadow: 0 3px 0 #bfe0f5;
+}
+#directory .dir-item {
+  border: 3px solid var(--isle-white);
+  border-radius: 18px;
+  background: var(--isle-white);
+  box-shadow: 0 3px 0 var(--isle-edge);
+  font-family: var(--isle-font);
+}
+#directory .menu-map summary { border-radius: 999px; background: #eaf7df; font-family: var(--isle-font); font-weight: 800; }
+#activity .activity-card { font-family: var(--isle-font); }
+#activity #activityTitle { font-family: var(--isle-font); font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) {
+  #hud .icon-btn { transition: none; }
+}

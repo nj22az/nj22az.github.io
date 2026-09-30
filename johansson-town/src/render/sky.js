@@ -10,9 +10,10 @@ export function createTownSky(scene){
   // Blend at the longitude seam so there is no visible vertical join.
   const cloudAt=u=>noise(u*12,latitude*10)*.57+noise(u*25,latitude*23)*.28+noise(u*53,latitude*47)*.15;
   const u=x/(width-1),n=THREE.MathUtils.lerp(cloudAt(u),cloudAt(u-1),THREE.MathUtils.smoothstep(u,.88,1));
-  const cloud=THREE.MathUtils.smoothstep(n,.48,.72)*THREE.MathUtils.smoothstep(latitude,.48,.6)*(1-THREE.MathUtils.smoothstep(latitude,.88,1));
-  const base=[92+105*horizon,150+69*horizon,204+26*horizon],i=(y*width+x)*4;
-  for(let c=0;c<3;c++)data[i+c]=Math.round(THREE.MathUtils.lerp(base[c],244,cloud*.86));
+  const cloud=THREE.MathUtils.smoothstep(n,.44,.6)*THREE.MathUtils.smoothstep(latitude,.48,.6)*(1-THREE.MathUtils.smoothstep(latitude,.88,1));
+  // Clear toy-box blue overhead, paling to the horizon; clouds bright white puffs.
+  const base=[64+140*horizon,168+66*horizon,240+12*horizon],i=(y*width+x)*4;
+  for(let c=0;c<3;c++)data[i+c]=Math.round(THREE.MathUtils.lerp(base[c],252,cloud*.95));
   data[i+3]=255;
  }
  const texture=new THREE.DataTexture(data,width,height,THREE.RGBAFormat);texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=texture.minFilter=THREE.LinearFilter;texture.needsUpdate=true;

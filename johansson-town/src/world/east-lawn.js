@@ -42,7 +42,7 @@ const CLUMP_LEAVES=[0x6d9159,0x7c9c60,0x618751];
 const TURF_METRES=2.4;
 
 /** The green the lawn shows until the park's own grass arrives (see useParkGrass). */
-const BARE_TURF=0x6f8a55;
+const BARE_TURF=0x6fae4a;
 /**
  * What the shrubs are tinted once they are wearing the park's leaf.
  *
