@@ -36,7 +36,7 @@ function detailedMaterial(original,kind,options){
  detail.colorSpace=THREE.SRGBColorSpace;detail.wrapS=detail.wrapT=THREE.RepeatWrapping;
  detail.anisotropy=Math.min(options.maxAnisotropy||4,options.mobile?4:8);
  for(const map of [material.map,material.normalMap,material.roughnessMap,material.metalnessMap])if(map)map.anisotropy=detail.anisotropy;
- material.dithering=true;material.envMapIntensity=.75;
+ material.dithering=true;material.envMapIntensity=.75;material.userData.keepPhysical=true;
  material.onBeforeCompile=shader=>{
   shader.uniforms.harbourDetail={value:detail};
   shader.vertexShader='varying vec3 vHarbourPosition;\nvarying vec3 vHarbourNormal;\n'+shader.vertexShader;

@@ -135,9 +135,9 @@ function dressSakura(kit,solid,{inspect}){
  const S=SAKURA_BOX,roof=S.roof;
  // The flat upstairs, set back from the frontage so the shop's sign keeps the street.
  const x0=S.minX+.15,x1=S.maxX-1.05,z0=S.minZ+.5,z1=S.maxZ-.5,top=roof+2.7,wall=0xe7dcc2;
- kit.block(x0,x1,roof,top,z0,z1,wall);
+ kit.block(x0,x1,roof,top,z0,z1,wall,'plaster');
  kit.block(x0-.04,x1+.04,roof,roof+.25,z0-.04,z1+.04,0xc9bfa6);
- for(const [a,b,c,d] of [[x0,x1,z0,z0+.14],[x0,x1,z1-.14,z1],[x0,x0+.14,z0,z1],[x1-.14,x1,z0,z1]])kit.block(a,b,top,top+.45,c,d,wall);
+ for(const [a,b,c,d] of [[x0,x1,z0,z0+.14],[x0,x1,z1-.14,z1],[x0,x0+.14,z0,z1],[x1-.14,x1,z0,z1]])kit.block(a,b,top,top+.45,c,d,wall,'plaster');
  kit.block(x1-.02,x1+.06,top+.4,top+.5,z0,z1,0xb84e45);
  // Windows on the street, one of them a door out onto the terrace over the shop.
  const window=(z,y,w,h)=>{

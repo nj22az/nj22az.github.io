@@ -1,0 +1,84 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {installDOM} from './fixtures.mjs';
+import {normalizeRecipe,encodeRecipe,decodeRecipe,PARTS} from '../src/avatars/recipe.js';
+import {recipeFor} from '../src/avatars/cast.js';
+import {buildAvatar,measure} from '../src/avatars/build.js';
+import {applyCelShading} from '../src/render/cel.js';
+import {frontageMaterial} from '../src/render/frontage-material.js';
+import {buildResidentialDetails,buildSakuraDetails} from '../src/world/exterior-details.js';
+import {createKit} from '../src/world/okinawa/kit.js';
+import {createMaterials} from '../src/render/materials.js';
+
+installDOM();
+
+test('existing v1 saves retain their features and gain safe silhouette defaults',()=>{
+ const old={v:1,name:'Saved resident',head:{size:.4,shape:.7},eyes:{style:'almond',spacing:.2},hair:{style:'braids'},nose:{style:'hook'}};
+ const saved=decodeRecipe(btoa(JSON.stringify(old)));
+ assert.equal(saved.name,old.name);assert.equal(saved.head.size,.4);assert.equal(saved.head.shape,.7);
+ assert.equal(saved.head.form,'oval');assert.equal(saved.head.jaw,.5);assert.equal(saved.head.cheeks,.5);
+ assert.equal(saved.hair.style,'braids');assert.equal(saved.nose.style,'hook');
+ assert.deepEqual(decodeRecipe(encodeRecipe(saved)),saved);
+ const safe=normalizeRecipe({head:{form:'missing',jaw:99,cheeks:-99}});
+ assert.equal(safe.head.form,'oval');assert.equal(safe.head.jaw,1);assert.equal(safe.head.cheeks,0);
+});
+
+test('all five head forms have distinct geometry and stay in proportion at slider limits',()=>{
+ const shapes=new Set();
+ for(const form of PARTS.head){
+  const av=buildAvatar({...recipeFor('Thuan'),head:{form,size:.5,shape:.5,jaw:.5,cheeks:.5}});
+  shapes.add(JSON.stringify([...av.face.head.geometry.attributes.position.array]));
+  assert.ok([...av.face.head.geometry.attributes.position.array].every(Number.isFinite));av.dispose();
+  for(const size of [0,1])for(const shape of [0,1]){
+   const m=measure({head:{form,size,shape}}),ratio=2*m.Rh*m.headSY/m.H;
+   assert.ok(ratio>.21&&ratio<.38,`${form}: head occupies ${ratio} of height`);
+  }
+ }
+ assert.equal(shapes.size,5);
+ const names=['Johansson','Thuan','Nao','Mr Ōshiro','Uncle Kinjō','Mrs Nakamura'];
+ assert.ok(new Set(names.map(n=>recipeFor(n).head.form)).size>=4);
+});
+
+test('the shared frontage atlas keeps its repeating UV shader through the cel sweep',async()=>{
+ const oldFetch=globalThis.fetch,oldBitmap=globalThis.createImageBitmap;
+ try{
+  globalThis.fetch=async()=>({ok:true,blob:async()=>({})});globalThis.createImageBitmap=async()=>({width:16,height:16});
+  const material=await frontageMaterial(998),root=new THREE.Group();
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(),material);root.add(mesh);
+  applyCelShading(root);assert.equal(mesh.material,material);
+  const shader={vertexShader:'#include <uv_vertex>',fragmentShader:'#include <map_fragment>'};
+  mesh.material.onBeforeCompile(shader);
+  assert.match(shader.vertexShader,/vFrontageAtlas=vec4\(uv1,uv2\)/);
+  assert.match(shader.fragmentShader,/fract\(vMapUv\)/);assert.match(shader.fragmentShader,/textureGrad/);
+ }finally{globalThis.fetch=oldFetch;globalThis.createImageBitmap=oldBitmap;}
+});
+
+test('architectural fittings stay batched and leave the Sakura entrance clear',()=>{
+ const root=new THREE.Group(),residential=buildResidentialDetails(root),shop=buildSakuraDetails(root,{width:14,depth:11,doorX:0});
+ assert.equal(residential.children.length,3);assert.equal(shop.children.length,2);
+ for(const group of [residential,shop])for(const mesh of group.children){
+  assert.equal(mesh.material.userData.keepPhysical,true);assert.ok([...mesh.geometry.attributes.position.array].every(Number.isFinite));
+ }
+ const ray=new THREE.Raycaster(new THREE.Vector3(0,1,1),new THREE.Vector3(0,0,-1),0,1.5);
+ root.updateMatrixWorld(true);assert.equal(ray.intersectObject(shop,true).length,0,'No fittings across the doorway at walking height');
+});
+
+test('district plaster keeps its physical maps and metre-sized UVs',()=>{
+ const kit=createKit(),map=new THREE.Texture(),normalMap=new THREE.Texture(),arm=new THREE.Texture();
+ kit.surface('plaster',{map,normalMap,roughnessMap:arm,aoMap:arm,metres:2});
+ kit.box(4,3,.2,0,1.5,0,0xe7dcc2,{finish:'plaster'});
+ const root=new THREE.Group(),{meshes}=kit.finish(root);applyCelShading(root);
+ assert.equal(meshes.length,1);assert.equal(meshes[0].material.map,map);assert.equal(meshes[0].material.normalMap,normalMap);
+ assert.equal(meshes[0].material.roughnessMap,arm);assert.equal(meshes[0].material.aoMap,arm);
+ assert.equal(meshes[0].material.isMeshStandardMaterial,true);assert.ok(meshes[0].geometry.attributes.uv.count>0);
+});
+
+
+test('painted plaster has a light neutral base rather than the dark stone photograph',()=>{
+ const plaster=createMaterials().material('plaster');
+ assert.equal(plaster.map.isDataTexture,true);
+ const pixels=plaster.map.image.data;
+ for(let i=0;i<pixels.length;i+=4){assert.ok(pixels[i]>=238);assert.equal(pixels[i],pixels[i+1]);assert.equal(pixels[i+3],255);}
+ assert.equal(plaster.userData.keepPhysical,true);assert.equal(plaster.normalScale.x,.16);
+});

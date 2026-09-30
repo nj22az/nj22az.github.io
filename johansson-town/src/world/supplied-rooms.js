@@ -74,6 +74,7 @@ export function preloadSuppliedRooms(ids=Object.keys(files)){
       let meshes=0;
       gltf.scene.traverse(o=>{if(!o.isMesh)return;meshes++;
         for(const material of Array.isArray(o.material)?o.material:[o.material]){
+          if(id==='ramen-exterior')material.userData.keepPhysical=true;
           // Vertex-alpha shadow decals must not occlude the floor behind them.
           if(material.transparent){material.depthWrite=false;material.forceSinglePass=true;}
           if(material.map){material.map.magFilter=THREE.LinearFilter;material.map.anisotropy=2;}

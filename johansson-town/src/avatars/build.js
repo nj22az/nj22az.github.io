@@ -1,7 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {normalizeRecipe} from './recipe.js';
-import {drawFace} from './face.js';
+import {drawFace,faceLayout} from './face.js';
+import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {celFrom} from '../render/cel.js';
 
 /**
@@ -12,9 +13,8 @@ import {celFrom} from '../render/cel.js';
  * whole person is a single draw call and moves like a jointed toy, which is the look.
  * The head is the second draw call: a sphere whose front carries the painted face.
  *
- * Proportions are the point. The head is about a third of the height; arms are short and
- * end in round hands; legs are straight tubes on rounded shoes. Everyone is built on the
- * same frame, so the town's crowd reads as one family.
+ * The head is roughly a quarter of the height, with an authored silhouette. The same
+ * skeleton and measurements drive walking, seats, clothing and held objects.
  *
  * The body faces +z; the root is turned to face -z, the way the town's characters do.
  */
@@ -25,15 +25,15 @@ const BI=Object.fromEntries(BONES.map((n,i)=>[n,i]));
 export function measure(recipe){
  const r=normalizeRecipe(recipe);
  const H=1.36+r.body.height*.44,k=H/1.6,build=r.body.build;
- const Rh=(.25+r.head.size*.07)*k,headSX=1+(r.head.shape-.5)*.12,headSY=1.02-(r.head.shape-.5)*.1;
- const neck=.045*k,body=H-Rh*2*headSY-neck;
- const leg=body*.47,torso=body-leg;
+ const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k,headSX=profile.width,headSY=profile.height;
+ const neck=.065*k,body=H-Rh*2*headSY-neck;
+ const leg=body*.5,torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
  const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
  const width=(.3+build*.15)*k,depth=(.2+build*.09)*k;
- const upper=.2*k,fore=.18*k,hand=.058*k;
+ const upper=.22*k,fore=.2*k,hand=.052*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
- return {H,k,Rh,headSX,headSY,neck,torso,leg,foot,thigh,shin,legR,armR,width,depth,upper,fore,hand,hipY,chestY,neckY,headY,
+ return {H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,depth,upper,fore,hand,hipY,chestY,neckY,headY,
   headCentre:headY+Rh*headSY*.94,shoulderX:width/2+armR*.3,shoulderY:neckY-.045*k,hipX:width*.24,
   /** How far below the hip joint the backs of the thighs are when sitting. */
   seatDrop:legR*.95};
@@ -202,7 +202,7 @@ function addHair(list,recipe,m){
  // Hair and hat are built in head-bone space, then carried to model space.
  const at=(x,y,z)=>[x,m.headY+y,z];
  const cap=hairCap(style,recipe.hair.flip);
- if(cap)part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));
+ if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));}
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),'head',c,[1.05,1.25,.5]);}
  if(style==='ponytail'){ball(list,R*.34,at(0,cy+R*.1,-R*1.05),'head',c,[1,1,1]);ball(list,R*.3,at(0,cy-R*.45,-R*1.18),'head',c,[.9,1.9,.9]);ball(list,R*.16,at(0,cy+R*.1,-R*1.2),'head',recipe.outfit.accent);}
@@ -305,7 +305,7 @@ function addBody(list,recipe,m,swim=false){
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
   limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,arm);
   // A short sleeve is a wider bell over the top of the arm.
-  if(!swim&&!longSleeve)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.3,m.armR*1.42,top,{...arm,joints:[]});
+  if(!swim&&!longSleeve)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[1,1.1,.95],12,10);
  }
  // Legs and shoes; shorts and skirts show the knees.
@@ -341,8 +341,9 @@ function buildHead(recipe,m,faceSize){
   v.fromBufferAttribute(pos,i);
   const phi=Math.atan2(v.z,-v.x),theta=Math.acos(THREE.MathUtils.clamp(v.y,-1,1));
   uv.setXY(i,THREE.MathUtils.clamp((phi-PHI0)/PHI,.002,.998),THREE.MathUtils.clamp(1-(theta-TH0)/TH,.002,.998));
+  shapeHeadPoint(v,m.profile);pos.setXYZ(i,v.x,v.y,v.z);
  }
- g.scale(m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98);
+ g.scale(m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98);g.computeVertexNormals();
  // The face is shaded as if it were flat and tipped up to the light, as a drawn face
  // is: a sphere's own normals put a hard shadow line straight across the cheeks.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
@@ -359,6 +360,16 @@ function buildHead(recipe,m,faceSize){
  * @param {object} input recipe (anything; it is normalized)
  * @param {{shadows?:boolean,faceSize?:number}} [options]
  */
+function addNose(parts,recipe,m){
+ if(recipe.nose.style==='none')return;
+ const theta=Math.PI*.28+faceLayout(recipe).noseY/256*Math.PI*.58;
+ const v=shapeHeadPoint(new THREE.Vector3(0,Math.cos(theta),Math.sin(theta)),m.profile);
+ const hook=recipe.nose.style==='hook',wide=recipe.nose.style==='wide';
+ const radius=m.Rh*(.065+recipe.nose.size*.055);
+ ball(parts,radius,[0,m.headCentre+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+radius*.55],'head',recipe.body.skin,
+  [wide?1.45:.85,hook?1.55:.85,hook?1.65:1.2],12,10);
+}
+
 export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const rest=restPositions(m),bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
@@ -368,6 +379,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  }
  const parts=[];
  addBody(parts,recipe,m,false);
+ addNose(parts,recipe,m);
  // Ears.
  for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
  addHair(parts,recipe,m);addHat(parts,recipe,m);
@@ -398,7 +410,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   /** 'swim' or 'clothes'. */
   wear(outfit){
    if(outfit==='swim'&&!swimBody){
-    const parts=[];addBody(parts,recipe,m,true);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
+    const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
     addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
     const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
     swimBody=new THREE.SkinnedMesh(g,material);swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);

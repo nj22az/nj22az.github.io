@@ -20,7 +20,7 @@ function model(index,kind,width,depth,height,options){
  if(!source)return null;const mesh=source.getObjectByName((index%2?'gable':'hipped')+'-'+kind).clone();
  mesh.scale.set(width/mesh.userData.width,height,depth/mesh.userData.depth);mesh.castShadow=!!options.shadows;mesh.receiveShadow=true;mesh.userData.sharedAsset=true;
  for(const map of [mesh.material.map,mesh.material.normalMap,mesh.material.roughnessMap,mesh.material.aoMap])if(map)map.anisotropy=Math.min(options.maxAnisotropy||1,options.mobile?4:8);
- mesh.material.envMapIntensity=.45;mesh.material.dithering=true;return mesh;
+ mesh.material.envMapIntensity=.45;mesh.material.dithering=true;mesh.material.userData.keepPhysical=true;return mesh;
 }
 export function buildJapaneseShop({parent,site,register,enter,label,...options}){
  const index=IDS.indexOf(site.id);if(index<0)return null;
