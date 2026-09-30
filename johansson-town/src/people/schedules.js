@@ -1,5 +1,5 @@
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
-import {ONSEN_DOOR} from '../world/onsen-layout.js';
+import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
 import {FULL_TOWN} from '../world/full-town-state.js';
@@ -100,7 +100,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   g.rotation.y+=THREE.MathUtils.clamp(delta,-turnRate*dt,turnRate*dt);
   return forwardOnly(g.rotation.y,dx,dz);
  }
- function move(person,target,dt,tag,pace=0){const g=person.g,arrival=person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
+ function move(person,target,dt,tag,pace=0){const g=person.g,arrival=tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
   // followed comes back empty anyway, because the path starts in an obstacle. Getting
@@ -307,7 +307,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
    if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
    const indoor=['home','izakaya','ramen','market','onsen'].includes(tag)||tag==='work'&&v.workSite;
-   const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<.85;
+   const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<(tag==='onsen'?ONSEN_ENTRY_RADIUS:.85);
    const yieldTarget=p!==thuan?yieldAsideForThuan(p):null;
    if(yieldTarget){
     // Idle chats must not pin someone in Thuan's morning path.

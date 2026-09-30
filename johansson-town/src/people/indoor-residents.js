@@ -3,7 +3,7 @@ import {RAMEN_GUEST_SEATS,RAMEN_THUAN_SPOT,RAMEN_LAYOUT} from '../world/interior
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
-import {ONSEN_DOOR} from '../world/onsen-layout.js';
+import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a
@@ -45,7 +45,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   for(const p of world.people){
    const g=p.g;let saved=borrowed.get(p);
    if(!saved){
-    if(!wanted(p)||!atDestination(p,place,door(p)))continue;
+    if(!wanted(p)||!atDestination(p,place,door(p),place==='onsen'?ONSEN_ENTRY_RADIUS:.85))continue;
     const seat=seatFor(p);if(!seat)continue;
     const settled=g.userData.indoors===place&&!g.userData.justArrived;
     walker.forget(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled||seat.managed?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);

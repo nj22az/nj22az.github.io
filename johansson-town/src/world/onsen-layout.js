@@ -10,7 +10,10 @@ export function onsenPoint(x,z){
  return [ONSEN.x+x*c+z*s,ONSEN.z-x*s+z*c];
 }
 
-/** The step outside the noren, where anyone walking to the bath arrives. */
-export const ONSEN_DOOR=Object.freeze(onsenPoint(-1.4,5.4));
+/** The porch remains the safe player exit; residents enter across the facade at Z=4.2. */
+export const ONSEN_APPROACH=Object.freeze(onsenPoint(-1.4,5.4));
+export const ONSEN_DOOR=Object.freeze(onsenPoint(-1.4,4.0));
+/** Small enough that an arrival must have crossed the facade, rather than the lawn. */
+export const ONSEN_ENTRY_RADIUS=.15;
 
 export const onsenOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=ONSEN.opens&&m<ONSEN.closes;};
