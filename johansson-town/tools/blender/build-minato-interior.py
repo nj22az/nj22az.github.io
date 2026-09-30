@@ -19,6 +19,14 @@ What changes is everything round them.
  - The east side is a raised tatami koagari with low tables and cushions, shoes left on
    the stone at its step.
 
+The kitchen is a real one, and it is shared. Behind Nao's counter the back bar keeps
+the west end; the rest of the back wall is the cooking line -- a tall fridge, a four
+burner range under a steel canopy, the fryer, a double sink and the prep bench -- and it
+runs on, through an opening in the east wall, into Sato Ramen: the little corner shop
+that opens at lunch while Minato is shut (x 6.5 to 11.4). Its side of the line is the
+noodle boiler, the two stock pots and the toppings, facing a counter of five stools, a
+wall ledge, a ticket machine by the door and its own noren.
+
 Menu strips and signs are drawn at runtime (izakaya.js) so the lettering stays sharp.
 Input coordinates are Three.js (x, y, z); Blender takes (x, -z, y).
 """
@@ -92,6 +100,12 @@ M = dict(
     edamame=mat('Edamame', '7d9b45', .6),
     cream=mat('Till cream', 'e6dcc4', .5),
     sakaki=mat('Sakaki leaves', '3d6a37', .7),
+    tile=mat('White wall tile', 'e4e0d4', .35), grout=mat('Tile grout', '9a968a', .8),
+    quarry=mat('Quarry tile', '9c5436', .62), quarryB=mat('Quarry tile, darker', '86462d', .64),
+    chashu=mat('Chashu', 'c98b6a', .45), negi=mat('Negi', '6fa83c', .55), menma=mat('Menma', 'a77c3e', .5),
+    nori=mat('Nori', '1f2a22', .6), noodle=mat('Noodles', 'e8cf7a', .5), oil=mat('Fryer oil', 'b8862a', .15),
+    tube=mat('Fluorescent tube', 'fff4dc', .4, 0, 3.0), lacq_red=mat('Red lacquer', '9c2b22', .35),
+    ticket=mat('Ticket machine cream', 'ddd4bc', .45),
 )
 
 def loc(v): return (v[0], -v[2], v[1])
@@ -139,7 +153,7 @@ while x < 6.39:
 # --------------------------------------------------------------------------- walls
 cube('Back wall', (12.8, 3.8, .2), (0, 1.9, -6.4), M['plaster'])
 cube('Left cutaway wall', (.2, 2.8, 13), (-6.4, 1.4, 0), M['plaster'])
-cube('Right cutaway rim', (.2, .65, 13), (6.4, .325, 0), M['wainscot'])
+cube('Right cutaway rim', (.2, .65, 9.75), (6.4, .325, 1.525), M['wainscot'])   # open behind the counter: the kitchen runs on into Sato Ramen
 
 def wainscot_run(axis, fixed, a0, a1, skip=()):
     """Vertical cedar boards to the dado along one wall, with a cap rail."""
@@ -157,17 +171,17 @@ def wainscot_run(axis, fixed, a0, a1, skip=()):
         if axis == 'x': cube('Board batten', (.035, .93, .025), (t, .5, fixed + (.02 if fixed < 0 else -.02)), M['smoke'])
         else: cube('Board batten', (.025, .93, .035), (fixed + (.02 if fixed < 0 else -.02), .5, t), M['smoke'])
 
-wainscot_run('x', -6.285, -6.3, 6.3, skip=((4.8, 5.9),))   # the back-room doorway interrupts it
+wainscot_run('x', -6.285, -6.3, -1.1)   # the kitchen tile takes the rest of the back wall
 wainscot_run('z', -6.285, -6.3, 6.3)
-wainscot_run('z', 6.285, -6.3, 6.3)
+wainscot_run('z', 6.285, -3.3, 6.3)
 wainscot_run('x', 6.285, -6.3, -1.85)
 wainscot_run('x', 6.285, 1.85, 6.3)
 
-for xx in (-6.22, -3.2, 0, 3.2):
+for xx in (-6.22, -3.2):   # the cooking line stands along the rest of it
     cube('Wall post', (.16, 3.8, .14), (xx, 1.9, -6.22), M['smoke'])
 for zz in (-6.2, -3.4, -.6, 1.8, 4.3, 6.2):
     cube('Wall post', (.14, 3.8, .16), (-6.22, 1.9, zz), M['smoke'])
-for zz in (-6.2, -2.9, -.6, 1.8, 4.3, 6.2):
+for zz in (-2.9, -.6, 1.8, 4.3, 6.2):
     cube('Wall post', (.14, 3.8, .16), (6.22, 1.9, zz), M['smoke'])
 for xx in (-6.2, -1.9, 1.9, 5.4):   # clear of the street window
     cube('Wall post', (.16, 3.8, .14), (xx, 1.9, 6.22), M['smoke'])
@@ -175,7 +189,7 @@ for xx in (-6.2, -1.9, 1.9, 5.4):   # clear of the street window
 for y in (2.85, 3.66):
     cube('Wall rail', (12.6, .09, .07), (0, y, -6.24), M['smoke'])
     cube('Wall rail', (.07, .09, 12.6), (-6.24, y, 0), M['smoke'])
-    cube('Wall rail', (.07, .09, 12.6), (6.24, y, 0), M['smoke'])
+    cube('Wall rail', (.07, .09, 9.6), (6.24, y, 1.5), M['smoke'])
     cube('Wall rail', (4.45, .09, .07), (-4.07, y, 6.24), M['smoke'])
     cube('Wall rail', (4.45, .09, .07), (4.07, y, 6.24), M['smoke'])
 
@@ -283,15 +297,15 @@ for k in range(4):
     cyl('Beer glass', .036, .13, (-.05 + k * .085, .985, -3.0), M['clear'], 10)
 
 # Back bar: cupboard, shelves of isshobin, shochu and kept whisky with name tags.
-cube('Back bar cupboard', (7.1, .88, .55), (-1, .44, -5.95), M['wainscot'])
-cube('Back bar top', (7.2, .04, .6), (-1, .9, -5.95), M['honey'])
-for k in range(8): cube('Cupboard door seam', (.012, .74, .005), (-4.4 + k * .9, .44, -5.672), M['smoke'])
+cube('Back bar cupboard', (3.35, .88, .55), (-2.875, .44, -5.95), M['wainscot'])
+cube('Back bar top', (3.4, .04, .6), (-2.875, .9, -5.95), M['honey'])
+for k in range(4): cube('Cupboard door seam', (.012, .74, .005), (-4.4 + k * .9, .44, -5.672), M['smoke'])
 cyl('Rice cooker', .15, .22, (-3.6, 1.03, -5.95), M['porcelain'], 14)
 cyl('Rice cooker lid', .14, .04, (-3.6, 1.16, -5.95), M['steel'], 14)
 for k in range(5): cube('Stacked plates', (.26, .012, .26), (-2.7, .93 + k * .014, -5.95), M['blue'])
 for y in (1.3, 1.75, 2.2):
-    cube('Bottle shelf', (7.0, .045, .32), (-1, y, -6.08), M['smoke'])
-    for k in range(8): cube('Shelf bracket', (.04, .1, .28), (-4.4 + k * .97, y - .07, -6.1), M['smoke'])
+    cube('Bottle shelf', (3.3, .045, .32), (-2.85, y, -6.08), M['smoke'])
+    for k in range(4): cube('Shelf bracket', (.04, .1, .28), (-4.4 + k * 1.03, y - .07, -6.1), M['smoke'])
 def bottle(x, y, z, kind):
     if kind == 'isshobin':
         body, neck, h, r = rng.choice([M['green'], M['brown']]), None, .3, .05
@@ -306,22 +320,61 @@ def bottle(x, y, z, kind):
     if kind == 'keep':   # a customer's kept bottle, with a card on the neck
         cube('Keep tag', (.05, .03, .004), (x, y + h + .06, z + r * .5), M['label'])
 for y in (1.3, 1.75, 2.2):
-    for k in range(20):
+    for k in range(9):
         kind = ('isshobin', 'shochu', 'keep')[(k + int(y * 10)) % 3] if y > 1.4 else ('keep', 'shochu')[k % 2]
         bottle(-4.3 + k * .345 + rng.uniform(-.02, .02), y + .02, -6.08, kind)
 
-# The prep bench in the corner, and a stock pot on the ring.
-cube('Prep bench', (2.2, .9, 1.0), (4.65, .45, -4.7), M['steel'])
-cube('Prep bench top', (2.25, .035, 1.05), (4.65, .92, -4.7), M['steel'])
-for dx in (-.45, .45): ring('Gas ring', .12, .012, (4.65 + dx, .95, -4.7), M['darksteel'])
-cyl('Stock pot', .2, .3, (4.2, 1.1, -4.7), M['steel'], 16)
-cube('Chopping board', (.45, .03, .3), (5.25, .95, -4.6), M['honey'])
-
-# Doorway to the back room, with its noren.
-cube('Back room opening', (1.1, 2.0, .02), (5.35, 1.0, -6.27), M['lacquer'])
-for dx in (-.6, .6): cube('Doorway post', (.1, 2.1, .12), (5.35 + dx, 1.05, -6.24), M['smoke'])
-cube('Doorway lintel', (1.3, .1, .12), (5.35, 2.08, -6.24), M['smoke'])
-for k in range(3): cube('Noren panel', (.34, .8, .01), (4.99 + k * .36, 1.62, -6.2), M['noren'])
+# The cooking line along the rest of the back wall, on white tile.
+cube('Kitchen tile', (7.5, 1.1, .02), (2.55, 1.45, -6.275), M['tile'])
+for k in range(1, 25): cube('Tile joint', (.008, 1.1, .005), (-1.2 + k * .3, 1.45, -6.262), M['grout'])
+for k in range(1, 4): cube('Tile joint', (7.5, .008, .005), (2.55, .9 + k * .275, -6.262), M['grout'])
+# A tall two-door fridge.
+cube('Kitchen fridge', (1.35, 1.9, .7), (-.4, .95, -5.95), M['steel'], bevel=.02)
+cube('Fridge door seam', (.01, 1.8, .005), (-.4, .95, -5.597), M['darksteel'])
+for dx in (-.1, .1): cube('Fridge handle', (.03, .6, .03), (-.4 + dx, 1.2, -5.58), M['darksteel'])
+# The range: four burners, the wok, a pan, a stock pot and the kettle.
+cube('Range body', (1.9, .86, .75), (1.4, .43, -5.95), M['steel'])
+cube('Range top', (1.92, .04, .77), (1.4, .88, -5.95), M['darksteel'])
+for k in range(4): cyl('Range knob', .03, .03, (.75 + k * .43, .7, -5.565), M['darksteel'], 10, axis='z')
+for dx, dz in ((-.45, -.18), (.45, -.18), (-.45, .16), (.45, .16)):
+    ring('Burner ring', .11, .014, (1.4 + dx, .915, -5.95 + dz), M['darksteel'])
+cyl('Stock pot', .22, .34, (.95, 1.08, -6.13), M['steel'], 16)
+cyl('Stock pot broth', .2, .01, (.95, 1.25, -6.13), M['broth'], 16)
+cyl('Wok', .27, .09, (1.85, .96, -5.79), M['darksteel'], 18)
+cyl('Wok handle', .018, .3, (2.2, 1.0, -5.62), M['smoke'], 8, axis='x', rot=.5)
+cyl('Frying pan', .15, .04, (.95, .94, -5.79), M['darksteel'], 14)
+cyl('Kettle', .1, .16, (1.85, 1.0, -6.12), M['steel'], 12)
+cone('Kettle lid', .09, .03, .05, (1.85, 1.1, -6.12), M['steel'], 12)
+# The fryer, the double sink and the dish rack, and the prep bench at the end.
+cube('Fryer', (.7, .86, .75), (2.75, .43, -5.95), M['steel'])
+cube('Fryer oil', (.56, .01, .5), (2.75, .9, -5.97), M['oil'])
+for dx in (-.14, .14):
+    cube('Fryer basket', (.22, .12, .38), (2.75 + dx, .93, -5.97), M['darksteel'])
+    cyl('Basket handle', .012, .3, (2.75 + dx, 1.05, -5.7), M['lacquer'], 6, axis='z')
+cube('Sink cabinet', (1.4, .86, .75), (3.85, .43, -5.95), M['steel'])
+cube('Sink top', (1.42, .035, .77), (3.85, .88, -5.95), M['steel'])
+for dx in (-.33, .33): cube('Sink bowl', (.5, .012, .44), (3.85 + dx, .9, -5.95), M['darksteel'])
+cyl('Kitchen tap', .015, .32, (3.85, 1.06, -6.22), M['steel'], 8)
+cube('Kitchen spout', (.025, .025, .2), (3.85, 1.21, -6.13), M['steel'])
+cube('Dish rack', (1.2, .04, .3), (3.85, 1.95, -6.12), M['steel'])
+for k in range(9): cube('Plate in rack', (.01, .2, .2), (3.35 + k * .12, 2.07, -6.12), M['porcelain'] if k % 3 else M['blue'])
+cube('Prep bench', (1.4, .86, .75), (5.55, .43, -5.95), M['steel'])
+cube('Prep bench top', (1.42, .035, .77), (5.55, .88, -5.95), M['steel'])
+cube('Chopping board', (.5, .03, .32), (5.4, .915, -5.9), M['honey'])
+for k in range(6): cube('Sliced negi', (.03, .012, .03), (5.3 + k * .035, .935, -5.85), M['negi'])
+cyl('Prep bowl', .1, .06, (5.9, .93, -5.95), M['porcelain'], 12)
+# The canopy over the range and the fryer, with its duct and a rail of ladles.
+cube('Kitchen canopy', (3.3, .32, .85), (1.95, 2.35, -5.95), M['hood'], bevel=.02)
+cube('Canopy duct', (.45, 1.25, .45), (1.95, 3.1, -6.15), M['hood'])
+cube('Ladle rail', (2.8, .02, .02), (1.95, 2.12, -6.25), M['steel'])
+for k in range(7):
+    cyl('Hanging ladle', .008, .32, (.8 + k * .38, 1.95, -6.23), M['steel'], 6)
+    cyl('Ladle cup', .045, .04, (.8 + k * .38, 1.78, -6.2), M['steel'], 10)
+# The radio moves up over the fridge.
+cube('Radio shelf', (1.1, .04, .42), (-.4, 2.28, -6.07), M['honey'])
+cube('Radio cabinet', (1.0, .56, .38), (-.4, 2.58, -6.04), M['honey'], bevel=.03)
+cube('Radio cloth', (.55, .36, .01), (-.55, 2.58, -5.845), M['straw'])
+for dx in (.28, .4): cyl('Radio dial', .035, .03, (-.4 + dx, 2.58, -5.84), M['cream'], 12, axis='z')
 
 # Kamidana up in the corner, and the radio on its shelf.
 cube('Kamidana shelf', (.9, .04, .3), (-5.6, 3.15, -6.13), M['honey'])
@@ -331,10 +384,6 @@ for dx in (-.32, .32):
     cyl('Sakaki vase', .025, .08, (-5.6 + dx, 3.21, -6.1), M['porcelain'], 8)
     ball('Sakaki', (.05, .09, .04), (-5.6 + dx, 3.32, -6.1), M['sakaki'], 8, 5)
 cyl('Shimenawa', .015, .95, (-5.6, 3.55, -6.05), M['straw'], 6, axis='x')
-cube('Radio shelf', (1.1, .04, .42), (4.5, 1.88, -6.07), M['honey'])
-cube('Radio cabinet', (1.0, .56, .38), (4.5, 2.18, -6.04), M['honey'], bevel=.03)
-cube('Radio cloth', (.55, .36, .01), (4.35, 2.18, -5.845), M['straw'])
-for dx in (.28, .4): cyl('Radio dial', .035, .03, (4.5 + dx, 2.18, -5.84), M['cream'], 12, axis='z')
 
 # Beer crates of empties and the drinks fridge behind the counter's west end.
 def crate(x, y, z, m):
@@ -421,6 +470,124 @@ for k, tilt in enumerate((.12, -.1)):
     o = cyl('Umbrella', .03, .95, (-2.35 + tilt * .5, .6, 5.95 + k * .04), M['lacquer'], 8)
     o.rotation_euler.y = tilt
 for k in range(4): cyl('Coat peg', .018, .09, (-6.22, 1.78, 4.8 + k * .35), M['honey'], 8, axis='x')
+
+
+# --------------------------------------------------------------------------- Sato Ramen
+# The corner shop beside Minato, x 6.5 to 11.4 and z -6.4 to 3.7: its kitchen is the east
+# end of the same line, open to Minato's behind the counter, and its customers come in
+# by their own door at the front.
+RX0, RX1, RZ0, RZ1 = 6.5, 11.4, -6.4, 3.7
+RW, RD, RCX, RCZ = RX1 - RX0, RZ1 - RZ0, (RX0 + RX1) / 2, (RZ0 + RZ1) / 2
+cube('Ramen base', (RW + .2, .3, RD), (RCX, -.16, RCZ), M['smoke'])
+row = 0; zz = RZ0
+while zz < RZ1 - .01:
+    for col in range(int(RW / .3) + 1):
+        xx = RX0 + .15 + col * .3
+        if xx > RX1: break
+        cube('Quarry tile', (.29, .04, .29), (xx, .02, zz + .15), M['quarry'] if (row + col) % 3 else M['quarryB'])
+    zz += .3; row += 1
+cube('Ramen back wall', (RW + .2, 3.8, .2), (RCX, 1.9, RZ0), M['plaster'])
+cube('Ramen east wall', (.2, 3.8, RD + .2), (RX1 + .1, 1.9, RCZ), M['plaster'])
+cube('Ramen west face', (.04, 3.8, RZ1 + 3.35), (RX0 + .02, 1.9, (RZ1 - 3.35) / 2), M['plaster'])
+for side, fx in ((1, RX0 + .05), (-1, RX1 - .01)):
+    cube('Ramen wall tile', (.02, 1.1, RZ1 + 3.3), (fx, .55, (RZ1 - 3.3) / 2), M['tile'])
+    for k in range(1, 4): cube('Tile joint', (.03, .008, RZ1 + 3.3), (fx, k * .275, (RZ1 - 3.3) / 2), M['grout'])
+cube('Ramen kitchen tile', (RW, 1.1, .02), (RCX, 1.45, RZ0 + .125), M['tile'])
+for k in range(1, 16): cube('Tile joint', (.008, 1.1, .005), (RX0 + k * .3, 1.45, RZ0 + .138), M['grout'])
+# The front wall with the door on the right, the noren inside it, and a window.
+DX, DW = 9.75, 1.3
+cube('Ramen front wall', (DX - DW / 2 - RX0, 3.8, .2), ((RX0 + DX - DW / 2) / 2, 1.9, RZ1), M['plaster'])
+cube('Ramen front wall', (RX1 - DX - DW / 2, 3.8, .2), ((RX1 + DX + DW / 2) / 2, 1.9, RZ1), M['plaster'])
+cube('Ramen door lintel', (DW, 1.6, .2), (DX, 3.0, RZ1), M['plaster'])
+cube('Ramen door glass', (DW - .1, 2.1, .02), (DX, 1.1, RZ1 + .06), M['glass'])
+for dx in (-DW / 2, 0, DW / 2): cube('Door frame', (.05, 2.2, .06), (DX + dx, 1.1, RZ1 + .05), M['steel'])
+cube('Door frame', (DW, .05, .06), (DX, 2.2, RZ1 + .05), M['steel'])
+for k in range(2): cube('Ramen noren', (DW / 2 - .04, .7, .01), (DX - DW / 4 + k * DW / 2, 1.85, RZ1 - .13), M['lacq_red'])
+cube('Noren rod', (DW + .1, .03, .03), (DX, 2.22, RZ1 - .13), M['lacquer'])
+shoji('Ramen window', (7.8, 1.72, RZ1 - .11), 1.8, 1.0, 'x')
+# Ceiling, and fluorescent tubes rather than lanterns: a lunch counter, not a bar.
+for zz in (-4.8, -1.6, 1.6):
+    cube('Ceiling beam', (RW, .24, .2), (RCX, 3.62, zz), M['smoke'], bevel=.02)
+for k in range(21):
+    cube('Ceiling slat', (RW, .02, .08), (RCX, 3.77, RZ0 + .15 + k * .5), M['floorB'])
+cube('Ramen ceiling', (RW + .2, .06, RD + .2), (RCX, 3.83, RCZ), M['floorA'])
+for tz in (-2.6, .3, 2.6):
+    cube('Tube fitting', (.14, .06, 1.3), (RCX, 3.56, tz), M['steel'])
+    cyl('Fluorescent tube', .025, 1.2, (RCX, 3.5, tz), M['tube'], 8, axis='z')
+
+# The ramen kitchen: noodle boiler, the two stock pots, and the toppings.
+cube('Noodle boiler', (1.2, .86, .75), (7.25, .43, -5.95), M['steel'])
+cube('Boiler water', (1.06, .01, .6), (7.25, .9, -5.95), M['clear'])
+for k in range(6):
+    cyl('Tebo basket', .07, .16, (6.9 + (k % 3) * .35, .88, -6.12 + (k // 3) * .3), M['darksteel'], 10)
+    cyl('Tebo handle', .01, .28, (6.9 + (k % 3) * .35, 1.02, -5.98 + (k // 3) * .3), M['lacquer'], 6, axis='z')
+cube('Pot stand', (1.3, .62, .75), (8.6, .31, -5.95), M['darksteel'])
+for dx in (-.32, .32):
+    cyl('Soup pot', .28, .5, (8.6 + dx, .87, -5.95), M['steel'], 18)
+    cyl('Soup', .26, .01, (8.6 + dx, 1.125, -5.95), M['broth'], 18)
+    cyl('Pot lid', .29, .02, (8.6 + dx + .2, 1.14, -5.95 + .18), M['steel'], 18)
+cube('Toppings table', (1.35, .86, .75), (9.95, .43, -5.95), M['steel'])
+cube('Toppings top', (1.37, .035, .77), (9.95, .88, -5.95), M['steel'])
+for k, (m, shape) in enumerate(((M['chashu'], 'disc'), (M['negi'], 'bits'), (M['menma'], 'bits'), (M['nori'], 'sheet'), (M['egg'], 'egg'))):
+    tx = 9.45 + k * .25
+    cube('Toppings tray', (.22, .04, .3), (tx, .92, -5.95), M['steel'])
+    for j in range(3):
+        if shape == 'disc': cyl('Chashu slice', .045, .012, (tx, .95, -6.03 + j * .08), m, 12)
+        elif shape == 'sheet': cube('Nori sheet', (.08, .005, .12), (tx, .945, -6.02 + j * .03), m)
+        elif shape == 'egg': ball('Ajitama', (.03, .025, .035), (tx, .955, -6.03 + j * .08), m, 8, 5)
+        else: cube('Topping', (.12, .02, .06), (tx, .95, -6.03 + j * .08), m, rot=j * .6)
+cube('Ramen canopy', (2.8, .32, .85), (7.95, 2.35, -5.95), M['hood'], bevel=.02)
+cube('Ramen canopy duct', (.45, 1.25, .45), (7.95, 3.1, -6.15), M['hood'])
+cube('Bowl shelf', (1.4, .04, .3), (9.95, 1.95, -6.15), M['honey'])
+for k in range(4):
+    for j in range(4): cyl('Donburi', .085, .07, (9.5 + k * .3, 2.0 + j * .075, -6.15), M['porcelain'], 14)
+    cyl('Donburi rim', .087, .012, (9.5 + k * .3, 2.27, -6.15), M['red'], 14)
+# The back room, off the ramen kitchen, behind its noren.
+cube('Back room opening', (.9, 2.0, .02), (11.0, 1.0, RZ0 + .13), M['lacquer'])
+for dx in (-.5, .5): cube('Doorway post', (.1, 2.1, .12), (11.0 + dx, 1.05, RZ0 + .16), M['smoke'])
+cube('Doorway lintel', (1.1, .1, .12), (11.0, 2.08, RZ0 + .16), M['smoke'])
+for k in range(2): cube('Noren panel', (.42, .8, .01), (10.78 + k * .44, 1.62, RZ0 + .2), M['noren'])
+
+# The counter, a match for Minato's, and five chrome stools with red tops.
+cube('Ramen counter carcass', (RW - .3, .95, .75), (RCX + .05, .475, -2.55), M['smoke'])
+for k in range(23):
+    cube('Counter front slat', (.1, .86, .03), (RX0 + .35 + k * .197, .52, -2.155), M['wainscot'])
+cube('Ramen guest ledge', (RW - .2, .07, .55), (RCX + .05, 1.075, -2.2), M['honey'], bevel=.02)
+cube('Ramen serving shelf', (RW - .3, .06, .26), (RCX + .05, 1.25, -2.6), M['honey'], bevel=.015)
+cube('Ramen work top cabinet', (RW - .3, .88, .58), (RCX + .05, .44, -3.06), M['steel'])
+cube('Ramen work top', (RW - .25, .035, .62), (RCX + .05, .9, -3.06), M['steel'])
+RSTOOLS = (7.2, 8.1, 9.0, 9.9, 10.8)
+for sx in RSTOOLS:
+    cyl('Ramen stool top', .19, .08, (sx, .72, -1.42), M['vinyl'], 16)
+    cyl('Ramen stool post', .03, .66, (sx, .36, -1.42), M['steel'], 10)
+    cyl('Ramen stool foot', .17, .03, (sx, .02, -1.42), M['steel'], 14)
+    ring('Ramen foot ring', .14, .012, (sx, .28, -1.42), M['steel'])
+    cube('Chopstick box', (.14, .08, .06), (sx - .3, 1.15, -2.35), M['honey'])
+    cyl('Water cup', .033, .09, (sx + .3, 1.155, -2.1), M['clear'], 10)
+for cx in (7.65, 9.45, 10.35):
+    cyl('Pepper shaker', .02, .08, (cx - .05, 1.15, -2.36), M['porcelain'], 10)
+    cyl('Garlic jar', .03, .07, (cx + .03, 1.145, -2.36), M['clear'], 10)
+    cyl('Beni shoga pot', .028, .06, (cx + .1, 1.14, -2.36), M['red'], 10)
+cyl('Water pitcher', .06, .22, (8.55, 1.22, -2.35), M['steel'], 12)
+# A ledge along the east wall for the lunch rush, and its three stools.
+cube('Wall ledge', (.38, .05, 2.4), (RX1 - .2, 1.05, 1.2), M['honey'], bevel=.015)
+for k in range(3): cube('Ledge bracket', (.3, .12, .04), (RX1 - .17, .97, .2 + k * 1.0), M['smoke'])
+for lz in (.3, 1.2, 2.1):
+    cyl('Ramen stool top', .17, .07, (RX1 - .75, .7, lz), M['vinyl'], 16)
+    cyl('Ramen stool post', .03, .64, (RX1 - .75, .35, lz), M['steel'], 10)
+    cyl('Ramen stool foot', .15, .03, (RX1 - .75, .02, lz), M['steel'], 14)
+# The meal-ticket machine by the door: pay first, hand the ticket over the counter.
+cube('Ticket machine', (.72, 1.6, .5), (6.95, .8, RZ1 - .38), M['ticket'], bevel=.03)
+cube('Ticket machine panel', (.6, .6, .02), (6.95, 1.2, RZ1 - .64), M['cream'])
+for r in range(4):
+    for c in range(3): cube('Ticket button', (.14, .1, .02), (6.77 + c * .18, .98 + r * .14, RZ1 - .655), M['red'] if (r + c) % 4 == 0 else M['porcelain'])
+cube('Coin slot', (.12, .03, .02), (7.12, 1.62, RZ1 - .655), M['darksteel'])
+cube('Ticket tray', (.3, .06, .1), (6.95, .7, RZ1 - .66), M['darksteel'])
+# A television up in the corner for the lunchtime news, and a lucky daruma.
+cube('TV bracket', (.3, .05, .3), (RX1 - .3, 2.7, RZ1 - .4), M['smoke'])
+cube('Ramen television', (.55, .42, .42), (RX1 - .35, 2.95, RZ1 - .45), M['darksteel'], bevel=.02)
+cube('Daruma shelf', (.5, .04, .25), (RX1 - .2, 2.0, -1.5), M['honey'])
+ball('Daruma', (.1, .12, .09), (RX1 - .22, 2.14, -1.5), M['red'], 10, 6)
 
 # --------------------------------------------------------------------------- lights
 def akachochin(x, y, z):

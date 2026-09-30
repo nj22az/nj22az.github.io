@@ -5,7 +5,8 @@ import {createResidentLedger,residentPersonality} from './resident-personalities
 const LABELS={beer:'beer',tea:'green tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
 // Persistent meal records stop guests ordering again when the player re-enters.
 // A venue can keep its props under a hidden group and continue its dining cycle.
-export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger()}){
+export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Nao':null,venueName=place==='ramen'?'Inakaya':'Minato'}){
+ const inside=place==='ramen'?'inRamen':'inIzakaya';
  const settings=new Map();let serving=null,timer=0;
  function clear(person){for(const key of ['heldItem','mealState','residentSpeech'])delete person.g.userData[key];}
  function remove(person){const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink]){prop.removeFromParent();prop.geometry.dispose();prop.material.dispose();}settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
@@ -15,7 +16,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   prop.position.y=place==='ramen'?1.04:g.userData.seatHeight>.65?1.16:1.01;
  }
  return {update(dt){
-  const minutes=getMinutes(),present=getCustomers().filter(p=>(place!=='izakaya'||p.profile.name!=='Nao')&&p.g.visible&&!p.g.userData.roomTransition);
+  const minutes=getMinutes(),present=getCustomers().filter(p=>p.profile.name!==staffName&&p.g.visible&&!p.g.userData.roomTransition);
   for(const p of [...settings.keys()])if(!present.includes(p))remove(p);
   for(const person of present){
    const name=person.profile.name;
@@ -44,16 +45,17 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    }else{
     record.eaten+=dt;const phase=Math.floor(record.eaten/3)%4,drink=phase===0,eat=phase===2;
     data.mealState='eating';data.socialPose=drink?(seated?'Drink':'DrinkStanding'):eat?(seated?'Eat':'EatStanding'):seated?'Sit':'Idle_Neutral';data.heldItem=drink?record.drink:eat?record.item:null;
-    data.activity=drink?'drinking '+LABELS[record.drink]+' at '+(place==='ramen'?'Inakaya':'Minato'):eat?'eating '+LABELS[record.item]:'enjoying supper';
+    data.activity=drink?'drinking '+LABELS[record.drink]+' at '+venueName:eat?'eating '+LABELS[record.item]:'enjoying supper';
     table(person,setting.food,-1);table(person,setting.drink,1);setting.food.visible=seated&&!eat;setting.drink.visible=seated&&!drink;
     if(record.eaten>=42){record.finished=true;ledger.record(name,minutes,'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
   // While Nao is bringing the player a drink, izakaya-beer.js has her.
-  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
+  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
    const tidying=!serving&&Math.floor(minutes/6)%3!==2;
    staff.userData.serving=!!serving;staff.userData.socialPose=serving||tidying?'Use':'Idle_Neutral';
-   staff.userData.activity=serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:tidying?'tidying the Minato counter':'welcoming the evening guests';
+   staff.userData.activity=place==='ramen'?serving?'ladling a bowl of ramen for '+serving.profile.name:tidying?'minding the stock pots':'wiping down the ramen counter'
+    :serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:tidying?'tidying the Minato counter':'welcoming the evening guests';
   }
   if(serving&&(place!=='izakaya'||staff)&&(timer-=dt)<=0){
    const {record}=settings.get(serving),cost=place==='ramen'?300:({yakitori:180,fish:260,rice:150}[record.item]||180)+(record.drink==='beer'?180:120);
@@ -61,5 +63,5 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    else record.finished=true;
    serving=null;
   }
- },dispose(){for(const person of [...settings.keys()])remove(person);const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData.inIzakaya&&!candidate.userData.roomTransition?candidate:null;if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
+ },dispose(){for(const person of [...settings.keys()])remove(person);const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition?candidate:null;if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
 }

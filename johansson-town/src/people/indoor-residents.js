@@ -5,12 +5,16 @@ import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
+import {peninsulaActive} from '../world/town-mode.js';
+import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
  const borrowed=new Map();let clock=0,walker=null;
- const entrance=layout?.entrance|| (place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
+ // On the peninsula the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
+ const sato=place==='ramen'&&peninsulaActive();
+ const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
  function restore(p){
@@ -23,19 +27,22 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const name=p.profile.name;
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
   if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
-  if(place==='ramen'&&name==='Thuan')return {...RAMEN_THUAN_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
+  if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
+  if(place==='ramen'&&name==='Thuan'&&!sato)return {...RAMEN_THUAN_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player.
   if(place==='onsen'){
    const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'];
    return {id:seat.id,position:seat.position,stand:seat.stand,yaw:seat.yaw,height:seat.surfaceY,soak:true};
   }
-  const seats=place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
+  const seats=sato?SATO_GUEST_SEATS:place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
   if(place==='izakaya'&&name==='Barfly'){
    const index=7;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
    return {...seats[index],index};
   }
-  const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==getPlayerSeat())&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
+  // A seat the player is sitting on is taken: at Minato they may have any free stool.
+  const mine=getPlayerSeat(),taken=s=>Array.isArray(mine)&&Math.hypot(s.position[0]-mine[0],s.position[2]-mine[2])<.4;
+  const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==mine)&&!taken(s)&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
   if(index<0)return null;const seat=seats[index];
   return {...seat,index,stand:seat.stand||[1.16,0,seat.position[2]]};
  }

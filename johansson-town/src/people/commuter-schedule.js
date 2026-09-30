@@ -18,7 +18,12 @@ const shifts={
 };
 export const COMMUTER_SHIFTS=Object.freeze(Object.fromEntries(Object.entries(shifts).map(([name,shift])=>[name,Object.freeze(shift)])));
 const minuteOfDay=m=>((m%1440)+1440)%1440;
-export const shiftFor=profile=>COMMUTER_SHIFTS[typeof profile==='string'?profile:profile?.name]||null;
+/**
+ * On the peninsula Mrs Sato cooks the lunch at Sato Ramen: in on the 08:30 bus, fish from
+ * the harbour, the pots on at 10:30, serving 11:00 to 14:00, home on the 14:30.
+ */
+export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:850,departure:870});
+export const shiftFor=profile=>{const name=typeof profile==='string'?profile:profile?.name;return name==='Mrs Sato'&&peninsulaActive()?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
 function elapsed(profile,minutes){const shift=shiftFor(profile);return shift&&!shift.permanent?minuteOfDay(minutes-shift.arrival):null;}
 
 /**

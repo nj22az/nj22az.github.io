@@ -79,3 +79,18 @@ fits the hour and the weather, and is never the same as last time. `?spawn=<id>`
 `?audit` harness keeps the Sakura bench unless it names one. Residents on a park visit, a stroll or
 an evening out are drawn to benches (`SEAT_PULL` in `town-activities.js`).
 
+## Minato and Sato Ramen
+
+One building, one kitchen. The interior model (`tools/blender/build-minato-interior.py`, run with
+Blender 4.2 or `pip install bpy==4.2.0`) now has a working line behind Nao's counter: a tall
+fridge, a four-burner range under a canopy, the fryer, a double sink and a prep bench. It carries
+on through an opening into Sato Ramen, a single-storey corner shop on Minato's alley flank
+(`SATO_ANNEX` in `minato-facade.js`). The shop is open 11:00–14:00 while Minato is shut, and
+Mrs Sato cooks there (`sato-ramen-layout.js`, `interiors/sato-ramen.js`); the old street's
+Inakaya code paths are reused with Sato's seats, menu and hours.
+
+At Minato you can sit on any free counter stool or table seat and order anything on the wall.
+Nao cooks each dish at its station and brings it over (`DISHES`, `KITCHEN_STATIONS` in
+`izakaya-beer.js`). Food and drink have their own places on the table; you eat and drink them a
+mouthful at a time. You can also buy a guest a drink, which the game remembers (`state.treats`).
+

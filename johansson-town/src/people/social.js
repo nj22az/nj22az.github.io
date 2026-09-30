@@ -11,12 +11,14 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {BUS_STATION} from '../world/bus-station.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,SATO_SHIFT} from './commuter-schedule.js';
+import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
-export const RAMEN_DOOR=[...DINING.ramenDoor];
+export {RAMEN_DOOR} from '../world/dining-layout.js';
+import {RAMEN_DOOR} from '../world/dining-layout.js';
 export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
@@ -264,7 +266,13 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  */
 /** Reiko and Tetsuo start in the afternoon; on a dry morning they take an hour on the park bench. */
 const MORNING_PARK=Object.freeze({Reiko:Object.freeze([660,720]),Tetsuo:Object.freeze([750,810])});
+/** Lunch at Sato Ramen, next door to the shop, for those who have a slot (sato-ramen-layout.js). */
+function satoLunch(profile,minutes){
+ const slot=SATO_LUNCH[profile.name];
+ return slot&&satoRamenOpen(minutes)&&inTimeRange(minutes,...slot)?{place:'ramen',target:RAMEN_DOOR,activity:'lunch at Sato Ramen'}:null;
+}
 function yardResidentPlan(profile,minutes,rain=false,state=null){
+ const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  const morning=MORNING_PARK[profile.name];
@@ -289,6 +297,7 @@ function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
  if(profile.name==='Harbour master'){
   const day=HARBOUR_MASTER_DAY;
+  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
   if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
   if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
   if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
@@ -321,6 +330,11 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   const afterWork=afterWorkPlan(profile,minutes,rain);
   if(afterWork)return afterWork;
   return bus('walking to the Harbour Line for departure');
+ }
+ // Mrs Sato on the peninsula: fish at the harbour first, then her own kitchen.
+ if(profile.name==='Mrs Sato'&&peninsulaActive()&&phase==='town'){
+  if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
+  if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
  if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};

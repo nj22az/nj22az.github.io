@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {satoRamenOpen} from '../src/world/sato-ramen-layout.js';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
@@ -60,9 +61,11 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.deepEqual(TOWN_DESTINATIONS.books,[sites.find(s=>s.id==='frontrow').door[0],1.6]);
   const roles=Object.fromEntries(world.people.map(p=>[p.profile.name,p.profile.workSite]));
   for(const name of ['Aya','Kenji','Reiko','Tetsuo'].filter(inCast))assert.equal(roles[name],'frontrow');
-  if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'warehouse');
+  if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
-   const plan=residentPlan(p.profile,minute,false,c.state);assert.notEqual(plan.place,'ramen',p.profile.name+' must not enter an absent building');
+   // Sato Ramen is on the peninsula now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
+   const plan=residentPlan(p.profile,minute,false,c.state);
+   if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<850:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
   }
  }finally{configureTownMode('legacy');}
 });
@@ -107,7 +110,8 @@ test('restored supplied office and warehouse use their existing staff and workin
   const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{assert.deepEqual(await preloadSuppliedRooms(['office']),[true]);}finally{globalThis.fetch=native;}
   // The harbour master sleeps in the office at night now, so meet him on duty in the morning.
-  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Mrs Sato',buildWarehouseInterior,1000]]){
+  // Mrs Sato cooks at Sato Ramen now; the warehouse keeps its interior with nobody assigned.
+  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Nobody',buildWarehouseInterior,1000]]){
    const site=[...c.sites,...c.world.landmarks].find(s=>s.id===id),r=roomFor(c,site,builder);
    if(id==='office'){assert.ok(r.room.getObjectByName('Supplied office'));assert.ok(r.room.getObjectByName('Clerk CRT monitor'));assert.ok(c.targets.some(o=>o.userData.hit.label==='Open harbour spreadsheets'));}
    if(!inCast(name))continue;
