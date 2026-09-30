@@ -9,7 +9,9 @@ const pairIs=(s,a,b)=>[s.red,s.black].sort().join()===[a,b].sort().join();
 const near=(m,v)=>m.code==='reading'&&Math.abs(m.value-v)<=.01*Math.abs(v)+.02;
 const rigI=s=>{const g=rigOf(s);return g.U/(g.R1+g.R2);};
 const stationV=(red,black,value)=>(s,m)=>s.circuit==='station'&&s.mode==='dc'&&s.jack==='v'&&s.power&&s.link&&s.red===red&&s.black===black&&near(m,value(s));
-const deadR=(a,b,value)=>(s,m)=>s.circuit==='station'&&s.mode==='ohm'&&!s.power&&!s.link&&pairIs(s,a,b)&&near(m,value(s)/1000);
+// Normalisera displayens Ω/kΩ till kΩ före jämförelsen; autorange byter enhet vid 1 000 Ω.
+const resistanceKohm=m=>m.unit==='Ω'?m.value/1000:m.unit==='kΩ'?m.value:NaN;
+const deadR=(a,b,value)=>(s,m)=>s.circuit==='station'&&s.mode==='ohm'&&s.jack==='v'&&!s.power&&!s.link&&pairIs(s,a,b)&&near({...m,value:resistanceKohm(m)},value(s)/1000);
 
 export const FUNKTIONER = {
   'multimetersimulator.voltage.1': (s,m)=>s.mode==='dc'&&s.jack==='v'&&s.red==='P1'&&s.black==='P2'&&s.power&&s.link&&Math.abs(m.value-12)<.01,

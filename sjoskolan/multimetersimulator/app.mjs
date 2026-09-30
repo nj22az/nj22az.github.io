@@ -1,7 +1,7 @@
 import { initialState, network, measure, lampCurrent, MODES, RIGS, rigOf } from './model.mjs';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260926';
-import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260929-index';
+import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260930-station-ohm';
 import { protocolCSV } from './protocol.mjs';
 import { markHtml, markText } from '../gemensamt/markering.mjs';
 const $ = s => document.querySelector(s);
