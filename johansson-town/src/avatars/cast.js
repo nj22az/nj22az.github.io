@@ -57,6 +57,12 @@ export const CAST_RECIPES=Object.freeze({
   brows:{style:'arched',colour:'#b9b6b0',size:.5},nose:{style:'button',size:.45},mouth:{style:'smile',colour:'#b8544a',size:.5},
   glasses:{style:'round',colour:'#6b4a2e'},wrinkles:.7,blush:.3,
   outfit:{top:'apron',topColour:'#ad6178',bottom:'trousers',bottomColour:'#4a4040',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
+ // Higa-san, who has kept the bandai at Umi-no-yu for thirty years.
+ 'Mrs Higa':R({name:'Mrs Higa',body:{height:.24,build:.58,skin:'#c99a74'},head:{size:.5,shape:.55,form:'round',jaw:.35,cheeks:.6},
+  hair:{style:'perm',colour:'#9a968e'},eyes:{style:'sleepy',colour:'#2a1d16',size:.42},
+  brows:{style:'thin',colour:'#8a8680',size:.45},nose:{style:'button',size:.45},mouth:{style:'small',colour:'#a8433e',size:.45},
+  glasses:{style:'half',colour:'#6b4a2e'},wrinkles:.75,blush:.25,
+  outfit:{top:'blouse',topColour:'#6d8a74',bottom:'skirt',bottomColour:'#3a3a42',shoes:'#2b2b2b',accent:'#f4f1ea'}}),
  // The harbour master, who lives in his office, and Officer Mori at the police box.
  'Harbour master':R({name:'Harbour master',body:{height:.52,build:.68,skin:'#b5805d'},head:{size:.52,shape:.55,form:'round',jaw:.6,cheeks:.5},
   hair:{style:'horseshoe',colour:'#b9b7b0'},eyes:{style:'gentle',colour:'#2a1d16',size:.45},

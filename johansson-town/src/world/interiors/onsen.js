@@ -1,5 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {buildFigure,animateFigure} from '../../people/school-kids.js';
+import {buildAvatar} from '../../avatars/build.js';
+import {createAvatarAnimator} from '../../avatars/animate.js';
+import {recipeFor} from '../../avatars/cast.js';
 import {daylight} from '../../render/dusk.js';
 
 /**
@@ -113,9 +115,13 @@ export function buildOnsenInterior({room,reg,action,exit}){
  rect(-4.8,4.51,.4,1.05,1.4);
  box([.62,1.05,1.7],[-3.85,.525,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,1.075,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,1.1);
  box([.2,.12,.14],[-3.75,1.16,2.2],mat(0xd9c9a0,.6),'Ticket tray');
- const attendant=buildFigure({pose:'seated',adult:true,girl:true,shirt:0x6d8a74,bottom:0x3a3a42,hair:0x8a8680,skin:0xc99a74,name:'Umi-no-yu attendant'});
- attendant.position.set(-4.5,.05,2.6);attendant.rotation.y=Math.PI/2;room.add(attendant);animated.push(attendant);
- box([.5,.45,.5],[-4.5,.225,2.6],darkWood,'Attendant stool');rect(-4.5,2.6,.6,.6,1.2);
+ // Higa-san, a Shimanchu like everyone else, up on the bandai's raised floor so she can
+ // see over the counter -- which is the point of a bandai.
+ box([.9,.35,1.4],[-4.45,.175,2.6],darkWood,'Bandai platform');
+ box([.44,.4,.44],[-4.5,.55,2.6],wood,'Attendant stool');rect(-4.45,2.6,.9,1.4,1.2);
+ const attendant=new THREE.Group();attendant.name='Umi-no-yu attendant';attendant.position.set(-4.5,.35,2.6);attendant.rotation.y=-Math.PI/2;room.add(attendant);
+ // Her face is painted on a canvas, so without a page (the room tests) the stool is empty.
+ const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "Swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
@@ -245,7 +251,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   fanHead.rotation.y=Math.sin(time*.4)*.9;blades.rotation.z+=dt*18;
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
-  animateFigure(attendant,time,3);
+  // Seated at the bandai; now and then she looks up from her crossword.
+  higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'Read',expression:'neutral'});
  }
  tick(0);
  return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,dispose(){}};
