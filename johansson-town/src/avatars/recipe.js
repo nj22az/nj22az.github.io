@@ -31,7 +31,9 @@ export const PARTS=Object.freeze({
  facial:Object.freeze(['none','moustache','walrus','stubble','beard','goatee']),
  top:Object.freeze(['tee','kariyushi','polo','blouse','jacket','apron','smock']),
  bottom:Object.freeze(['shorts','trousers','skirt','longskirt']),
- hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief']),
+ hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon']),
+ earrings:Object.freeze(['none','studs','hoops']),
+ neckwear:Object.freeze(['none','pendant','scarf']),
 });
 
 const clamp=(v,lo=0,hi=1)=>Math.min(hi,Math.max(lo,Number.isFinite(+v)?+v:lo));
@@ -44,14 +46,15 @@ export const DEFAULT_RECIPE=Object.freeze({
  body:Object.freeze({height:.5,build:.5,skin:'#e8bf98'}),
  head:Object.freeze({size:.5,shape:.5,form:'oval',jaw:.5,cheeks:.5}),
  hair:Object.freeze({style:'crop',colour:'#1c1714',flip:false}),
- eyes:Object.freeze({style:'round',colour:'#2a1d16',size:.5,spacing:.5,height:.5,tilt:.5}),
- brows:Object.freeze({style:'straight',colour:'#1c1714',size:.5,height:.5,tilt:.5}),
- nose:Object.freeze({style:'button',size:.5,height:.5}),
- mouth:Object.freeze({style:'smile',colour:'#b8544a',size:.5,height:.5}),
+ eyes:Object.freeze({style:'round',colour:'#2a1d16',size:.5,width:.5,spacing:.5,height:.5,tilt:.5}),
+ brows:Object.freeze({style:'straight',colour:'#1c1714',size:.5,spacing:.5,height:.5,tilt:.5}),
+ nose:Object.freeze({style:'button',size:.5,height:.5,x:.5}),
+ mouth:Object.freeze({style:'smile',colour:'#b8544a',size:.5,width:.5,height:.5,x:.5}),
  glasses:Object.freeze({style:'none',colour:'#2b2b2b'}),
  facial:Object.freeze({style:'none',colour:'#1c1714'}),
  blush:.25,freckles:false,mole:false,wrinkles:0,
  outfit:Object.freeze({top:'tee',topColour:'#3fa0c8',pattern:'none',bottom:'trousers',bottomColour:'#27304d',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c'}),
+ accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',pin:false}),
  swim:Object.freeze({colour:'#2f5f9e'}),
 });
 
@@ -67,14 +70,15 @@ export function normalizeRecipe(input={}){
   body:sub('body',{height:num,build:num,skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num}),
   hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag}),
-  eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,spacing:num,height:num,tilt:num}),
-  brows:sub('brows',{style:(v,f)=>pick(PARTS.brows,v,f),colour:col,size:num,height:num,tilt:num}),
-  nose:sub('nose',{style:(v,f)=>pick(PARTS.nose,v,f),size:num,height:num}),
-  mouth:sub('mouth',{style:(v,f)=>pick(PARTS.mouth,v,f),colour:col,size:num,height:num}),
+  eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,width:num,spacing:num,height:num,tilt:num}),
+  brows:sub('brows',{style:(v,f)=>pick(PARTS.brows,v,f),colour:col,size:num,spacing:num,height:num,tilt:num}),
+  nose:sub('nose',{style:(v,f)=>pick(PARTS.nose,v,f),size:num,height:num,x:num}),
+  mouth:sub('mouth',{style:(v,f)=>pick(PARTS.mouth,v,f),colour:col,size:num,width:num,height:num,x:num}),
   glasses:sub('glasses',{style:(v,f)=>pick(PARTS.glasses,v,f),colour:col}),
   facial:sub('facial',{style:(v,f)=>pick(PARTS.facial,v,f),colour:col}),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
   outfit:sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col}),
+  accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
   swim:sub('swim',{colour:col}),
  };
 }
