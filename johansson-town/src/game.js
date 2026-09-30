@@ -46,8 +46,8 @@ import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
-import {createJohansson,MOVES} from './people/johansson.js';
-import {avatarsEnabled,createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
+import {MOVES} from './avatars/moves.js';
+import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp} from './people/izakaya-beer.js';
@@ -308,7 +308,7 @@ function openAvatarMaker(){
 }
 // A shared link (?avatar=code) is somebody to walk the town as.
 {const shared=importRecipeFromURL();if(shared)setTimeout(()=>say('Walking the town as '+(shared.name||'a new islander')+'.',4),4000);}
-function ensureJohansson(){if(!johansson){johansson=avatarsEnabled()?createAvatarJohansson({scene}):createJohansson({scene,resolve:assetURL});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
+function ensureJohansson(){if(!johansson){johansson=createAvatarJohansson({scene});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
 function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'1st person':'3rd person';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function startBicycleRide(entry){
  if(bicycleRide||current||seated)return;
@@ -482,7 +482,7 @@ function shotClear(from,to){
 }
 /** An over-the-shoulder lens: behind `near`, off to `side`, looking at `far`. */
 // Shimanchu heads are big, so the lens stands further back and wider to see past one.
-const SHOULDER=avatarsEnabled()?{back:1.05,side:.8,up:.16}:{back:.72,side:.5,up:.06};
+const SHOULDER={back:1.05,side:.8,up:.16};
 function overShoulder(near,far,ux,uz,side,out){
  return out.set(near.x-ux*SHOULDER.back+uz*side*SHOULDER.side,near.y+SHOULDER.up,near.z-uz*SHOULDER.back-ux*side*SHOULDER.side);
 }
@@ -859,7 +859,7 @@ function updateDirectory(){
  const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
  const progress=travelProgress(activities.state);
- if(avatarsEnabled())row('✿ Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
+ row('✿ Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
  row(progress.unlocked?'✦ Town shortcuts unlocked':'🔒 Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
  const destination=(site,title)=>{row((progress.unlocked?'Go to ':'Find on foot · ')+(title||site.title),progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
  const teaHouse=SITES.find(s=>s.id==='tea-house');
@@ -1120,7 +1120,7 @@ window.__JOHANSSON_SHOP__={
   entries:shop.journal.length,kinds:[...new Set(shop.journal.map(r=>r.kind))]}:null;},
 };
 for(const detail of world.details||[])detailStream.add(detail);
-characters.streamDetails(detailStream,invalidateDetails,()=>player.position);
+
 detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:38,load:()=>world.warehouse?.load()});
 // The real shop behind the real window. It streams with the rest of the street rather
 // than blocking the entry gate, and the stand-in shelves hold the window until it lands.

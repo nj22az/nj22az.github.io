@@ -13,7 +13,7 @@ class Element{
  constructor(){this.children=[];this.dataset={};this.hidden=false;this.style={};this.listeners={};this.classList={add(){},remove(){},contains(){return true;},toggle(){}};}
  append(...items){this.children.push(...items);}appendChild(e){this.append(e);}replaceChildren(){this.children=[];}querySelector(){return null;}remove(){}focus(){}setAttribute(){}querySelectorAll(){return this.children;}
  addEventListener(name,fn){(this.listeners[name]??=[]).push(fn);}get firstChild(){return this.children[0];}get lastChild(){return this.children.at(-1);}
- getContext(){return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText(s){return {width:s.length*17};}},{get:(o,k)=>o[k]||(()=>{})});}
+ getContext(){const gradient=()=>({addColorStop(){}});return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText(s){return {width:s.length*17};},createLinearGradient:gradient,createRadialGradient:gradient,createConicGradient:gradient,createPattern:()=>({setTransform(){}})},{get:(o,k)=>o[k]||(()=>{})});}
 }
 const elements=new Map();globalThis.document={createElement:()=>new Element(),querySelector:s=>{if(!elements.has(s))elements.set(s,new Element());return elements.get(s);},addEventListener(){},exitPointerLock(){},activeElement:new Element(),documentElement:new Element(),body:new Element()};
 globalThis.window={open:()=>null};globalThis.location={href:'https://nj22az.github.io/johansson-town/'};
@@ -39,7 +39,7 @@ console.log('Office checks passed: 18 mesh items, pages, v3 migration, deduplica
 const anchors=[];
 const world=createTown({scene,sites:[],mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
 const characters=createCharacters({mobile:true,shadows:false});world.people.forEach(p=>characters.attach(p.g,p.g.userData.name));
-assert.equal(world.people.length,STREET_CAST.length);assert.equal(characters.actors.length,0,'Rigs wait until their models are preloaded');
+assert.equal(world.people.length,STREET_CAST.length);assert.equal(characters.actors.length,STREET_CAST.length,'Every resident is a Shimanchu from the first frame');
 createContentItems({group:world.group,register:(o,label,fn)=>anchors.push({o,label,fn}),colliders:world.colliders,onInspect(){},onRead(){}});
 world.update(.016,1,1);world.beats.update(.016,1,1000);characters.update(.016);
 for(const id of ['keychain','cv'])assert.ok(anchors.some(a=>a.label==='Lift '+ITEMS.find(i=>i.id===id).title),id+' stays inspectable');

@@ -6,14 +6,13 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js?snappy=1';
 import {alleyShopPlacement} from '../src/world/alley-shops.js';
-import {preloadCharacter} from '../src/people/models.js?snappy=1';
 import {circleHitsRect,sweepFraction} from '../physics.js?snappy=1';
 import {routeAt} from '../src/world/layout.js?snappy=1';
 
 test('late street, home, bench and vending assets replace placeholders without moving doors or collision',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
- const native=globalThis.fetch;let failYuri=true,yuriRequests=0;
- globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return native(input);if(url.includes('characters/thuan/thuan.glb')){yuriRequests++;if(failYuri)return new Response('',{status:503});}return new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));};
+ const native=globalThis.fetch;
+ globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return native(input);return new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));};
  try{
   const sites=['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
   const entered=[],world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(o,label,fn){o.userData.hit={label,fn};},enter:site=>entered.push(site.id),onAction(){}});
@@ -34,6 +33,5 @@ test('late street, home, bench and vending assets replace placeholders without m
   const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
   for(const door of [DINING.izakayaDoor,DINING.ramenDoor,DINING.crystalDoor])assert.equal(sweepFraction({x:0,z:door[1]},{x:door[0],z:door[1]},blocked),1,'Dining junction and doors remain clear after streaming');
   assert.equal(world.group.children.filter(o=>o.name==='East lane delivery shelf').length,0,'Retired outdoor content furniture cannot reappear after streaming');
-  assert.equal(await preloadCharacter('Thuan'),false);failYuri=false;assert.equal(await preloadCharacter('Thuan'),true);assert.equal(yuriRequests,2,'A failed appearance can recover without reloading the town');
  }finally{globalThis.fetch=native;}
 });

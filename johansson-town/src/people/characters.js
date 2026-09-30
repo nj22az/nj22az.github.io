@@ -1,4 +1,4 @@
-import {createLocalCharacters,preloadModels,preloadCharacter,characterReady} from './models.js?snappy=1';
+import {createLocalCharacters} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 
 // Each resident has one appearance. Keep the logical entity while its chosen
@@ -11,12 +11,9 @@ const CAST=Object.freeze({
   'Harbour master':{source:'local-authored',height:1.74,identity:'Harbour master'}
 });
 
-export const preloadCharacters=preloadModels;
-export {preloadCharacter};
 
 export function createCharacters(options={}){
   const models=createLocalCharacters(options),actors=[],conversations=new Map(),entities=new Map(),aiControls=new Map();
-  const upgrades=new Map();
   let playerEntity=null,groundY=0,jumpVelocity=0,jumping=false;
 
   function attach(entity,file,height){
@@ -32,32 +29,8 @@ export function createCharacters(options={}){
     // Discard legacy world placeholders before the first rendered frame.
     for(const child of [...entity.children])child.removeFromParent();
     const actor=models.attach(entity,file,targetHeight);
-    entity.userData.visualReady=!!actor;entity.userData.character=actor;
-    if(actor)actors.push(actor);else upgrades.set(entity,{file,height:targetHeight});
+    entity.userData.visualReady=true;entity.userData.character=actor;actors.push(actor);
     return actor;
-  }
-
-  function mount(entity,entry){
-    if(!upgrades.has(entity))return true;
-    const actor=models.attach(entity,entry.file,entry.height);if(!actor)return false;
-    actors.push(actor);entity.userData.character=actor;upgrades.delete(entity);return true;
-  }
-
-  function streamDetails(stream,onChange,getPosition){
-    for(const [entity,entry] of upgrades){
-      entry.onChange=onChange;
-      stream.add({id:'resident:'+entry.file,priority:0,radius:52,timeoutMs:16000,distance:position=>{
-        for(let p=entity;p;p=p.parent)if(!p.visible)return Infinity;
-        if(entity.userData.inWorkplace||entity.userData.inMarket||entity.userData.inRamen||entity.userData.inIzakaya||entity.userData.inOnsen||entity.userData.inHome)position=getPosition?.()||position;
-        const point=entity.getWorldPosition(new THREE.Vector3());return Math.hypot(point.x-position.x,point.z-position.z);
-      },load:async()=>{
-        try{
-          if(!upgrades.has(entity))return true;
-          if(!await preloadCharacter(entry.file))return false;
-          const ready=mount(entity,entry);if(ready)onChange();return ready;
-        }catch(error){console.warn('Resident mesh attach failed:',entry.file,error.message);return false;}
-      }});
-    }
   }
 
   function face(entity,target,flip=false){if(!entity||!target)return;entity.lookAt(target.position.x,entity.position.y,target.position.z);if(flip)entity.rotateY(Math.PI);}
@@ -151,7 +124,6 @@ export function createCharacters(options={}){
     updateAIControls(dt);
     const now=performance.now();
     for(const [entity,c] of conversations){if(c.until<=now||bodyBusy(entity)){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
-    for(const [entity,entry] of upgrades)if(characterReady(entry.file)&&mount(entity,entry))entry.onChange?.();
     models.update(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }
@@ -160,5 +132,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {get jumping(){return jumping;},wear:(entity,outfit)=>models.wear(entity,outfit),attach,streamDetails,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {get jumping(){return jumping;},wear:(entity,outfit)=>models.wear(entity,outfit),attach,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

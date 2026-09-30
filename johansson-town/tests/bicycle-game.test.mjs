@@ -86,8 +86,6 @@ test('Bicycle mount, touch throttle, dismount and remount preserve the retained 
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
-    const {preloadModels}=await import('../src/people/models.js?snappy=1');
-    assert.deepEqual(await preloadModels(),{ready:7,total:7},'Actual selected character rigs preloaded');
     const api=await import(dataModule(source));
     api.doInteract(); // Stand from the opening bench before mounting.
     // Mount, touch steering, stop, dismount and re-mount through real game wiring.

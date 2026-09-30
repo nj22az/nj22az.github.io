@@ -61,7 +61,7 @@ on the device.
 Everyone is a Shimanchu (島人, islander): a round-headed, cel-shaded figure built at load
 time from a recipe in `src/avatars/`. **Town book → Make your islander** changes how you
 look; **Share** gives a `creator/?r=<code>` link, and `?avatar=<code>` imports one into
-the game. `?classic` brings back the older character models for comparison.
+the game.
 
 ## More
 
