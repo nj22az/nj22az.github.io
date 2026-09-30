@@ -61,6 +61,25 @@ Responsiva brytpunkter och Pointer Events finns för pekskärm; fysisk mobil/pek
 
 Visuell kontroll i webbläsare av denna uppdatering återstår: granskningsmiljön kunde inte öppna den lokala förhandsvisningen. DOM-tester ersätter inte kontroll av layout eller fysisk pekskärm.
 
+## Visuell acceptanskontroll 27 september 2026
+
+Den tidigare öppna webbläsarkontrollen har nu genomförts i Chromium vid 390 × 844, 820 × 1180, 1024 × 768 och 1440 × 1000 CSS-pixlar. Schemat har fått läsbara etiketter, en separat rad för mätspetsarnas handtag och sladddragning som inte täcker instruktionerna eller displayen. Övningsinnehållet och de databasgenererade filerna är oförändrade.
+
+24 modell-/DOM-tester samt 10 webbläsartester godkända. Hela övning 7, omvänd polaritet, låsning av mätplatsen, protokoll/CSV, omladdning och byte mellan handledd/fri övning ingår. Tryck och dragning av spetsar och ratt har provats med Chromium-pekemulering på telefon och surfplatta. Det är inte en kontroll på fysisk pekskärm. WebKit/Safari återstår; den lokala miljön saknar systemberoenden, och GitHub Actions startade inte på grund av kontots faktureringsspärr.
+
+Se [acceptansprotokollet](acceptance/2026-09-27.md) för fynd, skärmbilder och kvarstående kontroll.
+
+```sh
+cd sjoskolan/multimetersimulator
+npm ci
+npx playwright install --with-deps chromium webkit
+npm run test:browser
+# Enbart Chromium:
+npm run test:browser -- --project='chromium-*'
+```
+
+Testservern startas automatiskt. Bilder och felspår hamnar i `test-results/`; HTML-rapporten i `playwright-report/`. Arbetsflödet `Multimeter browser acceptance` kör samma svit och sparar rapporten som en Actions-artefakt när GitHub kan starta jobb.
+
 ## Referensprojekt och källor
 
 - [OpenLake/bhilaee-simulator](https://github.com/OpenLake/bhilaee-simulator): webbaserad generell kretsbyggare. README anger MIT; ingen kod har kopierats.

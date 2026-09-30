@@ -156,6 +156,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-09-30** PR #113 framflyttad: multimeterns övning 7 behåller läsbara diagrametiketter, separat spetsrad och sladdar i kanten; main:s senare notation och elevdata bevarade. Ny cacheversion. 24 modell-/DOM-tester och 10 Chromium-fall godkända på telefon, surfplatta och två skrivbordsbredder. Fysisk iPhone/iPad och WebKit kvarstår separat.
+
 - **2026-09-28** Vecka 40:s lås förstärkt med Växelströmslabbets transitiva körningsberoenden, även genererade
   uppgifter, beräkningar, instrumentbänk och använda gemensamma moduler. Manifestet utökat från 148 till 174 filer;
   tidigare hashar och allt elevmaterial oförändrade. Kontroll av startfiler, omfattning och tillkomna/bortfallna

@@ -1,0 +1,36 @@
+name: Multimeter browser acceptance
+
+on:
+  push:
+    paths: ['sjoskolan/multimetersimulator/**', 'sjoskolan/gemensamt/**', '.github/workflows/multimeter-browser.yml']
+  pull_request:
+    paths: ['sjoskolan/multimetersimulator/**', 'sjoskolan/gemensamt/**', '.github/workflows/multimeter-browser.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: sjoskolan/multimetersimulator
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm test
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multimeter-browser-results
+          path: |
+            sjoskolan/multimetersimulator/test-results/
+            sjoskolan/multimetersimulator/playwright-report/
+          retention-days: 14
