@@ -40,9 +40,15 @@ Källkod: `equipment.mjs`. Kör `npm run build` efter ändringar. Färdig `equip
 ## Utkast (vaxelstromslabbet-utkast)
 
 Kopia av fredagens labb (vecka 40) som läraren provar innan den ersätter originalet. Eleverna använder `../vaxelstromslabbet/`.
-Skillnader mot originalet: sladdar och strömpilar i Hela bänken (`equipment.mjs`, byggs till `equipment.js`), rutan Utkast,
+Skillnader mot originalet:
+- Hela bänken visar sladdarna (`equipment.mjs`, byggs till `equipment.js`): sinus parallellt över källan; spolen i serie med
+  dubbelriktade pilar (växelström), oscilloskopets referens (REF) och en strömprob runt returledaren till kanal 2.
+- Länken Se hur kretsen är kopplad efter avläsningen i uppgift 1–6 (`guided.mjs`), även på telefon.
+- Effektanalysatorn visar bara matningsströmmen när uppgiften saknar kompensering (`equipment-state.mjs`).
+- Skillnaden visas aldrig som −0,00 (`guided.mjs`).
+- Rutan Utkast,
 `noindex`, egen lagringsnyckel (`sjoskolan-ac-grund-utkast` i `guided.mjs`) och testerna pekar på den här mappen.
 
 Ersätta originalet: lås upp vecka 40, kopiera `equipment.mjs` och `equipment.js` (och övriga godkända ändringar) till
-`vaxelstromslabbet/`, byt `equipment.js?v=` i `boot.mjs`, kör `npm test`, lås vecka 40 igen och ta bort den här mappen.
+`vaxelstromslabbet/`, byt `equipment.js?v=` i `boot.mjs`, kopiera också `equipment-state.mjs` och `guided.mjs` (utan lagringsnyckeln), kör `npm test`, lås vecka 40 igen och ta bort den här mappen.
 Lagringsnyckeln och rutan Utkast följer inte med.

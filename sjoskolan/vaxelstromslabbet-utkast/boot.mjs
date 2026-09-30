@@ -1,4 +1,4 @@
-import {mountGuide} from './guided.mjs?v=20260930d';
+import {mountGuide} from './guided.mjs?v=utkast5';
 const p=new URLSearchParams(location.search);
 let mode=['guidad','fri','station'].includes(p.get('lage'))?p.get('lage'):(p.has('flik')||p.has('uppgift')?'fri':location.hash==='#labbprotokoll'?'station':'guidad');
 let freeModule=null,guide=null;
@@ -11,4 +11,4 @@ async function choose(next){mode=next;document.querySelectorAll('[data-mode]').f
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.mode)));choose(mode);
 
-import('./equipment.js?v=utkast3').then(({mountEquipment})=>mountEquipment(document.getElementById('equipment-bench'))).catch(()=>{document.getElementById('equipment-bench').innerHTML='<p>Instrumentvyn kunde inte laddas. Uppgifterna och deras avläsningar fungerar fortfarande.</p>';});
+import('./equipment.js?v=utkast5').then(({mountEquipment})=>mountEquipment(document.getElementById('equipment-bench'))).catch(()=>{document.getElementById('equipment-bench').innerHTML='<p>Instrumentvyn kunde inte laddas. Uppgifterna och deras avläsningar fungerar fortfarande.</p>';});

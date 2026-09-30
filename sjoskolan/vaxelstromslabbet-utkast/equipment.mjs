@@ -6,14 +6,14 @@ import {markHtml,markText} from '../gemensamt/markering.mjs';
 const VIEW_KEY='sjoskolan-ac-visning';
 // Kopplingen i Hela bänken: uttagens lägen i varje instrument (lokala koordinater) och vilka uttag som förbinds.
 // Sinus: mätarna och oscilloskopet parallellt över källan. Impedans: källa, strömmätare och komponentplatta i serie.
-const UTTAG={source:{rod:[-.35,.64,.84],svart:[-.87,.64,.84]},meter:{rod:[.45,.39,.46],svart:[-.45,.39,.46]},scope:{rod:[-2.35,.36,.91]},load:{rod:[-.72,.42,.49],svart:[.72,.42,.49]}};
+const UTTAG={source:{rod:[-.35,.64,.84],svart:[-.87,.64,.84]},meter:{rod:[.45,.39,.46],svart:[-.45,.39,.46]},scope:{rod:[-2.35,.36,.91],ch2:[-1.7,.36,.91],svart:[-1.05,.36,.91]},load:{rod:[-.72,.42,.49],svart:[.72,.42,.49]}};
 const KOPPLING={
- sinus:[['source','rod','trms','rod','rod'],['source','svart','trms','svart','svart'],['source','rod','avg','rod','rod'],['source','svart','avg','svart','svart'],['source','rod','scope','rod','gul']],
- impedans:[['source','rod','trms','rod','rod'],['trms','svart','load','rod','rod'],['load','svart','source','svart','svart'],['source','rod','scope','rod','gul']],
+ sinus:[['source','rod','trms','rod','rod'],['source','svart','trms','svart','svart'],['source','rod','avg','rod','rod'],['source','svart','avg','svart','svart'],['source','rod','scope','rod','gul'],['source','svart','scope','svart','svart']],
+ impedans:[['source','rod','trms','rod','rod'],['trms','svart','load','rod','rod'],['load','svart','source','svart','svart'],['source','rod','scope','rod','gul'],['source','svart','scope','svart','svart']],
 };
 const KOPPLING_TEXT={
- sinus:'Sladdarna: källan är kopplad till båda mätarna och oscilloskopet parallellt. Alla tre mäter samma spänning.',
- impedans:'Sladdarna: strömmätaren sitter i serie. Strömmen går från källans röda uttag genom mätaren, resistorn och spolen och tillbaka till det svarta uttaget. Pilarna visar strömmens väg. Samma ström går genom alla delar. Oscilloskopet mäter källans spänning.',
+ sinus:'Sladdarna: källan är kopplad till båda mätarna och oscilloskopet parallellt. Alla tre mäter samma spänning. Oscilloskopets svarta sladd (REF) är referensen, 0 V.',
+ impedans:'Sladdarna: strömmätaren sitter i serie. Strömmen går från källans röda uttag genom mätaren, resistorn och spolen och tillbaka till det svarta uttaget, och samma ström går genom alla delar. Det är växelström: riktningen byter 100 gånger per sekund vid 50 Hz, därför pekar pilarna åt båda hållen. Oscilloskopets kanal 1 (gul) mäter källans spänning mot REF (svart). Kanal 2 (blå) får strömmen från strömproben runt returledaren.',
 };
 export function mountEquipment(root){
  root.innerHTML=`<header class="equipment-heading"><p class="equipment-eyebrow">LABBÄNKEN</p><h2 class="equipment-title" tabindex="-1">Instrumenten i uppgiften</h2></header><p class="equipment-instruction">Välj ett instrument eller hela bänken.<span class="equipment-scroll-note"> Du kan rulla sidan över bilden.</span></p><div class="equipment-row"><span class="equipment-row-label" aria-hidden="true">Visa:</span><div class="equipment-choices" role="group" aria-label="Visa"></div></div><div class="equipment-view-tools"><span class="equipment-row-label" aria-hidden="true">Bild:</span><div class="equipment-mode" role="group" aria-label="Bild"><button type="button" data-view="3d" aria-pressed="true">3D-bild</button><button type="button" data-view="flat" aria-pressed="false">Siffror</button></div><p class="equipment-status" role="status"></p></div><div class="equipment-view"><div class="equipment-flat" hidden></div></div><section class="equipment-detail" aria-label="Valt instrument"></section><p class="equipment-back"><a href="#guide-steg">Tillbaka till uppgiften</a></p><p class="equipment-footnote">Förenklade instrumentmodeller. Sladdarna i Hela bänken visar principen för kopplingen, inte den fysiska riggens kopplingsschema.</p>`;
@@ -28,7 +28,7 @@ export function mountEquipment(root){
  const camera=new THREE.OrthographicCamera(-9,9,5,-5,.1,100);camera.position.set(0,5.5,20);
  const models=new Map(),textures=new Set(),materials=new Set(),geometries=new Set();
  const material=(color,extra={})=>{const m=new THREE.MeshStandardMaterial({color,roughness:.65,metalness:.08,...extra});materials.add(m);return m;};
- const wires=[],PIL=material('#1763a3',{emissive:'#0b3f73',emissiveIntensity:.5}),SLADD={rod:material('#c53d36'),svart:material('#1d2126'),gul:material('#d7a133')};
+ const wires=[],PIL=material('#1763a3',{emissive:'#0b3f73',emissiveIntensity:.5}),SLADD={rod:material('#c53d36'),svart:material('#1d2126'),gul:material('#d7a133'),bla:material('#479ed4')},PROB=material('#8fa6b6',{metalness:.3,roughness:.4});
  const rubber=material('#172a3b'),dial=material('#536674'),panel=material('#e3e8eb'),blue=material('#1763a3'),gold=material('#eeb441'),copper=material('#b96535',{metalness:.65,roughness:.3});
  function mesh(g,geometry,mat,x,y,z){geometries.add(geometry);const m=new THREE.Mesh(geometry,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m;}
  const box=(g,w,h,d,x,y,z,mat,r=.08)=>mesh(g,new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/4,h/4,d/4)),mat,x,y,z);
@@ -59,7 +59,7 @@ export function mountEquipment(root){
   }else if(type==='scope'){
    box(g,5.8,3.52,1.7,0,1.94,0,panel,.15);box(g,4.4,2.78,.1,-.55,1.99,.87,rubber,.07);display=screen(g,4.18,2.57,-.55,1.99,.933,1200,740);
    label(g,'OSCILLOSKOP',3.8,-.55,3.5,.868);for(const [y,t]of [[2.9,'TID'],[1.95,'V / DIV'],[.97,'TRIGG']]){knob(g,2.3,y,.94,.26);label(g,t,.91,2.28,y-.38,.87);}
-   jack(g,-2.35,.36,.91,'#d7a133');jack(g,-1.7,.36,.91,'#479ed4');label(g,'CH1    CH2',1.4,-1.99,.61,.88);feet(g,5.3,1.7);
+   jack(g,-2.35,.36,.91,'#d7a133');jack(g,-1.7,.36,.91,'#479ed4');jack(g,-1.05,.36,.91,'#141414');label(g,'CH1    CH2    REF',2.1,-1.7,.61,.88);feet(g,5.3,1.7);
   }else if(type==='power'){
    box(g,3.7,3.43,1.3,0,1.87,0,panel,.13);box(g,3.35,2.72,.1,0,1.83,.67,rubber,.05);display=screen(g,3.13,2.52,0,1.83,.729,1024,800);label(g,'EFFEKTANALYSATOR',3.3,0,3.39,.665);feet(g,3.2,1.3);
   }else{
@@ -90,7 +90,7 @@ export function mountEquipment(root){
    c.fillStyle='#d4dfbf';c.fillRect(0,0,w,h);c.fillStyle='#152722';c.textAlign='right';c.font='bold 180px monospace';c.fillText(item.rows[0][0],w-35,h*.53);c.font='44px Arial';c.fillText(item.rows[0][1],w-35,h*.81);
   }else{
    c.fillStyle=item.type==='load'?'#e3e8eb':'#102a3e';c.fillRect(0,0,w,h);c.textAlign='left';
-   const rows=item.type==='load'?item.rows.slice(0,3):item.rows,step=h/(rows.length+.3);
+   const rows=item.type==='load'?item.rows.slice(0,3):item.rows.filter(([v])=>v!=='—'),step=h/(rows.length+.3);
    rows.forEach(([value,label],i)=>{const y=step*(i+.82);c.fillStyle=item.type==='load'?'#163248':'#a5bdca';c.font=`${item.type==='power'?31:39}px Arial`;subText(c,label,30,y-step*.38,item.type==='power'?31:39);c.fillStyle=item.type==='load'?'#163248':'#e1f5f4';c.font=`bold ${item.type==='power'?49:64}px monospace`;c.fillText(value,30,y+step*.09);});
   }texture.needsUpdate=true;
  }
@@ -132,8 +132,15 @@ export function mountEquipment(root){
    const bana=[p,p.clone().add(new THREE.Vector3(0,-.04,.3)),new THREE.Vector3(p.x,lag,p.z+fram),new THREE.Vector3((p.x+q.x)/2,lag-.04,Math.max(p.z,q.z)+fram+.1),new THREE.Vector3(q.x,lag,q.z+fram),q.clone().add(new THREE.Vector3(0,-.04,.3)),q];
    const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(bana,false,'centripetal'),90,.065,8),SLADD[farg]);m.castShadow=true;scene.add(m);wires.push(m);
    // Seriekretsen: pilar visar strömmens väg (källans röda uttag, mätaren, plattan, tillbaka).
-   if(current.tab==='impedans'&&farg!=='gul'){const kurva=m.geometry.parameters.path;for(const s of [.35,.65]){const pt=kurva.getPointAt(s),dir=kurva.getTangentAt(s);
-    const pil=new THREE.Mesh(new THREE.ConeGeometry(.16,.4,16),PIL);pil.position.copy(pt);pil.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);scene.add(pil);wires.push(pil);}}});
+   if(current.tab==='impedans'&&k<3){   // bara seriekretsens tre sladdar, inte oscilloskopets
+    const kurva=m.geometry.parameters.path;for(const s of [.35,.65]){const pt=kurva.getPointAt(s),dir=kurva.getTangentAt(s);
+    for(const tecken of [1,-1]){const pil=new THREE.Mesh(new THREE.ConeGeometry(.15,.34,16),PIL);pil.position.copy(pt).addScaledVector(dir,.2*tecken);pil.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().multiplyScalar(tecken));scene.add(pil);wires.push(pil);}}}
+   // Strömproben: en ring runt returledaren (plattan UT till källans svarta uttag), blå sladd till CH2.
+   if(current.tab==='impedans'&&a==='load'&&b==='source'){const kurva=m.geometry.parameters.path,pt=kurva.getPointAt(.5),dir=kurva.getTangentAt(.5);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.3,.11,14,32),PROB);ring.position.copy(pt);ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),dir);scene.add(ring);wires.push(ring);
+    const q2=pos('scope','ch2'),sida=models.get('scope').g.position.x+3.35;   // runt oscilloskopets högra sida, inte över skärmen
+    if(q2){const v=[pt.clone().add(new THREE.Vector3(0,-.25,.2)),new THREE.Vector3(sida,pt.y-.4,pt.z+.6),new THREE.Vector3(sida,q2.y-.1,q2.z+.8),new THREE.Vector3(q2.x+.6,q2.y-.22,q2.z+.8),q2.clone().add(new THREE.Vector3(0,-.04,.3)),q2];
+     const s=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(v,false,'centripetal'),80,.055,8),SLADD.bla);scene.add(s);wires.push(s);}}});
  }
  const shown=()=>current?(closeup?current.instruments.filter(i=>i.id===selected):current.instruments):[];
  // Siffror: vanliga kort med alla rader (inga knappar). Bara det valda instrumentet, eller alla när hela bänken visas.
