@@ -41,6 +41,8 @@ function quietDataUrlError(error){
 test('Published peninsula boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
+    // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
+    globalThis.location.search='?spawn=sakura-bench';
     globalThis.innerHeight=768;
     globalThis.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
     globalThis.addEventListener=()=>{};

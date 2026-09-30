@@ -40,6 +40,8 @@ function quietDataUrlError(error){
 test('Bicycle mount, touch throttle, dismount and remount preserve the retained character routine',async()=>{
   try {
     fixtures.installDOM();
+    // The game starts at one of several openings (world/openings.js); this test rides from the Sakura bench.
+    globalThis.location.search='?spawn=sakura-bench';
     globalThis.innerHeight=768;
     globalThis.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
     globalThis.addEventListener=()=>{};

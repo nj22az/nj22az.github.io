@@ -93,6 +93,12 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   get pending(){return order?{kind:order.kind,phase:order.phase}:null;},
   get drink(){return drink?{kind:drink.kind,left:drink.left,sips:DRINKS[drink.kind].sips}:null;},
   get served(){return served;},
+  /** A drink already on the table at this seat -- the evening you walk into, not one you ordered. */
+  serveNow(kind,seat){
+   const spec=DRINKS[kind];if(!spec||!seat?.table)return false;
+   clearDrink();const prop=createDrinkProp(kind);prop.position.set(...seat.table);room.add(prop);
+   drink={kind,left:spec.sips,prop};served++;return true;
+  },
   /** Ask for a drink at this seat. False if Nao is not here or one is already coming. */
   order(kind,seat){
    const spec=DRINKS[kind],nao=getNao();

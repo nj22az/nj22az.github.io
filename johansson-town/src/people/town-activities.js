@@ -28,7 +28,11 @@ export function townAffordance(object){
 
 const POSE={read:'Read',inspect:'Use',machine:'Use',radio:'Use',post:'Use',recycle:'Use',arcade:'Use',phone:'Phone',fish:'Fish',seat:'Sit',shop:'Use'};
 const VERB={read:'reading',inspect:'examining',machine:'using',radio:'listening to',post:'posting a letter at',recycle:'sorting recycling at',arcade:'playing',phone:'making a call at',fish:'fishing at',seat:'resting at',shop:'buying a snack at'};
-const eligible=place=>['work','evening','stroll','patrol'].includes(place);
+// A park visit is free time too: people who go there to rest find the bench, rather than
+// standing beside it for an hour.
+const eligible=place=>['work','evening','stroll','patrol','park'].includes(place);
+/** How much a free moment pulls somebody towards a seat: most in the park, a little on a walk. */
+const SEAT_PULL={park:12,evening:2.5,stroll:2.5};
 
 export function createTownActivities({getTargets,collides,getPlayerPosition=()=>null,ledger=createResidentLedger(),getState=()=>({}),inside=false}){
  const active=new Map(),nextScan=new Map(),recent=new Map(),reservations=new Map();let serial=0;
@@ -60,14 +64,15 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    const preference=taste.interests.indexOf(affordance.kind),id=affordance.kind+':'+Math.round(point.x*10)+':'+Math.round(point.z*10);
    if(base.place==='patrol'&&!['read','inspect','phone','post'].includes(affordance.kind))continue;
    if(affordance.cost>ledger.account(person.profile.name,minutes).yen)continue;
-   candidates.push({...affordance,id,location:point.clone(),score:distance+(preference<0?5:preference)-((person.profile.name.length+Math.floor(minutes/30))%3)*.2+(recent.get(person)===id?20:0)});
+   const pull=affordance.kind==='seat'?SEAT_PULL[base.place]||0:0;
+   candidates.push({...affordance,id,location:point.clone(),score:distance+(preference<0?5:preference)-pull-((person.profile.name.length+Math.floor(minutes/30))%3)*.2+(recent.get(person)===id?20:0)});
   }
   candidates.sort((a,b)=>a.score-b.score);
   // Bound work per scan. Navigation handles the selected approach; a timeout
   // releases inaccessible objects without holding a chair or retrying each frame.
   for(const candidate of candidates.slice(0,5)){
    const target=approach(candidate.object,person);if(!target)continue;
-   const use={...candidate,target,base:base.place,phase:'walking',remaining:candidate.kind==='fish'?22:candidate.kind==='seat'?18:10,deadline:minutes+36,paid:false,transaction:'errand-'+(++serial)+'-'+Math.floor(minutes)};
+   const use={...candidate,target,base:base.place,phase:'walking',remaining:candidate.kind==='fish'?22:candidate.kind==='seat'?(base.place==='park'?40:18):10,deadline:minutes+36,paid:false,transaction:'errand-'+(++serial)+'-'+Math.floor(minutes)};
    active.set(person,use);reservations.set(candidate.object,use);candidate.object.userData.reservedBy=person.profile.name;return use;
   }return null;
  }
@@ -91,7 +96,8 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    if(use.kind==='seat'||use.kind==='office'&&use.object.userData.seat){
     const seat=use.object.userData.seat;
     if(seat?.position)g.position.set(...seat.position);
-    g.userData.seatHeight=seat?Math.max(.35,(seat.eyeY||1.15)-.64):.51;
+    // eyeY is measured from the ground under the seat, which is raised on the park's mound.
+    g.userData.seatHeight=seat?Math.max(.35,(seat.eyeY||1.15)-(inside?0:seat.position?.[1]||0)-.64):.51;
     if(Number.isFinite(seat?.yaw))g.rotation.y=seat.yaw;
    }
   }

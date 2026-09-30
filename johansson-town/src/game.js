@@ -18,6 +18,8 @@ import {WAREHOUSE} from './world/warehouse.js';
 import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
 import {buildKobanInterior} from './world/interiors/koban.js';
+import {chooseOpening} from './world/openings.js';
+import {BUS_STATION} from './world/bus-station.js';
 import {homeOwner} from './people/home-life.js';
 import {buildResidentHome} from './world/interiors/resident-home.js';
 import {createWorkplaceResidents} from './people/workplace-residents.js';
@@ -875,11 +877,53 @@ function updateDirectory(){
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
   section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Harbour Line','Northern bus terminal']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
+/**
+ * Where the game starts (world/openings.js): one of a few good moments in town, picked
+ * for the hour, instead of always the bench across from Sakura. The audit harness keeps
+ * the bench unless it names an opening with ?spawn=.
+ */
+function beginAtOpening(){
+ const params=new URLSearchParams(location.search),force=params.get('spawn');
+ if(world.townMode!=='peninsula'||params.has('audit')&&!force)return null;
+ const opening=chooseOpening({minutes,rain:weather,force});
+ if(opening.id==='sakura-bench')return opening;
+ if(opening.room){const door=doors.get(opening.room);if(door){standUpAt(door.x,door.z,Math.PI);}if(isSuppliedRoom(opening.room))preloadSuppliedRooms([opening.room]);return opening;}
+ if(opening.stand){const [x,z]=opening.stand==='bus-platform'?BUS_STATION.platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
+ if(opening.seat&&sitOnSeat(opening.seat))return opening;
+ return null;
+}
+function standUpAt(x0,z0,facing=yaw){
+ seated=false;parkSeat=null;
+ const [x,z]=findClear(x0,z0);player.position.set(x,groundHeight(x,z),z);yaw=facing;pitch=-.05;world.spawn=player.position.toArray();
+}
+/** Sit on a seat by its label, through the same path as tapping it. */
+function sitOnSeat(label){
+ const o=interactables.find(o=>o.userData.hit?.label===label&&o.userData.seat);if(!o)return false;
+ const stand=o.userData.seat.stand;if(stand)standUpAt(stand[0],stand[2]??stand[1]);
+ active={...o.userData.hit,object:o};o.userData.hit.fn();active=null;
+ return seated;
+}
+async function openInside(opening){
+ const site=SITES.find(s=>s.id===opening.room);if(!site)return;
+ // The room's model can miss its load window while the town itself is still being
+ // built; give it a few tries before walking in, and otherwise leave you at the door.
+ if(isSuppliedRoom(site.id))for(let tries=0;tries<4&&!suppliedRoomReady(site.id);tries++){
+  if((await preloadSuppliedRooms([site.id]))[0])break;
+  await new Promise(r=>setTimeout(r,1500));
+ }
+ if(isSuppliedRoom(site.id)&&!suppliedRoomReady(site.id)){say('Minato is just here. Step inside for a drink.',5);return;}
+ await enterRoom(site);
+ if(current?.id!==opening.room)return;
+ if(opening.seat&&sitOnSeat(opening.seat)&&opening.drink)beerService?.serveNow(opening.drink,parkSeat?.izakaya);
+ say(opening.caption+' E to drink, or stand.',6);
+}
 // The peninsula omits the parked-bicycle interaction; its seven other street
 // activities remain required. Archived layouts retain the bicycle as the eighth.
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(160,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<(world.townMode==='peninsula'?7:8))failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(!FULL_TOWN.active&&environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.',5);runStabilityChecks();
+const opening=beginAtOpening();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
+if(opening?.room)openInside(opening);
 canvas.addEventListener('click',event=>{
  if(!current||!controlsAllowed()||touchSticks.suppressClick())return;
  if(seated){doInteract();return;}

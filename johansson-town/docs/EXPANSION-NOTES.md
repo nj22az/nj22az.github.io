@@ -70,3 +70,12 @@ Generation reference images moved from `assets/generation/pilot/references/` to
   that no longer exist removed. Each section is labelled with its original file name.
 - Old convenience store and street-kit leftovers retired; dead doc links fixed; the
   one-off `rebuild-town-runtime` workflow deleted.
+
+## Openings and free time
+
+The game starts at one of a few curated openings (`src/world/openings.js`): the Sakura bench, a beer
+at Minato while it is open, the end of the pier, the park bench, the seawall, or the bus stop. The pick
+fits the hour and the weather, and is never the same as last time. `?spawn=<id>` forces one; the
+`?audit` harness keeps the Sakura bench unless it names one. Residents on a park visit, a stroll or
+an evening out are drawn to benches (`SEAT_PULL` in `town-activities.js`).
+

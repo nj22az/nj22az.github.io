@@ -262,9 +262,14 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  * an evening stop when one is due, and otherwise home — where they eat, read and, at
  * night, sleep in their own beds for anybody who opens the door to see.
  */
+/** Reiko and Tetsuo start in the afternoon; on a dry morning they take an hour on the park bench. */
+const MORNING_PARK=Object.freeze({Reiko:Object.freeze([660,720]),Tetsuo:Object.freeze([750,810])});
 function yardResidentPlan(profile,minutes,rain=false,state=null){
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
+ const morning=MORNING_PARK[profile.name];
+ // Aimed beside the bench, not at its step: with somebody already on it, they wait off to one side.
+ if(!rain&&morning&&inTimeRange(minutes,...morning))return {place:'park',target:[PARK_STAND[0]+1.4,PARK_STAND[1]+.9],activity:'sitting in the park'};
  // Their evening stops were timed against the last bus; living next door, they take
  // at most a couple of hours after work before heading home to bed.
  const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<120?afterWorkPlan(profile,minutes,rain):null;
