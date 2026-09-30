@@ -113,3 +113,23 @@ made from the class list). The old placeholder figures (`school-kids.js`) are go
   `ocean.js`. Both groups are `dynamicProp`s placed where they live, because the
   section renderer batches static meshes and culls moving ones by their group's origin.
   Could become: hermit crabs at night, a heron at the tide line, catchable fish from the pier.
+
+## The island: ferry, sea cave, dungeon, airport island
+
+- **Ferry** (`src/world/ferry.js`): the island's commuters come and go on the three daily
+  sailings (`HARBOUR_LINE` in `commuter-schedule.js`), lying alongside the outer pier's west
+  flank. The run keeps the old bus interface (`door`, `queueSpot`, `doorway`, `boarding`,
+  `phase`), so `schedules.js` boards it unchanged; `transit.js` says which stop a layout uses.
+  The ticket booth on the quay is the terminal. The retired layouts keep the bus station.
+- **Sea cave** (`src/world/coyote-tunnel.js`, name kept): the tunnel is now a low mouth in a
+  nine-metre headland at the end of a gravel path. "Go into the old sea cave" opens the dungeon.
+- **Dungeon** (`src/dungeon/`): seeded floors of rooms and passages (`generate.js`) built into
+  the interior room (`dungeon.js`); walls are the tile grid via `layout.blocked`. Crabs and
+  wisps, chests with yen and trinkets, stairs down, the rope up. Loot is banked on climbing
+  out (`finishDungeon` in `game.js`) and lost on blacking out; `state.dungeonDeepest` records
+  the record. Could become: keys and locked doors, a boss every fifth floor, a shop for
+  lantern oil and armour, floors themed by depth, trinkets sold at the harbour office.
+- **Kitano-jima** (`src/world/airport-island.js`): the airport island on the east horizon,
+  marked `userData.horizon` so the section renderer never culls it. `AIRPORT_ISLAND.dock` is
+  where a second ferry route would tie up; making it playable means a second town site the
+  ferry run can carry the player to.
