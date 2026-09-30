@@ -225,6 +225,34 @@ function addHair(list,recipe,m){
  if(style==='bob'||style==='long'){ball(list,R*.4,at(0,cy+R*.52,R*.72),'head',c,[2,.5,.6],10,6);}
 }
 
+/**
+ * A headband strip in unit head space: a ring of columns round the head at forehead
+ * height, each point pushed out to just above the hair (or the skin, below a fringe
+ * that stops higher up). Returns the geometry and where its knot sits behind.
+ */
+function headband(style,profile){
+ const spec=HAIR[style],W=56,g=new THREE.SphereGeometry(1,W,1,0,Math.PI*2,.5,.5),pos=g.attributes.position,uv=g.attributes.uv,v=new THREE.Vector3();
+ let knot=[0,.4,-1];
+ for(let i=0;i<pos.count;i++){
+  const u=(i%(W+1))/W,phi=u*Math.PI*2,x=Math.sin(phi),z=Math.cos(phi),back=THREE.MathUtils.smoothstep(-z,-.2,1);
+  const mid=.3+back*.14,y=mid+(uv.getY(i)-.5)*.14,flat=Math.sqrt(1-y*y);
+  v.set(x*flat,y,z*flat);
+  // The same hair field as hairCap: is this point under hair, and how far out is it?
+  let r=1.035;
+  if(spec&&!spec.ring){
+   const outFace=Math.max(.18-v.z,Math.abs(v.x)-spec.faceHalf,v.y-spec.front);
+   const low=THREE.MathUtils.lerp(spec.side,spec.back,THREE.MathUtils.smoothstep(-v.z,-.2,.7));
+   const f=Math.min(outFace,v.y-low),hair=spec.radius*(1+(spec.lift&&v.y>0?v.y*spec.lift:0))+.03;
+   r=THREE.MathUtils.lerp(1.035,Math.max(1.035,hair),THREE.MathUtils.smoothstep(f,-.06,.06));
+  }else if(spec?.ring&&back>.3)r=spec.radius+.03;
+  v.multiplyScalar(r);shapeHeadPoint(v,profile);
+  pos.setXYZ(i,v.x,v.y,v.z);
+  if(Math.abs(u-.5)<1e-6&&uv.getY(i)>.5)knot=[0,v.y-.07,v.z];
+ }
+ g.computeVertexNormals();
+ return {geometry:g,knot};
+}
+
 function addHat(list,recipe,m){
  const hat=recipe.outfit.hat,c=recipe.outfit.hatColour,R=m.Rh,top=m.headCentre+R*m.headSY*.2;
  if(hat==='none')return;
@@ -244,8 +272,11 @@ function addHat(list,recipe,m){
   part(list,new THREE.CylinderGeometry(R*.8,R*.95,R*.55,20),'head',c,M(0,top+R*.42,0,-.06));
   part(list,new THREE.CylinderGeometry(R*.97,R*.97,R*.12,20,1,true),'head','#d8342c',M(0,top+R*.25,0,-.06));
  }else if(hat==='headband'){
-  part(list,new THREE.TorusGeometry(R*1.07*m.headSX,R*.09,6,28),'head',c,M(0,m.headCentre+R*.45,0,Math.PI/2+.12));
-  ball(list,R*.16,[0,m.headCentre+R*.5,-R*1.05],'head',c,[1.4,.8,.8],8,6);
+  // A hachimaki tied snug round the forehead: it follows the head (and the hair where
+  // there is hair), rising a little behind, knotted at the back. Not a floating ring.
+  const band=headband(recipe.hair.style,m.profile);
+  part(list,band.geometry,'head',c,M(0,m.headCentre,0,0,0,0,...S));
+  ball(list,R*.13,[0,m.headCentre+band.knot[1]*S[1],band.knot[2]*S[2]-R*.04],'head',c,[1.5,.8,.7],8,6);
  }else if(hat==='kerchief'){
   part(list,new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.36),'head',c,M(0,m.headCentre+R*.05,-R*.12,-.45,0,0,...S));
   ball(list,R*.2,[0,m.headCentre+R*.1,-R*1.1],'head',c,[1.3,.9,.9],8,6);
