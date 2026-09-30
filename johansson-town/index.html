@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="./base.css?h=c692e6cb">
 <link rel="stylesheet" href="./context-controls.css?h=f442bdb6">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=bb7a71e0">
+<link rel="stylesheet" href="./landing.css?h=68bd7749">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=f083fafa">
 <link rel="modulepreload" data-town-runtime href="./runtime/boot-DnoELXfS.js">
@@ -28,7 +28,7 @@
 <div id="ink"></div>
 <div id="threshold"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
-<section id="start">
+<section id="start" class="guide-open">
   <div id="splash" class="splash" aria-hidden="true">
     <div class="splash-mark">
       <span class="splash-seal">港</span>
@@ -70,13 +70,14 @@
       <div class="crop-marks" aria-hidden="true"></div>
 
       <header>
-        <p class="board-back"><a href="#title" data-guide-close>◀ Back to the title screen</a></p>
+        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading">Residents</a><a href="#dir-heading">Places</a><a href="#visit-planning">Hours &amp; visiting</a><button type="button" data-town-enter>Enter town</button><a href="#title" data-guide-close>Title screen</a></nav>
         <div class="board-kicker">
           <span>JOHANSSON TOWN · VISITOR’S GUIDE</span>
           <span class="sr-only" id="boardDoc">Document JT-HB-63-0913</span>
           <span>HARBOUR DISTRICT · 1997</span>
         </div>
 
+        <div class="guide-heading"><p class="board-jp">ヨハンソン町</p><h1>Johansson Town</h1><p>A harbour neighbourhood of working quays, small shops and familiar faces.</p></div>
       </header>
 
 
@@ -93,8 +94,27 @@
 
 
 
+      <section aria-labelledby="roll-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">THE PEOPLE WHO MAKE THE PLACE</p>
+            <h2 id="roll-heading">Meet the residents</h2>
+          </div>
+        </div>
+        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
+        <div class="roll-grid" id="rollGrid"></div>
+      </section>
+      <section aria-labelledby="dir-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">THE NEIGHBOURHOOD</p>
+            <h2 id="dir-heading">Shops &amp; local places</h2>
+          </div>
+        </div>
+        <div class="place-grid" id="placesGrid"></div>
+      </section>
       <section class="brochure-day" aria-labelledby="day-heading">
-        <div class="section-bar paper"><div><p class="board-tiny">LITTLE THINGS, AT YOUR OWN PACE</p><h2 id="day-heading">A day in Johansson Town</h2></div></div>
+        <div class="section-bar paper"><div><p class="board-tiny">AROUND THE NEIGHBOURHOOD</p><h2 id="day-heading">A day in Johansson Town</h2></div></div>
         <div class="brochure-itinerary">
           <article><span class="brochure-number">01</span><h3>Morning at Sakura</h3><p>A shop door opens, shelves fill, and the street wakes up. Drop in for something small and a familiar hello.</p><span class="brochure-stop">桜商店 · GROCERIES & DAILY GOODS</span></article>
           <article><span class="brochure-number">02</span><h3>The long way round</h3><p>Browse the bookshop and workshop, follow the street towards the quay, or sit for a while and watch the town go by.</p><span class="brochure-stop">港町 · STREETS & HARBOUR</span></article>
@@ -102,43 +122,20 @@
         </div>
       </section>
 
-      <section aria-labelledby="roll-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">THE PEOPLE WHO MAKE THE PLACE</p>
-            <h2 id="roll-heading">You’ll soon know the neighbours</h2>
-          </div>
-        </div>
-        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
-        <figure class="resident-preview">
-          <img src="./assets/images/town-residents.webp" width="1200" height="400" loading="lazy" decoding="async" alt="Six town residents with individual face shapes, hairstyles and clothes: Johansson, Thuan, Nao, Mr Ōshiro, Uncle Kinjō and Mrs Nakamura">
-          <figcaption>Familiar faces, from left: Johansson, Thuan, Nao, Mr Ōshiro, Uncle Kinjō and Mrs Nakamura.</figcaption>
-        </figure>
-        <div class="roll-grid" id="rollGrid"></div>
-      </section>
-      <section aria-labelledby="dir-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">THE NEIGHBOURHOOD</p>
-            <h2 id="dir-heading">A few places to call your own</h2>
-          </div>
-        </div>
-        <div class="place-grid" id="placesGrid"></div>
-      </section>
       <section aria-labelledby="stockroom-heading">
         <div class="section-bar paper">
           <div>
             <p class="board-tiny">ANOTHER SIDE OF SAKURA</p>
             <h2 id="stockroom-heading">Thuan's Storage</h2>
           </div>
-          <p class="board-tiny">PLAYABLE SIDE STORY</p>
+          <p class="board-tiny">SAKURA SHŌTEN</p>
         </div>
         <a class="stockroom-card" href="/thuans-storage/">
           <img src="/thuans-storage/cover.jpg" width="1200" height="630" alt="Thuan's Storage – the stockroom behind Sakura Shōten">
           <span class="stockroom-text">
-            <span class="notice-no">A SIDE STORY FROM SAKURA SHŌTEN</span>
+            <span class="notice-no">BEHIND THE SHOP</span>
             <b>Restock the konbini with Thuan</b>
-            <span>Walk Thuan through Sakura Shōten's stockroom, pick the day's list and restock the shelves. A playable demo, still being built.</span>
+            <span>Walk Thuan through Sakura Shōten's stockroom, pick the day's list and restock the shelves. The day’s deliveries are waiting behind the shop.</span>
             <span class="stockroom-go">Open the stockroom <span aria-hidden="true">→</span></span>
           </span>
         </a>
@@ -164,7 +161,7 @@
             <figcaption>
               <p class="notice-no">潮待ち</p>
               <h3>SHIOMACHI</h3>
-              <p>Junmai from a fictional harbour brewery. Waiting for the tide, one cup at a time.</p>
+              <p>Junmai from the harbour brewery. Waiting for the tide, one cup at a time.</p>
             </figcaption>
           </figure>
           <figure class="poster-card">
@@ -326,7 +323,7 @@
       </details>
 
       <footer class="board-foot">
-        <p>Johansson Town · a fictional harbour neighbourhood, 1997.<br>Explore with touch, keyboard or controller. First- and third-person views. Your town remembers you on this device.</p>
+        <p>Johansson Town · Harbour District · 1997.<br>Explore with touch, keyboard or controller. First- and third-person views. Your town remembers you on this device.</p>
         <p class="jp"><span id="boardJpDate">平成9年9月13日</span><span class="board-foot-line">HARBOUR DISTRICT · 1997</span></p>
       </footer>
     </article>
@@ -349,7 +346,8 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=town-brochure-1"></script>
+<script src="./resident-guide.js?v=resident-guide-1"></script>
+<script src="./landing.js?v=resident-guide-1"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
 // behind it. Launching the game stays in index.html; this only presses its button.
@@ -362,13 +360,13 @@
   const SPLASH_KEY = "johansson-town-splash";
 
   // The company mark plays once per visit; a tap or key skips it.
-  let splashSeen = false;
-  try { splashSeen = sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
+  let splashSeen = start.classList.contains("guide-open");
+  try { splashSeen = splashSeen || sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
   const endSplash = () => {
     if (splash.classList.contains("done")) return;
     splash.classList.add("done");
     try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch {}
-    enter.focus({ preventScroll: true });
+    if (!start.classList.contains("guide-open")) enter.focus({ preventScroll: true });
   };
   if (splashSeen || matchMedia("(prefers-reduced-motion: reduce)").matches) endSplash();
   else {
@@ -389,6 +387,7 @@
     start.classList.remove("guide-open");
     enter.focus({ preventScroll: true });
   }
+  document.querySelectorAll("[data-town-enter]").forEach(button => button.addEventListener("click", () => enter.click()));
   guideLink.addEventListener("click", openGuide);
   document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
   document.getElementById("board").tabIndex = -1;
@@ -482,6 +481,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     if(window.__JOHANSSON_BOOTING__)return;
     window.__JOHANSSON_BOOTING__=true;
     enter.disabled=true;
+    document.getElementById('start').classList.remove('guide-open');
     document.getElementById('start').classList.add('booting');
     status.textContent='LOADING GAME CODE…';
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};

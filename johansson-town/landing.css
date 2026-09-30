@@ -779,3 +779,31 @@
 .sakura-ledger-tabs{display:flex;gap:8px;margin-bottom:10px}.sakura-ledger-tabs button[aria-pressed=true]{background:#39574d;color:#fffaf0}.sakura-ledger-tabs button{padding:10px 14px;border:1px solid #a99b81;background:#eae1cb;color:#302d27;border-radius:4px;cursor:pointer}
 .sakura-ledger-scroll{overflow:auto;max-height:45dvh;border:1px solid #acaa97;background:#fffdf7;overscroll-behavior:contain}.sakura-ledger table{border-collapse:separate;border-spacing:0;min-width:780px;width:100%;font-variant-numeric:tabular-nums}.sakura-ledger caption{text-align:left;padding:10px;font-weight:700;background:#e6eadc;color:#304339}.sakura-ledger th,.sakura-ledger td{padding:8px 10px;border-right:1px solid #d9ddcd;border-bottom:1px solid #d9ddcd;white-space:nowrap;text-align:left}.sakura-ledger th{position:sticky;top:0;background:#dfe7d5;color:#304339;z-index:1}.sakura-ledger tbody tr:nth-child(even){background:#f0f3e9}.sakura-ledger-note{font-size:12px;line-height:1.6;color:#605746;margin:12px 0 0}
 @media(max-width:600px){.sakura-ledger-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.sakura-ledger-summary dd{font-size:18px}.sakura-ledger-scroll{max-height:38dvh}#activity.sakura-records{padding:18px}}
+
+/* Town information page and individual resident records. */
+#start .guide-nav { display:flex; flex-wrap:wrap; align-items:center; gap:.75rem 1.25rem; margin:0 0 1.5rem; }
+#start .guide-nav a { color:var(--harbour-navy); font-size:.875rem; text-decoration-thickness:1px; text-underline-offset:.25em; }
+#start .guide-nav button { font:700 1rem/1.4 var(--gothic); padding:.7rem 1.15rem; border:0; border-radius:0; background:var(--harbour-navy); color:white; cursor:pointer; min-height:44px; }
+#start .guide-nav button:hover { background:var(--harbour-navy-deep); }
+.guide-heading { max-width:44rem; padding:1.75rem 0 .25rem; }
+.guide-heading h1 { font:400 clamp(2.25rem,7vw,4rem)/1.15 var(--mincho); color:var(--harbour-navy); margin:.4rem 0 1rem; }
+.guide-heading > p:last-child { font-size:1.125rem; line-height:1.65; margin:0; color:#444; }
+.board-frame :is(h2,details[id]) { scroll-margin-top:1.5rem; }
+.roll-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
+.roll-card { padding:0; overflow:hidden; border:1px solid #d2d7da; background:white; min-width:0; }
+.resident-portrait { display:block; width:100%; height:auto; aspect-ratio:1; object-fit:contain; background:#e9eff2; }
+.resident-copy { padding:1.25rem; }
+.roll-card h3 { margin:.3rem 0; font:400 1.65rem/1.25 var(--mincho); color:var(--harbour-navy); }
+.resident-role { margin:0; font-size:.875rem; color:#535d63; }
+.resident-place { margin:0 0 1rem; font-size:.875rem; color:#535d63; }
+.resident-bio,.resident-story p { font-size:1rem; line-height:1.7; color:#343d43; margin:0; }
+.resident-story { border-top:1px solid #d2d7da; margin-top:1.25rem; }
+.resident-story summary { font-size:.9375rem; font-weight:700; color:var(--harbour-navy); cursor:pointer; padding:.8rem 0; min-height:24px; }
+.resident-story p { padding-bottom:.75rem; }
+.roll-card .duty { margin:.75rem 0 0; }
+.roll-card .flag { font-size:.75rem; }
+.brochure-intro { margin:0 0 1.5rem; font-size:1rem; }
+.brochure-itinerary p,.place-card p,.poster-card p { font-size:1rem; }
+.board-kicker,.section-bar .board-tiny,.brochure-stop { font-size:.75rem; }
+@media(max-width:960px) { .roll-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:560px) { .roll-grid { grid-template-columns:1fr; } .resident-copy { padding:1rem; } .resident-portrait { max-height:20rem; } .guide-heading { padding-top:1.25rem; } }

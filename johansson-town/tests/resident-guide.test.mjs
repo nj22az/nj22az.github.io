@@ -1,0 +1,35 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import vm from 'node:vm';
+import {PROFILES} from '../src/people/profiles.js';
+import {NEIGHBOURS} from '../src/people/neighbours.js';
+const root=new URL('../',import.meta.url);
+const read=path=>readFile(new URL(path,root));
+test('every live resident has a biography, backstory and real model portrait',async()=>{
+ const catalogue=JSON.parse(await read('guide/residents.json'));
+ const expected=['Johansson','Thuan',...PROFILES.map(p=>p.name),...NEIGHBOURS.map(p=>p.name)];
+ assert.deepEqual(catalogue.map(r=>r.name).sort(),expected.sort());
+ assert.equal(new Set(catalogue.map(r=>r.name)).size,catalogue.length);
+ for(const r of catalogue){
+  for(const field of ['role','place','bio','backstory'])assert.ok(r[field]?.length>0,r.name+' '+field);
+  const data=await read(r.portrait);
+  assert.equal(data.subarray(0,4).toString(),'RIFF',r.name+' is a WebP image');
+  assert.ok(data.length>2000,r.name+' has rendered detail');
+ }
+ const context={window:{}};vm.runInNewContext((await read('resident-guide.js')).toString(),context);
+ assert.deepEqual(JSON.parse(JSON.stringify(context.window.JOHANSSON_RESIDENT_GUIDE)),catalogue);
+ const manifest=JSON.parse(await read('guide/portraits.json')),hash=createHash('sha256');
+ for(const path of manifest.sourceFiles)hash.update(path+'\0').update(await read(path)).update('\0');
+ assert.equal(manifest.sha256,hash.digest('hex'),'Portraits must be regenerated after avatar source changes');
+ assert.equal(manifest.count,catalogue.length);
+});
+test('town information opens first and keeps game launch and guide navigation',async()=>{
+ const html=(await read('index.html')).toString();
+ assert.match(html,/<section id="start" class="guide-open">/);
+ assert.match(html,/data-town-enter/);assert.match(html,/data-guide-close/);
+ assert.ok(html.indexOf('resident-guide.js')<html.indexOf('landing.js'));
+ assert.doesNotMatch(html,/fictional|playable demo|still being built/i);
+ assert.doesNotMatch(html,/town-residents\.webp/);
+});
