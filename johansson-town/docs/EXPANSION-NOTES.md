@@ -41,6 +41,10 @@ Still held back, in `STREET_CAST_NAMES`: Mrs Sato and the Bus driver; they would
 a peninsula routine the same way. Thuan and Nao still commute; their flat above Sakura is dressed
 from outside only. Everyone on the street is a recipe in `src/avatars/cast.js`.
 
+Hats are a separate piece of the avatar (`avatar.hat`, `setHat`, the `hatOff` flag). At home the hat
+goes on the room's `hatHook` (a peg, or the top of a hat stand) as a `buildHatProp` copy, and back
+on the head at the door. A home layout without a hook leaves the hat on.
+
 ## Retired in the cleanup (recover from `5c63eb8`)
 
 | What | Files | Why |

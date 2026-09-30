@@ -19,6 +19,7 @@ export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
  for(let i=0;i<5;i++)part([.1,.3,.24],[2.1+i*.13,1.3,-2.15],i%2?colour:0xc7b77a);
  const radio=part([.45,.25,.23],[1.1,.86,-1.9],0x485c58);reg(radio,'Inspect '+profile.name+'’s belongings',()=>action('inspect',profile.name+' at home',profile.role+'. '+(profile.personality||'A familiar room with a place for everything.')+' A radio, favourite books and tomorrow’s notes sit beside the table.'),true);
  const note=new THREE.Object3D();note.position.set(2,1,1.9);room.add(note);reg(note,'Read daily routine',()=>action('read',profile.name+'’s routine','Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'. Work, meals and walks continue outside. You may stay here while the day passes.'),true);
+ hatPeg(part,HOME_LAYOUT.hatHook);
  const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));
  return {...HOME_LAYOUT,home:true};
@@ -39,8 +40,17 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
   part([.9,1.7,.5],[-side*2.85,.85,-2.95],0x876b50,true);
   for(let b=0;b<4;b++)part([.11,.26,.22],[-side*2.85-.2+b*.13,1.14,-2.64],b%2?style.top:0xc6b78d);
   const notes=part([.28,.018,.2],[routine.table[0],.754,1.35],0xe8ddbb);notes.name=name+' personal notes';
+  hatPeg(part,routine.hatHook);
   reg(notes,'Inspect '+name+'’s belongings',()=>action('inspect',name+' at home',p.role+'. '+name+' keeps a separate futon, wardrobe and place at the table. Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'.'),true);
  });
  const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));return {...layout,home:true};
+}
+
+/** A wooden peg on the wall where a hat hangs when its owner is home. */
+function hatPeg(part,hook){
+ if(!hook)return;
+ const [x,y,z]=hook.position,out=[Math.sin(hook.yaw||0),Math.cos(hook.yaw||0)];
+ part([.1,.1,.03],[x+out[0]*.005,y+.12,z+out[1]*.005],0x6d5238).rotation.y=hook.yaw||0;
+ part([.035,.035,.14],[x+out[0]*.07,y+.1,z+out[1]*.07],0x6d5238).rotation.y=hook.yaw||0;
 }

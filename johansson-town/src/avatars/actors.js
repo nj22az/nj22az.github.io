@@ -67,6 +67,8 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
  const outfit=u.outfit||'clothes';if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ // At home the hat is on its hook (home-residents.js), not on the head.
+ const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
  const seated=!riding&&(Number.isFinite(u.seatHeight)&&SEATED.includes(u.socialPose)||Number.isFinite(u.chairBlend)&&u.chairBlend>.5);
  const mood=u.thuanMood,feeling=mood&&mood.until>now?mood.expression:null;

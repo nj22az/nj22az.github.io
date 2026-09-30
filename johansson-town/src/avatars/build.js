@@ -283,6 +283,29 @@ function addHat(list,recipe,m){
  }
 }
 
+/**
+ * Somebody's hat on its own, for a hook or a hat stand: the same pieces addHat puts on
+ * their head, painted the same, as a plain mesh. 'wall' puts the back of the crown at
+ * the origin with the brim facing +z; 'stand' sits the hat's rim on the origin. Null
+ * for somebody who does not wear one.
+ */
+export function buildHatProp(input,{mode='wall',shadows=true}={}){
+ const recipe=normalizeRecipe(input);
+ if(recipe.outfit.hat==='none')return null;
+ const parts=[];addHat(parts,recipe,measure(recipe));
+ if(!parts.length)return null;
+ const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
+ for(const key of ['skinIndex','skinWeight'])geometry.deleteAttribute(key);
+ geometry.computeBoundingBox();
+ const b=geometry.boundingBox,c=b.getCenter(new THREE.Vector3());
+ geometry.translate(-c.x,mode==='stand'?-b.min.y:-c.y,mode==='stand'?-c.z:-b.min.z);
+ geometry.computeBoundingSphere();
+ const mesh=new THREE.Mesh(geometry,celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'}));
+ mesh.name=(recipe.name||'Resident')+'’s hat';mesh.castShadow=shadows;mesh.receiveShadow=true;
+ mesh.userData.hatProp=true;
+ return mesh;
+}
+
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
 export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
 
@@ -421,22 +444,35 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  addNose(parts,recipe,m);
  // Ears.
  for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
- addHair(parts,recipe,m);addHat(parts,recipe,m);
+ addHair(parts,recipe,m);
  const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  geometry.computeBoundingSphere();
  const material=celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'});
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
+ // The hat is its own piece on the same skeleton, so it can come off: people hang it
+ // up when they get home (home-residents.js) and put it back on to go out.
+ const hatParts=[];addHat(hatParts,recipe,m);
+ let hat=null;
+ if(hatParts.length){
+  hat=new THREE.SkinnedMesh(mergeGeometries(hatParts,false),material);hatParts.forEach(g=>g.dispose());
+  hat.name='Shimanchu hat';hat.bind(body.skeleton,body.bindMatrix);hat.castShadow=shadows;hat.receiveShadow=true;hat.frustumCulled=false;
+ }
+ let hatOn=true,outfitNow='clothes';
+ const showHat=()=>{if(hat)hat.visible=hatOn&&outfitNow!=='swim';};
  // Swimwear is a second body, swapped in at the onsen.
  let swimBody=null;
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
- root.add(body);root.rotation.y=Math.PI;
+ root.add(body);if(hat)root.add(hat);root.rotation.y=Math.PI;
  const avatar={
-  recipe,measure:m,root,body,bones,face,height:m.H,
+  recipe,measure:m,root,body,hat,bones,face,height:m.H,
+  /** Whether the hat is on the head. Off, it is somebody else's job to show where it went. */
+  setHat(on){hatOn=!!on;showHat();},
+  get hatOn(){return !!hat&&hatOn;},
   faceState:{expression:'neutral',blink:0,talk:0,look:[0,0]},
   /** Repaint the face if what it is doing has changed. */
   paintFace(state){
@@ -456,8 +492,9 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
    }
    body.visible=outfit!=='swim';if(swimBody)swimBody.visible=outfit==='swim';
+   outfitNow=outfit;showHat();
   },
-  dispose(){geometry.dispose();material.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();},
+  dispose(){geometry.dispose();hat?.geometry.dispose();material.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();},
  };
  avatar.paintFace({});
  return avatar;

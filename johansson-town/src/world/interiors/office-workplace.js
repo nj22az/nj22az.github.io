@@ -10,7 +10,8 @@ export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],ey
  */
 export const OFFICE_HOME_LAYOUT=Object.freeze({bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
  door:[0,0,2.45],table:[-.9,0,1.35],bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
- cover:{position:[2.1,.41,1.22],width:1.1,length:1.3,axis:'z'}});
+ cover:{position:[2.1,.41,1.22],width:1.1,length:1.3,axis:'z'},
+ hatHook:{mode:'stand',position:[2.9,1.76,-.45],yaw:Math.PI/2}});
 export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  const room=new THREE.Group();room.name='Harbour office workplace';parent.add(room);
  const paper=new THREE.MeshStandardMaterial({color:0xe8e1c7,roughness:.92});
@@ -72,7 +73,7 @@ function buildBedNook({room,box,reg,action,collider,mat}){
  box('Alarm clock',[.14,.12,.08],[1.55,.16,-.1],0xd7263d);box('Tide table',[.2,.02,.28],[1.55,.23,1.7],0xe8e1c7);
  // Coat stand with the harbour master's jacket and cap, by the foot of the bed.
  box('Coat stand pole',[.05,1.75,.05],[2.9,.88,-.45],0x6d5238);box('Coat stand foot',[.4,.04,.4],[2.9,.02,-.45],0x6d5238);
- box('Harbour master jacket',[.42,.7,.14],[2.9,1.3,-.38],0x2c3e5c);box('Harbour master cap',[.28,.1,.28],[2.9,1.8,-.45],0xf4f1ea);
+ box('Harbour master jacket',[.42,.7,.14],[2.9,1.3,-.38],0x2c3e5c);// his cap goes on top when he is home
  collider(2.9,-.45,.4,.4,1.8);
  // A tea stool and a little table at the open side of the room.
  box('Tea stool',[.36,.42,.36],[-.9,.21,1.35],0x6d5238);
@@ -82,5 +83,5 @@ function buildBedNook({room,box,reg,action,collider,mat}){
  const inspect=(pos,label,title,text)=>{const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);o.userData.npcInteraction=false;reg(o,label,()=>action('inspect',title,text),true);};
  inspect([2.1,.7,.9],'Inspect the bed behind the screen','The harbour master’s bed','A tatami mat and a futon behind the folding screen, the quilt folded square every morning at half past five. He says the harbour needs someone within earshot of the radio, and the stairs to a flat would only slow him down.');
  inspect([-.9,1.0,.8],'Inspect the tea corner','Tea corner','A kettle, one cup and a tin of jasmine tea. The stool is where he reads the evening paper before turning in at nine.');
- inspect([2.9,1.4,-.45],'Inspect the coat stand','Coat stand','The navy jacket and the white cap, brushed and hung up at the end of the day. A tide table sticks out of the jacket pocket.');
+ inspect([2.9,1.4,-.45],'Inspect the coat stand','Coat stand','The navy jacket, brushed and hung up at the end of the day, with his white cap on top when he is in. A tide table sticks out of the jacket pocket.');
 }

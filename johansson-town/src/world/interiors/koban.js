@@ -14,7 +14,7 @@ export const KOBAN_ROOM=Object.freeze({
  staff:Object.freeze({'Officer Mori':Object.freeze([-1.4,0,.25])}),
 });
 /** Where Officer Mori walks, eats and sleeps when he is at home (home-residents.js). */
-export const KOBAN_HOME_LAYOUT=Object.freeze({...KOBAN_ROOM,
+export const KOBAN_HOME_LAYOUT=Object.freeze({...KOBAN_ROOM,hatHook:{position:[.45,1.6,3.04],yaw:Math.PI},
  door:[.9,0,-2.3],table:[1.2,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
  cover:{position:[-2.3,.37,2.28],width:1.1,length:1.3,axis:'z'}});
 
@@ -115,10 +115,11 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  box('TV screen',[.36,.28,.01],[2.85,.72,2.545],0x21302c);
  box('Clothes rail',[1.2,.04,.04],[-.3,1.75,2.95],0x9aa3a0);
  box('Spare uniform shirt',[.5,.7,.08],[-.55,1.35,2.95],0x9dbfe0);box('Spare uniform trousers',[.35,.9,.06],[0,1.25,2.97],0x27304d);
- box('Uniform cap on the shelf',[.3,.1,.3],[.45,1.8,2.95],0x27304d);
+ // His cap hangs on this peg when he is home (home-residents.js); on patrol it is on his head.
+ box('Hat peg plate',[.1,.1,.03],[.45,1.72,3.04],0x6d5238);box('Hat peg',[.035,.035,.14],[.45,1.7,2.98],0x6d5238);
  box('Tatami room window',[1.2,.9,.03],[-3.36,1.6,2.0],new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0xbfd8e6,emissiveIntensity:.35,roughness:.2}));
  for(const dz of [-.45,.45])box('Curtain',[.03,1.0,.3],[-3.32,1.6,2.0+dz],0xe8cf85);
- spot([-.3,1.4,2.7],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and the cap on the shelf, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
+ spot([-.3,1.4,2.7],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and a peg for his cap, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
  spot([1.2,1.0,1.75],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(hours.sleep)+'–'+time(hours.wake)+'. Front desk from 16:00. Supper at Sakura (Thuan recommends the curry bun).\n\nReiko wants a quote for the paper. Think of something that sounds more exciting than “quiet night”.');
  spot([2.85,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
  spot([-2.3,.7,1.9],'Inspect Officer Mori’s futon','inspect','Officer Mori’s futon','Folded away in the afternoon and laid out again at seven in the morning, after the night patrol. If he is asleep, let him be.');
