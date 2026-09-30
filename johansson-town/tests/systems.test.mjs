@@ -17,8 +17,11 @@ import {createContentItems} from '../content-items.js';
 import {createHands} from '../src/interact/hands.js';
 import {readSave} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
+import {STREET_CAST,STREET_CAST_NAMES} from '../src/people/residents.js';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+// Residents return to the street one at a time; checks on someone still away wait for them.
+const inCast=name=>STREET_CAST_NAMES.includes(name);
 const sites=()=>['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
 const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({scene:new THREE.Scene(),sites:all,mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});createContentItems({group:world.group,colliders:world.colliders,register:(o,label,fn)=>anchors.push({o,label,fn}),onInspect(){},onRead(){}});return {world,anchors,all};};
 
@@ -32,7 +35,7 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(groundHeight(0,0),0);assert.equal(groundHeight(32,47),0);
 });
 test('world construction, original route and new door reachability',()=>{
- const {world,all}=build();assert.equal(world.people.length,10);assert.ok(world.quality.streetInteractions>=8);
+ const {world,all}=build();assert.equal(world.people.length,STREET_CAST.length);assert.ok(world.quality.streetInteractions>=8);
  const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  // The compact town put the bus station across the old spine, so x=0 runs clear
  // only south of it. North of z=20.4 the shelter, its bench and the tightened
@@ -76,7 +79,7 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
 test('every resident has several authored subjects and schedules retain all outdoor residents',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(0,0,30);const state={inventory:[],quest:0};const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
  for(const p of world.people){assert.ok(DIALOGUE[p.g.userData.name].length>=3,p.g.userData.name);assert.ok(p.profile.age>0);}
- ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);const aiko=world.people.find(p=>p.g.userData.name==='Aya');assert.equal(aiko.g.visible,false);
+ ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);if(inCast('Aya'))assert.equal(world.people.find(p=>p.g.userData.name==='Aya').g.visible,false);
 });
 test('runtime assets, PBR maps and sound files exist locally',async()=>{
  for(const name of ['asphalt','timber','plaster','roof'])for(const suffix of ['nor_gl','arm'])assert.ok((await readFile(resolve(root,'assets/materials/'+name+'-'+suffix+'.jpg'))).length>1000);
@@ -103,7 +106,7 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.05)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,'Path edge is clear');
  }
  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:blocked});
- for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Kenji reaches his workshop without stopping against Kenta');
+ if(inCast('Kenji')){for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Kenji reaches his workshop without stopping against Kenta');}
  player.position.set(0,0,26);for(let i=0;i<120;i++)ai.update(1/60,1115,false);player.position.set(25,0,4);for(let i=0;i<120;i++)ai.update(1/60,1115,false);
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
 });
@@ -127,10 +130,11 @@ test('residents walk home without off-camera teleporting and Mori patrols past m
  ai.update(.1,1100,false);const mori=world.people.find(p=>p.profile.name==='Officer Mori');let nightMovement=0;
  for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);chats.update(.2,t,false);chatted ||= !!chats.current;
   world.people.forEach((p,i)=>assert.ok(p.g.position.distanceTo(before[i])<.3,p.profile.name+' teleported at '+t+' from '+before[i].toArray()+' to '+p.g.position.toArray()));
-  if(t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
+  if(mori&&t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
   assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);
  }
- assert.ok(chatted,'The actual moving cast has conversations during the evening');assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);
+ // Thuan and Nao spend the evening at work and on the last bus; street conversations need a neighbour back.
+ if(STREET_CAST.length>2)assert.ok(chatted,'The actual moving cast has conversations during the evening');if(mori){assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);}
  for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');
 });
 

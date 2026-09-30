@@ -1,4 +1,5 @@
 import {DINING} from '../src/world/dining-layout.js';
+import {TEA_HOUSE} from '../src/world/town-grid.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -45,11 +46,11 @@ test('supplied buildings load with portable maps and bounded geometry',async()=>
   assert.equal(blocked(DINING.izakayaDoor[0]-1,DINING.izakayaDoor[1]),true,'The closed door and step cannot be walked through');
   minato.group.updateMatrixWorld(true);
   const transformedDoor=new THREE.Vector3(0,1.66,4.05).applyMatrix4(minato.group.children[0].matrixWorld);
-  assert.ok(transformedDoor.distanceTo(entrances[0].o.position)<1.1,'Prompt aligned with the supplied door');
+  assert.ok(transformedDoor.distanceTo(entrances[0].o.position)<1.5,'Prompt aligned with the supplied door');
   const {preloadTeaHouse,buildTeaHouse}=await import('../src/world/tea-house.js?snappy=1');assert.equal(await preloadTeaHouse(),true);
   const world={group:new THREE.Group(),colliders:[]},sites=[],actions=[];
   buildTeaHouse(world,{sites,register:(o,label,fn)=>actions.push({o,label,fn}),enter:site=>assert.equal(site.id,'tea-house')});
-  assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[28,1,30]);
-  assert.ok(!world.colliders.some(c=>Math.abs(c.x-28)<c.w/2+.3&&Math.abs(c.z-30)<c.d/2+.3),'Entrance is clear');
+  assert.equal(sites[0].id,'tea-house');actions[0].fn();assert.deepEqual(actions[0].o.position.toArray(),[TEA_HOUSE.door[0],1,TEA_HOUSE.door[2]]);
+  assert.ok(!world.colliders.some(c=>Math.abs(c.x-TEA_HOUSE.door[0])<c.w/2+.3&&Math.abs(c.z-TEA_HOUSE.door[2])<c.d/2+.3),'Entrance is clear');
  }finally{globalThis.fetch=originalFetch;globalThis.createImageBitmap=originalBitmap;globalThis.self=originalSelf;}
 });

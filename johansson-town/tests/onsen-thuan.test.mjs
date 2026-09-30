@@ -7,7 +7,6 @@ import {residentPlan,thuanAtOnsen,onsenInvitationDay} from '../src/people/social
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {ONSEN_DOOR} from '../src/world/onsen-layout.js';
 import {ONSEN_ROOM,ONSEN_SEATS} from '../src/world/interiors/onsen.js';
-import {createLocalCharacters,preloadCharacter} from '../src/people/models.js';
 import {installDOM} from './fixtures.mjs';
 
 const thuan=RESIDENTS.find(p=>p.name==='Thuan');
@@ -49,23 +48,6 @@ test('the bath borrows Thuan into the rock pool in swimwear and gives her back d
  guests.sync(1215);assert.deepEqual(g.position.toArray(),ONSEN_SEATS.rock.position);guests.restore();
  // Nobody else is sent to the bath.
  assert.ok(world.people.filter(p=>p!==person).every(p=>!p.g.userData.inOnsen));
-});
-
-test('swimwear on the rebuilt Thuan replaces her top, trousers and shoes, and comes off again',async()=>{
- installDOM();const previous={fetch:globalThis.fetch,self:globalThis.self,bitmap:globalThis.createImageBitmap};
- globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
- globalThis.fetch=async input=>String(input).startsWith('blob:')?previous.fetch(input):new Response(await readFile(new URL('../assets/'+new URL(String(input.url||input)).pathname.split('/assets/')[1],import.meta.url)));
- try{
-  await preloadCharacter('Thuan');const models=createLocalCharacters(),entity=new THREE.Group();entity.userData.name='Thuan';
-  const actor=models.attach(entity,'Thuan'),shown=pattern=>{const found=[];actor.model.traverse(o=>{if(o.isMesh&&pattern.test(o.name))found.push(o.visible);});assert.ok(found.length,String(pattern));return found.every(Boolean)?true:found.some(Boolean)?'mixed':false;};
-  models.update(1/60);
-  assert.equal(shown(/Swimsuit/),false);assert.equal(shown(/elegantsuit/),true);
-  entity.userData.outfit='swim';models.update(1/60);
-  assert.equal(shown(/Swimsuit/),true);assert.equal(shown(/SkinUnder/),true);
-  assert.equal(shown(/elegantsuit/),false);assert.equal(shown(/shoes/),false);assert.equal(shown(/Trousers/),false);assert.equal(shown(/Hair/),true,'Her hair stays');
-  delete entity.userData.outfit;models.update(1/60);
-  assert.equal(shown(/Swimsuit/),false);assert.equal(shown(/elegantsuit/),true);assert.equal(shown(/shoes/),true);
- }finally{globalThis.fetch=previous.fetch;globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}
 });
 
 test('the invitation survives a reload, so she is still expected at the bath',async()=>{

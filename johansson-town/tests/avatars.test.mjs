@@ -6,7 +6,7 @@ import {normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,DEFAULT_RECIPE,PA
 import {CAST_RECIPES,NEIGHBOUR_RECIPES,recipeFor} from '../src/avatars/cast.js';
 import {buildAvatar,BONES} from '../src/avatars/build.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
-import {configureAvatars,avatarsEnabled,createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,COUNTER_STEP,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
+import {createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,COUNTER_STEP,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
 import {createLocalCharacters} from '../src/people/models.js?snappy=1';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 
@@ -77,17 +77,15 @@ test('people turn their heads to whoever they are looking at',()=>{
  assert.ok(Math.abs(right-left)>.6,'The head follows the point from one side to the other');
 });
 
-test('the character system hands out Shimanchu when avatars are on, and they dress for the bath',()=>{
- configureAvatars(true);
- try{
-  assert.equal(avatarsEnabled(),true);
+test('the character system hands out Shimanchu, and they dress for the bath',()=>{
+ {
   const models=createLocalCharacters(),scene=new THREE.Scene(),entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);
   const actor=models.attach(entity,'Thuan');
   assert.ok(actor.isAvatar);assert.equal(entity.userData.visualReady,true);assert.match(entity.userData.visualSource,/Shimanchu/);
   entity.userData.outfit='swim';models.update(1/30);assert.equal(actor.avatar.body.visible,false);
   entity.userData.outfit='clothes';models.update(1/30);assert.equal(actor.avatar.body.visible,true);
   const eye=models.conversationTarget(entity);assert.ok(eye.y>1&&eye.y<1.7,'Conversations frame the face: '+eye.y);
- }finally{configureAvatars(false);}
+ }
 });
 
 test('the player body offers everything the game asks of Johansson, and takes a new recipe',()=>{

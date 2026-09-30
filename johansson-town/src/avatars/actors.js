@@ -11,13 +11,7 @@ import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
  * they are speaking -- so the avatars read the same flags, and nothing that moves people
  * about had to change.
  *
- * ?classic in the address brings back the old bodies, for comparison. Outside a browser
- * (the test suite) the old bodies stay the default so their own tests keep covering them;
- * configureAvatars(true) switches over.
  */
-let enabled=typeof WebGLRenderingContext!=='undefined'&&typeof location!=='undefined'&&!new URLSearchParams(location.search).has('classic');
-export const avatarsEnabled=()=>enabled;
-export function configureAvatars(on){enabled=!!on;}
 
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';

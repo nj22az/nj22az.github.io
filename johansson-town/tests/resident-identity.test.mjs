@@ -5,32 +5,8 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {RESIDENTS} from '../src/people/residents.js';
 import {PROFILES} from '../src/people/profiles.js';
-import {preloadModels,createLocalCharacters,createYuriFigurine} from '../src/people/models.js?snappy=1';
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
 import {SAVE_KEY,migrateThuan} from '../src/save.js';
-
-test('resident identities are distinct, Nao uses her VRM and original Thuan remains only as a small static figurine',async()=>{
- installDOM();const native=globalThis.fetch,requests=[];globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
- globalThis.fetch=async input=>{const url=String(input.url||input);if(url.startsWith('blob:'))return native(input);requests.push(url);return new Response(await readFile(new URL('../assets/characters/'+new URL(url).pathname.split('/characters/')[1],import.meta.url)));};
- try{
-  await preloadModels();assert.equal(requests.length,7);assert.ok(requests.every(url=>!url.includes('/realistic/')));assert.equal(requests.filter(url=>url.endsWith('/nao/Nao.vrm')).length,1);
-  const scene=new THREE.Scene(),models=createLocalCharacters(),signatures=new Set(),actors=[];
-  const cast=[...PROFILES.filter(profile=>profile.name!=='Nao'),{name:'Yui'}];
-  for(const profile of cast){
-   const g=new THREE.Group();g.userData.name=profile.name;scene.add(g);const actor=models.attach(g,profile.name,profile.height);actors.push(actor);
-   let skin;actor.model.traverse(o=>{if(o.isSkinnedMesh&&!o.userData.facialFeatures)skin=o;});assert.ok(actor.lowPoly&&skin);const accessories=[];actor.model.traverse(o=>{if(o.name.startsWith('resident-')&&o.name!=='resident-held-item')accessories.push(o.name);});assert.ok(accessories.length,profile.name+' has an authored accessory');
-   const colors=skin.geometry.attributes.color.array;signatures.add(JSON.stringify([skin.geometry.attributes.position.count,Array.from(colors),actor.model.scale.toArray()]));
-   let bodyDraws=0;actor.model.traverse(o=>{if(o.isMesh)bodyDraws++;});assert.ok(bodyDraws<=3,profile.name+' keeps at most three standing draws');
-  }
-  assert.equal(signatures.size,cast.length);
-  const naoEntity=new THREE.Group();naoEntity.userData.name='Nao';scene.add(naoEntity);const nao=models.attach(naoEntity,'Nao',1.65);assert.equal(nao.lowPoly,false);assert.equal(naoEntity.userData.visualSource,'VRoid · Nao');assert.ok(nao.actions.has('Walk')&&nao.actions.has('CounterIdle'));
-  const entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);const yuri=models.attach(entity,'Thuan');assert.equal(yuri.height,1.64);assert.equal(yuri.lowPoly,false);assert.equal(yuri.model.getObjectByName('resident-ribbon'),undefined);
-  const ys=yuri.model.getObjectByName('output_unwrapped')||yuri.model.getObjectByName('base001');let ns;nao.model.traverse(o=>{if(o.isSkinnedMesh)ns=o;});assert.notEqual(ys.geometry.attributes.position,ns.geometry.attributes.position);assert.notEqual(ys.geometry.attributes.position.count,ns.geometry.attributes.position.count);assert.ok(ys.material.map);
-  const figure=await createYuriFigurine();assert.ok(figure);assert.equal(requests.filter(url=>url.includes('yuri-playful')).length,1);let skins=0;figure.traverse(o=>{if(o.isSkinnedMesh)skins++;});assert.equal(skins,0,'Figurine is frozen geometry, not another actor');
-  const bounds=new THREE.Box3().setFromObject(figure);assert.ok(Math.abs(bounds.max.y-bounds.min.y-.30)<.001);assert.equal(figure.userData.figurine,true);assert.equal(models.actors.length,cast.length+2);
-  await createYuriFigurine();assert.equal(requests.filter(url=>url.includes('yuri-playful')).length,1);
- }finally{globalThis.fetch=native;}
-});
 
 test('resident budgets and delivered meals survive real save restoration without changing the player wallet',async()=>{
  const state={yen:777},ledger=createResidentLedger(()=>state);ledger.purchase('Kenji',900,'market-meal','bun',150);const record=ledger.account('Kenji',900);record.meals={market:{item:'bun',delivered:true,finished:false,eaten:7}};
