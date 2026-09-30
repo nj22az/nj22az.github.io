@@ -1,13 +1,20 @@
 import * as THREE from '../../vendor/three.module.js';
 import {generateFloor,TILE,WALL,FLOOR,tileCentre,worldTile,seeded} from './generate.js';
+import {COSTUMES,COSTUMED,costumeRecipe,buildCostumeHead,bizarroLine} from './costumes.js';
+import {buildAvatar} from '../avatars/build.js';
+import {createAvatarAnimator} from '../avatars/animate.js';
+import {recipeFor} from '../avatars/cast.js';
 
 /**
- * Below the old sea cave: a floor of the dungeon, built into the room the game shows
- * interiors in, and run while you are down there.
+ * Below the old sea cave: Bizarro Minato, a floor at a time, built into the room the game
+ * shows interiors in, and run while you are down there.
  *
- * You come down a rope into the first room with a lantern. Chests in the other rooms hold
- * coins and things the sea left; crabs the size of dogs and blue wisps come for you when
- * you are near, and hurt when they touch you. Strike them with the action button. The
+ * You come down a rope into the first room with a lantern. Down here everything is the
+ * wrong way round: the rock is violet, the signs are in mirror writing, the furniture
+ * hangs from the roof, and the whole town is here in monster suits -- Officer Mori in a
+ * crocodile head, Mrs Sato as a donkey -- talking backwards and bopping you when they
+ * catch you. Bop them back with the action button. Chests in the rooms hold coins and
+ * things the sea left. The
  * stairs in the furthest room go down a floor, bigger and busier; the rope goes back up to
  * the cave mouth, and what you found comes with you. Black out and you wake at the mouth
  * with nothing but a headache.
@@ -18,9 +25,10 @@ import {generateFloor,TILE,WALL,FLOOR,tileCentre,worldTile,seeded} from './gener
  */
 export const WALL_HEIGHT=3;
 export const CREATURES=Object.freeze({
- crab:{name:'crab',hp:2,speed:1.25,sight:7,reach:.8,damage:1,yen:20},
- wisp:{name:'wisp',hp:1,speed:1.9,sight:9,reach:.7,damage:1,yen:35},
+ costume:{name:'townsperson',hp:2,speed:1.35,sight:8,reach:.8,damage:1,yen:30},
 });
+/** The older folk waddle; everyone else is quick in a suit. */
+const SLOW=new Set(['Mrs Sato','Harbour master']);
 
 const colour=(hex,k=1)=>{const c=new THREE.Color(hex);return [c.r*k,c.g*k,c.b*k];};
 
@@ -33,10 +41,10 @@ function buildShell(map){
   if(map.at(x,y)!==FLOOR)continue;
   const x0=x*TILE,x1=x0+TILE,z0=y*TILE,z1=z0+TILE,n=.85+random()*.25;
   // The stairs tile has no floor: it is the mouth of the pit the steps go down.
-  if(x!==map.stairs.x||y!==map.stairs.y)quad([x0,0,z0],[x0,0,z1],[x1,0,z1],[x1,0,z0],colour(0x8a7d66,n));
-  quad([x0,H,z0],[x1,H,z0],[x1,H,z1],[x0,H,z1],colour(0x3a352f,n*.8));         // the roof
+  if(x!==map.stairs.x||y!==map.stairs.y)quad([x0,0,z0],[x0,0,z1],[x1,0,z1],[x1,0,z0],colour(0x5d7a74,n));
+  quad([x0,H,z0],[x1,H,z0],[x1,H,z1],[x0,H,z1],colour(0x2c2440,n*.8));         // the roof, violet
   // A wall wherever a floor tile meets rock, faced into the tile.
-  const face=(ax,az,bx,bz)=>{const k=.8+random()*.3;quad([ax,0,az],[bx,0,bz],[bx,H,bz],[ax,H,az],colour(0x6b6256,k));};
+  const face=(ax,az,bx,bz)=>{const k=.8+random()*.3;quad([ax,0,az],[bx,0,bz],[bx,H,bz],[ax,H,az],colour(0x6c5a80,k));};
   if(map.at(x,y-1)===WALL)face(x1,z0,x0,z0);
   if(map.at(x,y+1)===WALL)face(x0,z1,x1,z1);
   if(map.at(x-1,y)===WALL)face(x0,z0,x0,z1);
@@ -64,31 +72,13 @@ function buildRubble(map){
   }
  }
  const g=new THREE.IcosahedronGeometry(1,0);
- const rubble=new THREE.MeshStandardMaterial({color:0x5d564c,roughness:1,flatShading:true});rubble.userData.keepPhysical=true;
+ const rubble=new THREE.MeshStandardMaterial({color:0x4f4466,roughness:1,flatShading:true});rubble.userData.keepPhysical=true;
  const mesh=new THREE.InstancedMesh(g,rubble,Math.max(1,spots.length));
  const d=new THREE.Object3D();
  spots.forEach(([x,z,s,r],i)=>{d.position.set(x,s*.5,z);d.scale.set(s,s*(r<.3?2.2:.8),s);d.rotation.set(r,r*5,0);d.updateMatrix();mesh.setMatrixAt(i,d.matrix);});
  mesh.count=spots.length;mesh.name='Dungeon rubble';return mesh;
 }
 
-function buildCrab(){
- const g=new THREE.Group();
- const shell=new THREE.MeshStandardMaterial({color:0x8e2c20,roughness:.6}),dark=new THREE.MeshStandardMaterial({color:0x1b1512});
- const body=new THREE.Mesh(new THREE.SphereGeometry(.42,12,8),shell);body.scale.set(1,.45,.8);body.position.y=.3;g.add(body);
- for(const s of [-1,1]){
-  const claw=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),shell);claw.scale.set(1,.7,1.4);claw.position.set(s*.42,.3,.35);g.add(claw);
-  const eye=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.16,5),dark);eye.position.set(s*.1,.5,.25);g.add(eye);
-  for(const z of [-.15,0,.15]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.45,.05,.05),shell);leg.position.set(s*.5,.18,z);leg.rotation.z=s*-.5;g.add(leg);}
- }
- return g;
-}
-function buildWisp(){
- const g=new THREE.Group();
- const core=new THREE.Mesh(new THREE.SphereGeometry(.2,12,8),new THREE.MeshBasicMaterial({color:0xcff4ff}));core.position.y=1.2;g.add(core);
- const halo=new THREE.Mesh(new THREE.SphereGeometry(.42,12,8),new THREE.MeshBasicMaterial({color:0x5fc8ff,transparent:true,opacity:.35,depthWrite:false}));halo.position.y=1.2;g.add(halo);
- const tail=new THREE.Mesh(new THREE.ConeGeometry(.2,.6,8),new THREE.MeshBasicMaterial({color:0x5fc8ff,transparent:true,opacity:.3,depthWrite:false}));tail.position.y=.8;tail.rotation.x=Math.PI;g.add(tail);
- return g;
-}
 function buildChest(){
  const g=new THREE.Group(),wood=new THREE.MeshStandardMaterial({color:0x7a5230,roughness:.8}),iron=new THREE.MeshStandardMaterial({color:0x3b3a36,roughness:.5,metalness:.4});
  const base=new THREE.Mesh(new THREE.BoxGeometry(.8,.45,.55),wood);base.position.y=.23;g.add(base);
@@ -96,6 +86,67 @@ function buildChest(){
  const top=new THREE.Mesh(new THREE.BoxGeometry(.82,.18,.57),wood);top.position.set(0,.09,.285);lid.add(top);
  for(const x of [-.3,.3]){const band=new THREE.Mesh(new THREE.BoxGeometry(.06,.64,.58),iron);band.position.set(x,.32,0);g.add(band);}
  g.userData.lid=lid;return g;
+}
+
+/**
+ * A townsperson in their suit: their own avatar, recoloured, with the animal's hood on the
+ * head bone. Without a page to paint faces on (the tests), a plain stand-in wears the hood.
+ */
+function buildCostumed(who){
+ const look=COSTUMES[who],mesh=new THREE.Group();mesh.name=who+' in a '+look.animal+' suit';
+ if(typeof document!=='undefined'&&document.createElement){
+  try{
+   const avatar=buildAvatar(costumeRecipe(recipeFor(who),who),{shadows:false,faceSize:128});
+   avatar.root.rotation.y=0;mesh.add(avatar.root);
+   const m=avatar.measure;
+   avatar.bones.head.add(buildCostumeHead(look.animal,{R:m.Rh,cy:m.headCentre-m.headY,sx:m.headSX,sy:m.headSY,colour:look.colour,belly:look.belly}));
+   return {mesh,animator:createAvatarAnimator(avatar)};
+  }catch(error){console.warn('Costume avatar unavailable',who,error);}
+ }
+ const suit=new THREE.MeshStandardMaterial({color:look.colour,roughness:.8});
+ const body=new THREE.Mesh(new THREE.CapsuleGeometry(.24,.7,4,10),suit);body.position.y=.6;mesh.add(body);
+ const head=new THREE.Group();head.position.y=1.25;mesh.add(head);
+ head.add(new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),new THREE.MeshStandardMaterial({color:0xe0b894})));
+ head.add(buildCostumeHead(look.animal,{R:.14,cy:0,colour:look.colour,belly:look.belly}));
+ return {mesh,animator:null};
+}
+
+/** Mirror-writing signs of the town's shops, and furniture hanging from the roof. */
+function dressBizarro(group,map){
+ const random=seeded(map.seed*11+map.floor);
+ const signs=[['さくら','SAKURA','#a6333c'],['みなと','MINATO IZAKAYA','#2b3a4a'],['中華そば','SATO RAMEN','#a34e3d'],['港','HARBOUR OFFICE','#2b5a78'],['交番','KOBAN','#1f2d4a']];
+ const H=WALL_HEIGHT;
+ const walls=[];
+ for(const r of map.rooms)for(let x=r.x;x<r.x+r.w;x++)if(map.at(x,r.y-1)===WALL)walls.push([x,r.y]);
+ const wood=new THREE.MeshStandardMaterial({color:0x6d5238,roughness:.9});
+ for(let i=0;i<Math.min(5,walls.length);i++){
+  const [x,y]=walls[Math.floor(random()*walls.length)],[cx,cz]=tileCentre(x,y),[jp,en,bg]=signs[i%signs.length];
+  let material=new THREE.MeshStandardMaterial({color:bg,roughness:.8});
+  if(typeof document!=='undefined'&&document.createElement){
+   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=160;const ctx=canvas.getContext('2d');
+   ctx.fillStyle=bg;ctx.fillRect(0,0,512,160);ctx.fillStyle='#f4efe2';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText(jp,256,62);ctx.font='bold 26px sans-serif';ctx.fillText(en,256,126);
+   const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;material=new THREE.MeshStandardMaterial({map:texture,roughness:.8});
+  }
+  // Mirror writing, and hung upside down half the time.
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.5),material);sign.name='Bizarro sign';
+  sign.position.set(cx,1.9,cz-TILE/2+.03);sign.scale.x=-1;if(random()<.5)sign.rotation.z=Math.PI;group.add(sign);
+ }
+ // A bench, a vending machine and a street lamp on the roof of a room or two.
+ for(const r of map.rooms.slice(1,4)){
+  const [cx,cz]=tileCentre(r.cx,r.cy),kind=Math.floor(random()*3),thing=new THREE.Group();
+  if(kind===0){const seat=new THREE.Mesh(new THREE.BoxGeometry(1.6,.08,.45),wood);seat.position.y=.45;thing.add(seat);for(const dx of [-.7,.7]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.06,.45,.4),wood);leg.position.set(dx,.22,0);thing.add(leg);}const back=new THREE.Mesh(new THREE.BoxGeometry(1.6,.4,.06),wood);back.position.set(0,.75,-.2);thing.add(back);}
+  else if(kind===1){const box=new THREE.Mesh(new THREE.BoxGeometry(.9,1.7,.7),new THREE.MeshStandardMaterial({color:0xc8453a,roughness:.6}));box.position.y=.85;thing.add(box);const glass=new THREE.Mesh(new THREE.BoxGeometry(.7,.8,.02),new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0x9fc4d6,emissiveIntensity:.4}));glass.position.set(0,1.15,.36);thing.add(glass);}
+  else{const pole=new THREE.Mesh(new THREE.CylinderGeometry(.05,.07,2.2,8),new THREE.MeshStandardMaterial({color:0x3d4a4a}));pole.position.y=1.1;thing.add(pole);const lamp=new THREE.Mesh(new THREE.SphereGeometry(.18,10,8),new THREE.MeshBasicMaterial({color:0xfff0c0}));lamp.position.y=2.25;thing.add(lamp);}
+  thing.rotation.x=Math.PI;thing.position.set(cx,H,cz);thing.name='Upside-down furniture';group.add(thing);
+ }
+ // A goldfish swimming slowly round the first room, in the air.
+ const [fx,fz]=tileCentre(map.rooms[0].cx,map.rooms[0].cy);
+ const fish=new THREE.Group();fish.name='Bizarro goldfish';
+ const orange=new THREE.MeshStandardMaterial({color:0xf08a2a,roughness:.5,emissive:0x5a2a00,emissiveIntensity:.3});
+ const body=new THREE.Mesh(new THREE.SphereGeometry(.16,12,8),orange);body.scale.set(1.5,1,.7);fish.add(body);
+ const tail=new THREE.Mesh(new THREE.ConeGeometry(.12,.22,6),orange);tail.rotation.z=Math.PI/2;tail.position.x=-.3;fish.add(tail);
+ group.add(fish);group.userData.goldfish={fish,x:fx,z:fz};
 }
 
 /**
@@ -156,14 +207,19 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   },true);
   return chest;
  });
- // Creatures.
+ // The townsfolk, in their suits. A floor has everybody once before anybody twice.
+ const order=[...COSTUMED].sort((a,b)=>((a.length*31+run.seed*7+run.floor)%13)-((b.length*31+run.seed*7+run.floor)%13));
  const creatures=map.creatures.map((c,i)=>{
-  const kind=CREATURES[c.kind],mesh=c.kind==='wisp'?buildWisp():buildCrab(),[x,z]=tileCentre(c.x,c.y);
+  const start=Math.floor((map.creatures[0]?.pick||0)*order.length),who=order[(start+i)%order.length],look=COSTUMES[who];
+  const kind={...CREATURES.costume,speed:SLOW.has(who)?1.05:CREATURES.costume.speed};
+  const {mesh,animator}=buildCostumed(who);
+  const [x,z]=tileCentre(c.x,c.y);
   mesh.position.set(x,0,z);mesh.userData.dynamicProp=true;group.add(mesh);
-  const creature={kind:c.kind,...kind,x,z,hp:kind.hp,mesh,alive:true,cool:0,hurt:0,phase:i*1.7,home:[x,z]};
-  reg(mesh,'Strike the '+kind.name,()=>strike(creature),true);
+  const creature={kind:c.kind,who,animal:look.animal,...kind,name:who+' the '+look.animal,x,z,hp:kind.hp,mesh,animator,alive:true,cool:0,hurt:0,phase:i*1.7,home:[x,z],said:i};
+  reg(mesh,'Bop '+who+' the '+look.animal,()=>strike(creature),true);
   return creature;
  });
+ dressBizarro(group,map);
  const lantern=new THREE.PointLight(0xffdcaa,5,14,1.4);lantern.name='Your lantern';group.add(lantern);
  room.add(new THREE.HemisphereLight(0x39465a,0x14110e,.35));
 
@@ -184,13 +240,13 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   const nx=c.x+dx/d*.9,nz=c.z+dz/d*.9;if(!blocked(nx,nz,.3)){c.x=nx;c.z=nz;}
   if(c.hp<=0){
    c.alive=false;run.loot+=c.yen*run.floor;run.kills=(run.kills||0)+1;
-   say(c.kind==='wisp'?'The wisp goes out like a blown candle. ¥'+c.yen*run.floor+' clinks on the stone.':'The crab backs into a crack and is gone, leaving ¥'+c.yen*run.floor+' behind.',2.5);
+   say(c.who+' takes off the '+c.animal+' head, bows, puts it back on backwards and waddles off into the dark. ¥'+c.yen*run.floor+' on the floor where they stood.',3.5);
    refresh();
-  }else say(c.kind==='wisp'?'The wisp flickers.':'Your blow rings off its shell.',1.2);
+  }else say(c.who+' the '+c.animal+': “'+bizarroLine(c.who,c.said++)+'”',2.2);
  }
  const spawn=[sx+.6,0,sz+.6];
  refresh();
- say(run.floor===1?'古洞 · Down the rope into the dark. Your lantern shows the way; find the stairs, or the rope back up.':'Floor B'+run.floor+'. The air is colder down here.',4);
+ say(run.floor===1?'古洞 · Down the rope into Bizarro Minato. The whole town is down here in monster suits, and everything is backwards.':'Floor B'+run.floor+'. Further down, and further backwards.',4.5);
  return {
   bounds:{minX:0,maxX:map.w*TILE,minZ:0,maxZ:map.h*TILE},
   spawn,exit:[sx,1.1,sz],yaw:0,noDoorway:true,colliders:[],
@@ -206,6 +262,7 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
     lantern.position.set(at.x,1.7,at.z);
     const t=performance.now()/1000;
     for(const l of torchLights)l.intensity=2.7+.5*Math.sin(t*9+l.position.x);
+    const gold=group.userData.goldfish;if(gold){const a=t*.4;gold.fish.position.set(gold.x+Math.cos(a)*1.6,2+.2*Math.sin(t*1.3),gold.z+Math.sin(a)*1.6);gold.fish.rotation.y=-a-Math.PI/2;}
     for(const c of creatures){
      if(!c.alive){c.mesh.visible=c.hurt>0;c.hurt=Math.max(0,c.hurt-dt);c.mesh.scale.setScalar(Math.max(.01,c.hurt/.35));continue;}
      c.cool=Math.max(0,c.cool-dt);c.hurt=Math.max(0,c.hurt-dt);c.phase+=dt;
@@ -217,13 +274,14 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
       const step=Math.min(len,speed*dt),nx=c.x+tx/len*step,nz=c.z+tz/len*step;
       if(!blocked(nx,nz,.3)){c.x=nx;c.z=nz;}else if(!blocked(nx,c.z,.3))c.x=nx;else if(!blocked(c.x,nz,.3))c.z=nz;
      }
-     c.mesh.position.set(c.x,c.kind==='wisp'?.15*Math.sin(c.phase*3):0,c.z);
-     c.mesh.rotation.y=Math.atan2(dx,dz)+(c.kind==='crab'?Math.sin(c.phase*14)*.15:0);
-     c.mesh.scale.setScalar(c.hurt>0?1.15:1);
+     const moved=Math.hypot(c.x-c.mesh.position.x,c.z-c.mesh.position.z)/Math.max(dt,1e-4);
+     c.mesh.position.set(c.x,c.hurt>0?.12*Math.sin(c.hurt*28):0,c.z);
+     c.mesh.rotation.y=Math.atan2(d<c.sight?dx:tx,d<c.sight?dz:tz);
+     c.animator?.update(dt,{speed:moved>.05?moved:0,expression:c.hurt>0?'surprised':'smile'});
      if(d<c.reach&&c.cool<=0){
       c.cool=1.3;run.hp-=c.damage;onHurt(c);refresh();
       if(run.hp<=0){onFaint();return;}
-      say(c.kind==='wisp'?'The wisp’s cold goes right through you.':'The crab’s claw catches your ankle.',1.5);
+      say(c.who+' the '+c.animal+' bops you. “'+bizarroLine(c.who,c.said++)+'”',2.2);
      }
     }
    },

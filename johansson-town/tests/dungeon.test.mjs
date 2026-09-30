@@ -61,3 +61,31 @@ test('chests pay out once, creatures can be struck down, and they hurt when they
  anchors.find(a=>/Climb/.test(a.label)).fn();assert.ok(exited);
  anchors.find(a=>/Go down to floor B2/.test(a.label)).fn();assert.ok(descended);
 });
+
+test('bizarro Minato: the townsfolk are down here in monster suits, talking backwards',async()=>{
+ const {COSTUMES,COSTUMED,buildCostumeHead,costumeRecipe,bizarroLine}=await import('../src/dungeon/costumes.js');
+ const {STREET_CAST_NAMES}=await import('../src/people/residents.js');
+ assert.equal(COSTUMES['Officer Mori'].animal,'crocodile');assert.equal(COSTUMES['Mrs Sato'].animal,'donkey');
+ for(const name of STREET_CAST_NAMES)assert.ok(COSTUMES[name],name+' has no costume');
+ // Every hood is real geometry, over the head and not through the face.
+ for(const name of COSTUMED){
+  const head=buildCostumeHead(COSTUMES[name].animal,{R:.14,cy:0,...COSTUMES[name]});
+  let meshes=0;head.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes>=4,name+'’s costume is bare');
+  const box=new THREE.Box3().setFromObject(head);assert.ok(box.max.y>.14,name+'’s hood does not sit over the head');
+  const suit=costumeRecipe({outfit:{hat:'police'}},name);assert.equal(suit.outfit.hat,'none');assert.equal(suit.outfit.topColour,COSTUMES[name].colour);
+  assert.notEqual(bizarroLine(name,0),bizarroLine(name,1));
+ }
+ // On a floor, the creatures are the townsfolk, each labelled with who and what they are.
+ const {anchors,layout}=build({hp:5,maxHp:5,loot:0,items:[],floor:3,seed:8});
+ const bops=anchors.filter(a=>/^Bop /.test(a.label));assert.ok(bops.length>=2,'Nobody in costume on B3');
+ for(const c of layout.dungeon.creatures)assert.ok(COSTUMES[c.who]&&c.animal===COSTUMES[c.who].animal);
+ // Everybody once before anybody twice, however busy the floor.
+ const deep=build({hp:5,maxHp:5,loot:0,items:[],floor:6,seed:4}).layout.dungeon.creatures.map(c=>c.who);
+ const counts=Object.values(deep.reduce((n,w)=>(n[w]=(n[w]||0)+1,n),{}));
+ assert.ok(Math.max(...counts)-Math.min(...counts)<=1||new Set(deep).size===deep.length,'The same townsperson fills the floor: '+deep);
+ assert.ok(bops.some(a=>/ the (crocodile|donkey|tanuki|octopus|seagull|shark|owl|fox|bear)$/.test(a.label)));
+ // The dressing: mirror writing and furniture on the roof.
+ const names=[];layout.dungeon&&build().room.traverse(o=>names.push(o.name));
+ assert.ok(names.includes('Bizarro sign')&&names.includes('Upside-down furniture')&&names.includes('Bizarro goldfish'));
+});
+

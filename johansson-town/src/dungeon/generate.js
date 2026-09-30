@@ -4,8 +4,8 @@
  * Rooms are scattered rectangles of cave floor, joined in a chain by crooked passages and
  * then by a couple of extra links, so a floor has loops rather than one long corridor. The
  * first room is where the rope comes down from the cave mouth; the stairs down are in the
- * room furthest from it by walking. Chests and creatures go in the other rooms, more of
- * both the deeper you go. Everything comes from the seed, so a floor is the same floor if
+ * room furthest from it by walking. Chests and the townsfolk in their monster suits go in
+ * the other rooms, more of both the deeper you go. Everything comes from the seed, so a floor is the same floor if
  * you come back to it with the same seed, and tests can walk it.
  */
 export const TILE=2.4;
@@ -67,7 +67,7 @@ export function generateFloor(floor=1,seed=1){
    chests.push({...t,yen:treasure?0:int(4,12)*10*floor,treasure});
   }}
   const count=r===far?1:int(0,Math.min(3,1+Math.floor(floor/2)));
-  for(let i=0;i<count;i++){const t=freeTile(r);if(t)creatures.push({...t,kind:random()<Math.min(.6,.2+floor*.1)?'wisp':'crab'});}
+  for(let i=0;i<count;i++){const t=freeTile(r);if(t)creatures.push({...t,kind:'costume',pick:random()});}
  }
  return {floor,seed,w,h,tiles,rooms,start:{x:start.cx,y:start.cy},stairs,chests,creatures,dist,at};
 }

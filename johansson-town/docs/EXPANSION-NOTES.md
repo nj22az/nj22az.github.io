@@ -123,6 +123,12 @@ made from the class list). The old placeholder figures (`school-kids.js`) are go
   The ticket booth on the quay is the terminal. The retired layouts keep the bus station.
 - **Sea cave** (`src/world/coyote-tunnel.js`, name kept): the tunnel is now a low mouth in a
   nine-metre headland at the end of a gravel path. "Go into the old sea cave" opens the dungeon.
+- **Bizarro Minato** (`src/dungeon/costumes.js`): the dungeon's inhabitants are the street cast in
+  monster suits -- a hood on the head bone (face showing under the animal's jaw) and a suit
+  recipe in its colours: Mori crocodile, Mrs Sato donkey, Thuan tanuki, Nao octopus, the harbour
+  master seagull, Kenji shark, Aya owl, Reiko fox, Tetsuo bear. They speak in opposite-talk
+  (`bizarroLine`). The cave is violet rock and teal floor, with mirror-writing shop signs and
+  furniture on the roof. Could become: costumes in the town at a festival, a costume shop.
 - **Dungeon** (`src/dungeon/`): seeded floors of rooms and passages (`generate.js`) built into
   the interior room (`dungeon.js`); walls are the tile grid via `layout.blocked`. Crabs and
   wisps, chests with yen and trinkets, stairs down, the rope up. Loot is banked on climbing
