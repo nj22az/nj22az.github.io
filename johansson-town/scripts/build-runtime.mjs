@@ -1,10 +1,15 @@
 import {build} from 'vite';
-import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {readFile,writeFile,readdir,unlink} from 'node:fs/promises';
 import {readFileSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import {runtimeSourceHash} from './runtime-source.mjs';
 const root=resolve(new URL('..',import.meta.url).pathname);
+// The manifest from the build before this one. Its files are kept alongside the new
+// ones, so a page still holding the old index.html (Pages caches it for minutes) can
+// finish loading; everything older is pruned below.
+const manifestPath=resolve(root,'runtime/.vite/manifest.json');
+const previousManifest=existsSync(manifestPath)?JSON.parse(readFileSync(manifestPath,'utf8')):{};
 // configFile:false means vite.config.js is not read, so base has to be set here too.
 // Without it the build defaults to '/', and the preload helper asks for every chunk
 // at the site root: each dynamic import 404s its hint and loads unprefetched.
@@ -41,6 +46,12 @@ html=html.replace(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g,(match,prefix='',file
  return `href="${prefix}${file}?h=${hash}"`;
 });
 await writeFile(resolve(root,'index.html'),html);
+// Prune: every hashed chunk that neither this build nor the previous one lists. With
+// emptyOutDir off (the runtime folder also holds source.json), nothing else ever
+// removes them, and each rebuild used to leave another 1.6 MB game chunk behind.
+const keep=new Set(['source.json',...[manifest,previousManifest].flatMap(m=>Object.values(m).flatMap(entry=>[entry.file,...(entry.css||[]),...(entry.assets||[])]))]);
+let pruned=0;for(const name of await readdir(resolve(root,'runtime'))){if(name.startsWith('.')||keep.has(name))continue;await unlink(resolve(root,'runtime',name));pruned++;}
+if(pruned)console.log('Pruned stale runtime chunks:',pruned);
 await writeFile(resolve(root,'runtime/source.json'),JSON.stringify({sha256:await runtimeSourceHash(root)},null,2)+'\n');
 console.log('Stylesheet hashes:',cssHashes.join(', '));
 console.log('Published runtime entry points:',boot,audio,'files:',(await readdir(resolve(root,'runtime'))).filter(f=>f.endsWith('.js')).length);
