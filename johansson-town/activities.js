@@ -9,7 +9,7 @@ import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
 import {loadWorkshopModel,printedItem} from './src/workshop/models.js';
 import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workbooks.js';
-import {STORE_MENU} from './src/people/store-service.js';
+import {STORE_MENU} from './src/commerce/store-menu.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';

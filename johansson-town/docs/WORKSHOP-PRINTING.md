@@ -32,7 +32,7 @@ recipes. Both full apps load only after their button is chosen. No real-money
 transaction, external checkout or uploaded user model is involved.
 
 The catalogue meshes are generated from the existing MIT-licensed recipes in
-`form-3d-studio/src/open-models.mjs`, then simplified to at most 3,000 triangles
+`../form-3d-studio/src/open-models.mjs` (the sibling Form 3D Studio project), then simplified to at most 3,000 triangles
 per solid for game use. All five total approximately 338 kB of JSON; only the
 selected model downloads. They are display meshes, not manufacturing exports.
 Use the full Form 3D application for its original STL and STEP export.

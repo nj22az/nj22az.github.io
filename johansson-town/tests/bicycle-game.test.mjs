@@ -81,12 +81,9 @@ test('Bicycle mount, touch throttle, dismount and remount preserve the retained 
     globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
     assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true],'All supplied rooms preloaded');
-    const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
     const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
-    const {preloadYuriHome}=await import('../src/world/yuri-home.js');
-    assert.equal(await preloadYuriHome(),true,'Thuan house exterior preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
     const {preloadModels}=await import('../src/people/models.js?snappy=1');

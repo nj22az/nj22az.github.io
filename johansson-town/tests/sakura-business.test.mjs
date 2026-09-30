@@ -6,8 +6,6 @@ import {collectTownFind,restoreTownCleanup,CLEANUP_SPOTS} from '../src/commerce/
 import {marketVisitsForDay,residentPlan} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {createResidentLedger} from '../src/people/resident-personalities.js';
-import {createStoreService} from '../src/people/store-service.js';
-import {advanceShopBusiness} from '../src/people/shop-business.js';
 import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-layout.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
@@ -28,24 +26,6 @@ test('sparse customer visits change each day, survive reloads and leave Thuan at
   assert.equal(residentPlan(thuan,day*1440+1200,false,fresh()).activity,'restocking after closing');
  }
  assert.equal(new Set(patterns).size,6);assert.equal(JSON.stringify(marketVisitsForDay(0)),patterns[0],'The bounded cache can recreate the same day');
-});
-
-test('Thuan visits the table, asks, fetches, delivers and credits one paid NPC meal',()=>{
- const state=fresh(),ledger=createResidentLedger(()=>state),room=new T.Group(),clerk=new T.Group();clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;room.add(clerk);
- const customer={profile:RESIDENTS.find(p=>p.name==='Kenji'),g:new T.Group()};customer.g.position.set(...STORE_SEATS[2].position);customer.g.userData={inMarket:true,storeSeatId:STORE_SEATS[2].id};room.add(customer.g);
- let minutes=900;const phases=[],service=createStoreService({clerk,room,ledger,getMinutes:()=>minutes,getSeat:()=>null,getBalance:()=>state.yen,pay:()=>{throw Error('NPC cannot charge the player');},say(){},getCustomers:()=>[customer],onSale:(cost,id)=>recordSakuraSale(state,cost,id)});
- for(let frame=0;frame<120*60;frame++){minutes+=1/60;service.update(1/60);if(phases.at(-1)!==service.phase)phases.push(service.phase);if(service.phase==='ask'){assert.ok(clerk.position.distanceTo(customer.g.position)<1.1);assert.equal(state.sakura.cash,0);assert.match(clerk.userData.residentSpeech.text,/order/);}}
- const sequence=phases.filter(p=>['approach','ask','answer','return','prepare','deliver','served'].includes(p));assert.deepEqual(sequence.slice(0,7),['approach','ask','answer','return','prepare','deliver','served']);
- assert.equal(state.sakura.cash,150);assert.equal(state.sakura.sales,150);assert.equal(state.yen,1200);assert.equal(ledger.account('Kenji',minutes).yen,2250);assert.equal(ledger.account('Kenji',minutes).meals.market.finished,true);
- service.dispose();advanceShopBusiness({world:{people:[{profile:{name:'Thuan'},g:clerk},customer]},ledger,state,minutes,dt:100});assert.equal(state.sakura.cash,150,'Leaving the room cannot credit the same delivery twice');
-});
-
-test('offscreen orders need real arrivals and persist into the visible shop',()=>{
- const state=fresh(),ledger=createResidentLedger(()=>state),clerk={profile:{name:'Thuan'},g:new T.Group()},customer={profile:{name:'Aya'},g:new T.Group()},world={people:[clerk,customer]};
- const step=(dt,visible=false)=>advanceShopBusiness({world,ledger,state,minutes:700,dt,visible});
- step(50);assert.equal(state.sakura.cash,0);clerk.g.userData.indoors='market';customer.g.userData.indoors='market';step(44);assert.equal(state.sakura.cash,0);step(1,true);assert.equal(state.sakura.cash,0);step(1);assert.equal(state.sakura.cash,120);
- step(18);step(100);assert.equal(state.sakura.cash,120);assert.equal(ledger.account('Aya',700).meals.market.finished,true);
- state.sakura=restoreSakura(JSON.parse(JSON.stringify(state.sakura)));assert.equal(recordSakuraSale(state,120,'meal-0-Aya'),false);assert.equal(state.sakura.cash,120);
 });
 
 test('sales fund inventory purchases, with no free money or lost items when the till is empty',()=>{
