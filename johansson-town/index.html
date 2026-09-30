@@ -22,6 +22,7 @@
 <title>Johansson Town</title>
 <link rel="stylesheet" href="living-town.css?h=15bfb223">
 <link rel="stylesheet" href="./landing.css?h=f3f145f3">
+<link rel="stylesheet" href="./title-screen.css?h=1844ef50">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="modulepreload" data-town-runtime href="./runtime/boot-BpC-uiyQ.js">
@@ -36,50 +37,53 @@
 <div id="threshold"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
 <section id="start">
-  <a class="sr-only" href="#board">Skip to town guide</a>
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-mark">
+      <span class="splash-seal">港</span>
+      <span class="splash-word">Johansson<em>Co.</em></span>
+    </div>
+  </div>
+  <section id="title" class="title-screen" aria-labelledby="titleLogo">
+    <div class="title-sky" aria-hidden="true">
+      <span class="title-sun"></span>
+      <span class="title-cloud c1"></span><span class="title-cloud c2"></span><span class="title-cloud c3"></span>
+      <span class="title-spark s1">✦</span><span class="title-spark s2">✦</span><span class="title-spark s3">✦</span><span class="title-spark s4">✦</span>
+    </div>
+    <div class="title-town" aria-hidden="true"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="" fetchpriority="high" decoding="async"></div>
+    <div class="title-center">
+      <p class="title-presents">JOHANSSON CO. PRESENTS</p>
+      <h1 id="titleLogo" class="title-logo">
+        <span class="sr-only">Johansson Town</span>
+        <span class="logo-jp" aria-hidden="true">ヨハンソン町</span>
+        <span class="logo-main" aria-hidden="true"><span style="--i:0">J</span><span style="--i:1">O</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">N</span><span style="--i:5">S</span><span style="--i:6">S</span><span style="--i:7">O</span><span style="--i:8">N</span></span>
+        <span class="logo-town" aria-hidden="true"><span style="--i:9">T</span><span style="--i:10">O</span><span style="--i:11">W</span><span style="--i:12">N</span></span>
+      </h1>
+      <p class="title-tag">A little harbour life · 1997</p>
+      <div class="title-menu">
+        <button id="enter" type="button"><span class="title-cursor" aria-hidden="true">▶</span><b>PRESS START</b></button>
+        <a class="title-guide" href="#board" data-guide-open><span class="title-cursor" aria-hidden="true">▶</span>TOWN GUIDE</a>
+      </div>
+      <div class="title-loading">
+        <div class="title-bar" aria-hidden="true"><span></span></div>
+        <div id="bootStatus" role="status">READY</div>
+      </div>
+    </div>
+    <footer class="title-foot">
+      <span>© 1997 JOHANSSON CO.</span>
+      <span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
+    </footer>
+  </section>
   <div class="board-wrap">
     <article id="board" class="board-frame">
       <div class="crop-marks" aria-hidden="true"></div>
 
       <header>
+        <p class="board-back"><a href="#title" data-guide-close>◀ Back to the title screen</a></p>
         <div class="board-kicker">
           <span>JOHANSSON TOWN · VISITOR’S GUIDE</span>
           <span class="sr-only" id="boardDoc">Document JT-HB-63-0913</span>
           <span>HARBOUR DISTRICT · 1997</span>
         </div>
-
-        <div class="board-hero">
-          <p class="board-vert" aria-hidden="true">港町案内</p>
-          <div>
-            <p class="sr-only" id="boardDateLong">HEISEI 9 · 13 SEPTEMBER 1997</p>
-            <p class="board-jp">ヨハンソン町</p>
-            <h1>JOHANSSON<span> TOWN</span></h1>
-            <p class="board-lede">Slow streets. Familiar faces. A little life by the water.</p>
-          </div>
-          <div class="board-stamp">
-            <div class="board-seal" aria-hidden="true"><b>港</b></div>
-            <p class="board-tiny board-edition">A LITTLE HARBOUR TOWN<br>YOUR VISIT STARTS HERE</p>
-          </div>
-        </div>
-
-        <section class="admit" aria-labelledby="enter-heading">
-          <div class="admit-copy">
-            <p class="board-tiny">WELCOME TO THE NEIGHBOURHOOD</p>
-            <h2 id="enter-heading">Make yourself at home.</h2>
-            <p>Pick up groceries at Sakura, meet the neighbours, and take the long way down to the harbour. There’s no hurry here.</p>
-            <button id="enter" type="button">
-              <span><small>入町</small><b>ENTER TOWN</b></span>
-              <span class="arrow" aria-hidden="true">→</span>
-            </button>
-            <div id="bootStatus" role="status">READY</div>
-            <p class="admit-note">Play with touch, keyboard or controller. Your progress saves on this device.</p>
-            <a class="admit-settings" href="#visit-planning">Plan your visit ↓</a>
-          </div>
-          <figure class="town-preview">
-            <img src="./assets/images/town-street.webp" width="1200" height="760" alt="Sakura Shōten, its red awning and grocery shelves, seen from the street in Johansson Town" fetchpriority="high" decoding="async">
-            <figcaption>桜商店 · A midday walk past Sakura</figcaption>
-          </figure>
-        </section>
 
       </header>
 
@@ -357,6 +361,109 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./landing.js?v=town-brochure-1"></script>
+<script>
+// Title screen: the Johansson Co. splash, the START menu, and the town guide page
+// behind it. Launching the game stays in index.html; this only presses its button.
+(() => {
+  const start = document.getElementById("start");
+  const splash = document.getElementById("splash");
+  const enter = document.getElementById("enter");
+  const guideLink = document.querySelector("[data-guide-open]");
+  const items = [enter, guideLink];
+  const SPLASH_KEY = "johansson-town-splash";
+
+  // The company mark plays once per visit; a tap or key skips it.
+  let splashSeen = false;
+  try { splashSeen = sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
+  const endSplash = () => {
+    if (splash.classList.contains("done")) return;
+    splash.classList.add("done");
+    try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch {}
+    enter.focus({ preventScroll: true });
+  };
+  if (splashSeen || matchMedia("(prefers-reduced-motion: reduce)").matches) endSplash();
+  else {
+    splash.addEventListener("animationend", (event) => { if (event.animationName === "splash-out") endSplash(); });
+    splash.addEventListener("pointerdown", endSplash);
+  }
+
+  const titleActive = () => !start.classList.contains("hidden") && !start.classList.contains("guide-open") && !start.classList.contains("booting");
+
+  function openGuide(event) {
+    event?.preventDefault();
+    start.classList.add("guide-open");
+    start.scrollTop = 0;
+    document.getElementById("board").focus?.({ preventScroll: true });
+  }
+  function closeGuide(event) {
+    event?.preventDefault();
+    start.classList.remove("guide-open");
+    enter.focus({ preventScroll: true });
+  }
+  guideLink.addEventListener("click", openGuide);
+  document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
+  document.getElementById("board").tabIndex = -1;
+
+  // A short two-note chime when START is pressed. The press is the user gesture
+  // browsers ask for, so this never autoplays.
+  function chime() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      [[988, 0], [1319, .09]].forEach(([freq, at]) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(.0001, ctx.currentTime + at);
+        gain.gain.exponentialRampToValueAtTime(.06, ctx.currentTime + at + .01);
+        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + at + (at ? .45 : .12));
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(ctx.currentTime + at);
+        osc.stop(ctx.currentTime + at + .5);
+      });
+      setTimeout(() => ctx.close(), 900);
+    } catch {}
+  }
+  enter.addEventListener("click", () => { if (!window.__JOHANSSON_BOOTING__) chime(); }, { capture: true });
+
+  document.addEventListener("keydown", (event) => {
+    if (!splash.classList.contains("done")) { endSplash(); event.preventDefault(); return; }
+    if (start.classList.contains("guide-open") && event.key === "Escape") { closeGuide(event); return; }
+    if (!titleActive()) return;
+    const index = items.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      items[((index < 0 ? 0 : index + step) + items.length) % items.length].focus();
+    } else if ((event.key === "Enter" || event.key === " ") && index < 0) {
+      event.preventDefault();
+      enter.click();
+    }
+  });
+
+  // Controller: Start or A presses START, the d-pad moves the cursor.
+  let held = {};
+  function pollPads() {
+    if (start.classList.contains("hidden") || window.__JOHANSSON_RUNNING__) return;
+    let pads = [];
+    try { pads = navigator.getGamepads?.() || []; } catch {}
+    for (const pad of pads) {
+      if (!pad) continue;
+      const pressed = (i) => pad.buttons[i]?.pressed;
+      const edge = (i) => { const now = pressed(i), was = held[pad.index + ":" + i]; held[pad.index + ":" + i] = now; return now && !was; };
+      if (!splash.classList.contains("done")) { if (edge(9) || edge(0)) endSplash(); continue; }
+      if (!titleActive()) { if (edge(1) && start.classList.contains("guide-open")) closeGuide(); continue; }
+      const current = Math.max(0, items.indexOf(document.activeElement));
+      if (edge(12) || edge(13)) items[(current + 1) % items.length].focus();
+      if (edge(9)) enter.click();
+      else if (edge(0)) items[current].click();
+    }
+    requestAnimationFrame(pollPads);
+  }
+  window.addEventListener("gamepadconnected", () => requestAnimationFrame(pollPads), { once: true });
+})();
+</script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
 (() => {
@@ -386,6 +493,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     if(window.__JOHANSSON_BOOTING__)return;
     window.__JOHANSSON_BOOTING__=true;
     enter.disabled=true;
+    document.getElementById('start').classList.add('booting');
     status.textContent='LOADING GAME CODE…';
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
     try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
@@ -409,6 +517,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
         : 'Johansson Town could not start: '+(err.message||'Unknown startup error')+'. Reload and try again.';
       fatal.classList.remove('hidden');
       window.__JOHANSSON_BOOTING__=false;
+      document.getElementById('start').classList.remove('booting');
       enter.disabled=false;
     }
   }
