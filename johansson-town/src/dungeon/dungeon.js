@@ -4,6 +4,7 @@ import {COSTUMES,COSTUMED,costumeRecipe,buildCostumeHead,bizarroLine} from './co
 import {buildAvatar} from '../avatars/build.js';
 import {createAvatarAnimator} from '../avatars/animate.js';
 import {recipeFor} from '../avatars/cast.js';
+import {WEAPONS} from '../interact/fists.js';
 
 /**
  * Below the old sea cave: Bizarro Minato, a floor at a time, built into the room the game
@@ -157,7 +158,7 @@ function dressBizarro(group,map){
  * @param {Function} [o.say] @param {Function} [o.hud]
  * @param {Function} [o.onDescend] @param {Function} [o.onExit] @param {Function} [o.onFaint] @param {Function} [o.onHurt]
  */
-export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescend=()=>{},onExit=()=>{},onFaint=()=>{},onHurt=()=>{}}){
+export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescend=()=>{},onExit=()=>{},onFaint=()=>{},onHurt=()=>{},onStrike=()=>{},onWeapon=()=>{}}){
  const map=generateFloor(run.floor,run.seed);
  const group=new THREE.Group();group.name='Old sea cave, floor B'+run.floor;room.add(group);
  group.add(buildShell(map),buildRubble(map));
@@ -201,7 +202,13 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   const chest={...c,mesh,open:false};
   reg(mesh,'Open the chest',()=>{
    if(chest.open)return;chest.open=true;mesh.userData.lid.rotation.x=-1.9;
-   if(chest.treasure){run.items.push(chest.treasure.name);run.loot+=0;say('In the chest: '+chest.treasure.name+'. Worth something to somebody.',3.5);}
+   if(chest.weapon){
+    run.items.push(chest.weapon);
+    const better=!run.weapon||WEAPONS[chest.weapon].damage>WEAPONS[run.weapon].damage;
+    if(better){run.weapon=chest.weapon;onWeapon(chest.weapon);}
+    say('In the chest: a '+chest.weapon+'. '+(better?'Better than bare knuckles. You take it in your right hand.':'You already have something better; it goes in the bag.'),3.5);
+   }
+   else if(chest.treasure){run.items.push(chest.treasure.name);say('In the chest: '+chest.treasure.name+'. Worth something to somebody.',3.5);}
    else{run.loot+=chest.yen;say('The chest holds ¥'+chest.yen+' in old coins.',3);}
    refresh();
   },true);
@@ -216,11 +223,11 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   const [x,z]=tileCentre(c.x,c.y);
   mesh.position.set(x,0,z);mesh.userData.dynamicProp=true;group.add(mesh);
   const creature={kind:c.kind,who,animal:look.animal,...kind,name:who+' the '+look.animal,x,z,hp:kind.hp,mesh,animator,alive:true,cool:0,hurt:0,phase:i*1.7,home:[x,z],said:i};
-  reg(mesh,'Bop '+who+' the '+look.animal,()=>strike(creature),true);
+  reg(mesh,'Fight '+who+' the '+look.animal,()=>strike(creature),true);
   return creature;
  });
  dressBizarro(group,map);
- const lantern=new THREE.PointLight(0xffdcaa,5,14,1.4);lantern.name='Your lantern';group.add(lantern);
+ const lantern=new THREE.PointLight(0xffdcaa,6,15,1.3);lantern.name='Your lantern';group.add(lantern);
  room.add(new THREE.HemisphereLight(0x39465a,0x14110e,.35));
 
  const refresh=()=>hud('♥'.repeat(Math.max(0,run.hp))+'♡'.repeat(Math.max(0,run.maxHp-run.hp))+' · B'+run.floor+' · ¥'+run.loot+(run.items.length?' · '+run.items.length+' found':''));
@@ -231,18 +238,25 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   return false;
  };
  let player=null;
+ let clock=0,lastPunch=-9;
  function strike(c){
-  if(!c.alive||!player)return;
+  if(!player||clock-lastPunch<.36)return;
+  lastPunch=clock;
+  // The punch is thrown whether or not it lands: that is what a swing at thin air looks like.
+  onStrike(c,run.weapon);
+  if(!c?.alive)return;
   const dx=c.x-player.x,dz=c.z-player.z,d=Math.hypot(dx,dz)||1;
-  if(d>2.2){say('Too far to reach.',1.5);return;}
-  c.hp--;c.hurt=.35;
+  if(d>2.5){say('Too far to reach.',1.2);return;}
+  const damage=WEAPONS[run.weapon]?.damage||1;
+  c.hp-=damage;c.hurt=.35;c.attack=0;c.animator?.play('Hurt');
   // Knocked back, if there is room behind it.
-  const nx=c.x+dx/d*.9,nz=c.z+dz/d*.9;if(!blocked(nx,nz,.3)){c.x=nx;c.z=nz;}
+  // Knocked back half a step: far enough to feel it, near enough to follow up.
+  const nx=c.x+dx/d*.5,nz=c.z+dz/d*.5;if(!blocked(nx,nz,.3)){c.x=nx;c.z=nz;}
   if(c.hp<=0){
-   c.alive=false;run.loot+=c.yen*run.floor;run.kills=(run.kills||0)+1;
+   c.alive=false;c.leaving=1.6;c.animator?.play('Bow');run.loot+=c.yen*run.floor;run.kills=(run.kills||0)+1;
    say(c.who+' takes off the '+c.animal+' head, bows, puts it back on backwards and waddles off into the dark. ¥'+c.yen*run.floor+' on the floor where they stood.',3.5);
    refresh();
-  }else say(c.who+' the '+c.animal+': “'+bizarroLine(c.who,c.said++)+'”',2.2);
+  }else say((run.weapon?'Whack! ':'Pow! ')+c.who+' the '+c.animal+': “'+bizarroLine(c.who,c.said++)+'”',2.2);
  }
  const spawn=[sx+.6,0,sz+.6];
  refresh();
@@ -253,24 +267,31 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   blocked,
   dungeon:{
    map,run,chests,creatures,strike,
+   /** Somebody in a suit close enough to fight: the fists come up. */
+   nearFoe(at,range=4.5){return creatures.some(c=>c.alive&&Math.hypot(c.x-at.x,c.z-at.z)<range);},
    /**
     * @param {number} dt seconds
     * @param {{x:number,z:number}} at where the player stands
     */
    update(dt,at){
-    player=at;if(!at)return;
-    lantern.position.set(at.x,1.7,at.z);
+    player=at;clock+=dt;if(!at)return;
+    // Held up over your head: at eye height it lit your own fists white as they came past it.
+    lantern.position.set(at.x,2.6,at.z);
     const t=performance.now()/1000;
     for(const l of torchLights)l.intensity=2.7+.5*Math.sin(t*9+l.position.x);
     const gold=group.userData.goldfish;if(gold){const a=t*.4;gold.fish.position.set(gold.x+Math.cos(a)*1.6,2+.2*Math.sin(t*1.3),gold.z+Math.sin(a)*1.6);gold.fish.rotation.y=-a-Math.PI/2;}
     for(const c of creatures){
-     if(!c.alive){c.mesh.visible=c.hurt>0;c.hurt=Math.max(0,c.hurt-dt);c.mesh.scale.setScalar(Math.max(.01,c.hurt/.35));continue;}
+     if(!c.alive){
+      // A bow, then gone: shrinking away into the dark over the last moment.
+      c.leaving=Math.max(0,(c.leaving||0)-dt);c.mesh.visible=c.leaving>0;
+      c.mesh.scale.setScalar(Math.min(1,c.leaving/.35)||.01);c.animator?.update(dt,{speed:0,expression:'happy'});continue;
+     }
      c.cool=Math.max(0,c.cool-dt);c.hurt=Math.max(0,c.hurt-dt);c.phase+=dt;
      const dx=at.x-c.x,dz=at.z-c.z,d=Math.hypot(dx,dz);
      let tx=c.home[0]-c.x,tz=c.home[1]-c.z,speed=c.speed*.4;
      if(d<c.sight){tx=dx;tz=dz;speed=c.speed;}
      const len=Math.hypot(tx,tz);
-     if(len>c.reach*.8&&c.hurt<=0){
+     if(len>c.reach*.8&&c.hurt<=0&&!(c.attack>0)){
       const step=Math.min(len,speed*dt),nx=c.x+tx/len*step,nz=c.z+tz/len*step;
       if(!blocked(nx,nz,.3)){c.x=nx;c.z=nz;}else if(!blocked(nx,c.z,.3))c.x=nx;else if(!blocked(c.x,nz,.3))c.z=nz;
      }
@@ -278,10 +299,18 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
      c.mesh.position.set(c.x,c.hurt>0?.12*Math.sin(c.hurt*28):0,c.z);
      c.mesh.rotation.y=Math.atan2(d<c.sight?dx:tx,d<c.sight?dz:tz);
      c.animator?.update(dt,{speed:moved>.05?moved:0,expression:c.hurt>0?'surprised':'smile'});
-     if(d<c.reach&&c.cool<=0){
-      c.cool=1.3;run.hp-=c.damage;onHurt(c);refresh();
-      if(run.hp<=0){onFaint();return;}
-      say(c.who+' the '+c.animal+' bops you. “'+bizarroLine(c.who,c.said++)+'”',2.2);
+     // Arms up for a moment, then down on you: you can see it coming, and step back.
+     if(d<c.reach&&c.cool<=0&&!(c.attack>0)&&c.hurt<=0){c.attack=.42;c.animator?.play('Swipe');}
+     if(c.attack>0){
+      c.attack-=dt;
+      if(c.attack<=0){
+       c.cool=1.3;
+       if(d<c.reach*1.4){
+        run.hp-=c.damage;onHurt(c);refresh();
+        if(run.hp<=0){onFaint();return;}
+        say(c.who+' the '+c.animal+' bops you. “'+bizarroLine(c.who,c.said++)+'”',2.2);
+       }
+      }
      }
     }
    },

@@ -22,6 +22,9 @@ export const TREASURES=Object.freeze([
  {name:'Coral comb',value:450},{name:'Brass ship’s bell',value:800},{name:'Tin toy robot',value:650},
 ]);
 
+/** What you might find to fight with, instead of your fists (interact/fists.js WEAPONS). */
+export const WEAPON_FINDS=Object.freeze(['Harisen paper fan','Driftwood club','Rusty boat hook']);
+
 /**
  * @param {number} floor 1 for the first floor down
  * @param {number} seed
@@ -63,8 +66,9 @@ export function generateFloor(floor=1,seed=1){
  const chests=[],creatures=[];
  for(const r of rooms.slice(1)){
   if(random()<.7){const t=freeTile(r);if(t){
-   const treasure=random()<.25+floor*.05?TREASURES[int(0,TREASURES.length-1)]:null;
-   chests.push({...t,yen:treasure?0:int(4,12)*10*floor,treasure});
+   const weapon=random()<.18?WEAPON_FINDS[int(0,WEAPON_FINDS.length-1)]:null;
+   const treasure=!weapon&&random()<.25+floor*.05?TREASURES[int(0,TREASURES.length-1)]:null;
+   chests.push({...t,yen:treasure||weapon?0:int(4,12)*10*floor,treasure,weapon});
   }}
   const count=r===far?1:int(0,Math.min(3,1+Math.floor(floor/2)));
   for(let i=0;i<count;i++){const t=freeTile(r);if(t)creatures.push({...t,kind:'costume',pick:random()});}

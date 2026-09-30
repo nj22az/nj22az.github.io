@@ -16,6 +16,17 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {STREET_CAST_NAMES} from '../src/people/residents.js';
 
+// The town's clock follows the real one (town-clock.js), so without this the smoke test
+// depended on the hour it was run at: after 20:00 Sakura had already shut and restocked
+// before the test's own day began, and the after-hours restock it checks never came. Ten
+// in the morning, with time still running from there.
+{
+ const RealDate=Date,started=RealDate.now(),base=new RealDate(2026,8,30,10,0,0).getTime();
+ globalThis.Date=class extends RealDate{
+  constructor(...args){super(...(args.length?args:[base+RealDate.now()-started]));}
+  static now(){return base+RealDate.now()-started;}
+ };
+}
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
 const dataModule=source=>'data:text/javascript;base64,'+Buffer.from(source).toString('base64');

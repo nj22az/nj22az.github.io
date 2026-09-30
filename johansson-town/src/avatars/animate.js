@@ -21,7 +21,7 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
- PickUp:1.6,Fist:1.4,Jump:.9,Cheer:1.6,Hop:1.2,Stomp:1.4,Slump:2.2,Fidget:2.4,SitToast:2.2,SitDrink:2.4,
+ PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Stomp:1.4,Slump:2.2,Fidget:2.4,SitToast:2.2,SitDrink:2.4,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
@@ -159,6 +159,23 @@ export function createAvatarAnimator(avatar){
    case 'Stretch':set('shoulderL',-.2,0,2.8*e);set('shoulderR',-.2,0,-2.8*e);add('chest',-.25*e);add('head',-.3*e);break;
    case 'PickUp':add('chest',1.1*e);add('spine',.3*e);set('shoulderR',-1.3*e);set('thighL',-.5*e);set('thighR',-.5*e);set('kneeL',.9*e);set('kneeR',.9*e);return {root:-.08*e};
    case 'Fist':set('shoulderR',-2.4*q+Math.sin(t*8)*.2*q,0,-.1);set('elbowR',-.5*q);add('chest',-.1*q);break;
+   // Fighting with bare hands: a straight punch, the other fist kept up by the chin.
+   case 'Jab':case 'JabL':{
+    const R=g.name==='Jab',a=R?'R':'L',b=R?'L':'R',sgn=R?1:-1;
+    // Pulled back for a beat, snapped out, and brought home again.
+    const out=t<.1?-(t/.1)*.3:t<.2?(t-.1)/.1:Math.max(0,1-(t-.2)/.22);
+    set('shoulder'+a,-.9-.75*out,0,-sgn*.05);set('elbow'+a,-1.9+1.85*out);
+    set('shoulder'+b,-1.05,0,sgn*.18);set('elbow'+b,-2.1);
+    add('chest',.06*out,-sgn*.4*out);add('head',0,sgn*.12*out);
+    return {root:-.02*q};}
+   // Somebody in a suit coming at you: both arms up over the head, then down on you.
+   case 'Swipe':{
+    const up=t<.32?t/.32:Math.max(0,1-(t-.32)/.14),down=t<.32?0:Math.min(1,(t-.32)/.14)*Math.max(0,1-(t-.5)/.2);
+    set('shoulderL',-2.7*up-1.2*down,0,.25);set('shoulderR',-2.7*up-1.2*down,0,-.25);set('elbowL',-.4*up);set('elbowR',-.4*up);
+    add('chest',-.2*up+.45*down);add('head',-.15*up+.2*down);
+    return {root:.04*up};}
+   // Hit: knocked back a step, arms flung out, head snapped back.
+   case 'Hurt':set('shoulderL',-.5*e,0,.9*e+.13);set('shoulderR',-.5*e,0,-.9*e-.13);set('elbowL',-.5*e);set('elbowR',-.5*e);add('chest',-.4*e);add('head',-.35*e,Math.sin(t*20)*.1*e);return {root:-.03*e};
    case 'Jump':{const up=t<.2?-.08:Math.sin(Math.PI*Math.min(1,(t-.2)/.6))*.25;set('shoulderL',-.3,0,1.4*q);set('shoulderR',-.3,0,-1.4*q);set('kneeL',t<.2?.8:.3);set('kneeR',t<.2?.8:.3);set('thighL',t<.2?-.5:-.2);set('thighR',t<.2?-.5:-.2);return {root:up};}
    case 'Cheer':set('shoulderL',-.2,0,2.6*q);set('shoulderR',-.2,0,-2.6*q);set('elbowL',-.3);set('elbowR',-.3);return {root:Math.abs(Math.sin(t*7))*.1*e};
    case 'Hop':set('shoulderL',-.2,0,.9*e);set('shoulderR',-.2,0,-.9*e);add('head',-.15*e);return {root:Math.abs(Math.sin(t*8))*.12*e};
