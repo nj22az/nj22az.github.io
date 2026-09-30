@@ -94,3 +94,6 @@ Nao cooks each dish at its station and brings it over (`DISHES`, `KITCHEN_STATIO
 `izakaya-beer.js`). Food and drink have their own places on the table; you eat and drink them a
 mouthful at a time. You can also buy a guest a drink, which the game remembers (`state.treats`).
 
+Everyone indoors is a Shimanchu too: Higa-san at the Umi-no-yu bandai (`Mrs Higa` in `cast.js`) and the
+whole 5・6年 class with Yonamine-sensei (`src/people/school-avatars.js`, one avatar per person, recipes
+made from the class list). The old placeholder figures (`school-kids.js`) are gone.
