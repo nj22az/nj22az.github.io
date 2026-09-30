@@ -97,3 +97,19 @@ mouthful at a time. You can also buy a guest a drink, which the game remembers (
 Everyone indoors is a Shimanchu too: Higa-san at the Umi-no-yu bandai (`Mrs Higa` in `cast.js`) and the
 whole 5・6年 class with Yonamine-sensei (`src/people/school-avatars.js`, one avatar per person, recipes
 made from the class list). The old placeholder figures (`school-kids.js`) are gone.
+
+## Park and the east beach
+
+- The supplied park model was reworked in Blender (`tools/blender/rework-park.py`, run
+  with the `bpy` package): its merged bush clump, whose leaf rendered as a ring of grey
+  boulders round the hill, is gone from the GLB. The original is in git history.
+- The east lawn wears the park's painted turf from the first frame, so the hill and the
+  lawn are one green even before the model streams in.
+- The gateball court is cut level into the hill's foot (`inGateball` in `park-layout.js`)
+  behind a low retaining wall with colliders, instead of the slope running under the sand.
+- `src/world/beach-life.js`: red crabs on the dry sand (one instanced draw) that scuttle
+  sideways, run seaward when you come within 3.4 m and dig in under 1.25 m; a pool of
+  three fish leaping 10–55 m offshore with splash rings, riding `waveHeight` from
+  `ocean.js`. Both groups are `dynamicProp`s placed where they live, because the
+  section renderer batches static meshes and culls moving ones by their group's origin.
+  Could become: hermit crabs at night, a heron at the tide line, catchable fish from the pier.

@@ -1,3 +1,4 @@
+import {parkSkirtHeight} from '../park-layout.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
@@ -426,6 +427,19 @@ function buildYardLife(kit,solid,{inspect}){
 function buildGateball(kit,solid,{anchor,inspect}){
  const G=GATEBALL,top=GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
  kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,0xcdb88f,'sand');
+ // The court is cut level into the foot of the park hill. Where the hill comes down to
+ // it, a low stone wall with a cap holds the slope back.
+ const step=.5;
+ for(const side of ['south','west']){
+  const length=side==='south'?G.maxX-G.minX:G.maxZ-G.minZ;
+  for(let t=0;t<length-1e-6;t+=step){
+   const mid=t+step/2,x=side==='south'?G.minX+mid:G.minX-.13,z=side==='south'?G.maxZ+.13:G.minZ+mid;
+   const h=parkSkirtHeight(side==='south'?x:G.minX-.02,side==='south'?G.maxZ+.02:z)??0;if(h<.04)continue;
+   const w=side==='south'?step:.26,d=side==='south'?.26:step;
+   kit.box(w,h+.04,d,x,(h+.04)/2,z,0x8f8a7c);kit.box(w+.02,.06,d+.06,x,h+.07,z,0x6f6b60);
+   solid({id:'gateball-wall',x,z,w,d,height:h+.1});
+  }
+ }
  const line=(x0,x1,z0,z1)=>kit.block(x0,x1,top,top+.006,z0,z1,0xf4f1ea);
  line(G.minX+.3,G.maxX-.3,G.minZ+.3,G.minZ+.36);line(G.minX+.3,G.maxX-.3,G.maxZ-.36,G.maxZ-.3);
  line(G.minX+.3,G.minX+.36,G.minZ+.3,G.maxZ-.3);line(G.maxX-.36,G.maxX-.3,G.minZ+.3,G.maxZ-.3);

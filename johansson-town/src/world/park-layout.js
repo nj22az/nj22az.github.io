@@ -1,5 +1,8 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {FULL_TOWN} from './full-town-state.js';
+import {GATEBALL} from './okinawa/layout.js';
+/** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
+export const inGateball=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
 /**
  * What the supplied park's ground textures are multiplied by.
  *
@@ -51,7 +54,7 @@ export function parkSkirtHeight(x,z){
  const p=activePark();if(p.plaza)return null;
  const ex=Math.min(Math.max(x,p.x-p.half),p.x+p.half),ez=Math.min(Math.max(z,p.z-p.half),p.z+p.half);
  const d=Math.hypot(x-ex,z-ez);
- if(d<=0)return null;
+ if(d<=0||inGateball(x,z))return null;
  // The reach turns with the outward direction rather than switching at the face, or
  // the skirt would step by its own width along the corner where the rule flipped.
  const west=d?Math.max(0,(ex-x)/d):0;

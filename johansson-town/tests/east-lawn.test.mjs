@@ -6,7 +6,8 @@ import {installDOM} from './fixtures.mjs';
 import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
-import {PARK} from '../src/world/park-layout.js';
+import {PARK,inGateball} from '../src/world/park-layout.js';
+import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
 
@@ -24,7 +25,8 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
   // Walking east must never be a step up. The park used to be a plinth with a
   // vertical face, and excluding its square from the lawn left a dead band one body
   // wide at its foot: you walked into an invisible wall on open grass.
-  else if(routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+  // The gateball court is cut level into the hill's foot behind a retaining wall.
+  else if(!inGateball(x,z)&&!inGateball(x+.4,z)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
    &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
    steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
@@ -85,15 +87,19 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
  globalThis.fetch=async url=>String(url).startsWith('blob:')?original(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const bare=buildEastLawn({parent:new THREE.Group(),colliders:[]});
-  // Before the model arrives the lawn is a plain green, and says so rather than
-  // quietly claiming it dressed itself.
+  // Before the model arrives the lawn already wears the painted turf the park's ground
+  // uses, so the two greens match from the first frame; with nothing fetched there is
+  // nothing more to hand over, and it says so.
   assert.equal(bare.useParkGreenery(parkFoliage()),false);
-  assert.equal(bare.lawn.material.map,null);
+  assert.ok(bare.lawn.material.map?.image===paintedTurf().image,'The bare lawn is a green of its own');
 
   assert.equal(await preloadPark(),true);
-  const {grass,bush}=parkFoliage();
+  const {grass}=parkFoliage();
   assert.ok(grass?.image,'The park model carries no lawn texture');
-  assert.ok(bush?.image,'The park model carries no shrub texture');
+  // The park's pale bush clump was taken out of the model (tools/blender/rework-park.py):
+  // it read as a ring of stones round the hill. Its leaf texture still exists in the
+  // original asset, so the shrub hand-over is exercised with a stand-in leaf.
+  const bush=grass.clone();
   const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
   assert.equal(lawn.useParkGreenery({grass,bush}),true);
   assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');

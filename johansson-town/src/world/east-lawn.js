@@ -6,6 +6,8 @@ import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
+import {GATEBALL} from './okinawa/layout.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -108,8 +110,11 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   for(let v=from;v<to;v+=CELL)set.add(v);
   return [...set].sort((a,b)=>a-b);
  };
- const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half);
- const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half);
+ // The gateball court's edges too: the court is level ground cut into the hill's foot,
+ // and the lawn stops at its retaining wall rather than sloping in under the sand.
+ const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half,GATEBALL.minX,GATEBALL.maxX);
+ const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half,GATEBALL.minZ,GATEBALL.maxZ);
+ const onCourt=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
@@ -121,7 +126,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass-tuck(x,z),z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
   const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
-  if(onMound(mx,mz))continue;
+  if(onMound(mx,mz)||onCourt(mx,mz))continue;
   const a=j*xs.length+i,b=a+1,c=a+xs.length,d=c+1;
   faces.push(a,c,b,b,c,d);
  }
@@ -285,5 +290,8 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   }
   return true;
  };
+ // The same painted turf as the park's own ground from the start, so the two greens match
+ // before the park has streamed in -- and where it never does.
+ if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf();if(turf)useParkGreenery({grass:turf});}catch{}}
  return {group,lawn,shore,shrubs,garden,useParkGreenery,tick:garden.tick};
 }
