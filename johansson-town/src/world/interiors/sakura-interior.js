@@ -10,6 +10,7 @@ import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './saku
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING,SAKURA_TILL_CABINET} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,paintSakuraShell,buildSakuraBand} from './sakura-cheer.js';
+import {buildSakuraLife} from './sakura-life.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -146,6 +147,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
  buildSakuraBand(room);
+ const life=buildSakuraLife(room,{anchor,action});
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
@@ -167,7 +169,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,last='';
- return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>decorations.tick(time),accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
