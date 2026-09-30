@@ -97,7 +97,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
     assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['bus-station','warehouse']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['ferry-terminal','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');

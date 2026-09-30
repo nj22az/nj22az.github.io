@@ -10,7 +10,7 @@ import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {BUS_STATION} from '../src/world/bus-station.js';
+import {FERRY_TERMINAL} from '../src/world/ferry.js';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 
 const THUAN=RESIDENTS.find(p=>p.name==='Thuan');
@@ -38,7 +38,8 @@ test('Thuan has a beer at Minato between closing the shop and the last bus',()=>
   assert.equal(plan(last-THUAN_BUS_MARGIN-1).place,'izakaya');
   const leaving=plan(last-THUAN_BUS_MARGIN);
   assert.equal(leaving.place,'bus');
-  assert.deepEqual(leaving.target,BUS_STATION.queue);
+  // The island's commuters leave by the ferry from the outer pier.
+  assert.deepEqual(leaving.target,FERRY_TERMINAL.queue);
   assert.equal(plan(last-1).place,'bus','She is still drinking when her bus goes');
   // Rain changes her evening activity, not the bus schedule.
   assert.equal(departureFor(THUAN,true),shift.departure);

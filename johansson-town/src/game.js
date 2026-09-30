@@ -22,7 +22,7 @@ import {chooseOpening} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
 import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,satoRamenOpen} from './world/sato-ramen-layout.js';
-import {BUS_STATION} from './world/bus-station.js';
+import {transitStop} from './world/transit.js';
 import {homeOwner} from './people/home-life.js';
 import {buildResidentHome} from './world/interiors/resident-home.js';
 import {createWorkplaceResidents} from './people/workplace-residents.js';
@@ -912,7 +912,7 @@ function beginAtOpening(){
  const opening=chooseOpening({minutes,rain:weather,force});
  if(opening.id==='sakura-bench')return opening;
  if(opening.room){const door=doors.get(opening.room);if(door){standUpAt(door.x,door.z,Math.PI);}preloadIzakaya(['interior']);return opening;}
- if(opening.stand){const [x,z]=opening.stand==='bus-platform'?BUS_STATION.platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
+ if(opening.stand){const [x,z]=opening.stand==='bus-platform'?transitStop().platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
  if(opening.seat&&sitOnSeat(opening.seat))return opening;
  return null;
 }
@@ -1162,7 +1162,7 @@ window.__JOHANSSON_POSE__={
  get x(){return player.position.x;},get y(){return player.position.y;},get z(){return player.position.z;},
  get yaw(){return yaw;},get pitch(){return pitch;},get inside(){return current?.id||null;},
  get ground(){return routeAt(player.position.x,player.position.z)?.id||null;},
- get bus(){const run=world.bus;return run?{phase:run.phase,service:run.service??null,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
+ get bus(){const run=world.ferry||world.bus;return run?{phase:run.phase,service:run.service??null,z:+run.bus.position.z.toFixed(1),scale:+run.bus.scale.x.toFixed(3),visible:run.bus.visible}:null;},
  get doors(){return (world.shopDoors||[]).map(d=>+d.amount.toFixed(3));},
  /** The town clock, in minutes past midnight, so a routine can be watched against it. */
  get minutes(){return Math.round(minutes);},

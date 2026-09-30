@@ -19,10 +19,12 @@ const shifts={
 export const COMMUTER_SHIFTS=Object.freeze(Object.fromEntries(Object.entries(shifts).map(([name,shift])=>[name,Object.freeze(shift)])));
 const minuteOfDay=m=>((m%1440)+1440)%1440;
 /**
- * On the peninsula Mrs Sato cooks the lunch at Sato Ramen: in on the 08:30 bus, fish from
- * the harbour, the pots on at 10:30, serving 11:00 to 14:00, home on the 14:30.
+ * On the island Mrs Sato cooks the lunch at Sato Ramen: in on the 08:30 ferry, fish from
+ * the harbour, the pots on at 10:30, serving 11:00 to 14:00, home on the 14:30. She shuts
+ * the counter at two and goes straight down to the pier to wait for it on the quay bench,
+ * which also keeps her out of the street behind Sakura when Thuan goes out for her break.
  */
-export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:850,departure:870});
+export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:840,departure:870});
 export const shiftFor=profile=>{const name=typeof profile==='string'?profile:profile?.name;return name==='Mrs Sato'&&peninsulaActive()?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
 function elapsed(profile,minutes){const shift=shiftFor(profile);return shift&&!shift.permanent?minuteOfDay(minutes-shift.arrival):null;}
 
@@ -67,6 +69,7 @@ export function serviceTime(minutes){
 }
 /** The stop notice reads the same clock and schedule as the bus. */
 export function harbourTimetable(minutes){
+ if(peninsulaActive())return ferryTimetable(minutes);
  const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
  const due=nextService(minutes);
  const status=current===undefined
@@ -75,6 +78,17 @@ export function harbourTimetable(minutes){
  return 'Harbour Line · Three services daily (town time)\nArrival → Departure\n'
   +HARBOUR_LINE.map(s=>serviceTime(s)+' → '+serviceTime(s+BUS_DWELL)).join('\n')
   +'\n\nThe bus waits '+BUS_DWELL+' town minutes at each stop.\n'+status;
+}
+/** The same three services, as the ferry sails them from the outer pier. */
+function ferryTimetable(minutes){
+ const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
+ const due=nextService(minutes);
+ const status=current===undefined
+  ?'Next ferry in: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
+  :'Alongside now: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
+ return 'Minato Ferry · Three sailings daily (town time)\nIn → Out\n'
+  +HARBOUR_LINE.map(s=>serviceTime(s)+' → '+serviceTime(s+BUS_DWELL)).join('\n')
+  +'\n\nThe ferry lies alongside the outer pier for '+BUS_DWELL+' town minutes. Board by the gangway on the pier.\n'+status;
 }
 export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
