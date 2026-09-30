@@ -157,6 +157,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 45. **Jämför mätvärden i samma enhet.** Multimeterns autorange returnerar `value` i displayens Ω eller kΩ.
     Normalisera före kontroll och prova alla riggar på båda sidor om enhetsbytet.
 
+46. **SVG-reservvyer behöver attributstyrning.** Visa/dölj SVG med `toggleAttribute("hidden", ...)`;
+    `.hidden` på SVG kan bli en vanlig JS-egenskap utan att ändra synligheten. Prova WebGL-reservläget i webbläsare.
+
 ## Ändringar
 
 - **2026-09-30** PR #113 framflyttad: multimeterns övning 7 behåller läsbara diagrametiketter, separat spetsrad och sladdar i kanten; main:s senare notation och elevdata bevarade. Ny cacheversion. 24 modell-/DOM-tester och 10 Chromium-fall godkända på telefon, surfplatta och två skrivbordsbredder. Fysisk iPhone/iPad och WebKit kvarstår separat.
@@ -556,3 +559,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Cacheversionerna är uppdaterade; elevframsteg och protokoll behåller sina lagringsnycklar.
   Kontroll: 26 modell-/DOM-tester och 14 Chromium-tester godkända (två pektester gäller bara pekprojekten).
   Station A genomförd i alla nio steg vid 390, 820, 1024 och 1440 px; sparade övningar och protokoll behålls vid omladdning.
+
+- **2026-09-30** Första etappen av den onumrerade slutsektionen `simulatorer/`: 3D-maskinrum, Johanssons verkliga
+  avatar med arbetskläder och skyddsutrustning, Station A med nio steg, mätspetsar i händerna, tangent-/peknavigation
+  och 2D-reservläge. Kopierad mätmodell och registrerade källhashar; veckolabben är orörda. Framsteg och protokoll
+  använder egna lagringsnycklar. Övriga 3D-stationer är tydligt markerade som kommande.
+  Kontroll: 24 modell-/sessionstester, 14 Chromium-kontroller vid 390, 820, 1024 och 1440 px; två pektester
+  hoppas över i skrivbordsprojekten. Hela Station A, riktiga 3D-kontakter, armräckvidd, sparande, CSV och WebGL-reservläge.
