@@ -38,6 +38,7 @@ import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?s
 import {createIzakayaGuests} from './people/izakaya-guests.js';
 import {controlVisibility} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
+import {bicycleRiderFit,bicycleBlocked} from './world/bicycle-fit.js';
 import {createBicycleController} from './world/bicycle-controller.js';
 import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
@@ -312,7 +313,7 @@ function startBicycleRide(entry){
  const object=bike.object,position=object.getWorldPosition(new THREE.Vector3()),heading=object.rotation.y||0;
  const previousThirdPerson=thirdPerson,colliderIndex=world.colliders.indexOf(bike.collider);
  if(colliderIndex>=0)world.colliders.splice(colliderIndex,1);
- const flagNames=['inWorkplace','inIzakaya','inOnsen','inMarket','inRamen','inHome','indoors','roomTransition','sleeping'];
+ const flagNames=['inWorkplace','inIzakaya','inOnsen','inMarket','inRamen','inHome','indoors','roomTransition','sleeping','sleepBlend','floorHeight','chairBlend','socialPose','seatHeight'];
  const flags=Object.fromEntries(flagNames.map(key=>[key,{exists:Object.hasOwn(thuan.g.userData,key),value:thuan.g.userData[key]}]));
  bicycleRide={bike,thuan,controller:createBicycleController({x:position.x,z:position.z,yaw:heading}),previousThirdPerson,colliderRemoved:colliderIndex>=0,wheelAngle:0,originParent:thuan.g.parent,originPosition:thuan.g.position.clone(),originRotation:thuan.g.rotation.clone(),originVisible:thuan.g.visible,flags};
  player.position.set(position.x,groundHeight(position.x,position.z),position.z);player.quaternion.setFromAxisAngle(yAxis,heading);player.visible=true;
@@ -321,6 +322,7 @@ function startBicycleRide(entry){
  for(const key of Object.keys(flags))delete thuan.g.userData[key];
  thuan.g.userData.playerControlled=true;thuan.g.userData.bicyclePhase=0;thuan.g.userData.socialPose='Sit';thuan.g.userData.seatHeight=.92;thuan.g.userData.activity='riding her bicycle';
  const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
+ const fit=actor?.isAvatar?bicycleRiderFit(actor.avatar.measure):{scale:1,saddle:.9575};bike.setRiderFit(fit);bike.animateRide(0,true);thuan.g.userData.bicycleFit=fit;
  playerSpeed=0;playerRunning=false;setRunning(false);resetInput();
  setThirdPerson(true,false);yaw=heading;pitch=-.12;thirdDistance=3.6;
  say('Thuan’s bicycle · WASD / left stick to ride · E to dismount',5);
@@ -328,19 +330,19 @@ function startBicycleRide(entry){
 function stopBicycleRide(){
  if(!bicycleRide)return;
  const ride=bicycleRide,{bike,thuan}=ride,x=ride.controller.state.x,z=ride.controller.state.z,heading=ride.controller.state.yaw;
- bike.object.removeFromParent();world.group.add(bike.object);bike.object.position.set(x,0,z);bike.object.rotation.set(0,heading,0);
+ bike.animateRide(thuan.g.userData.bicyclePhase||0,false);bike.object.removeFromParent();world.group.add(bike.object);bike.object.position.set(x,groundHeight(x,z),z);bike.object.rotation.set(0,heading,0);
  bike.collider.x=x;bike.collider.z=z;
- bike.collider.w=Math.abs(Math.cos(heading))*.62+Math.abs(Math.sin(heading))*1.88;
- bike.collider.d=Math.abs(Math.sin(heading))*.62+Math.abs(Math.cos(heading))*1.88;
+ bike.collider.w=(Math.abs(Math.cos(heading))*.62+Math.abs(Math.sin(heading))*1.88)*bike.object.scale.x;
+ bike.collider.d=(Math.abs(Math.sin(heading))*.62+Math.abs(Math.cos(heading))*1.88)*bike.object.scale.x;
  if(ride.colliderRemoved)world.colliders.push(bike.collider);
  const rightX=Math.cos(heading),rightZ=-Math.sin(heading),thuanX=x-rightX*1.25,thuanZ=z-rightZ*1.25;
  thuan.g.removeFromParent();
- const wasInside=Object.values(ride.flags).some(flag=>flag.exists&&flag.value),parent=wasInside&&ride.originParent?.parent?ride.originParent:world.group;
+ const wasInside=['inWorkplace','inIzakaya','inOnsen','inMarket','inRamen','inHome','indoors'].some(key=>ride.flags[key]?.value),parent=wasInside&&ride.originParent?.parent?ride.originParent:world.group;
  parent.add(thuan.g);
  if(wasInside){thuan.g.position.copy(ride.originPosition);thuan.g.rotation.copy(ride.originRotation);thuan.g.visible=ride.originVisible;}
  else{thuan.g.position.set(thuanX,groundHeight(thuanX,thuanZ),thuanZ);thuan.g.rotation.set(0,heading,0);}
- for(const [key,flag] of Object.entries(ride.flags))if(flag.exists)thuan.g.userData[key]=flag.value;
- thuan.g.userData.playerControlled=false;delete thuan.g.userData.bicyclePhase;delete thuan.g.userData.socialPose;delete thuan.g.userData.seatHeight;
+ thuan.g.userData.playerControlled=false;delete thuan.g.userData.bicyclePhase;delete thuan.g.userData.bicycleFit;
+ for(const [key,flag] of Object.entries(ride.flags)){delete thuan.g.userData[key];if(flag.exists)thuan.g.userData[key]=flag.value;}
  const [px,pz]=findClear(x+rightX*1.25,z+rightZ*1.25);player.position.set(px,groundHeight(px,pz),pz);
  const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
  player.visible=false;player.quaternion.setFromAxisAngle(yAxis,heading);yaw=heading;playerSpeed=0;playerRunning=false;
@@ -767,7 +769,7 @@ function reachTheTunnelMouth(x,z){
  say('歩行者通行止め · No pedestrians in the tunnel. The Harbour Line is the way through.',3.5);
 }
 function updatePlayer(dt){
- if(!seated)unstuckPlayer();
+ if(!seated&&!bicycleRide)unstuckPlayer();
  const fromX=player.position.x,fromZ=player.position.z;
  const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
  ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
@@ -776,13 +778,14 @@ function updatePlayer(dt){
  if(bicycleRide){
   const ride=bicycleRide,oldYaw=ride.controller.state.yaw;
   const fast=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]);
-  const result=ride.controller.update(dt,{throttle:f,steer:s,fast,blocked:(x,z)=>environmentBlocked(x,z,.48)||overlapsResident(x,z)});
+  const result=ride.controller.update(dt,{throttle:f,steer:s,fast,blocked:(x,z,heading)=>bicycleBlocked(x,z,heading,ride.bike.object.scale.x,(px,pz,r)=>environmentBlocked(px,pz,r)||overlapsResident(px,pz))});
   const state=result.state;player.position.set(state.x,groundHeight(state.x,state.z),state.z);player.quaternion.setFromAxisAngle(yAxis,state.yaw);
   yaw+=state.yaw-oldYaw;playerSpeed=Math.abs(state.speed);playerRunning=fast;player.visible=true;
-  ride.wheelAngle-=Math.hypot(result.dx,result.dz)/.31;
-  ride.thuan.g.userData.bicyclePhase=(state.distance/.12)%1;
+  const travel=-Math.sin(state.yaw)*result.dx-Math.cos(state.yaw)*result.dz;
+  ride.wheelAngle-=travel/(.31*ride.bike.object.scale.x);ride.distance=(ride.distance||0)+travel;
+  ride.thuan.g.userData.bicyclePhase=(ride.distance/1.6)%1;ride.bike.animateRide(ride.thuan.g.userData.bicyclePhase,true);
   ride.bike.wheels?.forEach(wheel=>wheel.rotation.x=ride.wheelAngle);
-  ride.thuan.g.userData.activity=state.speed>.15?'riding her bicycle':'stopped with her bicycle';
+  ride.thuan.g.userData.activity=Math.abs(state.speed)>.15?'riding her bicycle':'stopped with her bicycle';
   camera.position.copy(player.position).add(fwVec.set(0,1.45,0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);placeThirdPerson(dt);
   const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
   return;
@@ -1031,7 +1034,7 @@ function updateContextControls(){
  const items=activities.state.inventory?.length||0;hudIcons.count(items);
  // While you walk, the top buttons fade back so the street has the screen.
  document.body.classList.toggle('hud-moving',!blocked&&now<controlsMovingUntil);
- const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:now<controlsTargetUntil,hasItems:items>0,pressed:[...pressedControls]});
+ const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!bicycleRide||now<controlsTargetUntil,hasItems:items>0,pressed:[...pressedControls]});
  for(const [id,visible] of Object.entries(state)){
   const element=$('#'+id);
   if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}

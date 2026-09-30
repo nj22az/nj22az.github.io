@@ -1,4 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
+import {poseAvatarOnBicycle} from './bicycle-pose.js';
+import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 
 /**
@@ -61,7 +63,8 @@ export function createAvatarAnimator(avatar){
   if(s.riding){
    // Pedalling: the knees go round, the hands are on the bars.
    const p=s.ridePhase||0;
-   targetRoot=(s.saddle??.8)-m.hipY+m.seatDrop;
+   const fit=s.bicycleFit||bicycleRiderFit(m);
+   targetRoot=fit.saddle*fit.scale-m.hipY+m.seatDrop;
    set('thighL',-1.05+Math.sin(p*Math.PI*2)*.38);set('kneeL',1.05+Math.cos(p*Math.PI*2)*.4);
    set('thighR',-1.05-Math.sin(p*Math.PI*2)*.38);set('kneeR',1.05-Math.cos(p*Math.PI*2)*.4);
    set('chest',.28);set('head',-.18);
@@ -126,8 +129,11 @@ export function createAvatarAnimator(avatar){
   const k=1-Math.exp(-dt*14);
   for(const j of JOINTS){current[j].lerp(target[j],k);bones[j].rotation.set(current[j].x,current[j].y,current[j].z);}
   rootY+=(targetRoot-rootY)*(s.seated||s.riding?1-Math.exp(-dt*9):k);hipsY+=(targetHips-hipsY)*k;lean+=(targetLean-lean)*k;
+  if(s.riding)rootY=targetRoot;
+  avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
-  bones.hips.position.y=m.hipY+hipsY;
+  bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
+  if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}

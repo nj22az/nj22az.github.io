@@ -151,11 +151,11 @@ function addStreetLife(world,options,factory){
   // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
   // inspection spot and its original placement.
   const bicycleSpot=peninsulaActive()?{x:-4.85,z:-23.2}:BOOKSHOP_BICYCLE;
-  const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows});
+  const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
   bicycle.object.name="Thuan's commuter bicycle";
   addWithCollider(group,colliders,bicycle);
   if(peninsulaActive()){
-    anchor(group,[bicycleSpot.x+1,.9,bicycleSpot.z],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
+    anchor(bicycle.object,[1,.9,0],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
     interactions++;
   }else{
     addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));

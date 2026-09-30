@@ -11,12 +11,13 @@ export function createBicycleController({x=0,z=0,yaw=0}={}){
   const rate=Math.abs(target)>Math.abs(state.speed)?2.4:6.8;
   state.speed=THREE.MathUtils.damp(state.speed,target,rate,dt);
   const speedFactor=THREE.MathUtils.clamp(Math.abs(state.speed)/1.4,0,1);
+  const oldYaw=state.yaw;
   state.yaw-=steer*(.18+1.12*speedFactor)*dt;
   const dx=-Math.sin(state.yaw)*state.speed*dt,dz=-Math.cos(state.yaw)*state.speed*dt;
   let moved=false;
-  if(!blocked(state.x+dx,state.z+dz)){
+  if(!blocked(state.x+dx,state.z+dz,state.yaw)){
    state.x+=dx;state.z+=dz;state.distance+=Math.hypot(dx,dz);moved=true;
-  }else state.speed=0;
+  }else{state.speed=0;state.yaw=oldYaw;}
   return {state,moved,dx:moved?dx:0,dz:moved?dz:0};
  }
  return {state,update};

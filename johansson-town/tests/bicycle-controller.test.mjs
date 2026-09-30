@@ -26,3 +26,15 @@ test('an obstruction stops the bicycle before it crosses the blocked point',()=>
  assert.ok(bike.state.z>=-.75);
  assert.equal(bike.state.speed,0);
 });
+
+test('the front wheel stops at a wall before the rider centre reaches it',async()=>{
+ const {bicycleBlocked}=await import('../src/world/bicycle-fit.js');
+ const bike=createBicycleController();
+ const blocked=(x,z,yaw)=>bicycleBlocked(x,z,yaw,.75,(px,pz,r)=>pz-r<-.9);
+ for(let i=0;i<180;i++)bike.update(1/60,{throttle:1,blocked});
+ assert.ok(bike.state.z>=-.3225,'Front wheel and tyre remain clear of the wall');
+ assert.equal(bike.state.speed,0);
+ assert.equal(blocked(bike.state.x,bike.state.z,bike.state.yaw),false);
+ for(let i=0;i<60;i++)bike.update(1/60,{throttle:-1,blocked});
+ assert.ok(bike.state.z>0,'Can reverse away from the wall');
+});
