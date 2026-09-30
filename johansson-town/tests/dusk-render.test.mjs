@@ -63,7 +63,7 @@ test('Sakura tubes load at the current hour without making stock emissive or cel
    display.updateLighting(minutes);
    assert.equal(tube.material.emissive.getHex(),PALETTE.sakuraTube);
    assert.equal(tube.material.emissiveIntensity,level);
-   assert.equal(room.children.find(o=>o.isHemisphereLight).intensity,1.2*level);
+   assert.equal(room.children.find(o=>o.isHemisphereLight).intensity,1.7*level,'the bright shop fill follows the tubes');
   }
  }finally{globalThis.fetch=old;}
 });

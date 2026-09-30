@@ -9,7 +9,7 @@ test('Thuan holds a conversation rather than presenting a directory',()=>{
  let greetings=0;window.__JOHANSSON_CHARACTER_CONTROL__={gesture(name){assert.equal(name,'Thuan');greetings++;}};
  const body=()=>document.querySelector('#activityBody').firstChild.textContent;
  const smallTalk=()=>dom.labels().filter(l=>
-  !['Talk with Thuan','Ask her something','The shop side of things','See you soon, Thuan'].includes(l)
+  !['Talk with Thuan','Ask her something','At the counter','See you soon, Thuan'].includes(l)
   &&!/^Pay for /.test(l)&&!/Umi-no-yu/.test(l));
 
  acts.action('resident','Thuan');
@@ -47,6 +47,9 @@ test('the shop paperwork is folded away behind one reply',()=>{
  const dom=installDOM(),acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1002});
  acts.action('resident','Thuan');
  assert.ok(!dom.has('Read the shop ledger'),'The ledger is not a conversation topic');
+ dom.button('At the counter');
+ assert.ok(dom.has('My stamp card'),'the counter has her stamp card');
+ assert.ok(!dom.has('Read the shop ledger'),'the ledger is still one more step away');
  dom.button('The shop side of things');
  assert.ok(dom.has('Read the shop ledger'));
  assert.ok(dom.has('Sell items from my bag'));
@@ -55,3 +58,21 @@ test('the shop paperwork is folded away behind one reply',()=>{
  acts.close();
 });
 
+
+test('at the counter she sells hot snacks and recommends something from the shelves',()=>{
+ const dom=installDOM(),acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,getSocialContext:()=>({inside:'market',thuanAvailable:true})});
+ const yen=acts.state.yen,bag=acts.state.inventory.length;
+ acts.action('resident','Thuan');dom.button('At the counter');
+ assert.ok(dom.has('Hot snacks from the case'));
+ dom.button('Hot snacks from the case');
+ const snack=dom.labels().find(l=>/Nikuman/.test(l));assert.ok(snack,'the steamer has buns');
+ dom.button(snack);
+ assert.equal(acts.state.yen,yen-120);
+ assert.equal(acts.state.inventory.length,bag+1);
+ assert.ok(acts.state.inventory.includes('Nikuman bun'));
+ dom.button('Back to Thuan');dom.button('At the counter');dom.button('What do you recommend?');
+ const into=dom.labels().find(l=>/^Into the basket/.test(l));assert.ok(into,'she offers her pick');
+ dom.button(into);
+ assert.equal(acts.state.konbini.basket.length,1);
+ acts.close();
+});

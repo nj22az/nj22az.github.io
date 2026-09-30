@@ -51,6 +51,7 @@ import {avatarsEnabled,createAvatarJohansson,playerRecipe,savePlayerRecipe,impor
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp} from './people/izakaya-beer.js';
+import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
 import {routeAt,groundHeight} from './world/layout.js?snappy=1';
 import {createNeighbours} from './people/neighbours.js';
@@ -291,6 +292,7 @@ hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inve
 // Johansson himself, for the third-person view. The model loads the first time the view is used.
 const VIEW_KEY='johansson-town-view';
 let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
+const shopCarry=createShopCarry({holder:()=>johansson});
 try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)==='third';}catch{}
 /**
  * The Shimanchu maker, from the Town book. The town stops while it is open (it is a
@@ -424,6 +426,8 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(null);
  johansson.update(dt,{speed:playerSpeed,running:playerRunning,seated,airborne:!!characters?.jumping,visible:thirdPerson&&started&&!inspector?.active&&!bicycleRide});
+ // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
+ shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
 if(thirdPerson)setThirdPerson(true,false);
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!bicycleRide&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
@@ -1074,6 +1078,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
  get johansson(){return johansson;},
  get room(){return room;},
+ get activities(){return activities;},
 };
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.

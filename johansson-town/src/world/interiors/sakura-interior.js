@@ -9,6 +9,7 @@ import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING,SAKURA_TILL_CABINET} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
+import {buildSakuraCheer} from './sakura-cheer.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -97,7 +98,7 @@ function dressBackbar(room,anchor,action,materials){
  }
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
  if(look)anchor([look.x-.15,1.2,look.z],'Look over the till backbar',()=>action('inspect','Sakura · Till backbar',
-  'Ferry cards, phone cards, stamps and gum on the eye-level strip. A postcard stand faces the queue. Thuan\u2019s radio sits low with spare batteries. The ledger and bell stay on the counter.'));
+  'Ferry cards, phone cards, stamps and gum on the eye-level strip. A postcard stand faces the queue. Thuan\u2019s radio sits low with spare batteries. The hot case and bell are on the counter; the books live in the back office.'));
 }
 export function buildSakuraInterior({room,reg,action,exit}){
  const layout=SAKURA_LAYOUT,unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
@@ -140,8 +141,9 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildMedicineShelf(room);
  anchor([5.55,1.35,2.3],'Ask Thuan for something from the medicine shelf',()=>action('sakura-medicine'));
  const decorations=createWindowDecorations(room);
- const ledger=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.20),new THREE.MeshStandardMaterial({color:0x436454,roughness:.8}));ledger.position.set(4.77,1.025,1.7);room.add(ledger);
- anchor([4.50,1.24,1.7],'Read Sakura sales ledger',()=>action('shop-ledger'));
+ // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
+ // case, the oden and the bell (sakura-cheer.js).
+ buildSakuraCheer(room,{anchor,action});
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
@@ -150,12 +152,14 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const stock=layout.stockroom;anchor([stock[0],1.15,stock[2]],'Open stockroom restock',()=>action('storage-restock'));
  // Stock cartons carry the same generated Sakura label as delivered cartons.
  const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [-4.6,-3.7,-2.8,-1.9]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
- const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0x66715c,1.2);room.add(fill);
+ // Bright, even konbini light: warm white from the tubes, a pale floor bounce rather
+ // than the old green-grey, so the shop reads cheerful instead of dim.
+ const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0xd8d2c4,1.7);room.add(fill);
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
   // The decorations follow the real calendar, looked at once an hour.
   decorations.refresh(townCalendarAt(minutes).date);
-  lightLevel=fluorescent(minutes);fill.intensity=1.2*lightLevel;
+  lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
   }

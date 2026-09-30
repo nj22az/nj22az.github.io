@@ -89,6 +89,8 @@ export const SAKURA_LAYOUT={
   rect(-4.02,-3.2,.12,1.53),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
+  // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
+  rect(6.4,-2.7,.7,1.2,.8),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite

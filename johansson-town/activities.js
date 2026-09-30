@@ -39,7 +39,7 @@ import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
@@ -249,6 +249,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     const greeting=onsenBath?'はぁ… 気持ちいい。\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.':ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=onsenBath?'Thuan · Umi-no-yu':ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
+    const openHotCase=topic==='hot-case';if(openHotCase)topic=null;
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
     // A conversation, not a menu. Two pieces of small talk at a time, rotated so the
     // next time you stop by she has something else to say, and the shop's paperwork
@@ -267,11 +268,50 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const fresh=smallTalk.filter(([,id])=>!asked.includes(id));
     const offered=(fresh.length>=2?fresh:smallTalk).slice(0,2);
     histories.set('Thuan/small-talk',[...asked,...offered.map(([,id])=>id)].slice(-5));
-    const paperwork=()=>show(title,'書類ね。\nThe shop side of things.',[
+    // The counter: everything a konbini clerk does for you besides ringing up the basket.
+    // Hot snacks from the case by the till, her pick of the shelves, the stamp card, and
+    // the paperwork, which she fetches from the back office rather than keeping it out.
+    const back=['Back to Thuan',()=>thuanConversation()];
+    const onDutyHere=getSocialContext().inside==='market'&&!offDuty&&!ramenVisit&&!onsenBath;
+    const hotCase=()=>show(title,'ホットスナック、いかがですか？\nFresh from the hot case — what would you like?',[
+      ...HOT_SNACKS.map(snack=>[`${snack.jp} ${snack.name} · ¥${snack.cost}`,()=>{
+        const result=buyHotSnack(state,snack.id,getMinutes(),getSocialContext().thuanAvailable!==false);
+        if(!result.ok){show(title,result.message,[back]);return;}
+        save();note('Bought '+snack.name.toLowerCase()+' from Sakura’s hot case.');
+        characterControl()?.feel?.('Thuan','happy',6);tone(880,.08);
+        show(title,'はい、どうぞ！\n'+result.message+'\n\n'+snack.name+' is in your bag.',[['Another one',hotCase],back],{mood:'happy'});
+      },state.yen<snack.cost,'Could I have '+snack.name.toLowerCase()+', please?']),
+      back]);
+    const recommend=()=>{
+      const pick=thuanRecommends(state,Math.floor(getMinutes()/1440));
+      if(!pick){show(title,'The shelves are nearly bare today. Come back after the delivery!',[back]);return;}
+      show(title,`これ、おすすめ！\nTry the ${pick.name.toLowerCase()} — ${pick.brand||'Sakura'}, ¥${pick.cost}. `+(EXAMINE_LINES[pick.id]||'I would buy it myself if I were not standing on this side of the counter.'),[
+        [`Into the basket · ¥${pick.cost}`,()=>{
+          const result=addToBasket(state,pick);save();
+          show(title,result.ok?'いいね！\n'+result.message:result.message,[back],{mood:result.ok?'happy':undefined});
+        }],
+        ['Maybe next time',()=>thuanConversation()]]);
+    };
+    const stampCard=()=>{
+      const n=state.konbini.stamps,marks='●'.repeat(n)+'○'.repeat(Math.max(0,CARD_STAMPS-n));
+      show(title,`スタンプカード\n${marks}\n\n${n} of ${CARD_STAMPS} stamps. One for every ¥300 at the till — fill it and the next green tea is on the house.`+(state.konbini.cards?`\nCards filled so far: ${state.konbini.cards}.`:''),[back]);
+    };
+    const paperwork=()=>show(title,'ちょっと待ってね。\nThe shop books live in the back office — I can fetch them.',[
       ['Sell items from my bag',workshopUI.selling],
       ['Read the shop ledger',shopLedger],
-      ['Back to Thuan',()=>thuanConversation()],
+      back,
     ]);
+    const counter=()=>show(title,'いらっしゃいませ！\nWhat can I do for you?',[
+      ...(onDutyHere?[['Hot snacks from the case',hotCase],['What do you recommend?',recommend]]:[]),
+      ['My stamp card',stampCard],
+      ['The shop side of things',paperwork],
+      back,
+    ]);
+    if(openHotCase){
+      if(onDutyHere&&getSocialContext().thuanAvailable!==false)hotCase();
+      else show('Sakura Shōten · Hot case',sakuraHoursOpen(getMinutes())?SAKURA_AWAY_MESSAGE:'The hot case is dark. Thuan switches it on at nine.',[['Close',close]]);
+      return;
+    }
     // Umi-no-yu: ask her along after work. She goes straight from locking up.
     const today=Math.floor(getMinutes()/1440),thuanProfile=PROFILES.find(p=>p.name==='Thuan');
     const onsenAsked=Number.isFinite(state.onsenDate)&&state.onsenDate>=today;
@@ -301,7 +341,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ...(onsenBath?[]:[[onsenAsked?'Umi-no-yu after work — still on':'Come to Umi-no-yu after work',onsenAsked?()=>show(title,state.onsenDate===today?'Of course! After I lock up. The rock bath, by the sea wall.':'Tomorrow, after I lock up. I have not forgotten.',[['Back to Thuan',()=>thuanConversation()]]):inviteOnsen]]),
       ...offered.map(([label,id])=>[label,()=>thuanConversation(id)]),
       ['Ask her something',askThuan],
-      ['The shop side of things',paperwork],
+      ['At the counter',counter],
       ['See you soon, Thuan',close],
     ]);
   }
@@ -578,7 +618,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
   }
   function shopLedger(){
-    if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are on the counter at Sakura.');return;}
+    if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
     ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);
   }
@@ -745,6 +785,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
+      case 'sakura-hot-snacks':thuanConversation('hot-case');break;
       case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
