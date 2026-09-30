@@ -1,0 +1,14 @@
+{
+  "sourceFiles": [
+    "guide/residents.json",
+    "src/avatars/build.js",
+    "src/avatars/cast.js",
+    "src/avatars/recipe.js",
+    "src/avatars/face.js",
+    "src/avatars/head-profile.js",
+    "src/people/resident-personalities.js",
+    "src/render/cel.js"
+  ],
+  "sha256": "517936dff6dcd8213e5338e5644d2a0d6e884d12f871d937763d251bb922d0fa",
+  "count": 38
+}
