@@ -40,21 +40,11 @@ export const eastLawnAt=(x,z,r=0)=>
  x>=EAST_LAWN.minX+r&&x<=EAST_LAWN.maxX-r&&z>=EAST_LAWN.minZ+r&&z<=EAST_LAWN.maxZ-r;
 
 const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
-/** Lighter than the treeline: these read as shrubs on grass, not rocks. */
-const CLUMP_LEAVES=[0x6d9159,0x7c9c60,0x618751];
 /** How many metres of lawn one tile of the park's grass covers. */
 const TURF_METRES=2.4;
 
-/** The green the lawn shows until the park's own grass arrives (see useParkGrass). */
+/** The green the lawn shows without a page to paint the turf on. */
 const BARE_TURF=0x6fae4a;
-/**
- * What the shrubs are tinted once they are wearing the park's leaf.
- *
- * The park's own bushes wear this texture untinted, so matching them means staying
- * close to white — but not reaching it, because white with no texture is exactly what
- * a failed hand-over looks like and there is nothing else to tell the two apart.
- */
-const LEAF_TINT=0xdfe6d6;
 
 /**
  * Ground drawn rather than fetched, for the surfaces the town supplies no photograph
@@ -200,47 +190,9 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  colliders.push({id:'east-lawn-trees',x:(west+g0)/2,z:treeZ+.35,w:g0-west,d:1.5,height:5.4},
   {id:'east-lawn-trees',x:(g1+eastEnd)/2,z:treeZ+.35,w:eastEnd-g1,d:1.5,height:5.4});
 
- // Shrubs banked against the two closed edges, so the green itself stays open. They
- // are kept off the park mound and off the lines people walk to reach it.
- const clumps=[],park={minX:6.6,maxX:25,minZ:-33,maxZ:-14};
- let seed=8817;const random=()=>(seed=seed*1103515245+12345&0x7fffffff)/0x7fffffff;
- for(let i=0;i<150&&clumps.length<52;i++){
-  const x=EAST_LAWN.minX+1.6+random()*(wall.x-EAST_LAWN.minX-3.4),z=EAST_LAWN.minZ+1.6+random()*(treeZ-EAST_LAWN.minZ-3.6);
-  if(x>park.minX&&x<park.maxX&&z>park.minZ&&z<park.maxZ)continue;
-  if(Math.abs(z+36)<2.2||Math.abs(z+18)<2.2)continue;
-  if(Math.abs(x-SCHOOL.gate.x)<3.2&&z>14)continue;          // the way to the school gate
-  if(inKobanPlot(x,z,1))continue;                            // the police box
-  if(wall.x-x>7&&treeZ-z>7)continue;
-  clumps.push({x,z,size:.5+random()*.42,tint:Math.floor(random()*CLUMP_LEAVES.length)});
- }
- // A white base so the park's leaf texture, once it arrives, is the colour rather than
- // a tint over one; until then the per-instance greens stand in for it.
- const clumpMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1});
- // Round the normals off the shape itself.
- //
- // A polyhedron arrives with one normal per face, and the ink pass draws a line
- // wherever normals break — so a flat-shaded ball is delivered to the lawn with every
- // one of its eighty facets outlined, which reads as a bag of green rocks rather than
- // as planting. For a sphere the smooth normal is just the direction from the centre.
- const clumpGeometry=new THREE.IcosahedronGeometry(1,2);
- {
-  const p=clumpGeometry.attributes.position,normals=new Float32Array(p.count*3);
-  for(let i=0;i<p.count;i++){
-   const x=p.getX(i),y=p.getY(i),z=p.getZ(i),length=Math.hypot(x,y,z)||1;
-   normals[i*3]=x/length;normals[i*3+1]=y/length;normals[i*3+2]=z/length;
-  }
-  clumpGeometry.setAttribute('normal',new THREE.BufferAttribute(normals,3));
- }
- const shrubs=new THREE.InstancedMesh(clumpGeometry,clumpMat,Math.max(1,clumps.length));
- if(clumps.length){
-  const dummy=new THREE.Object3D(),colour=new THREE.Color();
-  clumps.forEach((c,i)=>{
-   dummy.position.set(c.x,c.size*.5,c.z);dummy.scale.set(c.size*1.15,c.size*.95,c.size*1.05);
-   dummy.rotation.set(0,i*1.9,0);dummy.updateMatrix();shrubs.setMatrixAt(i,dummy.matrix);
-   shrubs.setColorAt(i,colour.setHex(CLUMP_LEAVES[c.tint]));
-  });
-  shrubs.name='East lawn planting';shrubs.castShadow=!!shadows;shrubs.receiveShadow=!!shadows;group.add(shrubs);
- }
+ // No shrub clumps on the green. They were round balls on flat grass, and from the hill
+ // they read as a scatter of boulders rather than as planting; the treeline, the park's
+ // tree and the gardens carry the green without them.
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
@@ -252,7 +204,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   * the lawn is the flat green above.
   * @returns {boolean} whether the grass was there to use.
   */
- const useParkGreenery=({grass,bush}={})=>{
+ const useParkGreenery=({grass}={})=>{
   if(!grass?.image)return false;
   // The tiling is in the lawn's own UVs, in metres, so the texture repeats once per
   // TURF_METRES wherever the ground goes.
@@ -263,35 +215,10 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   // at 4 while the rest of the town takes whatever the device will give.
   map.anisotropy=Math.max(map.anisotropy,anisotropy);
   lawn.material.map=map;lawn.material.color.setHex(TURF_TINT);lawn.material.needsUpdate=true;
-  if(bush?.image){
-   // The park's shrubs are one merged clump, so the lawn borrows the leaf rather than
-   // the geometry.
-   //
-   // Write it to the material the mesh is actually wearing, not to the one built here.
-   // By the time the park streams in, the cel pass has replaced every material in the
-   // town with a MeshToonMaterial of its own and kept the original only as
-   // userData.celFrom. Setting the map on the closed-over clumpMat dressed an orphan
-   // nothing renders, and the whitening below — which is set on the mesh, not the
-   // material — landed anyway. Twenty-nine white blobs on a green lawn, and not a
-   // word in the console.
-   const wearing=[shrubs.material,shrubs.material?.userData?.celFrom,clumpMat].filter(Boolean);
-   for(const material of new Set(wearing)){material.map=bush;material.needsUpdate=true;}
-   // And only give up the authored greens once the leaf is demonstrably on. The tint
-   // multiplies the texture, so this has to be light to let the leaf read — but never
-   // white, because white is what a failed hand-over looks like.
-   if(shrubs.material?.map&&shrubs.instanceColor){
-    const through=new THREE.Color(LEAF_TINT);
-    for(let i=0;i<shrubs.count;i++)shrubs.setColorAt(i,through);
-    // The attribute survives. Dropping it outright is what a mesh cannot do once
-    // anything has looked at it: the section renderer reads it every frame, so a null
-    // here threw out of the render loop and cost the whole cel look.
-    shrubs.instanceColor.needsUpdate=true;
-   }
-  }
   return true;
  };
  // The same painted turf as the park's own ground from the start, so the two greens match
  // before the park has streamed in -- and where it never does.
  if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf();if(turf)useParkGreenery({grass:turf});}catch{}}
- return {group,lawn,shore,shrubs,garden,useParkGreenery,tick:garden.tick};
+ return {group,lawn,shore,garden,useParkGreenery,tick:garden.tick};
 }

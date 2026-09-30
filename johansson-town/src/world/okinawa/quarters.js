@@ -1,4 +1,6 @@
-import {parkSkirtHeight} from '../park-layout.js';
+import {COURT_TERRACE} from '../park-layout.js';
+/** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
+const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
@@ -425,21 +427,18 @@ function buildYardLife(kit,solid,{inspect}){
 
 /** Gateball on the lawn by the seawall: a sand court, three hoops, the goal post, a shelter. */
 function buildGateball(kit,solid,{anchor,inspect}){
- const G=GATEBALL,top=GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
+ // The court is level on a terrace at the hill's own ground (COURT_TERRACE), graded into
+ // the hill with banks and held up on the seaward side by a stone wall.
+ const G=GATEBALL,T=COURT_TERRACE,H=T.height,top=H+GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
  kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,0xcdb88f,'sand');
- // The court is cut level into the foot of the park hill. Where the hill comes down to
- // it, a low stone wall with a cap holds the slope back.
- const step=.5;
- for(const side of ['south','west']){
-  const length=side==='south'?G.maxX-G.minX:G.maxZ-G.minZ;
-  for(let t=0;t<length-1e-6;t+=step){
-   const mid=t+step/2,x=side==='south'?G.minX+mid:G.minX-.13,z=side==='south'?G.maxZ+.13:G.minZ+mid;
-   const h=parkSkirtHeight(side==='south'?x:G.minX-.02,side==='south'?G.maxZ+.02:z)??0;if(h<.04)continue;
-   const w=side==='south'?step:.26,d=side==='south'?.26:step;
-   kit.box(w,h+.04,d,x,(h+.04)/2,z,0x8f8a7c);kit.box(w+.02,.06,d+.06,x,h+.07,z,0x6f6b60);
-   solid({id:'gateball-wall',x,z,w,d,height:h+.1});
-  }
- }
+ // The wall fills the strip between the terrace and the seawall's south return, so no
+ // slope of lawn is left running up under it.
+ {const z0=EAST_LAWN_SOUTH,z1=T.minZ,x0=T.minX,x1=T.maxX;
+  kit.block(x0,x1,0,H+.02,z0,z1,0x8f8a7c);
+  kit.block(x0-.03,x1,H+.02,H+.08,z1-.3,z1+.04,0x6f6b60);
+  solid({id:'gateball-wall',x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,height:H+.1});
+  // Its west end, where the bank comes down beside it.
+  kit.block(x0-.3,x0,0,H+.02,z0,z1,0x8f8a7c);}
  const line=(x0,x1,z0,z1)=>kit.block(x0,x1,top,top+.006,z0,z1,0xf4f1ea);
  line(G.minX+.3,G.maxX-.3,G.minZ+.3,G.minZ+.36);line(G.minX+.3,G.maxX-.3,G.maxZ-.36,G.maxZ-.3);
  line(G.minX+.3,G.minX+.36,G.minZ+.3,G.maxZ-.3);line(G.maxX-.36,G.maxX-.3,G.minZ+.3,G.maxZ-.3);
@@ -452,12 +451,12 @@ function buildGateball(kit,solid,{anchor,inspect}){
  for(const [i,[x,z]] of [[22.5,-35],[24.1,-33.9],[26,-36.2],[27.3,-34.4],[29.4,-33.2]].entries())kit.sphere(.04,x,top+.04,z,i%2?0xd8342c:0xf4f1ea,{detail:1});
  // The shelter on the seaward end, where the elders sit between turns.
  const sx0=G.maxX-.1,sx1=G.maxX+1.5;
- kit.block(sx0,sx1,2.3,2.4,G.minZ+.6,G.maxZ-.6,0x8a3b2e);
- for(const z of [G.minZ+.8,G.maxZ-.8])for(const x of [sx0+.1,sx1-.1]){kit.box(.1,2.3,.1,x,1.15,z,0x6e5a44);solid({id:'shelter-post',x,z,w:.14,d:.14,height:2.3});}
- kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,.22,cz+dz,0x5d6468);
- solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:.5});
- for(let i=0;i<3;i++)kit.rod([sx1-.25,.02,cz-1+i*.5],[sx1-.15,.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
- inspect(cx,1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
+ kit.block(sx0,sx1,H+2.3,H+2.4,G.minZ+.6,G.maxZ-.6,0x8a3b2e);
+ for(const z of [G.minZ+.8,G.maxZ-.8])for(const x of [sx0+.1,sx1-.1]){kit.box(.1,2.3,.1,x,H+1.15,z,0x6e5a44);solid({id:'shelter-post',x,z,w:.14,d:.14,height:H+2.3});}
+ kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,H+.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,H+.22,cz+dz,0x5d6468);
+ solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:H+.5});
+ for(let i=0;i<3;i++)kit.rod([sx1-.25,H+.02,cz-1+i*.5],[sx1-.15,H+.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
+ inspect(cx,H+1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
   'Five a side, mallets and numbered balls, three hoops and a post, and a referee with a whistle and a stopwatch who is somehow also the loudest player. The Minato seniors play here at seven every morning before it gets hot. They have been losing to the team from the next village since 1985.');
 }
 
