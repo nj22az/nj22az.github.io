@@ -4,13 +4,14 @@ import {DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {makeContentObject} from '../content-items.js';
 import {createContentItems} from '../content-items.js';
 import {createTown} from '../src/world/town.js?snappy=1';
+import {STREET_CAST} from '../src/people/residents.js';
 import {createCharacters} from '../src/people/characters.js?snappy=1';
 import {createActivities} from '../activities.js?snappy=1';
 import {createInspector} from '../inspect-3d.js';
 import * as THREE from '../vendor/three.module.js';
 class Element{
- constructor(){this.children=[];this.hidden=false;this.style={};this.listeners={};this.classList={add(){},remove(){},contains(){return true;},toggle(){}};}
- append(...items){this.children.push(...items);}appendChild(e){this.append(e);}replaceChildren(){this.children=[];}focus(){}setAttribute(){}querySelectorAll(){return this.children;}
+ constructor(){this.children=[];this.dataset={};this.hidden=false;this.style={};this.listeners={};this.classList={add(){},remove(){},contains(){return true;},toggle(){}};}
+ append(...items){this.children.push(...items);}appendChild(e){this.append(e);}replaceChildren(){this.children=[];}querySelector(){return null;}remove(){}focus(){}setAttribute(){}querySelectorAll(){return this.children;}
  addEventListener(name,fn){(this.listeners[name]??=[]).push(fn);}get firstChild(){return this.children[0];}get lastChild(){return this.children.at(-1);}
  getContext(){return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText(s){return {width:s.length*17};}},{get:(o,k)=>o[k]||(()=>{})});}
 }
@@ -38,7 +39,7 @@ console.log('Office checks passed: 18 mesh items, pages, v3 migration, deduplica
 const anchors=[];
 const world=createTown({scene,sites:[],mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
 const characters=createCharacters({mobile:true,shadows:false});world.people.forEach(p=>characters.attach(p.g,p.g.userData.name));
-assert.equal(world.people.length,10);assert.equal(characters.actors.length,10);
+assert.equal(world.people.length,STREET_CAST.length);assert.equal(characters.actors.length,0,'Rigs wait until their models are preloaded');
 createContentItems({group:world.group,register:(o,label,fn)=>anchors.push({o,label,fn}),colliders:world.colliders,onInspect(){},onRead(){}});
 world.update(.016,1,1);world.beats.update(.016,1,1000);characters.update(.016);
 for(const id of ['keychain','cv'])assert.ok(anchors.some(a=>a.label==='Lift '+ITEMS.find(i=>i.id===id).title),id+' stays inspectable');

@@ -13,6 +13,7 @@ import {buildResidentHome} from '../src/world/interiors/resident-home.js';
 import {SUPPLIED_ROOM_LAYOUTS} from '../src/world/supplied-rooms.js';
 import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
+import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 import {buildHomes} from '../src/world/homes.js';
 function person(name,parent){const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();g.userData={name,hit:{inside:false}};g.position.set(...[profile.home[0],0,profile.home[1]]);parent.add(g);return {profile,g};}
 const tick=(fn,from,seconds)=>{for(let i=0;i<seconds*30;i++)fn(1/30,from+i/30);};
@@ -80,8 +81,8 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
  assert.deepEqual(freeTime,[850,880,910].map(m=>homeRoutine(nao,m+1440).activity));
 });
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
- const cases=RESIDENTS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',p.name==='Officer Mori'?1320:p.name==='Nao'?960:p.start-30,p.home,false]]);
- const market=RESIDENTS.find(p=>p.name==='Thuan').work;
+ const cases=HOME_OWNERS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',p.name==='Officer Mori'?1320:p.name==='Nao'?960:p.start-30,p.home,false]]);
+ const market=[...MARKET_THRESHOLD];
  cases.push(['Kenji','ramen',600,RAMEN_DOOR,true],['Kenji','ramen',800,RAMEN_DOOR,false],['Nao','izakaya',1100,IZAKAYA_DOOR,true],['Nao','izakaya',800,IZAKAYA_DOOR,false],['Reiko','market',600,market,true],['Reiko','market',800,market,false]);
  for(const name of Object.keys(WORK_SITES)){
   const p=RESIDENTS.find(p=>p.name===name);cases.push([name,'work',730,p.work,true],[name,'work',1300,p.work,false]);

@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {createTown} from '../src/world/town.js?snappy=1';
 import {createTownSky} from '../src/render/sky.js';
 import {installDOM} from './fixtures.mjs';
+import {STREET_CAST_NAMES} from '../src/people/residents.js';
 import {groundHeight,OUTER_PIER} from '../src/world/layout.js?snappy=1';
 
 test('street has no transparent canopy sheets and phones retain bounded night lighting',()=>{
@@ -11,7 +12,8 @@ test('street has no transparent canopy sheets and phones retain bounded night li
  const world=createTown({scene,sites:[],mobile:true,shadows:false,register(){},enter(){},onAction(){}});
  const pier=world.group.getObjectByName('pier-concrete-surface');
  assert.equal(groundHeight(0,-56),pier.position.y,'Physics and visible pier share the same height');
- const master=world.people.find(p=>p.g.userData.name==='Harbour master');assert.equal(master.g.position.y,groundHeight(master.g.position.x,master.g.position.z),'Initial resident is grounded at the relocated workplace');
+ // Whoever keeps the harbour office stands on the relocated workplace ground once back in the cast.
+ const master=world.people.find(p=>p.g.userData.name==='Harbour master');if(STREET_CAST_NAMES.includes('Harbour master'))assert.equal(master.g.position.y,groundHeight(master.g.position.x,master.g.position.z),'Initial resident is grounded at the relocated workplace');
  assert.equal(groundHeight(0,-38),0,'Boardwalk remains flush');
  assert.equal(groundHeight(0,-46),0,'Approach is not raised with the pier');
  for(const z of [-50,-56,-64])assert.equal(groundHeight(2,z),OUTER_PIER.height);

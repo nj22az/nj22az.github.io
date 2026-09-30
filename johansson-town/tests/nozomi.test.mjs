@@ -16,7 +16,7 @@ test('Nozomi and Aya retain their identities on low-poly rigs, including retries
   const {preloadModels,preloadModel,preloadCharacter,createLocalCharacters}=await import('../src/people/models.js?nozomi-low-poly=1');
   for(const id of ['aya','nozomi','vroid-bob'])assert.equal(await preloadModel(id),false);
   assert.equal(requests.length,0);
-  assert.deepEqual(await preloadModels(),{ready:5,total:6});
+  assert.deepEqual(await preloadModels(),{ready:6,total:7});
   const scene=new THREE.Scene(),models=createLocalCharacters(),reikoEntity=new THREE.Group();reikoEntity.userData.name='Reiko';scene.add(reikoEntity);
   assert.equal(models.attach(reikoEntity,'Reiko'),null);assert.equal(reikoEntity.children.length,0);
   failFormal=false;assert.equal(await preloadCharacter('Nozomi'),true);
