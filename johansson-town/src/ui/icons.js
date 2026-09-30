@@ -41,6 +41,9 @@ const P=Object.freeze({
  recycle:'<path d="M7 19H4l3-6M17 19h3l-3-6M9 6l3-4 3 4"/><path d="M8 13l-3-2M16 13l3-2M12 2v6M7 19h10"/>',
  box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
  map:'<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
+ shuffle:'<path d="M3 6h3l12 12h3M3 18h3L18 6h3M18 3l3 3-3 3M18 15l3 3-3 3"/>',
+ undo:'<path d="M3 10h10a6 6 0 010 12M3 10l5-5M3 10l5 5"/>',
+ reset:'<path d="M3 10a9 9 0 119 11M3 4v6h6"/>',
  close:'<path d="M6 6l12 12M18 6L6 18"/>'
 });
 export const ICON_NAMES=Object.freeze(Object.keys(P));

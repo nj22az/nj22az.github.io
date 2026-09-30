@@ -859,13 +859,13 @@ function updateDirectory(){
  const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
  const progress=travelProgress(activities.state);
- row('✿ Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
- row(progress.unlocked?'✦ Town shortcuts unlocked':'🔒 Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
+ row('Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
+ row(progress.unlocked?'Town shortcuts unlocked':'Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
  const destination=(site,title)=>{row((progress.unlocked?'Go to ':'Find on foot · ')+(title||site.title),progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
  const teaHouse=SITES.find(s=>s.id==='tea-house');
- if(teaHouse)destination(teaHouse,'🍵 Corner Tea House');
+ if(teaHouse)destination(teaHouse,'Corner Tea House');
  const izakaya=SITES.find(s=>s.id==='izakaya');
- if(izakaya){destination(izakaya,'🏮 Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
+ if(izakaya){destination(izakaya,'Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
  section('Street');SITES.filter(s=>!['izakaya','tea-house'].includes(s.id)).forEach(s=>destination(s));
  (world.landmarks||[]).forEach(s=>destination(s));
  section('Residents');world.people.forEach(p=>row(p.g.userData.name,p.g.userData.activity||'On the street',()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);}));
