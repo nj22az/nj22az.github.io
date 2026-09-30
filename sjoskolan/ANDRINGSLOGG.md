@@ -522,3 +522,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     - Labbhandboken (vecka-40.html): ett kort manus för att förklara D och en tabell över hur D används i varje uppgift.
 - **2026-09-30** Växelströmslabbet: rubrikradens länkar och Först-rutan sa ”del 1–3” och pekade på den äldre
   genomgångssidan. Nu del 2–4 och delsidorna, som veckosidan (regel 40). Vecka 40 upplåst, ändrad, låst igen.
+- **2026-09-30** Utkast `vaxelstromslabbet-utkast/`: en kopia av fredagens labb där Hela bänken visar sladdarna
+  (sinus: mätarna och oscilloskopet parallellt över källan; spolen: källa, strömmätare och komponentplatta i serie, med
+  pilar för strömmens väg). Originalet och låset för vecka 40 är orörda tills läraren godkänner. Se utkastets README.
