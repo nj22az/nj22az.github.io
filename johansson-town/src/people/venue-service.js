@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
-import {createResidentProp} from './resident-props.js';
+import {createDrinkProp,createDishProp,setPropPortion,updatePropPortion,disposeServing} from './izakaya-beer.js';
+import {consumptionPhase} from '../avatars/consume.js';
 import {createResidentLedger,residentPersonality} from './resident-personalities.js';
 
 const LABELS={beer:'beer',tea:'green tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
@@ -8,8 +9,8 @@ const LABELS={beer:'beer',tea:'green tea',rice:'rice',yakitori:'yakitori',fish:'
 export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Nao':null,venueName=place==='ramen'?'Inakaya':'Minato'}){
  const inside=place==='ramen'?'inRamen':'inIzakaya';
  const settings=new Map();let serving=null,timer=0;
- function clear(person){for(const key of ['heldItem','mealState','residentSpeech'])delete person.g.userData[key];}
- function remove(person){const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink]){prop.removeFromParent();prop.geometry.dispose();prop.material.dispose();}settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
+ function clear(person){for(const key of ['heldItem','mealState','residentSpeech','heldPortion','foodPortion','consumeElapsed'])delete person.g.userData[key];}
+ function remove(person){const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
  function table(person,prop,side){
   const g=person.g,forward=new THREE.Vector3(-Math.sin(g.rotation.y),0,-Math.cos(g.rotation.y)),right=new THREE.Vector3(Math.cos(g.rotation.y),0,-Math.sin(g.rotation.y));
   prop.position.copy(g.position).addScaledVector(forward,place==='ramen'?.40:g.userData.seatHeight>.65?.78:.60).addScaledVector(right,side*.15);
@@ -34,20 +35,25 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?'tea':taste.drink,delivered:false,eaten:0,finished:false};
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}
    if(!setting){
-    const food=createResidentProp(record.item),drink=createResidentProp(record.drink);food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);
+    const food=createDishProp(record.item==='fish'?'hokke':record.item),drink=createDrinkProp(record.drink==='beer'?'draft':'oolong');food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);
     if(!record.delivered&&!record.finished)person.g.userData.residentSpeech={text:place==='ramen'?'One ramen, please.':'A '+LABELS[record.drink]+' and '+LABELS[record.item]+', please, Nao.',until:minutes+5};
    }
    const data=person.g.userData,seated=Number.isFinite(data.seatHeight);
-   if(record.finished){data.socialPose=seated?'Sit':'Idle_Neutral';delete data.heldItem;data.mealState='finished';data.activity='relaxing after '+LABELS[record.item];setting.food.visible=setting.drink.visible=false;continue;}
+   if(record.finished){data.socialPose=seated?'Sit':'Idle_Neutral';delete data.heldItem;delete data.heldPortion;delete data.foodPortion;delete data.consumeElapsed;data.mealState='finished';data.activity='relaxing after '+LABELS[record.item];setting.food.visible=setting.drink.visible=false;continue;}
    if(!record.delivered){
     data.socialPose=seated?'Sit':'Idle_Neutral';data.mealState='ordered';data.activity='waiting for '+LABELS[record.item]+' and '+LABELS[record.drink];
     if(!serving){serving=person;timer=2.8;}
    }else{
     record.eaten+=dt;const phase=Math.floor(record.eaten/3)%4,drink=phase===0,eat=phase===2;
+    // Four sips and three bites finish within the existing 42-second meal.
+    const portion=(offset,mouthfuls)=>{const t=Math.max(0,record.eaten-offset);return record.eaten<offset?1:Math.max(0,1-(Math.floor(t/12)+consumptionPhase(t%12).swallow)/mouthfuls);};
+    const drinkLeft=portion(0,4),foodLeft=portion(6,3);
+    data.consumeElapsed=record.eaten%3;data.heldPortion=drink?drinkLeft:eat?1-consumptionPhase(data.consumeElapsed).swallow:undefined;data.foodPortion=foodLeft;
+    setPropPortion(setting.food,foodLeft);setPropPortion(setting.drink,drinkLeft);updatePropPortion(setting.food,dt);updatePropPortion(setting.drink,dt);
     data.mealState='eating';data.socialPose=drink?(seated?'Drink':'DrinkStanding'):eat?(seated?'Eat':'EatStanding'):seated?'Sit':'Idle_Neutral';data.heldItem=drink?record.drink:eat?record.item:null;
     data.activity=drink?'drinking '+LABELS[record.drink]+' at '+venueName:eat?'eating '+LABELS[record.item]:'enjoying supper';
     table(person,setting.food,-1);table(person,setting.drink,1);setting.food.visible=seated&&!eat;setting.drink.visible=seated&&!drink;
-    if(record.eaten>=42){record.finished=true;ledger.record(name,minutes,'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
+    if(record.eaten>=42){record.finished=true;setPropPortion(setting.food,0);setPropPortion(setting.drink,0);ledger.record(name,minutes,'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
   // While Nao is bringing the player a drink, izakaya-beer.js has her.

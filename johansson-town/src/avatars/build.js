@@ -366,7 +366,24 @@ function addBody(list,recipe,m,swim=false){
  // Neck.
  tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.2,'neck',skin,8);
  // Collars and the apron.
- if(!swim&&['polo','kariyushi','smock','jacket'].includes(o.top))part(list,new THREE.TorusGeometry(m.armR*1.6,m.armR*.45,6,14),'chest',o.top==='kariyushi'?o.topColour:'#f4f1ea',M(0,m.neckY-.015,m.depth*.08,Math.PI/2-.35));
+ if(!swim&&['polo','kariyushi','smock','jacket','blouse'].includes(o.top)){
+  // Folded collar points and a button placket identify the +z front. A torus
+  // around the neck reads as a rolled, backwards collar from either side.
+  const trim=o.top==='kariyushi'?top:'#f4f1ea';
+  const surface=y=>D/2*latheRadius(prof,(y-hipY)/m.torso)+.008*m.k;
+  for(const s of [-1,1]){
+   const points=[[s*.012*m.k,m.neckY-.012*m.k],[s*.085*m.k,m.neckY-.035*m.k],[s*.055*m.k,m.neckY-.115*m.k]];
+   // Reverse one panel's winding so both outward normals face +z.
+   if(s>0)points.reverse();
+   const g=new THREE.BufferGeometry();
+   g.setAttribute('position',new THREE.Float32BufferAttribute(points.flatMap(([x,y])=>[x,y,surface(y)+.004*m.k]),3));
+   g.computeVertexNormals();part(list,g,'chest',trim);
+  }
+  for(const t of [.4,.56,.72]){
+   const y=hipY+m.torso*t;
+   ball(list,.006*m.k,[0,y,surface(y)],'chest','#f4f1ea',[1,1,.45],8,6);
+  }
+ }
  if(!swim&&o.top==='apron'){
   // Below the waist it follows the legs, so sitting down folds it onto the lap.
   const lap=p=>{if(p.y>hipY-.01)return [['hips',1]];const w=THREE.MathUtils.smoothstep(p.x,-W*.2,W*.2);return [['thighL',w],['thighR',1-w]];};
@@ -429,7 +446,8 @@ function buildHead(recipe,m,faceSize){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=faceSize;
  const ctx=canvas.getContext('2d');
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
- const g=new THREE.SphereGeometry(1,36,26),pos=g.attributes.position,uv=g.attributes.uv,v=new THREE.Vector3();
+ let g=new THREE.SphereGeometry(1,36,26);
+ const pos=g.attributes.position,uv=g.attributes.uv,v=new THREE.Vector3();
  // The face is projected onto the front of the sphere; everything else samples the
  // canvas edge, which is plain skin.
  const PHI0=Math.PI/2-.95,PHI=1.9,TH0=Math.PI*.28,TH=Math.PI*.58;
@@ -444,6 +462,17 @@ function buildHead(recipe,m,faceSize){
  // is: a sphere's own normals put a hard shadow line straight across the cheeks.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
  for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ // atan2 wraps on the rear/side seam. Interpolating from u=0 to u=1
+ // across a triangle paints the whole face there, including red lips.
+ // Give those triangles their own plain-skin UVs, retaining smooth normals.
+ const indexed=g;g=indexed.toNonIndexed();indexed.dispose();
+ const P=g.attributes.position,U=g.attributes.uv;
+ for(let i=0;i<P.count;i+=3){
+  const us=[U.getX(i),U.getX(i+1),U.getX(i+2)];
+  const rear=P.getZ(i)<=0&&P.getZ(i+1)<=0&&P.getZ(i+2)<=0;
+  if(rear||Math.max(...us)-Math.min(...us)>.5)
+   for(let j=0;j<3;j++)U.setXY(i+j,.002,.002);
+ }
  // Cel-shaded like the town, on its high-key ramp, and a little self-lit so a face in
  // a dim room still reads.
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05}),{bands:'soft3'});

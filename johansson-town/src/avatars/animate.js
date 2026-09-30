@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {poseAvatarOnBicycle} from './bicycle-pose.js';
 import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
+import {consumptionPhase,poseAvatarConsumption} from './consume.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -21,7 +22,7 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
- PickUp:1.6,Fist:1.4,Jump:.9,Cheer:1.6,Hop:1.2,Stomp:1.4,Slump:2.2,Fidget:2.4,SitToast:2.2,SitDrink:2.4,
+ PickUp:1.6,Fist:1.4,Jump:.9,Cheer:1.6,Hop:1.2,Stomp:1.4,Slump:2.2,Fidget:2.4,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
@@ -37,6 +38,7 @@ export function createAvatarAnimator(avatar){
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
+ let consumption=null,consumeTime=0,lastConsume=null;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
 
@@ -55,6 +57,15 @@ export function createAvatarAnimator(avatar){
   */
  function update(dt,s={}){
   time+=dt;
+  const action=gesture?.name||s.pose||s.seat;
+  const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
+  if(eating||drinking){
+   if(action!==lastConsume)consumeTime=0;
+   consumeTime+=dt;
+   const t=Number.isFinite(s.consumeElapsed)?s.consumeElapsed:gesture?gesture.t+dt:consumeTime%5;
+   consumption={...consumptionPhase(t),food:eating,elapsed:consumeTime,cycle:Math.floor(consumeTime/5)};
+  }else{consumption=null;consumeTime=0;}
+  lastConsume=action;
   for(const j of JOINTS)target[j].set(0,0,0);
   let targetRoot=0,targetHips=0,targetLean=0;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
@@ -134,6 +145,7 @@ export function createAvatarAnimator(avatar){
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
   if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
+  else if(consumption)poseAvatarConsumption(avatar,consumption.lift,consumption.food,s.heldProp);
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}
@@ -183,5 +195,5 @@ export function createAvatarAnimator(avatar){
   }
   return null;
  }
- return {update,play,stop,get gesture(){return gesture?.name||null;}};
+ return {update,play,stop,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
 }

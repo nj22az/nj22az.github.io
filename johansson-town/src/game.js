@@ -56,7 +56,7 @@ import {MOVES} from './avatars/moves.js';
 import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
-import {createBeerService,createDrinkProp} from './people/izakaya-beer.js';
+import {createBeerService,createDrinkProp,createBiteProp,setPropPortion} from './people/izakaya-beer.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
 import {routeAt,groundHeight} from './world/layout.js?snappy=1';
@@ -387,19 +387,23 @@ function placeThirdPerson(dt){
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Nao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
 function sipDrink(){
+ if(Math.max(sipDrink.busyUntil||0,eatDish.busyUntil||0)>performance.now())return false;
  const table=beerService?.drink;if(!table||table.left<=0)return false;
  const first=table.left===table.sips,r=beerService.sip();if(!r)return false;
  tipsy=Math.min(4,tipsy+r.alcohol);minutes+=2;townClock.pass(2);activities.state.clockAhead=townClock.ahead;
- if(thirdPerson&&johansson?.ready){johansson.play(first?'SitToast':'SitDrink');const prop=createDrinkProp(r.kind==='bottle'?'draft':r.kind);prop.scale.setScalar(.95);johansson.hold(prop);clearTimeout(sipDrink.timer);sipDrink.timer=setTimeout(()=>johansson?.hold(null),first?2300:2500);}
- else hands.sip(r.kind==='bottle'?'draft':r.kind);
+ sipDrink.busyUntil=performance.now()+2500;
+ if(thirdPerson&&johansson?.ready){johansson.play(first?'SitToast':'SitDrink');const prop=createDrinkProp(r.kind,{held:true});prop.userData.startPortion=table.left/table.sips;prop.userData.finishPortion=r.left/table.sips;setPropPortion(prop,prop.userData.startPortion,{immediate:true});johansson.hold(prop);clearTimeout(sipDrink.timer);sipDrink.timer=setTimeout(()=>johansson?.hold(null),2500);}
+ else hands.sip(r.kind,table.left/table.sips,r.left/table.sips);
  say(first?'乾杯！ The first mouthful is the coldest thing in Okinawa.':r.left?'Another mouthful. '+r.left+' left.':'The last of it. Nao glances over: もう一杯？',3);
  return true;
 }
 /** E at the table with a dish in front of you: one mouthful of it. */
 function eatDish(){
+ if(Math.max(sipDrink.busyUntil||0,eatDish.busyUntil||0)>performance.now())return false;
  const r=beerService?.bite();if(!r)return false;
  minutes+=2;townClock.pass(2);activities.state.clockAhead=townClock.ahead;
- if(thirdPerson&&johansson?.ready)johansson.play('SitEat');else hands.bite(r.kind);
+ eatDish.busyUntil=performance.now()+2500;
+ if(thirdPerson&&johansson?.ready){johansson.play('SitEat');const prop=createBiteProp(r.kind);prop.userData.startPortion=1;prop.userData.finishPortion=0;johansson.hold(prop);clearTimeout(sipDrink.timer);sipDrink.timer=setTimeout(()=>johansson?.hold(null),2500);}else hands.bite(r.kind);
  say(r.left?'いただきます。 '+(r.left===1?'One mouthful left.':r.left+' mouthfuls left.'):'ごちそうさま。 The plate is clean.',3);
  return true;
 }
