@@ -100,3 +100,20 @@ test('Station A: instrument check passes and the lab protocol fetches the readin
   assert.match(q('#labbprotokoll .lp-example').textContent,/mA/);
   assert.match(q('#lesson-number').textContent,/09/);
 });
+
+
+test('Station A: Pavlo rig 6 passes R1 and R2 without losing earlier progress',async()=>{
+  const old={done:['voltage','polarity'],records:[{time:'2026-09-29',lesson:'Spänning',step:1,reading:'12,00 V'}]};
+  const ui=await mount(old,{lesson:'stationA'}),{q,click,change}=ui;
+  change('#rig','6');click('#functions [data-mode="dc"]');
+  change('#red-node','Ref+');change('#black-node','Ref−');click('#check');click('#next');
+  click('#link');change('#red-node','A');change('#black-node','B');click('#check');click('#next');
+  assert.match(q('#task-heading').textContent,/Steg 3 av 9/);
+  click('#functions [data-mode="ohm"]');assert.equal(q('#reading').textContent,'961,8');
+  click('#check');assert.equal(q('#next').hidden,false);click('#next');
+  assert.match(q('#task-heading').textContent,/Steg 4 av 9/);
+  change('#red-node','N');change('#black-node','B');click('#check');
+  assert.equal(q('#next').hidden,false);click('#next');
+  assert.match(q('#task-heading').textContent,/Steg 5 av 9/);
+  assert.deepEqual(ui.saved().done,old.done);assert.deepEqual(ui.saved().records[0],old.records[0]);
+});

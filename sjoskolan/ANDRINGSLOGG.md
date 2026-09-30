@@ -154,6 +154,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     och förhandsbilder, uppdatera `manifest.json` och ladda upp den nya PDF:en i Shopify (görs av Nils).
 19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
 
+45. **Jämför mätvärden i samma enhet.** Multimeterns autorange returnerar `value` i displayens Ω eller kΩ.
+    Normalisera före kontroll och prova alla riggar på båda sidor om enhetsbytet.
+
 ## Ändringar
 
 - **2026-09-30** PR #113 framflyttad: multimeterns övning 7 behåller läsbara diagrametiketter, separat spetsrad och sladdar i kanten; main:s senare notation och elevdata bevarade. Ny cacheversion. 24 modell-/DOM-tester och 10 Chromium-fall godkända på telefon, surfplatta och två skrivbordsbredder. Fysisk iPhone/iPad och WebKit kvarstår separat.
@@ -547,3 +550,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   markerar nu 5 ms i kurvan och att rotorn vrids medurs; texten i övning 1.10 låg över en ledning. Övriga figurer stämmer
   (visare, Y/Δ-bleck, resistansnät, effekttriangel, startarens kontakter, tångens varv). Ny kontroll: figurkontroll.py.
   EL-000810–813 reviderade med det skyddade innehållet uppackat (regel 44).
+
+- **2026-09-30** Multimeterlabbet, Station A: R1-kontrollen normaliserar Ω/kΩ så rigg 2, 5 och 6 kan godkännas.
+  R2 använder samma kontroll. Regressioner täcker alla riggar, båda spetsordningarna, felkopplingar och steg 3 → 4 → 5.
+  Cacheversionerna är uppdaterade; elevframsteg och protokoll behåller sina lagringsnycklar.
+  Kontroll: 26 modell-/DOM-tester och 14 Chromium-tester godkända (två pektester gäller bara pekprojekten).
+  Station A genomförd i alla nio steg vid 390, 820, 1024 och 1440 px; sparade övningar och protokoll behålls vid omladdning.
