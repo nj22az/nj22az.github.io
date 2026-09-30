@@ -9,7 +9,7 @@ import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING,SAKURA_TILL_CABINET} from './sakura-layout.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
-import {buildSakuraCheer} from './sakura-cheer.js';
+import {buildSakuraCheer,paintSakuraShell,buildSakuraBand} from './sakura-cheer.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -54,6 +54,7 @@ export function preloadSakuraInterior(){
   const response=await fetch(assetURL('models/sakura-interior/sakura-interior.glb?fittings=2'),{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);
   model=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;model.name='Supplied convenience-store interior';model.userData.sharedAsset=true;
   rearrangeShelving(model);
+  paintSakuraShell(model);
   // Kept out of the cel pass. These meshes carry vertex colours, and converting them
   // to MeshToonMaterial renders the whole shop black — verified by putting the
   // materials back one by one, and it happens with stock toon too, not just with the
@@ -144,6 +145,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
+ buildSakuraBand(room);
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));

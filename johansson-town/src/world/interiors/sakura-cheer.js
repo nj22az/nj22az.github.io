@@ -136,3 +136,62 @@ export function buildSakuraCheer(room,{anchor,action}){
  buildCheer(room);
  buildBackOffice(room,anchor,action);
 }
+
+/**
+ * Konbini colours for the supplied shell: white walls and ceiling, a pale counter, and
+ * the chain's band — Sakura pink with a red pinstripe and white lettering — running
+ * round the top of the walls, the way a Lawson is blue up there and a FamilyMart green.
+ * The model paints everything with one vertex colour per mesh, so each mesh gets its
+ * own flat colour instead.
+ */
+// Cool whites, so the room reads crisp under the warm tubes rather than cream. White
+// gondolas with Sakura-pink end panels, the way chains paint their end caps. The
+// fittings take no glow: nothing that holds stock is emissive.
+export const SAKURA_PAINT=Object.freeze({
+ 'sakura-building':[0xf2f6fa,.5],'sakura-ceiling':[0xf8fbff,.72],'sakura-counter':[0xeef0f2,.34],
+ 'sakura-shelf':[0xf4f6f8,0],'sakura-shelf-ends':[0xf27aa4,0],'sakura-fridge':[0xf2f6f8,0],
+});
+const paintFor=name=>SAKURA_PAINT[name]||SAKURA_PAINT[name.split(' ')[0]];
+export function paintSakuraShell(model){
+ model.traverse(o=>{
+  const spec=o.isMesh&&paintFor(o.name||'');if(!spec)return;
+  // The shell has no normals, so its walls catch little of the fill; a share of their own
+  // colour as glow is what tube light bouncing round a white room looks like.
+  const [colour,glow]=spec;
+  const paint=m=>{const c=m.clone();c.vertexColors=false;c.color.setHex(colour);if(glow){c.emissive.setHex(colour);c.emissiveIntensity=glow;}c.needsUpdate=true;return c;};
+  o.material=Array.isArray(o.material)?o.material.map(paint):paint(o.material);
+ });
+}
+/** Inner faces of the shop-floor walls, the band's height, and the counter's customer face. */
+export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
+ {x:-6.8,z0:-3.95,z1:3.2,yaw:Math.PI/2},
+ {z:-3.93,x0:-6.8,x1:6.8,yaw:0},
+ {x:6.8,z0:-1.1,z1:3.9,yaw:-Math.PI/2},
+]),counter:{x:4.52,z0:.1,z1:3.84,y0:.08,y1:.92}});
+export function buildSakuraBand(room){
+ const B=SAKURA_BAND,h=B.y1-B.y0;
+ const tex=sign(1024,128,(ctx,w,H)=>{
+  ctx.fillStyle='#f06b9a';ctx.fillRect(0,0,w,H);ctx.fillStyle='#d7263d';ctx.fillRect(0,H-16,w,16);ctx.fillStyle='#ffffff';ctx.fillRect(0,H-22,w,4);
+  ctx.fillStyle='#ffffff';ctx.font=`bold 54px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText('桜 SAKURA SHŌTEN',30,H*.42);
+  ctx.font=`bold 30px ${MARU}`;ctx.fillText('いつでも、ちかくに。',w*.62,H*.44);
+  ctx.beginPath();ctx.arc(w-40,H*.42,18,0,Math.PI*2);ctx.fill();
+ });
+ tex.wrapS=THREE.RepeatWrapping;
+ const make=(length,x,z,yaw)=>{
+  const t=tex.clone();t.needsUpdate=true;t.repeat.set(Math.max(1,Math.round(length/3.2)),1);
+  const m=add(room,new THREE.PlaneGeometry(length,h),new THREE.MeshBasicMaterial({map:t,toneMapped:false}),x,(B.y0+B.y1)/2,z,'Sakura wall band');m.rotation.y=yaw;return m;
+ };
+ for(const r of B.runs){
+  if(r.x!=null)make(r.z1-r.z0,r.x,(r.z0+r.z1)/2,r.yaw);
+  else make(r.x1-r.x0,(r.x0+r.x1)/2,r.z,r.yaw);
+ }
+ // The counter's customer face in the chain colours, with the logo in the middle.
+ const C=B.counter,len=C.z1-C.z0,ch=C.y1-C.y0;
+ const front=sign(1024,256,(ctx,w,H)=>{
+  ctx.fillStyle='#fff6f8';ctx.fillRect(0,0,w,H);ctx.fillStyle='#f06b9a';ctx.fillRect(0,H*.55,w,H*.45);ctx.fillStyle='#d7263d';ctx.fillRect(0,H*.55,w,10);
+  ctx.fillStyle='#d7263d';ctx.beginPath();ctx.arc(w/2,H*.42,58,0,Math.PI*2);ctx.fill();
+  signText(ctx,'桜',w/2,H*.42,70,'#ffffff');signText(ctx,'SAKURA SHŌTEN',w/2,H*.8,44,'#ffffff');
+ });
+ const panel=add(room,new THREE.PlaneGeometry(len,ch),new THREE.MeshBasicMaterial({map:front,toneMapped:false}),C.x,(C.y0+C.y1)/2,(C.z0+C.z1)/2,'Sakura counter front');
+ panel.rotation.y=-Math.PI/2;
+}
