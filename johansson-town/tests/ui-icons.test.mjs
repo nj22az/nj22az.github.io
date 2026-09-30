@@ -26,3 +26,15 @@ test('every icon draws, and unknown names fall back rather than break',()=>{
  assert.equal(svg('no-such-icon'),svg('box'));
  assert.match(svg('bag',{label:'Bag "full"'}),/aria-label="Bag &quot;full&quot;"/);
 });
+
+test('bag is created inside the opened menu and retains its accessible count and action',async()=>{
+ const {dressHud}=await import('../src/ui/hud-icons.js');
+ const badge={textContent:''},attributes={},listeners={};let parent=null,opened=0;
+ const bag={style:{setProperty(){}},classList:{add(){}},setAttribute(k,v){attributes[k]=v;},querySelector(){return badge;},addEventListener(k,v){listeners[k]=v;}};
+ const menu={append(el){parent=menu;assert.equal(el,bag);}};
+ const doc={body:{append(){assert.fail('Bag must belong to the menu');}},querySelector(selector){return selector==='#townControls'?menu:null;},createElement(){return bag;}};
+ const hud=dressHud({doc,onBag:()=>opened++});assert.equal(parent,menu);
+ hud.count(3);assert.equal(badge.textContent,'3');assert.equal(attributes['aria-label'],'Bag · 3 things');
+ listeners.click();assert.equal(opened,1);
+ hud.count(0);assert.equal(attributes['aria-label'],'Bag');
+});

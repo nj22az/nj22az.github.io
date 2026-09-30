@@ -60,62 +60,27 @@
   box-shadow: 0 3px 0 var(--isle-edge), 0 6px 14px rgba(40, 60, 90, .16);
 }
 
-/* ---------- The right-hand rail: coloured tiles ---------- */
+/* Compact, unframed menu access. The other tools live inside the menu. */
 #hud #directoryButton,
-#hud #cameraButton,
-#hud #viewButton,
-#hud #movesButton,
-#hud #bagButton {
-  --tile: var(--isle-sky);
-  --tile-deep: var(--isle-sky-deep);
-  border: 3px solid var(--isle-white);
-  border-radius: 18px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tile) 78%, #fff) 0%, var(--tile) 55%);
-  color: var(--isle-white);
-  font-family: var(--isle-font);
-  font-weight: 800;
-  box-shadow: 0 4px 0 var(--tile-deep), 0 8px 16px rgba(40, 60, 90, .22);
-  transition: transform .12s ease, box-shadow .12s ease, opacity .3s ease;
+#hud #directoryButton:active {
+  width:44px;height:44px;min-height:44px;padding:0;
+  display:grid;place-items:center;font-size:0;letter-spacing:0;
+  border:0;border-radius:0;background:transparent;box-shadow:none;
+  color:#fff;filter:drop-shadow(0 1px 2px #16262dcc);
+  transform:none;
 }
-#hud #directoryButton { --tile: var(--isle-sun); --tile-deep: var(--isle-sun-deep); }
-#hud #cameraButton { --tile: var(--isle-sky); --tile-deep: var(--isle-sky-deep); }
-#hud #viewButton { --tile: var(--isle-leaf); --tile-deep: var(--isle-leaf-deep); }
-#hud #movesButton { --tile: var(--isle-berry); --tile-deep: var(--isle-berry-deep); }
-#hud #bagButton { --tile: var(--isle-peach); --tile-deep: var(--isle-peach-deep); }
-#hud #viewButton[aria-pressed="true"] {
-  --tile: var(--isle-grape);
-  --tile-deep: var(--isle-grape-deep);
-  border-color: var(--isle-white);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tile) 78%, #fff) 0%, var(--tile) 55%);
+#hud #directoryButton::before { width:26px;height:26px;margin:0;grid-area:1/1; }
+#hud #directoryButton:focus-visible { outline:2px solid #fff;outline-offset:2px; }
+#directory #townControls .icon-btn {
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;border:0;background:transparent;box-shadow:none;
 }
-#hud #directoryButton:active,
-#hud #cameraButton:active,
-#hud #viewButton:active,
-#hud #movesButton:active,
-#hud #bagButton:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--tile-deep), 0 3px 8px rgba(40, 60, 90, .2); }
-#hud #bagButton .bag-count {
-  background: var(--isle-white);
-  color: var(--isle-peach-deep);
-  font-family: var(--isle-font);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, .12);
-}
-@media (pointer: coarse) {
-  #hud #directoryButton,
-  #hud #cameraButton,
-  #hud #viewButton,
-  #hud #movesButton,
-  #hud #bagButton { width: 54px; height: 54px; min-height: 54px; border-radius: 18px; }
-  #hud #directoryButton::before,
-  #hud #cameraButton::before,
-  #hud #viewButton::before,
-  #hud #movesButton::before { width: 26px; height: 26px; }
-  #hud #bagButton .ui-icon { width: 26px; height: 26px; }
-  #hud #cameraButton { top: max(114px, calc(env(safe-area-inset-top) + 108px)); }
-  #hud #viewButton { top: max(176px, calc(env(safe-area-inset-top) + 170px)); }
-  #hud #movesButton { top: max(238px, calc(env(safe-area-inset-top) + 232px)); }
-  #hud #bagButton { top: max(300px, calc(env(safe-area-inset-top) + 294px)); }
-  body.hud-moving #hud .icon-btn { opacity: .55; }
-}
+#directory #townControls .icon-btn::before { margin:0; }
+#directory #bagButton { position:static;inset:auto;transform:none;opacity:1; }
+#directory #bagButton .bag-count { font-size:12px; }
+#directory #bagButton[hidden] { display:none; }
+/* Touch already has the context action; repeating its keyboard prompt wastes space. */
+@media(pointer:coarse) { body.hud-seated #hud #prompt { display:none; } }
 
 /* ---------- Captions: speech bubbles ---------- */
 #hud #subtitle {
@@ -152,39 +117,29 @@
   box-shadow: 0 4px 0 var(--isle-sky-deep), 0 8px 18px rgba(40, 60, 90, .22);
 }
 
-/* ---------- Thumb buttons ---------- */
+/* Context actions remain thumb-sized, with centred icons and no painted frame. */
 .touch-controls #mobile #act,
 .touch-controls #mobile #movementActions #run,
 .touch-controls #mobile #movementActions #jump,
 .touch-controls #mobile #drink {
-  border: 3px solid var(--isle-white);
-  color: var(--isle-white);
-  font-family: var(--isle-font);
-  font-weight: 800;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;
+  color:#fff;filter:drop-shadow(0 1px 2px #16262dcc);
+  font-family:var(--isle-font);font-weight:800;
 }
-.touch-controls #mobile #act {
-  background: radial-gradient(circle at 50% 35%, #7fd0ff, var(--isle-sky) 65%);
-  box-shadow: 0 5px 0 var(--isle-sky-deep), 0 10px 20px rgba(40, 60, 90, .25);
-}
-.touch-controls #mobile #movementActions #run {
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffb08f, var(--isle-peach) 60%);
-  box-shadow: 0 4px 0 var(--isle-peach-deep), 0 8px 16px rgba(40, 60, 90, .22);
-}
-.touch-controls #mobile #movementActions #run[aria-pressed="true"] {
-  background: linear-gradient(180deg, #ff9dc6, var(--isle-berry) 60%);
-  box-shadow: 0 4px 0 var(--isle-berry-deep), 0 8px 16px rgba(40, 60, 90, .22);
-}
-.touch-controls #mobile #movementActions #jump {
-  border-radius: 50%;
-  background: linear-gradient(180deg, #a6e57c, var(--isle-leaf) 60%);
-  box-shadow: 0 4px 0 var(--isle-leaf-deep), 0 8px 16px rgba(40, 60, 90, .22);
-}
-.touch-controls #mobile #drink {
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffe07a, var(--isle-sun) 60%);
-  color: #6b4a00;
-  box-shadow: 0 4px 0 var(--isle-sun-deep), 0 8px 16px rgba(40, 60, 90, .22);
+.touch-controls #mobile #act { width:56px;height:56px; }
+.touch-controls #mobile #act.available:not(.control-off) { transform:none; }
+.touch-controls #mobile #act .act-glyph .ui-icon { width:28px;height:28px;margin:0; }
+.touch-controls #mobile #act .act-label { font-size:10px; }
+.touch-controls #mobile #movementActions #run,
+.touch-controls #mobile #movementActions #jump,
+.touch-controls #mobile #drink { width:48px;height:48px;min-height:48px; }
+.touch-controls #mobile #movementActions { bottom:calc(env(safe-area-inset-bottom) + 96px); }
+.touch-controls #mobile #drink { bottom:calc(env(safe-area-inset-bottom) + 158px); }
+.touch-controls #mobile #movementActions #run[aria-pressed="true"] { color:#ffe07a; }
+@media(max-height:520px) {
+  .touch-controls #mobile #movementActions { bottom:calc(env(safe-area-inset-bottom) + 82px); }
+  .touch-controls #mobile #drink { bottom:calc(env(safe-area-inset-bottom) + 138px); }
 }
 
 /* ---------- Menus ---------- */
