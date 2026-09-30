@@ -31,7 +31,7 @@ d.text((A['rotor'][0], A['rotor'][1] + 80), 'rotor (magnet)', font=f(60), fill=G
 gen = im.crop(beskar(im))
 sys.path.insert(0, str(SJO / 'verktyg' / 'ac'))
 import scheman_veckor as sv  # noqa: E402
-svg = RAW / 'sinus.svg'; svg.write_text(sv.sinus())
+svg = RAW / 'sinus.svg'; svg.write_text(sv.sinus(markor=5))   # L1 = sin ωt har toppen vid 5 ms
 rot = subprocess.run(['npm', 'root', '-g'], capture_output=True, text=True, check=True).stdout.strip()
 k = RAW / 'r.cjs'; k.write_text(sv.RITA); subprocess.run(['node', str(k), rot, str(svg)], check=True)
 sin = Image.open(RAW / 'sinus.png').convert('RGB')
@@ -39,8 +39,8 @@ h = 900
 gen = gen.resize((int(gen.width * h / gen.height), h)); sin = sin.resize((int(sin.width * h / sin.height), h))
 ut = Image.new('RGB', (gen.width + sin.width + 60, h + 100), 'white'); ut.paste(gen, (0, 0)); ut.paste(sin, (gen.width + 60, 0))
 d = ImageDraw.Draw(ut)
-d.text((gen.width / 2, h + 14), 'Spolarna sitter 120° isär', font=f(56), fill=INK, anchor='ma')
-d.text((gen.width + 60 + sin.width / 2, h + 14), 'Rotorn i bilden: L1 har sitt toppvärde', font=f(56), fill=INK, anchor='ma')
+d.text((gen.width / 2, h + 14), 'Spolarna 120° isär, rotorn vrids medurs', font=f(52), fill=INK, anchor='ma')
+d.text((gen.width + 60 + sin.width / 2, h + 14), 'Rotorn i bilden = 5 ms: L1 har sitt toppvärde', font=f(56), fill=INK, anchor='ma')
 ut.save(UT / 'v41_01_s06_generator_sinus.png')
 
 # Bild 4, 21 och 23 renderas mindre än generatorn: figuren visas i halva bildbredden och etiketterna ska gå att läsa där.

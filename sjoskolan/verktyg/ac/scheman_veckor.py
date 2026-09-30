@@ -30,7 +30,7 @@ def svg(b, h, inner):
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{b}" height="{h}" viewBox="0 0 {b} {h}"><rect width="{b}" height="{h}" fill="#fff"/>{inner}</svg>'
 
 
-def sinus():
+def sinus(markor=None):
     """L1, L2 och L3 över 20 ms (50 Hz) med toppvärdet 1, 120° isär. Streckad: linjespänningen U12 = L1 − L2 med toppvärdet √3 ≈ 1,73."""
     b, h, v, r, top, bot = 880, 330, 70, 130, 36, 280
     R3 = math.sqrt(3)
@@ -54,6 +54,8 @@ def sinus():
         if streck:
             mark = mark.replace('/>', f' stroke-dasharray="6 4"/>', 1)
         s += mark + t(b - r + 70, 77 + k * 40, namn, 19, farg, 'start', 700)
+    if markor is not None:                                                   # tidpunkten som en figur bredvid visar
+        s += ln((X(markor), top - 6), (X(markor), bot), farg=INK, w=2).replace('/>', ' stroke-dasharray="3 4"/>', 1) + t(X(markor) + 6, top + 4, f'{markor} ms', 17, INK, 'start', 700)
     return svg(b, h + 30, s)
 
 

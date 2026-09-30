@@ -77,7 +77,7 @@ def supply(name,lab12,lab1n):
     vmark(ax,(3.0,2.6),(3.0,0.2),lab1n,off=(0.12,0))
     save(F,name)
 supply("v41_01_s15_ovn3","U_{L} = 400 V","U_{F} = ?")
-supply("v41_01_s17_ovn4","U_{L} = ?","U_{F} = 120 V")
+supply("v41_01_s17_ovn4","U_{L} = ?","U_{F} = 230 V")
 # s19 Ö5: Y-last på trefasriggen
 F=fig(4.3,3.0); ax=cax(F,(-1.6,2.6),(-1.4,1.75)); V=yload(ax,0,0,1.15)
 vmark(ax,(V[1][0],V[1][1]-0.32),(V[2][0],V[2][1]-0.32),"U_{L} = 12,0 V",off=(0,-0.25),ha="center")
@@ -139,7 +139,7 @@ ax.plot([1.4,3.0],[2.6,2.6],color=INK,lw=LW); ax.plot([1.4,2.0],[1.9,1.9],color=
 rresistor(ax,(3.0,2.6),(3.0,0.95),"Ra",loff=0.4); rresistor(ax,(2.0,1.9),(2.0,0.95),"Rb",loff=-0.4)
 ax.plot([2.0,3.0],[0.95,0.95],color=INK,lw=LW); dot(ax,2.5,0.95); ax.plot([2.5,2.5],[0.95,0.3],color=INK,lw=LW); ax.plot([2.0,2.5],[0.3,0.3],color=INK,lw=LW,ls=":")
 ax.plot([2.15,2.35],[0.18,0.42],color=ORANGE,lw=3); ax.plot([2.15,2.35],[0.42,0.18],color=ORANGE,lw=3); ax.text(2.25,-0.05,"brott",color=ORANGE,fontsize=13,ha="center",va="top")
-ax.text(4.35,2.2,"Ua och Ub\nändras – varför?",ha="right",color=RED,fontsize=13,va="center")
+ax.text(4.4,1.05,"Ua och Ub\nändras –\nvarför?",ha="right",color=RED,fontsize=13,va="center")   # till höger om Ra, fritt från ledningarna
 save(F,"v41_01_s34_ovn10")
 
 # ================= v41_02 Y, Δ och trefaseffekt =================

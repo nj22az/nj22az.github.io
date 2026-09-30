@@ -229,6 +229,10 @@ def cmd_kontrollera(a):
     las = subprocess.run([sys.executable, str(ROT.parent / 'verktyg' / 'las' / 'veckolas.py'), 'kontrollera'], capture_output=True, text=True)
     if las.returncode:
         brister['fel'] += [r[4:] for r in las.stdout.splitlines() if r.startswith('FEL ')]
+    # Övningsfigurernas tal ska stå i övningen (verktyg/figurer/figurkontroll.py).
+    sys.path.insert(0, str(ROT.parent / 'verktyg' / 'figurer'))
+    import figurkontroll
+    brister['fel'] += figurkontroll.avvikelser()
     import numrering
     _, onskat = numrering.onskat()
     for (yta, i), nr in onskat.items():

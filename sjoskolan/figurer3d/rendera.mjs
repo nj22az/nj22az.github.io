@@ -1,9 +1,10 @@
 // Renderar en modell till en PNG och projicerar ankarpunkterna till bildkoordinater (för etiketter).
 // rendera.html?m=generator&v=0&w=1600&h=1000
 import { THREE, scen, generator, stjarnkoppling, plint, transformator } from './modeller.mjs';
+import { beroring, ljusbage, zoner, lasmark, jordning } from './sakerhet.mjs';
 const q = new URLSearchParams(location.search);
 const w = +q.get('w') || 1600, h = +q.get('h') || 1000;
-const modell = { generator: () => generator({ vinkel: +q.get('v') || 0 }), stjarna: stjarnkoppling, plintY: () => plint({ lage: 'Y' }), plintD: () => plint({ lage: 'D' }), plint: () => plint({ lage: 'inga' }), transformator }[q.get('m')]();
+const modell = { generator: () => generator({ vinkel: +q.get('v') || 0 }), stjarna: stjarnkoppling, plintY: () => plint({ lage: 'Y' }), plintD: () => plint({ lage: 'D' }), plint: () => plint({ lage: 'inga' }), transformator, beroring, ljusbage, zoner, lasmark, jordning }[q.get('m')]();
 const s = scen('#ffffff'); s.add(modell.grupp);
 const k = modell.kamera, cam = new THREE.PerspectiveCamera(k.fov, w / h, 0.1, 100); cam.position.copy(k.pos); cam.lookAt(k.mal);
 const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(w, h); r.outputColorSpace = THREE.SRGBColorSpace;

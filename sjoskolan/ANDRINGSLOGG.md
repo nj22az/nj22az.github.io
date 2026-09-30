@@ -135,6 +135,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     `avrundning`, annars tre värdesiffror. *Kontroll: `innehall.py kontrollera` (oavrundat tal i facit).*
 40. **En del heter samma sak överallt.** Vecka 40:s inlämning kallade sinus ”del 1”, spolen ”del 2” och effekten ”del 3”,
     medan veckosidan och labben kallar dem del 2–4. Hänvisningar pekar på delsidan med samma nummer som veckosidan.
+41. **En 3D-figur måste vara fysiskt rätt i detalj.** 3D gör bilden konkret, så en förenkling som är ofarlig i 2D blir
+    fel: en motor med fötterna direkt på stålkrovet är jordad genom fötterna, och då ger en bruten PE ingen
+    beröringsspänning. Rita det som gör påståendet sant (gummidämpare) och skriv ut det. Markera på en skylt där handtaget
+    pekar, och visa alla mätpunkter (PE hör till spänningsprovningen). Granska varje ny figur som elektriker och sjöingenjör.
+42. **Talen i en övningsfigur ska stå i övningen.** Övning 1.4 i vecka 41 visade U_{F} = 120 V när uppgiften sa 230 V:
+    figuren ritades till en äldre version. *Kontroll: `verktyg/figurer/figurkontroll.py` (i `innehall.py kontrollera`).*
+43. **En tidsbild och en kurva ska visa samma ögonblick.** Står det ”rotorn i bilden” under en kurva ska tidpunkten vara
+    markerad i kurvan (5 ms för L1 = sin ωt), annars läser eleven t = 0.
+44. **Revidera poster med skyddat innehåll med lösenordet laddat.** `skyddat packa-upp`, `revidera`, `skyddat packa` och
+    ta bort klartexten. Annars stämmer inte kontrollsumman och `bygg larare` stoppar (EL-000810–813).
+
 
 ### Boken
 
@@ -525,3 +536,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-09-30** Utkast `vaxelstromslabbet-utkast/`: en kopia av fredagens labb där Hela bänken visar sladdarna
   (sinus: mätarna och oscilloskopet parallellt över källan; spolen: källa, strömmätare och komponentplatta i serie, med
   pilar för strömmens väg). Originalet och låset för vecka 40 är orörda tills läraren godkänner. Se utkastets README.
+- **2026-09-30** Vecka 42: fem 3D-figurer (`figurer3d/sakerhet.mjs`, `verktyg/figurer/figurer3d_v42.py`): v42_01 bild 7
+  beröringsspänning (pumpmotor på gummidämpare, isolationsfel, bruten PE, punkterna A och B), bild 8 ljusbåge i ett öppet
+  fack, v42_02 bild 7 riskområde och närområde som skal åt alla håll, v42_03 bild 8 frånskilj, lås och märk samt
+  spänningsprovning mot L1, L2, L3 och PE, bild 21 jordnings- och kortslutningsdon efter en synligt öppen frånskiljare.
+  Etiketterna placeras i spalter (`fig3d.spalter`) och håller 11–13 pt i bildens högra kolumn.
+- **2026-09-30** Vecka 41 granskad bild för bild. Rättat: övning 1.4 visade U_{F} = 120 V (uppgiften: 230 V); bild 6 i del 1
+  markerar nu 5 ms i kurvan och att rotorn vrids medurs; texten i övning 1.10 låg över en ledning. Övriga figurer stämmer
+  (visare, Y/Δ-bleck, resistansnät, effekttriangel, startarens kontakter, tångens varv). Ny kontroll: figurkontroll.py.
+  EL-000810–813 reviderade med det skyddade innehållet uppackat (regel 44).
