@@ -252,7 +252,7 @@ function controlsAllowed(){return !creatorOpen&&started&&!document.hidden&&!room
 function dragLook(dx,dy){const c=cameraControls.settings;yaw-=dx*.004*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-dy*.0032*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);}
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
-$('#cameraButton').onclick=openCamera;$('#viewButton')&&($('#viewButton').onclick=()=>{if(started)setThirdPerson(!thirdPerson);});$('#movesButton')&&($('#movesButton').onclick=movesMenu);$('#cameraMenuButton').onclick=openCamera;
+$('#cameraButton').onclick=()=>{toggleDir(false);openCamera();};$('#viewButton')&&($('#viewButton').onclick=()=>{if(started){toggleDir(false);setThirdPerson(!thirdPerson);}});$('#movesButton')&&($('#movesButton').onclick=()=>{toggleDir(false);movesMenu();});
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
 const move2=new THREE.Vector2(),fwVec=new THREE.Vector3(),rtVec=new THREE.Vector3(),moveVec=new THREE.Vector3(),turnQ=new THREE.Quaternion(),yAxis=new THREE.Vector3(0,1,0);
 
@@ -898,7 +898,7 @@ document.addEventListener('keydown',e=>{
 });document.addEventListener('keyup',e=>keys[e.code]=false);
 function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').innerHTML=runButtonFace(value);}
 // Icons on the buttons, and the bag, which only appears when there is something in it.
-const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused)activities.bag();}});$('#run').innerHTML=runButtonFace(false);
+const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused){toggleDir(false);activities.bag();}}});$('#run').innerHTML=runButtonFace(false);
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
 $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();pressedControls.add('run');toggleRunning();};
@@ -1044,7 +1044,10 @@ function updateContextControls(){
  for(const [id,visible] of Object.entries(state)){
   const element=$('#'+id);
   if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}
-  element.classList.toggle('control-off',!visible);
+  // The bag lives in the menu, where exploration is deliberately paused.
+  const show=id==='bagButton'?started&&items>0:visible;
+  element.classList.toggle('control-off',!show);
+  if(id==='bagButton')element.hidden=!show;
  }
  if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
  // Soft quest: quay before evening press (~18:30), once per calendar dayKey if picked.

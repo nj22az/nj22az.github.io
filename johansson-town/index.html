@@ -25,11 +25,11 @@
 <link rel="stylesheet" href="./title-screen.css?h=1844ef50">
 <link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
-<link rel="stylesheet" href="./tomodachi-ui.css?h=27302b0c">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-n33-1Ok-.js">
+<link rel="stylesheet" href="./tomodachi-ui.css?h=56de92f2">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-48bEpPQX.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CRFK9PiW.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-CuXD-OgH.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Cj_EbQEB.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-OO_vwja7.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -344,10 +344,7 @@
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
   <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
-  <button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button>
-  <button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button>
-  <button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button>
-  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
+  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Menu</button>
 
 
 
@@ -355,7 +352,7 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraMenuButton">CAMERA & CONTROLS</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button><button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
@@ -505,7 +502,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-n33-1Ok-.js');
+      await import('./runtime/boot-48bEpPQX.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
