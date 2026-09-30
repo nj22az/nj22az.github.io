@@ -23,6 +23,7 @@ import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
+import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
@@ -211,6 +212,8 @@ export function createTown(options){
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
    world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
+   // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
+   world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.
@@ -272,8 +275,8 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.busStation?.update(minutes,day);
+    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors

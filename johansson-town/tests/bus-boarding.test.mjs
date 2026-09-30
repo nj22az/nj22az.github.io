@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createBusRun} from '../src/world/bus.js';
+import {createFerryRun as createBusRun,FERRY} from '../src/world/ferry.js';
+import {OUTER_PIER} from '../src/world/layout.js';
 import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -60,17 +61,14 @@ test('nobody is put down on the platform unless the bus is at it',()=>{
  assert.ok(until(run,'away'),'The bus never goes');
  assert.equal(atTheStop(),false,'A departed bus still counts as standing at the stop');
 
- // and where they step off is the door they would have got on by: beside the front of
- // the bus, clear of its flank, on the road it is standing on. The bus stands at the
- // arch now rather than at the shelter, so the old test -- step off inside the bus
- // station's footprint -- was asking for somewhere the bus no longer goes.
+ // and where they step off is where they would have got on: the gangway's foot on the
+ // pier, beside the ferry lying alongside it, level with the gangway.
  assert.ok(until(run,'waiting',600),'The service never comes back');
  const step=run.door;
- assert.equal(step[1],run.doorway[1],'On and off happen at different ends of the bus');
- assert.ok(step[0]<run.doorway[0],'The door is on the far side of the bus from the kerb it opens onto');
- assert.ok(Math.abs(step[0]-run.bus.position.x)>1.2,'They step off into the side of the bus');
- assert.ok(step[1]<run.bus.position.z,'They step off at the back rather than the front');
- assert.ok(Math.abs(step[0]-MAIN_ROAD.x)<MAIN_ROAD.width/2,'They step off the edge of the road');
+ assert.equal(step[1],run.doorway[1],'On and off happen at different places along the ferry');
+ assert.ok(step[0]>run.doorway[0],'The gangway lands on the water side rather than the pier');
+ assert.ok(step[0]-run.bus.position.x>FERRY.beam/2,'They step off into the side of the ferry');
+ assert.ok(Math.abs(step[0]-OUTER_PIER.x)<OUTER_PIER.width/2,'They step off the edge of the pier');
 });
 
 test('with no bus modelled at all, people come and go as they always did',()=>{

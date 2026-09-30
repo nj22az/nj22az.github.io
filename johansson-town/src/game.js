@@ -787,15 +787,15 @@ function placeAtEntrance(s,leave=false){
  player.position.set(x,groundHeight(x,z),z);
 }
 /**
- * Walking up to the tunnel mouth. There is no footway inside and the sign at the portal
- * says so; the first time you reach it, somebody's voice in your head reads it out.
+ * Walking into the mouth of the old sea cave: the first time you reach it, a line says
+ * what it is and how to go in.
  * Once per approach -- the collision repeats every step you hold the key down.
  */
 let tunnelSignAt=-99;
 function reachTheTunnelMouth(x,z){
  if(!world.tunnel?.splat?.(x,z)||elapsed-tunnelSignAt<6)return;
  tunnelSignAt=elapsed;
- say('歩行者通行止め · No pedestrians in the tunnel. The Harbour Line is the way through.',3.5);
+ say('古洞 · The old sea cave. It goes down into the dark — tap to go in.',3.5);
 }
 function updatePlayer(dt){
  if(!seated&&!bicycleRide)unstuckPlayer();
@@ -899,7 +899,7 @@ function updateDirectory(){
  (world.landmarks||[]).forEach(s=>destination(s));
  section('Residents');world.people.forEach(p=>row(p.g.userData.name,p.g.userData.activity||'On the street',()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);}));
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
-  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Harbour Line','Northern bus terminal']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
+  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato Ferry','Outer pier · 3 sailings daily']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
 /**
  * Where the game starts (world/openings.js): one of a few good moments in town, picked

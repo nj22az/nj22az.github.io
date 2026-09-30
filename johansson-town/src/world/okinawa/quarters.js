@@ -379,7 +379,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(const x of [I.maxX-.4])kit.rod([x,.4,I.maxZ+.1],[x,I.height,I.maxZ+.1],.05,0x8e979a);
  solid(kit.rect(I.minX,I.maxX,I.minZ,I.maxZ,I.height,'ice-plant'));
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant','Minato ice plant · 製氷所',
-  'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear at the bus stop. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
+  'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
  fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:'第三港丸'});
  fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
@@ -482,7 +482,7 @@ function buildWires(kit,solid){
 
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
- higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every bus by the sound of it in the tunnel. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
+ higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
  kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
  nakasone:'The Nakasones keep the lawn in front of Umi-no-yu cut, because nobody else will. Mr Nakasone plays the sanshin on the verandah after supper; if the wind is right you can hear it from the bath.',
  miyagi:'Mrs Miyagi is ninety-one, walks to the utaki every morning and has outlived two husbands and a typhoon that took the roof off everything else on this side. The shisa on her ridge is older than she is.',
