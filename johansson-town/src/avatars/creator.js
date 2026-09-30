@@ -19,7 +19,7 @@ import {svg} from '../ui/icons.js';
  * (creator/), which is what a shared link opens.
  */
 
-const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat']);
+const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
 const LABEL={
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
@@ -31,6 +31,7 @@ const LABEL={
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
  shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
+ beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
  flowers:'Flowers',stripes:'Stripes',dots:'Dots',
 };
 
@@ -55,19 +56,19 @@ const TABS=[
  {id:'eyes',name:'Eyes',controls:[
   {kind:'parts',at:'eyes.style',list:PARTS.eyes,draw:'face'},
   {kind:'colours',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
-  {kind:'slider',at:'eyes.size',label:'Size'},{kind:'slider',at:'eyes.spacing',label:'Closer ↔ apart'},
+  {kind:'slider',at:'eyes.size',label:'Size'},{kind:'slider',at:'eyes.width',label:'Eye width'},{kind:'slider',at:'eyes.spacing',label:'Closer ↔ apart'},
   {kind:'slider',at:'eyes.height',label:'Lower ↔ higher',invert:true},{kind:'slider',at:'eyes.tilt',label:'Tilt'}]},
  {id:'brows',name:'Brows',controls:[
   {kind:'parts',at:'brows.style',list:PARTS.brows,draw:'face'},
   {kind:'colours',at:'brows.colour',label:'Colour',palette:PALETTE.hair},
-  {kind:'slider',at:'brows.size',label:'Size'},{kind:'slider',at:'brows.height',label:'Lower ↔ higher',invert:true},{kind:'slider',at:'brows.tilt',label:'Tilt'}]},
+  {kind:'slider',at:'brows.size',label:'Size'},{kind:'slider',at:'brows.spacing',label:'Brow spacing'},{kind:'slider',at:'brows.height',label:'Lower ↔ higher',invert:true},{kind:'slider',at:'brows.tilt',label:'Tilt'}]},
  {id:'nose',name:'Nose',controls:[
   {kind:'parts',at:'nose.style',list:PARTS.nose,draw:'face'},
-  {kind:'slider',at:'nose.size',label:'Size'},{kind:'slider',at:'nose.height',label:'Lower ↔ higher',invert:true}]},
+  {kind:'slider',at:'nose.size',label:'Size'},{kind:'slider',at:'nose.x',label:'Left / right'},{kind:'slider',at:'nose.height',label:'Lower ↔ higher',invert:true}]},
  {id:'mouth',name:'Mouth',controls:[
   {kind:'parts',at:'mouth.style',list:PARTS.mouth,draw:'face'},
   {kind:'colours',at:'mouth.colour',label:'Lips',palette:PALETTE.lips},
-  {kind:'slider',at:'mouth.size',label:'Size'},{kind:'slider',at:'mouth.height',label:'Lower ↔ higher',invert:true}]},
+  {kind:'slider',at:'mouth.size',label:'Size'},{kind:'slider',at:'mouth.width',label:'Mouth width'},{kind:'slider',at:'mouth.x',label:'Left / right'},{kind:'slider',at:'mouth.height',label:'Lower ↔ higher',invert:true}]},
  {id:'extras',name:'Glasses & beard',controls:[
   {kind:'parts',at:'glasses.style',list:PARTS.glasses,draw:'face'},
   {kind:'colours',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
@@ -83,10 +84,20 @@ const TABS=[
   {kind:'colours',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
   {kind:'colours',at:'outfit.shoes',label:'Shoes',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']},
   {kind:'colours',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
- {id:'hat',name:'Hat',controls:[
+ {id:'accessories',name:'Accessories',controls:[
+  {kind:'parts',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'figure'},
+  {kind:'parts',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
+  {kind:'toggle',at:'accessories.pin',label:'Lapel pin'},
+  {kind:'colours',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
+ {id:'hat',name:'Hats & bows',controls:[
   {kind:'parts',at:'outfit.hat',list:PARTS.hat,draw:'figure'},
   {kind:'colours',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
 ];
+
+for(const t of TABS){
+ if(!['eyes','brows','nose','mouth'].includes(t.id))continue;
+ t.controls.splice(1,0,{kind:'position',label:'Position',at:t.id+'.height',horizontal:t.id+(t.id==='eyes'||t.id==='brows'?'.spacing':'.x'),paired:t.id==='eyes'||t.id==='brows'});
+}
 
 const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['sit','Sit']];
 
@@ -245,7 +256,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(0-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
   // A body faces -z in the town; here it turns round to face you.
   holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
-  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':'smile'});
+  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   aim(dt);renderer.render(scene,camera);
  }
  canvas.addEventListener('pointerdown',e=>{dragging={x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);});
@@ -267,7 +278,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function figureThumb(r,c,at){
   const a=buildAvatar(r,{shadows:false,faceSize:128}),m=a.measure;
   a.root.rotation.y=.45;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
-  const onHead=at.startsWith('hair')||at==='outfit.hat';
+  const onHead=at.startsWith('hair')||at==='outfit.hat'||at==='accessories.earrings';
   const y=onHead?m.headCentre+m.Rh*.2:at==='outfit.bottom'?m.hipY*.7:m.hipY+m.torso*.55,d=onHead?m.Rh*5.4:at==='outfit.bottom'?m.H*.95:m.H*.85;
   thumbCamera.position.set(0,y+(onHead?m.Rh*.4:.1),d);thumbCamera.lookAt(0,y,0);
   const px=c.width;
@@ -290,9 +301,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  // ----- The panel -----
- function change(at,value){
+ function change(at,value,remember=true){
   if(get(recipe,at)===value)return;
-  history.push(structuredClone(recipe));if(history.length>60)history.shift();
+  if(remember){history.push(structuredClone(recipe));if(history.length>60)history.shift();}
   set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;undo.disabled=false;
  }
  function chooseTab(id){tab=id;category.value=id;renderTabs();renderBody();body.scrollTop=0;}
@@ -323,9 +334,17 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     for(const hex of control.palette){const b=el('button',{ariaLabel:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,control.at)===hex));
      b.onclick=()=>{change(control.at,hex);for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));if(t.controls.some(c=>c.kind==='parts'))renderPictures();};row.append(b);}
     body.append(row);
+   }else if(control.kind==='position'){
+    const row=el('div',{className:'shm-chips',role:'group',ariaLabel:'Position '+t.name.toLowerCase()});
+    const directions=[['arrow-left',control.paired?'Closer':'Move left',control.horizontal,-.04],['arrow-up','Move up',control.at,.04],['arrow-down','Move down',control.at,-.04],['arrow-right',control.paired?'Wider apart':'Move right',control.horizontal,.04]];
+    for(const [icon,label,at,delta] of directions){const b=iconButton(icon,label);b.onclick=()=>{change(at,Math.max(0,Math.min(1,get(recipe,at)+delta)));for(const range of body.querySelectorAll('input[type=range]'))if(range.dataset.at===at)range.value=range.dataset.invert==='true'?1-get(recipe,at):get(recipe,at);renderPictures();};row.append(b);}
+    body.append(row);
    }else if(control.kind==='slider'){
     const input=el('input',{type:'range',min:0,max:1,step:.01,value:control.invert?1-get(recipe,control.at):get(recipe,control.at),ariaLabel:control.label});
-    input.oninput=()=>change(control.at,control.invert?1-+input.value:+input.value);
+    input.dataset.at=control.at;input.dataset.invert=String(!!control.invert);
+    let adjusting=false;
+    input.oninput=()=>{change(control.at,control.invert?1-+input.value:+input.value,!adjusting);adjusting=true;};
+    input.onchange=()=>{adjusting=false;};
     body.lastChild.remove();body.append(el('label',{className:'shm-slider'},el('span',{textContent:control.label}),input));
    }else if(control.kind==='toggle'){
     const b=el('button',{className:'shm-toggle',textContent:control.label});b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));
