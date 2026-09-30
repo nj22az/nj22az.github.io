@@ -6,6 +6,6 @@ The owner's [GameDev Free Resources catalogue](https://github.com/teamgravitydev
 
 The active cast consists of 21 individually fitted MakeHuman CC0 residents and the owner's supplied Yuri. The town also uses local Three.js r170 (MIT), Poly Haven PBR maps and HDR lighting (CC0), the credited Don Carson vending machine (CC BY 3.0), an OSM extract/adapted road dataset (ODbL), the owner's supplied harbour shops and original project geometry/audio. Existing rights notices for each asset remain in the ledger.
 
-`resource-catalog.js` retains the existing prop-source catalogue. Its approved/future entries are intake candidates, not a statement that a file is included. Archived Quaternius characters and procedural prototypes remain for rollback. ambientCG and GSI imagery are not included.
+`resource-catalog.js` retains the existing prop-source catalogue. Its approved/future entries are intake candidates, not a statement that a file is included. The retired procedural and VRoid character prototypes were removed in the 2026 cleanup; see docs/EXPANSION-NOTES.md for where to recover them. ambientCG and GSI imagery are not included.
 
 Accept a new asset only with exact-file provenance and permission to redistribute. Keep required notices on screen and in the ledger. Preserve collision/interaction anchors when a visual model fails. Do not add remote asset URLs or franchise scans to the runtime.

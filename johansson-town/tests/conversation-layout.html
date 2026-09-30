@@ -21,7 +21,7 @@ window.addEventListener('message',event=>{
  else document.querySelector('#results').textContent+=`\n${results.filter(r=>r.ok).length}/${results.length} checks passed`;
 });
 frame.srcdoc=`<!doctype html><meta charset="utf-8">
- ${['styles.css','polish.css','viewport-fix.css','character-controls.css','office.css','dialogue.css','context-controls.css'].map(path=>'<link rel="stylesheet" href="'+root+path+'">').join('')}
+ ${['base.css','context-controls.css'].map(path=>'<link rel="stylesheet" href="'+root+path+'">').join('')}
  <canvas id="game"></canvas>
  <script type="module">
  import {conversationViewport} from '${root}src/conversation-layout.js';

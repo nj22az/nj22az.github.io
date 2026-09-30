@@ -24,7 +24,7 @@ export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
   bag.className='icon-btn bag-button control-off';bag.setAttribute('aria-label','Bag');
   bag.innerHTML=`${svg('bag')}<b class="bag-label">Bag</b><span class="bag-count" aria-hidden="true"></span>`;
   bag.addEventListener('click',()=>onBag());
-  (doc.querySelector('#hud')||doc.body).append(bag);
+  (doc.querySelector('#townControls')||doc.body).append(bag);
  }
  let shown=-1;
  return {

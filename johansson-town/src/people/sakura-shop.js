@@ -10,6 +10,7 @@ import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
 import {returnShopStock} from '../commerce/shop-stock.js';
 import {PALETTE,fluorescent} from '../render/dusk.js';
+import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
 export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
@@ -102,6 +103,8 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    const walls=shell();if(walls)walls.visible=true;
    lit(false);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
+   // The door chime: a bright little arpeggio of our own as the automatic door opens.
+   townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
   },
   /**
    * Parks the real interior behind the shop's own glazing, so the street looks in at

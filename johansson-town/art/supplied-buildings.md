@@ -12,7 +12,7 @@ The source door faces the east lane at Minato's existing entrance `(24,20)`. New
 
 Yuri’s canal-bank house now uses the owner’s `japanese_residential_home_02.glb`: Morrissey Alexander’s **Japanese Residential Home 02**. The two-storey timber house, porch and tiled roof replace the generic kit building at `house-west-canal`. The packed model is 1,996 triangles in one draw. Re-encoded PBR atlases reduce the 12,260,696-byte upload to 1,422,240 bytes. The existing bedroom interior, night visits and nameplate remain active.
 
-Runtime: `assets/models/yuri-home/yuri-home-exterior.glb`. Reproduction: `python tools/pack-yuri-home.py /path/to/japanese_residential_home_02.glb`. Metadata: `assets/models/yuri-home/exterior-manifest.json`. Credits: `assets/ATTRIBUTION.md`.
+Retired in the September 2026 cleanup: the canal-house exterior (`yuri-home-exterior.glb`, packed by `tools/pack-yuri-home.py` from `japanese_residential_home_02.glb`) is no longer in the town. Recover it from commit `5c63eb8` (see `docs/EXPANSION-NOTES.md`).
 
 The source door faces local +Z after packing. Town yaw `π/2` turns it toward the west-bank boardwalk at `(-5.11, 11.53)`. Collision covers the house body and leaves the stoop walkable. Noren and a `ゆりの家` sign mark the enterable house.
 

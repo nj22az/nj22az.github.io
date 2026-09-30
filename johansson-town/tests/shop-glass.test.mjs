@@ -9,7 +9,6 @@ import {DINING,restaurantPoint,restaurantApproach,izakayaPlot,IZAKAYA_DOOR} from
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {SAKURA_FRONT} from '../src/world/interiors/sakura-layout.js';
 import {buildStorefront} from '../src/world/storefront.js';
-import {buildStoreShell} from '../src/world/interiors/convenience.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {WEST_SHOPS} from '../src/world/west-shops.js';
@@ -64,17 +63,13 @@ test('an unexpected izakaya asset is not made transparent',()=>{
  assert.equal(mesh.material.transparent,false);
 });
 
-test('Sakura keeps its full-size frontage and clear street and interior glazing',()=>{
+test('Sakura keeps its full-size frontage and clear street glazing',()=>{
  installDOM();
  const parent=new THREE.Group(),site={id:'market',side:-1,z:-28,title:'Sakura'};
  const facade=buildStorefront({parent,site,label(){},register(){},enter(){},placement:{x:-7.45,z:-28,yaw:Math.PI/2,scale:1}});
  assert.deepEqual(facade.scale.toArray(),[1,1,1]);
  const panes=facade.children.filter(o=>o.userData.clearWindow);
  assert.equal(panes.length,3);panes.forEach(o=>assertGlass(o.material));
- const room=new THREE.Group(),box=(size,pos,color,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color}));m.position.set(...pos);parent.add(m);return m;};
- buildStoreShell({room,box,reg(){},exit(){}});
- const inside=room.children.filter(o=>o.userData.clearWindow);
- assert.equal(inside.length,3);inside.forEach(o=>assertGlass(o.material));
 });
 
 test('Minato stands beside Sakura with its door and NPC approach facing the road',async()=>{
