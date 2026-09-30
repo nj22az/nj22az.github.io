@@ -42,13 +42,10 @@ git checkout 5c63eb8 -- johansson-town/assets/models/sea-cave
 Generation reference images moved from `assets/generation/pilot/references/` to
 `art/generation-references/`: they are inputs for making art, not game files.
 
-## Known cleanup still open
+## Done in the second cleanup pass
 
-- CSS: 14 stylesheets with heavy overlap (`polish.css` restates ~20 selectors from
-  `styles.css`; the touch buttons are styled in up to seven files). Merge in one pass,
-  keeping `context-controls.css` and `dual-controls.css` (tests read them by name).
-- Unused selectors: `.start-card`, `.scene-line`, `.desktop-help`, `.boot-status` and
-  the old landing-page `.board-*` / `.admit-*` classes.
-- Docs with dead links: `EAST-GARDEN.md`, `VROID-CAST.md`, `NEIGHBOURS-AND-STREET.md`,
-  `HARBOUR-BOARDWALK.md`, `WORKSHOP-PRINTING.md`.
-- `.github/workflows/rebuild-town-runtime.yml` is a one-off with hard-coded checks.
+- CSS: 14 stylesheets merged into 5 in link order (`base.css`, `context-controls.css`,
+  `landing.css`, `dual-controls.css`, `tomodachi-ui.css`), with ~90 rules for classes
+  that no longer exist removed. Each section is labelled with its original file name.
+- Old convenience store and street-kit leftovers retired; dead doc links fixed; the
+  one-off `rebuild-town-runtime` workflow deleted.

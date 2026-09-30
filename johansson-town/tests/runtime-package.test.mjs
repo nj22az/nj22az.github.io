@@ -35,7 +35,7 @@ test('every stylesheet link carries a hash of the file it points at',async()=>{
  const {createHash}=await import('node:crypto');
  const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
  const links=[...html.matchAll(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g)];
- assert.ok(links.length>=10,'The page still links its stylesheets');
+ assert.ok(links.length>=5,'The page still links its stylesheets');
  for(const [,,file,query] of links){
   const css=await readFile(new URL('../'+file,import.meta.url));
   const hash=createHash('sha256').update(css).digest('hex').slice(0,8);
